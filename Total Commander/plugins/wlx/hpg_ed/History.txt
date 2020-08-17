@@ -1,0 +1,239 @@
+hpg_ed Version History:
+=======================
+V 0.5.13: (2003/08/15)
+======================
+FIX: (THIS TIME IT WORKS REALLY!) COMMENTS BUG IN C/C++ AND PASCAL/DELPHI
+Comments were wring calculated. A line comment
+like:
+//**********
+void ...
+
+were not correctly parsed. Instead also the next lines were treated as comment lines. The same in PASCAL with //(*.
+
+ADDED JUMP TO LINE AS COMMAND
+So you can setup a keyboard binding to that command. Per default no hotkey is assigned.
+
+
+V 0.5.12: (2003/08/13)
+======================
+CHANGED CURSOR BEHAVIOR PREVWORD (Ctrl-Left)
+Cursor just moved to previous word until column 0. If on clumn 0 Ctrl-Left was ignored. Now the cursor moves to the last word of the previous row (if any).
+
+NEW SAVE DIALOG
+Added places bar to the save as dialog.
+
+FIXED: NON ENGLISH SHORTCUT TEXTS
+Under some strange circumstances the Shortcut texts for menus, toolbar button hints etc. would be display in German. Now all captions are builded with a plain English version.
+
+NEW SUPPORT FOR LONG LINES
+Changed the maximum number of characters from 1024 to 4096. This slows down the editor a little bit, but a lot of files I'm using may contain more lines so I decided this by myself :-)
+(In next versions the number of columns should be dynamically determined).
+
+CHANGES CONFIG DIALOGS:
+Changed some config pages a little bit to make the dealing with settings a little bit easier. The "General Settings" and "Tab & Indetions" pages are changed to a treeview options dialog.
+
+V 0.5.11:
+=========
+WINDOWS <-> Linux Convertings
+Added new converting function. Now you can save Windows files as Linux files and vice versa. Therefor a new switch is included in the Save as dialog of hpg_ed (not the lister menu!).
+
+Version Information Dialog
+Added version information dialog that includes all important hpg_ed versions and comments.
+
+XML Extension
+Added the extension .xml to the initial associations (html highlighter), that are applied automatically when hpg_ed started for the first time.
+
+Convert Spaces To TABS
+Added new option under Editor/Tabs&Indention in configuration:
+"Convert spaces to TABS on save". If option is switched on, a definable number of spaces will be converted to a real tab character. (It is also a great feature to reformat you source codes).
+
+Fix - Long Lines
+hpg_ed now displays a warning message when lines becomes longer than 1023 lines. The editor cannot display or edit those lines. If hpg_ed is invoked with a file that contains lines with more than 1023 characters it is rejected by hpg_ed and the standard lister is displayed instead.
+
+User Reserved Folders
+Added support for ENV-Variable "USERRESFOLDER". This variable can be set to comma-separated list of folders that are used to find the matching user reserved keyword list. The complete search oder is now (only if no full qualified path is given!):
+   1st USERRESFOLDER
+   2nd current folder
+   3rd all parent folders (upto root) of current folder
+
+Keyboard Binding Reference Table
+Added a menu item to display all currently assigned keyboard bidings in a table. A temporary file is created and the default editor is invoked with it.
+
+Document Property Dialog
+Added a simple document properties dialog that displays some information about the current loaded document, its state, encoding and the used user reserved keyword file.
+
+ANSI <-> OEM Converting Function
+Added an ANSI to OEM and OEM to ANSI converting function. Use this if you want save a DOS file as Windows (ANSI) file or vice versa. Note: This is not the same than the WINDOWS<->Linux converting and there is not UNDO available.
+
+
+V 0.5.10:
+   - fix: The tab & indention settings are applied to the editor AFTER
+	 a file was loaded and though the tabs are always converted to 3 spaces.
+   - fix: minor fixes on configuration DLL forms' tab stops.
+   - fix: The configuration dll is now searched in several places with the
+	 follwing order:
+	 1st: windows path or current directory of tcmd
+	 2nd: directory where the hpg_ed is located in
+	 3rd: the suggested place where the tcmd ini file is located in
+	 Please take care that only one configuration dll 'hpg_ed_cfg.dll' is on
+	 your system and old DLL's are not supported anymore!
+
+V 0.5.9:
+Changes:
+   - fix: Changing background colours did not correctly work.
+   - add: Added colour profiles to save colour sets and fast load some
+	 predefined ones.
+   - fix: CursorBeyondEOF did not work. Instead the KeepTrailingBlanks
+	 options was used :-(
+   - add: User reserved colours.
+   - fix: Due to the user reserved colors old colour definitions in ini
+	 files didn't work.
+
+V 0.5.8:
+Changes:
+   - add: enhanced the find findnext function (F3, Ctrl-F).
+	it supports now: backwards search and restarts search if term
+	was not found at the start (or at the end in case of backwords
+	search ;-).
+   - fix: rejects binaries also if invoked via '4'. Currently this
+	may unfortunatelly take some time :-(
+   - enh: some graphical enhancements with gutter:
+	added current line's indicator,
+	gutter width is calculated at edit time (no flicker i hope) and is
+	less width comsumpting :-)
+   - add: in configuration you can now change default key bindings in a
+	comprehensive dialog
+   - add: Support for custom keywords, loaded asynchroniously from an external
+	reference file(!)
+	See description about Custom keywords in Readme.txt
+
+V 0.5.7:
+Changes:
+   - fix: Small memory leak when reloaded a file (also when open via MRU)
+   - add: Added MRU for the last 10 files opened with hpg_ed
+   - add: Added MS Visual Studio like Bookmarks, CTRL-F2 Set/Unsets a bookmark
+	 F2 jumps to the next bookmark regardingless of the bookmark's number
+   - add: Bookmarks can be Set/Unset by simply clicking on the Gutter with the
+	 left mouse button.
+   - add: Added options Hide Gutter. If line numbers are switched off, the gutter
+	 (and of course the bookmark indicators!) are hidden.
+
+V 0.5.6:
+Changes:
+   - fix: Toolbar buttons do not reflect the real states for cut, copy, paste
+   - enh: Removed the configuration from main application and moved it to the
+	 new hpg_ed_cfg.dll. So the code is smaller and the plugin load faster into
+	 memory.
+   - add: Support now unix text files. hpg_ed detects now whether a file
+	 is either ANSI oder UNIX style and saves the file in the detected
+	 format. (Also added indicator in main lister window that displays unix in
+	 case of unix files).
+   - fix: Cursor Beyond EOF did not work, instead the SmartTabs value was used,
+	 which lead to strange effects.
+   - enh: Colour can be either one of the 16 palette entries or a custom color
+	 which can be selected via color dialog.
+
+V 0.5.5:
+Changes:
+   - add: Templates with auto completion. In edit mode use CTRL-J to pop up
+	 a template list with pre-defined shortcuts that are assigned to portions
+	 of code which will be inserted at the cursor location.
+	 Example:
+		in C++ code enter
+		   fori
+	  press CTRL-J and the fori is replaced with
+		   for( int i = 0; i < | ; i++ ) {
+			}
+		Note the cursor is placed on the |
+	 So this feature is quiet equal the one found in the Borland's Editors.
+   - add: Added configuration page for the templates.
+   - fix: 'N' and 'P' did not work if lister was invoked via F3 or Shift-F3.
+	 Usually the next or previous selected file should be loaded, now its
+	 fixed. Thanks to Christian Ghisler for the hint with keybd_event() :)
+
+V 0.5.4:
+Changes:
+   - add: Syntax Highlighter Colours are now adjustable. Even the coulours used for
+	 the selected block and the right margin :-) Very comprehensive new colour dialog.
+   - add: right margin can now be switch on/off.
+   - add: new line numberings without the flicker effects.
+   - fix: flickering on resizing when lister was opened with hpg_ed before, made
+	 listing in quick view panel mode very ugly.
+
+V 0.5.3:
+Changes:
+   - chg: using TCMD's suggested directory to store its own ini file in (hpg_eg.ini)
+   - fix: client region was not always correctly calculated
+   - fix: configuration dialog's StayOnTop attribut forced the select font dialog
+	 to be displayed behind the config dialog.
+   - add: using 2 different fonts one for ASCII and another for ANSI display.
+	 Note: you'll need to set up this in hpg_ed's own configuration dialog because
+	 there is currently no API call implemented in TCMD's lister to get its information
+	 directly.
+   - chg: the configuration dialog is now plugged in the main lister form and
+	 replaces the editor. This is a workaround of strange behaviors with topmost
+	 dialogs etc.
+   - chg: changed the configuration dialog and split up the properties into
+	 different sections for easier configuration.
+   - add: added sample to fonts section to test the two fonts immediately without
+	 the need first to change back to the editor.
+
+V 0.5.2:
+Changes:
+   - Added line/column display of current selection.
+   - Added % display of current position.
+   - Added support for jump to % via Listers percent menu item.
+   - Added 'jump to line' function. Click on the line/columns display opens
+	 the jump to line dialog.
+   - Avoid the flicker when showing hpg_ed's form a little bit (moved alignment
+	 of controls before showing form).
+   - When pressing 'n' or 'p' in full lister view (F3) the next and previous.
+	 selected (if any) files will not be loaded if not using the lister's menu.
+	 Now you can press 'n' or 'p' two times (only in non-edit mode!).
+	 The first keypress sets the focus on the lister's main window the second one
+	 is processed by the lister itself instead of the hpg_ed's one.
+
+Known Restrictions:
+   - In Syntax highlighting mode the editor can only display up to 100000 lines
+	 of source code. If changed to text or ini highlighting mode the file may
+	 be larger.
+   - If the file is very large the performance of the editor is decreased a lot.
+
+V 0.5.1: 03/23/2003
+Fixes:
+   - Bug in INI Syntax highlighter (RALib 2.01).
+	 If the line length exeeds 1025 characters an exception occured
+	 (EOutOfRange, infinite exception loop).
+
+V 0.5: 03/19/2003
+Fixes:
+   - PASCAL syntax highlighter was not shown in configuration dialog.
+   - The states (enabled/disabled) of the toolbar buttons did not correctly
+	 display the states of the current loaded file in editmode.
+   - Corrected the version information, in 0.4 the files' version info was set
+	 to 0.1.4 instead of 0.4(!).
+
+Changes:
+   - Added default font chose dialog.
+   - Implemented a simple print function (does NOT use the Listers default
+	 font nor character set, instead the default listers font will be used.
+   - Added more options to configuration dialog, tab stops, smart tabs etc.
+   - The internal configurations dialog's style is set to StayOnTop because
+	 it was not possible to let it stay in the font of the lister window.
+
+V 0.4: 03/16/2003
+Changes:
+	- localized version (added shortcuts)
+	- added some options to the configurations dialog
+	- auto edit mode
+	- initially show/hide toolbar
+
+V 0.3: 02/09/2003
+Fixes:
+	- when opening more than 1 lister form,
+	  closing the second one forced exceptions
+New:
+   - added configuration dialog, available via 'Configure...'
+   
+V 0.1.x-0.2.x: January 2003
+First version with syntax highlightings

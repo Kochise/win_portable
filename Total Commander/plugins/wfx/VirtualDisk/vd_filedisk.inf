@@ -1,0 +1,25 @@
+[Version]
+Signature="$Windows NT$"
+
+[DefaultInstall]
+CopyFiles=CopyDriver
+AddReg=AddRegisrtyItems
+
+[SourceDisksNames]
+1=""
+[SourceDisksFiles]
+vd_filedisk.sys=1
+[CopyDriver]
+vd_filedisk.sys, , , 0x00001006
+[DestinationDirs]
+CopyDriver=12
+
+[AddRegisrtyItems]
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "ErrorControl", 0x00010003, 1
+
+; When to start the driver:
+;   At boot:  Start=1
+;   Manually: Start=3
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "Start", 0x00010003, 1
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "Type", 0x00010003, 1
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk\Parameters", "NumberOfDevices", 0x00010003, 4

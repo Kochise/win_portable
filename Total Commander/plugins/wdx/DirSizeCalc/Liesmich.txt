@@ -1,0 +1,268 @@
+DirSizeCalc 1.21
+----------------
+
+DirSizeCalc ist ein Inhaltsplugin für den Total Commander.
+
+
+Plugin-Beschreibung
+-------------------
+
+DirSizeCalc zählt die Größe aller Dateien in einem Verzeichnis zusammen und zeigt das Ergebnis an. Die Berechnung der Größe geschieht im  
+Hintergrund. So kann man während der Berechnung weiterarbeiten. 
+Außerdem kann man durch Benutzung eines der "Bei Bedarf"-Felder die Größe des Verzeichnisses unter dem Cursor anzeigen lassen, indem man  
+die Leertaste drückt. Die "Hintergrund"-Felder beginnen sofort nach dem Öffnen eines Verzeichnisses mit der Berechnung.
+Hinzu kommen noch einige andere verwandte Felder.
+
+Beschreibung der Felder
+-----------------------
+
+Größe				Dateigröße
+Komprimierte Größe 		Dateigröße bei gesetztem "Komprimiert-Attribut". Dieses Feld steht nur unter Windows NT basierten Systemen zur Verfügung.
+Verzeichnisanzahl		Anzahl aller Unterverzeichnisse in einem Verzeichnis.
+Dateianzahl			Anzahl aller Dateien in einem Verzeichnis.
+Leer				Ermittelt, ob ein Verzeichnis weder Unterverzeichnisse noch Dateien enthält.
+Enthält Dateien			Ermittelt, ob ein Verzeichnis Dateien enthält.
+Enthält Unterverzeichnisse	Ermittelt, ob ein Verzeichnis Unterverzeichnisse enthält.
+
+Systemvorrausetzungen
+---------------------
+
+Für diesen Plugin wird Total Commander 6.50 oder neuer benötigt. 
+Für benutzerdefinierte Einheiten und Platzhalter wird Total Commander 6.52 benötigt.
+Um die Größe von komprimierten Dateien anzuzeigen wird Windows NT/2000/XP benötigt.
+
+
+Einstellungen
+-------------
+
+Alle Einstellungen werden in der Datei "DirSizeCalc.ini" gespeichert. Änderungen werden erst nach einem Neustart des Total Commanders wirksam. Diese Datei wird automatisch bei der Installation angelegt, wenn sie noch nicht vorhanden ist.
+
+
+Ort der Einstellungsdatei "DirSizeCalc.ini"
+-------------------------------------------
+
+"DirSizeCalc.ini" wird standardmäßig im gleichen Verzeichnis wie die Datei Wincmd.ini gespeichert. Falls gewünscht kann diese Datei auch in eins der folgenden Verzeichnisse verschoben werden:
+
+Unterverzeichnis mit dem Namen "DirSizeCalc" relativ zu dem Verzeichnis, in dem sich die Datei Wincmd.ini befindet
+Plugin-Verzeichnis
+Total Commander Verzeichnis
+
+
+Ausschließen von Bereitstellungs- und Abzweigungspunkten von der Berechnung
+---------------------------------------------------------------------------
+
+Diese Einstellungen wirkt sich auf alle Felder aus. 
+Es gibt sowohl Einstellungen für "Im Hintergrund" als auch für "Bei Bedarf". 
+Außerdem gibt es Einstellungen um auf oberster Ebene und auf allen untergeordneten Ebenen Bereitstellungs- und Abzweigungspunkte  
+auszuschließen. Die oberste Ebene ist das aktuelle Verzeichnis. Wenn beispielsweise auf oberster Ebene Abzweigungspunkte ausgeschlossen  
+werden, dann werden unabhängig von der Einstellung für die unteren Ebenen keine Größenangaben für Abzweigungspunkte berechnet.
+
+Im Einzelnen gibt es folgende Einstellungen.
+
+TopFollowReparsePointsBackground	= Einstellung für Verzeichnisse auf oberster Ebene für die Berechnung im Hintergrund.
+TopFollowReparsePointsOnDemand		= Einstellung für Verzeichnisse auf oberster Ebene für die Berechnung bei Bedarf.
+SubFollowReparsePointsBackground	= Einstellung für Verzeichnisse auf untergeordneten Ebenen für die Berechnung im Hintergrund.
+SubFollowReparsePointsOnDemand		= Einstellung für Verzeichnisse auf untergeordneten Ebenen für die Berechnung bei Bedarf.
+
+0 = Bereitstellungs- und Abzweigungspunkte von der Berechnung ausschließen.
+1 = Bereitstellungspunkte von der Berechnung ausschließen, aber Abzweigungspunkte mitrechnen.
+2 = Abzweigungspunkte von der Berechnung ausschließen, aber Bereitstellungspunkte  mitrechnen.
+3 = Bereitstellungs- und Abzweigungspunkte mitrechnen.
+
+In der Vorgabeeinstellung werden Bereitstellungs- und Abzweigungspunkte stets mitgerechnet (alle Werte auf 3 gesetzt).
+
+
+Benutzerdefinierte Einheiten
+----------------------------
+
+Benutzerdefinierte Einheiten erlauben es genauere Größenangaben anzuzeigen.
+
+Um eine benutzerdefinierte Einheit hinzuzufügen muss ein Abschnitt in der Datei "DirSizeCalc.ini" erstellt werden. Für diesen Abschnitt gibt es eine Namenskonvention. Diese Abschnitte müssen mit der Zeichenkette "CustomUnitConfig_" beginnen. Alle folgenden Zeichen werden für die Bezeichnung verwendet. Beispiel:
+
+CustomUnitConfig_MyDim. In diesem Fall lautet der Name der Einheit "MyDim".
+
+Die Einstellungsdatei enthält einige Beispieleinheiten.
+
+
+Grundeinstellungen für benutzerdefinierte Einheiten
+---------------------------------------------------
+
+Es ist nicht notwendig, für jede benutzerdefinierte Einheit jede Einstellung vorzunehmen, die man ohnehin immer auf den gleichen Wert  
+setzen möchte. Hierzu gibt es den Abschnitt "Default_CustomUnitConfig". Dieser Abschnitt kann die gleichen Werte enthalten wie die Abschnitte zur benutzerdefinierten Einheit.
+
+Definiert man in diesem Abschnitt eine oder mehrere Einstellungen nicht, so wird der Standardwert für diese Einstellung benutzt. Die  
+Standardwerte sind:
+
+AllowedUnits=1
+NumberOfDigits=3
+DecimalSeparator=,
+LeadingZero=1
+ThousandSeparator=.
+WantByteDigits=0
+WantThousandSeparator=1
+
+AllowedUnits
+------------
+
+AllowedUnits=1		
+
+Diese Einstellung gibt an in welchen Größenordnungen Dateigrößen angezeigt werden.
+
+Es kann eine Kombination der folgenden Werte angegeben werden:
+1=Bytes
+2=KiloBytes
+4=Megabytes
+8=GigaBytes
+
+Beispiel:
+
+AllowedUnits wird auf 5 gesetzt. Das ist eine Kombination aus Byte und Megabytes.
+
+Im Verzeichnis gibt es Dateien mit folgenden Dateigrößen in Bytes:
+
+          234
+       58.923
+  923.345.789
+2.826.347.092
+
+Das Ergebnis sieht dann folgendermaßen aus (auch abhängig von den anderen Einstellungen):
+
+      234 bytes
+    0,056 MB
+  880,571 MB
+269.5,415 MB
+
+
+Die genauen Größenordnungen sind:
+
+0 Bytes - 1023 Bytes = Bytes
+1024 Bytes - 1048575 = Kilobytes
+1048576 - 1073741823 = Megabytes
+	> 1073741824 = Gigabytes
+
+Wenn sich also eine Dateigröße in einer in AllowedUnits angegebenen Größenordnung befindet, dann wird die Größe in dieser Größenordnung  
+angezeigt. Anderenfalls wird die Größe in der nächst kleineren in AllowedUnits angegebenen Größenordnung angezeigt.
+
+NumberOfDigits
+--------------
+
+NumberOfDigits gibt die Anzahl der Nachkommastellen an.
+
+
+DecimalSeparator
+----------------
+
+DecimalSeparator gibt an welches Zeichen für den Dezimaltrennzeichen verwendet werden soll.
+
+
+LeadingZero
+-----------
+
+LeadingZero gibt an, ob eine führende Null angezeigt wird, wenn eine Größenangabe kleiner eins ist.
+
+ 
+ThousandSeparator
+-----------------
+
+ThousandSeparator gibt an welches Zeichen für ein Tausendertrennzeichen verwendet werden soll.
+Das Zeichen "S" ist reserviert, um ein Leerzeichen als Tausendertrennzeichen zu verwenden.
+
+
+WantByteDigits
+--------------
+
+WantByteDigits gibt an, ob bei der Größenordnung in Bytes Nachkommastellen angezeigt werden sollen. Der Nachkommawert ist für Byte Angaben  
+immer null.
+
+Mögliche Einstellungen
+WantByteDigits=O	Keine Nachkommastellen für Byteangaben
+WantByteDigits=1	Nachkommastellen für Byteangaben
+
+
+WantThousandSeparator
+---------------------
+
+WantThousandSeparator gibt an, ob ein Tausendertrennzeichen verwendet werden soll oder nicht.
+
+WantThousandSeparator=0 Kein Tausendertennzeichen
+WantThousandSeparator=1 Tausendertrennzeichen
+
+
+Versionschronik
+---------------
+
+1.21
+- KORRIGIERT		Das Durchführen von Dateioperationen auf Verzeichnisse nach der Benutzung des Feldes "Enthält Dateien war in manchen Fällen nicht möglich.
+- KORRIGIERT		Es wurden fälschlicherweise Einheiten für Felder angezeigt, die keine Größengabe darstellen können.
+
+1.20
+- HINZUGEFÜGT		Alle Felder können nun entweder im Hintergrund oder "Bei Bedarf" berechnet werden.
+- HINZUGEFÜGT		Nutzung der erweiterten Pluginschnittstelle, die die bisherigen Einschränkungen bei Formatierung und Sortierung benutzerdefinierter Einheiten aufhebt.
+- HINZUGEFÜGT		Nutzung der erweiterten Pluginschnittstelle, die die Anzeige von Platzhaltern ermöglicht. Sie werden angezeigt, solange die Berechnung noch nicht abgeschlossen ist.
+- HINZUGEFÜGT		Neue Felder "Enthält Dateien" und "Enthält Unterverzeichnisse.
+
+1.13
+- KORRIGIERT		Einstellungen wurden in einigen Fällen nicht gelesen.
+
+1.12
+- KORRIGIERT		Standard-Einstellungsdatei wird nun während der Installation erzeugt.
+- HINZUGEFÜGT		Russische Übersetzung hinzugefügt.
+- KORRIGIERT		Fehlerhafte Sprachdatei korrigiert.
+
+1.11
+- KORRIGIERT		Fehlerhafte Installationsdatei korrigiert.
+
+1.10
+- HINZUGEFÜGT		Einstellungen werden nun in der Datei "DirSizeCalc.ini" verwaltet.
+- HINZUGEFÜGT		Ein neues Feld "Leer" wurde hinzugefügt. Es zeigt an, ob ein Verzeichnis weder Dateien oder Unterverzeichnisse  
+enthält.
+- HINZUGEFÜGT		Benutzerdefinierte Einheiten hinzugefügt. Benötigt Total Commander 6.52 oder höher.
+- HINZUGEFÜGT		Bereitstellungs- noch Abzweigungspunkte können optional von der Berechnung ausgeschlossen werden.
+- KORRIGIERT		Die Größe von Dateien, die exklusiv geöffnet sind, wurde nicht berechnet.
+
+1.07
+- HINZUGEFÜGT		Neue Felder "Unterverzeichnisanzahl" und "Dateianzahl" hinzugefügt. Beide Felder können im Hintergrund berechnet  
+werden oder bei Bedarf.
+- HINZUGEFÜGT		Alle Felder werden nun immer zuerst absteigend sortiert.
+- KORRIGIERT		Ein Fehler wurde korrigiert, der bei einem Verzeichniswechsel nur die Berechnung der ersten Spalte gestoppt hat,  
+wenn mehrere Spalten des Plugins angezeigt werden.
+
+1.06
+- HINZUGEFÜGT		Unterstützung für die Plugin-Funktion ContentStopGetValue hinzugefügt.
+
+1.05
+- KORRIGIERT		Fehler in Installationsdatei "pluginst.inf" korrigiert.
+
+1.04
+- HINZUGEFÜGT		Unterstützung für Einheiten hinzugefügt.
+- HINZUGEFÜGT		Plugin Installationsdatei "pluginst.inf" hinzugefügt.
+- HINZUGEFÜGT		Unterstützung für komprimierte Dateien hinzugefügt (benötigt Windows NT/2000/XP).
+- GEÄNDERT		Plugin-Name geändert nach DirSize.
+
+1.03
+- HINZUGEFÜGT     	Unterstützung für Anzeigen bei Bedarf hinzugefügt.
+- GEÄNDERT   		Verzeichnisgrößenermittlung im Vordergrund verworfen.
+
+1.02
+- HINZUGEFÜGT      	Verzeichnisgrößenermittlung im Vordergrund hinzugefügt.
+- HINZUGEFÜGT      	Deutsche Sprachdatei hinzugefügt.
+- GEÄNDERT   		Reduzierte Dateigröße.
+
+1.01
+- KORRIGIERT:   	Größe für gerade geöffnete Dateien wurde nicht angezeigt.
+- GEÄNDERT:   		Verbesserte Geschwindigkeit.
+
+1.00
+-       		Erste Veröffentlichung.
+
+Kontakt zum Autor
+-----------------
+
+Besuche das Total Commander Forum ( http://www.ghisler.ch ). Copyright (C) 2004, 2005 Christian Hillbricht.
+
+
+Lizenz und Haftung
+------------------
+
+Jegliche Haftung für direkte wie indirekte Schäden wird hiermit ausgeschlossen, soweit dies gesetzlich zulässig ist.
+Alle Rechte vorbehalten. Dieser Total Commander Plugin ist urheberrechtlich geschützte Freeware.

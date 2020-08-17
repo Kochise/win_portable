@@ -1,0 +1,179 @@
+======================================================
+ TCBurner - CD/DVD Burning Plugin for Total Commander
+ Copyright (c) 2005 Tiamat Software-Entwicklung
+======================================================
+
+CURRENT VERSION: 0.9.3
+
+[ +  Feature added            ]
+[ *  Feature changed/extended ]
+[ -  Feature removed/replaced ]
+[ %  Fixed bug                ]
+[ !  Important note           ]
+
+
+--- Changes in current version -----------------------------------------------
+
+[!] This release of TCBurner contains a new version of "FoxBurner.dll". If you
+    are upgrading from a previous version, make sure this new DLL (size
+    720.896 bytes, date 23.02.2005 23:14) becomes active, i.e. you overwrite
+    the old DLL upon installation!
+[+] Querying the properties of plugin root entries now opens the documentation
+    html file at the point where the selected entry is explained
+[+] The plugin itself now supports multi-language through a .locale file. Those
+    are stored in a subdir "Lang" under the plugin dir. You can choose the
+    language to use in the configuration dialog. You can also make your own
+    language file by editing the "english.locale" file which contains some
+    remarks. (If you do so, it would be nice if you sent your language file to
+    the developer for distribution!).
+[+] The plugin now supports .lst files created by the DiskDir plugin. If you
+    copy such a file (the whole file, not some contents!) to the Data-CD/DVD
+    project, you're queried if you wish the plugin to interpret the .lst as
+    a list file and put all files listed in it in the project instead of the
+    list file itself.
+[+] Data and Audio Project contents can now be saved to disk, by executing
+    pseudo-file commands, and automatically at plugin init/shutdown
+[+] Volume labels are now stored separately per project type
+[+] Added "default label" option: if active, after each burning process the
+    chosen volume label is replaced by a default value
+[+] Added separator lines between pseudo-file commands and project contents.
+    Meanwhile the special pseudo-files got a little too many for my taste, so
+    some separator was needed. :) I hope it will work okay for different
+    ways of ordering the panel in TC.
+[+] Added "Estimated Free Space" entry to project directories. Total media 
+    space is either retrieved from a media inserted in a selectable burner, or
+    (if not possible - no device inserted, burner busy etc.) based on a preset
+    or user-definable media type (execute the Free Space pseudo-file to change
+    those settings). Device/preset size is stored in configuration for each
+    project type. In case of oversize, a warning icon and text is displayed.
+[+] The "Info: Burning Devices" pseudo-directory now shows the type of
+    inserted media (if any) for each burning device
+[+] Media checks before burning (is media empty/writable/erasable?) can be 
+    skipped now, so users with slightly incompatible burners that report wrong
+    media information can (try to) burn anyway
+[+] Added an option to use external ASPI layer. Might help in some cases with
+    slightly incompatible burners.
+[+] Location of configuration file can be changed from the Global Settings
+    dialog. In addition the file can be moved manually anytime, even while the
+    plugin is initialized, since the location to be used is evaluated each 
+    time the config file needs to be written.
+[+] The Burn and Erase Progress dialogs can be minimized now; the completion
+    percentage is shown in the title/task bar
+[+] Verify function re-made: wrote an own verify replacing the FoxBurner 
+    internal one. Advantages: faster, more stable, waits for media re-insert 
+    if it was ejected, can verify Data+VideoDVD Projects, verifies only files 
+    actually in the project
+[+] Burning log text can now also be copied to clipboard (in addition to
+    saving it to a file)
+[+] Configuration file is now searched for in the following folders, the first
+    folder where it is found (top-down) is used. If it cannot be found, a new
+    file with default settings is created in the first listed folder.
+    [wincmd-ini-path]\tcburner.ini
+    [wincmd-ini-path]\tcburner\tcburner.ini
+    [plugin-path]\tcburner.ini
+    [wincmd-path]\tcburner.ini
+[*] The functions that were formerly performed with the TC Rename command
+    (change volume label, re-order audio tracks) are now performed by execu-
+    ting the pseudo-files. Text entry is done in a input query dialog.
+[*] DVD+/-RW media don't support multisession, don't need to be erased before 
+    writing (i.e. any writing operation erases existing data) and may show 
+    incorrect media status ("Complete Disc" despite being empty); media checks 
+    have been modified accordingly and a warning is displayed if multisession 
+    burn on such a media is attempted
+[*] Some static pseudo-file commands (like "Estimated Free Space" and
+    "Load Project") are now shown in the project folders even if the project
+    itself is empty
+[*] When erasing a media from the burn dialog (when a non-empty but erasable
+    media was detected), the erasing and subsequent burning is started auto-
+    matically now, the Erase dialog no longer waits for user interaction
+[*] Accidentially copying a whole lot of non-useable files to the Image, Audio
+    or DVD project caused a great lot of error message boxes. Now a query is
+    shown "show further errors/ignore further errors/abort operation?"
+[*] Removed the ** from the Project pseudo-directory names; no more conflict
+    with TC's quick directory change feature (where * has some special meaning)
+[*] In the "Project Size" pseudo-file the size in bytes is now displayed in 
+    the TC's size column. Looks better, and avoids the last "." in the byte 
+    count being interpreted as file extension.
+[*] The font in all dialogs has been changed from MS Sans Serif to Tahoma.
+    Looks a good deal nicer.
+[*] TCBurner has a new nice set of colorful alpha-blended icons
+[%] Save-as-dialog for ISO file creation now displays "Overwrite?" warning if
+    file already exists
+[%] The commands in "Info: Burning Device" would allow you to retrieve device
+    info also during a burning/erasing process, thus messing up the burning.
+[%] ISO image filenames were checked case-sensitively, so only ".iso" would be
+    accepted, not ".ISO" or others
+[%] This version of TCBurner includes a new version of the FoxBurner SDK DLL
+    which should fix the problem with Video DVDs not playing correctly on
+    standalone DVD players
+[-] Removed the "Data Project: Boot Image" pseudo-folder. The boot image for
+    bootable CDs is now selected via a file requester after confirming the 
+    Burn Media dialog.
+
+
+--- Changes in previous versions ---------------------------------------------
+
+0.9.2  (15.02.2005)
+
+[!] Since TCBurner uses an INI file now instead of the registry to store its
+    configuration data, your configuration will be reset to default if you
+    upgrade from 0.9.1. I really was too lazy to include a migration 
+    function. :-) You can safely remove the registry key "HKEY_LOCAL_MACHINE\
+    Software\Tiamat Software\TCBurner" if you wish to clean up a little.
+[+] New burning project type: ISO/CUE Image Burning
+[+] Burn speed can now be set
+[+] The last used burning device is now stored in the configuration file and 
+    subsequently presented as default when opening the burn/erase dialog
+[+] Overburn option: if you try to burn a too large project, you now have the
+    possibility to ignore it and burn anyway.
+[+] Pressing F3 on the "**Show Help" command now displays the documentation
+    html in TC's lister.
+[+] New root command: "Rescan burning devices". Mostly useful for people with
+    removable burners.
+[+] Extended handling of media checks before burning: in case of empty drive,
+    message is shown with opportunity to insert media. In case of non-writable
+    but erasable media, erase dialog is offered.
+[+] Contents of burn log window can now be saved to a text file
+[+] Upon first start of each new version of the plugin, a text box with the
+    changes log is now shown.
+[+] Project size (bytes, duration, filecount) is now shown as a pseudo-file
+    in Data and Audio Project pseudo-directories
+[+] The volume label is now shown as a pseudo-file in each project pseudo-
+    directory, and can be set using the TC "Rename" command (Shift-F6).
+[+] New root command: "Update check". Queries newest available plugin version
+    from the download website and informs the user if a newer version than
+    is currently installed is available.
+[*] Erasing a medium no longer blocks the TC window (except when done from
+    within burn dialog)
+[*] Configuration data is now stored in an INI file ("tcburner.ini" in the
+    plugin's directory) instead of the registry.
+[*] Better progress bar during erase. The time needed for erase is now
+    estimated at first and then measured, and stored for each device and
+    medium type. For details see documentation.
+[*] Some improved status messages during burning
+[*] Re-ordering audio tracks improved: new name can contain characters other
+    than the new track number now. The first group of numeric characters will
+    be used as new track number, all characters before and after it are 
+    truncated.
+[*] Improved speed of plugin's initialization
+[*] Track duration in audio projects is now shown as "mm:ss" (minutes,
+    seconds) instead of "hh:mm:ss".
+[*] Creating ISO images now has an own pseudo-file command in the Data project
+    pseudo-directory, and is no longer done via a special entry in the burning
+    device list.
+[%] The Data Project would show inaccessible files (locked by other processes
+    etc.) with a "random" size (something like 60.000 terabytes :) )
+[%] After decompressing MP3/OGG files for audio burning, the "Close" button
+    would behave like "Abort burn" if there was an error starting the burning
+    process, causing an infinite abort-query loop.
+[%] Deleting multiple audio tracks at once didn't work properly due to pseudo-
+    filenames changing during deletion
+[%] The message "Errors occured during adding files" was displayed "the wrong
+    way around" for Video DVD projects: success was shown as error, an error
+    was treated as success.
+
+
+0.9.1 (08.02.2005)
+
+[!] First public beta release
+

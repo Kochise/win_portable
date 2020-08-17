@@ -1,0 +1,725 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <title>DirSizeCalc</title>
+    <link href="./styles/layout.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="content">
+      <h1>DirSizeCalc</h1>
+      <p>Version 2.22</p>
+      <p>&nbsp;</p>
+      <p>DirSizeCalc is a content plug-in for the file manager Total
+        Commander. It provides several numeric calculation for directory
+        contents. The calculations can be started automatically while
+        entering a directory or explicitly by the user.</p>
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#field_descriptions">Field descriptions </a></li>
+        <li><a href="#requirements">System requirements </a></li>
+        <li><a href="#use">Use</a>
+          <ol>
+            <li><a href="#use_cases">Use cases </a>
+              <ol>
+                <li><a href="#use_cases_automatic_calculation">Display
+                    directory and file sizes automatically </a></li>
+                <li><a href="#use_cases_delete_empty_folder_trees">Delete
+                    empty directory trees </a></li>
+                <li><a href="#use_cases_check_if_comression_makes_sense">Find
+                    out if compression makes sense </a></li>
+                <li><a href="#use_cases_files_count">Find out how many
+                    directory are contained in a directory </a></li>
+                <li><a href="#use_cases_contains_subdirectories">Find
+                    out if a directory contains subdirectories</a></li>
+                <li><a href="#use_cases_load_fields_on_demand">Load the
+                    directory size for all selected or all fields by
+                    pressing a keystroke</a></li>
+              </ol>
+            </li>
+            <li><a href="#additional_information">Additional information
+                for displayed values </a></li>
+            <li><a href="#empty_directory_display">Size display for
+                (almost) empty directories </a></li>
+            <li><a href="#placeholders">Placeholders</a></li>
+          </ol>
+        </li>
+        <li><a href="#settings">Settings</a>
+          <ol>
+            <li><a href="#field_settings">Field settings </a>
+              <ol>
+                <li><a href="#field_settings_name">Name</a></li>
+                <li><a href="#field_settings_field_selection">Field
+                    selection </a></li>
+                <li><a href="#field_settings_loading_behavior">Loading
+                    behavior </a></li>
+                <li><a href="#field_settings_reparse_point_behavior">Reparse
+                    point behavior </a></li>
+                <li><a href="#field_settings_recursive">Recursive</a></li>
+                <li><a href="#field_settings_cache_values">Cache values
+                  </a></li>
+                <li><a href="#field_settings_limit">Calculation limit</a></li>
+              </ol>
+            </li>
+            <li><a href="#unit_settings">Unit settings </a>
+              <ol>
+                <li><a href="#unit_settings_name">Name</a></li>
+                <li><a href="#unit_settings_prefixes_units">Prefixes and
+                    units </a></li>
+                <li><a href="#unit_settings_formatting">Formatting</a></li>
+                <li><a href="#unit_settings_preview">Preview</a></li>
+              </ol>
+            </li>
+            <li><a href="#settings_file_location">Change settings file
+                location </a></li>
+          </ol>
+        </li>
+        <li><a href="#faq">Frequently asked questions </a></li>
+        <li><a href="#contact">Author contact </a></li>
+        <li><a href="#license">License</a></li>
+      </ol>
+      <h2>1. Field descriptions <a name="field_descriptions"></a></h2>
+      <table>
+        <tbody>
+          <tr>
+            <td width="234"> Size</td>
+            <td width="552">File- or directory size </td>
+          </tr>
+          <tr>
+            <td>Compressed Size </td>
+            <td>
+              <p>File- or directory size with set compressed attribute.
+                This field is only available on Windows NT based
+                operating systems.</p>
+            </td>
+          </tr>
+          <tr>
+            <td>Compression Ratio </td>
+            <td>Calculates the ratio between Size and Compressed Size. </td>
+          </tr>
+          <tr>
+            <td>Subdirectory Count </td>
+            <td>Count of all subdirectories in a directory </td>
+          </tr>
+          <tr>
+            <td>File Count </td>
+            <td> Count of all files in a directory. </td>
+          </tr>
+          <tr>
+            <td>Empty</td>
+            <td>Finds out if a directory is empty </td>
+          </tr>
+          <tr>
+            <td>Contains Files </td>
+            <td>Finds out of a directory contains files. </td>
+          </tr>
+          <tr>
+            <td>Contains subdirectories </td>
+            <td>Finds out of a directory contains subdirectories. </td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>2. System requirements <a name="requirements"></a></h2>
+      <p>Total Commander 6.50 is required for this plug-in. Total
+        Commander 7.03 is recommended for this plug-in. </p>
+      <h2>3. Use <a name="use"></a></h2>
+      <p>Before DirSizeCalc's fields can be used they must be added to
+        the part of Total Commander where they are intended to be used.
+        Basically all content plug-ins can be used in the same way. The
+        following program parts of Total Commander support content
+        plug-ins. </p>
+      <ul>
+        <li>Custom columns views </li>
+        <li>Tooltips</li>
+        <li>Thumbnal view </li>
+        <li>Find files</li>
+        <li>Colors by file type </li>
+        <li>Overwrite dialog </li>
+        <li>Multi rename tool</li>
+      </ul>
+      <h3>3.1 Use cases <a name="use_cases"></a></h3>
+      <h4>3.1.1. Display size of files and directories automatically<a
+          name="use_cases_automatic_calculation"></a></h4>
+      <h5>Custom columns view</h5>
+      <p>Total Commander provides to calculate the size of directories
+        by executing the command cm_CountDirContent (Hotkey
+        Shift+Alt+Enter). An automatic calculation each time a directory
+        is entered isn't possible though. By using the field "Size" the
+        directory sizes are displayed as fast as possible. In the
+        following explains step by step who this can be setup.</p>
+      <ol>
+        <li>Open the configuration dialog by clicking
+          Configuration/Options in the main menu. </li>
+        <li>Navigate to the page "Custom columns".</li>
+        <li>Click the "New" button to create a new custom columns view.
+        </li>
+        <li> You can setup the number of columns and its contents n this
+          dialog. Click the "Add column" button. A new row with
+          properties is displayed. This row represents the new column's
+          attributes. </li>
+        <li>The next step is to define the new column's contents. Click
+          the + button to assign a field to the column. Select
+          dirsizecalc/Size/&lt;default&gt; in the menu. The property
+          "Field contents" now displays [dirsizecalc.Size]. You can
+          select another unit instead of &lt;default&gt;. Fore more
+          details on this see the "Units" chapter. The property "Title"
+          displays the text which will be displayed in the column
+          header. The title can be changed at will. </li>
+        <li>Click OK to close the dialog "Custom columns". </li>
+        <li>Click OK to close the configuration dialog.</li>
+      </ol>
+      <h4>3.1.2. Delete empty directory trees <a
+          name="use_cases_delete_empty_folder_trees"></a></h4>
+      <h5>Find files</h5>
+      <p>A large amount of directories containing no files may make it
+        difficult to maintain orientation in the file system. It's a
+        good idea to clean up from time to time. Values provided by
+        content plug-ins such as DirSizeCalc can be used to narrow down
+        the number of found files. So the find files function of Total
+        Commander is used together with with the DirSizeCalc plug-in to
+        find directories containing no files. </p>
+      <ol>
+        <li>Click "Search" in the Commands menu. </li>
+        <li>Navigate to the "Plugins" tab. </li>
+        <li>In this tab rules can be defined. For each file and
+          directory in the search scope the defined rules will be
+          checked. Only if the rule applies the file or directory will
+          be added to the list of found files. In this case the rule is
+          Plugin: dirsizecalc, Field: Contains Files, Operator: = and
+          Value: No. In Furthermore the short form is used. In this case
+          this would be dirsizecalc.Contains Files=No. The rule ensures
+          that only directories will be found that contain no files. If
+          a directory contains files or a problem occurred during
+          retrieving the contents the directory won't be found during
+          the search. </li>
+        <li>Click on the button "Start search". Wait until the search
+          has finished. </li>
+        <li>Click on the "Feed to Listbox" button to display the search
+          results in a Total Commander file list panel.</li>
+        <li>Select all directories listed in the search results panel.</li>
+        <li>Apply the delete operation to the selected files. During the
+          process a prompt might be displayed informing you that a
+          directory isn't empty. The statement is true but this is just
+          a directory containing other empty directories. The prompt can
+          be answered by clicking on the "All" button.</li>
+      </ol>
+      <p>Alternatively the rule dirsizecalc.Empty=Yes can be used. In
+        this case the directories will be deleted without warnings as
+        they don't even contain empty subdirectories. The disadvantage
+        is that after deleting new empty subdirectories emerge until no
+        empty directories are found.</p>
+      <p>&nbsp;</p>
+      <p>It's a good idea to search the search parameters to be able to
+        repeat the search later. </p>
+      <h4>3.1.3. Find out if compression makes sense <a
+          name="use_cases_check_if_comression_makes_sense"></a></h4>
+      <h5>Custom columns view </h5>
+      <h5>Find files</h5>
+      <p>The Windows file system NTFS allows you to set the "compressed"
+        attribute to each file. The file is compressed but in contrast
+        to archives you can continue working as if the file were
+        uncompressed. Why are not all files compressed automatically?
+        Reading and writing of compressed files takes longer compared to
+        uncompressed files. For this reason only files should be
+        compressed where write operation are performed infrequently.
+        Many files are archives or files with a high information
+        content. The cannot be further compressed by using NTFS
+        compression. This is where "Compressed Size" and "Compression
+        Rate" come into play. They can be setup the same way as
+        described in the use case "Display size of files and directories
+        automatically" but an additional column "Compressed Size" has to
+        be added. Alternatively you can search for files which couldn't
+        be compressed very good. The search is setup in the same way as
+        described in "Delete empty directory trees" but the rule defined
+        in the "Plugins" tab differs. It could be for example some like
+        this:</p>
+      <ul>
+        <li>tc.Compressed = yes </li>
+        <li>tc.Directory = no</li>
+        <li>dirsizecalc.Compressed Size &gt; 80</li>
+      </ul>
+      <h4>3.1.4. Find out how many files are contained in a directory <a
+          name="use_cases_files_count"></a></h4>
+      <h5>Thumbnail view </h5>
+      <ol>
+        <li>Open the configuration dialog by clicking
+          Configuration/Options in the main menu. </li>
+        <li>Navigate to the page "Thumbnail view".</li>
+        <li>Make sure "Show custom fields below thumbnails" is checked.
+        </li>
+        <li>Enter "Size: " (without quotes) in the fields below. </li>
+        <li>Click on the "Add" button right to the edit field. </li>
+        <li>Select "dirsizecalc/File Count" in the menu. </li>
+        <li>Click OK to close the configuration dialog.</li>
+      </ol>
+      <h4>3.1.5. Find out if a directory contains subdirectories <a
+          name="use_cases_contains_subdirectories"></a></h4>
+      <h5>Tooltip</h5>
+      <ol>
+        <li>Open the configuration dialog by clicking
+          Configuration/Options in the main menu. </li>
+        <li>Navigate to the page "Display".</li>
+        <li>Make sure that the options " Show filename in file list as
+          tooltip if truncated" and are activated. </li>
+        <li>Make sure the options "Show file name in file list as
+          tooltip if truncated " and "Win32-style tips with file
+          comments"are activated.</li>
+        <li>Click on the "+" button to create a user-defined tooltip.</li>
+        <li>The dialog "User-defined fields by file type" is displayed.
+          Click on the "Add" button to create a new file type.</li>
+        <li>The dialog "Enter file type" is displayed. Enter *.* to
+          include all directories.</li>
+        <li>Click OK to close the dialog "Enter file type".</li>
+        <li>Now a dialog is displayed which is also labeled
+          "User-defined fields by filetype". First enter "Contains
+          subdirectories: " (without quotes).</li>
+        <li>Clock on the the + button. </li>
+        <li>Select dirsizecalc/Contains subdirectories. In the text
+          fields the following text should be displayed: "Contains
+          subdirectories: [=dirsizecalc.Contains Subdirectories]"
+          (without quotes).</li>
+        <li>Click OK to close the dialog "User-defined fields by file
+          type".</li>
+        <li>Click OK to close the dialog "User-defined fields by file
+          type".</li>
+        <li>Click OK to close the configuration dialog.</li>
+      </ol>
+      <p>The described approach can be used in a slightly modified way
+        to color directories containing subdirectories using the "Colors
+        by file type" function. In this case Total Commander uses
+        DirSizeCalc to process the operation in foreground. For this
+        reason Total Commander until the operation is completed. </p>
+      <h4>3.1.6. Load the directory size for all selected or all fields
+        by pressing a keystroke<a name="use_cases_load_fields_on_demand"></a></h4>
+      <p>Many users don't want that all sizes are calculated
+        automatically. They rather want to know the sizes of all
+        selected or of all displayed directories. Total Commander makes
+        it possible. Here is an example how this can be achieved by
+        pressing a keystroke.</p>
+      <ol>
+        <li>Start the included setting tool (DirSizeCalcSetting.exe).</li>
+        <li>Select the "Load on demand" option for the already selected
+          field "Size" in the dialog "Edit field settings".</li>
+        <li>Click OK.</li>
+        <li>Restart Total Commander.</li>
+        <li>Create a new custom column view as described in chapter
+          3.1.1 .</li>
+        <li>Open the configuration dialog by clicking
+          Configuration/Options in the main menu.</li>
+        <li>Select the page "Misc.".</li>
+        <li>Select the desired hotkey (e.g. Alt+Shift+Enter).</li>
+        <li>Click on the button with the magnifier.</li>
+        <li>Select the "Custom column view" category in the displayed
+          "Choose command" dialog.</li>
+        <li>Select cm_LoadSelOnDemandFields, to calculate the size of
+          all selected directories or cm_LoadAllOnDemandFields to
+          calculate the size of all directories. </li>
+        <li>Click OK to apply the selected command. </li>
+        <li>Click on the button with the checkmark to apply the chosen
+          command.</li>
+        <li>Click OK to close the configuration dialog . </li>
+        <li>Now select the directories to calculate.</li>
+        <li>Press the chosen hotkey . </li>
+      </ol>
+      <p>Once configured you just have to set the created custom column
+        view and the steps 15 and 16. Although the new commands can be
+        found in the "Custom column view" category they also work great
+        in thumbnail view. </p>
+      <h3>3.2 Additional values for displayed values <a
+          name="additional_information"></a></h3>
+      <p>DirSizeCalc shows some tokens in front of the calculation
+        result, if the complete directory content couldn't be retrieved.
+        This can be the case for several reasons: </p>
+      <ul>
+        <li>AD = Access denied. This error is displayed if the current
+          user has no sufficient access permissions for opening the
+          directory. </li>
+        <li>U = Unreadable Unicode name. This error occurs if file name
+          contains characters which don't match the currently set
+          Windows code page and you have deactivated storing of short
+          file names.</li>
+        <li>E = Unknown error. Unknown error should not be displayed at
+          all. When it's displayed please report it to me.</li>
+        <li>NF = Not followed reparse point. The user has set the option
+          to now follow reparse points which results in not including
+          these these files in the calculation.</li>
+      </ul>
+      <h3>3.3. Size display of (almost) empty directories <a
+          name="empty_directory_display"></a></h3>
+      <p>There can be multiple reasons for a directory size of 0 bytes.
+        So far the fields "Leer" and "Contains Files" had to be used to
+        distinguish them but now this information is displayed directly
+        in the "Size" field. The following cases are distinguished: </p>
+      <ul>
+        <li>The directory contains only files of size 0. In this case
+          DirSizeCalc displays 0 as size.</li>
+        <li>The directory contains only empty subdirectories but no
+          files. In this case "No files" is being displayed.</li>
+        <li>The directory is really empty In this case "Empty is being
+          displayed. </li>
+      </ul>
+      <h3>3.4 Placeholders<a name="placeholders"></a></h3>
+      <p>Calculation of directory can take a long time. For this reason
+        DirSizeCalc displays "Dir." until the actual value has been
+        calculated. If DirSizeCalc detects that the directory is
+        actually a reparse point "Junc. Pt." is displayed for junction
+        points and "Mnt. Pt." is displayed for mount points. </p>
+      <h2>4. Settings <a name="settings"></a></h2>
+      <p>The bundled settings tool (DirSizeCalcSettings.exe) can be used
+        to personalize DirSizeCalc. Closing the setting tool will save
+        the settings but Total Commander has to be restarted to apply
+        the changed settings.</p>
+      <h3>4.1. Field settings <a name="field_settings"></a></h3>
+      <p>Field settings can be used to personalize the field's behavior.
+        Initially just predefined fields are available on the "Fields"
+        tab. By clicking on "Add" you can add you own fields. This can
+        be helpful if you want to use a certain field with different
+        behaviors. By clicking "Delete" custom fields can be deleted.</p>
+      <p>A single click in the list will open a dialog which includes
+        all settings available for the selected field. Please note that
+        not all settings are available to all fields.</p>
+      <h4>4.1.1 Name<a name="field_settings_name"></a></h4>
+      <p>This is the field's name for all built-in fields. For custom
+        fields a name set by the user.</p>
+      <h4>4.1.2. Field selection <a
+          name="field_settings_field_selection"></a></h4>
+      <p>Here you can pick one of DirSizeCalc's fields .</p>
+      <h4>4.1.3. Loading behavior <a
+          name="field_settings_loading_behavior"></a></h4>
+      <p>This setting only applies to fields used in custom column views
+        and in thumbnail view. By default the values are calculated
+        automatically when opening a directory (setting automatically).
+        If you change this to "on demand" here than you will have to
+        press the space key to load the values of all configured fields
+        for the directory under the cursor.</p>
+      <h4>4.1.4. Reparse point behavior <a
+          name="field_settings_reparse_point_behavior"></a></h4>
+      <p>Reparse points look like normal directories but they point to a
+        disk volume (mount points) or another directory (junction
+        points). By default DirSizeCalc treats reparse points just like
+        normal directories which means the target's directory contents
+        is calculated. This may lead to wrong assumptions on the
+        directory's size and take a long time. </p>
+      <p>DirSizeCalc provides separated options for mount- and junction
+        points. By unchecking "Follow mount points" respectively "Follow
+        junction points" calculation can be completely deactivated. In
+        addition the option "but not in subdirectories" can be used to
+        treat reparse points like directories in the visible directory
+        level but don't calculate values for reparse points in
+        subdirectories.</p>
+      <h4>4.1.5. Recursive<a name="field_settings_recursive"></a></h4>
+      <p>By default a directory is processed recursively. This means the
+        complete directory including all subdirectories and the
+        directory content of this subdirectories and so on is considered
+        in the calculation. By disabling "Recursive" only the directory
+        content is considered.</p>
+      <h4>4.1.6. Cache values <a name="field_settings_cache_values"></a></h4>
+      <p>DirSizeCalc stores the retrieved values in a cache to speed up
+        displaying directory sizes. The cache's disadvantage is that the
+        displayed values are not always up to date. If you want to get
+        the actual directory sizes you can force a reload by executing
+        "Reread source" from the View menu (hotkey: Ctrl+R).</p>
+      <h4>4.1.7. Calculation limit<a name="field_settings_limit"></a></h4>
+      <p>If you just need approximate values and calculation time is
+        critical you enable a calculation limit. Here you can enter the
+        number of files which should be retrieved for a directory. </p>
+      <p>When the limit has been reached the calculation the calculation
+        will be aborted and "&gt;=" will by displayed in front of the
+        value. This indicates the the actual value might by much bigger.</p>
+      <h3>4.2. Unit settings <a name="unit_settings"></a></h3>
+      <p>The built-in units differ in unit and prefix. Unit defines if
+        and how the size in bytes is converted to another unit. Prefix
+        defines the base on which the calculation is performed.</p>
+      <p>The so called binary prefixes are based on power of two. The
+        size dimensions are 2^10 =1.024 (= 1 KiB), 2^20 = 1.048.576 (= 1
+        MiB) and 2^30= 1.073.741.824 (=1 GiB).</p>
+      <p>The SI prefixes are based on power of ten. The size dimensions
+        differ by a factor of 1000. 1.000 bytes (= 1 kB), 1.000.000 (1
+        MB) and 1.000.000.000 (= 1 GB).</p>
+      <p>Many programs - such as Total Commander - calculate based on
+        power of two but use SI prefixes. This presentation is wrong and
+        isn't used by Total Commander for this reason.</p>
+      <p>Below you'll find a table containing example conversions.
+        Please note that actual presentation depends on the chosen
+        formatting options. </p>
+      <p>&nbsp;</p>
+      <table frame="VOID" cols="7" rules="NONE" border="0"
+        cellspacing="0">
+        <colgroup> <col width="98"> <col width="120"> <col width="86">
+          <col width="86"> <col width="120"> <col width="86"> <col
+            width="86"> </colgroup> <thead> <tr>
+            <th>
+              <div align="right">bytes</div>
+            </th>
+            <th>
+              <div align="right">KiB</div>
+            </th>
+            <th>
+              <div align="right">MiB</div>
+            </th>
+            <th>
+              <div align="right">GiB</div>
+            </th>
+            <th>
+              <div align="right">kB</div>
+            </th>
+            <th>
+              <div align="right">MB</div>
+            </th>
+            <th>
+              <div align="right">GB</div>
+            </th>
+          </tr>
+        </thead> <tbody>
+          <tr>
+            <td sdval="0" sdnum="1031;0;#.##0" width="98" align="RIGHT"
+              height="17">0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="120"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="120"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="587" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">587</td>
+            <td sdval="0,5732421875" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,6</td>
+            <td sdval="0,000559806823730469" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,000000546686351299286" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,587" sdnum="1031;0;#.##0,0" align="RIGHT">0,6</td>
+            <td sdval="0,000587" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000000587" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000</td>
+            <td sdval="0,9765625" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,00095367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,000000931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1024" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.024</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,0009765625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,00000095367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1,024" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001024" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000001024" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="81981" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">81.981</td>
+            <td sdval="80,0595703125" sdnum="1031;0;#.##0,0"
+              align="RIGHT">80,1</td>
+            <td sdval="0,0781831741333008" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="0,0000763507559895515" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="81,981" sdnum="1031;0;#.##0,0" align="RIGHT">82,0</td>
+            <td sdval="0,081981" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+            <td sdval="0,000081981" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="101654" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">101.654</td>
+            <td sdval="99,271484375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">99,3</td>
+            <td sdval="0,0969448089599609" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="0,0000946726649999619" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="101,654" sdnum="1031;0;#.##0,0" align="RIGHT">101,7</td>
+            <td sdval="0,101654" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+            <td sdval="0,000101654" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000.000</td>
+            <td sdval="976,5625" sdnum="1031;0;#.##0,0" align="RIGHT">976,6</td>
+            <td sdval="0,95367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">1,0</td>
+            <td sdval="0,000931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1048576" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.048.576</td>
+            <td sdval="1024" sdnum="1031;0;#.##0,0" align="RIGHT">1.024,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,0009765625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1048,576" sdnum="1031;0;#.##0,0" align="RIGHT">1.048,6</td>
+            <td sdval="1,048576" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001048576" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="5400000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">5.400.000</td>
+            <td sdval="5273,4375" sdnum="1031;0;#.##0,0" align="RIGHT">5.273,4</td>
+            <td sdval="5,14984130859375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5,1</td>
+            <td sdval="0,00502914190292358" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="5400" sdnum="1031;0;#.##0,0" align="RIGHT">5.400,0</td>
+            <td sdval="5,4" sdnum="1031;0;#.##0,0" align="RIGHT">5,4</td>
+            <td sdval="0,0054" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="70000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">70.000.000</td>
+            <td sdval="68359,375" sdnum="1031;0;#.##0,0" align="RIGHT">68.359,4</td>
+            <td sdval="66,7572021484375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">66,8</td>
+            <td sdval="0,0651925802230835" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="70000" sdnum="1031;0;#.##0,0" align="RIGHT">70.000,0</td>
+            <td sdval="70" sdnum="1031;0;#.##0,0" align="RIGHT">70,0</td>
+            <td sdval="0,07" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+          </tr>
+          <tr>
+            <td sdval="1000000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000.000.000</td>
+            <td sdval="976562,5" sdnum="1031;0;#.##0,0" align="RIGHT">976.562,5</td>
+            <td sdval="953,67431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">953,7</td>
+            <td sdval="0,931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,9</td>
+            <td sdval="1000000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000.000,0</td>
+            <td sdval="1000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+          </tr>
+          <tr>
+            <td sdval="1073741824" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.073.741.824</td>
+            <td sdval="1048576" sdnum="1031;0;#.##0,0" align="RIGHT">1.048.576,0</td>
+            <td sdval="1024" sdnum="1031;0;#.##0,0" align="RIGHT">1.024,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="1073741,824" sdnum="1031;0;#.##0,0" align="RIGHT">1.073.741,8</td>
+            <td sdval="1073,741824" sdnum="1031;0;#.##0,0" align="RIGHT">1.073,7</td>
+            <td sdval="1,073741824" sdnum="1031;0;#.##0,0" align="RIGHT">1,1</td>
+          </tr>
+          <tr>
+            <td sdval="6250000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">6.250.000.000</td>
+            <td sdval="6103515,625" sdnum="1031;0;#.##0,0" align="RIGHT">6.103.515,6</td>
+            <td sdval="5960,46447753906" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5.960,5</td>
+            <td sdval="5,82076609134674" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5,8</td>
+            <td sdval="6250000" sdnum="1031;0;#.##0,0" align="RIGHT">6.250.000,0</td>
+            <td sdval="6250" sdnum="1031;0;#.##0,0" align="RIGHT">6.250,0</td>
+            <td sdval="6,25" sdnum="1031;0;#.##0,0" align="RIGHT">6,3</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>&nbsp;</p>
+      <h4>4.2.1. Name<a name="unit_settings_name"></a></h4>
+      <p>For built-in units this is the default unit abbreviation. For
+        custom units this is a name defined by the user.</p>
+      <h4>4.2.2. Prefixes and units <a
+          name="unit_settings_prefixes_units"></a></h4>
+      <p>DirSizeCalc allows the user to define which unit is used for a
+        certain range of file- and directory sizes. By default bytes is
+        used. First check all other units which you want to use. Than
+        enter the minimum value in bytes where this unit should be used.
+      </p>
+      <p>If you want to use KiB as the smallest unit you have to enter 0
+        in the KiB size field.</p>
+      <h4>4.2.3. Formatting<a name="unit_settings_formatting"></a></h4>
+      <p>There are a bunch of options to customize the formatting of
+        file- and directory sizes. This includes the number of digits,
+        decimal- and thousand separators and some more.</p>
+      <h4>4.2.4. Preview <a name="unit_settings_preview"></a></h4>
+      <p>This preview displays how directory sizes will be displayed
+        later in Total Commander.</p>
+      <h3>4.3 Change the settings location <a
+          name="settings_file_location"></a></h3>
+      <p>By default DirSizeCalc stores its settings in the same
+        directory where Wincmd.ini - Total Commander's main settings
+        file - is located. In this dialog you can choose between several
+        locations.</p>
+      <p>&nbsp;</p>
+      <ul>
+        <li>Same directory as "Wincmd.ini"</li>
+        <li>Directory "DirSizeCalc" in "Wincmd.ini" directory.</li>
+        <li>Plug-in directory</li>
+        <li>Total Commander root directory</li>
+      </ul>
+      <p>&nbsp;</p>
+      <p>To choose a new location please select the desired location
+        from the combo box. </p>
+      <p>In addition the current path and if this path is writable is
+        displayed. </p>
+      <h2>5. Frequently asked questions <a name="faq"></a></h2>
+      <p><strong>Can I use DirSizeCalc to calculate values for all
+          selected or all directories?</strong></p>
+      <p>Yes this is possible starting from Total Commander 7.50. There
+        is a <a href="#use_cases_load_fields_on_demand">use case</a>
+        which describes how it works. </p>
+      <p>&nbsp;</p>
+      <p><strong>I changed to a directory containing many files.
+          Previously I sorted by a column which contained a DirSizeCalc
+          field. Total Commander seems to hang. Is there anything I can
+          do? </strong></p>
+      <p>Total Commander waits for the calculation to finish and blocks
+        program's use. Trying to abort the calculation (e.g. by hitting
+        Escape) is not handled by Total Commander and for this reason
+        not forwarded to the plug-in. I asked the author of Total
+        Commander to add adda way to abort the calculation as soon as
+        possible. </p>
+      <p>In the meantime you can use "Calculation limit" option which
+        only calculates a fraction of the directory contents and
+        therefore shortens the waiting time.</p>
+      <p>&nbsp;</p>
+      <p><strong>Instead of displaying the size of directories in
+          archives just 0 is displayed. Why it doesn't work?</strong></p>
+      <p>In this case DirSizeCalc would have to get the values from
+        Total Commander. Unfortunately this isn't possible in the
+        current Total Commander version. I asked the author of Total
+        Commander to add this feature as soon as possible.</p>
+      <p>&nbsp;</p>
+      <p><strong>In earlier versions there have been fields called "in
+          background" and "on demand". Where have they gone?</strong></p>
+      <p>The default setting is now "in background". If you want to load
+        the values "on demand" you are free to do so. Please start the
+        bundled configuration utility (DirSizeCalcSettings.exe). This
+        tool allows you to set "on demand" loading for each single field
+        or you can even create your own custom field with loading
+        behavior set to "on demand". The reasons for changing the field
+        names have been reducing the field count and shortening of field
+        names. If you added custom columns you had to change the title
+        manually resulted in losing the information anyway. </p>
+      <h2>6. Contact<a name="contact"></a></h2>
+      <p>There is a <a
+          href="http://www.ghisler.ch/board/viewtopic.php?t=18021">thread</a>
+        in the <a href="http://www.ghisler.ch/">Total Commander forum</a>
+        which can be used to discuss problems, bug and suggestions.</p>
+      <h2>7. License and liability <a name="license"></a></h2>
+      <p> Any liability for damage of any sort is hereby denied.<br>
+        All rights reserved. This Total Commander plug-in is copyrighted
+        free ware.</p>
+    </div>
+  </body>
+</html>

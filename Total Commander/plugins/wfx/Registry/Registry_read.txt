@@ -1,0 +1,244 @@
+Registry v 2.6.1 - plugin for Total Commander 5.51 and newer.
+
+These software are provided "as-is". No warranty provided.
+
+You use this program at your own risk. The author is not responsible for data loss, damages, etc.
+while using or misusing this software. Think twice before move/delete, it's your own registry!
+
+
+This plugin is freeware.
+
+Works under NT/W2K/XP/9x.
+
+--------------------------------------------------------
+Usage:
+  Assigne command "cd \\\Registry" to button or shortcut
+or  
+  Choose [Registry] folder in TC "Network Neighborhood"
+--------------------------------------------------------
+
+Features:
+  - Browse through system registry
+  - Remote registry connection
+  - Create new value
+	First way: double click " -Add Value- "
+
+        Second way: Use F7, if first symbol is \,
+                   then new _value_ will be created.
+                   Use \\ for values like \value.
+
+        Third way: type 'new' from command line.
+                    Thanks for idea to Alexey Babenko.
+  - Modify values (REG_DWORD, REG_SZ, REG_EXPAND_SZ, REG_BINARY).
+  - Delete/Rename keys and values.
+  - Create keys like folders (F7)
+  - View (F3) and Quick view (Ctrl+Q)
+  - Export keys and values into .reg file (F5)
+  - Export using UNICODE (off by default, see options dialog)
+  - Export binary values as binary file (off by default, see options dialog)
+  - Permission edit dialog (Win2k, XP or newer) (right click on key (not value) -> properties)
+  - Options dialog (right click on Registry plugin in Network places -> properties, or type "config" from command line)
+  - Shows last modified date on keys (Win2k or newer)
+  - special characters conversion (optional, can be switched from options dialog):
+	/ - [slash]
+	\ - [bslash]
+	* - [star]
+	: - [colon]
+	? - [qmark]
+	" - [quote]
+	. - [dot]
+
+
+FAQ:
+  - SEARCH IN PLUGIN FILE SYSTEM IS NOT SUPPORTED BY TC 5.50,
+    THE FEATURE IS IMPLEMENTED ONLY IN TC 5.51
+  - Hkey_users - interpreted by TC as short 8.3 DOS name,
+    Configuration->Options->Display->Show old 8.3 names lowercase
+ - Windows 95/98/Me only
+   To install the Microsoft Remote Registry service 
+   - In the Network option in Control Panel, click Add. 
+   - In the Select Network Component Type dialog box, double-click Service. 
+   - In the Select Network Service dialog box, click the Have Disk button. 
+   - In the Install From Disk dialog box, type the path to the ADMIN\NETTOOLS\REMOTREG directory on the Windows 95 compact disc, and then click OK. 
+   - In the Install From Disk dialog box, click OK. 
+   - In the Select Network Service dialog box, click Microsoft Remote Registry, and then click OK. 
+   If you are prompted to specify the location of additional files, specify the path to the files on a shared network directory or on the compact disc.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+TIPS:
+  - FOR UNICODE VALUE SEARCH IN win2k, XP CHECK "Unicode" IN TC SEARCH DIALOG
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Version history:
+---------------------
+v 1.0 - 18.11.2002
+  - Initial version
+
+v 1.1 - 19.11.2002
+  - New: value creation added (F7, or type "new" from command line, see above)
+  - Fixed: crash in binary value edit dialog after total value deleting
+
+v 1.2 - 20.11.2002 
+  - Changed: from now to create new value one should use \ instead # (see above)
+  - Fixed: incorrect work with values containing symbol '\'.
+  - Fixed: Key export improved.
+  - Fixed: dialog for value creating was modeless.
+  - Fixed: looks like all bugs in binary edit dialog have been fixed.
+
+v 1.3 - 21.11.2002
+  - New: from now one can copy and move keys and values within registry 
+  - New: REG_RESOURCE_LIST, REG_FULL_RESOURCE_DESCRIPTOR, REG_MULTI_SZ are editable
+  - Changed: repeated message while deleting nested keys removed
+  - Fixed: incorrect export of fields with symbol '\' in name or value
+  - Fixed: minor bug in binary edit dialog
+  - Fixed: there was no possibility to delete values with symbol '\'
+
+v 1.4 - 28.11.2002
+  - Changed: values size is shown as file size for all value types
+  - Fixed: exception while trying to open key properties.
+  - Fixed: icons are shown for each value (TC 5.51 or newer)
+
+v 1.5 b1 - 30.11.2002
+  - New: remote registry connection
+  - New: adopted for TC 5.51 (as result F3 and Ctrl+Q may not work with TC 5.5)
+  - Fixed: incorrect work if key and value had one name (icon still is not showed)
+  - Fixed: new created empty string value contained strange symbols
+
+v 1.5 b2 - 05.12.2002
+  - New: options dialog (right click on Registry, select Properties)
+  - New: export using UNICODE (off by default, see options dialog)
+  - New: export binary values as binary file (off by default, see options dialog)
+  - New: permission edit dialog (Win2k, XP or newer) (right click on registry KEY (not value!) -> Properties)
+  - New: Open in regedit button
+
+v 1.5 b3 - 06.12.2002
+  - New: from now options are saved to .ini file
+  - New: third way to add new value, using " -Add Value- " (optional, see options dialog)
+  - New: date/time is shown for keys
+  - New: special characters conversion, optional, "\" is being changed to "[slash]" and so on, see features list
+
+v 1.5 b4 - 11.12.2002
+  - New: value edit using F4, regedit used for import after edit
+  - Fixed: (!) (win9x only) .reg file with single value could not be imported because of the missing trailing symbol '\n'
+  - Fixed: permission edit dialog functionality now equal to the one in regedt32.exe in Win2k
+  - Fixed: more accurate exporting and editing values like REG_RESOURCE_LIST, etc.
+	   Now export is equal to the one done by regedit and without regedit bugs.
+  - Fixed: some keys could not be exported due to " -Add Value- ".
+  - Fixed: back compatibility with TC 5.50 ("$wc" and "_tc" temp folders now treated equally)
+  - Nice: found a bug in MS regedit (at least during export of some empty values in Win2K SP3,
+          previous value is repeated)
+
+v 1.5 b5 - 23.12.2002
+  - Changed: adopted for TC 5.51 b4
+  - Changed: dot is not translated for keys
+  - Changed: slash is not translated for keys in TC 5.51 b4 (plugin interface version > 1.2)
+  - Fixed: default button for all edit dialogs
+  - Fixed: F3 on service files like "Connect network registry"
+  - Fixed: binary edit dialog text color with non-default window color
+  - Fixed: some keys had no date
+  - Fixed: bug with stack overflow while text search
+
+v 1.5 b6 - 7.01.2003
+  - New: command line instruction "config" to call options dialog
+  - Fixed: some keys could not be renamed in win2k, keys renaming in win9x didn't work at all
+  - Fixed: string values in win9x treated as binary
+
+v 1.5 Final - 22.01.2003
+  - Fixed: crash while "cd" command processing
+  - New: "cd" command support (e.g. cd Software, cd \HKEY_USERS\.Default, cd "New Key #1, cd.., cd .., cd \, cd \\\regplgname\xxx\")
+  - Minor interface improvments
+
+v 1.5.1 - 20.02.2003 
+  - Fixed: bug with stack overflow and TC crash while text search
+
+v 1.5.2 - 25.02.2003
+  - New: export setup dialog (Win2000, XP only)
+  - Changed: only trailing dot is converted for keys (e.g. BCM Advanced Research, Inc. -> BCM Advanced Research, Inc[dot])
+  - Fixed: all key names in export file were upper-case
+  - Fixed: some keys with russian names could not be opened
+  - Fixed: one option in options dialog did not work properly
+
+v 1.5.3 - 14.03.2003
+  - New: progress bar for export
+  - New: error message is displayed if a folder could not be created, deleted or moved
+  - Changed: perfomance improvment, especially export
+  - Changed: overwrite confirmation for export
+  - Fixed: -Add Value- export
+  - Fixed: huge values processing improved (REG_BINARY with size > 1Mb)
+  - Fixed: icon for REG_NONE
+
+v 1.5.4 - 15.08.2003
+  - Fixed: empty keys exporting and deleting in Win9x and Win2000
+  - Fixed: string value edit in Win9x
+  - Fixed: export for WinNT 4.0 (from now only REGEDIT4 format is allowed)
+  - Fixed: permission edit is now supported for NT4 (in progress, not finished yet)
+  - Fixed: error while using F7 for value creation
+  - Fixed: default icon for default value inside of remote registry
+  - Fixed: incorrect work with remote registry
+
+v 1.5.5 - 10.11.2003
+  - New: last connected remote host name is remembered (latest version of .ini file is used)
+  - Fixed: some error messages were missed while working with remote registry
+  - Fixed: incorrect icon for remote registry root values 
+  - Fixed: icon for REG_RESOURCE_REQUIREMENTS_LIST
+  - Fixed: some bugs with non-english keys and UNICODE export
+
+v 2.0 - 26.11.2003
+  - New: "Open in regedit" button now opens not only keys but values
+  - New: UNICODE support for fields dialogs
+  - New: Mutiline strings support, e.g. \\\Registry\HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\SystemBiosVersion
+  - New: extended value creation dialog for the next types - REG_MULTI_SZ and REG_EXPAND_SZ
+  - New: different icons for ordinary strings and REG_MULTI_SZ, REG_EXPAND_SZ, 
+	 as well as for unusual binary fields, like REG_FULL_RESOURCE_DESCRIPTOR
+  - New: 16x16 main icon added. Looks better in TC toolbar
+  - New: XP-style icons
+  - New: plugin executable is packed with AsPack
+  - Fixed: finally export is fully synchronized with export using regedit, including REGEDIT4
+  - Fixed: binary edit dialog with large fonts
+  - Fixed: multiple connection to the same host
+
+v 2.1 - 30.06.2004
+  - New: UNICODE mode is allowed for NT4
+  - Fixed: read-only values now can be viewed from edit dialog, but are shown as read-only
+    e.g. \\\Registry\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\ACPI\ values
+    
+v 2.2 - 1.07.2004
+  - Fixed: crash while exporting key from remote registry
+  - Fixed: binary edit dialog enabled for read-only values
+    e.g. \\\Registry\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\ACPI\ values
+    
+v 2.3 - 2.07.2004
+  - Fixed: export of REG_EXPAND_SZ value in REGEDIT4 format
+  
+v 2.4 - 6.07.2004
+  - New: search for human readable content of REG_EXPAND_SZ values
+  - New: " -Add Value- " file is now excluded from search
+  - Fixed: export of REG_EXPAND_SZ value in REGEDIT4 format (exported like REG_SZ in previous version)
+
+v 2.5 - 17.09.2004
+  - New: Russian language support
+  - New: export with timestamp option - time format is sort suitable (should be turned on in configuration dialog, works for NT4, Win2k, XP, etc.)
+  - New: New value index autoincrement
+  - New: export of multiple keys at once (off by default - lot of empty folders can be created, probably bug of TC; should be turned on in configuration dialog)
+  - Fixed: export of REG_SZ values with 0D, 0A bytes
+  - Fixed: tabstops and accelerators for dialogs
+
+v 2.6 - 12.01.2005
+  - New: autoinstall support (starting from TC 6.50)
+  - New: type name in edit dialog caption
+  - Changed: from now search through REG_EXPAND_SZ value is performed as search of any other hex(n) value
+             instead of "search for human readable content of REG_EXPAND_SZ values" in version 2.4, just for consistency
+  - Fixed: modeless message box in configuration dialog
+  - Fixed: improved work with multiline strings
+  - Fixed: hotkeys and some other fixes in russian version
+  - Fixed: search of values did not work. Search works a bit faster now.
+  - Fixed: export of strings in REGEDIT4 on >= NT4 systems
+  
+v 2.6.1 - 14.01.2005
+  - Fixed: export of expandable strings (and possibly other types) in REGEDIT4 format on >= NT4 systems
+
+Author:
+  Home page: http://www.totalcmd.net/plugring/registry.html
+  Vitaly Knyazev, Belarus
+  E-mail: karapuz79@tut.by
+  ICQ#: 116227

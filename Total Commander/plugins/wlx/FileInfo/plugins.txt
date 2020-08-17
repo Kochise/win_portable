@@ -1,0 +1,55 @@
+Using Plugins with fileinfo.wlx :
+--------------------------------
+
+
+to Users :
+----------
+to use plugins, you must manually edit fileinfo.ini and add a new section with new line like following
+
+[plugins]
+0=c:\Program Files\wincmd\plugins\unaspack.dll
+
+!!! you MUST enter the complete path for this dll !!!
+
+I supply unaspack.dll as a sample but this plugin just test for the version of aspack,
+if the file you are viewing is aspack protected (eg : irfanview.exe), you'll get in 'Image File Header'
+
+	TECHNICAL FILE INFORMATION : 
+	File Type Description :	Portable Executable (PE)
+
+	Plugin 0  :	<APK>: Executing... 
+	Plugin 0  :	<APK>: File compressed with Aspack ver 2.11c/d 
+	Plugin 0  :	End of Work 
+
+
+However, if you own PE-explorer from heaventools (get their trial demo), you can add unupx.dll (found in 'PE Explorer\plugins' dir )
+in this case, you'll get 
+
+	TECHNICAL FILE INFORMATION : 
+	File Type Description :	Portable Executable (PE)
+
+	Plugin 1  :	Executing... 
+	Plugin 1  :	<UPX> File compressed with UPX 
+	Plugin 1  :	<UPX> UPX version: 12 
+	Plugin 1  :	<UPX> File type: win32/pe 
+	Plugin 1  :	<UPX> Compression method: NRV2D_LE32 
+	Plugin 1  :	<UPX> Compression level: 8 
+	Plugin 1  :	<UPX> Uncompressed length: 294235 bytes 
+	Plugin 1  :	<UPX> Compressed length: 73725 bytes 
+	Plugin 1  :	<UPX> Original file size: 286720 bytes 
+	Plugin 1  :	<UPX> Filter ID: 26h 
+	Plugin 1  :	<UPX> CTO (for filters 21h .. 29h): 01h 
+	Plugin 1  :	<UPX> Header checksum:  From Header = 91h 
+	Plugin 1  :	<UPX> Header checksum:  Calculated  = 91h 
+	Plugin 1  :	<UPX> Compressed adler32:   From Header = CDB3F22Ah 
+	Plugin 1  :	<UPX> Compressed adler32:   Calculated  = CDB3F22Ah 
+	Plugin 1  :	<UPX> Decompressing... 
+
+and fileinfo will use the decompressed image of your executable in all this tabs.
+
+to developers :
+---------------
+I supply the source of unaspack.dll written in Visual C++.if you want to contribute to develop this plugin 
+or an other (eg : Manolo PEload PEpack PE-Prot PEshield Petite Securom Shrinker TimeLock/VBox VGCrypt WWPack32 PE-Compact...)
+please contact me. I will give you more information.
+

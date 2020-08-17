@@ -1,0 +1,808 @@
+<html>
+<head>
+	<style>
+	<!--
+	body {
+		font-family:verdana,arial; 
+		font-size:10pt; 
+		margin-left:10px; 
+		margin-right:10px; 
+		width:700px; 
+		background-image: url(Background.png)
+	}
+	h2 {font-size:17pt; font-weight:bold; margin-top:50px}
+	h3 {font-size:14pt; font-weight:bold; margin-top:30px}
+	h4 {font-size:12pt; font-weight:bold; margin-top:20px}
+	h5 {font-size:11pt; font-weight:bold}
+	li {margin-bottom:2px}
+	A:link,A:visited {color:#e03020; text-decoration:none}
+	A:hover {color:#ff40a0; text-decoration:underline}
+	//-->
+	</style>
+	<title>Total Commander Burning Plugin Documentation</title>
+</head>
+
+<body>
+
+<p style="background-color:#202090; color:#ffffff; text-align:center; padding-top:6px; padding-bottom:6px">
+<b><font size=6>Total Commander</font><br>
+<font size=4>CD/DVD Burning Plugin</font><br><br>
+<font size=2>Version 0.9.3 - Documentation</font></b><br><br>
+<font size=1>Written by Frank Zavelberg. Copyright &copy; 2005 by Tiamat Software. All rights reserved.</font></p>
+
+<p style="background-color:#000000; color:#ffffff; text-align:center; padding-top:5px; padding-bottom:5px">
+<font size="2">PLEASE READ THIS TEXT CAREFULLY TO UNDERSTAND HOW THE TC BURNING 
+PLUGIN WORKS, THUS AVOIDING UNNECESSARY QUESTIONS AND PROBLEMS !</font></p>
+
+<h2>License agreement</h2>
+
+<p>You are allowed to use this software only if you accept the terms of the 
+following license agreement.</p>
+
+<ol>
+	<li>Disclaimer<br>
+
+	This software is provided "as-is". The developer does not guarantee that it 
+	works as intended (means: it may have bugs anywhere and anytime), and is not 
+	to be held responsible for any damage that might occur directly or 
+	indirectly through the usage, or lack of usage, of this software.</li>
+
+	<li>Status<br>
+
+	This software is distributed as "freeware" for private use. In private 
+	environments it may be used freely without restriction of features or time. 
+	In commercial or other environments it may be used only with express 
+	permission of the developer.</li>
+
+	<li>Scope of usage<br>
+
+	This software is a plugin for the file manager Total Commander by Christian 
+	Ghisler and may only be used within that file manager. Its functions may not 
+	be called from any other application, and it may not be incorporated in any 
+	other software package. Use in any other file manager that supports the 
+	Total Commander plugin interface is only allowed with express permission of 
+	the developer.</li>
+
+	<li>Redistribution</li>
+
+	The developer reserves the sole right to distribute this software. 
+	Distribution by third parties is only allowed with express permission of the 
+	developer.</li>
+
+	<li>Package/software integrity</li>
+
+	In case of permitted third-party distribution, the software package (i.e. 
+	Rar archive) has to be distributed as a whole and unchanged; no files from 
+	the package may be altered or left out, and no files may be added. It is 
+	forbidden to reverse-engineer, disassemble, alter or otherwise manipulate 
+	any part of the software.</li>
+</ol>
+
+
+
+<h2>Contents</h2>
+
+<ul>
+	<li><b>Overview</b>
+	<ul>
+		<li><a href="#over-main">Main Purpose</a></li>
+		<li><a href="#over-features">Main Features</a></li>
+		<li><a href="#over-acknowledgements">Acknowledgements</a></li>
+		<li><a href="#over-donations">Donations</a></li>
+	</ul></li>
+	<li><a href="#execute">Executing the plugin</a></li>
+	<li><b>Plugin operation</b>
+	<ul>
+		<li><a href="#oper-over">Overview</a></li>
+		<li><a href="#oper-configlocations">Storage of configuration data</a></li>
+		<li><a href="#oper-locales">Multi-language support</a></li>
+		<li><b>The pseudo-files</b>
+		<ul>
+			<li><a href="#oper-config">Configuration</a></li>
+			<li><a href="#oper-erase">Erase Media</a></li>
+			<li><a href="#oper-rescan">Rescan Devices</a></li>
+			<li><a href="#oper-help">Show Help</a></li>
+			<li><a href="#oper-update">Update Check</a></li>
+		</ul></li>
+		<li><a href="#oper-dir">The pseudo-directories</a>
+		<ul>
+			<li><a href="#oper-audio">Project: Audio CD</a></li>
+			<li><a href="#oper-data">Project: Data CD/DVD</a></li>
+			<li><a href="#oper-image">Project: ISO/CUE Image</a></li>
+			<li><a href="#oper-video">Project: Video DVD</a></li>
+			<li><a href="#oper-devices">Info: Burning Devices</a></li>
+		</ul></li>
+		<li><a href="#oper-mediatype">Setting the Media Type for free space estimate</a></li>
+	</ul></li>
+	<li><b>Burning the media</b>
+	<ul>
+		<li><a href="#burn-options">The burning options dialog</a></li>
+		<li><a href="#burn-progress">The burning progress window</a></li>
+	</ul></li>
+	<li><a href="#contact">Contacting the developer</a></li>
+</ul>
+
+<br><hr>
+
+<h2>Overview</h2>
+
+<h3><a name="over-main">Main Purpose</a></h3>
+
+<p>The aim of the Total Commander CD/DVD Burning Plugin, or <b>TCBurner</b>, is 
+to make burning CDs and DVDs as easy and comfortable as possible for Total 
+Commander users.</p>
+
+<h3><a name="over-features">Features</a></h3>
+
+<ul>
+
+	<li>Burn CDs and DVDs directly from Total Commander's directory structure, 
+	by displaying commands and burning projects as pseudo-directories and 
+	pseudo-files.</li>
+
+	<li>Burn the following types of projects:
+	<ul>
+		<li>Data CDs/DVDs</li>
+		<li>Video DVDs</li>
+		<li>Audio CDs</li>
+		<li>ISO/CUE Images</li>
+		<li><b>Planned types:</b> VideoCD, Super Video CD, UDF Data CD</li>
+	</ul></li>
+
+	<li>Burn the following types of media:
+	<ul>
+		<li>CD-R/RW</li>
+		<li>DVD+R/RW</li>
+		<li>DVD-R/RW</li>
+		<li>DVD-RAM</li>
+	</ul>
+
+	<li>Verify Data and VideoDVD projects after burning</li>
+
+	<li>Erase rewritable media, modes Fast and Complete</li>
+
+	<li>Display information about available burning devices (brand, vendor,
+	product ID) and inserted media (type, mode, number of sessions, used and
+	free space).</li>
+
+</ul>
+
+<h3><a name="over-acknowledgements">Acknowledgements</a></h3>
+
+<p>TCBurner uses the <b>FoxBurner SDK</b>. For further information, <a 
+href="http://www.foxburner.com/foxburner/content_sdk.asp" target="_blank">click 
+here</a>.</p>
+
+<p>Many thanks to <b>Poul Dam</b> (<a 
+href="mailto:pouldam@gmail.com">pouldam@gmail.com</a>) for his icon work 
+assistance!</p>
+
+<h3><a name="over-donations">Donations</a></h3>
+
+<p>This plugin is <b>Freeware</b> and will function for an unlimited time, 
+without feature restrictions. However, if you like it and want to show your 
+appreciation to the developer, a <b>donation</b> will be very welcome!</p>
+
+<p>You can donate the following ways:</p>
+
+<ul>
+	<li>Transfer money to my bank account.
+	<ul>
+		<li>For German users - Account Number: <b>210099018</b>, Bank Code: <b>37069627</b></li>
+		<li>For international users - IBAN: <b>DE02 3706 9627 0210 0990 18</b>, BIC: <b>GENODED1RBC</b></li>
+	</ul></li>
+	<li>Send money to my <b>PayPal account</b> by clicking here (you will be taken to PayPal's secure
+	money transfer site):
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_xclick">
+		<input type="hidden" name="business" value="paypal@tianet.de">
+		<input type="hidden" name="item_name" value="Donation for TCBurner">
+		<input type="hidden" name="no_note" value="1">
+		<input type="hidden" name="currency_code" value="EUR">
+		<input type="hidden" name="lc" value="US">
+		<input type="hidden" name="tax" value="0">
+		<input type="image" src="Donate.gif" border="0" name="submit">
+		</form>
+	</li>
+	<li>Send me <b>cash or cheques</b> via snail-mail. My address is:<br>
+	<b>Frank Zavelberg<br>
+	Burggraben 14<br>
+	D-53359 Rheinbach</b></li>
+</ul>
+
+
+
+<h2><a name="execute">Executing the plugin</a></h2>
+
+<p>Press ALT-F1 or ALT-F2 and switch to <b>Network Neighborhood</b>. You find 
+the plugin under <b>CD/DVD Burner</b> there, with a golden CD as icon.</p>
+
+<p><img src="NetworkNeighborhood.png"><br>
+<i>The Network Neighborhood listing with the TCBurner plugin</i></p>
+
+<p>Querying the properties of the TCBurner directory (by pressing Alt-Enter) 
+will display the <b>About box</b>. Switch to the TCBurner directory, and the 
+plugin will be initialized.</p>
+
+<p>Make sure you keep the two DLL files <b>FoxBurner.dll</b> and 
+<b>mp3lib.dll</b> in the plugin's directory, as those are needed for 
+operation!</p>
+
+<p>The initialization is only necessary <b>once</b> per execution of Total 
+Commander. When you switch out of the TCBurner plugin, and re-switch back to it 
+later, no initialization is done.</p>
+
+
+<h2>Plugin operation</h2>
+
+<h3><a name="oper-over">Overview</a></h3>
+
+<p>Since the various functions of the plugin are executed through "pseudo-
+directories" and "pseudo-files", you are presented with the following list after 
+switching to the plugin directory.</p>
+
+<p><i>"Pseudo" means here that the files and directories listed are not really 
+actual files or directories on any data storage device, but merely placeholders 
+to perform the various functions of the plugins, or representations of the 
+actual files being burned to a media.</i></p>
+
+<p><img src="Main.png"><br>
+<i>The main listing of pseudo-files/-directories</i></p>
+
+<p>Depending on what you wish to do, execute the corresponding pseudo-file/switch 
+to the corresponding pseudo-directory.</p>
+
+<p>To add files to a burning project, you use the normal Total Commander 
+<b>Copy</b> command to create representations of the files to be burned in the 
+desired project type pseudo-directory. The writer device you wish to use is 
+selected when project assembly is complete, in the Burn Media dialog.</p>
+
+<p>Further functions are invoked through TC's commands like <b>Query 
+Properties</b> (Alt-Enter) and <b>View</b> (F3).</p>
+
+
+
+<h3><a name="oper-configlocations">Storage of configuration data</a></h3>
+
+<p>To accomodate to the requirements of different (multi-user-)environments, 
+TCBurner looks for its configuration data file <b>"tcburner.ini"</b> in multiple 
+folders, which are:</p>
+
+<ol>
+	<li>[wincmd-ini-path]\tcburner.ini</li>
+	<li>[wincmd-ini-path]\tcburner\tcburner.ini</li>
+	<li>[plugin-path]\tcburner.ini</li>
+	<li>[wincmd-path]\tcburner.ini</li>
+</ol>
+
+<p>The first folder where it is found (top-down) is used. If it cannot be found, 
+a new file with default settings is created in the first listed folder. This way 
+you can put the configuration file in any of the locations listed, either 
+manually or through the configuration dialog.</p>
+
+<p>For multi-user environments e.g. it is useful to put the file in the "wincmd-
+ini-path", so that each user has its own configuration file, and since the 
+plugin directory is probably not writable for all users.</p>
+
+<p>You can move the configuration file at any time, even while the plugin is 
+intialized, since each time the file needs to be loaded or saved (and not only 
+once upon initialization!), its location is searched for in the described 
+way.</p>
+
+
+
+<h3><a name="oper-locales">Multi-language support</a></h3>
+
+<p>TCBurner supports <b>multiple languages</b> through "locale"-files. In the 
+subdirectory <b>"Lang"</b> under the plugin directory you find (and put) the 
+language files, extention ".locale".</p>
+
+<p>Several languages are included in the distribution archive, to create your 
+own language file please refer to the example locale file "english.locale" 
+(which is not really necessary in the Lang directory since the english language 
+is included hardcoded in the plugin file itself).</p>
+
+<p>You can switch to switch to another language in the configuration dialog, 
+page "System" (<a href="#oper-config">see here</a>). If you're going to create 
+an own language file, it would be nice if you send it to the developer for 
+distribution!</p>
+
+
+
+<h3>The pseudo-files</h3>
+
+<h4><a name="oper-config">Configuration</a></h4>
+
+<p>Execute this pseudo-file to display the plugin's global configuration 
+dialog:</p>
+
+<p><img src="GlobalSettings1.png"><br>
+<i>The Global Configuration dialog, page 1</i></p>
+
+<p><b>Use internal ASPI layer</b> - If you have problems with burning devices, 
+like incorrect detection of media types, free space, errors during burning or 
+finalization or similar, try installing an external ASPI layer and uncheck this 
+box.</p>
+
+<p><b>Skip media checks</b> - On some burning devices detection of correct media 
+type, status or size may fail. To be able to burn in such cases, you can choose 
+to skip these checks here.</p>
+
+<p><b>Locale File</b> - TCBurner supports multiple languages; you can set the 
+language to be used here. For further information, <a href="#oper-locales">see 
+here</a>.</p>
+
+<p><img src="GlobalSettings2.png"><br>
+<i>The Global Configuration dialog, page 2</i></p>
+
+<p><b>Automatically save contents</b> - Using pseudo-file commands you can save 
+project contents to HDD and load them again later. If additionally you wish to 
+automatically save the current projects' contents each time the plugin shuts 
+down and reload them next time you use it, check this box. The contents are 
+saved to the same directory where the plugin stores its configuration data file 
+(see <a href="#oper-config-locations">here</a>), and the project files are named 
+"TCBurnerAutoSaveAudioProject.tcb" and "TCBurnerAutoSaveDataProject.tcb".</p>
+
+<p><b>Support .lst files</b> - If checked, when adding a file with extension 
+.lst to a Data project (the file itself, not something from within!), you're 
+queried whether you wish to add all files listed instead of the .lst file 
+itself.</p>
+
+<p><img src="GlobalSettings3.png"><br>
+<i>The Global Configuration dialog, page 3</i></p>
+
+<p><b>Import last session</b> - When checked, upon burning a non-finalized data 
+project CD the latest session from the CD is imported before preparing the data 
+for the new burning. <b>Attention!</b> This setting does not apply to DVD+/-RW 
+media! Such media cannot contain multisession projects and are always 
+overwritten when new data is burned to them.</p>
+
+<p><b>Query burn speed</b> - When checked, the available burn speeds for each 
+device and media is queried from the burner in the Burn Options dialog. This 
+option can be turned off since the speed query can - depending on device and 
+media - take quite a while. If turned off burning is always done at maximum 
+speed.</p>
+
+<p><b>Use default volume label</b> - If checked, after each burning process the 
+volume label of the burned project type will be replaced by the default label 
+you set here.</p>
+
+<p><img src="GlobalSettings4.png"><br>
+<i>The Global Configuration dialog, page 4</i></p>
+
+<p>Here you can change the location of the plugin's ini file. Please <a 
+href="#oper-configlocations">see here</a> for further information. Changing the 
+location actually means the config file is moved from its current location to 
+the new one.</p>
+
+<p><b>Note:</b> Some further options which you will quite probably want to set 
+individually for each burning process, like ejecting the media after burning or 
+clearing the project after burning, are not set here but in the Burn Media 
+dialog.</p>
+
+
+<h4><a name="oper-erase">Erase Media</a></h4>
+
+<p>To erase a rewritable media, <b>execute</b> this pseudo-file. You will be 
+presented with a dialog where you can choose the burning device to use.</p>
+
+<p><img src="EraseMedium.png"><br>
+<i>The "Erase Media" dialog</i></p>
+
+<p>Check the <b>complete erase</b> box to perform a full erase (the whole media 
+is physically overwritten, which can take a long time). If unchecked, only the 
+administrative blocks of the media are erased (<b>fast erase</b>)).</p>
+
+<p><b>Note concerning the progress bar</b>: Since a CD/DVD burner does not 
+report actual progress information during an erase process, the progress bar 
+shows a timed estimate of the needed duration.</p>
+
+<p>For the first erase process performed on a specific device with a specific 
+type of media, a default duration of 30 seconds for a fast erase and 15 minutes 
+for a full erase is assumed. If that assumption is incorrect (which is quite 
+likely), the progress bar will jump back and forth.</p> 
+
+<p>After each completed erase, the needed time is measured and stored in the 
+configuration file, separately for each device/media type combination, so the 
+next erase process should display quite accurate duration values.</p>
+
+<p><b>Important:</b> rewritable DVD media (DVD-RW and DVD+RW) do not need to be 
+erased before writing new data to them. They're formatted in a special way, thus 
+do not support multisession, and are automatically erased each time new data is 
+written to them.</p>
+
+<p>You can minimize the erase window during the process, its percentage of 
+completion is shown in the title bar and thus in the task bar.</p>
+
+
+<h4><a name="oper-rescan">Rescan Devices</a></h4>
+
+<p>For people with removable burning devices who started the plugin 
+<b>before</b> they plugged their burner in (and are too lazy to restart TC ;) ) 
+this command may be quite useful.</p>
+
+
+
+<h4><a name="oper-help">Show Help</a></h4>
+
+<p>Executing this pseudo-file will open the documentation HTML file you're 
+currently looking at.</p>
+
+
+
+<h4><a name="oper-update">Update Check</a></h4>
+
+<p>Executing this pseudo-file checks the TCBurner web page for the most recent 
+available version. If a newer version than the one you're currently using is 
+available, you'll be queried if you wish to open the web page in your 
+browser.</p>
+
+
+<h3><a name="oper-dir">The pseudo-directories</a></h3>
+
+<p>The main purpose of the pseudo-directories is holding representations of the 
+files and directories you wish to burn to the various project types TCBurner 
+supports.</p>
+
+
+<h4><a name="oper-audio">Project: Audio CD</a></h4>
+
+<p>If you wish to burn an Audio CD, "copy" the files you wish to burn to this
+pseudo-directory. The following types of files can be burned:</p>
+
+<ul>
+	<li>WAV files (uncompressed wave files, 44kHz 16bit PCM)</li>
+	<li>MP3 files (MPEG 1 Layer 3 compressed audio files)</li>
+	<li>OGG files (Ogg-Vorbis compressed audio files)</li>
+</ul>
+
+<p>The file types MP3 and OGG will be automatically decompressed on-the-fly 
+while burning (no temporary files are created!).</p>
+
+<p>The audio files are not actually copied anywhere when you "copy" them to the 
+Audio CD pseudo-directory, but the files listed there are mere representations 
+or links of the files you intend to burn. The list of files to burn is presented 
+in the following way:</p>
+
+<p><img src="AudioProject.png"><br>
+<i>Example for burning an Audio CD</i></p>
+
+<p><b>Important:</b> Some pseudo-file commands like "Burn Media" or "Clear 
+Project" only make sense when the project is not empty, and thus are only shown 
+if the project is not empty.</p>
+
+<p>The three-digit number in square brackets in front of the file name denotes 
+the <b>track number</b> of this audio file on the CD. The next number in square 
+brackets is the <b>estimated duration</b> of the track. "Estimated" because the 
+duration is extracted from the file header, and e.g. in case of VBR (variable 
+bitrate) MP3s, this duration may be highly incorrect. The displayed <b>file 
+size</b> refers to the size in bytes that track will use on the Audio CD and is 
+also merely an estimate based on the estimated duration.</p>
+
+<h5>Re-ordering audio tracks</h5>
+
+<p>If you wish to <b>re-order</b> the tracks, you simply need to Execute (press
+Return) the track pseudo-file. An input dialog will pop up, where you type the 
+desired new track number.</p>
+
+<p><b>Notice:</b> The track number you enter is the position to which you wish 
+to move the selected track track <b>before</b> the re-ordering operation . The 
+selected track will be inserted <b>before</b> the destination track (i.e. the 
+one currently occupying the new number), and all further tracks, starting with 
+the new position, will be moved downwards one position. To move a track to the 
+end of the list, give it a new track number that is higher than all existing 
+track numbers in the project. This may sound a little confusing, but just give 
+it a try. :)</p>
+
+<h5>Removing audio tracks</h5>
+
+<p>The Total Commander operation <b>Delete</b> is available for the audio file 
+representations here, in order to remove tracks from your burning project.</p>
+
+<h5>Performing further functions through pseudo-files</h5>
+
+<ul>
+
+	<li><b>Burn Media</b>: Execute to invoke the Burn Media dialog</li>
+
+	<li><b>Clear Project</b>: Execute to remove all contents from the project</li>
+
+	<li><b>Estimated Free Space</b>: shows the estimated free space either based 
+	on a size preset, or on a media inserted in a device, in the file size 
+	column. To set the preset or device to use, execute the pseudo-file (<a 
+	href="#oper-mediatype">see here</a> for further information).</li>
+
+	<li><b>Load Project</b>: To load the contents of a project previously saved 
+	to disk execute this pseudo-file. Existing contents will be cleared before 
+	the new contents are loaded.</li>
+
+	<li><b>Project Size</b>: Shows estimated project size information</li>
+
+	<li><b>Save Project</b>: To save the contents of your project execute this 
+	pseudo-file.</li>
+
+	<li><b>Volume Label</b>: Shows the current volume label. Execute the pseudo-file 
+	to change the label (a text input dialog will pop up). The volume label is
+	stored in the configuration file separately for each project type.</li>
+
+</ul>
+
+
+
+<h4><a name="oper-data">Project: Data CD/DVD</a></h4>
+
+<p>If you wish to burn a Data CD/DVD, "copy" the files and directories you wish 
+to burn to this pseudo-directory.</p>
+
+<p>The files and directories are not actually copied anywhere when you "copy" 
+them to the Data CD pseudo-directory, but the objects listed there are mere 
+representations of or links to the objects you intend to burn. Despite that 
+fact, the directory tree of a Data CD project looks quite like a normal 
+directory. The file sizes are also shown correctly, they're retrieved from the 
+actual files at their real position on your HDD or other storage device.</p>
+
+<img src="DataProject.png"><br>
+<i>Example for burning a Data CD</i></p>
+
+<p>In this example you see a directory "MP3s" was created, and the first 5 of 
+the MP3 files on the left pane were "copied" into that directory, as you can see 
+by the total directory size.</p>
+
+<p><b>Important:</b> Some pseudo-file commands like "Burn Media" or "Clear 
+Project" only make sense when the project is not empty, and thus are only shown 
+if the project is not empty.</p>
+
+<h5>Removing files/directories from the project</h5>
+
+<p>The Total Commander operation <b>Delete</b> is available for the file/ 
+directory representations here, in order to remove objects from your burning 
+project. The actual files on your HDD are of course not deleted!</p>
+
+<h5>Performing further functions through pseudo-files</h5>
+
+<ul>
+
+	<li><b>Burn Media</b>: Execute to invoke the Burn Media dialog</li>
+
+	<li><b>Clear Project</b>: Execute to remove all contents from the project</li>
+
+	<li><b>Create ISO Image</b>: Execute to write the project to an ISO image 
+	file (instead of burning it to a media)</li>
+
+	<li><b>Estimated Free Space</b>: shows the estimated free space either based 
+	on a size preset, or on a media inserted in a device, in the file size 
+	column. To set the preset or device to use, execute the pseudo-file (<a 
+	href="#oper-mediatype">see here</a> for further information).</li>
+
+	<li><b>Load Project</b>: To load the contents of a project previously saved 
+	to disk execute this pseudo-file. Existing contents will be cleared before 
+	the new contents are loaded.</li>
+
+	<li><b>Project Size</b>: Shows estimated project size information</li>
+
+	<li><b>Save Project</b>: To save the contents of your project execute this 
+	pseudo-file.</li>
+
+	<li><b>Volume Label</b>: Shows the current volume label. Execute the pseudo-file 
+	to change the label (a text input dialog will pop up). The volume label is
+	stored in the configuration file separately for each project type.</li>
+
+</ul>
+
+
+
+<h4><a name="oper-image">Project: ISO/CUE Image</a></h4>
+
+<p>If you wish to burn an image file to CD/DVD, "copy" the file to this pseudo-
+directory.</p>
+
+<p>Supported are image files of types ISO and BIN/CUE. For ISO, a single file
+with extension ISO is required. For BIN/CUE, a small cuesheet file (extension CUE)
+is required and the actual image file (extension BIN).</p>
+
+<p>In case of BIN/CUE you need to copy only one of the two files. The other file 
+must reside in the same directory as the one you copy, its existance of the is 
+verified when you copy.</p>
+
+<img src="ImageProject.png"><br>
+<i>Example for burning an image to CD</i></p>
+
+<p>As you can see, the pseudo-file shown in the Image project directory actually 
+is a whole path name, reminding you which image file you chose for burning.</p>
+
+<p>Naturally, only one image file is allowed in the Image project. If you "copy" 
+another file to the project, it overwrites the one currently present. To be 
+accepted as an image file, its extension must be ISO, BIN or CUE, and in case of 
+BIN/CUE the respective other file must exist in the same directory.</p>
+
+<p>For BIN/CUE, make sure that the image file matches the media type you're 
+going to burn. Otherwise the burning might fail with an error.</p>
+
+<p><b>Important:</b> Some pseudo-file commands like "Burn Media" or "Clear 
+Project" only make sense when the project is not empty, and thus are only shown 
+if the project is not empty.</p>
+
+<h5>Performing further functions through pseudo-files</h5>
+
+<ul>
+
+	<li><b>Burn Media</b>: Execute to invoke the Burn Media dialog</li>
+
+	<li><b>Clear Project</b>: Execute to remove all contents from the project</li>
+
+	<li><b>Estimated Free Space</b>: shows the estimated free space either based 
+	on a size preset, or on a media inserted in a device, in the file size 
+	column. To set the preset or device to use, execute the pseudo-file (<a 
+	href="#oper-mediatype">see here</a> for further information).</li>
+
+	<li><b>Volume Label</b>: Shows the current volume label. Execute the pseudo-file 
+	to change the label (a text input dialog will pop up). The volume label is
+	stored in the configuration file separately for each project type.</li>
+
+</ul>
+
+
+
+<h3><a name="oper-video">Project: Video DVD</a></h3>
+
+<p>For burning a Video DVD, the plugin assumes that you assembled all the files 
+that make up your DVD (IFOs, VOBs and BUPs) in one directory on your HDD. To 
+tell the plugin which directory that is, you just need to "copy" any one file 
+from that directory to the <b>Video DVD</b> pseudo-directory.</p>
+
+<p><img src="VideoDVDProject.png"><br>
+<i>Example for burning a Video DVD</i></p>
+
+<p>As you can see, the pseudo-file shown in the Video DVD project directory 
+actually is a whole path name, reminding you which path you chose as your DVD 
+project path.</p>
+
+<p>Naturally, only one path is allowed in the DVD project. If you "copy" another 
+file to the project, its path overwrites the one currently present. To be 
+accepted as a Video DVD project path, the path must contain the file 
+"VIDEO_TS.IFO" which is required for all Video DVDs.</p>
+
+<p>Conveniently, this means it is no problem if you simply copy the <b>whole 
+directory</b> containing your DVD files instead of switching into it and copying 
+a single file. That is because "create directory" commands, which such an action 
+would trigger, are simply ignored in Video DVD projects, as well as the actual 
+target file name. The only thing that is evaluated is the path in which the file 
+you try to copy resides. If that path contains a VIDEO_TS.IFO file, it will do 
+nicely.</p>
+
+<p><b>Important:</b> Some pseudo-file commands like "Burn Media" or "Clear 
+Project" only make sense when the project is not empty, and thus are only shown 
+if the project is not empty.</p>
+
+<h5>Performing further functions through pseudo-files</h5>
+
+<ul>
+
+	<li><b>Burn Media</b>: Execute to invoke the Burn Media dialog</li>
+
+	<li><b>Clear Project</b>: Execute to remove all contents from the project</li>
+
+	<li><b>Estimated Free Space</b>: shows the estimated free space either based 
+	on a size preset, or on a media inserted in a device, in the file size 
+	column. To set the preset or device to use, execute the pseudo-file (<a 
+	href="#oper-mediatype">see here</a> for further information).</li>
+
+	<li><b>Volume Label</b>: Shows the current volume label. Execute the pseudo-file 
+	to change the label (a text input dialog will pop up). The volume label is
+	stored in the configuration file separately for each project type.</li>
+
+</ul>
+
+
+
+<h4><a name="oper-devices">Info: Burning Devices</a></h4>
+
+<p>This pseudo-directory lists all available burning devices with vendor and 
+brand name, plus it shows basic information about the media inserted in the 
+devices (if any).</p>
+
+<p><img src="DeviceList.png"><br>
+<i>List of available burning devices</i></p>
+
+<p><b>Important:</b> for rewritable DVD media (DVD-RW and DVD+RW) no disc status 
+(empty, incomplete, complete) is shown because those media are formatted in a 
+special way, thus do not support multisession, and are automatically erased each 
+time new data is written to them. So there's no real "complete" state for them, 
+and often DVD writers do not report their state as "empty" even though they 
+are.</p>
+
+<p>You may execute the device pseudo-files or query their properties (by 
+pressing Alt-Enter) to open the Device Info dialog. The various information 
+shown speaks for itself, see the following screenshots:</p>
+
+<p><img src="DeviceInfo1.png"><br>
+<i>Device info dialog, page 1</i></p>
+
+<p><img src="DeviceInfo2.png"><br>
+<i>Device info dialog, page 2</i></p>
+
+<p><img src="DeviceInfo3.png"><br>
+<i>Device info dialog, page 3</i></p>
+
+
+
+<h3><a name="oper-mediatype">Setting the Media Type for free space estimate</a></h3>
+
+<p>All project pseudo-directories show the estimated free space, and in this 
+dialog (which you can reach by executing the free space pseudo-file) you set
+what the plugin should use as base for the estimate.</p>
+
+<p><img src="MediaType.png"><br>
+<i>The Media Type dialog</i></p>
+
+<p>The estimate can be based on a media inserted in the device you choose in the
+upper list, and if that is not desired, or the device is empty or busy, the media
+type and size you choose below is used as base.</p>
+
+<p>The settings made here are stored separately for each project type.</p>
+
+
+
+<h2>Burning the medium</h2>
+
+<h3><a name="burn-options">The burning options dialog</a></h3>
+
+<p>The <b>Burn Medium</b> dialog is invoked by executing the corresponding 
+pseudo-file in either one of the burning project pseudo-directories. Notice that 
+the necessary pseudo-file only becomes visible when the project is no longer all 
+empty, i.e. when at least one file/audio track has been "copied" to it, or a 
+valid DVD path has been chosen etc.</p>
+
+<p><img src="BurnMedium.png"><br>
+<i>The Burn Medium dialog</i></p>
+
+<p>In this dialog you can set the burning options that you likely will want to 
+set individually for each burning process. So for your convenience those options 
+are not located in the General Options dialog, but here where you also choose 
+the burning device to use.</p>
+
+<p>Notice that not all options are available/applicable for all types of 
+projects. E.g. the Verify option is only available for Data projects, the option 
+Finalize can only be turned off for Data projects and is always on for Audio CD 
+and Video DVD projects and so on.</p>
+
+<p>If activated in the Global Settings dialog, you can choose the desired 
+burning speed. Each time the Burn Options dialog is invoked, and each time you 
+change the burning device, the available speeds are queried. That is because the 
+available speeds do not only depend on the burning device, but also on the media 
+inserted. If the Query Burn Speeds option is disabled in Global Settings, the 
+Burn Speed combo box only has the option "Max. Speed" available.</p>
+
+
+
+<h3><a name="burn-progress">The burning progress window</a></h3>
+
+<p>After all that work, your burning process is finally on its way. :) Its 
+progress is shown in the following dialog.</p>
+
+<p><img src="BurningProgress.png"><br>
+<i>And there goes the burning...</i></p>
+
+<p>The areas of the dialog should be quite self-explanatory. You can abort
+burning or verifying by clicking the <b>Abort</b> button.</p>
+
+<p>You can minimize the burn window during the process, its percentage of 
+completion is shown in the title bar and thus in the task bar.</p>
+
+
+
+<h2><a name="contact">Contacting the developer</a></h2>
+
+<p>You can contact the developer of TCBurner for questions, suggestions and bug 
+reports here. Please choose:</p>
+
+<ul>
+	<li><a href="http://www.tiasoft.de" target="_blank">General Homepage (German)</a></li>
+	<li><a href="http://www.tiasoft.de/tcburner" target="_blank">Application Homepage (English)</a></li>
+	<li><a href="http://tiasoft.awhosting.de/forum" target="_blank">Support Forum (English)</a></li>
+	<li><a href="mailto:support@tianet.de">Send Email</a></li>
+	<li>ICQ UIN: <b>15325926</b> (get ICQ <a href="http://www.icq.com">here</a>.)</li>
+</ul>
+
+</body>
+</html>

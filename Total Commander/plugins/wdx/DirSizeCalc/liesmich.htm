@@ -1,0 +1,795 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;
+      charset=windows-1252">
+    <title>DirSizeCalc</title>
+    <link href="./styles/layout.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="content">
+      <h1>DirSizeCalc</h1>
+      <p>Version 2.22</p>
+      <p>&nbsp; </p>
+      <p>DirSizeCalc ist ein Inhaltsplugin für den Dateimanager Total
+        Commander. Es bietet verschiedene numerische Berechnungen für
+        Verzeichnisinhalte an. Alle Berechnungen werden im Hintergrund
+        durchgeführt. Die Berechnungen können automatisch beim Öffnen
+        von Verzeichnissen oder explizit durch den Benutzer gestartet
+        werden.</p>
+      <h2>Inhaltsverzeichnis</h2>
+      <ol>
+        <li><a href="#field_descriptions">Feldbeschreibungen</a></li>
+        <li><a href="#requirements">Systemvoraussetzungen</a></li>
+        <li><a href="#use">Benutzung</a>
+          <ol>
+            <li><a href="#use_cases">Anwendungsfälle</a>
+              <ol>
+                <li><a href="#use_cases_automatic_calculation">Größe von
+                    Dateien und Verzeichnissen automatisch anzeigen</a></li>
+                <li><a href="#use_cases_delete_empty_folder_trees">Leere
+                    Verzeichnisbäume löschen</a></li>
+                <li><a href="#use_cases_check_if_comression_makes_sense">Herausfinden
+                    ob sich Kompression lohnt</a></li>
+                <li><a href="#use_cases_files_count">Herausfinden wie
+                    viele Dateien sich im einem Verzeichnis befinden</a></li>
+                <li><a href="#use_cases_contains_subdirectories">Herausfinden
+                    ob ein Verzeichnis Unterverzeichnisse enthält</a></li>
+                <li><a href="#use_cases_load_fields_on_demand">Laden der
+                    Verzeichnisgrößen für alle selektierten oder aller
+                    Felder auf Knopfdruck</a></li>
+              </ol>
+            </li>
+            <li><a href="#additional_information">Zusatzinformationen
+                für angezeigte Werte</a></li>
+            <li><a href="#empty_directory_display">Größenanzeige von
+                (beinahe) leeren Verzeichnissen</a></li>
+            <li><a href="#placeholders">Platzhalter</a></li>
+          </ol>
+        </li>
+        <li><a href="#settings">Einstellungen</a>
+          <ol>
+            <li><a href="#field_settings">Feldeinstellungen</a>
+              <ol>
+                <li><a href="#field_settings_name">Name</a></li>
+                <li><a href="#field_settings_field_selection">Feldauswahl</a></li>
+                <li><a href="#field_settings_loading_behavior">Ladeverhalten</a></li>
+                <li><a href="#field_settings_reparse_point_behavior">Verhalten
+                    bei Analysepunkten</a></li>
+                <li><a href="#field_settings_recursive">Rekursiv</a></li>
+                <li><a href="#field_settings_cache_values">Werte
+                    zwischenspeichern</a></li>
+                <li><a href="#field_settings_limit">Berechnungslimit</a></li>
+              </ol>
+            </li>
+            <li><a href="#unit_settings">Einheiteneinstellungen</a>
+              <ol>
+                <li><a href="#unit_settings_name">Name</a></li>
+                <li><a href="#unit_settings_prefixes_units">Präfixe und
+                    Einheiten</a></li>
+                <li><a href="#unit_settings_formatting">Formatierung</a></li>
+                <li><a href="#unit_settings_preview">Vorschau</a></li>
+              </ol>
+            </li>
+            <li><a href="#settings_file_location">Ort der
+                Einstellungsdatei ändern</a></li>
+          </ol>
+        </li>
+        <li><a href="#faq">Oft gestellte Fragen</a></li>
+        <li><a href="#contact">Kontakt zum Autor</a></li>
+        <li><a href="#license">Lizenz</a></li>
+      </ol>
+      <h2>1. Feldbeschreibungen<a name="field_descriptions"></a></h2>
+      <table>
+        <tbody>
+          <tr>
+            <th scope="col" width="237">Feldname</th>
+            <th scope="col" width="649">Erläuterung</th>
+          </tr>
+          <tr>
+            <td width="237"> Größe</td>
+            <td width="549">Datei- oder Verzeichnisgröße </td>
+          </tr>
+          <tr>
+            <td>Komprimierte Größe</td>
+            <td>Datei- oder Verzeichnisgröße bei gesetztem
+              "Komprimiert-Attribut". Dieses Feld steht nur unter
+              Windows NT basierten Systemen zur Verfügung.</td>
+          </tr>
+          <tr>
+            <td>Kompressionsrate</td>
+            <td>Ermittelt das Verhältnis aus Größe und Komprimierte
+              Größe. </td>
+          </tr>
+          <tr>
+            <td>Unterverzeichnisanzahl</td>
+            <td>Anzahl aller Unterverzeichnisse in einem Verzeichnis.</td>
+          </tr>
+          <tr>
+            <td>Dateianzahl</td>
+            <td> Anzahl aller Dateien in einem Verzeichnis.</td>
+          </tr>
+          <tr>
+            <td>Leer</td>
+            <td>Ermittelt, ob ein Verzeichnis leer ist.</td>
+          </tr>
+          <tr>
+            <td>Enthält Dateien</td>
+            <td> Ermittelt, ob ein Verzeichnis Dateien enthält.</td>
+          </tr>
+          <tr>
+            <td>Enthält Unterverzeichnisse</td>
+            <td>Ermittelt, ob ein Verzeichnis Unterverzeichnisse
+              enthält.</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>2. Systemvoraussetzungen<a name="requirements"></a></h2>
+      <p>Für diesen Plugin wird Total Commander 6.50 oder neuer
+        benötigt. Total Commander 7.03 oder neuer wird empfohlen.</p>
+      <h2>3. Benutzung<a name="use"></a></h2>
+      <p>Bevor man die Felder von DirSizeCalc tatsächlich benutzen kann,
+        müssen diese in dem Teil des Total Commanders hinzugefügt
+        werden, in dem sie eingesetzt werden sollen. Im Grunde lassen
+        sich alle Inhaltplugins auf die gleiche Art und Weise einsetzen.
+        Folgende Programmteile des Total Commanders unterstützen
+        Inhaltplugins:</p>
+      <ul>
+        <li>Benutzerdefinierte Spaltenansichten</li>
+        <li>Tooltips</li>
+        <li>Miniaturansicht</li>
+        <li>Suchfunktion</li>
+        <li>Farben nach Dateityp </li>
+        <li>Überschreiben-Dialog </li>
+        <li>Mehrfach-Umbenenn-Tool</li>
+      </ul>
+      <h3>3.1 Anwendungsfälle<a name="use_cases"></a></h3>
+      <p>Im Folgenden wird das Einrichten in den verschiedenen
+        Programmteilen des Total Commanders anhand verschiedener
+        Anwendungsfälle exemplarisch erklärt.</p>
+      <h4>3.1.1. Größe von Dateien und Verzeichnissen automatisch
+        anzeigen<a name="use_cases_automatic_calculation"></a></h4>
+      <h5>Benutzerdefinierte Spaltenansicht</h5>
+      <p>Total Commander bietet die Möglichkeit mit dem Befehl
+        cm_CountDirContent (Tastenkürzel: Umschalt+Alt+Enter) die Größe
+        aller angezeigten Verzeichnisse zu ermitteln. Ein automatisches
+        Berechnen nach jedem Verzeichniswechsel ist jedoch nicht
+        möglich. Mit dem Feld "Größe" werden die Verzeichnisgrößen nach
+        dem Öffnen des Verzeichnisses schnellstmöglich angezeigt. Im
+        folgenden wird Schritt für Schritt erklärt, wie dies
+        eingerichtet werden kann. </p>
+      <ol>
+        <li>Wählen Sie im Menü mit Konfigurieren/Einstellungen um den
+          Konfigurationsdialogzu öffnen.</li>
+        <li>Wähle die Seite "Benutzerdef. Spalten".</li>
+        <li>Drücke den Knopf "Neu", um eine neue benutzerdefinierte
+          Spaltenansicht zu erstellen</li>
+        <li>In dem jetzt erscheinenden Dialog kann man festlegen wie
+          viele Spalten die Ansicht haben und was diese Spalten anzeigen
+          soll. Drücke zunächst den Knopf "Spalte hinzufügen". Es wird
+          eine neue leere Zeile mit Eigenschaften angezeigt. Dies
+          repräsentiert die Eigenschaften der neuen Spalte.</li>
+        <li>Als nächstes wird festgelegt was in der Spalte angezeigt
+          werden soll. Um das Feld in der erstellten Spalte zu nutzen,
+          klicke auf den Knopf mit dem +. Wähle
+          dirsizecalc/Größe/&lt;Voreinstellung&gt; in dem erscheinenden
+          Menü. In der Eigenschaft Feldinhalt wird nun
+          [dirsizecalc.Größe] angezeigt. Statt &lt;Voreinstellung&gt;
+          kann man auch eine andere Einheit wählen. Näheres dazu im
+          Kapitel Einheiten. In der Eigenschaft Titel wird übrigens der
+          Text angezeigt, der später im Spaltenkopf erscheint. Diesen
+          kann nach Belieben ändern. </li>
+        <li>Drücke OK, um den aktuellen Dialog "Benutzerdefinierte
+          Spalten" zu schließen.</li>
+        <li>Drücke OK, um auch den Konfigurationsdialog zu schließen.</li>
+      </ol>
+      <h4>3.1.2. Leere Verzeichnisbäume löschen<a
+          name="use_cases_delete_empty_folder_trees"></a></h4>
+      <h5>Suchfunktion</h5>
+      <p> Eine große Anzahl Verzeichnisse, die keine Dateien enthalten,
+        kann die Übersicht im Dateisystem erschweren. Es empfiehlt sich
+        daher von Zeit zu Zeit aufzuräumen. Werte von Inhaltplugins
+        können in der Total Commander-Suche genutzt werden, um die
+        Anzahl der Suchergebnisse zu verringern. Hier wird die also die
+        Suchfunktion des Total Commander zusammen mit dem DirSizeCalc
+        Plugin genutzt, um nur Verzeichnisse zu finden, die keine
+        Dateien enthalten. </p>
+      <ol>
+        <li>Im Menü mit Befehle "Suchen" aufrufen. </li>
+        <li>Auf den Tab "Plugins" wechseln.</li>
+        <li>Im Tab Plugins können Regeln festgelegt werden. Für jede
+          Datei und jedes Verzeichnis im Suchbereich werden die vom
+          Benutzer festgelegten Regeln überprüft. Nur wenn die Regel
+          zutrifft, wird die Datei oder das Verzeichnis der
+          Suchergebnisliste hinzugefügt. In diesem Fall lautet die
+          Regel. Plugin: dirsizecalc, Feld: Enthält Dateien, Operator: =
+          und Wert: Nein. Im Folgenden werden Suchregeln in der Kurzform
+          wie z. B. dirsizecalc.Enthält Dateien=Nein dargestellt. Das
+          Feld "Enthält Dateien stellt sicher, dass nur Verzeichnisse
+          gefunden werden, die auch wirklich keine Dateien enthalten.
+          Wenn das Verzeichnis Dateien enthält ist oder ein Problem beim
+          Ermitteln des Inhalts aufgetreten ist, wird das Verzeichnis
+          bei der Suche nicht gefunden.</li>
+        <li>Klicke auf den Knopf "Suche starten".</li>
+        <li>Klicke auf den Knopf "Anwenden", um das Suchergebnis in
+          einem Total Commander Dateifenster anzuzeigen.</li>
+        <li>Markiere alle im dem Fenster Suchergebnisse angezeigten
+          Verzeichnisse.</li>
+        <li>Wende die Löschen-Operation auf die markierten Dateien an.
+          Dabei können Meldungen des Total Commander angezeigt werden,
+          dass ein Verzeichnis nicht leer sei. Das ist auch richtig,
+          jedoch handelt es sich hierbei um ein Verzeichnis, dass
+          lediglich leere Unterverzeichnisse enthält. Die Meldung kann
+          also mit Klicken auf "Alle" bejaht werden. </li>
+      </ol>
+      <p>Alternativ kann auch die Regel dirsizecalc.Leer=Ja verwendet
+        werden. In diesem Fall werden die Verzeichnisse ohne Warnungen
+        gelöscht, weil sie ja nicht einmal leere Unterverzeichnisse
+        enthalten. Der Nachteil ist allerdings, dass nach dem Löschen
+        wieder neue leere Verzeichnisse entstehen und der Vorgang
+        solange wiederholt werden muss, bis keine leeren Verzeichnisse
+        mehr gefunden werden.</p>
+      <p>&nbsp;</p>
+      <p>Es empfiehlt sich in jedem Fall die Suchparameter
+        abzuspeichern, um die Suche zu einem späteren Zeitpunkt
+        komfortabel wiederholen zu können. </p>
+      <p>&nbsp;</p>
+      <h4>3.1.3. Herausfinden ob sich Kompression lohnt<a
+          name="use_cases_check_if_comression_makes_sense"></a></h4>
+      <h5>Benutzerdefinierte Spaltenansicht </h5>
+      <h5>Suchfunktion</h5>
+      <p>Das Windows-Dateisystem NTFS bietet die Möglichkeit für jede
+        Datei das Attribut "Komprimiert" zu setzen. Die Datei wird
+        komprimiert, man kann aber im Gegensatz zu Archiven genauso mit
+        den Dateien arbeiten als wären sie unkomprimiert. Warum sind
+        dann nicht alle Dateien automatisch komprimiert? Das Lesen und
+        Schreiben komprimierter Dateien dauert länger als mit
+        unkomprimierten. Aus diesem Grund sollte man möglichst nur
+        Dateien komprimieren, in die selten geschrieben wird. Viele
+        Dateien sind Archive oder Datentypen mit einem besonders hohen
+        Informationsgehalt. Diese können mit der NTFS-Kompression kaum
+        noch weiter komprimiert werden. Hier kommen die Felder
+        "Komprimierte Größe" und "Kompressionsrate" von DirSizeCalc ins
+        Spiel. Die Konfiguration erfolgt analog zu dem Anwendungsfall
+        "Größe von Dateien und Verzeichnissen automatisch anzeigen", es
+        wird jedoch noch eine Spalte mit dem Feld "Komprimierte Größe"
+        hinzugefügt. Alternativ kann man auch konkret nach Dateien
+        suchen, die nicht besonders stark komprimiert werden konnten.
+        Die Suche wird wie in "Leere Verzeichnisbäume löschen "
+        gestartet, im Reiter Plugins werden jedoch andere Regeln
+        definiert. Sie könnten beispielsweise wie folgt lauten:</p>
+      <ul>
+        <li>tc.Komprimiert = ja</li>
+        <li>tc.Verzeichnis = nein</li>
+        <li>dirsizecalc.Kompressionsrate &gt; 80</li>
+      </ul>
+      <h4>3.1.4. Herausfinden wie viele Dateien sich im einem
+        Verzeichnis befinden<a name="use_cases_files_count"></a></h4>
+      <h5>Miniaturansicht</h5>
+      <ol>
+        <li>Im Menü mit Konfigurieren/Einstellungen den
+          Konfigurationsdialog öffnen</li>
+        <li>Wähle die Seite "Miniaturansicht".</li>
+        <li>Stelle sicher, dass "Zeige benutzerdef. Felder unter den
+          Bildern" angekreuzt ist.</li>
+        <li>Gebe in das Feld darunter "Größe: " (ohne Anführungszeichen)
+          ein.</li>
+        <li>Klicke auf den Knopf "Anfügen" rechts neben dem Eingabefeld.</li>
+        <li>Wähle in dem erscheinenden Menü dirsizecalc/Dateianzahl aus.
+        </li>
+        <li>Drücke OK, um auch den Konfigurationsdialog zu schließen.</li>
+      </ol>
+      <h4>3.1.5. Herausfinden ob ein Verzeichnis Unterverzeichnisse
+        enthält<a name="use_cases_contains_subdirectories"></a></h4>
+      <h5>Tooltip</h5>
+      <ol>
+        <li>Im Menü mit Konfigurieren/Einstellungen den
+          Konfigurationsdialog öffnen</li>
+        <li>Wähle die Seite "Ansicht".</li>
+        <li>Stelle sicher, dass die Optionen "Zeige vollen Dateinamen
+          als Hilfstext falls abgeschnitten" und "Win32-artige Tipps mit
+          Dateikommentaren" aktiviert sind.</li>
+        <li>Klicke auf den Knopf "+", um einen benutzerdefinierten
+          Tooltip zu erstellen.</li>
+        <li>Es öffnet sich der Dialog "Benutzerdefinierte Felder nach
+          Dateityp". Klicke hier auf den Knopf "Hinzufügen", um einen
+          neuen Dateityp hinzuzufügen.</li>
+        <li>Es erscheint der Dialog "Dateiart angeben". Gebe hier *.*
+          ein, um alle Verzeichnisse mit einzubeziehen.</li>
+        <li>Den Dialog "Dateiart angeben" mit OK schließen. </li>
+        <li>Jetzt erscheint ein Dialog der ebenfalls mit
+          "Benutzerdefinierte Felder nach Dateityp" betitelt ist. Gebe
+          zunächst in dem Textfeld "Enthält Unterverzeichnisse: " ein
+          (ohne Anführungszeichen).</li>
+        <li>Drücke auf den Knopf "+".</li>
+        <li>Wähle im erscheinenden Menü dirsizecalc/Enthält
+          Unterverzeichnisse. In dem Textfeld sollte nun "Enthält
+          Unterverzeichnisse: [=dirsizecalc.Enthält Unterverzeichnisse]"
+          (ohne Anführungszeichen) stehen.</li>
+        <li> Schließe den Dialog "Benutzerdefinierte Felder nach
+          Dateityp" mit OK. </li>
+        <li>Schließe den Dialog "Benutzerdefinierte Felder nach
+          Dateityp" mit OK.</li>
+        <li>Schließe den Konfigurationsdialog mit OK.</li>
+      </ol>
+      <p>Das beschriebene Vorgehen kann in leicht abgewandelter Form
+        auch genutzt werden, um mit der Funktion "Farben nach Dateityp"
+        alle Verzeichnisse einzufärben, die Unterverzeichnisse
+        enthalten. In diesem Fall weist der Total Commander DirSizeCalc
+        an die Berechnung im Vordergrund durchzuführen, weshalb der
+        Total Commander während der Berechnung blockiert ist.</p>
+      <p>&nbsp;</p>
+      <h4>3.1.6. Laden der Verzeichnisgrößen für alle selektierten oder
+        aller Felder auf Knopfdruck<a
+          name="use_cases_load_fields_on_demand"></a></h4>
+      <p>Viele Nutzer wollen nicht, dass alle Felder automatisch
+        berechnet werden. Vielmehr sollen die Größen der aktuell
+        ausgewählten Verzeichnisse wissen. Mit Total Commander 7.5 ist
+        das nun möglich. Hier ein Beispiel wie dies durch Drücken einer
+        Tastenkombination erreicht werden kann.</p>
+      <ol>
+        <li>Starte das mitgelieferte Einstellungsprogramm
+          (DirSizeCalcSetting.exe).</li>
+        <li>Wählen Sie hier für das bereits voreingestellte Feld "Größe"
+          im rechts angezeigten Fenster "Feldeinstellungen bearbeiten"
+          die Option "Bei Bedarf" laden.</li>
+        <li>Klicken Sie auf OK.</li>
+        <li>Starten Sie Total Commander neu.</li>
+        <li>Erstellen Sie eine benutzerdefinierte Spaltenansicht wie im
+          Kapitel 3.1.1. beschrieben.</li>
+        <li>Wählen Sie im Menü mit Konfigurieren/Einstellungen um den
+          Konfigurationsdialog zu öffnen.</li>
+        <li>Wählen Sie nun die Seite "Diverses" an.</li>
+        <li>Wählen Sie nun die gewünschte Tastenkombination: Z.B.
+          Alt+Umschalt+Enter.</li>
+        <li>Klicken Sie auf die Schaltfläche mit dem Lupensymbol</li>
+        <li>Wählen Sie in dem angezeigten Dialog "Befehl wählen" die
+          Kategorie "Benutzerdef. Ansichten".</li>
+        <li>Wählen Sie hier cm_LoadSelOnDemandFields, um die Größe der
+          selektierten Verzeichnisse zu ermitteln oder
+          cm_LoadAllOnDemandFields, um die Größe aller angezeigten
+          Verzeichnisse zu ermitteln. </li>
+        <li>Klicken Sie auf OK, um den gewählten Befehl zu übernehmen. </li>
+        <li>Klicken Sie im Konfigurationsdialog auf die Schaltfläche mit
+          dem Häkchen.</li>
+        <li>Klicken Sie auf OK, um den Konfigurationsdialog zu
+          schließen. </li>
+        <li>Wählen Sie nun die Verzeichnisse aus, deren Größe berechnet
+          werden soll.</li>
+        <li>Drücken Sie die gewählte Tastenkombination. </li>
+      </ol>
+      <p>Einmal eingerichtet ist nur noch das Einstellen der Erstellen
+        benutzerdefinierten Spaltenansicht und die Schritte 15-16 nötig.
+        Obwohl die neuen Befehle in der Kategorie "Benutzerdef.
+        Ansichten" gelistet sind, funktionieren sie ebenso gut in der
+        Miniaturansicht. </p>
+      <h3>3.2 Zusatzinformationen für angezeigte Werte<a
+          name="additional_information"></a></h3>
+      <p>DirSizeCalc zeigt einige Tokens vor dem Berechnungsergebnis an,
+        wenn nicht der komplette Verzeichnisinhalt ermittelt werden
+        konnte. Dies kann verschiedene Ursachen haben: </p>
+      <ul>
+        <li>ZV = Zugriff verweigert. Dieser Fehler wird angezeigt, wenn
+          der aktuelle Benutzer keine ausreichenden Zugriffsrechte für
+          das Öffnen eines Verzeichnisses hat. </li>
+        <li>U = Nicht lesbarer Unicode-Name. Dieser Fehler kann
+          auftreten, wenn der Dateiname Zeichen enthält, die nicht mit
+          der in Windows eingestellten Codepage übereinstimmt und wenn
+          der Benutzer die Windows-Option zur Speicherung von kurzen
+          Dateinamen deaktiviert hat.</li>
+        <li>F = Unbekannter Fehler. Unbekannte Fehler sollten eigentlich
+          nicht auftreten. Diesen Fehler bitte an mich melden. </li>
+        <li>NG = Analysepunkt wurde nicht verfolgt. Durch die vom
+          Benutzer gewählte Option wurde verhindert dass die Dateien,
+          auf die an dem Analysepunkt verzweigt wird, mitgezählt werden.</li>
+      </ul>
+      <h3>3.3. Größenanzeige von (beinahe) leeren Verzeichnissen<a
+          name="empty_directory_display"></a></h3>
+      <p>Bei der Anzeige von Verzeichnisgrößen gibt es einige
+        Spezialfälle. Wenn ein Verzeichnis die Größe 0 hat, so kann dies
+        verschiedene Ursachen haben. Bislang musste man hierzu die
+        Felder "Leer" und "Enthält Dateien" bemühen, jetzt wird diese
+        Information direkt in dem Größenfeld angezeigt. Es werden die
+        folgenden Fälle unterschieden:</p>
+      <ul>
+        <li>Das Verzeichnis enthält nur Dateien, deren Größe jeweils 0
+          byte ist. In diesem Fall zeigt DirSizeCalc 0 als Größe an.</li>
+        <li>Das Verzeichnis enthält nur leere Unterverzeichnisse, aber
+          keine Dateien. In diesem Fall wird "Keine Dateien" angezeigt.</li>
+        <li>Das Verzeichnis ist gänzlich leer. In diesem Fall wird
+          "Leer" angezeigt.</li>
+      </ul>
+      <h3>3.4 Platzhalter<a name="placeholders"></a></h3>
+      <p>Die Berechnung von Verzeichnisinhalten kann sehr lange dauern,
+        Aus diesem Grund zeigt DirSizeCalc solange "Verz." an, bis der
+        eigentliche Wert berechnet ist. Stellt DirSizeCalc fest, dass es
+        sich bei einem Verzeichnis, um einen Analysepunkt handelt, so
+        wird für einen Bereitstellungspunkt "Bereitst.-Punkt" und für
+        einen Abzweigungspunkt "Abzw.-Punkt" angezeigt. </p>
+      <h2>4. Einstellungen<a name="settings"></a></h2>
+      <p>Mit dem mitgelieferten Einstellungs-Programm
+        (DirSizeCalcSettings.exe) lässt sich DirSizeCalc komfortabel an
+        die eigenen Bedürfnisse anpassen. Schließt man das Programm mit
+        OK, so werden die Einstellungen abgespeichert. Allerdings ist
+        ein zusätzlicher Neustart des Total Commanders notwendig, damit
+        die veränderten Einstellungen Wirkung zeigen. </p>
+      <h3>4.1. Feldeinstellungen<a name="field_settings"></a></h3>
+      <p>Mit den Feldeinstellungen kann das Verhalten der in DirSizeCalc
+        eingebauten Felder an die eigenen Bedürfnisse angepasst werden.
+        Auf dem Tab "Felder" stehen zunächst nur die vordefinierten
+        Felder zur Verfügung. Drückt man auf "Hinzufügen" kann man auch
+        eigene Felder definieren. Dies ist hilfreich, wenn man ein
+        bestimmtes Feld mit verschiedenen Verhalten nutzen möchte. Mit
+        "Löschen" kann man die benutzerdefinierten Felder wieder
+        löschen, wenn sie nicht mehr benötigt werden. </p>
+      <p>Durch einen einfachen Klick auf ein Feld in der Liste öffnet
+        sich ein Dialog mit den für dieses Feld verfügbaren
+        Einstellungen. Bitte beachten Sie, dass nicht alle Einstellungen
+        für alle Felder zur Verfügung stehen.</p>
+      <h4>4.1.1 Name<a name="field_settings_name"></a></h4>
+      <p>Bei eingebauten Feldern ist dies der Name des Feldes, bei
+        benutzerdefinierten Feldern ein vom Benutzer festgelegter Name.</p>
+      <h4>4.1.2. Feldauswahl<a name="field_settings_field_selection"></a></h4>
+      <p>Hier kann eines der Felder von DirSizeCalc gewählt werden.</p>
+      <h4>4.1.3. Ladeverhalten<a name="field_settings_loading_behavior"></a></h4>
+      <p>Diese Einstellung betrifft nur Felder in benutzerdefinierte
+        Spaltenansichten und in der Miniaturansicht. Standardmäßig
+        werden die Werte automatisch nach dem Öffnen eines Verzeichnis
+        ermittelt (Einstellung automatisch). Wenn man hier die Option
+        "Bei Bedarf laden" wählt, dann werden durch Drücken der
+        Leertaste die Werte für alle Felder des Verzeichnisses unter dem
+        Cursor ermittelt. </p>
+      <h4>4.1.4. Verhalten bei Analysepunkten<a
+          name="field_settings_reparse_point_behavior"></a></h4>
+      <p>Analysepunkte sehen aus wie normale Verzeichnisse, zeigen
+        jedoch entweder auf ein Datenträgervolumen (Einhängepunkte) oder
+        auf ein anderes Verzeichnis (Verzweigungspunkte). Standardmäßig
+        behandelt DirSizeCalc Analysepunkte wie normale Verzeichnisse.
+        Das bedeutet dass der Verzeichnisinhalt des Ziels berechnet
+        wird. Dies kann jedoch zu falschen Annahme über die
+        Verzeichnisgröße führen und die Dauer der Berechnung stark
+        erhöhen. Außerdem ist es nicht immer gewünscht Analysepunkte zu
+        folgen, weil dadurch unter Umständen Verzeichnisgrößen mehrfach
+        angezeigt werden.</p>
+      <p>DirSizeCalc bietet getrennte Optionen für Einhänge- und
+        Verzweigungspunkte an. Deaktiviert man die Optionen
+        "Einhängepunkten folgen" bzw. "Abzweigungspunkten folgen" kann
+        die Werteberechnung komplett abgeschaltet werden. Darüber steht
+        mit der Option "aber nicht in Unterverzeichnissen" die
+        Möglichkeit zur Verfügung Analysepunkte auf der angezeigten
+        Ebene wie Verzeichnisse zu behandeln, jedoch keine
+        Werteberechnung für Analysepunkte in Unterverzeichnissen
+        durchzuführen. </p>
+      <h4>4.1.5. Rekursiv<a name="field_settings_recursive"></a></h4>
+      <p>In der Standardeinstellung wird ein Verzeichnis rekursiv
+        verarbeitet. Es wird also der komplette Verzeichnisinhalt mit
+        dessen Unterverzeichnissen und wiederum den Unterverzeichnissen
+        der Unterverzeichnisse usw. in die Berechnung miteinbezogen.
+        Wird rekursiv deaktiviert, wird nur der direkte
+        Verzeichnisinhalt berücksichtigt.</p>
+      <h4>4.1.6. Werte zwischenspeichern<a
+          name="field_settings_cache_values"></a></h4>
+      <p>DirSizeCalc speichert die ermittelten Werte der Verzeichnisse
+        in einem Zwischenspeicher, damit die erneute Darstellung der
+        Verzeichnisgrößen schneller ablaufen kann. Das Zwischenspeichern
+        hat allerdings den Nachteil, dass die aktuell angezeigten
+        Verzeichnisgrößen nicht mehr aktuell sind. In diesem Fall kann
+        der Benutzer ein Neueinlesen veranlassen. Dies geschieht über
+        den Befehl "Quelle neu einlesen" im Menü Ansicht des Total
+        Commanders (Tastenkürzel: Strg+R). </p>
+      <h4>4.1.7. Berechnungslimit<a name="field_settings_limit"></a></h4>
+      <p>Wenn Sie nur ungefähre Werte benötigen und die Berechnungszeit
+        möglichst kurz sein muss sollten Sie ein Berechnungslimit
+        aktivieren. Hier können Sie die Anzahl der Dateien eingeben, die
+        für ein Verzeichnis ermittelt werden sollen. </p>
+      <p>Wenn das Limit erreicht wurde, wird die Berechnung abgebrochen
+        und "&gt;=" vor dem ermittelten Wert angezeigt. Damit wird
+        angezeigt, dass der eigentliche Werte deutlich größer sein
+        könnte. </p>
+      <h3>4.2. Einheiteneinstellungen<a name="unit_settings"></a></h3>
+      <p>Die eingebauten Einheiten unterscheiden sich in Einheit und
+        Präfix. Einheit gibt an, ob und wie die Größe in Bytes in eine
+        andere Einheit umgerechnet wird. Der Präfix gibt an, wie diese
+        Umrechnung durchgeführt wird. </p>
+      <p>Die so genannten Binärpräfixe basieren auf Zweierpotenzen. Die
+        Größenordnungen sind 2^10 =1.024 (= 1 KiB), 2^20 = 1.048.576 (=
+        1 MiB) und 2^30= 1.073.741.824 (=1 GiB).</p>
+      <p>Die SI-Präfixe basieren auf Zehnerpotenzen. Die Größenordnungen
+        unterscheiden sich jeweils um den Faktor 1000. 1.000 bytes (= 1
+        kB), 1.000.000 (1 MB), 1.000.000.000 (= 1 GB).</p>
+      <p>Viele Programme - so auch der Total Commander - rechnen mit
+        Zweierpotenzen, benutzen dafür jedoch SI-Präfixe. Diese
+        Darstellung ist falsch und wird daher in DirSizeCalc nicht
+        verwendet. </p>
+      <p>Unten finden sie eine Tabelle mit Beispielumrechnungen. Die
+        tatsächliche Darstellung hängt von den gewählten
+        Formatierungsoptionen ab. </p>
+      <p>&nbsp;</p>
+      <table frame="VOID" cols="7" rules="NONE" border="0"
+        cellspacing="0">
+        <colgroup> <col width="98"> <col width="120"> <col width="86">
+          <col width="86"> <col width="120"> <col width="86"> <col
+            width="86"> </colgroup> <thead> <tr>
+            <th>
+              <div align="right">bytes</div>
+            </th>
+            <th>
+              <div align="right">KiB</div>
+            </th>
+            <th>
+              <div align="right">MiB</div>
+            </th>
+            <th>
+              <div align="right">GiB</div>
+            </th>
+            <th>
+              <div align="right">kB</div>
+            </th>
+            <th>
+              <div align="right">MB</div>
+            </th>
+            <th>
+              <div align="right">GB</div>
+            </th>
+          </tr>
+        </thead> <tbody>
+          <tr>
+            <td sdval="0" sdnum="1031;0;#.##0" width="98" align="RIGHT"
+              height="17">0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="120"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="120"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+            <td sdval="0" sdnum="1031;0;#.##0,0" width="86"
+              align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="587" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">587</td>
+            <td sdval="0,5732421875" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,6</td>
+            <td sdval="0,000559806823730469" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,000000546686351299286" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,587" sdnum="1031;0;#.##0,0" align="RIGHT">0,6</td>
+            <td sdval="0,000587" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000000587" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000</td>
+            <td sdval="0,9765625" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,00095367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,000000931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1024" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.024</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,0009765625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="0,00000095367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1,024" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001024" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+            <td sdval="0,000001024" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="81981" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">81.981</td>
+            <td sdval="80,0595703125" sdnum="1031;0;#.##0,0"
+              align="RIGHT">80,1</td>
+            <td sdval="0,0781831741333008" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="0,0000763507559895515" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="81,981" sdnum="1031;0;#.##0,0" align="RIGHT">82,0</td>
+            <td sdval="0,081981" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+            <td sdval="0,000081981" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="101654" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">101.654</td>
+            <td sdval="99,271484375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">99,3</td>
+            <td sdval="0,0969448089599609" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="0,0000946726649999619" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="101,654" sdnum="1031;0;#.##0,0" align="RIGHT">101,7</td>
+            <td sdval="0,101654" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+            <td sdval="0,000101654" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000.000</td>
+            <td sdval="976,5625" sdnum="1031;0;#.##0,0" align="RIGHT">976,6</td>
+            <td sdval="0,95367431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">1,0</td>
+            <td sdval="0,000931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="1048576" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.048.576</td>
+            <td sdval="1024" sdnum="1031;0;#.##0,0" align="RIGHT">1.024,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,0009765625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="1048,576" sdnum="1031;0;#.##0,0" align="RIGHT">1.048,6</td>
+            <td sdval="1,048576" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="0,001048576" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="5400000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">5.400.000</td>
+            <td sdval="5273,4375" sdnum="1031;0;#.##0,0" align="RIGHT">5.273,4</td>
+            <td sdval="5,14984130859375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5,1</td>
+            <td sdval="0,00502914190292358" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,0</td>
+            <td sdval="5400" sdnum="1031;0;#.##0,0" align="RIGHT">5.400,0</td>
+            <td sdval="5,4" sdnum="1031;0;#.##0,0" align="RIGHT">5,4</td>
+            <td sdval="0,0054" sdnum="1031;0;#.##0,0" align="RIGHT">0,0</td>
+          </tr>
+          <tr>
+            <td sdval="70000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">70.000.000</td>
+            <td sdval="68359,375" sdnum="1031;0;#.##0,0" align="RIGHT">68.359,4</td>
+            <td sdval="66,7572021484375" sdnum="1031;0;#.##0,0"
+              align="RIGHT">66,8</td>
+            <td sdval="0,0651925802230835" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,1</td>
+            <td sdval="70000" sdnum="1031;0;#.##0,0" align="RIGHT">70.000,0</td>
+            <td sdval="70" sdnum="1031;0;#.##0,0" align="RIGHT">70,0</td>
+            <td sdval="0,07" sdnum="1031;0;#.##0,0" align="RIGHT">0,1</td>
+          </tr>
+          <tr>
+            <td sdval="1000000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.000.000.000</td>
+            <td sdval="976562,5" sdnum="1031;0;#.##0,0" align="RIGHT">976.562,5</td>
+            <td sdval="953,67431640625" sdnum="1031;0;#.##0,0"
+              align="RIGHT">953,7</td>
+            <td sdval="0,931322574615479" sdnum="1031;0;#.##0,0"
+              align="RIGHT">0,9</td>
+            <td sdval="1000000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000.000,0</td>
+            <td sdval="1000" sdnum="1031;0;#.##0,0" align="RIGHT">1.000,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+          </tr>
+          <tr>
+            <td sdval="1073741824" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">1.073.741.824</td>
+            <td sdval="1048576" sdnum="1031;0;#.##0,0" align="RIGHT">1.048.576,0</td>
+            <td sdval="1024" sdnum="1031;0;#.##0,0" align="RIGHT">1.024,0</td>
+            <td sdval="1" sdnum="1031;0;#.##0,0" align="RIGHT">1,0</td>
+            <td sdval="1073741,824" sdnum="1031;0;#.##0,0" align="RIGHT">1.073.741,8</td>
+            <td sdval="1073,741824" sdnum="1031;0;#.##0,0" align="RIGHT">1.073,7</td>
+            <td sdval="1,073741824" sdnum="1031;0;#.##0,0" align="RIGHT">1,1</td>
+          </tr>
+          <tr>
+            <td sdval="6250000000" sdnum="1031;0;#.##0" align="RIGHT"
+              height="17">6.250.000.000</td>
+            <td sdval="6103515,625" sdnum="1031;0;#.##0,0" align="RIGHT">6.103.515,6</td>
+            <td sdval="5960,46447753906" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5.960,5</td>
+            <td sdval="5,82076609134674" sdnum="1031;0;#.##0,0"
+              align="RIGHT">5,8</td>
+            <td sdval="6250000" sdnum="1031;0;#.##0,0" align="RIGHT">6.250.000,0</td>
+            <td sdval="6250" sdnum="1031;0;#.##0,0" align="RIGHT">6.250,0</td>
+            <td sdval="6,25" sdnum="1031;0;#.##0,0" align="RIGHT">6,3</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>&nbsp;</p>
+      <h4>4.2.1. Name<a name="unit_settings_name"></a></h4>
+      <p>Bei eingebauten Einheit ist dies der Standard-Einheitenkürzel,
+        bei benutzerdefinierten Einheiten ein vom Benutzer festgelegter
+        Name. </p>
+      <h4>4.2.2. Präfixe und Einheiten<a
+          name="unit_settings_prefixes_units"></a></h4>
+      <p>DirSizeCalc bietet dem Benutzer die Möglichkeit sehr genau
+        einzustellen, bei welcher Datei- oder Verzeichnisgröße welche
+        Einheit benutzt wird. Standardmäßig benutzen benutzerdefinierte
+        Einheiten die Einheit bytes, also keine Umrechnung. Jede andere
+        Einheit, die sie verwenden wollen, müssen sie zunächst
+        aktivieren, indem sie sie ankreuzen. Anschließend tragen sie den
+        Wert in bytes ein, ab dem Verzeichnisgrößen in dieser Einheit
+        angezeigt werden sollen. </p>
+      <p>Möchte man dass KiB die kleinste verwendete Einheit ist, so
+        muss man beim Größenfeld 0 eintragen.</p>
+      <h4>4.2.3. Formatierung<a name="unit_settings_formatting"></a></h4>
+      <p>Hier stehen verschiedene Optionen zur Verfügung, um die
+        Formatierung von Verzeichnis- und Dateigrößen anzupassen. Dies
+        umfasst die Anzahl der Nachkommastellen, Dezimal- und
+        Tausendertrennzeichen und einige mehr. </p>
+      <h4>4.2.4. Vorschau<a name="unit_settings_preview"></a></h4>
+      <p>Die Vorschau zeigt anhand repräsentativer Größen wie die
+        späteren Verzeichnisgrößen im Total Commander aussehen werden. </p>
+      <h3>4.3 Ort der Einstellungsdatei ändern<a
+          name="settings_file_location"></a></h3>
+      <p>Standardmäßig speichert DirSizeCalc seine Einstellungen im
+        gleichen Verzeichnis, in dem sich auch die Datei Wincmd.ini -
+        die Haupteinstellungsdatei des Total Commanders - befindet, ab.
+        In diesem Dialog können Sie zwischen verschiedenen Orten wählen.</p>
+      <ul>
+        <li>Gleiches Verzeichnis wie Wincmd.ini</li>
+        <li>Verzeichnis "DirSizeCalc" im Wincmd.ini-Verzeichnis</li>
+        <li>Plugin-Verzeichnis</li>
+        <li>Total Commander Stammverzeichnis</li>
+      </ul>
+      <p>Um einen neuen Ort zu wählen, bitte den gewünschten Ort aus dem
+        Auswahlfeld wählen. </p>
+      <p>Außer dem Auswahlfeld wird noch der aktuelle Pfad der
+        Einstellungsdatei und ob diese existiert und beschreibbar ist,
+        angezeigt.</p>
+      <h2>5. Oft gestellte Fragen<a name="faq"></a></h2>
+      <p><strong>Kann ich DirSizecalc verwenden, um die Größe aller
+          Ordner oder aller selektieren Ordner zu berechnen?</strong></p>
+      <p>Ab Total Commander 7.50 ist das möglich. Wie das funktioniert,
+        wird in einem <a href="#use_cases_load_fields_on_demand">Anwendungsfall</a>
+        beschrieben.</p>
+      <p>&nbsp;</p>
+      <p><strong>Ich bin in ein Verzeichnis mit vielen Dateien
+          gewechselt. Zuvor hatte ich nach einer Spalte sortiert, die
+          ein Feld von DirSizeCalc enthält. Total Commander scheint zu
+          hängen. Was soll ich tun?</strong></p>
+      <p>Total Commander wartet hier auf die Beendigung der Berechnung
+        und blockiert so die Benutzung des Programms. Ein Abbruchversuch
+        durch den Benutzer (z. B. durch Drücken von Escape) wird vom
+        Total Commander nicht beachtet und somit auch nicht an das
+        Plugin weitergeleitet. Ich habe den Autor des Total Commanders
+        gebeten, eine solche Abbruchbehandlung möglichst bald
+        einzubauen.</p>
+      <p>In der Zwischenzeit kann man sich mit der Option
+        "Berechnungslimit" behelfen, die nur einen Teil des Inhalts sehr
+        großer Verzeichnisse berücksichtigt und somit die Wartezeit
+        verkürzt.</p>
+      <p>&nbsp;</p>
+      <p><strong>Statt die Größe von Verzeichnissen in Archiven
+          anzuzeigen, wird dort 0 angezeigt. Warum geht das nicht?</strong></p>
+      <p>In diesem Fall müsste DirSizeCalc die Werte vom Total Commander
+        erhalten. Dies ist mit der aktuellen Total Commander Version
+        leider nicht möglich. Ich habe den Autor des Total Commanders
+        gebeten, diese Funktion möglichst bald einzubauen.</p>
+      <p>&nbsp;</p>
+      <p><strong>In früheren Versionen gab es Felder mit "Im
+          Hintergrund" und "Bei Bedarf". Warum sind sie nun
+          verschwunden?</strong></p>
+      <p>Die Standardeinstellung ist nun "Im Hintergrund". Wer die Werte
+        dennoch lieber "Bei Bedarf" laden möchte, kann dies auch gerne
+        weiterhin tun. Starten Sie dazu bitte das mitgelieferte
+        Konfigurationsprogramm (DirSizeCalcSettings.exe). Hier können
+        sie für jedes Feld individuell einstellen wie es geladen werden
+        soll oder ein benutzerdefiniertes Feld mit den gewünschten
+        Einstellungen anlegen. Der Grund für die Änderung war die
+        Reduzierung der Feldanzahl und vor allem die Verkürzung der
+        Feldnamen. Wenn man benutzerdefinierte Spalten definierte,
+        musste man den Titel händisch kürzen, wodurch die Information
+        zum Ladeverhalten im Spaltentitel ohnehin wegfiel. </p>
+      <h2>6. Kontakt<a name="contact"></a></h2>
+      <p>Im offiziellen Total Commander Forum habe ich ein <a
+          href="http://www.ghisler.ch/board/viewtopic.php?t=20380">Thema</a>
+        erstellt, in dem ich Fragen zu DirSizeCalc beantworte.</p>
+      <h2>7. Lizenz<a name="license"></a></h2>
+      <p>Jegliche Haftung für direkte wie indirekte Schäden wird hiermit
+        ausgeschlossen, soweit dies gesetzlich zulässig ist. Alle Rechte
+        vorbehalten. Dieser Total Commander Plugin ist urheberrechtlich
+        geschützte Freeware.</p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+ArchView - lister plugin for Total Commander
+Author © 2004-2005 Hudyakov Aleksey aka Parcan
+
+
+1. Description
+----------
+This plugin is to view variable information about archives: size, number of files, folders, size of dictionary, compression method, ration, comments, etc.
+Support archives:
+ACE, ARC (PAK), ARJ, BH - Blak Hole, BZIP2 (TAR BZIP2), CAB, CPIO, DWC, GZIP (TAR GZIP), HA, LHA (LZH), PPM, RAR, SQZ, TAR, Z, ZIP (JAR - Java ARhiver), ZOO
+
+2. Installation
+----------
+а) Unpack contents of archive in some folder (example, c:\TotalCmd\plugins\wlx\ArchView \).
+б) Connect plugin (for Total Commander 5.51 or later choose item of the menu Configuration-Options, proceed on page Edit/View, press the button "Configure internal viewer", then the button "LS-Plugins", for Total Commander 6.50 or later choose item of the menu Configuration-Options, proceed on page Plugins, press the button "Configure" for plugin of internal viewing and add ArchView in the list).
+
+Plugin it is recommended to establish by last in the list of plugins, since by default it analyzes all possible files, except for an own log-file ArchView.log, or to put settings of plugin on the maximal speed.
+
+
+3. Requirements
+----------
+- Total Commander 5.51 or later.
+- Processor 486 or later.
+-Operative memory of 8 Mb or later.
+- Windows 9x/Me/NT/2k/XP/2003.
+
+
+4. Functional
+----------
+Plugin tests input file for known types of archives. On time of testing of input file Total Commander will be inaccessible. If the file is determined, the management comes back Total Commander and the analysis of file is started in separate thread.
+
+If you want to make start of plugin maximum fast, it is necessary:
+- Disable check SFX of archives ArchivesSFX = 0 sections [Main]
+- Disable graphic display of the analysis of file ShowProgress=0 section [Window]
+- Disable creation of log-file CreateLogFile=0 section [Logfile]
+- Set priorities for archives, which you use PriorityArchives section [Archives]
+- Set check of files only on extension OnlyExtensions=1 section [Extensions]
+- Set detect-string for plugin, in file of settings Total Commander wincmd.ini section [ListerPlugins], example (N - number of plugin in the list):
+N_detect=EXT="RAR"|EXT="ACE"|EXT="ZIP"|EXT="CAB"
+detect-string can be automatically generated plugin for the current settings, for this enable parameter SetDetectString=1 section [Main]
+
+Depending on type of archive to the user the following information:
+- Unpack size files
+- Pack size files
+- Archive size
+- Number files in archive
+- Number folders in archive
+- Number chapters in archive (only ARJ)
+- Dictionary size
+- Host OS
+- Extract OS
+- Method Pack
+- Memory Size (only PPM)
+- Ratio1: size of archive concerning the unpacked size
+- Ratio2: packed size concerning the unpacked size
+- Pack version
+- Unpack version
+- Size of SFX module
+- Size of recovery record
+- Solid archive
+- Multivolume archive
+- Number of volume (only for multivolume archive)
+- Comment of archive
+- Comment of files
+- Comment of chapters (only ARJ)
+- There is a password
+- Archive is lock
+- Authentity verification
+- Date created (for ACE and ARJ)
+- Date modified (only ARJ)
+- Time created (for ACE and ARJ)
+- Time modified (only ARJ)
+- Original name (for ARJ and GZIP)
+- Magic (only TAR)
+- Time of testing
+- Time of analysis
+- All time
+
+The file of settings ArchView.ini can contain the following keys on sections:
+[Main]
+- ArchivesSFX (default 1)
+	1 - check executed files on SFX archives
+	0 - not check, not influence archives DWC and ZIP
+- SizeSFX (default 512000, i.e. 500 Kb)
+	maximal allowable size SFX module in bytes, the modules of the large sizes will be ignored, restriction on maximal length of the module 10485760, i.e. 10 Mb, not influence archives DWC and ZIP
+- FloatSize (default 0)
+	1 - show the floating size, i.e. 1000 = 0.9 Kb
+	0 - size in bytes
+- AllParametrs (default 0)
+	1 - show all possible parameters for given type of archive
+	0 - show only enabled parameters
+- InvertRatio (default 0)
+	1 - other account of compression
+	0 - usual account of compression
+- SetDetectString (default 0)
+	1 - if for plugin the not detect-string, by call it will be generated depending on the current settings
+	0 - not generate detect-string
+- Language (default language in the program)
+	name of file of translation place in folder Language of the catalogue plugin without extension
+[Window]
+- SaveLastTab (default 1)
+	1 - save last open tab
+	0 - not save
+- LastTabNumber (default 0)
+	number of last open tab
+- SaveWindowSize (default 1)
+	1 - save the size of window
+	0 - not save
+- WidthWindow, HeightWindow (default 0)
+	width and height of window
+- ShowCommentOnTabInfo (default 0)
+	1 - show comment of archive on tab Info
+	0 - not show
+- ShowTabComment (default 1)
+	1 - show tab Comment, if it is necessary
+	0 - not show
+- ShowTabAbout (default 1)
+	1 - show tab About
+	0 - not show
+- ShowProgress (default 1)
+	1 - graphically display progress the analysis of file
+	0 - not display
+- ShowLeftRatio (default 1)
+	1 - graphically display compression concerning the size of archive
+	0 - not display
+- ShowRightRatio (default 1)
+	1 - graphically display compression concerning the packed size of files
+	0 - not display
+- FontSize (default 12)
+	size of font is limited from 6 up to 34
+[Parameters]
+- UnpackSizeFiles, PackSizeFiles, ArchiveSize, NumberFiles, NumberFolders, NumberChapters, DictionarySize, HostOS, ExtractOS, MethodPack, MemorySize, RatioArchiveSize, RatioPackFileSize, PackVersion, UnpackVersion, SfxModule, RecoveryRecord, Solid, MultiArc, MainComment, FileComment, ChapterComment, Password, ArchiveLock, AuthVerification, TestTime, AnalyzeTime, AllTime, DateCreated, DateModified, TimeCreated, TimeModified, OriginalName, Magic (все ключи по умолчанию 1)
+	1 - show parameter on tab Info
+	0 - not show parameter
+[Logfile]
+- CreateLogFile (default 1)
+	1 - create log-file
+	0 - not create
+- DetailLogFile (default 1)
+	1 - create detailed log-file
+	0 - not detailed
+- WidthAuthorName (default 12)
+	width field author of the message for log-file in symbols
+- WidthMessage (default 40)
+	width field message for log-file in symbols
+[Archives]
+- PriorityArchives (default 13 17 1 6 3 11 9 15 2 4 5 7 8 10 12 14 16 18)
+	priority testing of file on the type of archive, is determined under number in the specified list, and numbers to archives are given in alphabetic order keys of section [Archives] file of settings ArchView.ini without the passing of keys (look bottom)
+- Ace (1), ArcPak (2), Arj (3), Bh (4), BZip2Tbz2 (5), Cab (6), Cpio (7), Dwc (8), GZipTgz (9), Ha (10), LhaLzh (11), Ppm (12), Rar (13), Sqz (14), Tar (15), Z (16), ZipJar (17), Zoo (18) (all keys default 1)
+	1 - check file on the given type of archive
+	0 - not check
+[Extensions]
+- OnlyExtensions (default 0)
+	1 - make testing file only on expansion (file only on that archive at which this expansion will be tested will meet earlier)
+	0 - test all files
+- ExtAce (default ace)
+- ExtArcPak (default arc pak)
+- ExtArj (default arj)
+- ExtBh (default bh)
+- ExtBZip2Tbz2 (default bz2, tbz2)
+- ExtCab (default cab)
+- ExtCpio (default cpio)
+- ExtDwc (default dwc)
+- ExtGZipTgz (default gz tgz)
+- ExtHa (default ha)
+- ExtLhaLzh (default lha lzh)
+- ExtPpm (default ppm)
+- ExtRar (default rar)
+- ExtSqz (default sqz)
+- ExtTar (default tar)
+- ExtZ (default z)
+- ExtZipJar (default zip jar)
+- ExtZoo (default zoo)
+	list of expansions appropriate to the given type of archive, specified through space (attention through space), file with known expansion is faster tested
+[Libraries]
+- Ace (default %COMMANDER_PATH %\unacev2.dll)
+	path to library for ACE archive (for reading the comment)
+- Rar (default %COMMANDER_PATH %\unrar.dll)
+	path to library for RAR archive (for reading the comment)
+
+5. Control
+----------
+Ctrl + Tab         - next tab
+Ctrl + Shift + Tab - previous tab
+W                  - word wrap
+
+
+6. Important
+----------
+- plugin was not checked on files by the size more than 2 Gb.
+- all keys of file settings and language file are limited on maximal length in 50 symbols.
+- itself plugin the comment are read only if they are stored in text(ARC, ARJ, ZIP/JAR), for some archives the comments can be read with use appropriate DLL (ACE, RAR), for some archives while there is no opportunity to read the comment (GZIP/TGZ, SQZ), at other archives of the comments it does not happen.
+- number folders in archive - number blocks of describing folder in structure of archive.
+- size recovery record - in plugin the size of all block of the recovery record, in the program RAR is given out the size of the pure recovery record.
+- for ARC and PAK archives not determined the password.
+- the false identification of files is possible.
+- for multivolume archives the information is given out only on a concrete volume.
+- if in volume of multivolume archive the files have a beginning in the previous volume or continuation in the following, the information on the size and compression will be erroneous.
+- for some types of multivolume archives number of volume is determined on extensions of file.
+- for ZIP archive, there are some methods of organization of volumes, more often volumes between first and last have no the identification information and are not determined, how the archives.
+- In some archives the block description of folder and block description of file zero length it is possible to distinguish only on attributes, if the attributes are not established, both blocks will be considered as files of zero length.
+- the items of authentity verification for archives RAR of the old versions and ARJ are not defined.
+- the authentity verification is not checked on correctness.
+- the check on SFX module is realized only for those archives, for which the author saw an opportunity of creation multivolume archives.
+
+
+7. Contact
+----------
+Error messages, wish, offer, expletives, translations of language files, and other you can send to the address Parcan@mail.ru
+
+
+8. Special thanks
+----------
+Roman Bataev - advice and help
+CaptainFlint - advice and help
+SCHMaster - advice and help
+Sheridan - advice and help
+ShurikSoft - advice and help
+Pavel Ageev - advice and help
+Alexandr Filipchik - advice and help Russian.lng,  Readme.rus
+Christian Ghisler - author program Total Commander
+Andrey Pyasetskiy - author site http:\\wincmd.ru
+Luis Mejia - for translation Spanish.lng
+Vico//Koby - for translation Spanish.lng
+Oscar Salinas Mora (OSM666) - for translation Spanish.lng
+xxxxx0 - for translation Czech.lng
+Igor Butskiy - for translation Ukrainian.lng
+Norbert Fiedler - for translation Deutsch.lng
+Kurt Lettmaier - for translation German.lng
+Peter Brockamp - for translation Deutsch.lng
+
+9. Copyrights
+----------
+All rights on given plugin belong to the author. The given product is absolutely free-of-charge and is distributed freely for noncommercial use. You can use it as you wish, however remember, that you do it at own risk, and the author does not carry any responsibility for probable moral or material damage caused at use of the given product.

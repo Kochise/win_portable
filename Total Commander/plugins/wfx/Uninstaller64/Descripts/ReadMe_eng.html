@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Uninstaller64 ReadMe</title>
+  
+  <style type="text/css">
+    body {
+      background-color: #eeffff;
+      font-family: serif;
+      font-size: 12pt;
+    }
+    h1 {
+      font-size: 18pt;
+      font-weight: bold;
+    }
+    h2 {
+      font-size: 16pt;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    h3 {
+      font-size: 12pt;
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+    p {
+      text-align: justify;
+    }
+    td {
+      vertical-align: top;
+    }
+    td.ini-key {
+      padding-top: 2pt;
+      font-family: monospace;
+      font-size: 10pt;
+      color: #000080;
+    }
+    code {
+      font-family: monospace;
+      font-size: 10pt;
+      color: #000080;
+    }
+    .nobr {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Uninstaller64</h1>
+<p>
+<b>Version 1.0.1</b>
+</p>
+<p>
+Plugin for Total Commander that allows to manage the list of installed applications.
+</p>
+
+<table border="0" cellpadding="0" cellspacing="2">
+  <tr><td><b>Author:</b></td><td style="width: 0.3em;"></td><td>Konstantin Vlasov, 2012</td></tr>
+  <tr><td><b>Homepage:</b></td><td style="width: 0.3em;"></td><td><a href="http://flint-inc.ru/eng/info/uninstaller64.html" target="_blank">http://flint-inc.ru/</a></td></tr>
+  <tr><td><b>E-mail:</b></td><td style="width: 0.3em;"></td><td><a href="mailto:support@flint_inc.ru?Subject=Uninstaller64">support@flint_inc.ru</a></td></tr>
+</table>
+
+<p>
+Distributed under <a href="Artistic%20License%202.0.html">Artistic License 2.0</a>.
+</p>
+
+<p>
+<b>System requirements:</b><br />
+</p>
+<ul>
+  <li>
+    <b>32-bit version:</b><br />
+    Windows 2000 and higher<br />
+    Total Commander 7.50&ndash;8.0<br />
+  </li>
+  <li>
+    <b>64-bit version:</b><br />
+    Processor with 64-bit instruction set (Intel Pentium 4, AMD Athlon 64 and higher)<br />
+    Windows XP x64 and higher<br />
+    Total Commander 8.0 x64
+  </li>
+</ul>
+
+
+<a name="description"></a><h2>Description</h2>
+<p>
+This plugin allows to view the list of installed applications directly in the Total Commander panel, view detailed information about each uninstallation entry, launch deinstallation and forcibly delete invalid entries. The plugin was developed as replacement for the <a href="http://wincmd.ru/plugring/uninstaller.html" target="_blank">UnInstaller</a> plugin which have not been updated for very long time and no longer suits the needs of modern systems, supporting neither Unicode, nor 64-bit architecture. The plugin Uninstaller64 provides the same functionality extending it according to the latest innovations both in Windows architecture and in Total Commander. It's worth noting that the current version of Unisntaller64 does not cover all of the original UnInstaller plugin's functionality, particularly, displaying detailed information about Windows hotfixes is not supported. However, even in UnIsntaller this function only works in Windows XP and older systems, so this drawback is not critical. But anyway, implementing this feature is still planned for the future versions of Unisntaller64 (and if I can I will add support for modern Windows systems as well). For the complete list of differences between both plugins please refer to the <a href="#history">Version history</a> section.
+</p>
+
+
+<a name="installation"></a><h2>Installation and Usage</h2>
+<p>
+For installing the plugin just enter its archive in Total Commander and agree to install it. If automatic installation is turned off in your TC, see instructions in the Total Commander help file. 
+</p>
+<p>
+After you installed the plugin, a new folder named <b>Uninstaller64</b> appears in the TC Network Neighborhood panel. When you enter this folder a list of installed applications is shown. Each entry contains a dummy extension looking like <code>.L00D7</code>. This extension prevents Total Commander from splitting application name in two (everything from the last dot character to the end of name is treated an extension and by default printed in the second column). Additionally, this suffix allows to avoid name conflicts when several applications with the same name are installed: the plugin will make sure that they have different extensions. Also, you can use the extension as an additional information source: the first letter of it specifies how the application is installed. If this letter is <code><b>U</b></code> the installation was performed for the current user only, and <code><b>L</b></code> means system-wide installation. In Windows x64 the system-wide 32-bit applications will be shown with the letter <code><b>W</b></code>.
+</p>
+<p>
+When you set cursor on an entry and press <code>F3</code> the Lister window is opened containing information about the uninstallation entry. You can also copy this information directly from the list. The file contents is a usual HTML document, therefore it is recommended to use additional Lister plugin like <a href="http://wincmd.ru/plugring/htmlview.html" target="_blank">HTMLView</a>. You still will be able to read all the information even without this plugin, internal Lister abilities are sufficient for that, but plugins would significantly improve the appearance.
+</p>
+<p>
+If you press <code>Alt+Enter</code> or select the <b>Properties</b> command from an entry's context menu, the Properties dialog is opened. In this dialog you can edit the main parameters of the uninstallation entry. However, if the current user does not have permissions to access the corresponding registry key for writing the dialog will have all the fields disabled. To edit them in this case you will need to restart TC with Administrator privileges.
+</p>
+<p>
+When you press <code>Enter</code> uninstallation is launched for the entry under cursor. Pressing <code>Del</code> or <code>F8</code> permanently deletes the uninstallation key from the registry. Please, be extremely careful using this function! After deleting the registry key it will be impossible to uninstall the application by the standard means.
+</p>
+
+
+<a name="configuration"></a><h2>Configuring Plugin</h2>
+<p>
+For opening the plugin Settings dialog, open the Network Neighborhood in TC, select the plugin and press <code>Alt+Enter</code> (alternatively, you can select the Properties command from the context menu). The dialog contains the following options:
+</p>
+<ul>
+  <li><b>Show hidden entries</b><br />
+    If this option is turned on the plugin also displays the entries marked as hidden. An entry is considered hidden if it does not contain a user-readable name, if it does not provide information about the uninstallation command, or if it is a system component. It is strongly recommended not to uninstall such entries.
+  </li>
+  <li><b>Show icons for hidden entries</b><br />
+    If hidden entries are shown this option controls whether they will have default TC icon for hidden files, or its own icon specified in the registry. Please note that most hidden entries are not designed for displaying in the list of installed applications and therefore they do not have any icon (in this case Uninstaller64 will display its own default icon in the form of a box and a CD).
+  </li>
+  <li><b>Show Windows hotfixes</b><br />
+    This option controls displaying of installed Windows hotfixes. At the moment, this function does not work accurately enough, and in modern Windows systems it does not work at all because of changed registry paths. Improving is planned for the future versions.
+  </li>
+  <li><b>Confirm uninstallation</b><br />
+    If this option is turned on the plugin will request confirmation each time you launch uninstallation. Since most uninstallers show similar requests themselves or allow to cancel uninstallation before attempting any actions, you may leave this option turned off.
+  </li>
+  <li><b>Confirm for hidden entries only</b><br />
+    If the previous option is turned off, you can still have confirmations on specifically for the hidden entries to make sure you don't launch them by mistake. This is recommended even more so, because hidden components are not designed to be user-controlled and therefore they often do not provide any confirmations of their own.
+  </li>
+  <li><b>Plugin settings file location</b><br />
+    The plugin can store its settings in one of the three places: its own directory, the installation path of Total Commander and directory containing the TC configuration file (usually named wincmd.ini). The location you choose should be accessible for writing for the current user, otherwise the plugin will not be able to save its settings. If you have a default TC installation it is recommended to choose wincmd.ini location. For portable configurations (when wincmd.ini is located in the TC directory) it's more preferable to keep the settings file together with the plugin to avoid littering the root TC directory.
+  </li>
+  <li><b>Language</b><br />
+    Here you can choose the plugin interface language. Please, note that this option only affects translation of dialogs and HTML information file contents. Names of the internal content data fields are translated by Total Commander automatically, according to the language selected in its own settings (of course, only if the corresponding section is present in the <code>Uninstaller64.lng</code> file).
+  </li>
+</ul>
+
+
+<a name="history"></a><h2>Version history</h2>
+
+<h3>Update for version 1.0.1 (25.06.2012):</h3>
+<ol type="1">
+  <li>Added German translation (TychoBarfy).</li>
+  <li>Added Spanish translation (Victor Emmanuel).</li>
+  <li>Added Danish translation (Peter Madsen).</li>
+  <li>Added French translation (Christophe Faure).</li>
+  <li>Added Hungarian translation (Bluestar).</li>
+</ol>
+
+<h3>Version 1.0.1 (11.06.2012):</h3>
+<ol type="1">
+  <li>Fixed: The plugin did not remove the element from list after uninstallation.</li>
+  <li>Fixed: Faulty error message after successful deleting of an entry.</li>
+  <li>Fixed: In some cases the list of installed applications was incomplete.</li>
+  <li>Added: Experimental: Now MSI entries without corresponding auxiliary registry key are also marked hidden.</li>
+</ol>
+
+<h3>Version 1.0.0 (9.06.2012):</h3>
+<p>
+This is first public release. Differences from UnInstaller 1.8.1:
+</p>
+<ol type="1">
+  <li>64-bit version is available.</li>
+  <li>Full Unicode support.</li>
+  <li>Listing of both 32- and 64-bit uninstallation entries (no matter which TC version is used).</li>
+  <li>Improved design of the HTML document with information about an uninstallation entry.</li>
+  <li>Improved method of searching icons to display in TC panel.</li>
+  <li>Options to confirm uninstallation.</li>
+  <li>Improved date/time of the application installation.</li>
+  <li>Show estimated application size also in Windows Vista/7.</li>
+  <li>Support background operations.</li>
+  <li>Content data fields with basic information about uninstallation entries.</li>
+  <li>Option where to store plugin settings.</li>
+  <li>When deinstalling applications or deleting uninstallation entries, the plugin does not change the other entries' pseudo-extensions; therefore user does not have to reread the list each time, and the cursor in TC panel does not jump to the beginning of the list.</li>
+  <li>When deleting a key, auxiliary keys are also deleted from the registry.</li>
+  <li>When opening the Properties dialog, it becomes read-only if the user does not have write access to the corresponding registry key.</li>
+  <li>[Not implemented] The HTML information dump does not show extended information about Windows hotfixes.</li>
+</ol>
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+Version 2.22
+------------
+FIXED     A problem with getting values from symbolic links has been resolved.
+
+
+Version 2.21
+------------
+FIXED     Directory cache didn't work properly in some cases.
+FIXED	  Improved handling of junction points. In many cases 'access denied' had been displayed for junction points.
+FIXED	  Language file was ignore in x64 version.	  
+
+
+Version 2.20
+------------
+
+ADDED     64 bit support
+
+
+Version 2.15
+------------
+FIXED     Supporting units in search broke file sorting --> Found a solution. However it's not recommended to use a custom unit in search that uses different units for different file sizes. This will always behave as if bytes has been chosen.
+FIXED     Sometimes displaying the prefix was possible although multiple units where selected in settings tool. 
+
+
+Version 2.14
+------------
+FIXED     cm_refresh no longer updated displayed values due an error in long file name support.
+
+
+Version 2.13
+------------
+FIXED     Search for fields didn't consider selected unit.
+FIXED     Also place all other windows in settings tool correctly when Aero is turned on in Windows Vista or 7.     
+ADDED	  Support for very long paths also for UNC paths.
+ADDED	  Support for very long paths (Up to 1023 characters, Unicode version only).
+FIXED	  Crash when trying to calculate values for paths having an unsupported length.
+FIXED     In some cases unsupported Unicode file names were not marked as such (ANSI version only).
+FIXED     When a calculation limit was set some files could remain unaccessable.
+
+
+Version 2.12
+------------
+FIXED     Correctly place settings tool window when Aero is turned on in Windows Vista or 7.
+FIXED     A bug that led to not following reparse points even when turned on.
+
+
+Version 2.12 BETA 2
+-------------------
+FIXED     File limitation option wasn't handled correctly in settings tool.
+FIXED     Plugins settings file could point to Wincmd.ini and overwrite it (settings tool).
+ADDED     Updated French and Danish language files
+
+
+Version 2.12 BETA 1
+-------------------
+CHANGED   The default for displaying a prefix for bytes unit is now disabled.   
+FIXED     Wrong language used in settings utility when using a redirected Configuration section in Wincmd.ini that starts with an environment string.
+ADDED     Support for symbolic directory links. They are treated in the same way as directory junctions.
+
+
+Version 2.11
+------------
+FIXED     Localized strings sometimes not loaded in Unicode version
+FIXED     Incorrect results in Empty, Contains Files and Contains Subdirectories fields in Unicode version
+CHANGED   Unicode version of the settings utility wasn't really Unicode. Currently not included in package.
+
+
+Version 2.10
+------------
+FIXED     Fixes in several included files, additions in the help file. 
+
+
+Version 2.10 BETA 2
+-------------------
+FIXED     Several Unicode related problems fixed.
+ADDED     Unicode version of the plugin is now in an extra file (DirSizeCalc.uwdx).
+
+
+Version 2.10 BETA 1
+-------------------
+ADDED     First version supporting Unicode.
+FIXED     Most fields didn't work anymore in Total Commander 7.5 because of a bug in DirSizeCalc.
+
+
+Version 2.01
+------------
+FIXED     Move settings location was broken.
+ADDED     New field option to limit the number of files calculated in a directory.
+FIXED     German language file contained wrong prefixes. 
+
+
+Version 2.00
+------------
+ADDED     English (readme.htm) and German (liesmich.htm) documentation
+CHANGED   Updated program description in pluginst.inf 
+ADDED     History.txt contains full English list of of changes
+
+
+Version 2.00 RC 1
+-----------------
+FIXED     String "bytes" (412) wasn't translatable.
+ADDED	    File History.txt contains the full list of changes.
+ADDED	    Icon for settings utility.
+ADDED	    Hint to inform user that a restart is required after changing settings (string 1001).
+CHANGED	  String 1000 cannot be localized. Fo this reason the message is now displayed in all available languages.
+FIXED	    Controls should be aligned accurately.
+FIXED	    Fixed a problem with calculating values in subdirectories.
+FIXED	    Tab stops and mnemonics didn't work properly in field and unit edit dialogs.
+CHANGED	  Minor language file updates (Strings 305, 307, 415, 502 and 1000 changed).
+FIXED	    Prefixes were not translatable. 
+DROPPED	  Removed "bug workaround option" completely. The size field now displays always values from archives.
+
+
+Version 2.00 BETA 11
+--------------------
+FIXED	    Dulicate field/unit names are now handled properly.
+ADDED	    Localization. Currently the language file contains an English template and a German translation.
+FIXED	    Minumum file size now displays the proper prefix depending on the chosen size display type.
+FIXED	    Custom units didn't work in the last version. 
+FIXED	    Standard units now consider potentially changed settings. 
+FIXED	    Couldn't change "show prefix" for standard units.
+DROPPED   Default field and default unit are now obsolote.
+FIXED	    Labels for empty type fields were not updated.
+ADDED	    Change location dialog.
+ADDED	    Unit preview dialog.
+
+
+Version 2.00 BETA 10
+--------------------
+ADDED	    Some settings of standard unit settings can now also be changed.
+FIXED	    Set default field and unit name if user has entered an empty string.
+FIXED     Passed-through error values are now handled correctly.
+DROPPED	  Completely removed the classic size display type. Binary is the new default.
+ADDED	    The standard units now consist of both the binary and the decimal size display types.
+DROPPED	  Removed the settings for using language default thousand and decimal separators. Language default thousand and decimal separators are now the defaults for the default unit.
+ADDED	    Support for editing unit settings.
+ADDED	    Edit field and unit dialogs are now positioned accurately.
+
+
+Version 2.00 BETA 9
+-------------------
+CHANGED	  Directory Count field now shows number of directories if the recursive option is disabled.
+FIXED	    Didn't read default unit settings if no custom unit was defined.
+FIXED	    Various crashes when adding/deleting fields in the configuration tool.
+
+
+Version 2.00 BETA 8
+-------------------
+FIXED	    Non resursive field "File Count" showed up to 2 files too much.
+FIXED	    Didn't distinguish between recursive and non-recursive fields while caching displayed same values for different fields.
+FIXED	    New unit-specific behavior of SizeDisplayType didn't work at all.
+ADDED	    Graphical configuration tool "DirSizeCalc settings".
+
+
+Version 2.00 BETA 7
+-------------------
+FIXED     UseLangDefaultThousandSeparator and UseLangDefaultDecimalSeparator only worked when defined in default unit.
+ADDED	    FollowJunctionPoints and FollowMointPoints can be set to 2 to follow reparse points but not in subdirectories.
+ADDED	    New field-specific setting UseCache (0=Off, 1=on).
+ADDED	    Allow caching for fields where Recursive was set to 0.
+ADDED	    There is now a new section called "Default_FieldConfig" which can be used to change the behavior of the standard fields. It also serves as a template for custom fields.
+CHANGED   There are no longer "on demand" fields by default. All standard fields are background fields. By changing the default field settings they can be changed to "on demand" fields at once. If you need "on demand" and "background" variants of one fields you need to create a custom field. The new field names are shorter but of course all existing field definitions must be updated by the user.
+CHANGED	  Some tokens in the language file have been changed. F changed to NF which stands for "not followed". D changed to AD which stands for "access denied".
+FIXED	    Compressed file size showed invalid values for some inaccesible files (for example pagefile.sys). 
+FIXED	    Now 100.0 is displayed in the compression ratio field if compressed file size couldn't be retrieved because of inaccesible files.
+CHANGED   SizeDisplayType is no longer a global setting. It can be changed in the "Default_CustomUnitConfig" section. If the user has chosen 1 (binary or 2 (decimal) it can be overridden in a custom unit to allow decimal and binary calculation side by side.
+ADDED	    WantPrefix (0=off, 1=on) can be sued to disable displaying of unit prefixes if. Will only be considered if other the unit settings make sure that only one size dimension is displayed. This could be for example AllowedUnits=4 and MinFileSizeK=0.
+ADDED	    Standard fields can now be customized. The settings are stored just like custom field section. The section name have a FieldConfig prefix which is followed by the standard field name. A valid section name is "FieldConfig_Size". This is always the English name not the translated.
+DROPPED	  Default ini file is no longer included.
+
+
+Version 2.00 BETA 6
+-------------------
+FIXED     "Contains files" showed general error although "access denied" was the problem.
+FIXED	    Zero or nothing was displayed for very small values.
+FIXED	    "Minimal file size" unit settings now really work as "at least as big" instead of "bigger than".
+FIXED	    Plug-in is now able to consider user changes in the [eng] section even when using the internal English language file.
+ADDED	    Custom fields. Several options are now field-specific so you can use two different behaviors at once.
+DROPPED   Old Reparse point handling options.
+CHANGED   Simplified and improved options for "not following reparse points". Setting is now field-specific and can be just on or off. The default for both options is enabled.
+ADDED	    Added new unit options UseLangDefaultThousandSeparator and UseLangDefaultDecimalSeparator. Both option overrule their equivalent custom setting options.
+ADDED	    New field-specific option "CalcMode". This can be either "background" or "on demand".
+ADDED	    New field-specific option "Recursive" (enabled by default).
+FIXED	    Made plug-in more responsive when using more than one field at once.
+
+
+Version 2.00 BETA 5
+-------------------
+FIXED	    Interrupting ongoing calculations didn't work properly.
+FIXED	    No values were calculated if the first field for a file was "Directory Count".
+FIXED	    Passing through values didn't work even if PassThroughValues was set to 1.
+ADDED	    Caching directory values.
+ADDED	    cm_Refresh (default hotkey Ctrl+R) can be used to clear all cached values für all subdirectories below the currently displayed directory. 
+          Doesn't work in the current version of Total Commander (7.02a). You currently have to reenter the current directory to see the recalculated values.
+
+
+Version 2.00 BETA 4
+-------------------
+FIXED     Options in [General] section weren't added to default ini file.
+FIXED     In some cases directories could no longer be deleted if the field "Empty" or "Contains Subdirectories" were used.
+FIXED     Some fields didn't display a thousand separator.
+FIXED     Not following reparse point didn't show "F" when reparse points was in a subdirectory.
+CHANGED   German translation: Changed "Gepackte Größe" into "Komprimierte Größe".
+FIXED     The field "Contains files" didn't work at all.
+FIXED     Wrong string used for not following reparse points.
+CHANGED   Size display type (class, binary or decimal) is used for all size field units not just for user-defined fields.
+CHANGED   Renamed default units to drop support for auto-generated TC units and to reflect size display types.
+FIXED     Size display type was always classic.
+CHANGED   Removed custom units from default ini file (name conflicts).
+FIXED     Various fixes in the language file.
+
+
+Version 2.00 BETA 3
+-------------------
+ADDED     The new option "PassThroughValues" can be set in the [General] section in DirSizecalc.ini to enable or disable display of values on FTP servers, in filesystem plug-ins and in archives. The default value is 0 (disabled). Setting it to 1 will enable displaying of values in the special locations but also lead to sort problems in the size fields. This behavior is caused by TC and hopefully will be changed one day. To apply this setting you have to reinstall the plug-in.
+ADDED	    Now display "Empty" or "No files" in the size fields if the directory is empty or contains no files instead of 0.
+CHANGED   The whole error handling in directory calculation has been changed. The plug-in works much greedier than in the previous version. DirSizeCalc tries to get as many file size information as possible. This also includes special prefixes which are displayed before the value.
+CHANGED   Many strings have been shortened. 
+
+Version 2.00 BETA 2
+-------------------
+ADDED	    DirSizeCalc now supports displaying the size of files on FTP servers, in filesystem plug-ins and in archives. Total Commander 7 is required to make this work. Currently there is no support for directory sizes and placeholders.
+FIXED	    Size in directories which contained Unicode characters wasn't displayed correctly. However displaying the filesize in directories which doesn't have a short filename is not supported.
+ADDED	    Added field "Compression ratio". This field is the ratio between file size and compressed file size.
+ADDED	    Directory placeholder and unit names can now be translated/customized.
+ADDED	    Directory placeholder now distinguish between junction points and mount points.
+ADDED	    File size units can now confirm to the ISO-Standards. The user can choose between 1000 bytes = 1 Kilobyte, 1024 bytes = 1 Kibibyte and 1024 bytes = 1 Kilobyte. The units bkM, bkM2, bkMG and bkMG2 are generated by TC and for this reason always display 1024 bytes = 1 Kilobyte.
+ADDED	    New system for defining which unit is used for a file size dimension. The user can now define a minimum file size where the certain unit is used. Example: Setting the value for the minimal gigabyte unit to 2.000.000.000 will display all files larger 2.000.000.000 bytes as gigabytes. 
+
+
+Version 1.21
+------------
+FIXED	    Executing file operations on directories wasn't possible in some cases after the field "Contains files" has been used. 
+FIXED	    Units had been shown for fields which are not able to display file sizes. 
+
+
+Version 1.20
+------------
+ADDED	    All fields can now be calculated in background or on demand. 
+ADDED	    No more limits on formatting and sorting user-defined units enabled through Plugin interface enhancements. 
+ADDED	    Plugin interface enhancements are now used to enable displaying of placeholders. They are shown until the calculation has been completed. 
+ADDED	    New fields "Contains files" and "Contains Subdirectories" added. 
+
+
+Version 1.13
+------------
+FIXED	    Settings were not read in some cases. 
+
+
+Version 1.12  
+------------
+FIXED	    Default settings file is now created during plugin installation. 
+ADDED	    Russian translation added. 
+FIXED	    Fixed faulty language file. 
+
+
+Version 1.11
+------------
+FIXED	    Fixed faulty installation file. 
+
+
+Version 1.10
+------------
+ADDED	    Settings are now managed in "DirSizeCalc.ini". 
+ADDED	    A new field "Empty" has been added. It indicates if a directory contains files or subdirectories. 
+ADDED	    User-defined units added. Requires Total Commander 6.52 or higher. 
+ADDED	    Mount Points and Junctions can now be excluded from calculation optionally. 
+FIXED	    The size of files which where opened exclusively had not been calculated. 
+
+
+Version 1.07
+------------
+CHANGED	  Plugin name changed to DirSizeCalc. 
+ADDED	    New fields "Directory Count" and "File Count" added. Both fields can be calculated in background or on demand. 
+ADDED	    All fields are now always sorted descending first. 
+FIXED	    A bug has been fixed which stopped dir size calculation on a directory change only for the first column when multiple DirSizeCalc columns are displayed. 
+
+
+Version 1.06
+------------
+ADDED	    Added support for the plugin function ContentStopGetValue. 
+
+
+Version 1.05
+------------
+FIXED	    Error in installation file "pluginst.inf" fixed. 
+
+
+Version 1.04
+------------
+ADDED     Support for units added. 
+ADDED     Plugin installation file "pluginst.inf" added. 
+ADDED 	  Support for compressed file size added (requires Windows NT/2000/XP). 
+CHANGED	  Plugin name changed to DirSize. 
+
+
+Version 1.03
+------------
+ADDED	    Support for "on demand" displaying added. 
+
+
+Version 1.02
+------------
+ADDED	    foreground directory size calculation. 
+ADDED	    German language file. 
+CHANGED	  Decreased file size. 
+
+
+Version 1.01
+------------
+FIXED     Size for currently used files wasn't displayed. 
+CHANGED   Increased speed. 
+
+Version 1.00
+------------
+Initial release

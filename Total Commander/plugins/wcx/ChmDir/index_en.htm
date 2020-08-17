@@ -1,0 +1,408 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>CHMDir Plugin (WCX/WDX) for Total Commander</title>
+<link rel="stylesheet" type="text/css" href="chmdir.css">
+</head>
+
+<body bgcolor="White">
+<h1>CHMDir Plugin (WCX/WDX) for Total Commander</h1>
+
+<p align="right" style="font-size: smaller;"><a href="index_ru.htm">Switch to Russian</a></p>
+
+Version 0.40 beta 7 for 32 bit version of <a href="http://www.ghisler.com/">Total Commander</a>.
+Use it at your own responsibility. If you upgrade plugin,
+see section <a href="#history">History</a>.
+
+<p>Tested with Total Commander 6.51&ndash;6.53 under w2k rus.
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY and NO SUPPORT.
+
+<p>Comments may be send to <a href="#author">author</a>.
+
+<p>CHMlib, CHMtools and LZX Compression library are Copyright 2001 Matthew T. Russotto &mdash;
+<a href="http://www.speakeasy.org/~russotto/">http://www.speakeasy.org/~russotto/</a>.
+
+<p>CHMDir uses info from Paul Wise aka pabs &mdash;
+<a href="http://pabs.zip.to">http://pabs.zip.to</a>
+and small piece of code from
+<a href="http://www.info-zip.org/pub/infozip/">Info-ZIP</a> (file <code>match.c</code>).
+
+<P>
+<hr>
+<ul>
+	<li><a href="#about">About plugin</a>
+	<li><a href="#files">Files in archive</a>
+	<li><a href="#install_wcx">How to install plugin</a>
+	<ul>
+		<li><a href="#install_wcx">As packer plugin (WCX)</a>
+		<li><a href="#install_wdx">As content plugin (WDX)</a>
+	</ul>
+	<li><a href="#ini_file">CHMDir.ini &mdash; settings</a>
+	<li><a href="#CHMView">CHMView.exe</a>
+	<LI><A HREF="#wtedit">wtedit.exe and wtdump.exe</A>
+	<li><a href="#UnCHMw">UnCHMw.exe</a>
+	<li><a href="#new">New versions</a>
+	<li><a href="#make">How to make</a>
+	<li><a href="#author">Author</a>
+	<li><a href="#history">History</a>
+</ul>
+
+<hr>
+
+<a name="about"></a>
+<H2>About plugin</H2>
+
+<p>CHMDir adds support of
+<a href="http://www.speakeasy.org/~russotto/">ITSS/CHM</a>
+file format (compiled HTML) to Total Commander,
+allows you to extract, search, pack, delete files in CHM.
+
+<p>Also it add unpacking of HtmlHelp 2 files (<code>.Hx?</code>).
+
+<p>Also it can used as content plugin, showing info about title of help window,
+maker of CHM and time of compilation.
+
+<p>Presence of Internet Explorer in system is not necessary.
+
+<blockquote>
+<strong>NB</strong>: Plugin can not make full-fledged HtmlHelp files (contents, index, etc.)
+but it can make CHM-file even if there is one '.htm' or '.html' file in files
+to be packed. For example, repack this archive to CHM-file. To make
+full-fledged HtmlHelp use
+<A HREF="http://msdn.microsoft.com/workshop/author/htmlhelp/">HTML Help Workshop</A>
+or <a href="http://yarix.by.ru/">htm2chm</a>.
+</blockquote>
+
+<p>If there is not file '#SYSTEM' in root of packed files list it will be created
+and if there is not some '.hhc' file in packed list, 'stub.hhc' will be
+created with all files and directories from packing list using &lt;title&gt; of topic. Its
+order depends on sort type of TC. Default topic will be (what comes first, case
+insensitive): see '<CODE>default_topics</CODE>' in <a href="#ini_file">CHMDir.ini</a>.
+If there is not such file, first found
+'.htm' or '.html' in packed list will be used.
+
+<p>For keeping structure of file before repacking it must be unpacked with turned
+on option 'Show special CHM files' in <a href="#ini_file">CHMDir.ini</a>
+to keep files such as '#SYSTEM' (there is
+information about title of help window and contents file in this file).
+
+
+<a name="files"></a>
+<H2>Files in archive</H2>
+
+<table cellpadding="0" cellspacing="0" align="center">
+	<tr><td><A HREF="File_Id.diz">File_Id.diz</A></td>  <td width="20"></td>
+		<td>short description of package</td></tr>
+	<tr><td><strong>index_en.htm</strong></td>          <td></td>
+		<td>description of package on English (you are now reading)</td></tr>
+	<tr><td><A HREF="index_ru.htm">index_ru.htm</A></td><td></td>
+		<td>same as above on Russian</td></tr>
+    <tr><td><A HREF="chmdir.css">chmdir.css</A></td><td></td>
+        <td>Style sheet for <SAMP>index_*.htm</SAMP></td></tr>
+	<tr><td><A HREF="pluginst.inf">pluginst.inf</A></td><td></td>
+		<td>INF-file for automatically install the plugin</td></tr>
+	<tr><td><A HREF="CHMDir.wcx">CHMDir.wcx</A></td>    <td></td>
+		<td>plugin module</td></tr>
+	<tr><td><A HREF="sample.ini">sample.ini</A></td>    <td></td>
+		<td>sample INI-file for plugin</td></tr>
+    <tr><td><A HREF="chmdir.lng">chmdir.lng</A></td>    <td></td>
+        <td>language file for WDX</td></tr>
+	<tr><td><A HREF="CHMView.exe">CHMView.exe</A></td>  <td></td>
+		<td>program for viewing CHM files without <samp>hh.exe</samp></td></tr>
+	<tr><td><A HREF="UnCHMw.exe">UnCHMw.exe</A></td>    <td></td>
+		<td>command line utility for unpacking CHM files</td></tr>
+	<tr><td><a href="wtdump.exe">wtdump.exe</a></td>    <td></td>
+		<td>program for dumping properties of HtmlHelp window</td></tr>
+	<tr><td><a href="wtedit.exe">wtedit.exe</a></td>    <td></td>
+		<td>program for editing HtmlHelp window properties</td></tr>
+    <tr><td><a href="descript.ion">descript.ion</a></td>    <td></td>
+        <td>file descriptions</td></tr>
+</table>
+
+
+<a name="install_wcx"></a>
+<h2>How to install plugin as WCX</h2>
+
+<ol>
+	<li>Unzip the <code>chmdir.wcx</code> to the Total Commander directory (usually
+		<code>c:\wincmd</code> or <code>c:\totalcmd</code>) or directory as you like
+	<li>In Total Commander, choose <em>Configuration/Options</em> and open <em>Plugins</em> page
+    <li>Click <em>Configure</em> in 'Packer plugins (.WCX)'
+	<li>Type '<code>chm</code>' as the extension
+    <li>Click <em>New type</em>, and select the unpacked <code>chmdir.wcx</code>
+	<li>Click <em>OK</em>
+	<li>Repeat steps 4-6 for .hxs extension
+	<li>If its necessary make file <a href="#ini_file">CHMDir.ini</a> (or copy
+		from <code>sample.ini</code>) in dir same as plugin
+</ol>
+
+<blockquote>
+<strong>NB</strong>: File icons and default action (on &lt;Enter&gt;) will not change. To enter into
+archive use &lt;Ctrl-PgDn&gt;. If you want to change this to opening archive with
+&lt;Enter&gt; and showing archive icon:
+
+<ol>
+    <li>Choose <EM>Configuration/Options...</EM> then open page <EM>Packer</EM> and press
+        button <em>Configure</em> in 'Packer plugins (.WCX)'
+    <li>In drop-down list 'All file with...' choose '<SAMP>chm</SAMP>'
+	<li>In field 'Associate with:' change number <em>NNN</em> before comma
+		to <em>MMM</em>, where <em>MMM</em>=<em>NNN</em>-256
+</ol>
+
+<p>or
+
+<ol>
+	<li>Close Total Commander
+    <li>Open Total Commander's INI-file (usually <SAMP>&lt;windows_dir&gt;\WINCMD.INI</SAMP>) with
+		text editor
+    <li>In section <SAMP>[PackerPlugins]</SAMP> change <EM>NNN</EM> in line looks like
+        '<SAMP>chm=NNN,C:\wincmd\chmdir.wcx</SAMP>' to <EM>MMM</EM>, where <EM>MMM</EM>=<EM>NNN</EM>-256.
+</ol>
+
+<p>To view CHM-file use one of:
+
+<ul>
+    <li>command <SAMP>hh &lt;chm-file&gt;</SAMP>,
+	<li>keystroke &lt;Ctrl-Enter&gt; to insert file name into command line and &lt;Enter&gt;
+		to open file,
+	<li>right click on file name and choose default action (bolded).
+</ul>
+</blockquote>
+
+<a name="install_wdx"></a>
+<h2>How to install plugin as WDX</h2>
+<ol>
+    <li>Choose <EM>Configuration/Options...</EM>
+    <li>Choose page <EM>Plugins</EM> and in group 'Content plugins (.WDX)' press button <EM>Configure</EM>.
+    <li>In the 'Content plugins' dialog box press <EM>Add</EM> and type '<SAMP>*.wcx</SAMP>' in 'File name' field.
+    <li>Locate unpacked CHMDir.wcx and press <EM>Open</EM>.
+</ol>
+
+
+<a name="ini_file"></a>
+<h2>CHMDir.ini</h2>
+
+<p>At startup plugin looks up the file CHMDir.ini in its directory &mdash; standard
+Windows <em>ini</em>-file.
+
+<P>See descriptions in <A HREF="sample.ini">sample.ini</A>.
+
+<p>In order to changes start to work you must restart TC or unload all plugins
+and change to another archive (TC remember file list of last archive).
+
+
+<h2>Known bugs and limitations</h2>
+<ul>
+	<li>Plugin uses CHMTools that deals with version 3 only.
+	<li>Plugin uses RAM to hold file names in CHM and for unpacking buffer. So if
+		you have 1000 files in file with 100 bytes average file name length then you
+		need more ~0.5 Mb RAM available.
+	<li>Plugin will not work with files &gt;= 2 Gb.
+</ul>
+
+
+<a name="CHMView"></a>
+<h2>CHMView.exe</h2>
+
+<p>This program is intended for viewing CHM files without hh.exe. It needs one
+parameter &mdash; CHM file name. It will unpack all files in CHM into temp dir and
+will try to start default HTML viewer.
+
+
+<a name="wtedit"></a>
+<a name="wtdump"></a>
+<h2>wtedit.exe and wtdump.exe</h2>
+
+<P><STRONG>wtdump.exe</STRONG> dumps properties of HtmlHelp window (or default properties
+in current dir) and sample <em>HHP</em> (HtmlHelp project file) that can be used to create such HtmlHelp.
+
+<P><STRONG>wtedit.exe</STRONG> allows you to edit HtmlHelp window properties of
+file that used as program parameter.
+
+<P>Both programs need <code>CHMDir.wcx</code> in its directory or in directory
+pointed by environment variable '<code>PATH</code>'.
+
+<P>For more information see
+<A HREF="http://msdn.microsoft.com/workshop/author/htmlhelp/">HTML Help Web page</A>
+or <EM>Help for HTML Help</EM> from <EM>HTML Help Workshop</EM>.
+
+
+<a name="UnCHMw"></a>
+<h2>UnCHMw.exe</h2>
+
+<p>This program is stand alone command line version of CHM unpacker.
+
+<p><STRONG>UnCHMw.exe</STRONG> uses settings from <a href="#ini_file">CHMDir.ini</a>.
+
+
+<a name="new"></a>
+<h2>New versions</h2>
+
+<p>See: <a href="http://www.totalcmd.net/plugring/chmdir.html">http://www.totalcmd.net/plugring/chmdir.html</a>
+
+
+<a name="make"></a>
+<h2>How to make</h2>
+
+<p>Edit <code>Makefile</code>, make dir with name "obj" and run 'Nmake.exe'.
+
+
+<a name="author"></a>
+<h2>Author</h2>
+
+<p>Oleg Bondar aka Hobo (<code>hobo-mts at mail pnt ru</code>).
+Change 'at' to '@' and 'pt' to '.'.
+
+<p>Subject of message must contain word '<samp>CHMDir</samp>'.
+
+
+<a name="history"></a>
+<h2>History</h2>
+
+<h3>0.40 beta 7 (2005/??/??)</h3>
+<ul>
+	<LI>Added HtmlHelp window properties.
+	<LI>CHMView: added progress dialogs.
+	<li>Added wtdump.exe and wtedit.exe.
+	<LI>Added UnCHMw.exe.
+    <LI>Added charset conversion for &lt;TITLE&gt; tag.
+    <LI>Added charset / language field into content plugin.
+</ul>
+
+<h3>0.40 beta 6 (2005/06/23)</h3>
+<ul>
+	<li>Added button to add default topic file name.
+	<li>Changed 'LZX window size code' to 'LZX window size' in configuration dialog.
+	<li>Added packing with IStorage COM interface.
+	<li>Added functionality of content plugin (WDX).
+</ul>
+
+<h3>0.40 beta 5:</h3>
+<ul>
+	<li>Added unpacking of HxS files.
+	<li>Expanded stub.hhc.
+	<li>Added INI-file parameter title_stub.
+</ul>
+
+<h3>0.40 beta 4:</h3>
+<ul>
+	<li>Fixed an unfortunate misprint in file header (structure size) that steeled
+		through inadvertence.
+	<li>Added option to set low priority when packing.
+</ul>
+
+<h3>0.40 beta 3:</h3>
+<ul>
+	<li>Fixed: CHMView was not unpacking CHMs with empty dirs containing subdirs only.
+	<li>Clicking on button 'Store files by ext.' enables or disables next edit
+		control.
+	<li>Now '=.gif' unpacked as '=.gif', not as	'_.gif'.
+	<li>Changed sorting of directory listing of CHM.
+</ul>
+
+<h3>0.40 beta 2:</h3>
+<ul>
+	<li>Code for made listing rewritten.
+	<li>Added packer parameters in INI-file.
+	<li>Added file sorting by extension before packing and calculation of listing
+		chunk size.
+	<li>Added generation of HtmlHelp files.
+	<li>Added INI-file parameters: calc_chunk_size, its_use_store,
+		default_topics, sort_dir_by_ext.
+	<li>Added dialog to configure plugin.
+	<li>Added index.htm in distribution.
+</ul>
+
+<h3>0.40 beta 1:</h3>
+<ul>
+	<li>Code for listing and unpacking fully rewritten &mdash; improved memory usage
+		and performance.
+	<li>Added caching of CHM data.
+	<li>Added functions PackFiles(), DeleteFiles() and ConfigurePacker().
+		GetPackerCaps() now returns 479. If you update plugin you need to
+		reconfigure of plugin (see above).
+</ul>
+
+<h3>0.30a:</h3>
+<ul>
+	<li>Added function PackSetDefaultParams() (stub and in source only &mdash; plugin
+		makes initialization when DllMain() is called&nbsp;&mdash; wrong way but user does
+		not know what INI file is used, and plugin can not inform him about it &mdash;
+		all settings made manually by editing INI file)
+</ul>
+
+<h3>0.30:</h3>
+<ul>
+	<li>Added function CanYouHandleThisFile() for opening files other then .chm.
+		GetPackerCaps() now returns 452.
+	<li>Added CHMView.exe into distribution
+</ul>
+
+<h3>0.29 beta:</h3>
+<ul>
+	<li>Added INI-file
+	<li>Memory requirements significantly decreased
+	<li>Removed make-files for Watcom and lcc-Win32
+</ul>
+
+<h3>0.28 beta:</h3>
+<ul>
+	<li>Files with name started with '#' and '$' removed from listing
+	<li>Char '_' used as default for unmappable characters in
+		WideCharToMultiByte(). Not tested because I have not that files.
+	<li>Yet another kludge for unpacking files made by htm2chm
+</ul>
+
+<h3>0.27 beta:</h3>
+<ul>
+	<li>Added processing of returned result of ProcessDataProc() &mdash; 'Cancel' button
+		works.
+	<li>Fixed error that provoked crash while opening CHMs that contains lo-o-ong
+		file names.
+</ul>
+
+<h3>0.26 beta:</h3>
+<ul>
+	<li>Added decoding of file names from UTF-8.
+</ul>
+
+<h3>0.24 beta:</h3>
+<ul>
+	<li>Added info about CHMView.
+	<li>Time of archive files == time of CHM file.
+	<li>Added version info.
+</ul>
+
+<h3>0.23 beta:</h3>
+<ul>
+	<li>Return to one .WCX file &mdash; no additional DLL.
+	<li>Fixed error with memory deallocation in chmdir.
+	<li>Kludged (I hope) [error] in Matthew T. Russotto's chmlib that makes
+		access violation in Total Commander. See comment <code>'!!!&nbsp;Hobo'</code>.
+	<li>Added READMEru.txt &mdash; on Russian.
+	<li>Archive name changed to wcx_chmdirX.XX.zip.
+</ul>
+
+<h3>0.22 beta:</h3>
+<ul>
+	<li>Next try to make stable release. Matthew T. Russotto's chmlib moved to
+		separate DLL and this DLL loaded and unloaded every processed file for
+		decrease memory usage.
+	<p>Failed. Known bug #1 still present. :-(
+
+</ul>
+
+<h3>0.21 beta:</h3>
+<ul>
+	<li>Added function GetPackerCaps().
+</ul>
+
+<h3>0.20 beta:</h3>
+<ul>
+	<li>First public release.
+</ul>
+
+</body>
+</html>

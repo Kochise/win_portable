@@ -1,0 +1,114 @@
+Virtual Disk, Version 1.3.3 Final
+  FS-plugin for Total Commander that allows to mount disk images as additional virtual
+  drives in system.
+
+Author of the plugin: Konstantin Vlasov, 2012
+Homepage: http://flint-inc.ru/
+E-mail:   support@flint_inc.ru
+
+The driver is based on the open-source project FileDisk by Bo Branten, 2009
+Homepage: http://www.acc.umu.se/~bosse/
+E-mail:   bosse@acc.umu.se
+
+
+    /============================\
+    |      Version history:      |
+    \============================/
+
+Version 1.3.3 Final (build 5300):
+  1. Driver is now signed by the Christian Ghisler's digital signature, so that
+     it can now work in Windows Vista/7 x64 without turning off the signature
+     checks.
+  2. Fixed security issue: Using the driver, users could access files which were
+     otherwise inaccessible for them (fixed only for WinXP or newer!).
+  3. Mounting of compressed and encrypted images is forbidden. Reason: a bug in
+     Windows can lead to dead lock.
+  4. Added Traditional Chinese interface translation (Sheree Chen).
+  5. In the image properties dialog focus is set on the Mount/Unmount button by
+     default.
+  6. Implemented a new command-line tool vd_filedisk.exe for mounting and
+     unmounting images independently from TC (available separately).
+  7. Source codes for the driver and vd_filedisk.exe are published under GPL.
+  8. Added 64-bit version.
+
+Version 1.3.2 (driver only):
+  1. Driver was updated according to the changes in original FileDisk driver
+     version 1.17.0.0:
+    à) fixed problem with unrecognized ISO images with Joliet file system under
+       Windows Vista/7.
+
+Version 1.31 Final (build 4300):
+  1. Driver was updated according to the changes in original FileDisk driver
+     version 1.15.0.0:
+    a) added support for CD/DVD images in UDF format;
+    b) improved support for mounting images over network;
+    c) minor fixes and improvements.
+
+Version 1.30 Final (build 3001):
+  1. Slightly improved the version numeration system.
+  2. Added the messages describing some of the errors in more details.
+  3. The FAQ section was added into the ReadMe files.
+  4. Added Hungarian interface translation (Robert Bukovinszki).
+  5. Added full Italian translation (Paolo Gai).
+  6. Added Czech interface translation (Martin Ruzicka).
+  7. Added Turkish translation for the interface and ReadMe file (Atila Ozkok).
+
+Version 1.30 beta 3:
+  1. Automatic remount of disks after reboot is implemented.
+  2. Bug fixed which caused the images unmounted because of a reboot to look still mounted.
+  3. Added 64-bit drivers: one tested for Windows x64 and one experimental for Windows 64-bit
+     (Intel Itanium).
+  4. Two German language files were added (by Frank Bultge and Peter Brockamp).
+  5. Several small fixes.
+
+Version 1.30 beta 2:
+  1. The driver is redesigned so that the plugin does not need administrator priviledges to work.
+     They are needed for installing the driver only.
+  2. Besides the new driver installation methode (by means of INF-file) the old one (which needs
+     copying of the driver file and importing the data into the registry) has been added, because
+     the new methode did not suit to some systems.
+  3. The NRG-files are now added into the plugin in CD/DVD mode by default, as this format in some
+     cases can be mounted and recognized by the system correctly.
+  4. For the experiment, the 64-bit version of the driver VD_FileDisk has been added.
+
+Version 1.30 beta 1:
+  1. Added floppy drive emulation mode.
+  2. The driver was renamed from FileDisk into VD_FileDisk so that there were no conflitcs with other
+     programs using the similar driver (for example WinImage 7.0+).
+  3. Driver installation is made simplier (by means of INF-file).
+  4. Added Polish interface translation (Pawel Wawrzyszko).
+  5. Added Ukranian interface translation (Butsky Igor).
+
+Version 1.26:
+  1. Fixed bug when the name of "Mounting mode" group box was not translated.
+  2. Changed font from MS Sans Serif to "virtual" MS Shell Dlg so that it could be easily changed
+     on every system.
+  3. Added French (Claude Charries) and Spanish (Luis Mejia) interface translations.
+
+Version 1.25:
+  1. The plugin now supports LNG-files for changing its language. The language can be chosen
+     by calling the "About" box ("Properties" item in the context menu, or pressing Alt+Enter
+     on the "Virtual Disks") and pressing the "Settings" button. There are two languages in
+     the plugin package: Russian and English, the second is default.
+  2. In the dialogs the hotkeys were added for quick moving between controls (underlined
+     letters).
+  3. The program Convert.exe is removed from the package as it was needed for very old version
+     only.
+  4. Added file pluginst.inf for automatic install in Total Commander 6.5+.
+
+Version 1.20:
+  1. In this version the updated Bo Brenten's driver filedisk.sys is used (1.0.0.13). The
+     previous version used in the plugin had a bug which involved memory leaks. These leaks caused
+     the system work more and more slowly till it completely hangs.
+     Also, this driver works better with large CD-images (larger than 700 MB).
+
+Version 1.10:
+  1. All the code is rewritten at all. It resulted in many bug fixes, more effective work
+     with file list and better work from several copies of TC.
+  2. BIN file now behave as ISO-file because it is recognised by Windows.
+  3. Added checking of the file type on file copying.
+  4. Fixed several bugs in copiing/removing files.
+  5. It is not allowed now to remove image if it is mounted without unmounting.
+
+Version 1.00:
+  The first version. It can mount images in format ISO, BIN (in CD-mode) and IMG (in RW- and RO-modes).

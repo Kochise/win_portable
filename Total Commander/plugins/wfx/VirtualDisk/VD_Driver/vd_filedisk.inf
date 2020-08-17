@@ -1,0 +1,34 @@
+[Version]
+Signature="$Windows NT$"
+Provider=Konstantin Vlasov
+DriverVer=26/01/2011,1.3.3.5300
+; Non-Plug and Play Drivers
+Class=LegacyDriver
+ClassGuid={8ecc055d-047f-11d1-a537-0000f8753ed1}
+
+[DefaultInstall]
+CopyFiles=CopyDriver
+AddReg=AddRegistryItems
+
+[SourceDisksNames]
+1=""
+[SourceDisksFiles]
+vd_filedisk.sys=1,i386
+[SourceDisksFiles.ia64]
+vd_filedisk.sys=1,ia64
+[SourceDisksFiles.amd64]
+vd_filedisk.sys=1,amd64
+[CopyDriver]
+vd_filedisk.sys, , , 0x00001006
+[DestinationDirs]
+CopyDriver=12
+
+[AddRegistryItems]
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "ErrorControl", 0x00010003, 1
+
+; When to start the driver:
+;   At boot:  Start=1
+;   Manually: Start=3
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "Start", 0x00010003, 1
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk", "Type", 0x00010003, 1
+HKLM, "SYSTEM\CurrentControlSet\Services\VD_FileDisk\Parameters", "NumberOfDevices", 0x00010003, 4
