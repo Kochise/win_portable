@@ -1,0 +1,58 @@
+%% Begin of file `tgheros.sty'. 
+% This file belongs to the TeX Gyre collection of fonts. The work is released
+% under the GUST Font License. See the MANIFEST-TeX-Gyre-Heros.txt
+% and README-TeX-Gyre-Heros.txt files for the details.
+% For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+%% ----------------------------------------------------------------------------
+%% [EN] LaTeX2e support for Tex Gyre Heros fonts
+%% The declaration `\usepackage{tgheros}' in the LaTeX preamble
+%% will set TeX Gyre Heros as the default sans serif font for the document. 
+%%
+%% [PL] Wspomaga stosowanie w LaTeXu kroju Tex Gyre Heros
+%% Umieszczenie linijki `\usepackage{tgheros}' w preambule spowoduje
+%% ustawienie TeX Gyre Heros jako podstawowego bezszeryfowego kroju
+%% dokumenu, czyli kroju skojarzonego z poleceniem \sffamily.
+%% W dokumenach po polsku konieczne jest uaktywnienie kodowania
+%% T1, QX lub OT4 (najlepiej przy pomocy pakietu 'polski'). Np.:
+%%
+%% \usepackage{tgheros}
+%% \usepackage[T1]{polski}
+%% ----------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tgheros}
+  [2009/09/27 v1.2 TeX Gyre Heros as default sans serif family]
+
+\renewcommand{\sfdefault}{qhv}
+\renewcommand\bfdefault{b}
+
+\def\tg@scale@to@rm#1#2{%
+  \begingroup
+  \fontsize{10}{0}\usefont{\encodingdefault}{\rmdefault}{m}{n}%
+  #1%
+  \xdef\qhv@scale{%
+    \strip@pt
+    \dimexpr  1pt *
+    \@tempdima / \dimexpr#2pt\relax 
+    \relax}%
+  \PackageInfo{tgheros}{The qhv family is scaled by \qhv@scale}
+  \endgroup
+}
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{prefix=qhv@}
+\DeclareStringOption{scale}[.95]
+\define@key{tgheros}{matchlowercase}[1]{%
+  \tg@scale@to@rm{\@tempdima#1\fontdimen5\font}{5.23999}}
+\define@key{tgheros}{matchuppercase}[1]{%
+  \tg@scale@to@rm{\setbox0\hbox{XWYZH}\@tempdima#1\ht0}{7.31999}}
+\DeclareVoidOption{oldspacing}{}
+\DeclareVoidOption{condensed}{\renewcommand{\sfdefault}{qhvc}}
+\ProcessKeyvalOptions*
+
+
+\endinput
+%% 
+%% End of file `tgheros.sty'.

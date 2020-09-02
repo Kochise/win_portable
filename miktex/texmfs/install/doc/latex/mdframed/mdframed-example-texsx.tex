@@ -1,0 +1,270 @@
+
+
+\setcounter{errorcontextlines}{999}
+\documentclass[parskip=false,english,11pt,lipsum=true]{ltxmdf}
+
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows,shadings,shadows}
+\newcommand\Loadedframemethod{tikz}
+\usepackage[framemethod=\Loadedframemethod]{mdframed}
+
+\surroundwithmdframed[middlelinecolor=ltxmdfblue,middlelinewidth=1pt,%
+                      roundcorner=10pt,innertopmargin=0pt,%
+                      leftmargin=1cm,rightmargin=1cm,%
+                      innerleftmargin=-15pt,innerrightmargin=-15pt,%
+                      ignorelastdescenders,%
+                      settings={\lstset{resetmargins}},%
+                      skipbelow=\topskip,skipabove=\topskip,%
+                      innerbottommargin=0pt,backgroundcolor=gray!10]%
+                     {tltxmdfexample}
+
+\newmdenv[middlelinecolor=ltxmdfblue,middlelinewidth=1pt,%
+                      roundcorner=10pt,innertopmargin=0pt,%
+                      leftmargin=1cm,rightmargin=1cm,%
+                      innerleftmargin=-15pt,innerrightmargin=-15pt,%
+                      ignorelastdescenders,%
+                      settings={\lstset{resetmargins}},%
+                      skipbelow=\topskip,skipabove=\topskip,%
+                      innerbottommargin=0pt,backgroundcolor=gray!10]%
+                     {tltxmdfhighlight}
+\def\highlightinputenv{tltxmdfhighlight}
+
+\title{The \Pack{mdframed} package}
+\subtitle{Examples for \Opt{framemethod=\Loadedframemethod}}
+\author{\href{mailto:marco.daniel@mada-nada.de}{Marco Daniel}}
+\date{\mdfmaindate}
+\version{\mdversion}
+\introduction{In this document I collect various examples for
+              \Opt{framemethod=\Loadedframemethod}.
+              Some presented examples are more or less exorbitant.}
+
+\mdfsetup{skipabove=\topskip,skipbelow=\topskip}
+\newrobustcmd\ExampleText{%
+        An \textit{inhomogeneous linear} differential equation has the form
+         \begin{align}
+            L[v ] = f,
+         \end{align}
+        where $L$ is a linear differential operator, $v$ is
+        the dependent variable, and $f$ is a given non-zero
+        function of the independent variables alone.
+}
+
+\newcounter{examplecount}
+\setcounter{examplecount}{0}
+\renewcommand\thesubsection{}
+\newcommand\Examplesec[1]{%
+\stepcounter{examplecount}%
+\subsection{Example~\arabic{examplecount}~--~#1\relax}%
+}
+
+\begin{document}
+\maketitle
+\section{Loading}
+In the preamble only the package \Pack{mdframed} width the option
+\Opt{framemethod=\Loadedframemethod} is loaded. All other modifications will be
+done by \Cmd{mdfdefinestyle} or \Cmd{mdfsetup}.
+
+{\large\color{red!50!black}
+\NOTE Every \Cmd{global} inside the examples is necessary to work with my own
+created environment \Env{tltxmdfexample*}.}
+
+\section{Examples}
+All examples have the following settings:
+
+\begin{tltxmdfexample}
+\mdfsetup{skipabove=\topskip,skipbelow=\topskip}
+\newrobustcmd\ExampleText{%
+  An \textit{inhomogeneous linear} differential equation has the form
+  \begin{align}
+      L[v ] = f,
+  \end{align}
+  where $L$ is a linear differential operator, $v$ is the dependent
+  variable, and $f$ is a given non-zero function of the independent
+  variables alone.
+}
+\end{tltxmdfexample}
+\clearpage
+\Examplesec{Package listings}
+The example below is inspired by the following post on StackExchange
+\href{http://tex.stackexchange.com/questions/27673/background-overflows-^^A
+      when-using-rounded-corners-for-listings-package-listings}%
+     {Background overflows when using rounded corners for listings
+      (package: `listings`)}
+
+Here the solution which can be decorate as usual.
+
+\begin{tltxmdfexample}[moretexcs={BeforeBeginEnvironment,AfterEndEnvironment},
+                       morekeywords={lstlisting}]
+\BeforeBeginEnvironment{lstlisting}{%
+    \begin{mdframed}[<modification>]%
+    \vspace{-0.7em}}
+\AfterEndEnvironment{lstlisting}{%
+    \vspace{-0.5em}%
+    \end{mdframed}}
+\end{tltxmdfexample}
+
+With the new command \Cmd{surroundwithmdframed} you can use
+\begin{tltxmdfexample}[moretexcs={BeforeBeginEnvironment,AfterEndEnvironment},
+                       morekeywords={listings}]
+\surroundwithmdframed{listings}
+\end{tltxmdfexample}
+
+\clearpage
+\Examplesec{Package multicol}
+How I wrote in \enquote{Known Problems} you can't combine \Pack{multicol}  with
+\Pack{mdframed}. In a simple way without any breaks you can use:
+
+\begin{tltxmdfexample*}[morekeywords={multicols}]
+ \begin{multicols}{2}
+  \lipsum[1]
+  \begin{mdframed}
+   \ExampleText
+  \end{mdframed}
+  \lipsum[2]
+ \end{multicols}
+\end{tltxmdfexample*}
+
+\clearpage
+\twocolumn[\Examplesec{Working in twocolumn mode}]
+\begin{tltxmdfexample*}[moretexcs={Examplesec}]
+\lipsum[1]\lipsum[2]
+\begin{mdframed}[%
+   leftmargin=10pt,%
+   rightmargin=10pt,%
+   linecolor=red,
+   backgroundcolor=yellow]
+\ExampleText
+\end{mdframed}
+\lipsum[2]
+\end{tltxmdfexample*}
+
+\clearpage
+\onecolumn
+\Examplesec{Working inside enumerate}
+\begin{tltxmdfexample*}[morekeywords={enumerate}]
+Text Text Text Text Text Text Text Text
+\begin{enumerate}
+\item in the following \ldots
+      \begin{mdframed}[linecolor=blue,middlelinewidth=2]
+         \ExampleText
+      \end{mdframed}
+\item \lipsum[2]
+\end{enumerate}
+Text Text Text Text Text Text
+\end{tltxmdfexample*}
+
+\Examplesec{Position a specific symbol at a line}
+\begin{tltxmdfexample*}
+\tikzset{
+  warningsymbol/.style={
+      rectangle,draw=red,
+      fill=white,scale=1,
+      overlay}}
+\mdfdefinestyle{warning}{%
+ hidealllines=true,leftline=true,
+ skipabove=12,skipbelow=12pt,
+ innertopmargin=0.4em,%
+ innerbottommargin=0.4em,%
+ innerrightmargin=0.7em,%
+ rightmargin=0.7em,%
+ innerleftmargin=1.7em,%
+ leftmargin=0.7em,%
+ middlelinewidth=.2em,%
+ linecolor=red,%
+ fontcolor=red,%
+ firstextra={\path let \p1=(P), \p2=(O) in ($(\x2,0)+0.5*(0,\y1)$)
+                           node[warningsymbol] {\$};},%
+ secondextra={\path let \p1=(P), \p2=(O) in ($(\x2,0)+0.5*(0,\y1)$)
+                           node[warningsymbol] {\$};},%
+ middleextra={\path let \p1=(P), \p2=(O) in ($(\x2,0)+0.5*(0,\y1)$)
+                           node[warningsymbol] {\$};},%
+ singleextra={\path let \p1=(P), \p2=(O) in ($(\x2,0)+0.5*(0,\y1)$)
+                           node[warningsymbol] {\$};},%
+}
+\begin{mdframed}[style=warning]
+\ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{digression-environement inspired by Tobias Weh}
+\begin{tltxmdfexample*}[morekeywords={%
+                    font,anchor,let,in,arrow,round,cap,controls,coordinate,%
+                    excursus,head,arrows,calc,line,width,and,to,digressionarrows,%
+                    base,west},%
+                   moretexcs={usetikzlibrary}]
+\usetikzlibrary{calc,arrows}
+\tikzset{
+   excursus arrow/.style={%
+      line width=2pt,
+      draw=gray!40,
+      rounded corners=2ex,
+   },
+   excursus head/.style={
+      fill=white,
+      font=\bfseries\sffamily,
+      text=gray!80,
+      anchor=base west,
+   },
+}
+\mdfdefinestyle{digressionarrows}{%
+ singleextra={%
+      \path let \p1=(P), \p2=(O) in (\x2,\y1) coordinate (Q);
+      \path let \p1=(Q), \p2=(O) in (\x1,{(\y1-\y2)/2}) coordinate (M);
+      \path [excursus arrow, round cap-to]
+         ($(O)+(5em,0ex)$) -| (M) |- %
+         ($(Q)+(12em,0ex)$) .. controls +(0:16em) and +(185:6em) .. %
+         ++(23em,2ex);
+      \node [excursus head] at ($(Q)+(2.5em,-0.75pt)$) {Digression};},
+ firstextra={%
+      \path let \p1=(P), \p2=(O) in (\x2,\y1) coordinate (Q);
+      \path [excursus arrow,-to]
+         (O) |- %
+         ($(Q)+(12em,0ex)$) .. controls +(0:16em) and +(185:6em) .. %
+         ++(23em,2ex);
+      \node [excursus head] at ($(Q)+(2.5em,-2pt)$) {Digression};},
+ secondextra={%
+      \path let \p1=(P), \p2=(O) in (\x2,\y1) coordinate (Q);
+      \path [excursus arrow,round cap-]
+         ($(O)+(5em,0ex)$) -| (Q);},
+ middleextra={%
+      \path let \p1=(P), \p2=(O) in (\x2,\y1) coordinate (Q);
+      \path [excursus arrow]
+         (O) -- (Q);},
+   middlelinewidth=2.5em,middlelinecolor=white,
+   hidealllines=true,topline=true,
+   innertopmargin=0.5ex,
+   innerbottommargin=2.5ex,
+   innerrightmargin=2pt,
+   innerleftmargin=2ex,
+   skipabove=0.87\baselineskip,
+   skipbelow=0.62\baselineskip,
+}
+
+\begin{mdframed}[style=digressionarrows]
+         \ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{Theorem style shading background}
+\begin{tltxmdfexample*}[morekeywords={top,bottom,Theorem,shadow,alternativtheorem}]
+\mdtheorem[%
+ apptotikzsetting={%
+   \tikzset{mdfbackground/.append style ={%
+               top color=yellow!40!white,
+               bottom color=yellow!80!black},
+               mdfframetitlebackground/.append style={
+                     top color=purple!40!white,
+                     bottom color=purple!80!black
+               }
+           }%
+  },
+  ,roundcorner=10pt,middlelinewidth=2pt,
+  shadow=true,frametitlerule=true,frametitlerulewidth=4pt,
+  innertopmargin=10pt,%
+  ]{alternativtheorem}{Theorem}
+\begin{alternativtheorem}[Inhomogeneous linear]
+\ExampleText
+\end{alternativtheorem}
+\end{tltxmdfexample*}
+\end{document}
+ \endinput

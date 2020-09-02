@@ -1,0 +1,86 @@
+This is the README file for the paralist package. Please read the
+license information at the end of this file.
+
+
+PURPOSE
+
+This style file provides some new list environments. Itemized and enumerated 
+lists can be typesetted within paragraphs, as paragraphs and in a compact
+version. Most environments have optional arguments to format the labels.
+Additionally, the LaTeX environments itemize and enumerate can be 
+extended to use a similar optional argument.
+
+
+INSTALLATION
+
+To install the paralist package you need:
+  paralist.ins
+  paralist.dtx
+  docstrip.tex (part of the standard LaTeX2e distribution)
+               (I think you need at least version 2.4)
+
+Run LaTeX on the file paralist.ins to strip the comments from paralist.dtx and
+produce the style file paralist.sty. Put the file paralist.sty somewhere LaTeX
+can find it. Read the documentation of your LaTeX system to find out where this
+might be.
+
+If you're new to this, see
+http://www.tex.ac.uk/cgi-bin/texfaq2html?label=instpackages for more
+information on installing packages.
+
+
+DOCUMENTATION
+
+To produce the documentation you also need:
+  ltxdoc.cls (part of the standard LaTeX2e distribution)
+  doc.sty    (part of the standard LaTeX2e distribution)
+
+If you want the standard documentation, run LaTeX on paralist.dtx.
+If you want a more detailed documentation with the code and an index,
+use paralist.drv and modify it according to the following notes.
+
+To get documentation of the code, put a percent sign in front of the
+\OnlyDescription.
+
+If you additionally want to know about the change history, uncomment the
+indicated lines in paralist.drv and use the following commands:
+    latex paralist.drv
+    makeindex -s gglo.ist -o paralist.gls paralist.glo
+    latex paralist.drv
+Then the change history should appear at the end of the documentation.
+Note that this list is only complete if you include the code (see above).
+
+If you want to have an index of all the new and redefined macros and
+environments, uncomment the indicated lines and use the following
+commands:
+    latex paralist.drv
+    makeindex -s gind.ist paralist.idx
+    latex paralist.drv
+
+
+COPYING AND MODIFICATION
+
+Copyright 1998-2017 Bernd Schandl
+Copyright 2013 Julian Gilbey (modifications in v2.4)
+
+The paralist package consists of the following files:
+
+  README        Instructions on installation and documentation.
+  paralist.ins  The installation driver.
+  paralist.dtx  The documentation and the documented source code.
+
+This package can be redistributed and/or modified under the terms
+of the LaTeX Project Public License distributed from CTAN
+archives in the directory macros/latex/base/lppl.txt; either
+version 1 of the license, or (at your option) any later version.
+
+You might like to keep paralist.ins and paralist.dtx somewhere safe as 
+a backup, or in case you want to pass the paralist package on to someone 
+else.
+
+
+HELP
+
+Bernd Schandl
+email schandl@gmx.com
+

@@ -1,0 +1,64 @@
+%% Begin of file `tgschola.sty'.
+% This file belongs to the TeX Gyre collection of fonts. The work is released
+% under the GUST Font License. See the MANIFEST-TeX-Gyre-Schola.txt
+% and README-TeX-Gyre-Schola.txt files for the details.
+% For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+%% ----------------------------------------------------------------------------
+%% [EN] LaTeX2e support for Tex Gyre Schola fonts
+%% The declaration `\usepackage{tgschola}' in the LaTeX preamble
+%% will set TeX Gyre Schola as the default (serif) font for the document.
+%%
+%% [PL] Wspomaga stosowanie w LaTeXu kroju Tex Gyre Schola
+%% Umieszczenie linijki `\usepackage{tgschola}' w preambule spowoduje
+%% ustawienie TeX Gyre Schola jako podstawowego szeryfowego kroju
+%% dokumenu, czyli kroju skojarzonego z poleceniem \rmfamily.
+%% W dokumenach po polsku konieczne jest uaktywnienie kodowania
+%% T1, QX lub OT4 (najlepiej przy pomocy pakietu 'polski'). Np.:
+%%
+%% \usepackage{tgschola}
+%% \usepackage[T1]{polski}
+%% ----------------------------------------------------------------------------
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tgschola}
+  [2009/09/27 v1.2 TeX Gyre Schola as default roman family]
+
+\def\tg@scale@to@rm#1#2{%
+  \begingroup
+  \fontsize{10}{0}\usefont{\encodingdefault}{\rmdefault}{m}{n}%
+  #1%
+  \xdef\qcs@scale{%
+    \strip@pt
+    \dimexpr  1pt *
+    \@tempdima / \dimexpr#2pt\relax 
+    \relax}%
+  \PackageInfo{tgschola}{The qcs family is scaled by \qcs@scale}
+  \endgroup
+}
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{prefix=qcs@}
+\DeclareStringOption{scale}[1]
+\define@key{tgschola}{matchlowercase}[1]{%
+  \tg@scale@to@rm{\@tempdima#1\fontdimen5\font}{4.66}}
+\define@key{tgschola}{matchuppercase}[1]{%
+  \tg@scale@to@rm{\setbox0\hbox{XWYZH}\@tempdima#1\ht0}{7.295}}
+\DeclareVoidOption{oldspacing}{%
+  \def\qcs@set@spacing{%
+    \fontdimen2\font=.333em
+    \fontdimen3\font=.222em
+    \fontdimen4\font=.111em
+  }%
+}
+\ProcessKeyvalOptions*
+
+\renewcommand{\rmdefault}{qcs}
+\fontfamily{\familydefault}
+\renewcommand\bfdefault{b}
+
+\endinput
+%%
+%% End of file `tgschola.sty'.

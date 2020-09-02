@@ -1,0 +1,63 @@
+%% Begin of file `tgchorus.sty'. 
+% This file belongs to the TeX Gyre collection of fonts. The work is released
+% under the GUST Font License. See the MANIFEST-TeX-Gyre-Chorus.txt
+% and README-TeX-Gyre-Chorus.txt files for the details.
+% For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+%% ----------------------------------------------------------------------------
+%% [EN] LaTeX2e support for Tex Gyre Chorus fonts
+%% The declaration `\usepackage{tgchorus}' in the LaTeX preamble
+%% will set TeX Gyre Chorus as the default (serif) font for the document. 
+%%
+%% [PL] Wspomaga stosowanie w LaTeXu kroju Tex Gyre Chorus
+%% Umieszczenie linijki `\usepackage{tgchorus}' w preambule spowoduje
+%% ustawienie TeX Gyre Chorus jako podstawowego szeryfowego kroju
+%% dokumenu, czyli kroju skojarzonego z poleceniem \rmfamily.
+%% W dokumenach po polsku konieczne jest uaktywnienie kodowania
+%% T1, QX lub OT4 (najlepiej przy pomocy pakietu 'polski'). Np.:
+%%
+%% \usepackage{tgchorus}
+%% \usepackage[T1]{polski}
+%% ----------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tgchorus}
+  [2009/09/27 v1.2 TeX Gyre Chorus as default serif family]
+
+\def\tg@scale@to@rm#1#2{%
+  \begingroup
+  \fontsize{10}{0}\usefont{\encodingdefault}{\rmdefault}{m}{n}%
+  #1%
+  \xdef\qzc@scale{%
+    \strip@pt
+    \dimexpr  1pt *
+    \@tempdima / \dimexpr#2pt\relax 
+    \relax}%
+  \PackageInfo{tgchorus}{The qzc family is scaled by \qzc@scale}
+  \endgroup
+}
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{prefix=qzc@}
+\DeclareStringOption{scale}[1.1]
+\define@key{tgchorus}{matchlowercase}[1]{%
+  \tg@scale@to@rm{\@tempdima#1\fontdimen5\font}{3.99998}}
+\define@key{tgchorus}{matchuppercase}[1]{%
+  \tg@scale@to@rm{\setbox0\hbox{XWYZH}\@tempdima#1\ht0}{5.85999}}
+\DeclareVoidOption{oldspacing}{%
+  \def\qzc@set@spacing{%
+    \fontdimen2\font=.333em
+    \fontdimen3\font=.222em
+    \fontdimen4\font=.111em
+  }%
+}
+\ProcessKeyvalOptions*
+
+\renewcommand{\rmdefault}{qzc}
+\fontfamily{\familydefault}
+\renewcommand\bfdefault{b}
+
+\endinput
+%% 
+%% End of file `tgchorus.sty'.

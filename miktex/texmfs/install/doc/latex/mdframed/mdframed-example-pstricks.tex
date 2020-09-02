@@ -1,0 +1,146 @@
+
+\setcounter{errorcontextlines}{999}
+\documentclass[parskip=false,english,11pt]{ltxmdf}
+
+\lstDeleteShortInline{|}
+\newcommand\Loadedframemethod{PSTricks}
+\usepackage[framemethod=\Loadedframemethod]{mdframed}
+
+\surroundwithmdframed[middlelinecolor=ltxmdfblue,middlelinewidth=1pt,%
+                      roundcorner=10pt,innertopmargin=0pt,%
+                      leftmargin=1cm,rightmargin=1cm,%
+                      innerleftmargin=-15pt,innerrightmargin=-15pt,%
+                      ignorelastdescenders,%
+                      settings={\lstset{resetmargins}},%
+                      skipbelow=\topskip,skipabove=\topskip,%
+                      innerbottommargin=0pt,backgroundcolor=gray!10]%
+                     {tltxmdfexample}
+
+\newmdenv[middlelinecolor=ltxmdfblue,middlelinewidth=1pt,%
+                      roundcorner=10pt,innertopmargin=0pt,%
+                      leftmargin=1cm,rightmargin=1cm,%
+                      innerleftmargin=-15pt,innerrightmargin=-15pt,%
+                      ignorelastdescenders,%
+                      settings={\lstset{resetmargins}},%
+                      skipbelow=\topskip,skipabove=\topskip,%
+                      innerbottommargin=0pt,backgroundcolor=gray!10]%
+                     {tltxmdfhighlight}
+\def\highlightinputenv{tltxmdfhighlight}
+
+\title{The \Pack{mdframed} package}
+\subtitle{Examples for \Opt{framemethod=\Loadedframemethod}}
+\author{\href{mailto:marco.daniel@mada-nada.de}{Marco Daniel}}
+\date{\mdfmaindate}
+\version{\mdversion}
+\introduction{In this document I collect various examples for
+              \Opt{framemethod=\Loadedframemethod}.
+              Some presented examples are more or less exorbitant.}
+
+\mdfsetup{skipabove=\topskip,skipbelow=\topskip}
+\newrobustcmd\ExampleText{%
+        An \textit{inhomogeneous linear} differential equation has the form
+         \begin{align}
+            L[v ] = f,
+         \end{align}
+        where $L$ is a linear differential operator, $v$ is
+        the dependent variable, and $f$ is a given non-zero
+        function of the independent variables alone.
+}
+
+\newcounter{examplecount}
+\setcounter{examplecount}{0}
+\renewcommand\thesubsection{}
+\newcommand\Examplesec[1]{%
+\stepcounter{examplecount}%
+\subsection{Example~\arabic{examplecount}~--~#1\relax}%
+}
+
+\begin{document}
+\maketitle
+\section{Loading}
+In the preamble only the package \Pack{mdframed} width the option
+\Opt{framemethod=\Loadedframemethod} is loaded. All other modifications will be
+done by \Cmd{mdfdefinestyle} or \Cmd{mdfsetup}.
+
+{\large\color{red!50!black}
+\NOTE Every \Cmd{global} inside the examples is necessary to work with my own
+created environment \Env{tltxmdfexample*}.}
+
+\section{Examples}
+All examples have the following settings:
+
+\begin{tltxmdfexample}
+\mdfsetup{skipabove=\topskip,skipbelow=\topskip}
+\newrobustcmd\ExampleText{%
+  An \textit{inhomogeneous linear} differential equation has the form
+  \begin{align}
+      L[v ] = f,
+  \end{align}
+  where $L$ is a linear differential operator, $v$ is the dependent
+  variable, and $f$ is a given non-zero function of the independent
+  variables alone.
+}
+\end{tltxmdfexample}
+
+\clearpage
+
+\Examplesec{very simple}
+\begin{tltxmdfexample*}
+\global\mdfdefinestyle{exampledefault}{%
+     linecolor=red,middlelinewidth=3pt,%
+     leftmargin=1cm,rightmargin=1cm
+}
+\begin{mdframed}[style=exampledefault,roundcorner=5]
+\ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{hidden line + frame title}
+\begin{tltxmdfexample*}[morekeywords={innerlinecolor,addtopsstyle,mdfouterlinestyle,
+                    linestyle}]
+\global\mdfapptodefinestyle{exampledefault}{%
+ topline=false,rightline=false,bottomline=false,
+ frametitlerule=true,innertopmargin=6pt,
+ outerlinewidth=6pt,outerlinecolor=blue,
+ pstricksappsetting={\addtopsstyle{mdfouterlinestyle}{linestyle=dashed}},
+ innerlinecolor=yellow,innerlinewidth=5pt}%
+\begin{mdframed}[style=exampledefault,frametitle={Inhomogeneous linear}]
+\ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{Dash Lines}[morekeywords={pstrickssetting,linestyle,dashed}]
+\begin{tltxmdfexample*}
+\global\mdfdefinestyle{exampledefault}{%
+   pstrickssetting={linestyle=dashed,},linecolor=red,middlelinewidth=2pt}
+\begin{mdframed}[style=exampledefault]
+\ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{Double Lines}
+\begin{tltxmdfexample*}[morekeywords={addtopsstyle,mdfmiddlelinestyle,
+                    doubleline,doublesep}]
+\global\mdfdefinestyle{exampledefault}{%
+  pstricksappsetting={\addtopsstyle{mdfmiddlelinestyle}{%
+                      doubleline=true,doublesep=6pt,linewidth=4pt}},%
+  linecolor=red,middlelinewidth=16pt}
+\begin{mdframed}[style=exampledefault]
+\ExampleText
+\end{mdframed}
+\end{tltxmdfexample*}
+
+\Examplesec{Shadow frame}
+\begin{tltxmdfexample*}[morekeywords={shadow,shadowsize,myshadowbox}]
+\newmdenv[shadow=true,
+          shadowsize=11pt,
+          linewidth=8pt,
+          frametitlerule=true,
+          roundcorner=10pt,
+          ]{myshadowbox}
+\begin{myshadowbox}[frametitle={Inhomogeneous linear}]
+\ExampleText
+\end{myshadowbox}
+\end{tltxmdfexample*}
+\end{document}
+ \endinput

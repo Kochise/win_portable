@@ -21,6 +21,7 @@ Some useful Windows programs in one portable package
 **LastActivityView** : we know what you did last summer<br>
 **LICEcap** : record a part of your screen directly into animated gif<br>
 **lite** : lightweight source code editor coded in lua<br>
+**miktex** : LaTeX tools needed by texmaker (includes its own package updater)<br>
 **MyDefrag** : best defragger, select System Disk Monthly, then your Windows disk<br>
 **Notepad++** : the best code editor with some extensions installed (regex works there)<br>
 **Notepad2-mod** : the best code editor 2 (Alt+z or Alt+o are best there)<br>
@@ -35,6 +36,7 @@ Some useful Windows programs in one portable package
 **Subtitle Edit** : best subtitle editor, can shift time for several lines<br>
 **SuperFastClicker** : console program, press Capslock for mouse fast clicking<br>
 **SysinternalsSuite** : the stuff that should be included with every Windows<br>
+**texmaker** : LaTeX Editor that needs miktex (run texmaker.bat to setup the path)<br>
 **Total Commander** : the stuff that should replace Windows (at least the explorer)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>

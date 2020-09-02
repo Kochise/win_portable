@@ -1,0 +1,56 @@
+%% Begin of file `tgadventor.sty'. 
+% This file belongs to the TeX Gyre collection of fonts. The work is released
+% under the GUST Font License. See the MANIFEST-TeX-Gyre-Adventor.txt
+% and README-TeX-Gyre-Adventor.txt files for the details.
+% For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+%% ----------------------------------------------------------------------------
+%% [EN] LaTeX2e support for Tex Gyre Adventor fonts
+%% The declaration `\usepackage{tgadventor}' in the LaTeX preamble will
+%% set TeX Gyre Adventor as the default sans serif font for the document. 
+%%
+%% [PL] Wspomaga stosowanie w LaTeXu kroju Tex Gyre Adventor
+%% Umieszczenie linijki `\usepackage{tgadventor}' w preambule spowoduje
+%% ustawienie TeX Gyre Adventor jako podstawowego bezszeryfowego kroju
+%% dokumenu, czyli kroju skojarzonego z poleceniem \sffamily.
+%% W dokumenach po polsku konieczne jest uaktywnienie kodowania
+%% T1, QX lub OT4 (najlepiej przy pomocy pakietu 'polski'). Np.:
+%%
+%% \usepackage{tgadventor}
+%% \usepackage[T1]{polski}
+%% ----------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tgadventor}
+  [2009/09/10 v1.2 TeX Gyre Adventor as default sans serif family]
+
+\def\tg@scale@to@rm#1#2{%
+  \begingroup
+  \fontsize{10}{0}\usefont{\encodingdefault}{\rmdefault}{m}{n}%
+  #1%
+  \xdef\qag@scale{%
+    \strip@pt
+    \dimexpr  1pt *
+    \@tempdima / \dimexpr#2pt\relax 
+    \relax}%
+  \PackageInfo{tgadventor}{The qag family is scaled by \qag@scale}
+  \endgroup
+}
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{prefix=qag@}
+\DeclareStringOption{scale}[.9]
+\define@key{tgadventor}{matchlowercase}[1]{%
+  \tg@scale@to@rm{\@tempdima#1\fontdimen5\font}{5.46999}}
+\define@key{tgadventor}{matchuppercase}[1]{%
+  \tg@scale@to@rm{\setbox0\hbox{XWYZH}\@tempdima#1\ht0}{7.44}}
+\DeclareVoidOption{oldspacing}{}
+\ProcessKeyvalOptions*
+
+\renewcommand{\sfdefault}{qag}
+\renewcommand\bfdefault{b}
+
+\endinput
+%% 
+%% End of file `tgadventor.sty'.

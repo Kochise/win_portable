@@ -1,0 +1,194 @@
+% usepackage.4ht (2019-12-19-14:27), generated from tex4ht-4ht.tex
+% Copyright 2003-2009 Eitan M. Gurari
+% Copyright 2009-2019 TeX Users Group
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either
+% version 1.3c of this license or (at your option) any
+% later version. The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3c or later is part of all distributions
+% of LaTeX version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status "maintained".
+%
+% The Current Maintainer of this work
+% is the TeX4ht Project <http://tug.org/tex4ht>.
+%
+% If you modify this program, changing the
+% version identification would be appreciated.
+\immediate\write-1{version 2019-12-19-14:27}
+
+   \def\:temp{tex4ht}\ifx \:temp\@currname
+   \:warning{\string\usepackage{tex4ht} again?}
+   \def\:temp#1htex4ht.def,tex4ht.sty#2!*?: {\def\:temp{#2}}
+\expandafter\:temp \@filelist htex4ht.def,tex4ht.sty!*?: %
+\ifx \:temp\empty  \else
+   \:warning{if
+    \string\RequirePackage[tex4ht]{hyperref} or
+    \string\usepackage[tex4ht]{hyperref} was
+    used try instead, repectively,
+    \string\RequirePackage{hyperref} or
+    \string\usepackage{hyperref}}
+\fi
+
+\fi
+\gdef\a:usepackage{\use:package xr,xr-hyper,eso-pic,expl3,savetrees,biblatex,xeCJK,polyglossia,fontspec,tikz,pdfbase,caption,graphics,xcolor,imakeidx,minted,fancyhdr,,!*?: }
+\gdef\use:package#1,{%
+   \if :#1:\def\:temp##1!*?: {}\else
+      \def\:temp{#1}\ifx \@currname\:temp
+             \def\:temp##1!*?: {\input usepackage.4ht  }%
+      \else \let\:temp=\use:package \fi
+   \fi \:temp}
+\def\:temp{xr}\ifx \@currname\:temp
+   \AtEndOfPackage{\let\XR:\XR@
+   \def\XR@[#1]#2{%
+    \Configure{AtBeginDocument}{\XR:[#1]{#2}}{}}%
+}
+
+\fi
+\def\:temp{xr-hyper}\ifx \@currname\:temp
+   \AtEndOfPackage{\let\XR:\XR@
+    \def\XR@[#1][#2]#3{%
+      \AtBeginDocument{\XR:[#1][#2]{#3}}
+    }%
+}
+
+\fi
+\def\:temp{eso-pic}\ifx \@currname\:temp
+\:dontusepackage{eso-pic}
+\newcommand\AddToShipoutPicture{\@ifstar{}{}}
+\let\AddToShipoutPictureBG\AddToShipoutPicture
+\let\AddToShipoutPictureFG\AddToShipoutPicture
+\fi
+\def\:temp{expl3}\ifx \@currname\:temp
+\ifdefined\XeTeXversion%
+\xenunidelblock{Latin-expl3}%
+\AtEndOfPackage{\xeuniuseblock{Latin-expl3}}
+\fi
+\fi
+\def\:temp{savetrees}\ifx \@currname\:temp
+\:dontusepackage{savetrees}
+\fi
+\def\:temp{biblatex}\ifx \@currname\:temp
+\AtEndOfPackage{%
+  \def\blx@mknoautolang{%
+    \blx@lbxinput{\blx@languagename}%
+    {}{}%
+  }%
+  \def\blx@lbxinput@iii#1#2{%
+  \global\csundef{blx@lng@#2}%
+  \:IfFileExists{#1.lbx}
+    {\blx@lbxinput@iv{#2}{#1}{language '#2' -> '#1'}}
+    {\ifcsdef{blx@suffmaptried@#2}
+      {}
+      {\blx@warning@noline{%
+          File '#1.lbx' not found!\MessageBreak
+          Ignoring mapping '#2' -> '#1'}%
+       \global\cslet{blx@suffmaptried@#2}\@empty}%
+     \blx@lbxinput@iv{#2}{#2}{language '#2'}}}
+
+}
+\fi
+\def\:temp{xeCJK}\ifx \@currname\:temp
+\:dontusepackage{xeCJK}
+\AtEndOfPackage{%
+  \RequirePackage{fontspec}
+}
+\DeclareDocumentCommand\setCJKmainfont{o m o}{}
+\let\setCJKsansfont\setCJKmainfont
+\let\setCJKmonofont\setCJKmainfont
+
+\DeclareDocumentCommand\setCJKfamilyfont {m o m }{}
+\DeclareDocumentCommand\newCJKfontfamily {o m o m}{\expandafter\gdef\csname #2\endcsname{\relax}}
+
+\DeclareDocumentCommand\xeCJKsetup{m}{}
+% }
+\AtBeginDocument{%
+  \xeuniuseblock{CJK}
+}
+\fi
+\def\:temp{polyglossia}\ifx \@currname\:temp
+\ExplSyntaxOn
+\AtEndOfPackage{
+
+\cs_set_eq:NN\orig_polyglossia@keys_define_lang:n\polyglossia@keys_define_lang:n
+\cs_set_protected:Npn \polyglossia@keys_define_lang:n #1 {
+  \orig_polyglossia@keys_define_lang:n{#1}
+  \keys_define:nn {polyglossia}{
+    #1 / direction
+    .  code:n = {}
+  }
+}
+\def\RequireBidi{}%
+}
+\ExplSyntaxOff
+\fi
+\def\:temp{fontspec}\ifx \@currname\:temp
+  \ifdefined\fontspec
+    \:dontusepackage{fontspec}
+  \else
+    \input usepackage-fontspec.4ht
+  \fi
+\fi
+\def\:temp{tikz}\ifx \@currname\:temp
+\AtEndOfPackage{%
+\let\use:tikzlibrary\usetikzlibrary
+\def\find:externalize#1external#2\@nil{%
+\if\relax#2\relax\else
+  \let\tikz:externalize\tikzexternalize
+  \renewcommand\tikzexternalize[1][]{\tikz:externalize[##1,mode=only graphics]}
+    \tikzset{%
+      tex4ht inc/.style={%
+        /pgf/images/include external/.code={%
+          \includegraphics[]{####1.pdf}%
+        }%
+      }
+    }
+    \tikzset{tex4ht inc}
+  \fi
+}
+\renewcommand\usetikzlibrary[1]{%
+  \use:tikzlibrary{#1}%
+  \find:externalize#1external\@nil%
+}
+}
+\fi
+\def\:temp{pdfbase}\ifx\@currname\:temp
+\AtEndOfPackage{%
+  \let\old:outputpage\@outputpage
+  \def\@outputpage{\old:outputpage{}}
+}
+\fi
+\def\:temp{caption}\ifx\@currname\:temp
+\AtEndOfPackage{%
+  \long\def\caption@If@Package@Loaded#1[#2]#3#4{}
+}
+\fi
+\def\:temp{graphics}\ifx\@currname\:temp
+  \ifdefined\XeTeXversion
+    \PassOptionsToPackage{dvips}{graphics}
+  \fi
+\fi
+\def\:temp{xcolor}\ifx\@currname\:temp
+  \ifdefined\XeTeXversion
+    \PassOptionsToPackage{dvips}{xcolor}
+  \fi
+\fi
+\def\:temp{imakeidx}\ifx\@currname\:temp
+  \PassOptionsToPackage{noautomatic}{imakeidx}
+\fi
+\def\:temp{minted}\ifx\@currname\:temp
+  \AtEndOfPackage{%
+    \define@booleankey{minted@opt@g}{breaklines}{}{}{}%
+  }
+\fi
+\def\:temp{fancyhdr}\ifx\@currname\:temp
+  \AtEndOfPackage{%
+  \def\ps@fancy{}%
+  }
+\fi
+
+
+\endinput
+
