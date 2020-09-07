@@ -1,0 +1,93 @@
+Title:Demo Chart;
+Subtitle:This chart contains a demo of the features of Msc-generator.;
+compress=yes; hscale=0.9; numbering=yes;
+vspace 20;
+g1:group 1 {
+    a [label=weak, weak], b[label=normal], c [label=strong, strong];
+},
+g2: group 2 {
+    aa[label=weak, weak],bb[label=normal], cc[label=strong, strong];
+};
+note: This is a\ngroup enttity [note.pos=right_up];
+mark top;
+{
+      box --: Arrows {
+            comment: These are the
+                     various arrow types [side=left];
+            a->b-c:solid line with\_subscript [arrow.midtype=dot];
+            b<=c:double line;
+            >b:dotted line;
+            <<c:dashed line with\^superscript;
+            b->b: \-Points to \n\+self;
+            a->b: Weak [weak, compress=no];
+            b->c: Strong [strong];
+            angle=5;
+            a->b: Slanted [arrow.type=double_empty];
+            activate b;
+            b->c: Slanted [arrow.type=double];
+            c->b: Slanted [arrow.type=empty_sharp];
+            deactivate b;
+            b->a: Slanted [arrow.type=triple_line];
+            angle=0;
+            a->*b: \plLost;
+            a*->b: \prLost;
+      };
+      vertical brace: Arrows here;
+      vspace 10;
+      mark above_boxes;
+      mark above_boxes_5 [offset=5];
+      box ==: Empty boxes [tag="1st set"] {
+            comment: These are the
+                     various box types [side=left];
+            parallel box a--a: Solid;
+            parallel box b==b: Double;
+            parallel box c..c: Dotted;
+            mark between_boxes;
+      } [tag="2nd set"] {
+            parallel box a--a: Round [line.corner=round];
+            parallel box b==b: Note  [line.corner=note];
+            parallel box c..c: Bevel [line.corner=bevel];
+            b--b [collapsed=yes] {
+                b->b;
+            };
+      };
+      vertical range above_boxes<->between_boxes:
+          First set of boxes
+          [side=end, text.width=80, text.wrap=yes, number=no];
+      vertical range between_boxes<->:
+          Second set of boxes
+          [side=end, text.width=80, text.wrap=yes, number=no];
+      vertical pointer above_boxes_5->*between_boxes at bb+:
+          lost pointer [side=end, text.wrap=yes, text.width=60];
+      vertical pointer above_boxes-> at bb+:
+          not lost;
+} {
+      box ..: Block Arrows {
+            block aa->bb-cc:arrow;
+            block aa=>bb-cc:diamond[arrow.type=diamond];
+            block aa>bb-cc:dot [arrow.type=dot];
+            block aa>>bb-cc:mixed[arrow.midtype=diamond];
+            angle=5;
+            block aa->cc: Slanted;
+            note: These are example
+                    block arrows;
+      };
+      vertical brace: Block arrows here;
+};
+vertical ->: All the way down...;
+---: Separator;
+mark pipe_top;
+pipe aa--bb: Solid pipe []
+       --cc: Solid, too;
+pipe b==bb: Double pipe {
+      a->cc: Label;
+};
+pipe b..c: Dotted pipe []
+     bb..cc: Dotted, too {
+      a->cc: Label;
+};
+vertical bracket pipe_top-- at a-: pipe_bracket;
+...:Time elapses...;
+symbol ... center at b-c;
+note: You can draw
+      various symbols;

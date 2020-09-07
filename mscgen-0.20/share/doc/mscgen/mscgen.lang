@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+   This is a language definition for gtksourceview describing
+   the grammar of mscgen (which was written by Michael C McTernan).
+
+   This file was originally written by: Niels Thykier <niels@thykier.net>
+
+   This file is PUBLIC DOMAIN and may be freely reproduced,  distributed,
+   transmitted, used, modified, built upon, or otherwise exploited by
+   anyone for any purpose, commercial or non-commercial, and in any way,
+   including by methods that have not yet been invented or conceived.
+
+   This file is provided "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+   EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<language id="msc" _name="mscgen" version="2.0" _section="Others">
+  <metadata>
+    <property name="globs">*.msc</property>
+  </metadata>
+  <styles>
+    <style id="attribute" _name="Arc attribute" map-to="def:keyword"/>
+    <style id="arc" _name="Arc type" map-to="def:preprocessor"/>
+    <style id="option" _name="Option or keyword" map-to="def:type"/>
+    <!-- Default locale is US, hench _name="Color" -->
+    <style id="colour" _name="Color" map-to="def:type"/>
+  </styles>
+  <!-- Attributes, options and colour names are case-insensitive -->
+  <default-regex-options case-sensitive="false" />
+  <definitions>
+
+    <define-regex id="escaped-character" extended="true">
+      \\                   # leading backslash
+      [\\\"n]              # escaped character
+    </define-regex>
+
+    <context id="msc">
+      <include>
+        <context ref="def:shebang" />
+        <context ref="c:comment" />
+        <context ref="def:shell-like-comment" />
+        <context ref="c:comment-multiline" />
+
+        <!-- 
+             Used for attribute/options values or entities that
+             (might) contain spaces; named string in lack of a
+             better name.
+        -->
+        <context id="string" end-at-line-end="false"
+                 style-ref="def:string">
+          <start>"</start>
+          <end>"</end>
+          <include>
+            <context id="escaped-character"
+                     style-ref="c:escaped-character">
+              <match>\%{escaped-character}</match>
+            </context>
+          </include>
+        </context>
+
+        <!--
+            Highlight colours as values (if they are not part of a
+            quoted string).
+        -->
+        <context id="colour" style-ref="colour">
+          <keyword>black</keyword>
+          <keyword>blue</keyword>
+          <keyword>green</keyword>
+          <keyword>indigo</keyword>
+          <keyword>violet</keyword>
+          <keyword>orange</keyword>
+          <keyword>red</keyword>
+          <keyword>yellow</keyword>
+          <keyword>white</keyword>
+        </context>
+
+        <context id="arc" style-ref="arc">
+          <keyword>[ar]?box</keyword>
+          <!-- Lost signal arcs (also case-insensitive) -->
+          <keyword>-x</keyword>
+          <keyword>x-</keyword>
+          <!--
+              all the other arcs - these fail to handle $entity $arc * and 
+              * $arc $entity though plus I am not sure it helps
+              having them coloured either way.
+              
+              Highlighting the "lost signal arc" makes sense because it
+              could be confused with A [-][-] x (the arrowless version of
+              -&gt;, the [] added to avoid breaking the comment).
+
+          <keyword>&lt;&lt;=&gt;&gt;</keyword>
+          <keyword>=&gt;&gt;</keyword>
+          <keyword>&lt;&lt;=</keyword>
+          <keyword>[-.=:]&gt;</keyword>
+          <keyword>&lt;[-.=:]</keyword>
+
+          <keywords>[-][-]</keyword>
+          <keywords>==</keyword>
+          <keywords>[.][.]</keyword>
+          <keywords>::</keyword>
+          -->
+        </context>
+
+        <context id="attribute" style-ref="attribute">
+          <!-- Arc attribute names -->
+          <keyword>label</keyword>
+          <keyword>url</keyword>
+          <keyword>id</keyword>
+          <keyword>idurl</keyword>
+          <keyword>linecolou?r</keyword>
+          <keyword>textcolou?r</keyword>
+          <keyword>textbgcolou?r</keyword>
+          <keyword>arclinecolou?r</keyword>
+          <keyword>arctextcolou?r</keyword>
+          <keyword>arctextbgcolou?r</keyword>
+          <keyword>arcskip</keyword>
+        </context>
+
+        <context id="option" style-ref="option">
+          <!-- option names -->
+          <keyword>hscale</keyword>
+          <keyword>arcgradient</keyword>
+          <keyword>width</keyword>
+          <!-- 
+               This is a keyword and not an option, but it seemed like
+               overkill to make to create a context for a single
+               context.
+          -->
+          <keyword>msc</keyword>
+        </context>
+      </include>
+    </context>
+  </definitions>
+</language>

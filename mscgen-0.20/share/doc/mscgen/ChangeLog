@@ -1,0 +1,247 @@
+0.20: 05/03/2011
+      Fix spelling errors (issue #58)
+      Add a MSC validation phase to check that all the entity names are known
+       before rendering is started.  This now also outputs the input line
+       number at which a problem was detected e.g.
+         Error detected at line 10: Unknown source entity 'xyz'.
+	 (issue #62)
+      Add width and height attributes to svg output.
+         (Thanks hwmaier for pointing this out, issue #63)
+      When wrapping words in boxes, hypenate very long words if needed to fit
+       the available space.
+       (issue #59)
+      Fix assertion if ... is placed on the same line as another arc, but
+       after the arc has been specified.
+      Fix regression where blank lines at the start of input would be
+       rejected and parsing stopped.
+       (Thanks Bernhard for the report and example)
+      Allow output to stdout if - is specified as the output filename.
+      Fix opening and closing the output file twice - the dummy output in the
+       first layout run now goes to /dev/null (or a temp file on Win32).
+
+0.19: 01/01/2011
+      Configure script changes to be more thorough about gdlib and FreeType
+       detection.  Also correct problems in configuring for Win32 native.
+      Inprove RPM packaging compliance with Fedora packaging guidelines.
+      Further gdlib anti-alising workarounds.
+      Correct canvas height computation when last arc(s) skip (issue #46).
+      Allow input quoted strings to span multiple lines e.g.
+         a->b [label="line1
+                      line1 too!"];
+       (issue #45)
+      Add gtksourceview syntax highlighting grammar installed in docs
+       (Thanks to NThykier for adding this, issue #51).
+      Improve error message output by showing line which caused the problem
+       and detect possible parse error due to mis-handling of x- in some
+       cases and print helpful note (issue #53).
+      Parse UTF-8 byte order mark and print a warning if parsing UTF-8 to
+       generate a PNG when configured without FreeType.  Otherwise ignore
+       the BOM (issue #7).
+      Add support for 'note' arcs which draw a box with the corner turned down.
+      Enable box arc names to be in upper or lower case in the input file.
+      Add word wrapping for arc labels in boxes.  Wrapping for all arc labels
+       can also be enabled with the new "wordwraparcs" msc attribute.
+       (issue #45)
+      Fix rendering of different sized boxes when using parallel arcs.
+       (issue #50)
+      Improve background to boxes to make it correctly fit abox, rbox
+       and note types.
+      Improve rounded corners in SVG output.
+      Improve vertical layout.
+      Make arcskip land an arc where a subsequent arc would start.
+      Ensure eps file BoundingBox is given in integer dimensions.
+       [Thanks to walter.stanish for the patch]
+      Textbgcolour now fills background of box arcs (rbox, abox etc..).
+      Fix incorrect use of perror() after fprintf() which may not have
+       resulted in the right error being reported.
+       (issue #57, thanks Neils!)
+
+0.18: 30/08/2010
+      Fix bad strncat() use allowing possible overrun.
+       Thanks to ensc42 and Neils for finding this.
+      Fix multi-line labels causing multiple dividers ("---")
+       Thanks to llucax for the report, issue #31.
+      Add support for arrowless arcs and bi-directional arrows as requested
+       by xmlscott and started by Niels.  Can now use arrows such as <->, <=>
+       for bidirectional arrows, --, ==, .. etc... for arcs without arrows.
+       Issue #29.
+      Fix text rendering over the box edge in multiline labels.
+      Add patch to honour linecolour in boxes, issue #33.
+       Thanks to Neils for this patch.
+      Add 'textbgcolour' and 'arctextbgcolour' attributes to set the
+       background colour for text in an entity or on an arc.
+      Add support for -X and X- arcs which indicate a lost message.
+      Add support for a new 'arcskip' attribute which allows an arc to have
+       an additional slant to show delays or similar.
+      Change configure.ac to attempt to use gdlib-config and then pkg-config.
+       This enables simpler configuration/build on platforms where gd hasn't
+       been updated to supply a pkg-config file e.g. Cygwin.  Update README
+       regarding building on Cygwin and progress the cygport.
+
+0.17: 31/08/2009
+      Change the command line parser so a space is not needed to split
+       switches from the value e.g. -Tpng is now acceptable.
+      Take input filename as last parameter if it doesn't match any switches.
+      Default output filename is <input filename>.<output type>.
+      The above changes now make it possible to use #!/usr/bin/mscgen -Tpng
+       at the top of a script to cause mscgen to process it directly.  The
+       usual restrictions apply (file must be exectutable, Unix format etc..)
+      Correctly handle multi-line C comments, issue #16.
+       [Thanks Neils for reporting this one]
+      Collapse parser and renderer together and bring man/ and test/ up a
+       level.  Parser and renderer and now both under GPLv2.
+      Change build system to use autotools.  Also add examples with an install
+       target too.
+       [Many thanks to Neils for his hard work on this contribution]
+      Add COPYING notice and credits for libgd according to their licence.
+      Remove the win32 version of gd from the packaging, and use pkg-conf to
+       file/setup build for libgd.  Also add --without-png option to configure.
+       [Again, thanks to Neils for suggestions and patches on this]
+      Fix ignoring of arc line colour attribute unless a text colour was also
+       given, issue #23.
+       [Thanks to dunbar.ian for reporting, Neils for finding the bug]
+      Apply patches to simplify installation of examples and increase install
+       portability, issue #27.
+       [Thanks chickenandpom for this patch]
+      Ensure docs install under mscgen.
+
+0.16: 28/06/2009
+      Fix segfault on malformed input, issue #10.
+       [Thanks Neils for reporting and providing a fix]
+      Replace flex default rule so that it will not echo unknown characters.
+       Instead it returns an unknown token to the parser which then stops
+       and warns about the erroneous input line.
+      Match \r\n, \r and \n line endings to count input line numbers.
+       [Both thanks to Neils]
+      Fix error in GPL address for utf8.c/h.
+      Fix for spaces (|||) and dividers (---) on lineswhich have ","
+       at the end causing an assert to fail.
+       [Thanks to Neils and jahagirdar.gopal for reporting]
+      Add FreeType support under USE_FREETYPE, although disabled by default
+      Add anti-alising to some lines.
+      Increase row heights when text is more than 2 lines long and size boxes
+       accordingly.  [Thanks to ronaldpwilson for reporting this one]
+
+0.15: 23/05/2009
+      Escape special characters for SVG output.
+      Better UTF8 support in SVG and PS output.
+      Add Wall Wextra and fixup warnings.
+      Add ability to place multiple boxes on the same line using ","
+       instead of ";".
+      Clean up Makefiles a little and add install target.
+      Update libgd to 2.0.34.
+
+0.14: 27/02/2009
+      Added state description boxes into the entity lines.
+      Use command "<entity> box <entity> [label="..."];" for state boxes.
+       "abox" and "rbox" also work for rounded and angular boxes.
+      Fix arc drawing for SVG which was un-noticably mirrored.
+      Add all-freebsd target.
+       [Thanks to Titus von Boxberg for the initial state box support]
+
+0.13: 27/10/2008
+      Fix colour output for postscript.
+      Fix scaling for Postscript bounding box; now matches image scaling.
+       [Thanks Klaus Wirl]
+      Parse empty double-quoted strings (e.g. label="") and allow double
+       quotes in strings if escaped (e.g. label="hello\"there").
+       [Thanks to Alexei Alexandrov for requesting this]
+      Add some info about building on Solaris
+       [Thanks to Robert Batusek and Jakub Vavra for helping with this]
+
+0.12: Fix version number being truncated (was reported as 0.1).
+       [Thanks to Graham Addis for spotting this]
+      Add REMOVE_PNG_OUPUT to allow building without PNG support as a
+       workaround for a packaging problem with gd-devel on Fedora 8.
+      Add support for textcolour and linecolour attributes on arcs and
+       entites.  Add support for double lined arcs.
+        [Thanks to Joon Sung Chun for the patch]
+      Add support for arctextcolour and arclinecolour attributes on entity
+       definitions to allow default colours to be set on arcs originating
+       from some entity.
+      Change ADraw colour model to RGB.  Allow colours to be specified as
+       #rrggbb values, or the 16 W3C HTML names.
+      Simplify running of tests under Valgrind e.g.
+         VALGRIND="valgrind -tool=memcheck" make test
+      Linux builds use pkg-config to get gd dependencies and no longer
+       static-link by default.  (Use STATIC=--static make for static objects).
+        [Thanks Juliano F. Ravasi for the suggestion]
+      Add more string replacements to make parse error reporting relate to
+       input and not internal parser token names.
+      Add 'width' global option to allow explicit setting of output chart
+       width, rather than using a scale factor with hscale.
+        [Thanks to Roger Spooner for the suggestion]
+      Rename parser.a to libparser.a [Another from Juliano]
+      Move CHANGES file up a directory.
+      Add arcgradient option to allow arrows to slope, making direction of
+       the message to be more clearly observed.
+        [Thanks to Roger Spooner for the patch]
+
+0.11: Only render an arc ID on the first line out the label if it has more
+       than one line (the ID would previously be duplicated on each line).
+      Add support for multi-line entity title labels (use '\n' in the label
+       to start a newline).
+      Apply changes based on patches from Alban Crequy to support broadcast
+       signals, where the destination entity is specified as "*", causing
+       arcs to be rendered to all entities.
+        [Thanks Alban Crequy for the patch]
+
+0.10: Change sinf() and cosf() to sin() and cos() which are more widely
+       supported, particularly SunOS 5.8
+        [Thanks to Malay Halder for reporting this]
+
+      Add rendering hint to SVG output to stop aliasing and produce sharper
+       output.
+
+0.9:  Remove compiler warnings and use of tempnam() on Unix.
+       Add initial SVG support.
+
+0.8:  Extend parser and msc ADT to support global options.
+       Add 'hscale' option to allow horizontal scaling of the output.
+      Re-check executable is Valgrind clean on Linux, when producing PS
+       output.
+
+0.7:  Remove 'else ifeq' in renderer Makefile.
+       This requires GNU Make 3.81, which causes problems with older
+       installations and Macs.
+        [Thanks to Ian Lister]
+
+      Remove printf output after parsing phase as the output isn't
+       useful or interesting!
+
+0.6:  Packaging changes only.
+       Change source package naming to simplify Gentoo packaging.
+        [Thanks Yvan Royon for pointing this out]
+
+       Update copyright notices to 2007.
+
+      Added man page.
+
+
+0.5:  Allow more than one line of text on an arc by parsing labels for
+       literal '\n' delimiters.
+
+      Correct makefile error that prevented Mac OS X building out of the box.
+
+0.4:  Ensure that temporary files created during image map generation are
+       deleted.
+
+      Clarify some error message and make them distinct.
+
+      Update Win32 version of GD that supplied in the source package.
+
+      Apply a patch from Gavin Shelley to add make commands for Mac OS X.
+       [Thanks Gavin!]
+
+0.3:  Add IDURL attribute to allow hypertext superscript strings against
+       edges.
+
+      Incorporate patch from Klaus Otto to allow entity headings to support
+       attributes too.  [Thanks Klaus!]
+
+0.2:  Clip arc labels positions against left and right edges of output to
+       prevent the text being clipped at the image edge.
+
+0.1:  Initial Release
+
+END OF FILE
