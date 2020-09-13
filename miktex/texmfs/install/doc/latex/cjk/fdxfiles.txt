@@ -1,0 +1,111 @@
+This is the file fdxfiles.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+
+Extended font definition files
+==============================
+
+The CJK package modifies LaTeX's font loading mechanism to input an extended
+font definition file (with suffix `.fdx') immediately after a normal font
+definition file (with suffix `.fd') has been loaded. A `.fdx' file is
+optional. Here a list of useful commands---note that neither whitespace nor
+linebreaks produce output while macros are defined in such files, which is
+quite convenient.
+
+Immediately after selecting the proper subfont for a given input character,
+the CJK package tests whether a macro
+
+  \<encoding>/<family>/<series>/<shape>/<plane>/<code>/<direction>
+
+is defined. If it exists, it is executed instead of calling \CJKsymbol.
+
+For halfwidth katakana, the macro is called
+
+  \<encoding>/<family>/<series>/<shape>/<code>/<direction>
+
+For fonts from HLaTeX the macro is called
+
+  \<encoding>/<family>/<series>/<shape>/<byte1>/<byte2>/<direction>
+
+For UTF-8, only characters in the range 0x800-0x10FFFF execute the test for
+this macro.
+
+<code>, <byte1> and <byte2> are decimal numbers; <direction> is either `v'
+or `h'.
+
+The following commands are intended for `.fdx' files:
+
+o   For vertical writing, \CJKvdef should be used to (globally) define the
+    macros described above. It always prepends `<encoding>/<family>/'.
+    Example from c00bsmi.fdx:
+
+      \CJKvdef{m/n/01/1}{\def\CJK@plane{v}\selectfont\CJKsymbol{4}}
+
+    This defines macro `\C00/bsmi/m/n/01/1/v': If glyph 1 in subfont `01'
+    (`bsmilp01' in this example) should be typeset, it is replaced with
+    glyph 4 from subfont `v' (`bsmilpv').
+
+    \CJKhdef is the equivalent for horizontal writing.
+
+o   Another macro is \CJKvlet, performing a global \let. Example (again
+    from c00bsmi.fdx):
+
+      \CJKvlet{bx/n/01/1}{m/n/01/1}
+
+    This makes `\C00/bsmi/bx/n/01/1/v' the same as `\C00/bsmi/m/n/01/1/v'.
+
+    \CJKhlet is the equivalent for horizontal writing.
+
+CJKvert.sty provides additional macros:
+
+o   Glyphs which shouldn't be rotated are available with \CJKsymbolsimple.
+    Here an example from c10gbsn.fdx:
+
+      \CJKvdef{m/n/01/17}{\CJKsymbolsimple{17}}
+
+    If glyph 17 in subfont `01' (`gbsnlp01') is requested, it is replaced
+    with itself but unrotated.
+
+o   Some correction parameters are available to position glyphs of a given
+    font (i.e., all subfonts) while \CJKvert is active.
+
+    \CJKvdef{norotate}{}
+
+      The default of CJKvert.sty is to rotate all glyphs using the graphicx
+      package. If `norotate' is present in a `.fdx' file, glyphs accessed
+      with \CJKsymbol are not rotated. `fullheight', `height' and `offset'
+      are used only if `norotate' is not set.
+
+    \CJKvdef{fullheight}{<dimension>}
+
+      If defined, it sets the full height (height plus depth) of all CJK
+      glyphs accessed with \CJKsymbol to <dimension>. In most cases this
+      value is 1em.
+
+    \CJKvdef{height}{<dimension>}
+
+      If defined, it defines the height of all CJK glyphs accessed with
+      \CJKsymbol. Consequently, the depth is set to `fullheight - height'.
+      For example, the AFM file for `bsmilp01' gives 879 PS units for the
+      `Ascender' value. Since 1em is 1000 PS units, a proper value for
+      the `height' parameter is 0.88em.
+
+    \CJKvdef{offset}{<dimension>}
+
+      If defined, shift the (rotated) glyphs accessed with \CJKsymbol
+      vertically by <dimension>.
+
+    \CJKvdef{simpleoffset}{<dimension>}
+
+      If defined, shift all glyphs accessed with \CJKsymbolsimple vertically
+      by <dimension>.
+
+o   The `offset' parameter is available to position glyphs of a given
+    font (i.e., all subfonts) while \CJKhorz is active.
+
+    \CJKhdef{offset}{<dimension>}
+
+      If defined (and \CJKhorz being active), shift the glyphs accessed
+      with \CJKsymbol vertically by <dimension>.
+
+---End of fdxfiles.txt---

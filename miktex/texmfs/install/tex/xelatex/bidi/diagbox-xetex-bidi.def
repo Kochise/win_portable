@@ -1,0 +1,159 @@
+%%
+%% This is file `diagbox-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,diagbox-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{diagbox-xetex-bidi.def}[2017/12/30 v0.2 bidi adaptations for diagbox package for XeTeX engine]
+\bidi@patchcmd{\diagbox@double}{%
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+}{\bidi@@diagbox@double@ii}{}{}
+\bidi@patchcmd{\diagbox@double}{%
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+}{\bidi@@diagbox@double@iii}{}{}
+\newcommand*{\bidi@@diagbox@double@ii}{%
+  \if@RTL
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepl}}}
+  \else
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+  \fi
+}
+\newcommand*{\bidi@@diagbox@double@iii}{%
+  \if@RTL
+    \begin{tabular}{@{\hspace{\diagbox@insepr}}>{\diagbox@font}l@{}}
+  \else
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+  \fi
+}
+\bidi@patchcmd{\diagbox@triple@setbox@NW}{%
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+}{\bidi@@diagbox@triple@setbox@NW@tabular@i@ii}{}{}
+\bidi@patchcmd{\diagbox@triple@setbox@NW}{%
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+}{\bidi@@diagbox@triple@setbox@NW@tabular@i@ii}{}{}
+\bidi@patchcmd{\diagbox@triple@setbox@NW}{%
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+}{\bidi@@diagbox@triple@setbox@NW@tabular@iii}{}{}
+\newcommand*{\bidi@@diagbox@triple@setbox@NW@tabular@i@ii}{%
+  \if@RTL
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepl}}}
+  \else
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+  \fi}
+\newcommand*{\bidi@@diagbox@triple@setbox@NW@tabular@iii}{%
+  \if@RTL
+    \begin{tabular}{@{\hspace{\diagbox@insepr}}>{\diagbox@font}l@{}}
+  \else
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+  \fi}
+\let\diagbox@triple@setbox@SW\diagbox@triple@setbox@NW
+\bidi@patchcmd{\diagbox@triple@setbox@SE}{%
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}%
+}{\bidi@@diagbox@triple@setbox@SE@tabular@i}{}{}
+\bidi@patchcmd{\diagbox@triple@setbox@SE}{%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}%
+}{\bidi@@diagbox@triple@setbox@SE@tabular@ii@iii}{}{}
+\bidi@patchcmd{\diagbox@triple@setbox@SE}{%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}%
+}{\bidi@@diagbox@triple@setbox@SE@tabular@ii@iii}{}{}
+\newcommand*{\bidi@@diagbox@triple@setbox@SE@tabular@i}{%
+  \if@RTL
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepl}}}
+  \else
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
+  \fi
+}
+\newcommand*{\bidi@@diagbox@triple@setbox@SE@tabular@ii@iii}{%
+  \if@RTL
+    \begin{tabular}{@{\hspace{\diagbox@insepr}}l@{}}
+  \else
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}
+  \fi
+}
+\let\diagbox@triple@setbox@NE\diagbox@triple@setbox@SE
+\bidi@patchcmd{\diagbox@double@pict@SE}{%
+  \diagbox@setlinecolor
+  \Line(0,\strip@pt\diagbox@ht)(\strip@pt\diagbox@wd,0)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,\strip@pt\diagbox@ht)(\strip@pt\diagbox@wd,0)}%
+}{}{}
+\let\diagbox@double@pict@NW\diagbox@double@pict@SE
+\bidi@patchcmd{\diagbox@double@pict@NE}{%
+  \diagbox@setlinecolor
+  \Line(0,0)(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,0)(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht)}%
+}{}{}
+\let\diagbox@double@pict@SW\diagbox@double@pict@NE
+\bidi@patchcmd{\diagbox@triple@pict@NW}{%
+  \diagbox@setlinecolor
+  \Line(0,\yym)(\x,0)
+  \Line(\xm,\y)(\x,0)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,\yym)(\x,0)
+  \Line(\xm,\y)(\x,0)}%
+}{}{}
+\bidi@patchcmd{\diagbox@triple@pict@NE}{%
+  \diagbox@setlinecolor
+  \Line(0,0)(\xxm,\y)
+  \Line(0,0)(\x,\yym)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,0)(\xxm,\y)
+  \Line(0,0)(\x,\yym)}%
+}{}{}
+\bidi@patchcmd{\diagbox@triple@pict@SW}{%
+  \diagbox@setlinecolor
+  \Line(0,\ym)(\x,\y)
+  \Line(\xm,0)(\x,\y)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,\ym)(\x,\y)
+  \Line(\xm,0)(\x,\y)}%
+}{}{}
+\bidi@patchcmd{\diagbox@triple@pict@SE}{%
+  \diagbox@setlinecolor
+  \Line(0,\y)(\xxm,0)
+  \Line(0,\y)(\x,\ym)%
+}{%
+  {\diagbox@setlinecolor
+  \Line(0,\y)(\xxm,0)
+  \Line(0,\y)(\x,\ym)}%
+}{}{}
+\endinput
+%%
+%% End of file `diagbox-xetex-bidi.def'.

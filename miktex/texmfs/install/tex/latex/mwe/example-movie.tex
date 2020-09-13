@@ -1,0 +1,29 @@
+%    \begin{macrocode}
+%</example-movie.tex>
+%<*example-movie.tex&standalone>
+\documentclass[border=0,tikz]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\begin{document}%
+%</example-movie.tex&standalone>
+%<*example-movie.tex>
+\foreach \n in {0,...,60} {%
+\begin{tikzpicture}[x=32bp,y=18bp]% 16x9
+    \clip (0,0) rectangle (10,10);
+    \path [fill=black!25] (0,0) rectangle (10,10);
+    \path [draw,ultra thick] (0,0) rectangle (10,10);
+    \node at (5,7) {\sffamily\Huge Example Movie};
+    \node at (5,4) {\sffamily\Large \ifnum\n=60 01:00\else00:\ifnum\n<10 0\fi\n\fi};
+    \fill [black!45] (2,2) rectangle (8,2.5);
+    \fill [black!65] (2,2) rectangle (2+\n/10,2.5);
+\end{tikzpicture}%
+}%
+%</example-movie.tex>
+%<*example-movie.tex&standalone>
+\end{document}%
+%</example-movie.tex&standalone>
+%<*example-movie.tex>
+%    \end{macrocode}

@@ -1,0 +1,637 @@
+This is the file japanese.txt of the CJK macro package ver. 4.1.0
+(20-Nov-1996).
+
+It concentrates on the use of DNP fonts (their font metrics can be used
+in conjunction with PS printers which have their own builtin Japanese fonts)
+and watanabe jfonts.
+
+The use of the kanji48 bitmap font together with hbf2gf is similar to all
+other CJK bitmap files and is documented in detail in the file hbf2gf.txt .
+
+
+kanji48 font
+------------
+
+Where is the font ? )
+
+Host ftp.tex.ac.uk
+    Location: /pub/archive/fonts/CJK
+      FILE   -rw-rw-r--   1 ctan     TeX    742459 Dec  1 00:01 kanji48.tar.gz
+Host ftp.dante.de
+    Location: /tex-archive/fonts/CJK
+      FILE   -rw-rw-r--  1 Mr.Ftp   server  742459 Dec  1 00:01 kanji48.tar.gz
+
+or your nearest CTAN mirror ftp sites.
+
+
+How to use it in CJK ? )
+
+Use CJK.sty with Japanese as follows:
+
+with latex:
+
+   \documentclass[a4paper]{article}
+     \topmargin=-3.5cm
+     \textheight=26cm
+   \usepackage{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}{JIS}{song}
+
+   .....
+   < Japanese text >
+   .....
+
+   \end{CJK*}
+   \end{document}
+
+
+with mulatex:
+
+   \documentclass[a4paper]{article}
+    ....
+   \usepackage[global]{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}{}{}
+
+   .....
+   < Japanese text >
+   .....
+
+   \end{CJK*}
+   \end{document}
+
+
+The package CJK offers two environments: CJK and CJK*. CJK* suppresses
+spaces followed by a CJK character, whereas CJK doesn't.
+
+If you write only Japanese, you should use the CJK* environment. If you
+really need a space directly followed by a JIS character, you must then use
+TeX commands like `\ ', `{} ', etc.
+
+It is highly recommended to declare
+
+     \usepackage[global]{CJK}
+
+if you use mulatex to be able to write Japanese inside of other
+environments. See mule2cjk.doc for details.
+
+
+DNP fonts
+---------
+
+What are DNP fonts ? )
+
+DNP stands for "Dai Nippon Printing" (a big printing company in Japan). DNP
+fonts are commercial fonts made by this company; if real DNP fonts have been
+already installed at your site, you should use them. But watanabe-dnp fonts,
+which are customized from watanabe-jfonts to emulate DNP fonts, are
+freeware. The method of emulation is symbolic name linking.
+
+
+Where are the fonts ? )
+
+      watanabe-dnp (pk files)
+         ftp.math.s.chiba-u.ac.jp://tex/watanabe-dnp/300
+             jb10-300pk.tar.gz  jb10-622pk.tar.gz  jm10-329pk.tar.gz
+             jm10-746pk.tar.gz  jb10-329pk.tar.gz  jb10-746pk.tar.gz
+             jm10-360pk.tar.gz  jm8-300pk.tar.gz   jb10-360pk.tar.gz
+             jb8-300pk.tar.gz   jm10-432pk.tar.gz  jm9-300pk.tar.gz
+             jb10-432pk.tar.gz  jb9-300pk.tar.gz   jm10-518pk.tar.gz
+             jb10-518pk.tar.gz  jm10-300pk.tar.gz  jm10-622pk.tar.gz
+      tfm files
+         ftp.math.s.chiba-u.ac.jp://tex/watanabe-dnp/tfm-dnp.tar.gz
+         ftp.math.s.chiba-u.ac.jp://tex/watanabe-dnp/tfm.tar.gz
+      tools for symbolic link
+         ftp.math.s.chiba-u.ac.jp://tex/watanabe-dnp/fake.tar.gz
+
+How to set them up ? )
+
+       Suppose your fonts directory is $fonts ,
+                     (e.g. /usr/local/lib/tex/fonts/japan)
+       and your source directory in which the above files are put is $src.
+                     (e.g. /usr/local/src)
+
+       You should now expand all fonts that you've downloaded from the ftp
+       server.
+
+         % cd $src
+         % gunzip -c fake.tar.gz     | tar xvf -
+         % gunzip -c jd....pk.tar.gz | tar xvf -
+         % gunzip -c jm....pk.tar.gz | tar xvf -
+         % gunzip -c tfm.tar.gz      | tar xvf -
+
+       Make directories.
+
+         % cd $fonts
+         % mkdir $fonts/watanabe-dnp
+         % mkdir $fonts/watanabe-dnp/jd300
+         % mkdir $fonts/watanabe-dnp/tfm
+
+       Copy files.
+
+         % cd $fonts/watanabe-dnp
+         % cp $src/fake/* .
+         % cp $src/tfm/* tfm
+         % cp $src/*pk/*pk jd300
+ 
+       Make all watanabe-dnp fonts.
+
+         % make mk-300ex
+
+       Make symbolic links.
+      
+         % mkdir $fonts/dnp
+         % cd $fonts/dnp
+         % cp $fonts/watanabe-dnp/LNFAKE .
+
+       Next, edit the file `LNFAKE' in the dnp directory. Make sure that
+       `wdir' is set to the directory where you have installed watanabe-dnp
+       fonts:
+
+               wdir=../watanabe-dnp/jd300/
+
+       Then execute,
+
+         % LNFAKE jm dm
+         % LNFAKE jb dg
+
+
+       The directory tree after the installation will look like this:
+
+          $fonts/ +- watanabe-dnp/ +-jd300/ (all pk files)
+                  |                |
+                  |                +-tfm/
+                  |                |
+                  |                +-Makefile, FAKEDNP, FAKETFM, fake.c  ... 
+                  |
+                  +- dnp/
+
+       You will need only the directories $fonts/watanabe-dnp/jd300 and
+       $fonts/dnp. You can remove $fonts/watanabe-dnp/tfm/ together with the
+       other now unnecessary files.
+
+       Moving to your tfm directory, execute
+
+         % gunzip -c tfm-dnp.tar.gz | tar xvf -
+
+       Then add tfm-dnp (with the full path) to the TEXFONTS environment
+       variable.
+
+
+How to use them in CJK ? )
+
+See the following examples how to use CJK.sty with DNP fonts.
+
+with latex:
+
+   \documentclass[a4paper]{article}
+     \topmargin=-3.5cm
+     \textheight=26cm
+   \usepackage{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}[dnp]{JIS}{song}
+
+   <Japanese text>
+
+   \end{CJK*}
+   \end{document}
+
+
+with mulatex:
+
+   \documentclass[a4paper]{article}
+   ....
+   \usepackage[global]{CJK}
+   \usepackage{indentfirst}
+
+   \CJKfontenc{JIS}{dnp}
+
+   \begin{document}
+   \begin{CJK*}{}{}
+
+   <Japanese text>
+
+   \end{CJK*}
+   \end{document}
+
+
+[Read the file mule2cjk.doc for an explanation why you can't say
+ `\begin{CJK*}[dnp]{}{}' with mulatex.]
+
+
+watanabe jfonts
+---------------
+You can also use the original watanabe jfonts in a CJK environment.
+
+Where are the fonts ? )
+
+      watanabe-jfonts (pk files)
+         ftp.iij.ad.jp://pub/TeX/fonts/watanabe-jfonts/300
+                 b250.lzh b274.lzh b300.lzh b329.lzh b360.lzh
+                 b432.lzh b518.lzh b622.lzh b746.lzh m250.lzh
+                 m274.lzh m300.lzh m329.lzh m360.lzh m432.lzh
+                 m518.lzh m622.lzh m746.lzh
+
+         ftp.iij.ad.jp://pub/TeX/fonts/watanabe-jfonts/400
+
+      tfm files
+         ftp.iij.ad.jp://pub/TeX/fonts/watanabe-jfonts/tfmfiles.lzh
+
+
+How to use them in CJK ? )
+
+See the following examples how to use CJK.sty with watanabe jfonts.
+
+with latex:
+
+   \documentclass[a4paper]{article}
+     \topmargin=-3.5cm
+     \textheight=26cm
+   \usepackage{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}[wn]{JIS}{song}
+
+   <Japanese text>
+
+   \end{CJK*}
+   \end{document}
+
+
+with mulatex:
+
+   \documentclass[a4paper]{article}
+   ....
+   \usepackage[global]{CJK}
+   \usepackage{indentfirst}
+
+   \CJKfontenc{JIS}{wn}
+
+   \begin{document}
+   \begin{CJK*}{}{}
+
+   <Japanese text>
+
+   \end{CJK*}
+   \end{document}
+
+
+compilation and coding-system
+-----------------------------
+
+If you use `latex' to compile latex files, you must save these files in
+Japanese EUC and say
+
+    latex yourfile
+
+to process these files.
+
+[You can also save the file in SJIS encoding; then you must use `SJIS'
+ instead of `JIS' as the encoding parameter in the CJK environment. Note
+ that SJIS uses the JIS fonts.]
+
+If you use `mulatex' to compile latex files, there are several possibilities
+in which coding-system you can save your latex files. If you use the
+original mulatex script file that comes with the CJK package, you must save
+these files in Mule's internal code and say
+
+    mulatex yourfile
+
+to process these files.
+ 
+[mulatex is in utils/mule2cjk in CJK package directory. ref: mule2cjk.doc]
+
+But if you do not like the idea of saving latex files in Mule's internal
+encoding (this coding-system is not a standard coding-system, can not be
+read without Mule and will be changed in the future), you can save them in
+*junet*, which is based on ISO-2022 encoding, or in *ctext*, which is used
+in the X window system as Compound Text Encoding. Then replace the mulatex
+shell script with one of the following examples.
+
+ 
+ :  mulatex for *junet*
+
+   % cat mulatex
+    #!/bin/sh
+    #  mulatex : LaTeX2e for Mule's *junet* encoding
+    #
+    fname=`echo $1 | sed 's/\.[^\.]*$//g'`
+    coco '*junet*' '*internal*' < $1 | mule2cjk > $fname.cjk
+    st=$?
+    if [ $st -ne 0 ] ; then
+       exit $st
+    fi
+    latex $fname.cjk
+    st=$?
+    if [ -f $fname.cjk ] ; then
+       /bin/rm -f $fname.cjk
+    fi
+    exit $st
+   %
+
+ :  mulatex for *ctext*
+
+   % cat mulatex
+    #!/bin/sh
+    #  mulatex : LaTeX2e for Mule's *ctext* encoding
+    #
+    fname=`echo $1 | sed 's/\.[^\.]*$//g'`
+    coco '*ctext*' '*internal*' < $1 | mule2cjk > $fname.cjk
+    st=$?
+    if [ $st -ne 0 ] ; then
+   	exit $st
+    fi
+    latex $fname.cjk
+    st=$?
+    if [ -f $fname.cjk ] ; then
+    	/bin/rm -f $fname.cjk
+    fi
+    exit $st
+    %
+
+If you use Mule (without auctex), add one of the following pieces of
+Lisp code to your .emacs initialization file.
+
+ : `.emacs' for *junet*
+
+    (add-hook 'LaTeX-mode-hook
+              (function (lambda ()
+                (set-file-coding-system  *junet*)
+                )))
+
+ : `.emacs' for *ctext*
+
+    (add-hook 'LaTeX-mode-hook
+              (function (lambda ()
+                (set-file-coding-system  *ctext*)
+                )))
+
+The program `coco' is included in the Mule package.
+
+
+auctex
+------
+
+auctex is an elisp package for TeX and LaTeX users. It is easy to integrate
+the CJK environment into auctex; the usage is very similar to ordinary LaTeX
+with the exception that the typesetting command to compile a .dvi file is
+not `latex' but `mulatex'.
+
+Add the following code to your .emacs file (or, if possible, to
+tex-site.el).
+
+ : `.emacs' for auctex users
+
+    (add-hook 'LaTeX-mode-hook
+              (function (lambda ()
+                (set-file-coding-system  *junet*)
+                (nconc
+                 TeX-command-list
+                 (list
+                  (list "MuLaTeX" "aucmulatex %t" 'TeX-run-LaTeX nil t)
+                  )
+                 )
+                (setq TeX-command-default "MuLaTeX")
+                )))
+
+
+ :  mulatex for auctex users
+
+   % cat aucmulatex
+    #!/bin/sh
+    #  aucmulatex : LaTeX2e in auctex mode for Mule's *junet* encoding
+    #
+    fname=`echo $1 | sed 's/\.[^\.]*$//g'`
+    coco '*junet*' '*internal*' < $1 | mule2cjk > $fname.cjk
+    st=$?
+    if [ $st -ne 0 ] ; then
+       exit $st
+    fi
+    latex \\nonstopmode\\input{$fname.cjk}
+    st=$?
+    if [ -f $fname.cjk ] ; then
+       /bin/rm -f $fname.cjk
+    fi
+    exit $st
+   %
+
+   This example describes only the usage for *junet*. Of course, you can use
+   other coding systems too.
+ 
+
+auctex (yet another usage)
+----------------------------
+
+You can directly write elisp code instead of using a mulatex shell script
+(not for the faint-hearted :-). If TeX files are written in *junet*, *ctext*,
+*euc-japan* ... encoding, Mule will understand the input files automatically.
+Add the following code to your .emacs file (or, if possible, to tex-site.el).
+
+ : `.emacs' for auctex user (for Mule 2.3 based on emacs 19.28)
+
+   (add-hook 'LaTeX-mode-hook
+   	  (function (lambda () 
+   		      (nconc
+   		       TeX-command-list
+   		       (list 
+   			(list "MuLaTeX" "latex '\\nonstopmode\\input{%c}'" 
+   			      'TeX-run-MuLaTeX nil t)
+   			)
+   		       )
+   		      (nconc
+   		       TeX-expand-list
+   		       (list
+   			(list  "%c" 'file "cjk")
+   			))
+   		      (setq TeX-command-default "MuLaTeX")
+   		      )))
+   
+   (define-program-coding-system nil "mule2cjk" *internal*)
+   
+   (defvar TeX-LaTeX-CJK-tmpfile nil)
+   
+   (defun TeX-MuLaTeX-sentinel (process name)
+     (prog1
+         (TeX-LaTeX-sentinel process name)
+       (delete-file TeX-LaTeX-CJK-tmpfile)))
+   
+   ;  customized from TeX-run-LaTeX
+   (defun TeX-run-MuLaTeX (name command file)
+     "Run mule2cjk and latex on current TeX buffer."
+   
+     (let ((TeX-LaTeX-CJK-tmpbuffer (generate-new-buffer-name "cjk")))
+       (setq TeX-LaTeX-CJK-tmpfile (concat file ".cjk"))
+       (generate-new-buffer TeX-LaTeX-CJK-tmpbuffer)
+       (call-process-region
+        (point-min) (point-max) "mule2cjk" nil TeX-LaTeX-CJK-tmpbuffer nil)
+       (set-buffer TeX-LaTeX-CJK-tmpbuffer)
+       (write-region (point-min) (point-max)
+   		  TeX-LaTeX-CJK-tmpfile nil nil *internal*)
+     
+       (let ((process (TeX-run-format name command file)))
+         (setq TeX-sentinel-function 'TeX-MuLaTeX-sentinel)
+         (if TeX-process-asynchronous
+   	  process
+   	(TeX-synchronous-sentinel name file process)))
+     (kill-buffer  TeX-LaTeX-CJK-tmpbuffer)))
+
+
+indentfirst.sty
+---------------
+
+Japanese style of indenting paragraphs is different from the original latex.
+There is a style file called `indentfirst.sty' in the official LaTeX2e
+`tools' package which always indents the first paragraph.
+
+Where is indentfirst.sty ? )
+
+Host ftp.dante.de
+
+    Location: /tex-archive/macros/latex/packages/tools
+      FILE      rw-rw-r--      1492  Dec 14 17:46   indentfirst.dtx
+                
+or your nearest CTAN mirror ftp sites.
+
+You should get all files in /pub/TeX/CTAN/macros/latex/packages/tools, read
+the readme.txt file and install them. There are many, many useful styles in it.
+(e.g. tabular or verbatim etc.)
+
+
+\maketitle
+----------
+
+When you write Japanese titles, make sure that the \maketitle command
+is inside of a CJK environment because it contains CJK characters.
+
+example )
+
+   \documentclass[a4paper]{article}
+    ....
+   \usepackage[global]{CJK}
+   \usepackage{indentfirst}
+
+   \begin{CJK*}{}{}
+     \title{ < Japanese Text > }
+     \author{ < Japanese Text > }
+   \end{CJK*}
+
+   \begin{document}
+   \begin{CJK*}{}{}
+
+     \maketitle
+   .....
+   < Japanese Text >
+   .....
+
+   \end{CJK*}
+   \end{document}
+
+
+
+JIS.cap
+-------
+
+CJK provides Japanese captions. You need the koma-script package (which is a
+replacement of the standard classes) to use the caption files. (ref: `CJK
+captions' in CJK.txt)
+
+[This feature does not work for Japanese in CJK versions prior to 4.1.0]
+
+
+Where is Koma-script ? )
+
+Host ftp.dante.de
+
+    Location: /tex-archive/macros/latex/contrib/supported
+      DIRECTORY rwxr-xr-x       1024 Jan 23 12:20 koma-script
+
+or your nearest CTAN mirror ftp sites.
+
+How to use it in CJK ? )
+
+Inside of your CJK JIS environment, put
+
+   \CJKcaption{JIS}
+
+to activate Japanese captions.
+
+   To use CJK.sty and Koma-script for Japanese captions, see the
+   example below.
+
+   % srcartcl is a stylefile of Koma-script
+   \documentclass{scrartcl}
+     \topmargin=-3.5cm
+     \textheight=26cm
+   \usepackage{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}[dnp]{JIS}{song}
+   \CJKcaption{JIS}
+
+   <Japanese text>
+
+   %  Japanese Caption
+   \refname{<Japanese text>}
+
+   \end{CJK*}
+   \end{document}
+
+
+\newpage
+--------
+
+If you encounter an undefined CJK command (just before leaving the CJK
+environment), it is necessary to flush out the page, because LaTeX sometimes
+writes the headers _after_ the environment was closed. (ref: `Possible
+errors' in CJK.txt)
+
+
+example )
+
+   \documentclass[a4paper]{article}
+   \usepackage{CJK}
+   \usepackage{indentfirst}
+
+   \begin{document}
+   \begin{CJK*}{JIS}{song}
+
+   < Japanese text >
+   .....
+   \newpage
+   \end{CJK*}
+   \end{document}
+
+
+Japanese PostScript printer
+---------------------------
+
+If your site has a postscript printer with builtin Japanese PS fonts 
+that implements /Ryumin-Light and /GothicBBB-Medium, or a printer that
+can emulate these fonts, you can easily use it to print out a dvi file
+made from dnp-tfm (see DNP fonts). `dvi2ps' is a tool to drive printer
+resident Japanese PS fonts. You can also use watanabe-dnp fonts for
+previewing, as their metric files are the same.
+
+Where is dvi2ps ? )
+
+Host ftp.math.s.chiba-u.ac.jp
+
+    Location: /tex
+      FILE      rw-r--r--    112970  Dec  1  1994   dvi2ps-1.91j.tar.gz
+
+
+------------------
+Version 1.0 Beta8 (1996/02/09)
+     Tanaka Shinichiro      Email: tanaka3@ifos.se.fujitsu.co.jp
+
+
+
+---End of japanese.txt---

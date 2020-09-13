@@ -1,0 +1,404 @@
+2001-09-08  Matt Swift  <swift@alum.mit.edu>
+
+	* abbrevs.cfg: Add testing for Acromake category.
+	
+	* abbrevs.dtx: Added (messy!) acromake emulation.  Removed
+	\TMCurrentMacro for the plain abbrevs -- will deal with that
+	later.
+	
+	* moredefs.dtx: Fixed broken \SaveName.
+	
+	* moredefs.dtx: Extend \EExpand...\In examples.
+	
+	* Makefile: Remove acromake -- abbrevs now emulates it.
+	
+2001-09-05  Matt Swift  <swift@alum.mit.edu>
+
+	* titles.dtx: Add \slash to \nospacelist.
+	
+2001-08-31  Matt Swift  <swift@alum.mit.edu>
+
+	* abbrevs.dtx: Added to \nospacelist the following between bars:
+	|/\slash\@sptoken\ \space\/\@xobeysp|.  Added \TMCurrentMacro.
+	
+	* abbrevs.cfg: Add test with \slash.
+	
+	* newclude.dtx: Extensive documentation revisions.  Incorporation
+	of includex package.  Revision and extension of hooks mechanisms.
+	Remove "group" option, which seemed inferior in all cases to the
+	others.
+	
+	* titles.dtx: Changed: \booktitle -> \book, \journaltitle ->
+	\journal, \musictitle -> \music, \articletitle -> \article,
+	\playtitle -> \play, \crafttitle -> \craft.  Compatibility easily
+	retained in configuration file.  New: \species, \WrapquotesSN,
+	\WrapquotesDN, \WrapquotesSK, \nospacelist (abstraction of what
+	was hard-coded).  Dox revisions.  Some code cleanup.
+
+	* titles.cfg: New: \newlet\longpoem\textitswitch
+	\newlet\film\textitswitch \newlet\essaytitle\Wrapquotes
+	\newlet\chaptertitle\Wrapquotes. Revise and expand testing to
+	accommodate changes in titles.dtx.
+	
+	* tag.sto: Add 2d optional argument to \include.  Revise
+	documentation.
+	
+	* lips.dtx: New: \BracketedLips, \olips, \Lips, mla package
+	option.
+	
+	* group.sto: This file is not distributed any more; it proved
+	inferior to other newclude solutions in all applications.
+	
+	* footnote.dtx: Dox changes only.
+	
+	* epigraph.dtx: Remove call to \normalcitations.  Remove \EPBox.
+	Add \@afterheading.
+	
+	* compsci.dtx: New: \file \email.  Changed: \booktitle -> \book.
+	Add hyperlatex package option.  Make \code not \long.
+	
+	* compsci.cfg: Define \ALaTeX instead of \require it (or something
+	like that).
+
+	* blkcntrl.dtx: Implementation and documentation revisions.
+	
+	* bits.dtx: Requires letterhead package -- which I don't think I
+	distribute.  Aha, that's why this is "unsupported"!  It may be
+	usable with a dummy letterhead package.  Call scheme-components
+	tasks now.
+
+	* attrib.dtx: Add \attribcitations.  Some dox revisions.
+	
+	* allocate.sto: Slight dox revisions.
+	
+	* achicago.dtx: Depends on slemph and verbatim too now, but not
+	relsize.  Some code cleanup.  Bumped minor version number to
+	differentiate from what I had up there on my FTP site.
+	
+	* achicago-bst.dtx: Extensive revisions to documentation.  Thanks
+	to Panagiotis Louridas for pointing out a significant bug that
+	would indicate authors with the same last name as the same with a
+	3-em dash in the bibliography.  More cleanup of code.  Major
+	version to 1; reflects non-beta state.
+	
+	* README-unsupported: Remove entry for newclude; revise entry for
+	includex.
+	
+	* README: Add section for newclude.
+	
+	* Makefile: bundle-license = LPPL.  Newclude moves to supported,
+	but remove group.sto.  Includex remains for now.  Alpha-bibstyle
+	mla: comment out for now, needs work in Frankenfile.
+	Alpha-configs: add letterhead remove myletter.  Dox-requirements:
+	add attrib.
+
+	* moredefs.dtx: Many documentation changes.  Change implementation
+	of \provideboolean and \newboolean to be compatible with ifthen
+	package.  Fix \prependto@macro \g@prependto@macro so they work.
+	Fix check for defined macro in \SaveName.  Fix \GobbleO \GobbleMO
+	so they work.  Bump \docdate and minor version to distinguish from
+	limited release on FTP site.
+
+
+1999-03-22  Matthew Swift  <swift@alum.mit.edu>
+
+	* Makefile: Moved dialogue from alph to stable (was a mistake).
+	Added ifndefs around HAVE_WEB2C definition.
+	
+1999-03-08  Matthew Swift  <swift@alum.mit.edu>
+
+	* abbrevs.cfg: Moved basic categories and datemarks to .dtx.
+	Changed \AbbrevInitialSuffix, \AbbrevSubsequentSuffix back to
+	\TM....
+	
+	* INSTALL: Added relsize to abbrevs deps.
+	
+	* Makefile: Added relsize to abbrevs-deps.
+	
+	* abbrevs.dtx: Some dox.  Require slemph.  Changed
+	\Abbrev{Initial,Subsequent}Suffix back to \TM...  Added basic
+	categories and datemarks from .cfg to main .dtx.
+
+	* achicago-bst.dtx: Revised some dox, adding the table of entry
+	types, defining \field, \entry, etc.
+	
+	* titles.dtx: Tiny bit of dox.  Fixed some mistakes in
+	commented-out \DTypeouts.
+	
+	* compsci.dtx: Fix a bit of dox.
+	
+	* README-unsupported: Tidied a bit, and mentioned dependences on
+	relsize.sty.
+	
+	* Makefile: Removed non-bundle fileset rules, dependencies, and
+	variables.  Removed symlinks.
+	
+	* INSTALL: Revised handling of non-Frankenstein packages.
+	Mentioned dox-building requirements.
+	
+	* README: Eliminated reference to non-Frankenstein links.
+	
+1999-03-01  Matthew Swift  <swift@alum.mit.edu>
+
+	* compsci.dtx: Lotso doxo.  The whole version-control system
+	revamped.  Also began to kick some butt in my verbatim skills with
+	a revamp of bothexample that got the kinks out and eliminated
+	dependence on moreverb.  Bracket \email with angle brackets.
+	
+	* dialogue.dtx: Updated version to 1.1.
+	
+	* achicago-bst.dtx: Lotso doxo.
+	
+	* titles.cfg: Added Question-or-Exclamation testing.
+	
+	* titles.dtx: Major revision.  Lots of dox.  Implemented four
+	complementary \WrapquotesXX and two package options.  Implemented
+	\IfQuestionOrExclamation.  Package now requires package slemph.
+	Added \word \phrase etc.  (Were they in the cfg?)  Changed some
+	names from old \sc@ to \ti@.  Moved from an \if to an \ifx so
+	titles don't break before funny command sequences.
+
+	* abbrevs.dtx: Just documentation.
+	
+	* achicago.dtx: Dox.
+	
+	* lips.dtx: Major revision.  Revised most dox.
+	
+	\lips will insert nonbreakable space when followed by the chars in
+	\LPNobreakList and normally-breakable space for everything else.
+	Previously, \lips inserted nonbreakable space for all following
+	punctuation, and minimally breakable space for everything else.
+	The space that follows a period + ellipsis is now
+	normally-breakable when it was nonbreakable.
+	
+	We use \ifx instead of \ifcat to look ahead.  This fixes \lips
+	breaking before command sequences.
+	
+	If \lips occurs before a tie, don't insert post-ellipsis space,
+	let the tie insert it.
+	
+	Fixed \PackageError bug.  Changed internal \sc@ macros to \lp@
+	except for scratch.
+	
+1999-02-27  Matthew Swift  <swift@alum.mit.edu>
+
+	* includex.dtx: Revised dox a bit.  Redid titling.  Added counters
+	sc@count and bit.
+	
+	* includex-test.tex: Changed titles of provided files.  Redid
+	document titling.
+	
+1999-02-26  Matthew Swift  <swift@alum.mit.edu>
+
+	* moredefs.dtx: Revised some dox.  Added \GVerboseErrors, \GDebug,
+	\D*Typeout, \DGobbleM, and dox.  Revised \Debug to deal with them.
+	
+	* bits.dtx: A tiny bit of dox.
+	
+	* newclude.dtx: Changed abstract.  Changed (reverted) to
+	\nc@endofpackage instead of \AtEndOfPackage because of some sort
+	of problem.
+	
+	* INSTALL: Removed mention of moreverb.
+	
+	* Makefile: Added some dox.  Removed moreverbs dependency and
+	rules.
+	
+	* dialogue.dtx: Attributed the example.  Added a bit of user
+	documentation.
+	
+	* attrib.dtx: Added user documentation.  Changed \AttribInit to
+	\at@init and gave user a hook \AttribInit.  Added footnote hack to
+	\at@init.  Added \normalcitations, and added it to \attribstar.
+	Added \nobreak to \attrib.
+	
+1999-02-25  Matthew Swift  <swift@alum.mit.edu>
+
+	* Makefile: Added blkcntrl.sty to dox-requirements.
+	
+	* blkcntrl.dtx: Added warning when \smallblocks called twice.
+	Changed \item[]\hook to \item\relax hook following latest
+	classes.dtx (did it change there?).
+	
+	* slemph.dtx: Significant change: \itswitch (and \slswitch) now
+	switches iff the current font is italic (slanted), rather than
+	switching when the current font is sloped
+	(i.e., either slanted OR italic).
+
+	* lips.dtx: Revise documentation.
+	
+1999-02-23  Matthew Swift  <swift@alum.mit.edu>
+
+	* README: Thorough revision.
+	* Makefile: Thorough revision.
+	* INSTALL: Thorough revision.
+	
+1999-02-18  Matthew Swift  <swift@alum.mit.edu>
+
+	* install-lsr: Changed [ -n "$addlsr" ] to [ $addlsr ]; revised
+	comments.  Moving to Frankenbundle directory.
+	
+1998-08-27  Matthew Swift  <swift@alum.mit.edu>
+
+	* epigraph.dtx: Added \normalcitations (see attrib.dtx) to
+	\PreEpigraph.
+
+1998-08-24  Matthew Swift  <swift@alum.mit.edu>
+
+	* achicago-bst.dtx: I changed all `new.sentence' back to
+	`new.block' because \newblock was adding a tiny bit of horiz
+	space, and that seemed like a good idea.
+
+	* achicago-bst.dtx: Removed `second.presort' function.  Removed
+	superfluous variables `sort.label' and `year.and.extra.label'.
+	Renamed several variables and functions for clarity.  Added much
+	documentation.  Streamlined and debugged
+	`make.short.label.names.q'.  Handled duplicate items in the
+	bibliography better: now handles duplicate organizations in the
+	`manual' entry type.
+
+1998-08-22  Matthew Swift  <swift@alum.mit.edu>
+
+	* achicago-bst.dtx: Added `make.vol.series.num.month.pages', which
+	seems to work for half the cases, namely, where |series| is empty.
+	Haven't written the other cases yet.
+	
+1998-08-20  Matthew Swift  <swift@alum.mit.edu>
+
+	* moredefs.dtx: *prepend macros were not prepending, they were
+	adding.
+
+	* epigraph.dtx: Changed \parbox argument from [c] default to [b].
+
+1998-08-15  Matthew Swift  <swift@alum.mit.edu>
+
+	* abbrevs.cfg: Added example in comments about changing
+	\PreFootnote.
+
+1997-11-11  Matthew Swift  <swift@alum.mit.edu>
+
+	* titles.cfg: Moved all the definitions to the main file.  The
+	config file should be expendable.
+
+	* moredefs.dtx: Added \ReserveCS* and \ReserveName* and changed
+	related dox.
+
+	* titles.dtx: Changed @ti@double@ to @doublequotes@ by using
+	\DeclareBooleanOptions to define it.
+
+	Moved the contents of the cfg file into the main file.
+
+	Added \term, \word, \defn, \foreign, \foreignword, \phrase.
+
+	* abbrevs.cfg: Added backwards compatibility of \TMNewCategory,
+	\TMDefineAbbrevPlain.
+
+	* compsci.dtx: removed \word \term \defn and put them in
+	titles package, which compsci requires.
+
+	v0.91 (beta) -> v0.92 (beta): changed the redefinition of the
+	moreverb command to recognize a variable change in the new
+	moreverb.sty.  Released to CTAN 4 Oct 96.  Is there a version of
+	the moreverb package I should be checking for?
+
+	* lips.dtx: 1.1 -> 1.2
+	
+	1.1 used \newlet but did not require moredefs (bug).  I changed to
+	use \newcommand and \let, rather than require moredefs.
+
+	Removed the \expandafters expanding \sc@t@a in
+	\sc@lips@check@punct.  This was a bug, it shouldn't have been
+	expanded.
+
+        Added more testing material.
+
+	
+	* abbrevs.dtx: \TMLongSuffix and \TMShortSuffix changed to
+	\TMInitialSuffix and \TMSubsequentSuffix.
+	
+	\TMNewCategory changed to \NewAbbrevCategory; backward compatible
+	\let is in the config file.
+	
+	\TMDefineAbbrevPlain changed to \TMDefineAbbrevStandard;
+	\tm@defineabbrevplain changed to \tm@defineabbrevstandard.
+	backward compatible \let for the former in the config file.
+	
+	Added documentation for programmer interface commands
+	\NewUserAbbrevDefiner, \NewAbbrevCategory.
+	
+	Actually implemented \TMHookAll, \TMFontAll (oops!).
+	
+	Added note about using with CJK.
+	
+1997-11-07  Matthew Swift  <swift@alum.mit.edu>
+
+	* moredefs.dtx: \NewUserInfo should use \ReserveCS to initialize
+	the variable, not \InitCS.
+
+	Fixed documentation of \NewUserCommand: order of arguments was
+	wrong; mention how the variable is initialized.
+	
+1997-10-20  Matthew Swift  <swift@alum.mit.edu>
+
+	* compsci.dtx, titles.dtx, abbrevs.dtx, moredefs.dtx: 
+	Changed \Monster* to \Franken*.
+
+	* lips.dtx, abbrevs.dtx: Revised abstract.
+
+1997-10-19  Matthew Swift  <swift@alum.mit.edu>
+
+	* compsci.dtx: Fixed problem with \char`\\ producing a " in
+	non-typewriter fonts, that is, in the definition of \meta.  I'm
+	lost on the current LaTeX font situation.  I'm using teTeX 0.4,
+	which bombs when I try to use T1 encoding.
+
+	Fixed some documentation, including ^^A comments which were
+	showing up in the codexample examples.
+	
+1997-10-18  Matthew Swift  <swift@alum.mit.edu>
+
+	* titles.cfg: Added \musictitle on 5 Aug 96; just making new
+	version now.
+
+	* lips.dtx, abbrevs.dtx, moredefs.dtx, slemph.dtx, titles.dtx:
+	Revised documentation.
+
+	* compsci.dtx, abbrevs.cfg: Corrected typos in dox.
+	
+	Use \NewRobustCommand for \cname instead of \DeclareRobustCommand.
+	
+	* abbrevs.cfg: Corrected typos in testing.
+
+	* abbrevs.dtx:	Added caveat about CJK and 8-bit input.
+	
+	Changed \TMNewAbbrevPlain to use \NewRobustCommand instead of
+	\@ifdefinable.
+
+	* moredefs.dtx: Either added or fixed \NewRobustCommand and
+	\NewTextFontCommand.
+	
+	In 1.02 (beta), which this version supercedes, I think I did the
+	  following: 
+
+		fixed bug in \InitName 
+		added \DeclareBooleanOptions, \DeclareBooleanUserOptions
+		      \SaveCS, \SaveName, \RestoreCS, \RestoreName
+		      \UndefineCS
+	
+	* INSTALL: Revised to reflect new CTANs and new distribution
+	package format.
+
+	* slemph.dtx: Changed \DeclareTextFontCommand to
+	\NewTextFontCommand.
+	
+	Changed \DeclareRobustCommand to \NewRobustCommand.
+	
+	* titles.dtx: Fixed infinite loop bug that occurred with
+	1996/12/01 and 1997/06/01 kernels with revised lookahead macros.
+	
+	Changed some legacy macro names from \sc@ to \ti@.
+
+Wed Dec 11 12:12:50 1996  Matthew Swift  <swift@bu.edu>
+
+	* README: Added pointer to INSTALL.
+

@@ -1,0 +1,190 @@
+\documentclass{minimal}
+\usepackage{logreq}
+
+% biblatex example
+% (this is a mockup of code which will be used in biblatex >= 0.9b)
+
+% sample code:
+
+% \usepackage{biblatex}
+% \bibliography{bibfile1,bibfile2,bibfile3}
+% \begin{document}
+% ...
+% \begin{refsection}[bibfile1,bibfile3]
+% ...
+% \end{refsection}
+% ...
+% \begin{refsection}[bibfile4,bibfile6,bibfile2]
+% ...
+% \end{refsection}
+% ...
+% \begin{refsection}[bibfile5,bibfile6]
+% ...
+% \end{refsection}
+% \end{document}
+
+% workflow:
+
+% latex file	(-> all requests active)
+% bibtex file
+% bibtex file1-blx
+% bibtex file2-blx
+% bibtex file3-blx
+% latex file	(-> all requests inactive)
+
+% additional bibtex passes may be required to resolve xrefs,
+% additional latex passes may be required to resolve labels;
+% i.e., the workflow may get as complex as this:
+
+% latex file	(-> all requests active)
+% bibtex file
+% bibtex file1-blx
+% bibtex file2-blx
+% bibtex file3-blx
+% latex file	(-> all requests inactive)
+% bibtex file
+% bibtex file1-blx
+% bibtex file2-blx
+% bibtex file3-blx
+% latex file	(-> latex request active, bibtex requests inactive)
+% latex file	(-> both requests inactive)
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex}
+    \option{--min_crossrefs 2}
+    \infile{\jobname}
+  }
+  \input{
+    \file{\jobname.aux}
+  }
+  \output{
+    \file{\jobname.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile1,bibfile2,bibfile3}
+  }
+  \requires[type=static]{
+    \file{biblatex.bst}
+  }
+}
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex}
+    \option{--min_crossrefs 2}
+    \infile{\jobname1-blx}
+  }
+  \input{
+    \file{\jobname1-blx.aux}
+  }
+  \output{
+    \file{\jobname1-blx.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname1-blx.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname1-blx.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile1,bibfile3}
+  }
+  \requires[type=static]{
+    \file{biblatex.bst}
+  }
+}
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex}
+    \option{--min_crossrefs 2}
+    \infile{\jobname2-blx}
+  }
+  \input{
+    \file{\jobname2-blx.aux}
+  }
+  \output{
+    \file{\jobname2-blx.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname2-blx.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname2-blx.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile4,bibfile6,bibfile2}
+  }
+  \requires[type=static]{
+    \file{biblatex.bst}
+  }
+}
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex}
+    \option{--min_crossrefs 2}
+    \infile{\jobname3-blx}
+  }
+  \input{
+    \file{\jobname3-blx.aux}
+  }
+  \output{
+    \file{\jobname3-blx.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname3-blx.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname3-blx.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile5,bibfile6}
+  }
+  \requires[type=static]{
+    \file{biblatex.bst}
+  }
+}
+
+\ltxrequest{biblatex}{1}{
+  \provides[type=dynamic]{
+    \file{\jobname.aux}
+    \file{\jobname1-blx.aux}
+    \file{\jobname2-blx.aux}
+    \file{\jobname3-blx.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.bbl}
+    \file{\jobname1-blx.bbl}
+    \file{\jobname2-blx.bbl}
+    \file{\jobname3-blx.bbl}
+  }
+  \requires[type=static]{
+    \let\do=\file
+    \docsvlist{biblatex.def,numeric.bbx,standard.bbx,numeric.cbx,
+               biblatex.cfg,american.lbx,english.lbx}
+  }
+}
+
+\begin{document}
+\end{document}

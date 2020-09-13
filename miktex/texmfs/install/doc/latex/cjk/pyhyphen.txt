@@ -1,0 +1,107 @@
+This is the file pyhyphen.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+Hyphenation patterns for unaccented pinyin syllables
+----------------------------------------------------
+
+Sometimes it makes sense to use unaccented pinyin syllables for common names
+and phrases which are repeated frequently; sometimes you are in an
+environment which doesn't allow accented pinyin syllables at all. For such
+cases it is desirable to have correct hyphenation, avoiding manually added
+hints using e.g., `\-' between the syllables.
+
+Fortunately, due to the limited numbers of Chinese pinyin syllables (407 for
+Mandarin), it is easy to create hyphenation patterns. The logical
+consequence is to add a new `language' to the Babel package, and exactly
+this can be found in the directory utils/pyhyphen.
+
+
+Installation
+------------
+
+This is fairly straightforward. Move the Babel language definition file
+pinyin.ldf file to a place found by TeX. If you e.g., maintain a local TEXMF
+tree, a good place would be $TEXMFLOCAL/tex/generic/babel/pinyin.ldf.
+Similarly, move the pinyin hyphenation pattern file pyhyph.tex into your
+(local) TEXMF tree: The analogous place would be
+$TEXMFLOCAL/tex/generic/hyphen/pyhyph.tex.
+
+Now run texconfig (or a similar tool) to add pyhyph.tex to the used
+hyphenation patterns. In the usual case you have to add a line saying
+
+  pinyin    pyhyph.tex
+
+to the hyphenation configuration file language.dat. Finally, build a new
+format file (usually the command `initex latex.ltx'); in most cases this
+happens automatically.
+
+Using Babel ensures that it works both with LaTeX and Plain TeX.
+
+
+Usage
+-----
+
+Do something like this:
+
+  \documentclass[...]{...}
+
+  \usepackage[T1]{fontenc}
+  \usepackage[pinyin,german,english]{babel}
+  ...
+
+  \begin{document}
+  ...
+  \foreignlanguage{pinyin}{some pinyin syllables}
+  ...
+  \end{document}
+
+
+Note 1: pinyin.ldf is intentionally very minimal. Don't expect that e.g.,
+        \chapter yields a pinyin version of the Chinese word for `chapter'.
+        It might be useful to define a shorthand macro like the following:
+
+          \newcommand{\py}[1]{\foreignlanguage{pinyin}{#1}}
+
+        Now you can simply say
+
+          \py{Beijing}
+
+Note 2: The hyphenation patterns use `umlaut u' with code position 0xFC
+        (this is latin-1 and T1 encoding). You can also use OT1 encoding,
+        but then the patterns containing `umlaut u' won't work.
+        Additionally, the quote character `'' is used as a letter which is
+        needed to resolve ambiguities like this:
+
+          Xi'an <-> Xian        
+
+        If a syllable not at the beginning of a word starts with a vowel
+        (i.e., `a', `e', or `o'), you must precede it with a quote
+        character. Example:
+
+          Tian'anmen
+
+        The hyphenation patterns correctly treat it as Tian'-an-men.
+
+        The shorthand `"u' (as used in German) is available to input
+        `umlaut u'.
+
+Note 3: Most Babel language support files define a `<language>.sty' file
+        also. This is not true for pinyin! pinyin.sty is used for accented
+        pinyin syllables which don't need a special hyphenation support.
+        (pinyin.sty works with Plain TeX also.)
+
+
+Technical details
+-----------------
+
+The dictionary used to construct the hyphenation patterns has been created
+with the small C program `pinyin.c' which simply combines all existing
+Chinese syllable pairs, inserting quote characters where needed. Then,
+`patgen' has been run on the dictionary; `pinyin.tr' defines the used
+character set.
+
+Due to the regularity of the word combinations, only two-letter patterns of
+the first level are needed to find all possible breaks without a single
+error or omission.
+
+---End of pyhyphen.txt---

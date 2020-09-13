@@ -1,0 +1,1150 @@
+%%% The file READMEb5.tex . This file is part of LaTeX2e CJK package.
+%%%
+%%% Note that this document is a very first version. Therefore, lots
+%%% of installation steps and issues are still left blank. Please be
+%%% patient and wait for the next new release. I'm sorry for any
+%%% inconveniences. I also deeply expect that everyone who is
+%%% interested in this topic gives me suggestions and corrections in
+%%% any respects. Thanks in advance.
+%%%
+%%% Revision 1.5  1996/11/22 10:49:00  d791013
+%%% * modify some context presentations.
+%%%
+%%% Revision 1.4  1996/10/23 03:59:40  d791013
+%%%   Revision control by CVS.
+%%%
+%%% Revision 1.3  1996/07/27 11:19:20  d791013
+%%% 1. In compliance with CJK version 4.0.0
+%%% 2. Fill up some unfinished sections in previous versions of this
+%%%    file. 
+%%% 3. Add more usages for MULE and AUCTeX.
+%%%
+
+\documentclass[12pt,a4paper]{article} 
+\usepackage{array,CJK}
+\RequirePackage{shortvrb}
+\MakeShortVerb{\|}
+
+% enlarge text width and height (for saving number of pages)
+\addtolength{\textwidth}{1in}
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\textheight}{1in}
+\addtolength{\topmargin}{-.5in}
+
+\begin{document}
+\begin{CJK*}{Bg5}{bsmi}
+\CJKtilde
+
+% local commands
+\newcommand{\ntutocjk}{~\textsf{ntu2cjk}~}
+\newcommand{\ttftopk}{~\textsf{ttf2pk}~}
+\newcommand{\hookstroke}{\raisebox{2pt}{\scriptsize $\surd$}}
+\newcommand{\crossmark}{$\times$}
+\newcommand{\bigfive}{~\textrm{Big-5}~碼}
+\renewcommand{\figurename}{圖~}
+\renewcommand{\tablename}{表~}
+
+%% end of header
+
+\title{\bigfive中文系統下的~CJK \LaTeXe~排版系統\\
+  (For CJK version 4.1.0)}
+\author{
+  李君宇\thanks{The author of the \textsf{ntu2cjk} package.
+        \textsf{E-mail:} d791013@ce.ntu.edu.tw}\ (Chun-Yu Lee) \and
+  Werner Lemberg\thanks{The author of the \LaTeXe\ CJK package.
+        \textsf{E-mail:} wl@gnu.org}}
+\date{20 Nov. 1996}
+\maketitle
+
+\tableofcontents
+
+\section{簡介}
+\label{sec:introduction}
+
+本文主要針對內容以\bigfive為主的中文文件（當然亦可包含外文及圖形等），
+欲使用~\LaTeXe~及~CJK~系統進行排版列印，其所需的基本要求與安裝步驟等，
+做一簡要的介紹。其範圍雖不能涵蓋要編好一篇（或一本）圖文並茂的文章所需
+之主題，但也足夠應付一般性的文件\footnote{本文將會在日後慢慢地修正與補
+  充相關主題，以加強其結構及內容。同時也期待讀者能提供寶貴的意見，以為
+  下一次出版之參考。}。
+
+本文的內容以配合~CJK 4.x.x~系統的設定為主。修改本文之同時，CJK~的版本
+是~4.1.0。
+
+\subsection{閱讀指引}
+\label{sec:reading-guides}
+
+下面是簡單的閱讀指引：
+\begin{itemize}
+\item 先確定你欲安裝的~CJK~版本是否是本文所描述的，若不同，請取得與本
+  文相容的~CJK~版本，或取得最新的~CJK~版本，並閱讀其所包含的本文件檔案。
+\item 若因版本之不同，您亦可以~CJK~文件中的~INSTALL~為主，佐以字型安裝
+  系統（\textsf{ntu2cjk}~或~\textsf{ttf2pk}）中相關的說明文件，再瀏覽
+  本文內容作為參攷性質，適當地安裝整個中文排版系統。
+\item 若您曾經安裝過~CJK，您可直接參考第~\ref{sec:steps}~節“安裝步驟”。
+\item 若在您的系統中，尚未安裝有中文~TFM、PK、或~PFB~等檔案，可參考第~
+  \ref{sec:install-fonts}~節“字型安裝”。
+\item 若您覺得上述的安裝步驟不夠具體，請參考第~\ref{sec:my-settings}~
+  節“我的例子”。
+\item 若想知道如何取得相關檔案，請參考附錄~\ref{sec:getting-files}“檔
+  案取得”。
+\item 若想對本文所使用之字詞有所疑惑，請參考附錄~\ref{sec:terms}“名詞
+  解釋”。
+\end{itemize}
+
+注意：本文內容在字型的安裝方面，對於\ttftopk的介紹較少\footnote{因本文
+  的主要作者只有使用\ntutocjk來安裝字型，對一些\ttftopk新的改變已不熟悉。}
+讀者可自~CJK~的文件套件中有關中文的說明檔~|NTeXb5.doc|~（與本檔案置於同
+一目錄中）得到詳細的解說。
+
+另外本文在對於~em\TeX~環境下的安裝解說，也只是翻譯自~CJK~文件中的~
+|INSTALL|~這個檔，本文作者並未實作過。
+
+\subsection{進一步的資訊來源}
+\label{sec:further-information}
+
+\begin{itemize}
+\item 文獻~\cite{latex2nd}~為基本手冊。
+\item 文獻~\cite{latex-companion:1993}~可為進階手冊。
+\item 參考~Newsgroup |comp.text.tex|~的~FAQ。
+\item 有關~\TeX/\LaTeX~常問的問題，可參攷文獻~\cite{tex-faq:1.9c}（版本
+  稍舊）。
+\end{itemize}
+
+\section{系統需求}
+\label{sec:requirements}
+
+\subsection{硬體環境}
+\label{sec:hardware-requirements}
+
+\TeX/\LaTeX~系統目前幾乎絕大部分的作業系統皆有支援。在~RAM~的需求上則
+視欲編排檔案的大小，小則數十萬位元，大則數百萬位元。雖然~\TeX/\LaTeX~
+系統在~286~以前的機器就能跑（沒記錯的話），但最好還是有~8MB~以上的記憶
+體，以應付中文字之所需。至於硬碟空間，在中文字型的使用需下，最好能有~
+150MB~的空間（\TeX~系統約~30MB，8~種~NTU~全真字型及其轉換字型，PS~及~
+PK~字型等，約~80MB）。
+
+\subsection{軟體需求}
+\label{sec:software-requirement}
+
+\begin{itemize}
+\item 對~\LaTeX~系統有概括的認識與對此系統具基本操作的能力。最好你有文
+  獻~\cite{latex2nd,latex-companion:1993}~這兩本書在手邊。
+\item \LaTeXe~的執行環境。包括~\TeX/\LaTeX~的相關環境。
+\item \LaTeXe\ CJK~系統。
+\item 若想安裝~PS~字型\footnotemark\addtocounter{footnote}{-1}，您需要
+  \begin{enumerate}
+  \item \textsf{ntu2cjk}~系統。
+  \item NTU TrueType~字型。
+  \item gcc~編譯器及相關環境、GNU make。
+  \item GhostScript(3.12~以上的版本)。
+  \item |afm2tfm|。
+  \item 解壓縮程式： |arj|、|gzip|、|tar|。
+  \item 若想從~PS~字型建立~PK~字型，則需~|ps2pk|~或~|gsftopk|。
+  \end{enumerate}
+\item 若欲安裝~PK~字型\footnote{就中文文件的排版、預覽及列印所需的字型
+    而言，可以單獨只存在有~PK~字型或~PS~字型；但就方便性與可攜性而言，
+    筆者建議，以動態的方式產生~PK~字型並保有完整（或常用及動態）的~PS~
+    字型，是較佳的組合。}，參考第~\ref{sec:install-pk-fonts}~節之描述。
+\item 輸出：|dvips|、|dvi2xx|、及其他~dvi~格式的轉換程式與其下游的轉換
+  程式。
+\end{itemize}
+
+
+\section{安裝步驟}
+\label{sec:steps}
+
+本節將主要的安裝流程，條列如下，各項中詳細的安裝指引，將在以後的各節中
+闡述：
+\begin{enumerate}
+\item 若是~\TeX/\LaTeX~系統己安裝好，請跳下一步。否則根據自己使用的作
+  業系統，決定應使用何種~\TeX~系統，並參考系統需求（第~
+  \ref{sec:requirements}~節）、檔案取得（附錄~\ref{sec:getting-files}）
+  及其他於附錄中各節之資料，取得相關檔案，並按所取得資料中的指示安裝。
+  若取得的系統沒有~\LaTeXe~系統，或是您想更新至較近的版本，則可另外自~
+  CTAN~取得，在已安裝好的~\TeX~環境中架上~\LaTeXe。
+\item 確定~\LaTeXe~己安裝妥當。可以一~\LaTeXe~格式且內容為英文的檔案
+  （如~|sample.|\linebreak[1]|tex|），從執行~|latex|~編譯，以~|xdvi|~
+  或~|dviscr|、|dvisvga|~等等）預視、到~|dvips|~或~|dvilj|~轉成印表格
+  式（PostScript~或~PCL~等格式）並印出，以判斷是否安裝正確。
+\item 安裝~CJK~中文~\LaTeXe~系統（參考第~\ref{sec:install-CJK}~節）。
+\item 選擇安裝~PK~或~PS~字型或二者皆安裝（參考第~
+  \ref{sec:install-pk-fonts}~節或第~\ref{sec:install-ps-fonts}~節）。
+\item 以~CJK~系統中所提供之中文~\LaTeXe~檔，|READMEb5.tex|，做測試（參
+  考第~\ref{sec:my-settings}~節）。
+\item 若有問題，請參考第~\ref{sec:trouble-shooting}~節“問題解決”。
+\end{enumerate}
+
+
+\section{安裝~CJK~中文~\LaTeXe~系統}
+\label{sec:install-CJK}
+
+請針對您所使用作業系統，參考下面對應的小節。
+
+\subsection{在~UNIX~系統下~(web2c)}
+\label{sec:install-under-unix}
+
+\begin{enumerate}
+\item 找個適當的目錄將取回的~CJK~壓縮檔解開。例如您將其解開至~
+  |/tmp/CJK|。
+\item 如果您能以系統管理者的身份（root）安裝，則可將解壓後的~CJK~目錄
+  中~|texinput|~目錄下的所有檔案（保持原目錄結構）移至~\TeX~系統能找到
+  的地方（通常是~
+  |${TEXMF}/|\linebreak[1]|tex/|\linebreak[1]|latex/|\ldots，
+  |${TEXMF}|~是~web2c~的~home，一般為~
+  |/usr/|\linebreak[1]|local/|\linebreak[1]|lib/|\linebreak[1]|texmf|），
+  並將此目錄名改成~CJK~或適當的名稱。如果您不是使用較新版的~\TeX~（像~
+  web2c，這些~\TeX~系統，提供了遞迴搜尋子目錄檔案的能力），則將~
+  |texinput|~目錄下的所有檔案移至~\TeX~系統能找到的地方。例如：
+  \begin{verbatim}
+  $ cd /usr/local/lib/texmf/tex/latex
+  $ mv CJK CJK.old
+  $ cd /tmp/CJK
+  $ cd 4_1.0
+  $ mv texinput /usr/local/lib/texmf/tex/latex/CJK
+  \end{verbatim}
+  如果您不能以~root~的權限安裝，請以類似於下面的指令稍作修改（如果使用~
+  |csh|），並建議將之加入~|.login|（用於~|/bin/csh|）或~|.profile|（用
+  於~|/bin/sh|）中，使得~\TeX~能搜尋到~CJK~目錄：
+  \begin{verbatim}
+    setenv TEXINPUTS: 你的 CJK 目錄名//
+  \end{verbatim}
+  注意，若您所使用的~\TeX~系統不支援多層子目錄搜尋，則將確切的目錄名稱
+  群，加入至~|TEXINPUTS|~的環境變數中；或者將~|texinput|~目錄下及~
+  |Bg5|~目錄下的所有檔案移至某個目錄中，並視此目錄為~CJK~目錄。
+
+  例如（以~|sh|~指令為例）：
+  \begin{verbatim}
+  （假設您想將 CJK 的 texinput 目錄移至 ~/CJK/texinput）
+  # cd ~/CJK  （至 CJK 子目錄）
+  # mv texinput texinput.old  （如果您有舊的 texinput 目錄，先備份）
+  # cd /tmp/CJK  （至解開 CJK 的地方）
+  # cd 4_1.0  （至目前的版本下）
+  # mv texinput ~/CJK  （將 texinput 子目錄移至 ~/CJK）
+  # TEXINPUTS=":~/CJK/texinput//"  （定義環境變數）
+  # export TEXINPUTS  （設為通用的環境變數）
+  \end{verbatim}
+\item 參考第~\ref{sec:install-fonts}~節字型安裝，將~|.tfm|~檔，PK~字型
+  或~PS~字型安裝至適當的目錄下。
+\item 參考第~\ref{sec:install-.fd}~節安裝~|.fd|~檔，或參考~|fonts.txt|，
+  並根據字型安裝的結果，設定相關的~|.fd|~檔。以本文針對的\bigfive中文而
+  言，必須修改~|c00kai.fd|（如果您將楷書字族設為~|kai|）、|c00fs.fd|
+  （如果您使用仿宋字族並定為~|fs|）…等相關檔案（亦可參考\ttftopk或
+  \ntutocjk所提供的範例）。
+\item 在解開的~CJK~目錄中，進入~\texttt{utils/Bg5conv}~目錄中，編譯~
+  |bg5conv.c|，如：
+  \begin{verbatim}
+  gcc -O -s -o bg5conv bg5conv.c
+  \end{verbatim}
+  將產生的執行檔~|bg5conv|~連同~|bg5latex|~這個檔，移至~\TeX~系統中放
+  置執行檔的目錄中（如果權限足夠）。或置於個人的目錄中，並確定此目錄存
+  在於環境變數~|PATH|~中（或在~|PATH|~中增加一執行路徑，建議將此路徑的
+  設定加到~login~的啟始檔中）。
+
+  例如：
+  \begin{verbatim}
+  # cd /tmp/CJK/4_1.0
+  # cd utils/Bg5conv
+  # gcc -O -s -o bg5conv bg5conv.c
+  # mv bg5conv bg5latex ~/bin
+  # export PATH=$PATH:~/bin
+  \end{verbatim}
+  注意，如果您有舊的~|bg5conv|~執行檔，請務必更新，因~4.0~以上的版本與
+  較早的版本不同（以~``|^^FF|''~為分界字元而不是~``|.|''）。
+
+\item 進入子目錄~|doc/chinese|~中，測試您的設定：
+  \begin{verbatim}
+  # cd /tmp/CJK/4_1.0
+  # cd doc/chinese
+  # bg5latex READMEb5.tex
+  \end{verbatim}
+  看是否能順利完成編繹。
+\end{enumerate}
+
+\subsection{在~DOS~或~OS/2~系統下}
+\label{sec:install-under-dos}
+
+\begin{enumerate}
+\item 找個適當的目錄將取回的~CJK~壓縮檔解開。
+\item 將~CJK~系統中~|texinput|~目錄下的所有檔案（保持原目錄結構）移至~
+  \TeX~系統能找到的地方，並將此目錄名改成~|CJK|~或適當的名稱。如果您不
+  是使用較新版的~\TeX（像~em\TeX，這些~\TeX~系統，提供了遞迴搜尋子目錄
+  檔案的能力），則將~|texinput|~目錄下與及您要使用的內碼目錄（Bg5）下
+  的所有檔案移至~\TeX~能找到的地方。
+
+  以~em\TeX~系統為例，將~CJK~的~|texinput|~中的檔案移至~
+  |c:\emtex\|\linebreak[1]|texinput\|\linebreak[1]|CJK\|\ldots，並以
+  下面的指令稍作修改，以使得~\TeX~能搜尋到~CJK~目錄：
+  \begin{verbatim}
+  set emtexdir=c:\emtex
+  set texinput=%emtexdir%\texinput!!
+  \end{verbatim}
+\item 在~CJK~系統中的~|utils\|\linebreak[1]|Bg5conv|~目錄中，將~
+  |bg5conv.|\linebreak[0]|exe|~連同~|bg5latex.|\linebreak[0]|bat|~移至~
+  \TeX~的執行路徑~(|PATH|)~中的某個目錄（或增加一執行路徑）。
+\item 參考~\ref{sec:install-fonts}~安裝字型一節，將~|.tfm|~檔，PK~字型
+  或~PS~字型安裝至適當的目錄下。
+\item 參考~\ref{sec:install-.fd}~安裝~|.fd|~檔一節，根據字型安裝的結果，
+  設定相關的~|.fd|~檔。（可參考\ttftopk或\ntutocjk所提供的範例）。
+\end{enumerate}
+
+
+\section{字型安裝}
+\label{sec:install-fonts}
+
+本文僅以由~True Type~字型產生的~PK~字型或~PS~字型為說明。字型之取得參
+考附錄~\ref{sec:getting-files}~之說明。
+
+PK~字型（或~PS~字型）最好安裝在當你要升級~\TeX/\LaTeX~系統時不會影響的
+位置\footnote{事實上，最好將那些正常安裝~\TeX/\LaTeX~系統以後，你必需
+  額外修改或安裝的檔案及程式，都放在另外較私有的目錄中，然後再以~link~
+  的方式置放於原本應處的位置。在~DOS~下，字型檔以加在環境變數的路徑中
+  為主，其它的則以複製的方式取代~link。}，因為一旦此類字型產生後，即可
+長時期的使用；另外，如果每次要升級~CJK~系統或~\TeX/\LaTeX~系統時，也可
+放心大膽的下手。
+
+\subsection{PK~字型}
+\label{sec:install-pk-fonts}
+
+\subsubsection{自動產生~PK~字型}
+[尚未完成，請參考\ttftopk或\ntutocjk的安裝說明]
+
+\subsubsection{預先產生~PK~字型}
+[尚未完成，請參考\ttftopk的安裝說明]
+
+\subsubsection{由~PS~字型產生~PK~字型}
+參考~\ref{sec:install-ps-fonts} PS~字型一節。
+
+\subsection{PS~字型}
+\label{sec:install-ps-fonts}
+
+此處所指的~PS~字型為中文~PostScript Type 1~字型，如果再加上一個或二個
+的~PS~字型（以這些中文~Type 1~字型為基底所構成的字型），可組成~
+PostScript Type 0~的字型。但~\TeX~系統目前仍無法取用~Type 0~的字，所以
+本文也不會提及。另外直接取用~TTF~字型在未來也可能實現，例如~
+Ghostscript~在新的版本中（4.01）已能使用~TTF~字型。
+
+以安裝楷書~PS~字型為例，簡述其流程如下（詳細請參考\ntutocjk中的~
+|README|~檔）：
+\begin{enumerate}
+\item 每次針對一個字族（font family，如楷書）產生~|.tfm|~及~|.pfb|~檔
+  案。
+\item 修改字族相關的~makefile~檔，如修改~|kai.mak|~的內容（以下以楷書
+  為例）。
+\item 若您使用~UNIX~系統，輸入下面的指令
+  \begin{verbatim}
+  make unix FONTMAK=kai.mak
+  \end{verbatim}
+  若您在~DOS~下，請下：
+  \begin{verbatim}
+  make dos FONTMAK=kai.mak
+  \end{verbatim}
+  若一切順利，應有~55~個的~|.pfb|~檔案和~55~個（或~110~個，如果~
+  |EXTENDED_FONT|~是設~|YES|）|.tfm|~檔案，且~TFM~檔案的大小，每個約為~
+  1.2kB~左右。
+\item 下~|make install-fonts|~此指令，可將所有產生的字型安裝至您設定在~
+  |kai.mak|~檔案中所指定的目錄中。您可能也需要以~|make install-maps|~
+  這個指令安裝~|Fontmap|~及~|psfonts.map|~等。
+\item 根據以上所定義字型相關的名稱，您必須修改~|c00kai.fd|~並移至~
+  \TeX~找得到的目錄。或者修改~|c00kai.fdx|，如果~|EXTENDED_FONT|~是設
+  為~|YES|，移至適當目錄後，必須將其名稱改為~|c00kai.fd|。
+\end{enumerate}
+
+\subsubsection{由~PS~字型產生~PK~字型}
+
+由~PS~字型產生~PK~字型，通常您需要藉~|gsftopk|~或~|ps2pk|~來完成。
+
+如果以~|gsftopk|~產生~PK~字，還需要~|gs|（Ghostscript）的輔助，因此在
+您案裝好~PS~字型後，記住要將字型所在的目錄名，加到~|GS_LIB|~這個環境變
+數中，或者將由\ntutocjk所產生~|.pfb|~檔，以~symbolic link~的方式，全部~
+link~到~|gs|~所定義的字型目錄中。
+
+如果用~|ps2pk|，您需要~AFM~檔（在\ntutocjk製造~|.pfb|~檔案的過程中，會
+產生~AFM~檔）。最好取得最新的版本，以保証在讀取~PS~字型與~AFM~檔時，不
+致產生問題。
+
+在您所使用的~\TeX/\LaTeX~系統中，大概都有~|MakeTeXPK|~這個檔，它的功用
+即是在系統發現某個~PK~字型不存在時，自動產生之。而此檔似乎不需特別的額
+外設定，都有自動由~PS~檔產生~PK~字型的功能。當然前提是這些~PS~字型必須
+出現在~|psfonta.map|~中，|MakeTeXPK|~用此檔中的字型判斷正要產生字是否
+為~PS~字型（其實這需要視您所安裝的相關系統而定）。
+
+%\section{不同電腦平臺下之注意事項}
+%\label{sec:platforms}
+
+%\subsection{DOS}
+%\label{sec:platform-dos}
+
+%\subsection{UNIX}
+%\label{sec:platform-unix}
+
+\subsection{安裝~\texttt{.fd}~檔}
+\label{sec:install-.fd}
+
+當你要的字型（TFM~檔案、PK~字型、或~PS~字型）按照上述幾節方式安裝妥當
+後，您也須要適當地設定相關的~|.fd|~檔。本節將簡述之。
+
+\LaTeXe~的~\textsf{NFSS}~規格中，要描述一種字型包含有下列參數：
+\begin{enumerate}
+\item Encoding：編碼方式，如~|T1|、|OT1|、|DC|~等。|U|~表示~unknown。
+  CJK~系統的編碼方式（參考~|fonts.txt|）一為文件介面所用，如~|Bg5|、
+  |GB|、|Bg5pmC|~等，一為~\textsf{NFSS}~所使用，如~|C00|、~|C10|、
+  |C01|~等。此處，即定義在~|.fd|~檔中的編碼方式需使用後者。以吾人所使
+  用的\bigfive為例，~|C00|~是必需定義的。
+\item Family：字族，如~|cm|、|cmss|、|cmtt|~等，CJK~系統在安裝\bigfive的
+  字型需自行定義，但需符合~\textsf{NFSS}~的規定，即定義字族的字數不可
+  超過五個字母。您可參考包含在解開檔案中的範例，如~|c00kai.fd|。CJK~系
+  統以楷書、明體、棣書等表示字族。吾人可用~|kai|、|song|、|ming|、|fs|、
+  |black|、|round|~等等表示\bigfive的字族。
+\item Series：字系列（橫向的尺寸），如~|m| (medium)、|b| (bold)、|bx|
+  (extended bold)~等，CJK~沿用此規格。
+\item Shape：字形狀，如~|n|、|sl|、|ol|、|it|~等。CJK~沿用之。
+\item Size：字大小（點數），如~|10|、|12|~等
+\item |\baselineskip|：相鄰兩行的基準線間距，大部分情況用不到此參數。
+\end{enumerate}
+
+根據以上的敘述，以下簡單介紹該檔的結構與語法，以~|c00kai.fd|（在~
+\texttt{texinput/Bg5}~目錄下）檔包含三個主要的指令：
+\begin{enumerate}
+\item |\ProvidesFile{c00kai.fd}{|{\em release-info}|}|：說明本檔名並避
+  免重複載入。
+\item |\DeclareFontFamily{C00}{kai}{}|：說明此檔以~|C00|~的編碼且描述~
+  |kai|~字族。其中~|C00|~是~\textsf{NFSS} encoding。
+\item |\DeclareFontShape{C00}{kai}{m}{n}{<-> CJK * b5ka}{}|：此命令的
+  第五個參數較複雜，可參考~|fonts.txt|~的說明。其中~|*|~號右的參數即是
+  一組字型檔名的字首，CJK~系統會在尾端加上二位數字，成為字型名稱
+  （sub-font name），不論是~|.tfm|~檔、|.pfb|~檔或~|pk|~檔皆需與此名一
+  致。|CJK|~則是字型大小函數（size function），CJK~系統定義了數個此類
+  函數，如：
+  \begin{verbatim}
+  CJK         相當於 `' (empty)  意指使用字的大小與 latex 編譯的一致。
+  sCJK        相當於 `s'         同上，但取字有誤時不警告（silent）。
+  CJKfixed    相當於 `fixed'     若需求的字大小在定義的範圍內，一律
+                                 使用指定的字。
+  sCJKfixed   相當於 `sfixed'    同上，但 keep silent。
+  CJKsub      相當於 `sub'       以另一類字型替代。
+  CJKssub     相當於 `ssub'      同上，但 keep silent。
+  \end{verbatim}
+  如此可以很方便的同時使用點陣字及向量字。
+\end{enumerate}
+
+最簡單的安裝方式就是，如果你是用\ttftopk來產生字型，則將其所提供的~
+|c00?????.fd|~複製到~\texttt{texinput/Bg5}~下；若是以\ntutocjk為主，亦
+同理為之；以此類推。
+
+\subsection{輸出中文~\LaTeX~文件與字型的關係}
+\label{sec:portability}
+
+此處所指的輸出包括從螢幕、檔案及紙張等。表~\ref{tab:soft-vs-fonts}~是
+本文所提及的一些軟出軟體與其所使用字型間的關係（除了特別說明外，軟體之
+版本大致皆為本文撰寫時最近的版本）。由此表可知，PK~字在預視時是不可或
+缺的，而~PS~字在列印包含有~PostScript~檔案（|.eps|、|.ps|~等）的文件時
+亦必需用到。
+\begin{table}[htbp]
+  \begin{center}
+    \leavevmode
+
+    \begin{tabular}{|>{\ttfamily}c|c|c|c|} \hline
+      輸出軟體          & 功能               & CJK PK~字型
+        & CJK PS~字型        \\ \hline
+      xdvi              & 預視               & \hookstroke
+        & \crossmark         \\
+                        &                    &
+        & （能有一個預設字） \\ \hline
+      dvisvga           & 預視               & \hookstroke
+        & \crossmark         \\ \hline
+      dvips             & 輸出至檔案或印表機 & \hookstroke
+        & \hookstroke        \\
+      （5.60~版本以下） &                    &
+        & （但為全部載入）   \\ \hline
+      dvihp             & 輸出至檔案或印表機 & \hookstroke
+        & \crossmark         \\ \hline
+      gs                & 預視及輸出         & \crossmark
+        & \hookstroke        \\ \hline
+    \end{tabular}
+
+    \caption{~\TeX~相關軟體與使用~CJK~字型間之關係。}
+    \label{tab:soft-vs-fonts}
+  \end{center}
+\end{table}
+
+要產製一篇圖文並茂的文章，尤其是中文文章，字族（font family）與其尺寸
+大小（font size）的變化是不可或缺的。對輸出時必須的~PK~與~PS~字型而言，
+若在此狀況下比較二者的差別，印表的方便性也可說是各有千秋；若在磁碟空間
+的使用上，可能就有所差異。因為同一字族但不同大小的字，PK~字型必需每種
+使用到的尺寸皆載入至其輸出檔中，而~PS~字型只需一次。
+
+目前，文章中所有使用到的~PFB~字型，若要產生內含式的~PS~檔案
+（self-contained Postscript output），|dvips|~會全部載入至其輸出中。而
+下一次出版的~|dvips|~程式中，將可能針對其輸出檔中的此項缺點有所改進；
+意即新的版本只會載入在文章中有使用到的字其在~|.pfb|~檔中所對應之定義的
+部分。（在筆者測試~|dvips| 5.60~版時，暫時無法成功地使用中文~CJK PS~字
+型，不過相信快了。）
+
+目前暫時可用~|fontload|~這個軟體，達成這個功能。
+
+
+\section{我的例子}
+\label{sec:my-settings}
+
+目前我使用的是~Linux~作業系統，\TeX/\LaTeX~則使用~te\TeX~環境，相關的
+目錄如下：
+\begin{itemize}
+\item |/usr/local/lib/texmf| 存放~\TeX/\LaTeX~系統。
+\item |/usr/local/lib/ghostscript| 存放~Ghostscript。
+\item |/usr/local/lib/ntuttf| 存放~NTU TrueType~字型及由\ntutocjk所產
+  生的相關字型。
+\item |~/CJK/4_1.0| 存放解開的~CJK~系統。
+\end{itemize}
+
+我以正常的安裝程序，將~te\TeX~安裝在~|/usr/local/lib/texmf|；之後將~
+CJK~在我的~|$HOME/CJK|~下解開，CJK~軟體中所有的檔案便產生在~|CJK|~子目
+錄中\footnote{之所以將~CJK 安裝在自己個人的目錄下，是因為~CJK~常更新，
+  不方便常請系統管理者頻頻改變設定。再加上為了自己檔案流通性的考慮，有
+  自己一份~CJK~的設定，個人認為，自己的~CJK~文件才會有較高程度的移植性。
+  若你又是系統中負責~CJK~軟體的人，甚或是整個~\TeX/\LaTeX~的維護者，在
+  自己私人的目錄下管理並定期更新~CJK，是個不錯的方式}，例如：
+\begin{verbatim}
+  % cd 
+  % gunzip CJK-4.1.0.src.tar.gz | tar xvf - 
+\end{verbatim}
+並做以下的處理：
+\begin{enumerate}
+\item 在~|~/CJK|~下建立一符號式的檔案連結（symbolic link），名為~
+  |texinput|~且連結至目前~CJK~版本名下的~|texinput| ，
+  \begin{verbatim}
+  % cd ~/CJK
+  % rm -f texinput
+  % ln -s 4_1.0/texinput texinput
+  \end{verbatim}
+\item 編譯一個新的~|bg5conv|~執行檔。
+  \begin{verbatim}
+  % cd ~/CJK/4_1.0/utils/Bg5conv
+  % gcc -O -o bg5conv bg5conv.c
+  % mv bg5conv bg5latex ~/bin    
+  \end{verbatim}
+  若不只是安裝給自己用，則可以~|root|~的身份~|cp|~至~|/usr/local/bin|~
+  目錄下。
+\item 在我的~|$HOME|~目錄下~|.cshrc|~檔中（因為我用的是~tcsh），增加一
+  行
+  \begin{verbatim}
+  setenv TEXINPUTS ":~/CJK/texinput//"
+  \end{verbatim}
+\item 產生~|.tfm|~檔及~|.pfb|~字型。在此我按照\ntutocjk中，一一~
+  ``make''~出相對的~|.pfb|~字型，共~8~組，每組~55~個~ |.tfm|~及~|.pfb|~
+  檔。我將這些檔案移至~
+  \texttt{/usr/local/lib/\linebreak[1]ntuttf/\linebreak[1]type1/}~及~
+  \texttt{/usr/local/lib/ntuttf/afm/}~相關於其字族的目錄下。並將
+  ~|config.CJK|~及~|CJK.map|~移至~|$TEXMF/dvips|~下。
+\item 設定~|.fd|~檔。因為我使用的是以~PS~字型為主的~PFB（由\ntutocjk產
+  生）及由其產生的~PK~字型（由~|gsftopk|~產生），所以我直接採用
+  \ntutocjk所提供的~|c00|*|.fd|~檔，沒有作任何更改（因為我有責任使它與
+  我的工作環境一致 :-）。我將其移至~|~/CJK/texinput/Bg5/|~目錄下。
+\end{enumerate}
+
+\subsection{建立文稿}
+\label{sec:creating-tex}
+
+中文~CJK \TeX~文稿與一般~\TeX~文稿的不同主要在於：
+\begin{itemize}
+\item 在所謂~\LaTeX~文件的~preamble（|\documentclass|~至~
+  |\begin{document}|）區域中，必須有~|\usepackage{CJK}|~這個命令，即必
+  須載入~|CJK.sty|。
+\item 中文字必須在~|CJK|~或~|CJK*|~的中文環境中。即：
+  \begin{verbatim}
+  \begin{CJK*}{}{}
+    中文段落、章節、圖形、表格、參考文獻、…等
+    ...
+    \newpage
+  \end{CJK*}
+  \end{verbatim}
+\item 要變換字型可用~|\CJKfamily|~命令，如~|\CJKfamily{fs}|~將以下的字
+  型改成仿宋字（當然~|fs|~這個字形名稱必須定義在~|c00fs.fd|~中）。
+\end{itemize}
+
+我的用法都是以一個中文環境包住所有的文章內容，如圖~
+\ref{fig:my-example}~所示。
+
+\newsavebox{\myex}
+\begin{lrbox}{\myex}
+  \begin{minipage}{.9\textwidth}
+  \footnotesize
+  \begin{verbatim}
+    \documentclass[12pt]{article}
+    \usepackage{CJK}
+
+    \begin{document}
+    \begin{CJK*}{Bg5}{fs}
+      \CJKtilde
+
+      \section{第一節}
+      \label{sec:section-1}
+      參考圖~\ref{fig:apply-pk-and-ps-fonts}。
+
+      \begin{figure}[htbp]
+        \begin{center}
+          \leavevmode
+          \includegraphics{pkpsapps.eps}
+          \caption{|pk|~字型與~|.pfb|~字型的應用對應圖}
+          \label{fig:apply-pk-and-ps-fonts}
+        \end{center}
+      \end{figure}
+
+      \bibliographystyle{plain}
+      \bibliography{mybib}
+  
+      \newpage %使有正確的中文輸出。
+    \end{CJK*}
+    \end{document}
+  \end{verbatim}
+  \end{minipage}
+\end{lrbox}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \leavevmode
+    \fbox{\usebox{\myex}}    
+    \caption{我的~CJK~文件範例。}
+    \label{fig:my-example}
+  \end{center}
+\end{figure}
+
+\subsection{以~\LaTeXe\ CJK~編排版面}
+\label{sec:clatexing}
+
+就同一般的~\LaTeX~檔一樣，但以~|bg5latex|~取代~|latex|，如：
+\begin{verbatim}
+  % bg5latex mylatex.tex
+  或者
+  % bg5latex mylatex
+\end{verbatim}
+
+\subsection{預覽}
+\label{sec:preview}
+
+大部分情況下我以~|xdvi|~預覽~|.dvi|~檔（在~Emacs~或~Mule~中若使用~
+AUC\TeX~這套軟體，更能顯出其突出的地方，尤其是只預覽文章中的一塊區域，
+隨時可檢視該區域的排版情形）。
+
+另外，我也會視情況用不同的預視程式。比如在~Linux~的~virtual terminal
+mode~我以~|dvisvga|~預視。在缺乏~|pk|~字型或沒有~|xdvi|~的少數情形下，
+我也用~|ghostview|~預視經由~|dvips|~產生的~|.ps|~檔案。
+
+\subsection{列印}
+\label{sec:printing}
+
+產生及列印~|PostScript|~檔案是我最常用的方式，因為在我的文章中，圖形是不
+可少的資料，而它們幾乎都是~|.eps|~的格式（由~|xfig|、AutoCAD、|GnuPlot|、
+|xv|、…等所產生）。所產生的~|.ps|~檔，或者是由~PostScript~印表機，亦或
+者透過~ Ghostscript~的轉換，而輸出到~Laserjet~或~Deskjet~甚或到點陣式印
+表機去。
+
+一般而言，以~|dvips cjk-doc|~會產生可列印的輸出，再以~|lpr cjk-doc.ps|~
+的印表指令列印即可。但您若不願產生中文~PK~字型，且您不是使用~PostScript~
+印表機，又用\ntutocjk安裝~PS~字型，也針對~ Ghostscript~的設定安裝好這些
+字型，而且您的印表趨動程式能以~|gs|~為主（Linux系統上多數都以此方式設定），
+則你可以直接以~|lpr|~這個命令列印~ |.ps|~檔（甚至是~|.dvi|~檔）。如：
+\begin{verbatim}
+  % dvips -P CJK cjk-doc
+  % lpr cjk-doc.ps
+\end{verbatim}
+
+以~|dvihp|~產生列印檔也是方式之一，其輸出格式為~PCL，或是~HP~印表機的格
+式。但因無法處理文章中包含的~PostScript~檔案，所以我並不常用。
+
+當要產生可攜的列印檔案格式（self-contained PostScript file），我會以產生~
+Post\-Script~（|.ps|）的格式為主。字型來源之一是由預視後自動產生的~PK~
+字型作為~ |dvips|~的輸入字型。此方式可以下列命令完成：
+\begin{verbatim}
+  % dvips cjk_doc -o cjk-doc-contains-pk-fonts.ps
+\end{verbatim}
+此時~|psfonts.map|~中需不含\ntutocjk所產生的中文字型（CJK 4.0 以上的版本
+中所含的\ntutocjk，預設為此情形），|dvips|~才會取用中文~PK~字，或如果中
+文~PK~字型不存在的話，會自動產生之。在使用~|xdvi|~或相關軟體預視時，因以~
+PK~字型為主，在字型找不到的情況下，亦會自動產生之。
+
+另外則是令~|dvips|~取用中文~PS~字，在按照\ntutocjk中說明安裝後，所有的中
+文~PS~字的對應檔會存在於~|CJK.map|~檔中。若要以此方式產生可攜式的~|.ps|~
+檔，必須進一步地以~|gs|~或~|fontload|~等類似的軟體，將~PS~字型載入到輸出
+的檔案中。若以~|fontload|~而言，在~UNIX~系統下，可以下面的指令達成：
+\begin{verbatim}
+  % dvips -P CJK -o cjk-doc-no-ps-fonts-contained.ps cjk_doc.dvi
+  % fload cjk-doc-no-ps-fonts-contained.ps > cjk-doc-contains-ps-fonts.ps
+  % lpr cjk-doc-contains-ps-fonts.ps
+\end{verbatim}
+此時~|cjk-doc-contains-ps-fonts.ps|~或~|cjk-doc-contains-ps-fonts.ps|~就
+是完整的~PS~檔案了，也就是說，您可以丟到任何一台支援有列印~PostScript~檔
+案的印表機或程式了。
+
+以上就是我個人對~CJK~中文~\LaTeX~系統的設定，有人願意提供自己的安裝經驗嗎﹖
+
+
+\section{問題解決}
+\label{sec:trouble-shooting}
+
+在使用預覽程式的時候，可能會遇到的問題與其解決的方式如下：
+\begin{itemize}
+\item PK~字型找不到。
+\item 不會自動產生~PK~字型。
+\end{itemize}
+
+[許多問題與其解決方式尚未整理納入]
+
+
+%\section{其他}
+%\label{sec:misc}
+
+
+\section{感謝}
+\label{sec:acknowledgements}
+
+\begin{itemize}
+\item 有這麼多人，貢獻許多心力，完成許多方便且內容豐富的程式。
+\item 有更多的使用者，使用這些程式，使他們更上層樓。
+\item 這種特別的相互影響，生生不息地循環著，才提升了我們的生活層面。
+\end{itemize}
+
+
+%\section{本文作者}
+%\label{sec:the-author}
+
+%李君宇 (Chun-Yu Lee)
+%d791013@ce.ntu.edu.tw 或 \\
+%chunylee@ms1.hinet.net
+
+
+%\bibliography{READMEb5}
+%\bibliographystyle{plain}
+
+
+\begin{thebibliography}{1}
+
+\bibitem{latex-companion:1993}
+Michel Goossens, Frank Mittelbach, and Alexander Samarin.
+\newblock {\em The \LaTeX Companion}.
+\newblock Addison Wesley, 1993.
+
+\bibitem{tex-faq:1.9c}
+Bobby Bodenheimer.
+\newblock The new \TeX\ FAQ --- your 100 questions answered:
+  Version 1.9c, date 1994/12/06.
+\newblock 1994.
+
+\bibitem{latex2nd}
+Leslie Lamport.
+\newblock {\em \LaTeX\ --- A Document Preparation System --- User's
+  Guide and Reference Manual}.
+\newblock Addison Wesley, 2 edition, 1994.
+
+\end{thebibliography}
+
+
+\appendix
+\section{名詞解釋}
+\label{sec:terms}
+
+下列名詞為本文中所使用，並局限於下列意思：
+
+\begin{description}
+\item[PK~字型:] PK fonts。一種壓縮過的點陣字型格式。廣泛使用在~
+  TeX/\LaTeX~需要輸出點陣字的地方。如預視或列印輸出。在此偏指中文~CJK
+  PK~字型。
+\item[PS~字型:] PostScript Type 1 fonts。PostScript~字有數種型式，本文
+  意指~Type 1~字型。其有兩種格式：PFA (Printer Font Ascii)~及~PFB
+  (Printer Font Binary)。在此偏指中文~CJK PS~字型。
+\item[主機、工作站:] A host computer, work station, etc。泛指某臺提供
+  資源或服務的電腦。如~FTP~站。
+\item[CTAN:] Comprehensive \TeX\ Archive Network。本文指收集幾乎所有有
+  關~TeX/\LaTeX~系統及文件的~FTP~站。目前已知的~CTAN~詳列於附錄~
+  \ref{sec:ctan-mirrors}。
+\item[IFCSS:] The CCIC (Chinese Community Information Center) of IFCSS
+  (Independent Federation of Chinese Students and Scholars)。附錄~
+  \ref{sec:ifcss-mirrors}~中是幾個有名的~ifcss~站。
+\item[AFM~檔案:] Adobe Font Metrics。存有編碼及字範圍等資料。
+\item[TFM~檔案:] \TeX\ Font Metrics。
+\item[|.fd|~檔案:] 字型描述檔~(font description files)。記錄相關於某一
+  種內碼。
+\item[GS~或~GhostScript:] 常用的~PostScript~語言解譯器（interpreter）
+  之一。
+\item[|afm2tfm|:] 將~AFM~檔案格式轉換成~TFM~檔案格式的程式。
+\item[一組字型檔:] 如果是使用壓縮過的字型，即不是使用~pmC~開頭的字族，
+  共有~55~個子字型檔。例如：|b5ka01.pfb|、|b5ka02.pfb|、…、
+  |b5ka55.pfb|。
+\item[\textsf{NFSS}:] New Font Selection Scheme。由~Frank Mittelbach~
+  和~Rainer Sch\"opf~所提出的字型選擇系統。 
+\end{description}
+
+\section{檔案取得}
+\label{sec:getting-files}
+
+\begin{description}
+\item[\LaTeXe~執行環境：] 一般皆有成套的系統供使用者簡單安裝，如在~DOS~
+  下的~em\TeX；在~Linux~下有~N\TeX、~te\TeX~等；UNIX~上則如~web2c~的版
+  本等。這些都散在~CTAN~的目錄下。譬如~em\TeX~在~
+  |systems/|\linebreak[1]|msdos/|\linebreak[1]|emtex|~中；N\TeX~在﹖﹖；
+  web2c~的版本在﹖﹖。\LaTeXe~系統本身則在~CTAN：
+  |macros/|\linebreak[1]|latex/|\linebreak[1]|base|~下。
+\item[\LaTeXe~CJK~系統：] CTAN: |language/chinese/CJK|~或~IFCSS host:
+  |tex/|\linebreak[1]|CJK.X_X.|\linebreak[1]|tar.gz|。
+\item[NTU TrueType~字型：] IFCSS host: |fonts/big5/ms-win|。將楷書、明
+  體、仿宋體等部分（或全部）的~ARJ~檔取回後，參考與這些字型在同一目錄
+  的說明檔（或參考附在\ntutocjk中的~|README|~檔），將其還原成個別~TTF~
+  字型。
+\item[\textsf{ntu2cjk, ttf2pk}:] 字型產生程式。它包含在~“\LaTeXe\ CJK~
+  系統”中。
+\item[GhostScript:] CTAN:
+  |support/|\linebreak[1]|ghostscript/|\linebreak[1]|aladdin|~或~
+  |support/|\linebreak[1]|ghostscript/|\linebreak[1]|gnu|。
+\item[|dvips|:] CTAN host: UNIX~版在~|dviware/dvips|；DOS~版在~
+  |systems/msdos/|\linebreak[1]|dviware/|\linebreak[1]|dvips/|%
+  \linebreak[1]|dvips558.pc|。 
+\item[|afm2tfm|:] 包含在~dvips~系統中。
+\item[|ps2pk|:] CTAN: |fonts/utilities/ps2pk|，或包含在一般套裝的~
+  \TeX/\LaTeX~系統中。
+\item[|gsftopk|:] CTAN: |fonts/utilities/gsftopk|，或包含在一般套裝的~
+  \TeX/\LaTeX~系統中。 
+\item[|dvi2|xx:] 如~|dvilj|、|dvidm|、…。在~CTAN: |dviware|~目錄下。
+\item[AUC\TeX:] CTAN: |support/auctex|~目錄中的~
+  |auctex.tar.gz|\linebreak[1]（~unix~）或~|auctex.zip|~（dos）。 
+\item[|fontload|:] CTAN: |fonts/utilities/fontload|。
+\item[Mule~的中文輸入法：] IFCSS: |mule/lisp/quail-b5|。
+\end{description}
+
+
+\section{其他相關的軟體與工具}
+\label{sec:other-stuffs}
+
+\subsection{在~Linux~系統上的\bigfive中文系統及模擬終端機程式}
+\label{sec:chinese-systems}
+
+\begin{itemize}
+\item chdrv
+\item yact
+\item CXterm
+\item xcin
+\end{itemize}
+
+\subsection{中文編輯\ -- Mule}
+\label{sec:mule}
+
+使用~Mule~為編輯中文~\LaTeX~文件的工具的使用者，可將下面的設定加至~
+|$HOME/|\linebreak[1]|.emacs|~檔中：
+\begin{verbatim}
+  ;;; Chinese Big-5 environment
+  (set-primary-environment 'chinese)
+  (set-default-file-coding-system '*big5*)
+  (setq display-coding-system '*big5*)
+  (setq keyboard-coding-system '*big5*)
+  ;; input methods
+  (add-hook 'quail-package-alist '("tsangchi-b5" "quail/tsangchi-b5"))
+  (add-hook 'quail-package-alist '("quick-b5" "quail/quick-b5"))
+  ; the default input method
+  (setq-default quail-current-package 
+    (assoc "tsangchi-b5" quail-package-alist))
+\end{verbatim}
+
+切換中英文輸入可按~|C-]|，要選擇其他的輸入法可按~|M-s|（|Alt-s|）。
+
+設定輸入法時可選擇自己習慣的。在~IFCSS Mule~的目錄中（參考第~
+\ref{sec:getting-files}~節）有一些中文輸入法，其中包括有：
+\begin{center}
+  \begin{tabular}{ll}\hline
+    檔案                & 對應之輸入法 \\\hline
+    cns-b5-input.tar.gz & 內含~|tsangchi-b5.el|（倉頡）及 \\
+                        &  |quick-b5.el|（簡易）等輸入法 \\
+    zozy.el.gz          & 零壹注音 \\
+    cj.el.gz            & 倉頡 \\
+    simplex.el.gz       & 簡易 \\
+    punct-b5.el.gz      & 標點符號 \\
+    qj-b5.el.gz         & 全形 \\
+    etzy.el.gz          & 倚天注音 \\
+    boshiamy.el.gz      & 嘸蝦米 \\
+    array30.el.gz       & 行列~30 \\\hline
+  \end{tabular}
+\end{center}
+
+以上為較常見的輸入法。該目錄中亦包含下列輸入法：
+\begin{center}
+  \begin{tabular}{ll} \hline
+    檔案                & 對應之輸入法 \\\hline
+    4corner.el.gz       & 四角號碼 \\
+    ctlaub.el.gz        & 劉錫祥式粵音 \\
+    ecdict.el.gz        & 英漢辭典 \\
+    hs.el.gz            & 華象 \\
+    hsu.el.gz           & 許氏注音 \\
+    py-b5.el.gz         & 漢語拼音 \\
+    roman.el.gz         & 羅馬拼音 \\\hline
+  \end{tabular}
+\end{center}
+
+
+鍵好的~\LaTeX~文件檔，可執行~|bg5latex|~編譯。亦可利用~|cjk-enc.el|~這個~
+Emacs Lisp~檔，將文件先行轉換成~|.cjk|~檔，再以~|latex|~進行編譯。作法是
+在~|~/.emacs|~檔案中加入下列數行（其中函數~ |write-cjk-file|~請參考~
+|cjk-enc.txt|~）：
+\begin{verbatim}
+  (load-library "cjk-enc")
+
+  (defun write-cjk-file ()
+    "Save current buffer and <buffername>.cjk in *cjk-coding*"
+    (interactive)
+    (setq coding file-coding-system)
+    (setq bufname (buffer-file-name))
+    (string-match "\\(.*\\)\\.[^/]*$" bufname)
+    (setq body (substring bufname 0 (match-end 1)))
+    (setq newbufname (concat body ".cjk"))
+    (message "Saving %s and %s" bufname newbufname)
+    (write-file newbufname *cjk-coding*)
+    (write-file bufname coding))
+\end{verbatim}
+之後便可在每次要執行~|latex|~前，用~|M-x write-cjk-file|~命令先存檔，
+然後再以~|latex|~編繹主檔名與您的文件主檔名一樣，但延伸檔名為~|.cjk|~
+的檔案。
+
+\subsection{\TeX/\LaTeX~的好幫手\ -- AUC\TeX}
+\label{sec:auctex}
+
+簡易指引：
+\begin{enumerate}
+\item 照第~\ref{sec:mule}~節的方式將~Mule~設定妥當。
+\item 按照~AUC\TeX~的安裝指示安裝。或按照~AUC\TeX~的~default~方式安裝。
+  下列數項可做可不做。
+\item 建立一個~|bg5latex-batch|~檔，分別如下： 
+  \begin{verbatim}
+  #! /bin/sh
+  f=`echo $1 | sed -e 's|\(.*\)\.[^/]*$|\1|'`
+  bg5conv < $1 > $f.cjk
+  latex \\nonstopmode\\input{$f.cjk}
+  \end{verbatim}
+\item \label{CJK-C-cC-c}在~|.emacs|~中加入：
+  \begin{verbatim}
+  (setq TeX-command-list
+    (append TeX-command-list
+      '(("CLaTeX" "bg5latex-batch %s " TeX-run-LaTeX nil t)
+        ("CLaTeX Interactive" "bg5latex %s " TeX-run-interactive nil t)
+        ("CPrint" "fload %f | lpr" TeX-run-command t nil)
+        )))
+  \end{verbatim}
+  則可在執行~|C-c C-c|~或~|C-c C-r|~時，在要輸入~|LaTeX|~的時機，輸入~
+  |CLaTeX|。
+\item 在~|.emacs|~中加入下列數行，以便您的文件在排版時（全文則執行
+  ~|C-c C-c CLaTeX|~，區域用~|C-c C-r CLaTeX|），若有錯誤可用~|C-c `|~
+  查驗錯誤所在，並可更正之。
+  \begin{verbatim}
+  (add-hook 'TeX-translate-location-hook
+            '(lambda ()
+               (if (string-match "\\(.*\\)\.cjk$" file)
+                 (setq file 
+                       (concat
+                        (substring file 
+                                   (match-beginning 1) 
+                                   (match-end 1))
+                        ".tex")))))
+  \end{verbatim}
+\item 或者您考慮用~|cjk-enc.el|，則在~|.emacs|~中加入下列數行：
+  \begin{verbatim}
+  (defun TeX-run-CJK-LaTeX (name command file)
+    "Create a process for NAME using COMMAND to format
+     FILE with CJK/LaTeX."
+    (write-cjk-file)
+    (TeX-run-LaTeX name command file))
+
+  (if (not (assoc "CJKLaTeX" TeX-command-list))
+    (setq TeX-command-list
+      (append TeX-command-list
+        '(("CJKLaTeX" "%l '\\nonstopmode\\input{%s.cjk}'" 
+                      TeX-run-CJK-LaTeX nil t)
+          ))))
+  \end{verbatim}
+  只要將上述使用~|CLaTeX|~的時機，改成使用~|CJKLaTeX|~即可。查錯同樣用
+  ~|C-c `|~。
+  
+  但要注意，使用~|CJKLaTeX|~時，文件中請不要使用~|\usepackage{CJK}|~或
+  類似的命令。
+\end{enumerate}
+
+注意，上述步驟只適用單一~CJK \LaTeXe~文件。
+
+% Not ready yet...
+%如果在您的文件中有用到~|\include|~這個命令，而您仍想用到~AUC\TeX~的功能，
+%可作如下的目錄安排：
+
+%  ./  ==> 本層目錄，原始文件之放置目錄。
+%  ../ ==> 上層目錄，置放由~latex~前由~bg5conv~轉換過的~|.cjk|~檔（因此
+%  若在此上層目錄中有原始文件，則需特別注意，不要使用與本層目錄中同名的
+%  文件）。另外包含一~|Makefile|~（參考圖~
+%  \ref{fig:makefile-for-multifile-latexing}~之例子），其內容主要為在每
+%  次~latex~前，更新~|.cjk|~檔。
+
+%  \begin{verbatim}
+%  #! /bin/sh
+%  make bg5conv
+%  cd CJK
+%  latex \\nonstopmode\\input{$1}
+%  \end{verbatim}
+
+
+%  \begin{lrbox}{\myex}
+%    \begin{minipage}{.9\textwidth}
+%      \footnotesize
+%\begin{verbatim}
+%TEXs    = abstract.tex archi.tex codebase.tex conclude.tex details.tex \
+%          dsgnbase.tex engtool.tex examples.tex introd.tex kb_lsp.tex \
+%          pjfinal.tex prg_gi.tex prg_s2c.tex related.tex represnt.tex \
+%          sscdcb.tex sscddb.tex sscdgi.tex sta2con.tex title_pg.tex 
+%MISC    = Makefile LaTeXsrc
+%RCSs    = $(wildcard $(SRCDIR)/*,v)
+
+%SRCDIR  = CJK
+
+%.PHONY: check_srcdir bg5conv default
+
+%.DEFAULT:       .tex .sty .bib .dvi .ps .lj .toc .lof .lot
+
+%default:
+%        @echo "There are the following targets:"
+%        @echo "    bg5conv  : Big5 CJK LaTeX file converted to LaTeX file."
+ 
+%bg5conv: check_srcdir $(TEXs)
+
+%check_srcdir: 
+%        @if [ -f LaTeXsrc ]; then \
+%          echo "Don't make at the LaTex source directory!"; \
+%          echo "Copy the Makefile to upper directory and make there."; \
+%          echo "e.g., cp Makefile ..; cd ..; make"; \
+%          exit 1; \
+%        fi
+%        @if [ ! -d $(SRCDIR) ]; then \
+%          echo "$(SRCDIR) not found!"; \
+%          exit 1; \
+%        fi
+
+%$(TEXs): %.tex : $(SRCDIR)/%.tex 
+%        bg5conv < $< > $@
+%\end{verbatim}
+%    \end{minipage}
+%  \end{lrbox}
+
+%  \begin{figure}[htbp]
+%    \begin{center}
+%      \leavevmode
+%      \framebox[.9\texwidth]{\myex}
+%      \caption{應付多重~CJK~文件檔的~Makefile~範例。}
+%      \label{fig:makefile-for-multifile-latexing}
+%    \end{center}
+%  \end{figure}
+
+
+
+\section{CTAN在各地的檔案區}
+\label{sec:ctan-mirrors}
+(本節摘自~CTAN host~上的~README.mirrors)
+
+為減少網路上的負荷，建議所有使用~CTAN~資源的網友，能使用當地的或最近的~
+CTAN host。 
+
+目前已知複製部分~CTAN~檔案的~FTP~站:
+\begin{verbatim}
+  ftp.fcu.edu.tw (Taiwan)               /pub2/tex
+  gate.sinica.edu.tw (Taiwan)           /TeX
+  ftp.adfa.oz.au (Australia)            /pub/tex/ctan
+  ftp.germany.eu.net (Deutschland)      /pub/packages/TeX
+  ftp.uu.net (Virginia, USA)            /pub/text-processing/TeX
+  nic.switch.ch (Switzerland)           /mirror/tex
+  sunsite.dsi.unimi.it (Italia)         /pub/TeX
+  sunsite.snu.ac.kr (Korea)             /shortcut/CTAN
+\end{verbatim}
+
+目前已知複製全部~CTAN~檔案的~FTP~站:
+\begin{verbatim}
+  dongpo.math.ncu.edu.tw (Taiwan)       /tex-archive
+  ftp.ccu.edu.tw (Taiwan)               /pub/tex
+  cis.utovrm.it (Italia)                /TeX
+  ctan.unsw.edu.au (NSW, Australia)     /tex-archive
+  ftp.center.osaka-u.ac.jp (Japan)      /CTAN
+  ftp.cdrom.com (West coast, USA)       /pub/tex/ctan
+  ftp.comp.hkbu.edu.hk (Hong Kong)      /pub/TeX/CTAN
+  ftp.cs.rmit.edu.au  (Australia)       /tex-archive
+  ftp.cs.ruu.nl (The Netherlands)       /pub/tex-archive
+  ftp.cstug.cz (The Czech Republic)     /pub/tex/CTAN
+  ftp.duke.edu (North Carolina, USA)    /tex-archive
+  ftp.ee.up.ac.za (South Africa)        /tex-archive
+  ftp.funet.fi (Finland)                /pub/TeX/CTAN
+  ftp.gwdg.de (Deutschland)             /pub/dante
+  ftp.jussieu.fr (France)               /pub4/TeX/CTAN
+  ftp.loria.fr (France)                 /pub/unix/tex/ctan
+  ftp.mpi-sb.mpg.de (Deutschland)       /pub/tex/mirror/ftp.dante.de
+  ftp.nada.kth.se (Sweden)              /pub/tex/ctan-mirror
+  ftp.rge.com (New York, USA)           /pub/tex
+  ftp.riken.go.jp (Japan)               /pub/tex-archive
+  ftp.tu-chemnitz.de (Deutschland)      /pub/tex
+  ftp.uni-augsburg.de (Deutschland)     /tex-archive
+  ftp.uni-bielefeld.de (Deutschland)    /pub/tex
+  ftp.unina.it (Italia)                 /pub/TeX
+  ftp.uni-stuttgart.de (Deutschland)    /tex-archive (/pub/tex)
+  ftp.univie.ac.at (\"Osterreich)       /packages/tex
+  ftp.u-aizu.ac.jp (Japan)              /pub/tex/CTAN
+  ftpserver.nus.sg (Singapore)          /pub/zi/TeX
+  kadri.ut.ee (Estonia)                 /pub/tex
+  src.doc.ic.ac.uk (England)            /packages/tex/uk-tex
+  sunsite.icm.edu.pl (Poland)           /pub/CTAN
+  sunsite.queensu.ca (Canada)           /pub/tex-archive
+  sunsite.unc.edu (North Carolina, USA) /pub/packages/TeX
+  wuarchive.wustl.edu (Missouri, USA)   /packages/TeX
+\end{verbatim}
+
+兩個主要的~CTAN~主機:
+\begin{verbatim}
+  ftp.dante.de  (Deutschland)         
+       -- anonymous ftp                 
+            /tex-archive (/pub/tex /pub/archive)
+       -- gopher on node gopher.dante.de
+       -- e-mail via ftpmail@dante.de
+       -- World Wide Web access on www.dante.de
+       -- Administrator: <ftpmaint@dante.de>
+
+  ftp.tex.ac.uk (England)               
+       -- anonymous ftp                 
+            /tex-archive (/pub/tex /pub/archive)
+       -- gopher on node gopher.tex.ac.uk
+       -- NFS mountable from 
+            nfs.tex.ac.uk:/public/ctan/tex-archive
+       -- World Wide Web access on www.tex.ac.uk
+       -- Administrator: <ctan-uk@tex.ac.uk>
+\end{verbatim}
+
+
+\section{IFCSS~在各地的~FTP~站}
+\label{sec:ifcss-mirrors}
+
+主要的~IFCSS~站： \verb|ftp.ifcss.org:/pub/software|
+
+其他的~FTP~站:
+\begin{verbatim}
+Taiwan:             ftp.edu.tw:/Chinese/ifcss/software      [full]
+                    ftp.ntu.edu.tw:/Chinese/ifcss/software  [full]
+                    iiiafs.iii.org.tw:/Chinese/ifcss/software [full]
+CHINA,
+    Beijing:        info.bta.net.cn:/pub/software           [partial]
+    Guangdong:      
+               info.gz.gdpta.net.cn:/pub/mirror/chnsoftware [partial]
+    Shanghai:       info.sta.net.cn:/pub/software           [partial]
+HONG KONG,:         ftp.cuhk.hk:/pub/chinese/ifcss/software [full]
+SINGAPORE,:         ftp.technet.sg:/pub/chinese             [full]
+USA,
+    California:     cnd.org:/pub/software                   [full]
+    New Mexico:     phaiakon.nmsu.edu:/pub/software         [full]
+\end{verbatim}
+
+%% start of trailer
+\newpage
+\end{CJK*}
+
+\end{document}
+
+%% Local Variables: 
+%% TeX-header-end: "%+ *[Ee]nd[ -]*[oO]f[ -]*[hH]eader" 
+%% TeX-trailer-start: "%+ *[Ss]tart[ -]*[oO]f[ -]*[tT]railer" 
+%% TeX-command-default: "CLaTeX" 
+%% TeX-master: t
+%% End: 

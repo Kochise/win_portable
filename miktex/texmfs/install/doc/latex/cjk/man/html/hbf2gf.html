@@ -1,0 +1,648 @@
+<!-- Creator     : groff version 1.22.3 -->
+<!-- CreationDate: Sat Apr 18 08:52:37 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>HBF2GF</title>
+
+</head>
+<body>
+
+<h1 align="center">HBF2GF</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#CONFIGURATION FILE">CONFIGURATION FILE</a><br>
+<a href="#FILE SEARCHING">FILE SEARCHING</a><br>
+<a href="#LIMITATIONS">LIMITATIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#AVAILABILITY">AVAILABILITY</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">hbf2gf &minus;
+convert a CJK bitmap font into subfonts usable by TeX and
+Omega.</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hbf2gf</b>
+[<b>&minus;q</b>] <i>configuration-file</i>[<i>.cfg</i>]
+<b><br>
+hbf2gf</b> [<b>&minus;q</b>] [<b>&minus;p</b>]
+[<b>&minus;g</b>] [<b>&minus;n</b>] <i>subfont-name
+x-resolution</i>
+[<i>y-scale&nbsp;</i>|&nbsp;<i>y-resolution</i>] <b><br>
+hbf2gf &minus;t</b> [<b>&minus;q</b>] <i>subfont-name</i>
+<b><br>
+hbf2gf &minus;&minus;version</b> |
+<b>&minus;&minus;help</b></p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">CJK bitmap
+fonts can&rsquo;t be directly used with TeX because the
+number of characters in such fonts exceeds&nbsp;256, the
+limit of a TeX font. Thus it is necessary to split these
+fonts into subfonts, and this is exactly what <b>hbf2gf</b>
+does.</p>
+
+<p style="margin-left:11%; margin-top: 1em">As the name
+says, <b>hbf2gf</b> uses CJK fonts in a certain format which
+is called <b>Hanzi Bitmap Font</b> (<b>HBF</b>) format. It
+simply consists of the CJK bitmap file(s) and a text file in
+a format very similar to the BDF format of the X&nbsp;Window
+System which describes the bitmap font files: the encoding,
+the size, etc. The produced GF files can then be converted
+with <b>gftopk</b> into standard PK files.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>hbf2gf</b>
+can be called in three modes:</p>
+
+<p style="margin-left:14%; margin-top: 1em"><b>hbf2gf</b>
+[<b>&minus;q</b>] <i>configuration-file</i>[<i>.cfg</i>]</p>
+
+<p style="margin-left:18%; margin-top: 1em">This call
+normally creates a set of GF files, one PL file, and a batch
+file which must be executed after <b>hbf2gf</b> has
+finished. This script will then call <b>gftopk</b> to
+convert all GF files into PK files, and it will call
+<b>pltotf</b> to convert the PL file into a TFM file.
+Finally it will copy the TFM file so that each PK file has
+its TFM file (which are all identical).</p>
+
+<p style="margin-left:18%; margin-top: 1em">If
+<b>ofm_file</b> is set to &lsquo;yes&rsquo; in the
+configuration file, OFM and OVF files will be created
+too.</p>
+
+
+<p style="margin-left:18%; margin-top: 1em"><b>&minus;q</b>
+makes <b>hbf2gf</b> quiet.</p>
+
+<p style="margin-left:14%; margin-top: 1em"><b>hbf2gf</b>
+[<b>&minus;q</b>] [<b>&minus;p</b>] [<b>&minus;g</b>]
+[<b>&minus;n</b>] <i>subfont-name x-resolution</i>
+[<i>y-scale&nbsp;</i>|&nbsp;<i>y-resolution</i>]</p>
+
+<p style="margin-left:18%; margin-top: 1em">This mode is
+intended for use with <b>mktexpk</b> and its derivates. Only
+one GF file together with a PL file for the given subfont
+will be computed, taking the horizontal resolution and a
+vertical scaling factor (if the value is smaller
+than&nbsp;10) resp. the vertical resolution (otherwise) from
+the command line, ignoring the <b>nmb_fonts</b> parameter of
+the configuration file. The last two characters (which are
+interpreted as the subfont number) are stripped to get the
+name for the configuration file (which must end with
+&lsquo;.cfg&rsquo;). No job file will be created. If option
+<b>&minus;p</b> is set, no PL file is created. If
+<b>&minus;g</b> is set, no GF file is created. The extension
+can be controlled with <b>&minus;n</b>; if set, the
+extension is &lsquo;.gf&rsquo;, otherwise
+&lsquo;.&lt;<i>resolution</i>&gt;gf&rsquo;. <b>&minus;q</b>
+makes <b>hbf2gf</b> quiet.</p>
+
+<p style="margin-left:14%; margin-top: 1em"><b>hbf2gf
+&minus;t</b> [<b>&minus;q</b>] <i>subfont-name</i></p>
+
+<p style="margin-left:18%; margin-top: 1em">This mode is
+intended for use with scripts like <b>mktexpk</b>; it tests
+whether the specified subfont name leads to an <b>hbf2gf</b>
+configuration file. It returns 0 on success and prints out
+the name of that configuration file (provided the
+<b>&minus;q</b> switch isn&rsquo;t set). This test
+isn&rsquo;t a thorough one; it only removes the last two
+characters and checks whether a configuration file with that
+name exists.</p>
+
+<p style="margin-left:11%; margin-top: 1em">See the next
+section for more details about configuration files.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Specifying the
+option <b>&minus;&minus;version</b> returns the current
+version of <b>hbf2gf</b> and the used file search library
+(e.g.&nbsp;<b>kpathsea</b>). Usage information is shown with
+the <b>&minus;&minus;help</b> parameter.</p>
+
+<h2>CONFIGURATION FILE
+<a name="CONFIGURATION FILE"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Here a sample
+configuration file (gsfs14.cfg) for a 56&times;56 Chinese
+font in GB encoding; note that all information about the
+font is in the jfs56.hbf file. See the <b>FILE SEARCHING</b>
+section how HBF fonts and <b>hbf2gf</b> configuration files
+are found. See the <b>AVAILABILITY</b> section where to get
+CJK fonts together with its HBF files:</p>
+
+<p style="margin-left:11%; margin-top: 1em">hbf_header
+jfs56.hbf <br>
+mag_x 1 <br>
+threshold 128 <br>
+comment jianti fansongti 56x56 pixel font</p>
+
+<p style="margin-left:11%; margin-top: 1em">design_size
+14.4</p>
+
+<p style="margin-left:11%; margin-top: 1em">y_offset
+&minus;13</p>
+
+<p style="margin-left:11%; margin-top: 1em">nmb_files
+&minus;1</p>
+
+<p style="margin-left:11%; margin-top: 1em">output_name
+gsfs14</p>
+
+<p style="margin-left:11%; margin-top: 1em">checksum
+123456789</p>
+
+<p style="margin-left:11%; margin-top: 1em">dpi_x 300</p>
+
+<p style="margin-left:11%; margin-top: 1em">pk_files no
+<br>
+tfm_files yes</p>
+
+<p style="margin-left:11%; margin-top: 1em">coding
+codingscheme GuoBiao encoded TeX text</p>
+
+<p style="margin-left:11%; margin-top: 1em">pk_directory
+$HBF_TARGET/pk/modeless/gb2312/gsfs14/ <br>
+tfm_directory $HBF_TARGET/tfm/gb2312/gsfs14/</p>
+
+<p style="margin-left:11%; margin-top: 1em">A configuration
+file is a plain text file consisting of keywords and its
+arguments. A keyword must start a line, otherwise the whole
+line will be ignored. If the word starting a line is not a
+keyword, the line will be ignored too. Empty lines will also
+be skipped. The search for keywords is case insensitive; in
+contrast, the arguments will be taken exactly as given
+(except &lsquo;yes&rsquo; and &lsquo;no&rsquo; which can be
+written with uppercase or lowercase letters). Each keyword
+has one argument which must be separated by whitespace
+(blanks or tabs) from the keyword and must be on the same
+line. Each line must not be longer than 256 characters.</p>
+
+<p style="margin-left:11%; margin-top: 1em">You can use
+environment variables in the configuration file. The escape
+character starting an environment variable in the
+configuration file is always &lsquo;$&rsquo;, even for
+operating systems like DOS which has other conventions.
+<b>hbf2gf</b> recognizes only environment variable names
+which start with a letter or an underscore, followed by
+alphanumeric characters or underscores. You can surround the
+variable with braces to indicate where the variable name
+ends, for example ${FOO}. To get a dollar sign you must
+write &lsquo;$$&rsquo;. The expansion of environment
+variables in hbf2gf itself (without the help of either
+kpathsea, emtexdir, or MiKTeX searching routines) is very
+limited; this feature has been carried over from previous
+versions. It can&rsquo;t expand variables set in texmf.cnf;
+it also can&rsquo;t handle more than one directory as the
+variable&rsquo;s value. <b>Don&rsquo;t use it except for the
+&lsquo;pk_directory&rsquo; and &lsquo;tfm_directory&rsquo;
+parameters!</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">This is the
+list of all necessary keywords: <b><br>
+hbf_header</b></p>
+
+<p style="margin-left:22%;">The HBF header file name of the
+input font(s). <b>hbf2gf</b> uses the given searching
+mechanism (kpathsea, emtexdir, or MiKTeX) to locate this
+file.</p>
+
+<p style="margin-left:11%;"><b>output_name</b></p>
+
+<p style="margin-left:22%;">The name stem of the output
+files. A running two digit decimal number starting with
+&lsquo;01&rsquo; will be appended. For Unicode fonts see the
+keyword <b>unicode</b> below. This value is in almost all
+cases identical to the name of the configuration file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">And now all
+optional keywords: <b><br>
+x_offset</b></p>
+
+<p style="margin-left:22%;">Increases the character width.
+Will be applied on both sides; default for non-rotated
+glyphs is the value given in the HBF header
+(<b>HBF_BITMAP_BOUNDING_BOX</b>) scaled to
+<b>design_size</b> (in pixels).</p>
+
+<p style="margin-left:11%;"><b>y_offset</b></p>
+
+<p style="margin-left:22%;">Shifts all characters up or
+down; default for non-rotated glyphs is the value given in
+the HBF header (<b>HBF_BITMAP_BOUNDING_BOX</b>) scaled to
+<b>design_size</b> (in pixels).</p>
+
+<p style="margin-left:11%;"><b>design_size</b></p>
+
+<p style="margin-left:22%;">The design size (in points) of
+the font. <b>x_offset</b> and <b>y_offset</b> refer to this
+size. Default is&nbsp;10.0.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>slant</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>The slant of the font (given as
+Delta_x&nbsp;/&nbsp;Delta_y). Only values in the range
+0&nbsp;&le;&nbsp;<b>slant&nbsp;</b>&le;&nbsp;1 are allowed.
+Default is&nbsp;0.0.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>rotation</b></p>
+
+<p style="margin-left:22%;">If set to &lsquo;yes&rsquo;,
+all glyphs will be rotated 90&nbsp;degrees
+counter-clockwise. The default offsets as given in the HBF
+header will be ignored (and set to&nbsp;0). Default is
+&lsquo;no&rsquo;.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>mag_x</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>mag_y</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>Scaling values of the characters to reach design size.
+If only one magnification is given, x and y values are
+assumed to be equal. Default is
+<b>mag_x&nbsp;</b>=&nbsp;<b>mag_y&nbsp;</b>=&nbsp;1.0.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>threshold</b></p>
+
+<p style="margin-left:22%;">A value between 1 and&nbsp;254
+defining a threshold for converting the internal graymap
+into the output bitmap; lower values cut more pixels.
+Default value is&nbsp;128.</p>
+
+<p style="margin-left:11%;"><b>comment</b></p>
+
+<p style="margin-left:22%;">A comment describing the font;
+default is none.</p>
+
+<p style="margin-left:11%;"><b>nmb_fonts</b></p>
+
+<p style="margin-left:22%;">The number of subfonts to
+create. Default value is &minus;1 for creating all
+fonts.</p>
+
+<p style="margin-left:11%;"><b>unicode</b></p>
+
+<p style="margin-left:22%;">If &lsquo;yes&rsquo;, a two
+digit hexadecimal number will be used as a running number,
+starting with the value of the first byte of the first code
+range. Default is &lsquo;no&rsquo;.</p>
+
+<p style="margin-left:11%;"><b>min_char</b></p>
+
+<p style="margin-left:22%;">The minimum value of the
+encoding. You should set this value to get correct subfile
+offsets if it is not identical to the lowest character code
+in the HBF file.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>dpi_x</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p><b>dpi_y</b></p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>The horizontal and vertical resolution (in dpi) of the
+printer. If only one resolution is given, x and y values are
+assumed to be equal. Default is&nbsp;300.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>checksum</b></p>
+
+<p style="margin-left:22%;">A checksum to identify the GF
+files with the appropriate TFM files. The default value of
+this unsigned 32bit integer is&nbsp;0.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>coding</b></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>A comment describing the coding scheme; default is
+none.</p> </td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>pk_directory</b></p>
+
+<p style="margin-left:22%;">The destination directory of
+the PK files; default: none. Attention! The batch file will
+not check whether this directory exists.</p>
+
+<p style="margin-left:11%;"><b>tfm_directory</b></p>
+
+<p style="margin-left:22%;">The destination directory of
+the TFM files; default: none. Attention! The batch file will
+not check whether this directory exists.</p>
+
+<p style="margin-left:11%;"><b>pk_files</b></p>
+
+<p style="margin-left:22%;">Whether to create PK files or
+not; default is &lsquo;yes&rsquo;.</p>
+
+<p style="margin-left:11%;"><b>tfm_files</b></p>
+
+<p style="margin-left:22%;">Whether to create TFM files or
+not; default is &lsquo;yes&rsquo;.</p>
+
+<p style="margin-left:11%;"><b>ofm_file</b></p>
+
+<p style="margin-left:22%;">Whether to create an OPL file
+or not; default is &lsquo;no&rsquo;. The batch file will
+then use <b>ovp2ovf</b> of the Omega distribution to convert
+it into an OFM and an OVF file. The OPL file simply maps all
+subfonts back to a single Omega font.</p>
+
+<p style="margin-left:11%;"><b>long_extension</b></p>
+
+<p style="margin-left:22%;">If &lsquo;yes&rsquo;, PK files
+will include the resolution in the extension (e.g.
+gsso1201.300pk). This affects the batch file only (default
+is &lsquo;yes&rsquo;).</p>
+
+<p style="margin-left:11%;"><b>rm_command</b></p>
+
+<p style="margin-left:22%;">The shell command to remove
+files; default: &lsquo;rm&rsquo;.</p>
+
+<p style="margin-left:11%;"><b>cp_command</b></p>
+
+<p style="margin-left:22%;">The shell command to copy
+files; default: &lsquo;cp&rsquo;.</p>
+
+<p style="margin-left:11%;"><b>job_extension</b></p>
+
+<p style="margin-left:22%;">The extension of the batch file
+which calls <b>gftopk</b> and <b>pltotf</b> to convert the
+GF and the PL files into PK and TFM files respectively;
+default is none.</p>
+
+<h2>FILE SEARCHING
+<a name="FILE SEARCHING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hbf2gf</b>
+uses either the <b>kpathsea</b>, <b>emtexdir</b>, or
+<b>MiKTeX</b> library for searching files (<b>emtexdir</b>
+will work only on operating systems which have an MS-DOSish
+background, i.e., MS-DOS, OS/2, Windows; <b>MiKTeX</b> is
+for Win32 systems).</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>kpathsea</b>
+<br>
+The actual version of kpathsea is displayed on screen if you
+call <b>hbf2gf &minus;&minus;version</b>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Here is a table
+of the file type and the corresponding <b>kpathsea</b>
+variables.</p>
+
+<p style="margin-left:17%; margin-top: 1em">.hbf MISCFONTS
+<br>
+.cfg HBF2GFINPUTS</p>
+
+<p style="margin-left:11%; margin-top: 1em">Please consult
+the info files of <b>kpathsea</b> for details on these
+variables. The decision which naming scheme to use for
+variables will be done during compilation.</p>
+
+<p style="margin-left:11%; margin-top: 1em">You should set
+the TEXMFCNF variable to the directory where your texmf.cnf
+configuration file resides.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Here is the
+proper command to find out to which value a <b>kpathsea</b>
+variable is set (we use MISCFONTS as an example). This is
+especially useful if a variable isn&rsquo;t set in texmf.cnf
+or in the environment, thus pointing to the default value
+which is hard-coded into the <b>kpathsea</b> library.</p>
+
+<p style="margin-left:14%; margin-top: 1em">kpsewhich
+&minus;progname=hbf2gf
+&minus;expand&minus;var=&rsquo;$MISCFONTS&rsquo;</p>
+
+<p style="margin-left:11%; margin-top: 1em">We select the
+program name also since it is possible to specify variables
+which are searched only for a certain program &ndash; in our
+example it would be MISCFONTS.hbf2gf.</p>
+
+<p style="margin-left:11%; margin-top: 1em">A similar but
+not identical method is to say</p>
+
+<p style="margin-left:14%; margin-top: 1em">kpsewhich
+&minus;progname=hbf2gf &minus;show&minus;path=&rsquo;misc
+fonts&rsquo;</p>
+
+<p style="margin-left:11%; margin-top: 1em">[A full list of
+format types can be obtained by saying &lsquo;kpsewhich
+&minus;&minus;help&rsquo; on the command line prompt.] This
+is exactly how <b>hbf2gf</b> searches for files; the
+disadvantage is that all variables are expanded which can
+cause very long strings.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>emtexdir</b>
+<br>
+Here the list of suffixes and its related environment
+variables to be set in autoexec.bat (resp. in config.sys for
+OS/2):</p>
+
+<p style="margin-left:17%; margin-top: 1em">.hbf HBFONTS
+<br>
+.cfg HBFCFG</p>
+
+<p style="margin-left:11%; margin-top: 1em">If one of the
+variables isn&rsquo;t set, a warning message is emitted. The
+current directory will always be searched. As usual, one
+exclamation mark appended to a directory path causes
+subdirectories one level deep to be searched, two
+exclamation marks causes all subdirectories to be searched.
+Example:</p>
+
+
+<p style="margin-left:14%; margin-top: 1em">HBFONTS=c:\fonts\hbf!!;d:\myfonts\hbf!</p>
+
+<p style="margin-left:11%; margin-top: 1em">Constructions
+like &lsquo;c:\fonts!!\hbf&rsquo; aren&rsquo;t possible.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>MikTeX</b>
+<br>
+Please consult the documentation files of <b>MiKTeX</b> for
+more details.</p>
+
+<h2>LIMITATIONS
+<a name="LIMITATIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The x and y
+output size must not exceed <b>MAX_CHAR_SIZE</b>, which is
+defined at compile time; its default value is
+1023&nbsp;(pixel).</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ttf2pk</b>(1)</p>
+
+<p style="margin-left:11%; margin-top: 1em">hbf2gf.w: this
+is the source code written in <b>CWEB</b> which can be
+converted into a pretty-printed TeX document using
+<b>cweave</b>. The CJK package also contains a preformatted
+hbf2gf.pdf file.</p>
+
+<p style="margin-left:11%; margin-top: 1em">the <b>CJK</b>
+documentation files (hbf2gf.txt).</p>
+
+<p style="margin-left:11%; margin-top: 1em">the <b>Hanzi
+Bitmap File</b> (<b>HBF</b>) standard version&nbsp;1.3;
+available at ftp.ifcss.org.</p>
+
+<p style="margin-left:11%; margin-top: 1em">the Omega
+documentation available at ftp.ens.fr and the CTAN hosts and
+mirrors.</p>
+
+<h2>FILES
+<a name="FILES"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p style="margin-top: 1em">*.cfg</p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em">The <b>hbf2gf</b> configuration
+scripts.</p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+
+<p>*.hbf</p></td>
+<td width="4%"></td>
+<td width="78%">
+
+
+<p>HBF header files which describe fixed-width bitmap
+fonts. Note that the bitmap font name(s) themselves as
+specified in the header files are irrelevant for
+<b>hbf2gf</b>.</p> </td></tr>
+</table>
+
+<h2>AVAILABILITY
+<a name="AVAILABILITY"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>hbf2gf</b>
+is part of the CJK macro package for LaTeX&nbsp;2e available
+at the CTAN hosts and its mirrors.</p>
+
+<p style="margin-left:11%; margin-top: 1em">CJK fonts
+together with HBF header files can be found at ftp.ifcss.org
+and its mirrors.</p>
+
+<h2>AUTHORS
+<a name="AUTHORS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Werner Lemberg
+&lt;wl@gnu.org&gt; <br>
+Ross Paterson (the HBF API) &lt;ross@soi.city.ac.uk&gt;</p>
+<hr>
+</body>
+</html>

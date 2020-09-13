@@ -39,7 +39,7 @@
     \wlog{File: #1 #4 #3 <#2>}%
     \let\ProvidesFile\@undefined}
 \fi
-\ProvidesFile{babel.def}[2020/07/13 3.47 Babel common definitions]
+\ProvidesFile{babel.def}[2020/09/01 3.48 Babel common definitions]
 \ifx\AtBeginDocument\@undefined  % TODO. change test.
     % == Code for plain ==
 \def\@empty{}
@@ -397,8 +397,8 @@
 \fi
 \countdef\last@language=19  % TODO. why? remove?
 \def\addlanguage{\csname newlanguage\endcsname}
-\def\bbl@version{3.47}
-\def\bbl@date{2020/07/13}
+\def\bbl@version{3.48}
+\def\bbl@date{2020/09/01}
 \def\adddialect#1#2{%
   \global\chardef#1#2\relax
   \bbl@usehooks{adddialect}{{#1}{#2}}%
@@ -522,11 +522,12 @@
   \ifx\languagename\@undefined\else
     \xdef\bbl@language@stack{\languagename+\bbl@language@stack}%
   \fi}
-\def\bbl@pop@lang#1+#2&#3{%
-  \edef\languagename{#1}\xdef#3{#2}}
+\def\bbl@pop@lang#1+#2\@@{%
+  \edef\languagename{#1}%
+  \xdef\bbl@language@stack{#2}}
 \let\bbl@ifrestoring\@secondoftwo
 \def\bbl@pop@language{%
-  \expandafter\bbl@pop@lang\bbl@language@stack&\bbl@language@stack
+  \expandafter\bbl@pop@lang\bbl@language@stack\@@
   \let\bbl@ifrestoring\@firstoftwo
   \expandafter\bbl@set@language\expandafter{\languagename}%
   \let\bbl@ifrestoring\@secondoftwo}
@@ -634,13 +635,13 @@
   % set the locale id
   \bbl@id@assign
   % switch captions, date
-  \ifcase\bbl@select@type
-    \bbl@bsphack
+  % No text is supposed to be added here, so we remove any
+  % spurious spaces.
+  \bbl@bsphack
+    \ifcase\bbl@select@type
       \csname captions#1\endcsname\relax
       \csname date#1\endcsname\relax
-    \bbl@esphack
-  \else
-    \bbl@bsphack
+    \else
       \bbl@xin@{,captions,}{,\bbl@select@opts,}%
       \ifin@
         \csname captions#1\endcsname\relax
@@ -649,8 +650,8 @@
       \ifin@  % if \foreign... within \<lang>date
         \csname date#1\endcsname\relax
       \fi
-    \bbl@esphack
-  \fi
+    \fi
+  \bbl@esphack
   % switch extras
   \bbl@usehooks{beforeextras}{}%
   \csname extras#1\endcsname\relax
@@ -1549,7 +1550,7 @@
      {\bbl@putsh@i#1\@empty\@nnil}%
      {\csname bbl@active@\string#1\endcsname}}
 \def\bbl@putsh@i#1#2\@nnil{%
-  \csname\languagename @sh@\string#1@%
+  \csname\language@group @sh@\string#1@%
     \ifx\@empty#2\else\string#2@\fi\endcsname}
 \ifx\bbl@opt@shorthands\@nnil\else
   \let\bbl@s@initiate@active@char\initiate@active@char
@@ -2269,7 +2270,11 @@
         {Use this macro as documented}}%
       {\bbl@provide@renew{#2}}}%
   % Post tasks
-  \bbl@exp{\\\babelensure[exclude=\\\today]{#2}}%
+  \bbl@ifunset{bbl@extracaps@#2}%
+    {\bbl@exp{\\\babelensure[exclude=\\\today]{#2}}}%
+    {\toks@\expandafter\expandafter\expandafter
+      {\csname bbl@extracaps@#2\endcsname}%
+     \bbl@exp{\\\babelensure[exclude=\\\today,include=\the\toks@}]{#2}}%
   \bbl@ifunset{bbl@ensure@\languagename}%
     {\bbl@exp{%
       \\\DeclareRobustCommand\<bbl@ensure@\languagename>[1]{%
@@ -2860,13 +2865,151 @@
 \fi
 \def\bbl@ini@captions@aux#1#2{%
   \bbl@trim@def\bbl@tempa{#1}%
-  \bbl@ifblank{#2}%
-    {\bbl@exp{%
-       \toks@{\\\bbl@nocaption{\bbl@tempa}{\languagename\bbl@tempa name}}}}%
-    {\bbl@trim\toks@{#2}}%
-  \bbl@exp{%
-    \\\bbl@add\\\bbl@savestrings{%
-      \\\SetString\<\bbl@tempa name>{\the\toks@}}}}
+  \bbl@xin@{.template}{\bbl@tempa}%
+  \ifin@
+    \bbl@replace\bbl@tempa{.template}{}%
+    \def\bbl@toreplace{#2}%
+    \bbl@replace\bbl@toreplace{[ ]}{\nobreakspace{}}%
+    \bbl@replace\bbl@toreplace{[[}{\csname}%
+    \bbl@replace\bbl@toreplace{[}{\csname the}%
+    \bbl@replace\bbl@toreplace{]]}{name\endcsname{}}%
+    \bbl@replace\bbl@toreplace{]}{\endcsname{}}%
+    \bbl@xin@{,\bbl@tempa,}{,chapter,}%
+    \ifin@
+      \bbl@patchchapter
+      \global\bbl@csarg\let{chapfmt@\languagename}\bbl@toreplace
+    \fi
+    \bbl@xin@{,\bbl@tempa,}{,appendix,}%
+    \ifin@
+      \bbl@patchchapter
+      \global\bbl@csarg\let{appxfmt@\languagename}\bbl@toreplace
+    \fi
+    \bbl@xin@{,\bbl@tempa,}{,part,}%
+    \ifin@
+      \bbl@patchpart
+      \global\bbl@csarg\let{partfmt@\languagename}\bbl@toreplace
+    \fi
+    \bbl@xin@{,\bbl@tempa,}{,figure,table,}%
+    \ifin@
+      \toks@\expandafter{\bbl@toreplace}%
+      \bbl@exp{\gdef\<fnum@\bbl@tempa>{\the\toks@}}%
+    \fi
+  \else
+    \bbl@ifblank{#2}%
+      {\bbl@exp{%
+         \toks@{\\\bbl@nocaption{\bbl@tempa}{\languagename\bbl@tempa name}}}}%
+      {\bbl@trim\toks@{#2}}%
+    \bbl@exp{%
+      \\\bbl@add\\\bbl@savestrings{%
+        \\\SetString\<\bbl@tempa name>{\the\toks@}}}%
+    \toks@\expandafter{\bbl@captionslist}%
+    \bbl@exp{\\\in@{\<\bbl@tempa name>}{\the\toks@}}%
+    \ifin@\else
+      \bbl@exp{%
+        \\\bbl@add\<bbl@extracaps@\languagename>{\<\bbl@tempa name>}%
+        \\\bbl@toglobal\<bbl@extracaps@\languagename>}%
+    \fi
+  \fi}
+\def\bbl@list@the{%
+  part,chapter,section,subsection,subsubsection,paragraph,%
+  subparagraph,enumi,enumii,enumiii,enumiv,equation,figure,%
+  table,page,footnote,mpfootnote,mpfn}
+\def\bbl@map@cnt#1{%  #1:roman,etc, // #2:enumi,etc
+  \bbl@ifunset{bbl@map@#1@\languagename}%
+    {\@nameuse{#1}}%
+    {\@nameuse{bbl@map@#1@\languagename}}}
+\def\bbl@inikv@labels#1=#2\@@{%
+  \in@{.map}{#1}%
+  \ifin@
+    \ifx\bbl@KVP@labels\@nil\else
+      \bbl@xin@{ map }{ \bbl@KVP@labels\space}%
+      \ifin@
+        \def\bbl@tempc{#1}%
+        \bbl@replace\bbl@tempc{.map}{}%
+        \in@{,#2,}{,arabic,roman,Roman,alph,Alph,fnsymbol,}%
+        \bbl@exp{%
+          \gdef\<bbl@map@\bbl@tempc @\languagename>%
+            {\ifin@\<#2>\else\\\localecounter{#2}\fi}}%
+        \bbl@foreach\bbl@list@the{%
+          \bbl@ifunset{the##1}{}%
+            {\bbl@exp{\let\\\bbl@tempd\<the##1>}%
+             \bbl@exp{%
+               \\\bbl@sreplace\<the##1>%
+                 {\<\bbl@tempc>{##1}}{\\\bbl@map@cnt{\bbl@tempc}{##1}}%
+               \\\bbl@sreplace\<the##1>%
+                 {\<\@empty @\bbl@tempc>\<c@##1>}{\\\bbl@map@cnt{\bbl@tempc}{##1}}}%
+             \expandafter\ifx\csname the##1\endcsname\bbl@tempd\else
+               \toks@\expandafter\expandafter\expandafter{%
+                 \csname the##1\endcsname}%
+               \expandafter\xdef\csname the##1\endcsname{{\the\toks@}}%
+             \fi}}%
+      \fi
+    \fi
+  %
+  \else
+    %
+    % The following code is still under study. You can test it and make
+    % suggestions. Eg, enumerate.2 = ([enumi]).([enumii]). It's
+    % language dependent.
+    \in@{enumerate.}{#1}%
+    \ifin@
+      \def\bbl@tempa{#1}%
+      \bbl@replace\bbl@tempa{enumerate.}{}%
+      \def\bbl@toreplace{#2}%
+      \bbl@replace\bbl@toreplace{[ ]}{\nobreakspace{}}%
+      \bbl@replace\bbl@toreplace{[}{\csname the}%
+      \bbl@replace\bbl@toreplace{]}{\endcsname{}}%
+      \toks@\expandafter{\bbl@toreplace}%
+      \bbl@exp{%
+        \\\bbl@add\<extras\languagename>{%
+          \\\babel@save\<labelenum\romannumeral\bbl@tempa>%
+          \def\<labelenum\romannumeral\bbl@tempa>{\the\toks@}}%
+        \\\bbl@toglobal\<extras\languagename>}%
+    \fi
+  \fi}
+\def\bbl@chaptype{chap}
+\ifx\@makechapterhead\@undefined
+  \let\bbl@patchchapter\relax
+\else\ifx\thechapter\@undefined
+  \let\bbl@patchchapter\relax
+\else\ifx\ps@headings\@undefined
+  \let\bbl@patchchapter\relax
+\else
+  \def\bbl@patchchapter{%
+    \global\let\bbl@patchchapter\relax
+    \bbl@add\appendix{\def\bbl@chaptype{appx}}% Not harmful, I hope
+    \bbl@toglobal\appendix
+    \bbl@sreplace\ps@headings
+      {\@chapapp\ \thechapter}%
+      {\bbl@chapterformat}%
+    \bbl@toglobal\ps@headings
+    \bbl@sreplace\chaptermark
+      {\@chapapp\ \thechapter}%
+      {\bbl@chapterformat}%
+    \bbl@toglobal\chaptermark
+    \bbl@sreplace\@makechapterhead
+      {\@chapapp\space\thechapter}%
+      {\bbl@chapterformat}%
+    \bbl@toglobal\@makechapterhead
+    \gdef\bbl@chapterformat{%
+      \bbl@ifunset{bbl@\bbl@chaptype fmt@\languagename}%
+        {\@chapapp\space\thechapter}
+        {\@nameuse{bbl@\bbl@chaptype fmt@\languagename}}}}
+\fi\fi\fi
+\ifx\@part\@undefined
+  \let\bbl@patchpart\relax
+\else
+  \def\bbl@patchpart{%
+    \global\let\bbl@patchpart\relax
+    \bbl@sreplace\@part
+      {\partname\nobreakspace\thepart}%
+      {\bbl@partformat}%
+    \bbl@toglobal\@part
+    \gdef\bbl@partformat{%
+      \bbl@ifunset{bbl@partfmt@\languagename}%
+        {\partname\nobreakspace\thepart}
+        {\@nameuse{bbl@partfmt@\languagename}}}}
+\fi
 \let\bbl@calendar\@empty
 \DeclareRobustCommand\localedate[1][]{\bbl@localedate{#1}}
 \def\bbl@cased{%  TODO. Move
@@ -3009,12 +3152,12 @@
        \else\iffontchar\font"200B
          \hyphenchar\font"200B
        \else
-         \bbl@error
+         \bbl@warning
            {Neither 0 nor ZERO WIDTH SPACE are available\\%
             in the current font, and therefore the hyphen\\%
-            will be printed. Try with 'HyphenChar', but be\\%
-            aware this setting is not safe (see the manual).}%
-           {See the manual.}%
+            will be printed. Try changing the fontspec's\\%
+            'HyphenChar' to another value, but be aware\\%
+            this setting is not safe (see the manual)}%
          \hyphenchar\font\defaulthyphenchar
        \fi\fi
      \fi}%

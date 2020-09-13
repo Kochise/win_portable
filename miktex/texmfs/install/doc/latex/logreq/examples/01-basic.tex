@@ -1,0 +1,63 @@
+\documentclass{minimal}
+\usepackage{logreq}
+
+% basic examples
+
+% shorthand for simple "rerun latex" requests
+% (for any package which requires another latex run)
+
+\ltxrequest{sample}{1}{}
+
+% typical bibtex request
+% (e.g., if natbib.sty were to support logreq)
+
+% sample code:
+
+% ...
+% \usepackage{natbib}
+% \begin{document}
+% ...
+% \bibliographystyle{plainnat}
+% \bibliography{bibfile1,bibfile2,bibfile3}
+% \end{document}
+
+% workflow:
+
+% latex file	(-> both requests active)
+% bibtex file
+% latex file	(-> latex request active, bibtex request inactive)
+% latex file	(-> both requests inactive)
+
+\logrequest[package=natbib,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex}
+    \infile{\jobname}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.aux}
+  }
+  \requires[type=editable]{
+    \file{bibfile1.bib}
+    \file{bibfile2.bib}
+    \file{bibfile3.bib}
+  }
+  \requires[type=static]{
+    \file{plainnat.bst}
+  }
+}
+
+\ltxrequest{natbib}{1}{
+  \provides[type=dynamic]{
+    \file{\jobname.aux}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+}
+
+\begin{document}
+\end{document}

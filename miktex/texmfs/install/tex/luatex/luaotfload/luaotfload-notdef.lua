@@ -5,9 +5,9 @@
 
 local ProvidesLuaModule = { 
     name          = "luaotfload-notdef",
-    version       = "3.14",       --TAGVERSION
-    date          = "2020-05-06", --TAGDATE
-    description   = "luaotfload submodule / color",
+    version       = "3.15",       --TAGVERSION
+    date          = "2020-09-02", --TAGDATE
+    description   = "luaotfload submodule / notdef",
     license       = "GPL v2.0",
     author        = "Marcel Krüger"
 }
@@ -34,6 +34,8 @@ local setfont            = node.direct.setfont
 local traverse_char      = node.direct.traverse_char
 local traverse_id        = node.direct.traverse_id
 local setchar            = node.direct.setchar
+local setdisc            = node.direct.setdisc
+local getdisc            = node.direct.getdisc
 local getwidth           = node.direct.getwidth
 local setkern            = node.direct.setkern
 local setattributelist   = node.direct.setattributelist
@@ -197,7 +199,7 @@ local push, pop do
         head = node.direct.remove(head, n)
         l[#l+1] = n
       elseif id == disc_id then
-        local pre, post, replace = node.direct.getdisc(n)
+        local pre, post, replace = getdisc(n)
         for nn in node.direct.traverse(pre) do
           if checkprop(nn) then
             local after
@@ -217,7 +219,7 @@ local push, pop do
             l[#l+1] = {nn, n, 'replace'}
           end
         end
-        node.direct.setdisc(n, pre, post, replace)
+        setdisc(n, pre, post, replace)
       end
     end
     return head
@@ -302,8 +304,6 @@ otfregister {
   },
 }
 
-ignorable_replacement = {}
-
 local delayed_remove do
   local delayed
   function delayed_remove(n)
@@ -335,7 +335,7 @@ local function ignorablehandler(head, fid, ...) -- FIXME: The arguments are prob
     end
   end end
   delayed_remove()
-  for n in traverse_id(head, disc_id) do
+  for n in traverse_id(disc_id, head) do
     local a, b, c = getdisc(n)
     setdisc(ignorablehandler(a, fid), ignorablehandler(b, fid), ignorablehandler(c, fid))
   end

@@ -1,0 +1,86 @@
+% This is the file Bg5.cap of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{Bg5.cap}[\filedate\space\fileversion]
+
+
+% Chinese captions
+%
+% character set: Big 5
+% encoding: Big 5
+
+\renewcommand\contentsname{目~~錄}
+\renewcommand\listfigurename{圖~目~錄}
+\renewcommand\listtablename{表~目~錄}
+
+\CJK@ifundefined\chapter
+  {\renewcommand\refname{參~考~資~料}
+   %\renewcommand\refname{參~考~文~獻}
+  }
+  {\renewcommand\bibname{文~~獻}
+   %\renewcommand\bibname{參~考~書~目}
+%  \newcommand\prechaptername{第}
+%  \newcommand\postchaptername{章}
+  }
+
+\renewcommand\indexname{索~引}
+
+\renewcommand\figurename{圖}
+\renewcommand\tablename{表}
+
+\newcommand\prepartname{第}
+\newcommand\postpartname{部}
+%\newcommand{\postpartname}{部分}
+\renewcommand\partformat{\prepartname\CJKnumber{\value{part}}\postpartname}
+
+
+% \newcommand\presectionname{第}
+% \newcommand\postsectionname{節}
+% \renewcommand\appendixname{附~錄}
+
+\CJK@ifundefined\mainmatter
+  {\renewcommand\abstractname{摘~要}}{}
+
+% \renewcommand\ccname{}                      %   ?
+% \renewcommand\enclname{附件}
+% \newcommand\prepagename{}                   %   ?
+% \newcommand\postpagename{}                  %   ?
+% \renewcommand\headtoname{}                  %   ?
+% \renewcommand\seename{}                     %   ?
+
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+\CJK@ifundefined\CJKnumber
+  {\def\CJKnumber#1{\ifcase #1\or
+                    一\or 二\or 三\or 四\or 五\or
+                    六\or 七\or 八\or 九\or 十\fi}}{}
+
+\endinput
+
+%%% Local Variables:
+%%% coding: big5
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

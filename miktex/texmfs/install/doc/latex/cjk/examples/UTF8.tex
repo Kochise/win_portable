@@ -1,0 +1,48 @@
+% This is the file UTF8.tex of the CJK package
+%   for testing UTF 8 encoding.
+%
+% written by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+\documentclass[12pt]{article}
+
+\usepackage{CJK}
+\usepackage[T1]{fontenc}
+
+
+% WARNING!  The font `cyberbit.ttf' is *not* part of TeXLive!
+% Its use is discouraged. If you really want to use it, please
+% follow the instructions given in `font.txt'.
+%
+% Look at the `CJKutf8.tex' example file (and read the
+% `CJKutf8.txt' documentation file) for a better way how to
+% process documents in UTF 8 encoding.
+
+
+% we want the Unicode font for normal text also
+\DeclareFontFamily{T1}{song}{}
+\DeclareFontShape{T1}{song}{m}{n}{<-> cyberb00}{}
+\renewcommand\rmdefault{song}
+
+
+\begin{document}
+
+\begin{CJK}{UTF8}{song}
+
+\noindent Hello World!
+
+\noindent Καλημέρα κόσμε
+
+\CJKnospace
+\noindent こんにちは 世界
+
+\end{CJK}
+
+\end{document}
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

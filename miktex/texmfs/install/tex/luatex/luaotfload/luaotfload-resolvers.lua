@@ -11,8 +11,8 @@
 
 local ProvidesLuaModule = { 
     name          = "luaotfload-resolvers",
-    version       = "3.14",       --TAGVERSION
-    date          = "2020-05-06", --TAGDATE
+    version       = "3.15",       --TAGVERSION
+    date          = "2020-09-02", --TAGDATE
     description   = "luaotfload submodule / resolvers",
     license       = "GPL v2.0"
 }
@@ -233,7 +233,7 @@ local function resolve_kpse (specification)
     local name       = specification.name
     local suffix     = stringlower (filesuffix (name))
     if suffix and fonts.formats[suffix] then
-        local resolved = resolvers.findfile(name, suffix)
+        local resolved = resolvers_findfile(name, suffix)
         if resolved then return resolved end
     end
     for t, format in next, fonts.formats do --- brute force
@@ -292,7 +292,7 @@ return function()
     end
     logreport ("log", 5, "resolvers", "installing font resolvers", name)
     local request_resolvers = fonts.definers.resolvers
-    for k, _ in pairs(resolvers) do
+    for k, _ in pairs(request_resolvers) do
         request_resolvers[k] = nil
     end
     setmetatable(request_resolvers, {__index = function(t, n)

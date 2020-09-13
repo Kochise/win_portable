@@ -1,0 +1,202 @@
+This file is part of the CJK package Ver. 4.8.4 (18-Apr-2015).
+
+The history of the beta versions of the never released version 2.5 .
+--------------------------------------------------------------------
+
+Changes beta 1 -> beta 2:
+    hbf2gf:  faster (search_min_max() removed)
+             feof() seems to be broken under Amiga gcc 2.6.3; replaced with
+               == EOF, etc.
+             some small bug fixes and typos
+             default value of target_size is now design_size (and not 10 pt)
+
+Changes beta 2 -> beta 3:
+    ttf2pk:  ttfdir must now be defined only once (in MakeTeXPK/maketexp.btm)
+             ttf2pkl instead of ttf2pk at some places erroneously used
+             an updated (and modified) version of MakeTeXPK is used
+             Makefile under Unix erroneously used FS=MSDOS
+
+Changes beta 3 -> beta 4:
+    ttf2pk:  MakeTeXPK couldn't create DC fonts correctly.
+             MakeTeXPK couldn't use already created .pk fonts in some cases;
+               you must now change the PKFONTS and PKFONTS.xdvi variable in
+               the kpathsearch configuration file (texmf.cnf) to add
+               `:$pkdir/ttf2pk'
+            ttf2pk.doc added
+            InstallFont added
+    hbf2gf: all float types changed to double. This makes life easier under
+              Amiga
+    pinyin.sty added
+    \CJKcaption command added
+    some caption files added. Works with the koma-script style files
+      included here (see below). Most of them are not complete now
+    wrong punctuation character offsets in Bg5.chr corrected
+    koma-script style files added. Note: this is only temporary until the
+      next official release of the koma-script package
+
+Changes beta 4 -> beta 5:
+    \CJK@enc replaced with specific encodings where possible
+    SJIS encoding scheme added (SJIS.enc, SJISconv.tex, etc.). Doesn't
+      currently work with CEF.sty
+    new commands \CJKCJK, \CJKhangul, and \CJKlatin for UTF8 encoding
+*   handling of intercharacter glue enhanced. Now there is no \CJKglue
+*     before and after a block of CJK characters. Note that this is a
+*     visually incompatible change to the previous versions of CJK!
+*     (see the command \CJKtilde also)
+    koma-script package removed (you should use the latest official release
+      now); caption files updated
+    mule2cjk added
+    \CJKtilde and \standardtilde added
+    MakeTeXPK hard linked into utils/hbf2gf
+
+Changes beta 5 -> beta 6: 
+    gmulatex script added 
+    \CJKhangul erroneously defined twice: \CJKCJK renamed into \CJKCJKchar,
+      \CJKhangul (in UTF 8 environment) into \CJKhangulchar, \CJKlatin into
+      \CJKlatinchar
+    the `global' option didn't work correctly; many \CJK@global's added
+    new command \CJKencshape to specify shapes on a per encoding base
+    \CJKchar didn't work in preprocessed mode
+    hbf2gf: new keyword `pk_files' (yes/no)
+            new calling mode for use with MakeTeXPK:
+              hbf2gf configuration_file [subfont_number resolution]
+            hbf2gf.cfg renamed to b5so12.cfg (MakeTeXPK needs this name)
+            some .cfg files added
+            other small changes
+    MakeTeXPK: taken from contrib/ttf2pk and enhanced to create CJK .pk
+                 files on demand from bitmap files
+               name of the mode subdir changed from `(.../pk/)ttf2pk' to
+                 `(.../pk/)CJK'.
+    maketexp.btm: similar changes as for MakeTeXPK; hard linked into
+                  utils/hbf2gf
+    makettfp.btm: hard linked into utils/hbf2gf
+    latin-3 and latin-4 added to mule2cjk
+    
+Changes beta 6 -> beta 7:
+    according to the newest LaTeX2e release, \MakeUppercase is disabled
+      instead of \uppercase in some cases.
+    a severe bug disabled Korean encoding
+    the encoding switching mechanism was broken; again many \CJK@global's
+      added
+    some commands which should be active only in certain encodings redefined
+      to work with the `global' option (Bg5text environment, \mj, etc.)
+    to use the Japanese DNP fonts, an encoding `JISdnp' and two size
+      functions (`DNP' and `DNPgen') are added
+*   a new unifying fontencoding scheme has been introduced:
+*       max. 4 characters encoding + max. 3 characters fontencoding
+*     examples:
+*       JISdnp, JISpmC, etc.
+*     this change causes many files to be renamed (e.g.,
+*     Uhanja.fd->Uhanj.fd); there is also a bunch of new/redefined functions
+*     to support this:
+*       \CJKenc
+*       \CJKfontenc
+*       \CJKshape
+*       \CJKencshape
+*       CJK and CJK* environment
+*     SOME OF THE ABOVE CHANGES ARE NOT COMPATIBLE WITH PREVIOUS VERSIONS!
+    CJK characters in verbatim environments are now treated correctly
+      by mule2cjk. Latin-encodings still don't work there
+    hbf2gf: the collection of configuration files has been harmonized in
+            size
+
+changes beta 7 -> 3.0:
+    the protection mechanism has been completely rewritten. Encoding changes
+      now work in sectioning commands too.
+
+    the pseudo-\if's has been replaced with real if's to avoid problems with
+      nested \if...\else...\fi constructions.
+
+    CNS directory renamed to CEF.
+
+    CEF macros CX, CY and U implemented. Font definition files for CX and CY
+      encodings added.
+
+    CEF now works with SJIS encoding too. CEFSconv added.
+
+    CNS.sty removed. Has been integrated into CJK.sty .
+
+    there are now three internally used active characters:
+            ^^80, ^^A0: used by mule2cjk
+            ^^ff      : used by CEFconv and mule2cjk.
+        we need those characters for verbatim environments.
+
+    a new internal level introduced:
+        we now have
+
+            active characters
+                |
+                +--------------> bindings (normal, preprocessed) <- new
+                |
+            active character macros
+                |
+                +--------------> encodings (GB, Bg 5, ...) + 
+                |                font encodings (none, dnp, pmC)
+                |
+            subfont selecting macros
+                |
+                +--------------> character macro sets (standard, Big 5, ...)
+                |
+            character selecting macros
+
+    all encodings except UTF 8 now work in preprocessed mode too.
+
+    some additional checks whether a loading of a certain binding/encoding/
+      character set is neccessary.
+
+    a new style option has been added: `active'. If activated, bindings are
+      local. Default is still `local' (with global bindings). You need this
+      option if you want to mix preprocessed text with non-preprocessed text
+      in nested CJK environments. This can happen if you merge texts in
+      various encodings.
+
+    the offset for the roma subfont of dnp font encoding was incorrect.
+
+    watanabe (a PD replacement of dnp fonts) font encoding for JIS added.
+
+    \CJKchar has now an optional parameter to select the encoding. You can
+      also use this command with Unicode encoding; additionally you can
+      enter characters with or without the 8th bit set (GL or GR form)
+      except for SJIS, Bg5 and UTF8 encoding.
+
+    two new size functions: `CJKsub' and `CJKssub'. They are similar to
+      `sub' and `ssub' except that the font substitution warnings appear
+      only once per CJK fontset. All .fd files updated.
+
+    MULEenc.sty added. Is loaded automatically after a file has been
+      processed with mule2cjk.
+
+    Latin encodings now work in verbatim environments also.
+
+    switch -g from mule2cjk has been removed. It was never necessary since
+      `"' and `\"' in german.sty select the same macro.
+
+    mule2cjk now inserts LaTeX2e macros (\textexclamdown, \textcent, etc.)
+      analogously to the latin[12].def files of the LaTeX2e distribution
+      (where applicable) for Latin encoded characters.
+
+    the batch file muclatex processes mule encoded files which contain
+      CEF macros.
+
+    Stephen Simpson <simpson@math.psu.edu> contributed a Bg 5 .fd file for
+      NTU TT fonts (ntu2cjk and ttf2pk).
+
+    pinyin.sty didn't work in tabbing environments; the syllable \me was
+      missing; the syllables \Na and \na were wrongly defined (Michael E.
+      Deisher <deisher@enws261.eas.asu.edu>).
+
+    pinyin.sty now accepts DC fonts too.
+
+    all .bat and .cmd files now have LF/CR pairs as newlines.
+
+    .bat and .cmd batch files added for all equivalent script files in the
+      utils directory. It might be useful to replace the TeX-coded 
+      preprocessors with this filters since they are faster.
+
+    all .bat and .cmd files call f_name.bat (f_name.cmd) to replace the
+      extension (usually .tex) with .cjk .
+
+    hbf2gf always used 300dpi resolution if used in mf-like mode (Zhang
+      Zhengyou <ZhengYou.Zhang@sophia.inria.fr>).
+
+---End of history.2_5---

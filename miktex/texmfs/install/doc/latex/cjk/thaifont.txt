@@ -1,0 +1,130 @@
+This is the file thaifont.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+Thai font support in the CJK package
+------------------------------------
+
+Version 4.8.4 of the CJK package has improved support for Thai. This file
+describes how to install and use the fonts. Please refer to cjk-enc.txt how
+to set up cjk-enc.el (which automatically loads thai-word.el for finding
+word breaks).
+
+The directory structure in utils/thaifont/texmf already reflects the
+directory structure of a standard TEXMF tree, version 1.1. Example:
+
+  utils/thaifont/texmf/fonts/enc/dvips/thai/c90.enc  ->
+                        /usr/local/share/texmf/fonts/enc/dvips/thai/c90.enc
+
+To create TFM files for other Thai fonts, use the utility files in the
+`thaifont/tools' directory. Details how to do that can be found in
+`thaifonts/tools/INSTALL'. The file thaifont/tools/c90.etx gives the
+theoretical background on the used font encoding and ligature mechanism;
+a pre-formatted version can be found in CJK's doc bundle.
+
+
+Installation
+------------
+
+. It is assumed that you have already installed the main parts of the CJK
+  package (as described in the doc/INSTALL file).
+
+. Get the latest fonts-tlwg package from
+
+    http://linux.thai.net/projects/thaifonts-scalable
+
+  and install the Type 1 font families `garuda' and `norasi'. You should use
+  fonts-tlwg version 0.5 or newer. Note, however, that this bundle no longer
+  contains pre-compiled AFM files; instead, they are generated (together
+  with Type 1 and TrueType versions of the font) with a bunch of tools using
+  a configure script and a Makefile.
+
+  Recommended locations are
+
+    TEXMF/fonts/type1/public/{garuda,norasi}/  .
+
+  Examples:
+
+    garuda.pfb    -> TEXMF/fonts/type1/public/garuda/garuda.pfb
+    norasi_bi.pfb -> TEXMF/fonts/type1/public/norasi/norasi_bi.pfb
+
+  Note that the TeX metric files of font-tlwg bundle are incompatible with
+  CJK's Thai implementation. Nevertheless, it is possible to use both at the
+  same time if desired. This is the very reason that the Babel language
+  support file of the CJK package is called `thaicjk.ldf', not `thai.ldf'.
+
+. Install all files from utils/thaifont/texmf in your TEXMF tree. This
+  should be straightforward.
+
+. Font definition files for Thai are in CJK's texinput/thai directory. To
+  simplify font handling with LaTeX, `gar' and `nrsr' are aliased to `cmr',
+  `cmss', and `cmtt'. If you want to use other fonts, you have to adapt
+  c90cmr.fd, c90cmss.fd, and c90cmtt.fd accordingly.
+
+. There are two possibilities how to make the Thai PostScript fonts known to
+  the various DVI drivers (and pdftex). The recommended way is to include
+  the files `garuda-c90.map' and `norasi-c90.map' in the `updmap.cfg'
+  configuration script by adding the following two lines:
+
+    Map garuda-c90.map
+    Map norasi-c90.map
+
+  Older versions of updmap which don't have updmap.cfg must be patched
+  directly by adding the map files to the `extra_modules' variable:
+
+    extra_modules="
+      garuda-c90.map
+      norasi-c90.map
+    "
+
+  After executing updmap, the fonts are known to all programs which uses the
+  map files.
+
+  For dvips, you can also use the `config.norasi-c90' and `config.garuda-c90'
+  files on the command line:
+
+    dvips -P norasi-c90 ...
+
+  This method doesn't work with pdfTeX (which doesn't understand the `-P'
+  option).
+
+. Run mktexlsr or a similar program to update the TEXMF file database.
+
+
+Usage
+-----
+
+Thai support has been fully integrated into the Babel system. For example,
+to have Thai as a secondary language and US English as the primary language,
+say
+
+  \documentclass{...}
+
+  ...
+  \usepackage[thaicjk,USenglish]{babel}
+  ...
+
+
+  \begin{document}
+
+  ...
+  \begin{otherlanguage}{thaicjk}
+  Thai text
+  \end{otherlanguage}
+
+  ...
+
+`thaicjk' changes the baseline stretch to 1.2, activates \frenchspacing, and
+modifies the \today command to use the proper Thai values and names.
+
+The just sketched outline works without cjk-enc also (but no word breaks are
+inserted automatically); you must then insert
+
+  \addto\extrasthaicjk{\fontencoding{C90}\selectfont}
+
+in the preamble of your document to make Babel switch to Thai font encoding
+on entering the `thaicjk' language environment.
+
+For use of cjk-enc.el please read `cjk-enc.txt'.
+
+
+---End of thaifont.txt---

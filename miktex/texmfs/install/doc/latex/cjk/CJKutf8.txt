@@ -1,0 +1,40 @@
+This is the file CJKutf8.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+CJKutf8.sty
+-----------
+
+This package merges base LaTeX's and CJK's UTF-8 support. If a Unicode
+character (within a CJK environment) corresponds to a glyph from the
+selected LaTeX font encoding, use it, otherwise it is taken from the
+selected CJK unicode font.
+
+Usage:
+
+  \usepackage[<font encoding>]{CJKutf8}
+
+  The <font encoding> value is directly passed to the `fontenc' package.
+  Besides `fontenc', CJKutf8.sty also loads the CJK package with the
+  `encapsulated' option so that you can use UTF-8 outside of the CJK
+  environment also.
+
+  Note that only font encodings with a corresponding DFU file actually
+  have Unicode definitions (for example, `t1enc.dfu').
+
+  Only use UTF-8 encoding for the CJK environment! Other encodings
+  don't give an error but might replace some CJK characters with glyphs
+  from the selected LaTeX encoding.
+
+If pdftex is used, ToUnicode cmaps are automatically generated (for C70
+encoding); use it in combination with Vladimir Volovich's `cmap' package.
+
+If CJKutf8.sty is used together with the `unicode' option of the hyperref
+package, pdftex automatically produces correct Unicode bookmarks.
+
+Both ToUnicode cmaps and Unicode bookmarks support characters greater than
+U+FFFF.
+
+Please read section `Possible errors' in CJK.txt regarding the Byte Order
+Mark (BOM) -- this should always be removed.
+
+---End of CJKutf8.txt---

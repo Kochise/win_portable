@@ -1,0 +1,140 @@
+%%
+%% This is file `ragged2e-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,ragged2e-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{ragged2e-xetex-bidi.def}[2018/10/17 v0.3 bidi adaptations for ragged2e package for XeTeX engine]
+\renewcommand{\Centering}{%
+   \ifx\\\@raggedtwoe@savedcr
+      \let\\\@centercr
+   \fi
+   \let\@gnewline\@raggedtwoe@gnewline
+   \if@RTL\rightskip\else\leftskip\fi\CenteringLeftskip
+   \@rightskip\CenteringRightskip
+   \if@RTL\leftskip\else\rightskip\fi\@rightskip
+   \parfillskip\CenteringParfillskip
+   \parindent\CenteringParindent
+   \@raggedtwoe@spaceskiptrue
+   \@raggedtwoe@everyselectfont
+   }
+\renewcommand{\RaggedLeft}{%
+   \ifx\\\@raggedtwoe@savedcr
+      \let\\\@centercr
+   \fi
+   \let\@gnewline\@raggedtwoe@gnewline
+   \if@RTL\rightskip\else\leftskip\fi\RaggedLeftLeftskip
+   \@rightskip\RaggedLeftRightskip
+   \if@RTL\leftskip\else\rightskip\fi\@rightskip
+   \parfillskip\RaggedLeftParfillskip
+   \parindent\RaggedLeftParindent
+   \@raggedtwoe@spaceskiptrue
+   \@raggedtwoe@everyselectfont
+   }
+\renewcommand{\RaggedRight}{%
+   \ifx\\\@raggedtwoe@savedcr
+      \let\\\@centercr
+   \fi
+   \let\@gnewline\@raggedtwoe@gnewline
+   \if@RTL\rightskip\else\leftskip\fi\RaggedRightLeftskip
+   \@rightskip\RaggedRightRightskip
+   \if@RTL\leftskip\else\rightskip\fi\@rightskip
+   \parfillskip\RaggedRightParfillskip
+   \parindent\RaggedRightParindent
+   \@raggedtwoe@spaceskiptrue
+   \@raggedtwoe@everyselectfont
+   }
+\renewcommand{\justifying}{%
+   \let\\\@raggedtwoe@savedcr
+   \let\@gnewline\@raggedtwoe@saved@gnewline
+   \if@RTL\rightskip\else\leftskip\fi\z@
+   \@rightskip\z@
+   \if@RTL\leftskip\else\rightskip\fi\@rightskip
+   \parfillskip\JustifyingParfillskip
+   \parindent\JustifyingParindent
+   \@raggedtwoe@spaceskipfalse
+   \@raggedtwoe@everyselectfont
+   }
+\def\@raggedtwoe@raggedrightboxes@opt{%
+  \renewcommand{\@arrayparboxrestore}{%
+    \let\if@nobreak\iffalse
+    \let\if@noskipsec\iffalse
+    \let\par\@@par
+    \let\-\@dischyph
+    \let\'\@acci\let\`\@accii\let\=\@acciii
+    \parskip\z@skip
+    \everypar{}%
+    \linewidth\hsize
+    \@totalleftmargin\z@
+    \if@RTL
+      \RaggedLeft
+    \else
+      \RaggedRight
+    \fi
+    \lineskip\normallineskip
+    \baselineskip\normalbaselineskip
+    \sloppy}%
+  \let\@raggedtwoe@raggedrightboxes@opt\relax
+  }
+\def\@raggedtwoe@document@opt{%
+  \AtBeginDocument{\@raggedtwoe@abdhook}%
+  \@raggedtwoe@raggedrightboxes@opt
+  \@raggedtwoe@footmisctrue
+  \let\@raggedtwoe@document@opt\relax
+  }
+\def\@raggedtwoe@abdhook{%
+  \PackageInfo{ragged2e}{ABD: executing `\string\RaggedLeft' for
+    right to left documents and `\string\RaggedRight' for left
+    to right documents}%
+  \if@RTL
+    \RaggedLeft
+  \else
+    \RaggedRight
+  \fi
+  \@ifundefined{@tocrmarg}{}{\edef\@tocrmarg{\@tocrmarg plus 2em}}%
+  \let\@raggedtwoe@abdhook\relax
+  }
+\@ifpackagewith{ragged2e}{raggedrightboxes}{%
+  \@raggedtwoe@raggedrightboxes@opt
+}{}
+\@ifpackagewith{ragged2e}{document}{%
+  \@raggedtwoe@document@opt
+}{}
+\let\origin@RaggedLeft=\RaggedLeft
+\let\origin@RaggedRight=\RaggedRight
+\def\RaggedLeft{\if@RTL\origin@RaggedRight\else\origin@RaggedLeft\fi}
+\def\RaggedRight{\if@RTL\origin@RaggedLeft\else\origin@RaggedRight\fi}
+\endinput
+%%
+%% End of file `ragged2e-xetex-bidi.def'.

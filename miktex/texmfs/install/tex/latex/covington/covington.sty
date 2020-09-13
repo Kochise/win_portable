@@ -1,0 +1,1049 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% File covington.sty
+%%
+%% LaTeX macros for Linguistics
+%%
+%% Original author:
+%% ================
+%% Michael A. Covington
+%% Artificial Intelligence Programs
+%% The University of Georgia
+%% Athens, Georgia 30602-7415 USA
+%% mcovingt@aisun1.ai.uga.edu
+%%
+%% Contributors:
+%% =============
+%% Robin Fairbairns <rf10@cl.cam.ac.uk> 2014-05-16: patched setting of \textfloatsep
+%% to use \setlength rather than \renewcommand; also converted to un*x line endings
+%%
+%% Current maintainer:
+%% ===================
+%% Juergen Spitzmueller <juergen@spitzmueller.org>
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2003/12/01 or later.
+%%
+%% This work has the LPPL maintenance status "maintained".
+%% 
+%% The Current Maintainer of this work is Juergen Spitzmueller.
+%%
+%% Code repository and issue tracker: https://github.com/jspitz/covington
+%%
+%% See covington.tex for documentation.
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%
+%%% Metadata
+%%%
+
+\def\filedate{2020/01/02}
+\def\fileversion{2.4}
+\def\filename{covington.sty}
+
+% Force redefinition of environments?
+\newif\ifforceredef\forceredeffalse
+% Tweak text layout?
+\newif\iftweaklayout\tweaklayouttrue
+% Prevent page breaks in glosses
+\newif\ifnoglossbreaks\noglossbreaksfalse
+% Use own example counter
+\newif\ifownexcounter\ownexcounterfalse
+
+\@ifundefined{ProvidesPackage}{%
+\typeout{* covington.sty : Covington's linguistic macros, \fileversion\ \filedate *}
+}{%
+\ProvidesPackage{covington}
+	[\filedate\space v\fileversion\space Covington's linguistic macros]
+\DeclareOption{force}{\forceredeftrue}
+\DeclareOption{keeplayout}{\tweaklayoutfalse}
+\DeclareOption{noglossbreaks}{\noglossbreakstrue}
+\DeclareOption{owncounter}{\ownexcountertrue}
+\ProcessOptions
+}
+
+%
+% Required packages
+%
+\RequirePackage{xkeyval}
+
+% Macro to issue warnings
+\newcommand\cov@warning[1]{%
+   \@ifundefined{PackageWarning}{%
+      \typeout{* covington warning : #1 *}
+   }{%
+      \PackageWarning{covington}{#1}%
+   }
+}
+
+%%%
+%%% Preferences about how text is laid out
+%%%
+
+% New 2018-08-24: Option to opt-out these layout tweaks
+\iftweaklayout
+\setlength{\textfloatsep}{0.7in}
+\raggedbottom
+\fi
+
+%%%
+%%% Stacked accents
+%%%
+
+% This is adapted from the \diatop macro in wsuipa.sty, which was
+% originally designed by Jean-Pierre Paillet.
+
+% Length to adjust accent distance
+% Introduced 2016-07-06 JSP. 
+\newlength\twoaccsep
+\setlength{\twoaccsep}{-0.8ex}
+\newcommand*\SetDiaOffset[1]{\addtolength{\twoaccsep}{#1}}
+
+\def\twoacc[#1|#2]{\leavevmode{\setbox1=\hbox{{#1{}}}%
+                     \setbox2=\hbox{{#2{}}}%
+                     \dimen0=\ifdim\wd1>\wd2\wd1\else\wd2\fi%
+                     \dimen1=\ht2\advance\dimen1by\twoaccsep%
+                     \setbox1=\hbox to1\dimen0{\hss#1\hss}%
+                     \rlap{\raise1\dimen1\box1}%
+                     \hbox to1\dimen0{\hss#2\hss}}}%
+
+% Example of usage: \twoacc[\^|\={a}]
+
+% 2017-05-21: Introduce a less odd syntax: \twodias{\^}{\=}{a}
+\newcommand*\twodias[3]{\leavevmode{\setbox1=\hbox{{#1{}}}%
+                     \setbox2=\hbox{{#2{#3}}}%
+                     \dimen0=\ifdim\wd1>\wd2\wd1\else\wd2\fi%
+                     \dimen1=\ht2\advance\dimen1by\twoaccsep%
+                     \setbox1=\hbox to1\dimen0{\hss#1\hss}%
+                     \rlap{\raise1\dimen1\box1}%
+                     \hbox to1\dimen0{\hss#2{#3}\hss}}}
+
+% Special cases:
+\def\acm#1{\twodias{\'}{\=}{#1}}   % acute over macron
+\def\grm#1{\twodias{\`}{\=}{#1}}   % grave over macron
+\def\cim#1{\twodias{\^}{\=}{#1}}   % circumflex over macron
+
+%%%
+%%% Example numbering
+%%%
+
+% Example numbering uses the same counter as LaTeX's equation numbering
+% by default.
+% Thus, you can use \label and \ref to refer to numbered examples in
+% exactly the same way as with equations.
+% As of v. 2.2, it is also possible to use an own counter and thus separate
+% equations from linguistic examples.
+
+% \exampleno  increments the counter and gives you its current value.
+%             You can use it anywhere to generate an example number.
+%
+%             For example, to display a sentence with a number at the
+%             right margin, do this:
+%
+%             \begin{flushleft}
+%             This is a sentence.  \hfill (\exampleno)
+%             \end{flushleft}
+
+\ifownexcounter
+  \newcounter{covex}
+  \newcommand{\@exampleno}{\refstepcounter{covex}\thecovex}
+\else
+  \newcommand{\@exampleno}{\refstepcounter{equation}\theequation}
+\fi
+\newcommand*\@@exampleno{\ifownexcounter\thecovex\else\theequation\fi}
+\newcommand*\exampleno{\@ifstar{\@@exampleno}{\@exampleno}}
+
+%%%
+%%% The 'example' environment
+%%%
+
+% Font setting possibility for example sentences
+\newcommand*\covexamplefs{}
+\newcommand*\covexamplenofs{\normalfont}
+
+% example     is an environment for displaying a single numbered 
+%             example, preceded by its number.  Example of use:
+%
+%             \begin{example}
+%             This is an example.
+%             \end{example}
+%
+%             This is actually a special case of 'examples' where
+%             the first \item is automatically supplied.
+%
+%             To display sub-examples with numbers such as
+%             (3)(a), (3)(b), etc., you can use 'itemize', thus:
+%             \begin{example}
+%              \begin{itemize}
+%              \item[(a)] This is the first example.
+%              \item[(b)] This is the second example.
+%              \end{itemize}
+%             \end{example}
+%
+% New in 1.1 (2016-07-06):
+%            We provide a covexample environment and only (re)define
+%            example if it does not yet exist or if redefinition is
+%            forced by the "force" option. This prevents clashes
+%            with packages/classes that roll their own example environment
+%            (such as beamer).
+
+\newenvironment{covexample}{\begin{covexamples}\item}{\end{covexamples}}
+
+\@ifundefined{example}{%
+  \newenvironment{example}{\begin{covexample}}{\end{covexample}}
+}{%
+\ifforceredef
+  \renewenvironment{example}{\begin{covexample}}{\end{covexample}}
+  \cov@warning{The example environment was already defined. Redefining it.}
+\else
+  \cov@warning{The example environment was already defined.^^J
+               Covington does not touch it.^^J
+               Use covexample if you want to access covington's^^J
+               version, or use the force package option.}
+\fi
+}
+
+%%%
+%%% The 'examples' environment
+%%%
+
+% examples    is an environment for displaying a series of examples
+%             together, each with its own example number.  Usage:
+%
+%             \begin{examples}
+%             \item This is the first example.
+%             \item This is the second example.
+%             \end{examples}
+%
+% Thanks to Darrel Hankerson of Auburn University, and numerous others
+% across the net, for help with this macro.
+%
+% New in 1.1 (2016-07-06):
+%            We provide a covexamples environment and only (re)define
+%            examples if it does not yet exist or if redefinition is
+%            forced by the "force" option. This prevents clashes
+%            with packages/classes that roll their own examples environment
+%            (such as beamer).
+%
+% New in 1.8 (2018-12-07): Allow to redefine label (\covexnumber)
+
+\newcounter{covexsave}          % used in trick with example number
+
+\newlength\examplenumbersep
+\setlength\examplenumbersep{0pt}
+
+\newcommand*\covexnumber[1]{(#1)}
+
+\newenvironment{covexamples}%         % define "example" environment
+{%
+\begin{list}{\covexamplenofs\covexnumber{\@@exampleno}}%
+{%
+\addtolength{\labelwidth}{\examplenumbersep}%
+\addtolength{\leftmargin}{\examplenumbersep}%
+\ifownexcounter
+  \setcounter{covexsave}{\arabic{covex}}%
+  \usecounter{covex}%                          % sets it to zero, unwantedly
+  \setcounter{covex}{\arabic{covexsave}}%   % restores previous value
+\else
+  \setcounter{covexsave}{\arabic{equation}}%
+  \usecounter{equation}%                          % sets it to zero, unwantedly
+  \setcounter{equation}{\arabic{covexsave}}%   % restores previous value
+\fi
+\setlength{\listparindent}{0pt}%
+\def\makelabel##1{##1\hfil}%       % put labels flushleft in space available
+}%
+\raggedright\covexamplefs}%     % text is flushleft, not justified
+{\end{list}}
+
+\@ifundefined{examples}{%
+  \newenvironment{examples}{\begin{covexamples}}{\end{covexamples}}
+}{%
+\ifforceredef
+  \renewenvironment{examples}{\begin{covexamples}}{\end{covexamples}}
+  \cov@warning{The examples environment was already defined. Redefining it.}
+\else
+  \cov@warning{The examples environment was already defined.^^J
+               Covington does not touch it.^^J
+               Use covexamples if you want to access covington's^^J
+               version, or use the force package option.}
+\fi
+}
+
+
+%%%
+%%% The 'subexamples' environment
+%%%
+
+% New in v1.6 (2018-09-07)
+% subexamples is an environment for displaying a series of examples
+%             that belong together and thus share an example number
+%             (with an alphabetic subcounter).  Usage:
+%
+%             \begin{subexamples}
+%             \item This is the first subexample.
+%             \item This is the second subexample.
+%             \end{subexamples}
+
+\newlength\subexamplenumbersep
+\setlength\subexamplenumbersep{0pt}
+
+\newcommand*\covsubexnumber[1]{(#1)}
+
+% 2019-06-21 (v. 2.3): optional preceding subexample text
+\define@key{cov@subex}{preamble}{\def\cov@sxp{#1}}
+\newcommand*\subexpreamblefs{\normalfont}
+
+\newenvironment{covsubexamples}[1][]%         % define "subexamples" environment
+{%
+    \ifx#1\empty\else\setkeys{cov@subex}{#1}\fi%
+    \begin{covexample}%
+    \@ifundefined{cov@sxp}{}{\subexpreamblefs\cov@sxp}% insert preamble if given
+    \begin{enumerate}
+    \addtolength{\labelsep}{\subexamplenumbersep}%
+    \renewcommand\theenumi{\alph{enumi}}
+    \renewcommand\labelenumi{\covexamplenofs\covsubexnumber{\theenumi}}
+    \renewcommand\p@enumi{\@@exampleno\,}%
+    \setlength{\listparindent}{0pt}%
+    \def\makelabel##1{##1\hfil}%       % put labels flushleft in space available
+}%
+{%
+    \let\cov@sxp\relax
+    \end{enumerate}
+    \end{covexample}
+}
+
+\@ifundefined{subexamples}{%
+  \newenvironment{subexamples}[1][]{\begin{covsubexamples}[#1]}{\end{covsubexamples}}
+}{%
+\ifforceredef
+  \renewenvironment{subexamples}[1][]{\begin{covsubexamples}[#1]}{\end{covsubexamples}}
+  \cov@warning{The subexamples environment was already defined. Redefining it.}
+\else
+  \cov@warning{The subexamples environment was already defined.^^J
+               Covington does not touch it.^^J
+               Use covsubexamples if you want to access covington's^^J
+               version, or use the force package option.}
+\fi
+}
+
+
+
+%%%
+%%% Reference to examples including parentheses
+%%%
+
+% New in v1.6 (2018-09-07)
+\providecommand*\pxref[1]{(\ref{#1})}
+
+
+%%%
+%%% Sentences with word-by-word glosses
+%%%
+
+% See covington.tex for full documentation.  Some examples:
+%
+% Displayed sentence with gloss and translation:
+%
+%             \gll Dit is een Nederlands voorbeeld.
+%                  This is a Dutch example.
+%             \glt `This is an example in Dutch.'
+%             \glend
+%
+% Same, using bracketing where words do not correspond one-to-one:
+%
+%             \gll Dit is een voorbeeldje     in het Nederlands.
+%                  This is a {little example} in {}  Dutch.
+%             \glt `This is a little example in Dutch.'
+%             \glend
+%
+% Same, with example number added at right:
+%
+%             \gll Dit is een voorbeeldje     in het Nederlands.
+%                  This is a {little example} in {}  Dutch.
+%             \glt `This is a little example in Dutch.' \hfill (\exampleno)
+%             \glend
+%
+% Same, with number but no (line reserved for) translation:
+%
+%             \gll Dit is een voorbeeldje     in het Nederlands.
+%                  This is a {little example} in {}  Dutch.
+%             \gln \hfill (\exampleno)
+%             \glend
+%
+% If you want to align 3 lines rather than two, use \glll instead of \gll.
+%
+% Layout is critical between \gll (or \glll) and \glt (or \gln).
+% After \glt, environment is essentially the same as 'flushleft'.
+%
+% Thanks to Marcel R. van der Goot for permission to reproduce code.
+%
+% Modified 1992 Nov 8 to force single spacing regardless of 
+% baselinestretch.
+
+\@ifundefined{new@fontshape}%
+   {\def\cov@selfnt{\ifx\@currsize\normalsize\@normalsize\else\@currsize\fi}}
+   {\def\cov@selfnt{\selectfont}}
+   % Thanks to Hans-Peter Kolb for this macro.
+
+% Try to prevent page breaks in glosses if noglossbreaks option is set
+\def\cov@nopagebreak{}
+\ifnoglossbreaks
+\def\cov@nopagebreak{\let\reserved@e\vadjust\let\reserved@f\nobreak}
+\fi
+
+% 2019-05-07: optional preceding gloss text (non-interlinearized)
+\newcommand*\glosslinepreamble[1]{#1}
+\def\cov@glp{}
+\newcommand*\glosspreamble[1]{\def\cov@glp{#1}}
+
+\def\gll{%                  % Introduces 2-line text-and-gloss.
+  \begin{flushleft}
+  \vskip\baselineskip%      % Added 1992 Nov 8 to force single spacing
+  \def\baselinestretch{1}%
+  \cov@selfnt%
+  \vskip-\baselineskip%
+  \bgroup
+  \catcode`\^^M=12
+  \twosent
+}
+
+\def\glll{%                  % Introduces 3-line text-and-gloss.
+   \begin{flushleft}
+   \vskip\baselineskip%      % Added 1992 Nov 8 to force single spacing
+   \def\baselinestretch{1}%
+   \cov@selfnt%
+   \vskip-\baselineskip%
+   \bgroup
+   \catcode`\^^M=12
+   \threesent
+}
+
+
+% The following two \x.. versions introduce special forms of glossing
+% macros that do not activate the newline char. The latter does not
+% work inside arguments (see http://tex.stackexchange.com/questions/169740)
+% Inspired by this post of David Carlisle to the mentioned stackexchange thread:
+% http://tex.stackexchange.com/a/169744/19291
+% These macros require the gloss lines to be ended explicitly with \xgle
+\def\xgll{%                 % Introduces 2-line text-and-gloss.
+   \begin{flushleft}
+   \vskip\baselineskip%      % Added 1992 Nov 8 to force single spacing
+   \def\baselinestretch{1}%
+   \cov@selfnt%
+   \vskip-\baselineskip%
+   \bgroup
+   \ignorespaces\xtwosent
+}
+
+\def\xglll{%                 % Introduces 3-line text-and-gloss.
+   \begin{flushleft}
+   \vskip\baselineskip%      % Added 1992 Nov 8 to force single spacing
+   \def\baselinestretch{1}%
+   \cov@selfnt%
+   \vskip-\baselineskip%
+   \bgroup
+   \ignorespaces\xthreesent
+}
+
+\def\glt{{\hskip -\glossglue}\cov@nopagebreak\unhbox\gline\smallskip\cov@nopagebreak\newline}  % \newline was \\
+                           % Introduces translation.
+                           % Required even if no translation follows.
+
+\def\gln{{\hskip -\glossglue}\unhbox\gline\hfill}
+                           % Alternative to glt, when one wants to
+                           % put a number but no translation.
+
+\def\glend{%
+   \end{flushleft}%
+   \def\cov@glp{}%
+}  % Ends the gloss environment.
+
+% The following TeX code is adapted, with permission, from:
+% gloss.tex: Macros for vertically aligning words in consecutive sentences.
+% Version: 1.0  release: 26 November 1990
+% Copyright (c) 1991 Marcel R. van der Goot (marcel@cs.caltech.edu).
+% Original gloss.tex and gloss.doc are available from
+% csvax.cs.caltech.edu [131.215.131.131] in pub/tex
+% and many other anonymous ftp archives.
+
+\newbox\lineone % boxes with words from first line
+\newbox\linetwo
+\newbox\linethree
+\newbox\wordone % a word from the first line (hbox)
+\newbox\wordtwo
+\newbox\wordthree
+\newbox\gline % the constructed double line (hbox)
+\newskip\glossglue % extra glue between glossed pairs or triples
+% \glossglue = 0pt plus 2pt minus 1pt % allow stretch/shrink between words
+\glossglue = 5pt plus 2pt minus 1pt % allow stretch/shrink between words
+\newif\ifnotdone
+
+% Add semantic markup (with latex 2.09 backwards support)
+\@ifundefined{selectfont}{%
+  \def\cov@emphasized{\it}%
+  \def\cov@normalfont{\rm}%
+}{%
+  \def\cov@emphasized{\normalfont\itshape}%
+  \def\cov@normalfont{\normalfont\upshape}%
+}
+
+% Font settings for gloss lines
+\newcommand*\glosslineone{\cov@emphasized}
+\newcommand*\glosslinetwo{\cov@normalfont}
+\newcommand*\glosslinethree{\cov@normalfont}
+
+\def\eachwordone{\glosslineone}
+\def\eachwordtwo{\glosslinetwo}
+\def\eachwordthree{\glosslinethree}
+
+\def\lastword#1#2#3% #1 = \each, #2 = line box, #3 = word box
+   {\setbox#2=\vbox{\unvbox#2%
+                    \global\setbox#3=\lastbox
+                   }%
+    \ifvoid#3\global\setbox#3=\hbox{#1\strut{} }\fi
+        % extra space following \strut in case #1 needs a space
+   }
+
+\def\testdone
+   {\ifdim\ht\lineone=0pt
+         \ifdim\ht\linetwo=0pt \notdonefalse % tricky space after pt
+         \else\notdonetrue
+         \fi
+    \else\notdonetrue
+    \fi
+   }
+
+{\catcode`\^^M=12 \endlinechar=-1 % 12 = other
+\gdef\getwords(#1,#2)#3 #4^^M% #1=linebox, #2=\each, #3=1st word, #4=remainder
+   {\setbox#1=\vbox{\hbox{#2\strut#3 }% adds space
+                    \unvbox#1%
+                   }%
+    \def\more{#4}%
+    \ifx\more\empty\let\more=\donewords
+    \else\let\more=\getwords
+    \fi
+    \more(#1,#2)#4^^M%
+   }
+
+\gdef\donewords(#1,#2)^^M{}%
+
+\gdef\twosent#1^^M#2^^M% #1 = first line, #2 = second line
+   {\getwords(\lineone,\eachwordone)#1 ^^M%
+    \getwords(\linetwo,\eachwordtwo)#2 ^^M%
+    \ifx\cov@glp\empty\else\glosslinepreamble{\cov@glp}\cov@nopagebreak\newline\fi%
+    \loop\lastword{\eachwordone}{\lineone}{\wordone}%
+         \lastword{\eachwordtwo}{\linetwo}{\wordtwo}%
+         \global\setbox\gline=\hbox{\unhbox\gline
+                                    \hskip\glossglue
+                                    \vtop{% vtop was vbox
+                                          \box\wordone
+                                          \nointerlineskip
+                                          \box\wordtwo
+                                         }%
+                                   }%
+         \testdone
+         \ifnotdone
+    \repeat
+    \egroup % matches \bgroup in \gloss
+   }
+
+\gdef\threesent#1^^M#2^^M#3^^M% #1 = first line, #2 = second line, #3 = third
+   {\getwords(\lineone,\eachwordone)#1 ^^M%
+    \getwords(\linetwo,\eachwordtwo)#2 ^^M%
+    \getwords(\linethree,\eachwordthree)#3 ^^M%
+    \ifx\cov@glp\empty\else\glosslinepreamble{\cov@glp}\cov@nopagebreak\newline\fi%
+    \loop\lastword{\eachwordone}{\lineone}{\wordone}%
+         \lastword{\eachwordtwo}{\linetwo}{\wordtwo}%
+         \lastword{\eachwordthree}{\linethree}{\wordthree}%
+         \global\setbox\gline=\hbox{\unhbox\gline
+                                    \hskip\glossglue
+                                    \vtop{% vtop was vbox
+                                          \box\wordone
+                                          \nointerlineskip
+                                          \box\wordtwo
+                                          \nointerlineskip
+                                          \box\wordthree
+                                         }%
+                                   }%
+         \testdone
+         \ifnotdone
+    \repeat
+    \egroup % matches \bgroup in \gloss
+   }
+} % restore \catcode`\^^M
+
+% An explicit gloss line ending (for \xgll and \xglll variants=
+\gdef\xgle{}
+% Special versions of \getwords, \donewords, \twosent and \threesent for the \x..
+% variants of gloss introducers (using \xgle as separator instead of active newline)
+\gdef\xgetwords(#1,#2)#3 #4\xgle% #1=linebox, #2=\each, #3=1st word, #4=remainder
+   {\setbox#1=\vbox{\hbox{#2\strut#3 }% adds space
+                    \unvbox#1%
+                   }%
+    \def\more{#4}%
+    \ifx\more\empty\let\more=\xdonewords
+    \else\let\more=\xgetwords
+    \fi
+    \more(#1,#2)#4\xgle%
+   }
+
+\gdef\xdonewords(#1,#2)\xgle{}%
+
+\gdef\xtwosent#1\xgle#2\xgle% #1 = first line, #2 = second line
+   {\xgetwords(\lineone,\eachwordone)#1 \xgle%
+    \xgetwords(\linetwo,\eachwordtwo)#2 \xgle%
+    \ifx\cov@glp\empty\else\glosslinepreamble{\cov@glp}\cov@nopagebreak\newline\fi%
+    \loop\lastword{\eachwordone}{\lineone}{\wordone}%
+         \lastword{\eachwordtwo}{\linetwo}{\wordtwo}%
+         \global\setbox\gline=\hbox{\unhbox\gline%
+                                    \hskip\glossglue%
+                                    \vtop{% vtop was vbox
+                                          \box\wordone
+                                          \nointerlineskip
+                                          \box\wordtwo
+                                         }%
+                                   }%
+         \testdone
+         \ifnotdone
+    \repeat
+    \egroup % matches \bgroup in \gloss
+   }
+
+\gdef\xthreesent#1\xgle#2\xgle#3\xgle% #1 = first line, #2 = second line, #3 = third
+   {\xgetwords(\lineone,\eachwordone)#1 \xgle%
+    \xgetwords(\linetwo,\eachwordtwo)#2 \xgle%
+    \xgetwords(\linethree,\eachwordthree)#3 \xgle%
+    \ifx\cov@glp\empty\else\glosslinepreamble{\cov@glp}\cov@nopagebreak\newline\fi%
+    \loop\lastword{\eachwordone}{\lineone}{\wordone}%
+         \lastword{\eachwordtwo}{\linetwo}{\wordtwo}%
+         \lastword{\eachwordthree}{\linethree}{\wordthree}%
+         \global\setbox\gline=\hbox{\unhbox\gline
+                                    \hskip\glossglue
+                                    \vtop{% vtop was vbox
+                                          \box\wordone
+                                          \nointerlineskip
+                                          \box\wordtwo
+                                          \nointerlineskip
+                                          \box\wordthree
+                                         }%
+                                   }%
+         \testdone
+         \ifnotdone
+    \repeat
+    \egroup % matches \bgroup in \gloss
+   }
+
+% V. 2.0: enquotable translation line 
+\newcommand*\glosslinetrans[1]{\covenquote{#1}}
+\newcommand*\glot[1]{%
+  \def\tempx{#1}%
+  \ifx\tempx\empty\gln
+  \else\glt\glosslinetrans{#1}\fi%
+}
+
+% V. 2.0: More convenient gloss macros
+%
+% Key-val options for the macros
+%
+% 1. ex=<true|false>
+\newif\ifgexample\gexamplefalse
+\newif\ifggexample\ggexamplefalse
+\define@boolkey+{covington}{ex}[true]{%
+    \ifKV@covington@ex
+      \gexampletrue
+    \else
+      \gexamplefalse
+    \fi
+}{%
+    \cov@warning{unknown env value '#1' in gloss macro}%
+}
+\define@boolkey+{gcovington}{ex}[true]{%
+    \ifKV@gcovington@ex
+      \ggexampletrue
+    \else
+      \ggexamplefalse
+    \fi
+}{%
+    \cov@warning{unknown env value '#1' in setglossoptions}%
+}
+\newif\ifgtright\gtrightfalse
+\newif\ifggtright\ggtrightfalse
+%
+% 2. tlb=<true|false>
+\define@boolkey+{covington}{tlr}[true]{%
+    \ifKV@covington@tlr
+      \gtrighttrue
+    \else
+      \gtrightfalse
+    \fi
+}{%
+    \cov@warning{unknown tlr value '#1' in gloss macro}%
+}
+\define@boolkey+{gcovington}{tlr}[true]{%
+    \ifKV@gcovington@tlr
+      \ggtrighttrue
+    \else
+      \ggtrightfalse
+    \fi
+}{%
+    \cov@warning{unknown tlr value '#1' in setglossoptions}%
+}
+%
+% 3. font settings for gloss line i, ii, iii
+\define@key{covington}{fsi}{\def\lglosslineone{#1}}
+\define@key{covington}{fsii}{\def\lglosslinetwo{#1}}
+\define@key{covington}{fsiii}{\def\lglosslinethree{#1}}
+\define@key{gcovington}{fsi}{\def\glosslineone{#1}}
+\define@key{gcovington}{fsii}{\def\glosslinetwo{#1}}
+\define@key{gcovington}{fsiii}{\def\glosslinethree{#1}}
+%
+% 4. Gloss preamble text
+\def\cov@gglp{}
+\define@key{covington}{preamble}{\def\cov@lglp{#1}}
+\define@key{gcovington}{preamble}{\def\cov@gglp{#1}}
+%
+% General setting option
+\newcommand*\setglossoptions[1]{\setkeys{gcovington}{#1}}
+%
+% 1. \digloss[<opts>]{<line 1>}{<line 2>}{<translation>}
+\newcommand*\digloss[4][\empty]{%
+  \ifggexample
+    \setkeys{covington}{ex=true}
+  \else
+    \setkeys{covington}{ex=false}
+  \fi%
+  \ifggtright
+    \setkeys{covington}{tlr=true}
+  \else
+    \setkeys{covington}{tlr=false}
+  \fi%
+  \ifx#1\empty\else\setkeys{covington}{#1}\fi%
+  \ifgexample
+  \begin{covexample}
+  \fi%
+  \@ifundefined{lglosslineone}{}{\def\glosslineone{\lglosslineone}}%
+  \@ifundefined{lglosslinetwo}{}{\def\glosslinetwo{\lglosslinetwo}}%
+  \@ifundefined{lglosslinethree}{}{\def\glosslinethree{\lglosslinethree}}%
+  \@ifundefined{cov@lglp}{}{\def\cov@gglp{\cov@lglp}}%
+  \ifx\cov@gglp\empty\else\def\cov@glp{\cov@gglp}\fi%
+  \xgll #2\xgle
+        #3\xgle
+  \ifgtright
+    \gln #4
+  \else
+    \glot{#4}
+  \fi
+  \glend
+  \ifgexample
+  \end{covexample}
+  \fi%
+  \let\lglosslineone\relax%
+  \let\lglosslinetwo\relax%
+  \let\lglosslinethree\relax%
+  \let\cov@lglp\relax%
+}
+
+% 2. \trigloss[<opts>]{<line 1>}{<line 2>}{<line 3>}{<translation>}
+\newcommand\trigloss[5][\empty]{%
+    \ifggexample
+    \setkeys{covington}{ex=true}
+  \else
+    \setkeys{covington}{ex=false}
+  \fi%
+  \ifggtright
+    \setkeys{covington}{tlr=true}
+  \else
+    \setkeys{covington}{tlr=false}
+  \fi%
+  \ifx#1\empty\else\setkeys{covington}{#1}\fi%
+  \ifgexample
+  \begin{covexample}
+  \fi%
+  \@ifundefined{lglosslineone}{}{\def\glosslineone{\lglosslineone}}%
+  \@ifundefined{lglosslinetwo}{}{\def\glosslinetwo{\lglosslinetwo}}%
+  \@ifundefined{lglosslinethree}{}{\def\glosslinethree{\lglosslinethree}}%
+  \@ifundefined{cov@lglp}{}{\def\cov@gglp{\cov@lglp}}%
+  \ifx\cov@gglp\empty\else\def\cov@glp{\cov@gglp}\fi%
+  \xglll #2\xgle
+         #3\xgle
+         #4\xgle
+  \ifgtright
+    \gln #5
+  \else
+    \glot{#5}
+  \fi
+  \glend
+  \ifgexample
+  \end{covexample}
+  \fi%
+  \let\lglosslineone\relax%
+  \let\lglosslinetwo\relax%
+  \let\lglosslinethree\relax%
+}
+
+
+%\def\gloss   % raw TeX macro for 2 aligned lines
+%   {\bgroup
+%    \catcode`\^^M=12
+%    \twosent
+%   }
+
+
+%%%
+%%% Phrase-structure rules
+%%%
+
+% \psr         To print S -> NP VP, use: \psr{S}{NP~VP}
+
+\newcommand{\psr}[2]{\mbox{\cov@emphasized #1 $\rightarrow$ #2}}
+
+
+%%%
+%%% Feature structures
+%%%
+
+% \fs         To print a feature structure by itself, type for example
+%             \fs{case:nom \\ person:P}
+%
+% \lfs        To print the same feature structure with the category
+%             label N at the top, type:
+%             \lfs{N}{case:nom \\ person:P}
+
+%    Modified 1990 Dec 5 so that features are left aligned.
+%    Modified 2001 Mar 27 so that italics are used without the user typing \it.
+\newcommand{\fs}[1]
+{
+    \mbox{\small\cov@emphasized
+          $
+          \left[
+          \!\!
+          \begin{array}{l}
+          #1
+          \end{array}
+          \!\!
+          \right]
+          $}
+}
+
+%     Modified 1990 Dec 5 so that features are left aligned.
+\newcommand{\lfs}[2]
+   {
+     \mbox{\cov@emphasized
+           $
+           \!\!
+           \begin{array}[t]{c}
+           #1
+           \\
+           \mbox{\small%
+                 $
+                 \left[
+                 \!\!
+                 \begin{array}{l}
+                 #2
+                 \end{array}
+                 \!\!
+                 \right]
+                 $}
+           \end{array}
+           \!\!
+           $}
+   }
+
+
+%%%
+%%% Discourse representation structures
+%%%
+
+% \drs        typesets a DRS in box notation a la Kamp.
+%             Arguments:
+%             1. List of discourse variables joined by ~
+%             2. List of conditions joined by \\
+%
+%             Example:   \drs{X}{donkey(X)\\green(X)}
+%
+%             Example:   \drs{~}{purple(X,Y)}
+%
+%             Example:   \drs{X}
+%                            {named(X,`Pedro') \\
+%                             \drs{Y}{donkey(Y)\\owns(X,Y)}~~
+%                             {\large $\Rightarrow$}~
+%                             \drs{~}{feeds(X,Y)}
+%                            }
+
+% \sdrs       like \drs but first argument is a sentence
+%             to be displayed above the drs.
+%
+%             Example:   \sdrs{A donkey is green.}{X}{donkey(X)\\green(X)}
+
+% \ifdrs      forms 2 DRSes joined with a big arrow.
+%             Usually used for DRSes nested within another.
+%
+%             Example:   \ifdrs{X}{donkey(X)\\hungry(X)}
+%                              {~}{feeds(Pedro,X)}
+
+% \alifdrs    is like \ifdrs but shifted to the left so that an
+%             embedded `if' structure will line up with ordinary
+%             DRS conditions.
+
+% \negdrs     forms a DRS preceded by the negation symbol.
+%
+%             Example:   \negdrs{X}{donkey(X)\\green(X)}
+
+% 2019-06-21 (v. 2.3): Do not define the macros if already defined.
+%                      This allows to use covington with the drs package.
+
+
+\providecommand{\drs}[2]
+{
+    {
+    \cov@emphasized
+    \begin{tabular}{|l|}
+    \hline
+    ~ \vspace{-2ex} \\
+    #1
+    \\
+    ~ \vspace{-2ex} \\
+    \hline
+    ~ \vspace{-2ex} \\
+    #2
+    \\
+    ~ \\    % can't vspace here or the line will come out wrong
+    \hline
+    \end{tabular}
+    }
+}
+
+\providecommand{\sdrs}[3]
+{\begin{tabular}{l}
+\mbox{\cov@emphasized #1} \\
+~ \\
+\drs{#2}{#3}
+\end{tabular}}
+
+\providecommand{\ifdrs}[4]
+{
+  \mbox{\drs{#1}{#2}~~{\large $\Rightarrow$}~\drs{#3}{#4}}
+}
+
+\providecommand{\alifdrs}[4]
+{
+  \mbox{$\!\!\!$\drs{#1}{#2}~~{\large $\Rightarrow$}~\drs{#3}{#4}}
+}
+
+\providecommand{\negdrs}[2]
+{
+  \mbox{{\large $\neg$}\drs{#1}{#2}}
+}
+
+
+%
+% Exercises, reference lists, and miscellany
+%
+
+% exercise    Environment for exercises, numbered by subsection.
+%             Optional argument for describing the exercise
+%             ("Project" or the like).
+%
+% New in 1.1 (2016-07-06):
+%            We provide a covexercise environment and only (re)define
+%            exercise if it does not yet exist or if redefinition is
+%            forced by the "force" option. This prevents clashes
+%            with packages/classes that roll their own exercise environment.
+
+% \bx         Abbreviation for \begin{covexercise}
+% \ex         Abbreviation for \end{covexercise}
+
+% reflist     Environment for hanging-indented list
+%             (suitable for LSA-style reference list).
+%             Does NOT require \item before entries.
+
+% \sentence   Displays its argument, flushleft, italicized.
+
+% \either     Displays its arguments as alternatives between
+%             large curly brackets.  Good for alternatives
+%             within sentences or PS-rules.
+
+\ifcsname c@subsection\endcsname
+  \newtheorem{covexercise}{Exercise}[subsection]
+\else
+  \newtheorem{covexercise}{Exercise}
+\fi
+
+% Exercise numbering resets to 0 not only at the start of
+% a subsection, but also at the start of a section or chapter
+% even if it is not divided into subsections.
+\@addtoreset{covexercise}{section}
+\@addtoreset{covexercise}{chapter}
+
+\newcommand{\bx}{\begin{covexercise}}
+\newcommand{\ex}{\end{covexercise}}
+
+\@ifundefined{exercise}{%
+  \newenvironment{exercise}{\begin{covexercise}}{\end{covexercise}}
+}{%
+\ifforceredef
+  \renewenvironment{exercise}{\begin{covexercise}}{\end{covexercise}}
+  \cov@warning{The exercise environment was already defined. Redefining it.}
+\else
+  \cov@warning{The exercise environment was already defined.^^J
+               Covington does not touch it.^^J
+               Use covexercise if you want to access covington's^^J
+               version, or use the force package option.}
+\fi
+}
+
+\newlength\reflistindent
+\setlength\reflistindent{3em}
+\newlength\reflistitemsep
+\setlength\reflistitemsep{6pt}
+\newlength\reflistparsep
+\setlength\reflistparsep{\parsep}
+\@ifundefined{reflist}{
+\newenvironment{reflist}{\begin{list}{}%
+{\setlength{\labelwidth}{0pt}%
+ \setlength{\labelsep}{0pt}%
+ \setlength{\leftmargin}{\reflistindent}%
+ \setlength{\itemindent}{-\reflistindent}%
+ \setlength{\listparindent}{-\reflistindent}%
+ \setlength{\itemsep}{\reflistitemsep}%
+ \setlength{\parsep}{\reflistparsep}}\item}{\end{list}}
+}
+% Modified 1992 Nov 8 to skip defining reflist if reflist is already
+% defined.  Permits using uga.sty with covingtn.sty.
+
+% V. 2.0: Add macro for font settings customization
+\newcommand*\sentencefs{\cov@emphasized}
+
+\newcommand{\sentence}[1]
+     {\begin{flushleft}{\sentencefs #1}\end{flushleft}}
+
+% V. 2.0: Further semantic markup
+\providecommand*\lexp[1]{\textit{#1}}
+\providecommand*\lcon[1]{\textsc{#1}}
+\newcommand*\covenquote[1]{\textquoteleft #1\textquoteright}
+\providecommand*\lmean[1]{\covenquote{#1}}
+
+\AtBeginDocument{%
+  \@ifundefined{enquote}{}{%
+    \renewcommand\covenquote[1]{\enquote*{#1}}
+  }
+}
+
+\newcommand{\either}[2]
+{
+     $
+     \left\{
+     \begin{array}{l}
+     \makebox{#1} \\
+     \makebox{#2} \\
+     \end{array}
+     \right\}
+     $
+}
+
+%%%%%%%%%%%%%%%%% End of Covington's Macros %%%%%%%%%%%%%%%%%

@@ -1,0 +1,388 @@
+This is the file commands.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+Here is a list of all commands of CJK.
+
+
+\begin{CJK}[<fontencoding>]{<encoding>}{<family>}
+...
+\end{CJK}
+
+        This starts a CJK environment.
+
+        Possible values for <encoding> are:
+            `Bg5', `Bg5+', `GB', `GBt', `GBK', `JIS', `SJIS', `KS', `UTF8',
+            `EUC-TW', `EUC-JP'.
+
+            [`CNS1'-`CNS7', `CEFX', `CEFY' are also possible but make no
+             sense. These are used with CEF and Mule. The same holds for
+             `JIS2'.]
+
+        Possible values for <fontencoding> are:
+            `' (empty, the default), `pmC' (for Bg5, GB, GBt, JIS, KS),
+            `dnp' (for JIS and SJIS), `wn' (for JIS), `HL' (for KS).
+
+        Possible values for <family> are defined in the FD files which must
+        be configured for the available fonts. If empty, the default value
+        (`mj' for KS encoding, `song' for the rest) is used.
+
+        Families can be changed with \CJKencfamily on a per-encoding base
+        and with \CJKfamily for all encodings. \CJKfamily overrides
+        \CJKencfamily; to have \CJKencfamily active you must assure that the
+        `family' parameter of the CJK environment is empty or that
+        \CJKfamily is defined as empty (inside the environment).
+
+        Font encodings can be changed on a per-encoding base with
+        \CJKfontenc; \CJKenc always uses the specified font encoding.
+
+        The hook \CJKhook is called on initializing the environment (used
+        by cjk-enc.el and VTeX, for example).
+
+        Newlines and spaces after a CJK character are retained. If you want
+        to suppress a newline, finish the line with `%'.
+
+        See also \CJKspace and \CJKnospace.
+
+
+\begin{CJK*}[<fontencoding>]{<encoding>}{<family>}
+...
+\end{CJK*}
+
+        The same as the CJK environment except that newlines and spaces
+        after a CJK character are swallowed. If you want a space after a CJK
+        character you must protect it (e.g., use `\ ').
+
+        See also \CJKspace and \CJKnospace.
+
+
+Text containing CJK characters should start with a fresh line (in the source
+file, not in the output) after activating a CJK environment because TeX has
+already read in the characters of the current line as non-active characters.
+
+You can stack CJK environments (i.e., saying \begin{CJK}...\end{CJK} again
+inside of a CJK environment) if you have not set the `global' package
+option, but it is possible that TeX's `save size' overflows. Use \CJKenc,
+\CJKfontenc, \CJKfamily, and \CJKencfamily instead. See CJK.txt for CJK
+package options which modify the scope of the CJK environment.
+
+To have different encodings/families on the same input line you must use
+\CJKenc, \CJKfontenc, \CJKfamily, and/or \CJKencfamily.
+
+If you use cjk-enc.el, you should NOT open a CJK (or CJK*) environment! It
+is done automatically. See cjk-enc.txt for details.
+
+
+==============================================================================
+
+
+The following commands are defined (or make sense) only inside of a CJK or
+CJK* environment (except \CJKbold, \CJKnormal, \CJKencfamily, \CJKfontenc,
+\CJKverbatim, \CJKhangul, \CJKhanja, \CJKhwkatakana, \CJKnohwkatakana,
+\CJKaddEncHook, \CJKtolerance, \CJKboldshift).
+
+
+\CJKcaption{<caption>}  Load <caption>.cpx, a language/encoding specific
+                        caption file. You need the SCRIPT style files of the
+                        koma-script package to fully use them (see CJK.txt
+                        for details).
+
+                        <caption>.cpx is a preprocessed version of
+                        <caption>.cap.
+
+        Example:
+
+                \begin{CJK*}{Bg5}{song}
+                \CJKcaption{Bg5}
+                ...
+                \end{CJK*}
+
+
+\CJKchar[<enc>]{<byte1>}{<byte2>}
+                        Insert a CJK character literally. <byte1> and
+                        <byte2> are the first and second byte of the CJK
+                        character (in the selected encoding), the optional
+                        parameter selects the encoding. You can use decimal,
+                        hexadecimal, or octal notation. <byte1> and <byte2>
+                        can be both in 7bit or 8bit (GL or GR)
+                        representation.
+
+                        To select Unicode characters you must specify `UTF8'
+                        encoding (but enter real Unicode values). If the
+                        Unicode value is greater than U+FFFF, put the first
+                        two bytes into the first argument, and the third byte
+                        into the second one.
+
+
+        Examples:
+
+                \CJKchar[Bg5]{217}{223}
+                \CJKchar[CNS1]{"57}{"4C}
+                \CJKchar[UTF8]{"02D9}{"04F}
+
+
+\CJKenc{<encoding>}     Change encoding. Contrary to \begin{CJK}{...}{...}
+                        it is not necessary to start a new line after
+                        \CJKenc. This command always uses the font encoding
+                        selected with \CJKfontenc.
+
+                        \CJKenc acts globally if the `global' option is set.
+
+                        See fonts.txt for a mapping table between CJK
+                        encoding names and the names of the FD files
+                        finally used.
+
+                        Use the macro \CJKaddEncHook to add commands which
+                        should be executed when a certain encoding is
+                        selected.
+                        
+
+\CJKfamily{<family>}    Change family for all encodings. This command
+                        overrides \CJKencfamily; to reactivate \CJKencfamily
+                        say `\CJKfamily{}'.
+
+                        \CJKfamily acts globally if the `global' option is
+                        set.
+
+
+\CJKencfamily[<fontencoding>]{<encoding>}{<family>}
+                        Change family for a certain encoding (and
+                        font encoding). Can be overridden with \CJKfamily.
+
+                        The possible values of <family> are defined in the
+                        encoding specific FD files.
+
+                        This command makes sense outside of a CJK
+                        environment; it acts globally if the `global' option
+                        is set.
+
+
+\CJKfontenc{<encoding>}{<fontencoding>} 
+                        Change font encoding for a certain encoding. If you
+                        select an encoding with \CJKenc, the font encoding
+                        specified with \CJKfontenc for this encoding is
+                        chosen.
+
+                        This command makes sense outside of a CJK
+                        environment; it acts globally if the `global' option
+                        is set.
+
+        Example:
+
+            \CJKencfamily{GBt}{hei}
+            \CJKfontenc{JIS}{dnp}
+
+            \begin{CJK*}{Bg5}{fs}                   %   this is equal to
+                                                    %   \begin{CJK*}{}{}
+                                                    %   \CJKenc{Bg5}
+                                                    %   \CJKfamily{fs}
+
+            ... Text in Bg5 fangsong ...            %   c00fs.fd used
+            \CJKenc{GB} ... Text in GB fangsong ... %   c10fs.fd used
+            \CJKfamily{kai} ... Text in GB kai ...  %   c10kai.fd used
+            \CJKenc{JIS} ... Text in JISdnp kai ... %   c42kai.fd used
+            \CJKfamily{}%
+            \CJKenc{GBt} ... Text in GBt hei ...    %   c20hei.fd used
+            \end{CJK*}
+
+
+\CJKindent              The `classical' indentation for CJK documents is
+                        exactly two ideographic spaces. \CJKindent sets
+                        the paragraph indentation to this value, using
+                        \parindent and the currently active CJK font.
+
+
+\CJKkern                To prevent a line break before a CJK character, say
+                        \CJKkern. This command suppresses the insertion of
+                        \CJKglue before the CJK character.
+
+
+\CJKglue                If you get overfull \hbox'es caused by CJK
+                        characters, try to increase \CJKglue. The default
+                        definition is
+
+                \newcommand{\CJKglue}{\hskip 0pt plus 0.08\baselineskip}  .
+
+                        \CJKglue is inserted by CJK between Chinese
+                        characters (punctuation characters as defined in the
+                        punctuation tables use an unbreakable glue; see
+                        CJK.enc). You should separate non-Chinese text from
+                        CJK characters with spaces to enable hyphenation. Or
+                        you can say \CJKtilde.
+
+
+\CJKtilde               This command changes the definition of the active
+                        `~' character from an unbreakable space to
+
+                \def~{\hspace{0.25em plus 0.125em minus 0.08em}}        .
+
+
+\nbs                    The original meaning of `~' is preserved within \nbs,
+                        a shorthand for the LaTeX command \nobreakspace.
+\standardtilde          To return to the original definition of `~' use this
+                        command.
+
+
+\CJKspace
+\CJKnospace             Switch from CJK to CJK* `mode' (\CJKnospace) or
+                        vice versa (\CJKspace).
+
+
+\CJKverbatim            If the `verbatim' package is loaded it is possible
+                        to improve the output automatically, namely, to
+                        avoid breaking of overfull lines in a verbatim
+                        environment. This command installs a hook to
+                        suppress insertion of glue between CJK and Thai
+                        glyphs.
+
+
+\CJKhanja
+\CJKhangul              \CJKhanja deactivates the use of C61 font encoding
+                        for hangul characters: All fonts used have C60 font
+                        encoding. \CJKhangul is the opposite command. The
+                        default is C61 for hangul.
+
+                        Archaic hangul elements (KS 0xA4D5-0xA4FE) and the
+                        character KS 0xA4D4 are only accessible if \CJKhanja
+                        is active.
+
+                        Both commands act globally if the `global' option is
+                        set.
+
+                        These commands make sense outside of a CJK
+                        environment.
+
+
+\CJKhwkatakana
+\CJKnohwkatakana        \CJKnohwkatakana deactivates the use of the C49
+                        font encoding and maps half-width katakana
+                        characters to full-width glyphs instead.
+                        \CJKhwkatakana (the default) is the opposite
+                        command.
+
+                        Both commands act globally if the `global' option is
+                        set; they have only effect for SJIS input encoding.
+
+                        These commands make sense outside of a CJK
+                        environment.
+
+
+\CJKtolerance           If you get overfull \hbox'es caused by KS
+                        characters, try to increase \CJKtolerance. The
+                        default definition is
+
+                \newcommand{\CJKtolerance}{400}  .
+
+                        Increasing \emergencystretch may help also.
+
+                        This command makes sense outside of a CJK
+                        environment.
+
+
+\CJKuppercase           If Big 5, SJIS, Bg5+, or GBK characters are used
+                        non-preprocessed, the LaTeX command \MakeUppercase
+                        is disabled (otherwise wrong CJK characters would be
+                        selected). In the unlikely case that you really need
+                        \MakeUppercase, use \CJKuppercase instead.
+
+                        This restriction does not exist for preprocessed CJK
+                        files, i.e., files processed with Bg5conv, SJISconv,
+                        CEF5conv, CEFSconv, extconv, or cjk-enc.el, thus
+                        \CJKuppercase is not defined in these cases.
+
+                        \CJKuppercase acts globally if the `global' option
+                        is set.
+
+
+\begin{Bg5text}
+...
+/end(Bg5text)
+
+\begin{SJIStext}
+...
+/end(SJIStext)          Enable the use of Big 5/SJIS encoded characters
+                        which contain `\', `{', and `}' as second bytes. See
+                        CJK.txt for a complete discussion. You need these
+                        environments only in rare cases where
+                        bg5conv/sjisconv or cjk-enc.el can't be used.
+
+\begin{Bg5+text}
+...
+/end(Bg5+text)
+
+\begin{GBKtext}
+...
+/end(GBKtext)           Enable the use of Big 5+/GBK encoded characters
+                        which contain `\', `{', and `}' as second bytes. See
+                        CJK.txt for a complete discussion. You need these
+                        environments only in rare cases where extconv can't
+                        be used.
+
+
+\Unicode{<byte1>}{<byte2>}
+\Unicode{<byte1><byte2>}{<byte3>}
+                        Insert a Unicode character literally. <byte1>,
+                        <byte2>, and <byte3> are the first, second, and
+                        third byte of the Unicode character. You can use
+                        decimal, hexadecimal, or octal notation. This
+                        command can only be used within UTF 8 encoding. In
+                        all other encodings you must say
+                        \CJKchar[UTF8]{<byte1>}{<byte2>} or
+                        \CJKchar[UTF8]{<byte1><byte2>}{<byte3>} instead.
+
+
+        Examples:
+
+                \Unicode{"23}{"45}
+                \Unicode{"25E}{"9A}
+
+\CJKCJKchar
+\CJKhangulchar
+\CJKlatinchar           These commands control the handling of
+                        intercharacter glue. Only defined for UTF8 encoding.
+                        \CJKCJKchar selects CJK style (using \CJKglue),
+                        \CJKhangulchar selects hangul style (using
+                        \CJKtolerance) and \CJKlatinchar uses none. Default
+                        is \CJKCJKchar.
+
+                        Only 3-byte UTF-8 encoded characters (i.e., Unicode
+                        characters in the range 0x800-0xFFFF) are affected;
+                        two-byte encoded characters is handled as ordinary
+                        characters (i.e., as if \CJKlatinchar were set).
+
+
+\CJKbold
+\CJKnormal              These commands set and unset the \ifCJK@bold@ flag.
+                        If set, boldface is emulated.
+
+                        Both commands are intended to appear in
+                        \DeclareFontShape commands only (usually in FD
+                        files); see fonts.txt for further details.
+
+
+\CJKsymbol              The CJK package uses this command instead of \symbol
+                        to print a CJK character; it honours the
+                        \ifCJK@bold@ flag: if set, boldface is emulated by
+                        printing the character three times with slight
+                        horizontal offsets. There should be hardly a reason
+                        to ever use this command explicitly.
+\CJKsymbols             A similar command specific to HLaTeX font support.
+                        It takes two characters which are then mapped to the
+                        final glyph using TeX's ligature mechanism.
+
+
+\CJKboldshift           The horizontal shift used for imitating bold fonts.
+                        Redefine this macro if the default value of 0.015em
+                        is not satisfying.
+
+                        These commands make sense outside of a CJK
+                        environment.
+
+
+\CJKaddEncHook{<encoding>}{<body>}
+                        This macro is primarily intended for packages. Use
+                        it to append the code in <body> to a hook for
+                        <encoding> which is executed each time <encoding> is
+                        selected. For an example see CJKnumb.sty .
+
+
+---End of commands.txt---

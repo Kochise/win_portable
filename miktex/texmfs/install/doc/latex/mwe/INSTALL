@@ -1,0 +1,35 @@
+Installation
+~~~~~~~~~~~~
+
+The 'mwe' package has due to its nature a little uncommon installation
+requirements.  While the normal package files are installed as normal, a variety
+of image files are installed in the 'tex/latex/mwe/' folder, so that they can be
+accessed from every (MWE) document.
+
+Multiple binary images are included which can't be build from the DTX alone
+without extra conversion tools.  A TDS ZIP file which only needs to be unzipped
+over the TEXMF is also provided.  This is the preferred way to install this
+package for end users and distribution maintainers.  If a manual build is wanted
+change all occurrences of 'nostandalone' to 'standalone' in the DTX file.
+Compile all extracted TEX files with pdflatex and convert these files from PDF
+to PNG and JPG. Compile again with latex and dvips to create the EPS files
+(rename the PS to EPS).
+
+The files should be installed in the following subdirectories of the TEXMF tree.
+
+=============================================================================
+    Files                                          TEXMF Installation folder
+-----------------------------------------------------------------------------
+    mwe.dtx mwe.ins                                     source/latex/mwe/
+    mwe.pdf README INSTALL                              doc/latex/mwe/
+    mwe.sty                                             tex/latex/mwe/
+    example-image-*x*.{tex,pdf,png,jpg,eps}             tex/latex/mwe/
+    example-image-?.{tex,pdf,png,jpg,eps}               tex/latex/mwe/
+    example-image-golden*.{tex,pdf,png,jpg,eps}         tex/latex/mwe/
+    example-grid-*.{tex,pdf}                            tex/latex/mwe/
+    example-image-a?*.pdf example-image-letter*.pdf     tex/latex/mwe/
+    example-image-a?*.tex example-image-letter*.tex     source/latex/mwe/
+    example-movie.mp4                                   tex/latex/mwe/
+    example-movie.tex                                   source/latex/mwe/
+=============================================================================
+

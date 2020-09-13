@@ -1,0 +1,34 @@
+This is the file reftex.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+RefTeX
+------
+
+To make RefTeX aware of \CJKinput and \CJKbibliography, add the following
+two lines to your .emacs file:
+
+  (add-to-list 'reftex-include-file-commands "CJKinclude")
+  (add-to-list 'reftex-bibliography-commands "CJKbibliography")
+
+These two variables have been added to RefTeX in July 2002.
+
+Older versions (like 4.16) which don't have them must be patched directly.
+In reftex.el:
+
+1097c1097
+<      (include-re (concat wbol "\\\\\\(include\\|input\\)[{ \t]+\\([^} \t\n\r]+\\)"))
+---
+>      (include-re (concat wbol "\\\\\\(include\\|input\\|CJKinput\\)[{ \t]+\\([^} \t\n\r]+\\)"))
+
+In reftex-parse.el:
+
+333c333
+<      "\\(\\`\\|[\n\r]\\)[ \t]*\\\\\\(no\\)?bibliography{[ \t]*\\([^}]+\\)" nil t)
+---
+>      "\\(\\`\\|[\n\r]\\)[ \t]*\\\\\\(no\\|CJK\\)?bibliography{[ \t]*\\([^}]+\\)" nil t)
+
+Changes for even older RefTeX versions (before Aug 1999 which only have
+reftex.el) are virtually the same.
+
+
+---End of reftex.txt---

@@ -1,0 +1,150 @@
+
+Handling of space between Kanji and non-Kanji characters.
+
+
+1. Shibuaki or Yonbuaki (四分あき)
+
+
+
+         <Japanese Text> English word <Japanese Text>
+                        ^            ^
+                    This point   This point 
+
+    This space is called "Shibuaki" which has a width of a quarter of a kanji
+    font width. It is used only between Kanji and non-Kanji characters.
+    (between Kanji and Kanji only stretchable glue is used; between
+    ASCII and ASCII ordinary space.)
+
+
+2. Yakumono(約物)
+
+    Here are the rules how and where to use Shibuaki.
+
+2.1 Yakumono for ASCII characters
+
+   rules:
+
+    0   No shibuaki between previous kanji character and the ASCII
+        character, and between next kanji character and the ASCII
+        character.
+
+          <Kanji character><ASCII character><Kanji Character>
+
+    1   Shibuaki space only between previous kanji character and the
+        ASCII character.
+
+          <Kanji character> <ASCII character><Kanji Character>
+                           ^            
+                        shibuaki
+
+    2   Shibuaki space only between next kanji character and the ASCII
+        character.
+
+          <Kanji character><ASCII character> <Kanji Character>
+                                            ^            
+                                         shibuaki
+
+    3   Shibuaki spaces between kanji characters and ASCII word.
+
+          <Japanese Text> English word <Japanese Text>
+                         ^            ^
+                      shibuaki     shibuaki
+
+
+   Rule 3 is always used by all printable ASCII characters without
+   the following yakumono ASCII characters.
+
+   [This is data from ASCII-Nihongo TeX.]
+
+   % ASCII yakumono characters and the corresponding rules
+    ( 1
+    ) 2
+    [ 1
+    ] 2
+    ` 1
+    ' 2
+    ; 2
+    , 2
+    . 2
+
+2.2 Yakumono for kanji characters
+
+   rules:
+
+    0   No shibuaki space between previous ASCII character and the kanji
+        character, and between next ASCII character and the kanji
+        character.
+
+          <ASCII character><Kanji character><ASCII character>
+
+    1   No shibuaki space between previous ASCII character and the kanji
+        character.
+
+          <ASCII character><Kanji character> <ASCII character>
+                                            ^            
+                                         shibuaki
+
+    2   No shibuaki space between next ASCII character and the kanji
+        character.
+
+          <ASCII character> <Kanji character><ASCII character>
+                           ^            
+                        shibuaki
+
+    3   Shibuaki spaces between kanji character and ASCII characters
+
+          <ASCII character> <Kanji character> <ASCII character>
+                           ^                 ^
+                        shibuaki          shibuaki
+
+   Rule 3 is always used by all kanji characters without the following
+   yakumono kanji characters.
+
+   [This is data from ASCII-Nihongo TeX.]
+
+   % Kanji yakumono characters and the corresponding rules
+     、  1
+     。  1
+     ，  1
+     ．  1
+     ；  1
+     ？  1
+     ）  1
+     （  2
+     ］  1
+     ［  2
+     ｝  1
+     ｛  2
+     ‘  2
+     ’  1
+     “  2
+     ”  1
+     〔  2
+     〕  1
+     〈  2
+     〉  1
+     《  2
+     》  1
+     「  2
+     」  1
+     『  2
+     』  1
+     【  2
+     】  1
+     ―  0
+     〜  0
+     …  0
+     ￥  0
+     °  1
+     ′  1
+     ″  1
+
+
+
+
+Reference: "Nihongo TeX technical book I"   ASCII co.
+           日本語TeXテクニカルガイド I    アスキー出版局
+                                    2200 yen. 
+
+
+Version 1.0B1                  written by tanaka3@ifos.se.fujitsu.co.jp

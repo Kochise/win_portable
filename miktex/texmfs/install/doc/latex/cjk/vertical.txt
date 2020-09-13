@@ -1,0 +1,120 @@
+This is the file vertical.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+
+Vertical typesetting
+====================
+
+TeX itself can't support vertical typesetting. Nevertheless, it is possible
+to emulate it by rotating glyphs by 90 degrees.
+
+The CJK package supports two different approaches:
+
+o   Provide fonts which already contain rotated glyphs. In this case, the
+    only difference to normal typesetting is the emulation of bold
+    characters by printing a character three times with slight vertical
+    offsets instead of horizontal ones. Both hbf2gf and ttf2pk can produce
+    rotated bitmap fonts. The major disadvantage is that it doesn't work
+    well for outline fonts since there is no portable way to implement
+    rotation on the font level which works for both PostScript and PDF
+    output.
+
+    You need a `.fdx' file for this option which at least contains
+    `\CJKvdef{norotate}{}'.
+
+o   Use the graphicx package to rotate glyphs. A disadvantage is that
+    processing of a document is much slower and that documents tend to be
+    much larger in size. On the other hand, PDF and PostScript output can be
+    produced from identical sources since graphicx hides the implementation
+    differences.
+
+    This works even without a `.fdx' file in case CJK's default rotation
+    parameters are fine.
+
+
+CJKvert.sty
+-----------
+
+Loading CJKvert.sty activates vertical support. The two commands to be used
+in documents are \CJKvert and \CJKhorz which do the obvious. \CJKvert is
+the default. The two commands act locally, not globally.
+
+Use macro \CJKbaselinestretch to adjust the baseline stretch during vertical
+typesetting. The default value is `1.3'.
+
+Package option `usebaselinestretch' saves the \baselinestretch value set
+before loading CJKvert.sty. If this option is active, then
+
+  new \baselinestretch = \CJKbaselinestretch * \baselinestretch
+
+after issuing \CJKvert. Otherwise, it is simply
+
+  new \baselinestretch = \CJKbaselinestretch
+
+Similarly, \CJKhorz restores the old \baselinestretch value if
+`usebaselinestretch' is active; without the option, \baselinestretch is set
+to `1'.
+
+
+Problems with vertical typesetting
+----------------------------------
+
+Some glyphs can't be used directly for vertical typesetting; a simple
+rotation by 90 degrees would produce ugly results for various reasons:
+
+o   Many punctuation characters have special vertical representation forms.
+    Some fonts contain proper vertical glyphs, but many don't. In the latter
+    case it is necessary to provide alternative methods to improve the
+    optical appearance.
+
+o   Non-rotated (latin) text within rotated (CJK) text is aligned
+    differently as if text is written horizontally. Rotated glyphs thus must
+    be slightly shifted.
+
+o   Some fonts contain CJK glyphs without quadratic bounding boxes but only
+    monospaced advance widths. It is then necessary to provide glyph
+    dimensions to assure monospaced advance heights after rotation.
+
+See the documentation file `fdxfiles.txt' for details on setting up
+extended font definition files which can handle those items.
+
+
+Fonts with vertical representation forms
+----------------------------------------
+
+OpenType fonts intended for vertical typesetting normally contain a GSUB
+feature called `vert' which provides a mapping to vertical instead of
+horizontal representation forms. ttf2tfm automatically takes care of it (see
+below), but if such fonts have been converted to sets of Type 1 subfonts
+this feature is lost.
+
+A solution to this problem is to collect all vertical representation glyphs
+in a special Type 1 subfont. See the scripts vertical.pe, vertref.pe (for
+FontForge), and makefdx.pl (for Perl) in the directory utils/subfonts which
+do that.
+
+At the moment of this writing, only the fonts bsmi00lp.ttf and bkai00mp.ttf
+for traditional Chinese have been transformed to Type 1 subfonts together
+with a font with vertical representation glyphs (bsmilpv.pfb and
+bkaimpv.pfb). They are part of the corresponding CJK font bundles found on
+CTAN. See the file INSTALL for more information.
+
+
+Rotated fonts
+-------------
+
+o   To install a rotated font to be handled by hbf2gf, simply proceed as
+    usual, with one difference: You have to add a line
+
+        rotation  yes
+
+    to the hbf2gf configuration file of this font. x_offset and y_offset
+    values must be adjusted too. Look at the example configuration file
+    b5kr12.cfg for details---as you can see, the name of the non-rotated
+    font (b5ka12) has been changed to `b5kr12'.
+
+o   With ttf2tfm, use the `-x' switch to activate rotation. For details
+    please refer to the man pages of ttf2tfm and ttf2pk.
+
+
+---End of vertical.txt---

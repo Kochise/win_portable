@@ -1,0 +1,81 @@
+% This is the file CJKmixed.tex of the CJK package
+%   for testing CJK text written vertically.
+%
+% written by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+%
+% Vietnamese support for Babel comes with the VnTeX package.
+
+\documentclass[12pt]{article}
+
+\usepackage{CJKutf8}
+\usepackage{CJKvert}
+\usepackage{CJKulem}
+
+\usepackage{inputenc}               % load it without argument
+                                    % to avoid Babel warnings
+
+\usepackage[vietnam,                % T5 font encoding
+            USenglish]{babel}
+
+\newenvironment{TChinese}{%
+  \CJKfamily{bsmi}%
+  \CJKtilde
+  \CJKnospace}{}
+
+
+\begin{document}
+
+\begin{CJK}{UTF8}{}
+
+\CJKhorz
+
+This is a test how CJK scripts can be typeset horizontally and
+vertically at the same time.  It is not too difficult to achieve,
+nevertheless it is not trivial.  Most importantly, you need a
+\texttt{.fdx} file which corresponds to your CJK font, and which
+defines how to set up the font for vertical typesetting.
+
+\begin{center}
+  \rotatebox[origin=c]{-90}{%
+    \begin{minipage}[c]{8cm}
+      \CJKvert
+      \begin{TChinese}
+        本常問問答集~(FAQ list)~是從一些經常被問到的問題及其適當的解答
+        中，以方便的形式摘要而出的。\uline{跟上一版不同的是，其編排結構
+          已徹底改變。} \textbf{有關新結構的細節，可參考「如何閱讀本問
+          答集及了解其編排結構」該項中的說明。}
+      \end{TChinese}
+    \end{minipage}%
+  }%
+  \hspace{0.5cm}%
+  \begin{minipage}[c]{8cm}
+    \begin{otherlanguage}{vietnam}
+      Phần ``Những câu hỏi và giải đáp thường gặp'' (viết tắt từ tiếng
+      Anh là FAQ) được nêu ra ở đây nhằm mục đích thu thập những câu
+      hỏi thường gặp trong thực tế và những lời giải đáp thích hợp
+      nhất của nó.  \uline{Từ lần ấn bản cuối cùng đến nay, đã có
+        những sự thay đổi khá lớn trong cấu trúc của FAQ.}  \textbf{Để
+        hiểu rõ hơn bạn nên xem lại chương ``Làm sao tôi có thể đọc
+        đuợc FAQ''.}
+    \end{otherlanguage}
+  \end{minipage}
+\end{center}
+
+\begin{TChinese}
+  本常問問答集~(FAQ list)~是從一些經常被問到的問題及其適當的解答中，以
+  方便的形式摘要而出的。\uline{跟上一版不同的是，其編排結構已徹底改變。}
+  \textbf{有關新結構的細節，可參考「如何閱讀本問答集及了解其編排結構」
+    該項中的說明。}
+\end{TChinese}
+
+\end{CJK}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% coding: utf-8
+%%% TeX-master: t
+%%% End:

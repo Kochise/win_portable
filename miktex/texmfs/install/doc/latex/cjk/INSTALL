@@ -1,0 +1,686 @@
+This is the file INSTALL of the CJK macro package ver. 4.8.4 (18-Apr-2015).
+
+Installation Guide
+==================
+
+It is probably a good idea to get a packaged version of CJK---be warned that
+installing CJK is *not* trivial.
+
+The easiest solution is to use the TeX Live CD which is distributed among
+members of TeX user groups worldwide. It comes with a ready-to-run CJK setup
+together with basic CJK fonts (in outline format if freely available) for
+almost all encodings. To get a recent snapshot, try the SVN archive. See
+
+  http://www.tug.org/texlive/svn/
+
+for more details.
+
+. Using web sites like http://rpmseek.com you can find and download CJK
+  packages for most GNU/Linux distributions like SuSE or Debian.
+
+. For FreeBSD try this:
+
+    http://www.freebsd.org/ports/chinese.html
+
+. MikTeX also provides packages for CJK.
+
+
+Here a check list for the impatient (experienced) user which tries to show
+whether you've done all steps to install the CJK package and fonts. It is
+assumed that you want to install both ttf2pk and hbf2gf.
+
+Detailed explanations can be found below.
+
+
+--- begin checklist ---------------------------------------------------------
+
+. Have you installed a LaTeX 2e version newer or equal to 2001/06/01? The
+  version of LaTeX is given in each log file produced by LaTeX. For using
+  CJKutf8.sty you even need version 2003/12/01.
+
+. Have you removed an older version of CJK? If not, do it now but don't
+  forget to save your FD and other files which you have changed! Don't
+  forget also to remove the ttf2pk and hbf2gf binaries.
+
+. Can the texinput tree of the CJK package be found by your TeX
+  implementation? Have you activated subdirectory searching?
+
+. Have you downloaded the needed font packages (either ps, hbf or ttf)? See
+  also contrib/wadalab/DNP.txt for the Japanese Wadalab fonts. Have you
+  moved the TFM files into your TFM-tree (or updated TFMINPUTS accordingly)?
+  Ditto for VF files if needed.
+
+. Have you installed ttf2pk and ttf2tfm from the FreeType 1 package (only
+  needed for TrueType fonts)? Note that FreeType 2 won't work.
+
+. Have you run ttf2tfm to create the proper TFM files from your TrueType
+  fonts? This won't be done automatically via mktextfm or MakeTeXTFM!
+
+. Have you updated the ttfonts.map file for ttf2pk? Have you updated the
+  various hbf2gf config files? Have you copied them to the right places?
+  Don't forget to install ttf2pk's SFD and other data files which define the
+  various CJK subfonts and encodings.
+
+. Have you modified and installed the script files for automatic font
+  generation (not necessary for teTeX 1.0 or newer)?
+
+. If you want Thai support, have you followed the instructions given in
+  thaifont.txt?
+
+
+web2c/teTeX users:
+
+. Do you have a C compiler and a make program available for compilation? GNU
+  gcc and GNU make are recommended.
+
+. Have you updated special.map?
+
+. Have you used the options --with-kpathsea-include=... and
+  --with-kpathsea-lib=... while calling the configure script of hbf2gf
+  (or ttf2pk)? Otherwise no file searching library is used which yields
+  surprising results... Note: Don't use `/usr/include/kpathsea', for
+  example, but `/usr/include' as an argument to --with-kpathsea-include.
+
+. To check whether kpathsea correctly finds HBF files and configuration
+  files for hbf2gf, say:
+
+    kpsewhich -progname=hbf2gf -format='misc fonts' <your_font>.hbf
+    kpsewhich -progname=hbf2gf -format='other text files' <your_file>.cfg
+
+  The same for TrueType fonts and the ttf2pk config file:
+
+    kpsewhich -progname=ttf2pk <your_font>.ttf
+    kpsewhich -progname=ttf2pk -format='other text files' ttfonts.map
+
+  [Recent kpathsea versions (like 3.5.5) which come with the new teTeX or
+   TeXLive distributions have a new variable `TEXFONTMAPS' for map files;
+   you should use this test
+
+     kpsewhich -progname=ttf2pk -format=map ttfonts.map
+
+   instead of the last one.]
+
+. Have you compiled the various *conv utility programs (like bg5conv)? Have
+  you installed them together with the caller scripts (like bg5latex) in
+  your path? FOR BIG 5 ENCODING YOU SHOULD ALWAYS USE bg5latex or
+  bg5pdflatex (except if you use cjk-enc.el). FOR SJIS ENCODING YOU SHOULD
+  ALWAYS USE sjislatex or sjispdflatex.
+
+. Have you updated and controlled the texmf.cnf configuration file or set
+  the various environment variables? (TEXINPUTS, TFMFONTS, PKFONTS,
+  MISCFONTS, TTFONTS, probably TTF2PKINPUTS, TTF2TFMINPUTS, HBF2GFINPUTS)
+
+. ttf2pk and hbf2gf should be in the same directory where your TeX binaries
+  like `texconfig' or `gftopk' are (or you must set TEXMFCNF and probably
+  TEXMF in the environment). Soft links won't work!
+
+. Finally, have you run texhash (or mktexlsr) after finishing all other
+  things?
+
+
+emTeX users:
+
+. Have you created a LaTeX format file which allows plain 8bit input and
+  output without using any TeX Code Page (tcp)?
+
+. Have you installed 4DOS (4OS2 or Take Command) for running the file
+  dvidrv.btm?
+
+. Have you configured dvidrv.btm?
+
+. Have you installed the various *conv utility programs (like bg5conv)?
+  together with the caller scripts (like bg5latex.bat)? FOR BIG 5 ENCODING
+  YOU SHOULD ALWAYS USE bg5latex.bat . FOR SJIS ENCODING YOU SHOULD ALWAYS
+  USE sjisltx.bat .
+
+. Have you created and installed TFM files for fonts not in a CJK font
+  package?
+
+. Check whether you have updated all needed environment variables (TEXINPUT,
+  TEXTFM, TTFONTS, TTFCFG, HBFONTS, HBFCFG) and your dvidrv configuration
+  file or files (+font-files, +virtual-fonts).
+
+
+In case of errors, verify the list step by step. Detailed information for
+each step can be found in the documentation files of CJK. Under web2c or
+teTeX, you can set the KPATHSEA_DEBUG environment variable to -1, then all
+debugging info is shown and sent to stderr; it is *highly* recommended that
+you read the kpathsea.info files. Under emTeX, read the various
+documentation files, especially dvidrv.doc and tex.doc, and check the log
+file of your dvi driver.
+
+For hbf2gf, read hbf2gf.txt and its manual page (hbf2gf.1 or a formatted
+version of it). Similarly, more info on ttf2tfm and ttf2pk can be found in
+ttf2pk.doc and the manual pages ttf2pk.1 and ttf2tfm.1 (or a formatted
+version).
+
+--- end checklist -----------------------------------------------------------
+
+
+
+Unix (web2c and teTeX)
+----------------------
+
+. If you can become root, rename the `texinput' directory tree of CJK into
+  `CJK' or something else and add it to your (local) web2c texinput tree
+  (for example, /usr/local/share/texmf.local/tex/latex/CJK).
+
+. If you can't become root, modify the TEXINPUTS environment variable
+  instead so that it includes the CJK directory; use a command similar to
+
+    setenv TEXINPUTS :<your CJK directory>//
+
+  to let TeX search the standard directories and your CJK tree, e.g.,
+
+    setenv TEXINPUTS :/home/joe_user/CJK/4_3.0/texinput//
+
+  (Note the leading double colon to append a path, and the double slash to
+  activate subdirectory searching---for details see the kpathsea info
+  files.)
+
+  [Recent teTeX and TeXLive versions automatically search a TEXMF tree in
+   your home directory called `texmf'.]
+
+  See contrib/wadalab/DNP.txt for the Japanese Wadalab fonts.
+
+. Edit the FD files of the encodings you want to use to specify the fonts
+  you have. An explanation of the additional size commands CJK provides can
+  be found in fonts.txt .
+
+  Note: Most FD example files from the CJK package are set up for PS fonts
+  from the TeXLive distribution.
+
+  If you use the CJK font packages (see below) no changes are needed.
+
+. [In case you plan to use only outline fonts (PFB, TTF) you can omit the
+   installation of hbf2gf and HBF fonts.]
+
+  If necessary, create TFM (and PK) files from CJK bitmaps with hbf2gf
+  (found in utils/hbf2gf). This program comes with a configure script; say
+  `./configure --help' in the utils/hbf2gf directory for configuration
+  options. You need a compiled kpathsea library and its header files; in
+  most cases you say
+
+    ./configure --prefix=/usr/local/TeX \
+                --with-kpathsea-include=<INCLUDEDIR> \
+                --with-kpathsea-lib=<LIBDIR>
+    make
+    make install
+
+  for a normal compilation and installation. Replace `/usr/local/TeX' with a
+  path to your TeX distribution, and <DIR> with the directory one level
+  higher than the library and the include files themselves. Example:
+  libkpathsea.a is in /usr/local/TeX/lib/i686-linux, kpathsea.h is in
+  /usr/local/TeX/include/kpathsea; then <LIBDIR> should be
+  `/usr/local/TeX/TeX/lib/i686-linux', and <INCLUDEDIR> should be
+  `/usr/local/TeX/include' (and not `/usr/local/TeX/include/kpathsea).
+
+  See hbf2gf.txt, the man page (hbf2gf.1), and the documentation of the
+  source file (hbf2gf.dvi) for further details. Usually it is sufficient to
+  let hbf2gf create a complete set of TFM files; PK fonts are then created
+  on demand.
+
+  Older kpathsea versions need a patched MakeTeXPK or mktexpk script; you
+  should apply the proper patch(es) from utils/hbf2gf/scripts. No changes to
+  the script files are necessary for teTeX 1.0 and newer.
+
+  The CJK font packages already contain TFM (and VF) files arranged for the
+  (new) TDS directory structure; add it directly to your TEXMF tree.
+
+. Free Chinese TrueType fonts (for both simplified and traditional Chinese)
+  with a license similar to the GPL can be found on
+
+    ftp://ftp.gnu.org/gnu/nongnu
+
+  and its mirrors worldwide. You might also search websites of companies
+  offering WWW browser; they often come with CJK language packs which
+  contain CJK TrueType fonts.
+
+  Please note that many CJK TrueType fonts only have a Unicode mapping
+  table. You should use the SFD files from the ttf2pk package starting with
+  the letter `U' (e.g., UKS.sfd) which maps Unicode fonts to language
+  specific encoded subfonts as needed by the CJK package.
+
+  The ttf2pk package found in the contrib/ttf2pk directory of
+
+    ftp://ftp.freetype.org/pub/
+            freetype/unstable/freetype1-contrib-current.tar.gz
+
+  contains the two programs ttf2tfm and ttf2pk for converting TrueType fonts
+  into TFM and PK fonts, respectively. By the way, this package is not
+  restricted to CJK TrueType fonts; it works with other TrueType fonts too.
+  Read the manual pages and the documentation for further information. For
+  compilation you also need the FreeType 1 package:
+
+    ftp://ftp.freetype.org/pub/freetype/unstable/freetype-current.tar.gz
+
+. The font editor `fontforge' (available from http://fontforge.sf.net) is
+  capable of generating Type 1 subfonts as needed by CJK from other formats
+  like TTF, OTF or CID (using the subfont definition files from ttf2pk).
+  Such subfonts should be usable by virtually all platforms.
+
+  (Funnnily, fontforge uses the `.sfd' extension also for saving font files
+  it creates.)
+
+  Although fontforge needs the X Window System, it can be compiled without a
+  graphical interface, using a scripting language to control font
+  conversion. The directory `utils/subfonts' of the CJK package contains
+  useful scripts for manipulating subfonts.
+
+. It is recommended to add all CJK fonts which are converted to the PK font
+  format (either with hbf2gf or ttf2pk) to the file special.map: Assuming
+  that your PK fonts should be generated in
+
+    $TEXMF/fonts/pk/modeless/gb2312/gsfs14/
+
+  the proper entries would be
+
+    gsfs1401  gb2312  gsfs14
+    gsfs1402  gs2312  gsfs14
+    ...
+
+. Compile the small preprocessors in the utils subdirectories with
+
+    cc -O -s -o bg5conv bg5conv.c
+    cc -O -s -o sjisconv sjisconv.c
+    cc -O -s -o cefconv cefconv.c
+    cc -O -s -o cef5conv cef5conv.c
+    cc -O -s -o cefsconv cefsconv.c
+    cc -O -s -o extconv extconv.c
+
+  and move them into TeX's bin directory (together with the shell scripts)
+  or modify the PATH environment variable appropriately. (`cc' can be any C
+  compiler.)
+
+  The script files `...latex' make the use of these programs transparent.
+
+. Move the man pages into your man1 directory tree.
+
+. If you want to use Mule, emacs, or XEmacs together with the CJK package,
+  you should install cjk-enc.el (in utils/lisp). See cjk-enc.txt for
+  documentation. Choose the correct cjk-enc.el version---note that the Mule
+  version has limited capabilities compared to the Emacs version.
+
+  Move cjk-enc.el to a place which is searched by Mule (e.g.,
+  /usr/local/lib/mule/site-lisp) and put the following line into your emacs
+  file:
+
+    (load-library "cjk-enc")
+
+  The default directory for emacs is /usr/local/share/emacs/site-lisp.
+
+  Note that you don't need cjk-enc.el in case you are editing UTF-8 encoded
+  files only.
+
+. If you mainly write Chinese or Japanese with Emacs or Mule, consider the
+  use of cjktilde.el (in utils/lisp). This file contains a minor mode which
+  exchanges the tilde key with the space key. See the documentation of
+  \CJKtilde in CJK.txt for the reasons to use `~' in most cases instead of
+  a space character.
+
+  To install, move cjktilde.el to a place which is searched by Emacs or Mule
+  (e.g., /usr/local/share/emacs/site-lisp) and put the following line into
+  your .emacs file:
+
+    (load-library "cjktilde")
+
+  To toggle the CJK tilde mode say
+
+    M-x cjk-tilde-mode
+
+  You can then assign cjk-tilde-mode to a key, e.g., shift-insert.
+
+. If you use AUCTeX you can try cjkspace.el instead of cjktilde.el; it works
+  in a similar (but not identical) way and is special to LaTeX buffers. Move
+  the file to the local lisp directory and put the following lines into your
+  .emacs file:
+
+    (autoload 'CJK-insert-space "cjkspace"
+      "Insert tildes appropriately in CJK document." t)
+    (defun my-LaTeX-mode-hook ()
+      "My personal key definitions for LaTeX mode."
+      (define-key LaTeX-mode-map " " 'CJK-insert-space))
+    (add-hook 'LaTeX-mode-hook 'my-LaTeX-mode-hook)
+
+  Please read the documentation in the file cjkspace.el .
+
+. For Thai support please follow the instructions given in `thaifont.txt'.
+
+
+DOS and OS/2 (emTeX)
+--------------------
+
+web2c has been ported to MS-DOS. If you use this (which I recommend), follow
+the instructions above.
+
+. Note that some Unix specific shell scripts and other files have names
+  longer than 8 characters. You don't need them. Some of the TeX input files
+  have lower and uppercase characters in its filenames, but none of the
+  filenames collide under DOS.
+
+. Move the `texinput' directory tree to a place where TeX scans for input
+  files (and rename it to `cjk' or something else). Note that its
+  subdirectories are specific to encoding schemes. emTeX allows for
+  recursively scanned search paths, thus retaining the directory tree is
+  possible.
+
+  Example:
+
+    CJK files:      c:\emtex\texinput\cjk\...
+    environment:    set emtexdir=c:\emtex
+                    set texinput=%emtexdir%\texinput!!
+
+  See contrib/wadalab/DNP.txt for the Japanese Wadalab fonts.
+
+. [In case you plan to use only outline fonts (PFB, TTF) you can omit
+   this step.]
+
+  Compile hbf2gf. You need GNU make and either the emx (DOS and OS/2) or
+  the djgpp (DOS and Windows) compiler.
+
+  Say `make -f Makefile.gnu' to see the possible options; more info can be
+  found in hbf2gf.txt .
+
+. Compile the utility programs.
+
+    cc -O -s -o bg5conv bg5conv.c
+    cc -O -s -o sjisconv sjisconv.c
+    cc -O -s -o cefconv cefconv.c
+    cc -O -s -o cef5conv cef5conv.c
+    cc -O -s -o cefsconv cefsconv.c
+    cc -O -s -o extconv extconv.c
+
+. Move the various BAT files (for DOS) and/or the CMD REXX scripts (for
+  OS/2) into a directory in the path (e.g., c:\emtex\bin).
+
+. Edit the FD files of your encoding(s) to specify the fonts you have. An
+  explanation of the additional size commands CJK provides can be found in
+  fonts.txt .
+
+  Note: Most FD example files from the CJK package are set up for PS fonts
+  from the TeXLive distribution.
+
+  If you use the CJK font packages (see below) no changes are needed.
+
+. [In case you plan to use only outline fonts (PFB, TTF) you can omit this
+   step.]
+
+  If necessary, create TFM (and PK) files from CJK bitmaps with hbf2gf
+  (found in utils\hbf2gf). See hbf2gf.txt and the documentation of the
+  source file (hbf2gf.dvi) for explanation. Usually it is sufficient to let
+  hbf2gf create a complete set of TFM files; PK fonts are then created on
+  demand (this is done with the dvidrv.btm shell script of the CJK package).
+
+  You need 4DOS or 4OS/2 (these are shareware replacements for command.com)
+  to run dvidrv.btm.
+
+  dvidrv.btm should also work with Take Command/16, Take Command/32, or Take
+  Command for OS/2.
+
+  The CJK font packages already contain TFM (and VF) files (arranged for the
+  (new) TDS directory structure; unpack the font packages in the root
+  directory with
+
+    gzip -d CJK_font_archive.tgz
+    tar xvf CJK_font_archive.tar
+
+  Rearrange the directory structure as suggested below (to make the file
+  search mechanism of emTeX faster) and modify the appropriate environment
+  variables to include the additional directories. The same holds for the
+  CJK bitmap fonts, its HBF header files and the hbf2gf configuration files.
+
+  [Note: Binaries for the gzip and tar archive programs can be found on CTAN
+   in the `utils' subdirectory.]
+
+  Example:
+
+      jfs56.tar.gz (should be ftp'ed as jfs56.tgz if you work under DOS
+                    since two dots are not allowed)
+
+    suggested final directory structure (after unpacking and rearranging):
+
+      c:\texmf\fonts\tfm\gsfs1401.tfm ...
+      c:\texmf\hbf2gf\gsfs14.cfg
+      c:\texmf\fonts\hbf\gb2312\jfs56\jfs56.a ...
+    [ c:\texmf\fonts\pk\modeless\XXXdpi\gsfs1401.pk ... ]
+
+    Add these lines to the end of autoexec.bat:
+
+      set texmfdir=c:\texmf
+      set cjkpk=%texmfdir%\fonts\pk
+      set textfm=%textfm%;%texmfdir%\fonts\tfm
+
+    Under OS/2, add similar lines (but with expanded pathnames) to the end
+    of config.sys:
+
+      set texmfdir=c:\texmf
+      set cjkpk=c:\texmf\fonts\pk
+      set textfm=<your old textfm path>;c:\texmf\fonts\tfm
+
+    Changes in gsfs14.cfg:
+
+      pk_directory  $texmfdir\fonts\pk\modeless\432dpi\
+      tfm_directory $texmfdir\fonts\tfm\
+
+    Changes in dvidrv.btm:
+
+      set pkdir=%texmfdir%\fonts\pk
+      set ttfcfg=%texmfdir%\ttf2pk
+      set hbfcfg=%texmfdir%\hbf2gf
+
+      set pre_dpi=
+      set post_dpi=dpi
+
+    Changes in a dvi driver configuration file (.cnf) for emTeX:
+
+      +font-files:{<your old pk path>,$texmfdir:fonts\modeless}\@Rrdpi\@f.pk
+
+. Free Chinese TrueType fonts (for both simplified and traditiional Chinese)
+  with a license similar to the GPL can be found on
+  ftp://ftp.gnu.org/gnu/nongnu and its mirrors worldwide. You might also
+  search websites of companies offering WWW browser; they often come with
+  CJK language packs which contain CJK TrueType fonts.
+
+  Please note that many CJK TrueType fonts only have a Unicode mapping
+  table. You should use the SFD files from the ttf2pk package starting with
+  the letter `U' (e.g., UKS.sfd) which maps Unicode fonts to language
+  specific encoded subfonts as needed by the CJK package.
+
+  The ttf2pk package can be found in the contrib/ttf2pk directory of
+
+    ftp://ftp.freetype.org/
+            freetype/unstable/freetype1-contrib-current.tar.gz
+
+  contains the two programs ttf2tfm and ttf2pk for converting TrueType fonts
+  into TFM and PK fonts, respectively. By the way, this package is not
+  restricted to CJK TrueType fonts; it works with other TrueType fonts too.
+  Read the manual pages and the documentation for further information. For
+  compilation you also need the FreeType 1 package:
+
+    ftp://ftp.freetype.org/pub/freetype/unstable/freetype-current.tar.gz
+
+. The font editor `fontforge' (available from http://fontforge.sf.net) is
+  capable to generate Type 1 subfonts as needed by CJK from other formats
+  like TTF, OTF or CID (using the subfont definition files from ttf2pk).
+  Such subfonts should be usable by virtually all platforms.
+
+  (Funnnily, fontforge uses the `.sfd' extension also for saving font files
+  it creates.)
+
+  Although fontforge needs the X Window System, it can be compiled without a
+  graphical interface, using a scripting language to control font
+  conversion. The directory `utils/subfonts' of the CJK package contains
+  useful scripts for manipulating subfonts.
+
+. You find the some standard Hangul PK fonts for 300dpi (cx) and 600dpi
+  (ljfour) resolution in the following archives:
+
+    han.300.tar.gz
+    han1.300.tar.gz
+    han.600.tar.gz
+    han1.600.tar.gz
+    han.tfmvf.tar.gz
+    han1.tfmvf.tar.gz
+
+  It is necessary to rearrange not only the directory structure but the
+  names of the dpi directories too: The TeX directory standards specifies
+  `dpiXXX', but emTeX provides by default `XXXdpi'.
+
+  The final locations of the packages' files should be
+
+    c:\texmf\fonts\tfm\
+    c:\texmf\fonts\vf\
+    c:\texmf\fonts\pk\{cx,ljfour}\XXXdpi\
+
+  Additionally to the above example you should add this to the end of
+  autoexec.bat:
+
+    set cjkvf=%texmfdir%\fonts\vf
+
+  or config.sys for OS/2:
+
+    set cjkvf=c:\texmf\fonts\vf
+
+  Assuming that you use the 300dpi Hangul PK fonts (for a cx printer) you
+  should do the following changes in your dvi driver configuration file
+  (suffix `.cnf') for emTeX (still continuing the above example):
+
+    +font-files:{<your old pk path>,$texmfdir:fonts\{modeless,cx}}\@Rrdpi\@f.pk
+    +virtual-fonts:{<your old vf path>,$texmfdir:fonts}\@f.vf
+
+. For Thai support please follow the instructions given in `thaifont.txt'.
+
+
+Other systems
+-------------
+
+Recent versions of CJK have only been tested with web2c; nevertheless, it
+should run on other systems too:
+
+  The font editor `fontforge' (available from http://fontforge.sf.net) is
+  capable to generate Type 1 subfonts as needed by CJK from other formats
+  like TTF, OTF or CID (using the subfont definition files from ttf2pk).
+  Such subfonts should be usable by virtually all platforms.
+
+  (Funnnily, fontforge uses the `.sfd' extension also for saving font files
+  it creates.)
+
+  Although fontforge needs the X Window System, it can be compiled without a
+  graphical interface, using a scripting language to control font
+  conversion. The directory `utils/subfonts' of the CJK package contains
+  useful scripts for manipulating subfonts.
+
+  If no outline fonts are available and you have to use HBF fonts, try to
+  compile hbf2gf. Since it is written in ANSI C it should be fairly portable
+  (if patches are needed please send them to the author; most likely you
+  have to modify the file operating routines). If this fails it is necessary
+  to build the various PK fonts on a different machine. It has been reported
+  that older GNU compilers on the NeXT have difficulties with `%i'
+  formatting parameters in the HBF API (hbf.c): replace all occurrences of
+  `%i' with `%d'.
+
+  If there exists an equivalent to mktexpk (or dvidrv.btm), try to modify it
+  similar to CJK's changes so that CJK fonts can be created on the fly. If
+  this fails you can only use precompiled sets of CJK fonts (this is, using
+  PK fonts generated on another platform).
+
+  The rest should be rather trivial for the experienced user; again, please
+  write the author if you have successfully installed the package and send a
+  report how to install.
+
+
+How to get CJK and related software
+-----------------------------------
+
+. You find CJK and software related to TeX at the CTAN hosts (Comprehensive
+  TeX Archive Network). These completely identical ftp servers (concerning
+  TeX software) are
+
+    ftp.dante.de    DANTE (Deutsche Anwendervereinigung fuer TeX)
+                    Hamburg (Germany)
+    ftp.tex.ac.uk   Cambridge University
+                    Cambridge (England)
+    ctan.tug.org    TUG (TeX Users Group)
+                    Massachusetts (USA)
+
+  You should use the nearest one, or even better, a local mirror of a CTAN
+  host: The file `CTAN.sites' on CTAN contains a list.
+
+  On CTAN, the CJK package itself is unpacked. To receive the complete
+  package, go to the parent directory of CJK and say
+
+    get CJK.zip
+
+  or
+
+    get CJK.tar.gz
+
+  whatever is appropriate for your system.
+
+  The CJK directory and all its subdirectories are sent to you in compressed
+  form. Be aware that not all mirrors of CTAN sites support compression of
+  directories.
+
+. The documentation bundle of the CJK package is not unpackaged; download it
+  as
+
+    get cjk-4.8.4-doc.tar.gz
+
+  or
+
+    get cjk-4.8.4-doc.tar.gz cjkdoc.tgz
+
+  whatever is appropriate for your system. It contains precompiled versions
+  (in DVI, PDF, text format) of all documentation and example files.
+
+. PostScript font packages with subfonts which can be directly used by the
+  CJK package are already available on CTAN:
+
+    traditional Chinese:
+      fonts/arphic/bkai00mp-<version>.tar.gz
+      fonts/arphic/bsmi00lp-<version>.tar.gz
+
+    simplified Chinese:
+      fonts/arphic/gbsn00lp-<version>.tar.gz
+      fonts/arphic/gkai00mp-<version>.tar.gz
+
+    Japanese:
+      fonts/wadalab/gothic-0-13-<version>.tar.gz
+      fonts/wadalab/maru-0-8-<version>.tar.gz
+      fonts/wadalab/maru-1-8-<version>.tar.gz
+      fonts/wadalab/mincho-0-12-<version>.tar.gz
+      fonts/wadalab/mincho-0-8-<version>.tar.gz
+      fonts/wadalab/mincho-1-8-<version>.tar.gz
+
+    Korean:
+      fonts/korean/HLaTeX/uhc-bom.tar.gz
+      fonts/korean/HLaTeX/uhc-dinaru.tar.gz
+      fonts/korean/HLaTeX/uhc-fonts.tar.gz
+      fonts/korean/HLaTeX/uhc-gothic.tar.gz
+      fonts/korean/HLaTeX/uhc-graphic.tar.gz
+      fonts/korean/HLaTeX/uhc-gungseo.tar.gz
+      fonts/korean/HLaTeX/uhc-jamo.tar.gz
+      fonts/korean/HLaTeX/uhc-myoungjo.tar.gz
+      fonts/korean/HLaTeX/uhc-pen.tar.gz
+      fonts/korean/HLaTeX/uhc-pilgi.tar.gz
+      fonts/korean/HLaTeX/uhc-pilgia.tar.gz
+      fonts/korean/HLaTeX/uhc-shinmun.tar.gz
+      fonts/korean/HLaTeX/uhc-taza.tar.gz
+      fonts/korean/HLaTeX/uhc-vada.tar.gz
+      fonts/korean/HLaTeX/uhc-yetgul.tar.gz
+
+  You should consult the documentation and the font samplers of those
+  packages (if available) for more informations.
+
+. Mule 2.3 can be downloaded from this Japanese host:
+
+    ftp://ftp.m17n.org/pub/mule/mule-2.3.tar.gz
+
+  [Note: You need Mule 2.3 only for right-to-left scripts like Arabic or
+   Hebrew which aren't yet supported in emacs. Otherwise, I strongly
+   recommend to get FSF emacs 22 or newer, or XEmacs 21.1 or newer which is
+   available from ftp.gnu.org (USA) and ftp.xemacs.org, respectively, and
+   its many mirrors.]
+
+
+---End of INSTALL---

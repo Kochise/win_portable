@@ -1,0 +1,134 @@
+% This is the file CJKutf8.tex of the CJK package
+%   for testing the CJKutf8 style file.
+%
+% written by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Vietnamese support for Babel comes with the VnTeX package.
+%
+% Read CJKutf8.txt for more details.
+
+\documentclass[12pt]{article}
+
+\usepackage{cmap}
+
+\usepackage[10pt]{type1ec}          % use only 10pt fonts
+\usepackage[T1]{fontenc}
+
+\usepackage{CJKutf8}
+\usepackage[german,
+            russian,                % T2A font encoding
+            vietnamese,             % T5 font encoding
+            greek,                  % LGR font encoding
+            USenglish]{babel}
+
+\usepackage{textalpha}              % improved LGR support
+
+\usepackage[overlap, CJK]{ruby}
+\usepackage{CJKulem}
+
+\renewcommand{\rubysep}{-0.2ex}
+
+\newenvironment{SChinese}{%
+  \CJKfamily{gbsn}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{TChinese}{%
+  \CJKfamily{bsmi}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{Japanese}{%
+  \CJKfamily{min}%
+  \CJKtilde
+  \CJKnospace}{}
+\newenvironment{Korean}{%
+  \CJKfamily{mj}}{}
+
+
+\begin{document}
+
+\parskip 3ex
+\parindent 0pt
+
+\begin{CJK}{UTF8}{}
+
+\begin{Korean}
+  이 FAQ 은 자주 반복되는 질문과 그에 대한 대답을 간단명료한 양식으로
+  모아 엮어졌습니다. \uline{이 FAQ 의 구조는 지난 판에 비하여
+    획기적으로 변경되었습니다.}  \textbf{상세한 것은 ``이 FAQ 을 어떻게
+    읽을 것인가'' 라는 대목을 참조하시기 바랍니다.}
+\end{Korean}
+
+\begin{otherlanguage}{german}
+  Dieses FAQ wurde erstellt, um häufig gestellte Fragen und ihre
+  Antworten in einer gefälligen Form zusammenzufassen.  \uline{Die
+    Struktur dieses FAQ wurde drastisch geändert seit der letzten
+    Version.}  \textbf{Für Details siehe den Abschnitt "`Wie lese ich
+    dieses FAQ"'.}
+\end{otherlanguage}
+
+\begin{SChinese}
+  本常问问答集~(FAQ list)~是从一些经常被问到的问题及其适当的解答中，以
+  方便的形式摘要而出的。\uline{跟上一版不同的是，其编排结构已彻底改变。}
+  \textbf{有关新结构的细节，可参考「如何阅读本问答集及了解其编排结构」
+    该项中的说明。}
+\end{SChinese}
+
+\begin{TChinese}
+  本常問問答集~(FAQ list)~是從一些經常被問到的問題及其適當的解答中，以
+  方便的形式摘要而出的。\uline{跟上一版不同的是，其編排結構已徹底改變。}
+  \textbf{有關新結構的細節，可參考「如何閱讀本問答集及了解其編排結構」
+    該項中的說明。}
+\end{TChinese}
+
+This FAQ list was made to summarize some frequently asked questions
+and their answers in a convenient form.  \uline{The structure of this
+  FAQ list has drastically changed since the last version.}
+\textbf{For details of the new structure, see the entry of `How to
+  read this FAQ and its structure'.}
+
+\begin{Japanese}
+  この~FAQ~リストは、よくある質問とその答を集め、役に立つようにしたもの
+  です。\uline{この~FAQ~リストの構造は、以前のものと比べて大幅に変更さ
+    れています。}\textbf{\ruby{新}{あたら}しい構造に関しては、「こ
+    の~FAQ~ の読み方とその構造」の項目を\ruby{参}{さん}\ruby{照}{しょ
+      う}して下さい。}
+\end{Japanese}
+
+\begin{otherlanguage}{vietnamese}
+  Phần ``Những câu hỏi và giải đáp thường gặp'' (viết tắt từ tiếng Anh
+  là FAQ) được nêu ra ở đây nhằm mục đích thu thập những câu hỏi
+  thường gặp trong thực tế và những lời giải đáp thích hợp nhất của
+  nó.  \uline{Từ lần ấn bản cuối cùng đến nay, đã có những sự thay đổi
+    khá lớn trong cấu trúc của FAQ.}  \textbf{Để hiểu rõ hơn bạn nên
+    xem lại chương ``Làm sao tôi có thể đọc đuợc FAQ''.}
+\end{otherlanguage}
+
+\begin{otherlanguage}{russian}
+  Этот список был составлен для суммирования некоторых часто
+  задаваемых вопросов (FAQ), вместе с ответами на них, в удобной
+  форме.  \uline{Структура этого FAQ кардинально изменилась по
+    сравнению с послед\-ней версией.}  \textbf{В разделе `Как читать
+    этот FAQ и его структура' объяснены детали этой новой структуры.}
+\end{otherlanguage}
+
+\begin{otherlanguage}{greek}
+  Η λίστα αυτή ΣΤΕ (συχνά τιθεμένων ερωτήσεων) έχει σαν σκοπό να
+  συμπεριλάβει σε εύχρηστη μορφή κάποιες σημαντικές ερωτήσεις και τις
+  απαντήσεις τους.  \uline{Η οργάνωση αυτής της λίστας άλλαξε
+    σημαντικά από την τελευταία έκδοσή της και μετά.}  \textbf{Για
+    λεπτομέρειες πάνω στη νέα οργάνωση, βλέπε το λήμμα <<Πώς να
+    διαβάσετε αυτή την ΣΤΕ και πώς είναι οργανωμένη>>.}
+\end{otherlanguage}
+
+\end{CJK}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

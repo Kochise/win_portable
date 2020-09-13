@@ -1,0 +1,203 @@
+% This is the file standard.chr of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{standard.chr}[\filedate\space\fileversion]
+
+
+% define macros for handling standard CJK fonts and characters.
+
+\gdef\CJK@standardChr{
+  \CJK@global\def\CJK@char##1##2##3{
+    {\ifnum ##3 < \CJK@min
+       \CJK@err
+     \else
+       \ifnum ##3 > \CJK@max
+         \CJK@err
+       \else
+         \CJK@testLastCJK
+         \ifCJK@
+           \CJKglue
+         \fi
+         \CJK@testLastKern
+         \ifCJK@
+           \CJK@nobreakglue
+         \fi
+
+         \@tempcnta ##3\relax
+         \advance\@tempcnta ##2\relax
+         \edef\CJK@plane{##1}
+         \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+         \edef\reserved@a{
+           \curr@fontshape/\CJK@plane/\the\@tempcnta/\CJK@direction}
+         \expandafter\ifx\csname\reserved@a\endcsname \relax
+           \CJKsymbol{\@tempcnta}
+         \else
+           \csname\reserved@a\endcsname
+         \fi
+
+         \CJK@CJK
+       \fi
+     \fi}}
+
+% the same, but the plane crosses the font file boundary.
+
+  \CJK@global\def\CJK@charx##1##2##3##4{
+    {\ifnum ##4 < \CJK@min
+       \CJK@err
+     \else
+       \ifnum ##4 > \CJK@max
+         \CJK@err
+       \else
+         \CJK@testLastCJK
+         \ifCJK@
+           \CJKglue
+         \fi
+         \CJK@testLastKern
+         \ifCJK@
+           \CJK@nobreakglue
+         \fi
+
+         \@tempcnta ##4\relax
+         \@tempcntb 256\relax
+         \advance\@tempcnta ##3\relax
+         \advance\@tempcntb -##3\relax
+         \chardef\@temp \@tempcntb
+         \ifnum ##4 < \@temp
+           \edef\CJK@plane{##1}
+         \else
+           \advance\@tempcnta -256\relax
+           \edef\CJK@plane{##2}
+         \fi
+         \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+         \edef\reserved@a{
+           \curr@fontshape/\CJK@plane/\the\@tempcnta/\CJK@direction}
+         \expandafter\ifx\csname\reserved@a\endcsname \relax
+           \CJKsymbol{\@tempcnta}
+         \else
+           \csname\reserved@a\endcsname
+         \fi
+
+         \CJK@CJK
+       \fi
+     \fi}}
+
+% for punctuation.
+
+  \CJK@global\def\CJK@punctchar##1##2##3##4{
+    {\ifnum ##4 < \CJK@min
+       \CJK@err
+     \else
+       \ifnum ##4 > \CJK@max
+         \CJK@err
+       \else
+         \CJK@numbToHex{\CJK@gtemp}{##4}
+         \CJK@testLastCJK
+         \ifCJK@
+           \CJK@testPostPunct{\CJK@punctEnc}{##1}{\CJK@gtemp}
+           \ifCJK@
+             \CJK@nobreakglue
+           \else
+             \CJKglue
+           \fi
+         \fi
+         \CJK@testLastKern
+         \ifCJK@
+           \CJK@nobreakglue
+         \fi
+
+         \@tempcnta ##4\relax
+         \advance\@tempcnta ##3\relax
+         \edef\CJK@plane{##2}
+         \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+         \edef\reserved@a{
+           \curr@fontshape/\CJK@plane/\the\@tempcnta/\CJK@direction}
+         \expandafter\ifx\csname\reserved@a\endcsname \relax
+           \CJKpunctsymbol{\@tempcnta}
+         \else
+           \csname\reserved@a\endcsname
+         \fi
+
+         \CJK@testPrePunct{\CJK@punctEnc}{##1}{\CJK@gtemp}
+         \ifCJK@
+           \CJK@kern
+         \else
+           \CJK@CJK
+         \fi
+       \fi
+     \fi}}
+
+  \CJK@global\def\CJK@punctcharx##1##2##3##4##5{
+    {\ifnum ##5 < \CJK@min
+       \CJK@err
+     \else
+       \ifnum ##5 > \CJK@max
+         \CJK@err
+       \else
+         \CJK@numbToHex{\CJK@gtemp}{##5}
+         \CJK@testLastCJK
+         \ifCJK@
+           \CJK@testPostPunct{\CJK@punctEnc}{##1}{\CJK@gtemp}
+           \ifCJK@
+             \CJK@nobreakglue
+           \else
+             \CJKglue
+           \fi
+         \fi
+         \CJK@testLastKern
+         \ifCJK@
+           \CJK@nobreakglue
+         \fi
+
+         \@tempcnta ##5\relax
+         \@tempcntb 256\relax
+         \advance\@tempcnta ##4\relax
+         \advance\@tempcntb -##4\relax
+         \chardef\@temp \@tempcntb
+         \ifnum ##5 < \@temp
+           \edef\CJK@plane{##2}
+         \else
+           \advance\@tempcnta -256\relax
+           \edef\CJK@plane{##3}
+         \fi
+         \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+         \edef\reserved@a{
+           \curr@fontshape/\CJK@plane/\the\@tempcnta/\CJK@direction}
+         \expandafter\ifx\csname\reserved@a\endcsname \relax
+           \CJKpunctsymbol{\@tempcnta}
+         \else
+           \csname\reserved@a\endcsname
+         \fi
+
+         \CJK@testPrePunct{\CJK@punctEnc}{##1}{\CJK@gtemp}
+         \ifCJK@
+           \CJK@kern
+         \else
+           \CJK@CJK
+         \fi
+       \fi
+     \fi}}}
+
+\endinput

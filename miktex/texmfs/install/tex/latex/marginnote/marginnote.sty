@@ -1,0 +1,454 @@
+%%
+%% This is file `marginnote.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% marginnote.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from marginnote.sty.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file marginnote.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%% From File: $Id: marginnote.dtx 27 2018-08-09 09:17:04Z mjk $
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{marginnote}[%
+  2018/08/09 v1.4b
+  non floating margin notes for LaTeX]
+\begingroup
+  \@ifundefined{pdfsavepos}{%
+    \@ifundefined{savepos}{%
+      \PackageError{marginnote}{%
+        neither \string\pdfsavepos\space nor \string\savepos\space
+        available
+      }{%
+        Package `marginnote' depends on extended features of
+        PDFLaTeX,\MessageBreak
+        LuaLaTeX or XeLaTeX. It does not work without those
+        feature.\MessageBreak
+        If you'd continue the package will not provide any feature.
+      }%
+      \aftergroup\endinput
+    }{%
+      \@ifundefined{lastxpos}{%
+        \PackageError{marginnote}{%
+          \string\savepos\space but not \string\lastxpos\space
+          available
+        }{%
+          Package `marginnote' depends on extended features of
+          PDFLaTeX,\MessageBreak
+          LuaLaTeX or XeLaTeX. It does not work without those
+          feature.\MessageBreak
+          If you'd continue the package will not provide any feature.
+        }%
+        \aftergroup\endinput
+      }{%
+        \global\let\mn@savepos\savepos
+        \global\let\mn@lastxpos\lastxpos
+        \global\let\mn@pagewidth\pagewidth
+      }%
+    }%
+  }{%
+    \@ifundefined{pdflastxpos}{%
+      \PackageError{marginnote}{%
+        \string\pdfsavepos\space but not \string\pdflastxpos\space
+        available
+      }{%
+        Package `marginnote' depends on extended features of
+        PDFLaTeX,\MessageBreak
+        LuaLaTeX or XeLaTeX. It does not work without those
+        feature.\MessageBreak
+        If you'd continue the package will not provide any feature.
+      }%
+      \aftergroup\endinput
+    }{%
+      \global\let\mn@savepos\pdfsavepos
+      \global\let\mn@lastxpos\pdflastxpos
+      \global\let\mn@pagewidth\pdfpagewidth
+    }%
+  }%
+\endgroup
+\newif\if@mn@verbose\@mn@verbosetrue
+\DeclareOption{verbose}{\@mn@verbosetrue}
+\DeclareOption{quiet}{\@mn@verbosefalse}
+\newcommand*{\mn@strut}{}
+\newcommand{\mn@zbox}[1]{}
+\DeclareOption{fulladjust}{%
+  \renewcommand*{\mn@strut}{\strut}%
+  \renewcommand{\mn@zbox}[1]{%
+    \bgroup
+      \setbox\@tempboxa\vbox{#1}%
+      \ht\@tempboxa\ht\strutbox
+      \dp\@tempboxa\dp\strutbox
+      \wd\@tempboxa\z@
+      \box\@tempboxa
+    \egroup
+  }%
+}
+\DeclareOption{heightadjust}{%
+  \renewcommand*{\mn@strut}{\begingroup\dp\strutbox\z@\strut\endgroup}%
+  \renewcommand{\mn@zbox}[1]{%
+    \bgroup
+      \setbox\@tempboxa\vbox{#1}%
+      \ht\@tempboxa\ht\strutbox
+      \dp\@tempboxa\dp\z@
+      \wd\@tempboxa\z@
+      \box\@tempboxa
+    \egroup
+  }%
+}
+\DeclareOption{depthadjust}{%
+  \renewcommand*{\mn@strut}{\begingroup\ht\strutbox\z@\strut\endgroup}%
+  \renewcommand{\mn@zbox}[1]{%
+    \bgroup
+      \setbox\@tempboxa\vbox{#1}%
+      \ht\@tempboxa\ht\z@
+      \dp\@tempboxa\dp\strutbox
+      \wd\@tempboxa\z@
+      \box\@tempboxa
+    \egroup
+  }%
+}
+\DeclareOption{noadjust}{%
+  \renewcommand*{\mn@strut}{\relax}%
+  \renewcommand{\mn@zbox}[1]{%
+    \bgroup
+      \setbox\@tempboxa\vbox{\kern-\ht\strutbox #1}%
+      \ht\@tempboxa\ht\z@
+      \dp\@tempboxa\dp\z@
+      \wd\@tempboxa\z@
+      \box\@tempboxa
+    \egroup
+  }%
+}
+\newcommand*{\mn@parboxrestore}{}
+\DeclareOption{parboxrestore}{%
+  \renewcommand*{\mn@parboxrestore}{%
+    \@tempskipa\parskip
+    \@parboxrestore
+    \parskip\@tempskipa
+  }%
+}
+\DeclareOption{noparboxrestore}{%
+  \renewcommand*{\mn@parboxrestore}{}%
+}
+\ExecuteOptions{verbose,fulladjust,parboxrestore}
+\ProcessOptions\relax
+\newcommand*{\newmarginnote}{\@newl@bel{mn}}
+\newcommand*{\marginnotetextwidth}{}
+\let\marginnotetextwidth\textwidth
+\AtBeginDocument{\edef\marginnotetextwidth{\the\textwidth}}
+\newcommand*{\@mn@thispage}{}
+\newcommand*{\@mn@currpage}{}
+\newcommand*{\@mn@currxpos}{}
+\newcounter{mn@abspage}
+\AtBeginDocument{\setcounter{mn@abspage}{1}%
+  \g@addto@macro\@outputpage{%
+    \stepcounter{mn@abspage}%
+    \ifodd\value{mn@abspage}%
+      \ifodd\value{page}%
+      \else
+        \if@twoside
+          \begingroup
+            \advance\c@page\m@ne
+            \PackageWarningNoLine{marginnote}{%
+              Consecutive odd pages found.\MessageBreak
+              Note, it is not recommended to use consecutive\MessageBreak
+              odd pages in a double-ended document.\MessageBreak
+              The pages of your document should always\MessageBreak
+              be a sequence: odd-even-odd-even-...\MessageBreak
+              Maybe you've forgotten a
+              \@ifundefined{KOMAClassName}%
+                           {\string\cleardoublepage}%
+                           {\string\cleardoubleoddpage}
+              before\MessageBreak
+              changing the page numbering on page \thepage
+            }%
+          \endgroup
+        \fi
+        \PackageInfo{marginnote}{Using workaround for absolute page number}%
+        \stepcounter{mn@abspage}%
+      \fi
+    \else
+      \ifodd\value{page}%
+        \if@twoside
+          \begingroup
+            \advance\c@page\m@ne
+            \PackageWarningNoLine{marginnote}{%
+              Consecutive even pages found.\MessageBreak
+              Note, it is not recommended to use consecutive\MessageBreak
+              even pages in a double-ended document.\MessageBreak
+              The pages of your document should always\MessageBreak
+              be a sequence: odd-even-odd-even-...\MessageBreak
+              Maybe you've forgotten a
+              \@ifundefined{KOMAClassName}%
+                           {\string\cleardoublepage}%
+                           {\string\cleardoubleevenpage}
+              before\MessageBreak
+              changing the page numbering on page \thepage
+            }%
+          \endgroup
+        \fi
+        \PackageInfo{marginnote}{Using workaround for absolute page number}%
+        \stepcounter{mn@abspage}%
+      \fi
+    \fi
+  }%
+}
+\newcommand*{\@mn@margintest}{%
+  \expandafter\ifx\csname @mn@thispage\endcsname\@empty
+    \gdef\@mn@atthispage{1}%
+  \else\expandafter\ifnum \@mn@thispage=\value{mn@abspage}%
+      \begingroup
+        \@tempcnta\@mn@atthispage\advance\@tempcnta by \@ne
+        \xdef\@mn@atthispage{\the\@tempcnta}%
+      \endgroup
+    \else
+      \gdef\@mn@atthispage{1}%
+    \fi
+  \fi
+  \xdef\@mn@thispage{\themn@abspage}%
+  \let\@mn@currpage\relax
+  \let\@mn@currxpos\relax
+  \mn@savepos
+  \protected@write\@auxout{\let\themn@abspage\relax}{%
+    \string\newmarginnote{note.\@mn@thispage.\@mn@atthispage}{%
+      {\themn@abspage}{\noexpand\number\mn@lastxpos sp}}%
+  }%
+  \expandafter\ifx\csname mn@note.\@mn@thispage.\@mn@atthispage\endcsname\relax
+    \if@twoside
+      \if@mn@verbose
+        \PackageInfo{marginnote}{Suggest that margin
+          note \@mn@thispage.\@mn@atthispage\space will be on\MessageBreak
+          absolute page \themn@abspage.\MessageBreak
+          This may be wrong}%
+      \fi
+      \ifodd\value{mn@abspage}\@tempswatrue\else\@tempswafalse\fi
+    \else
+      \if@mn@verbose
+        \PackageInfo{marginnote}{right page because not two side mode}%
+      \fi
+      \@tempswatrue
+    \fi
+  \else
+    \edef\@mn@currpage{\csname
+      mn@note.\@mn@thispage.\@mn@atthispage\endcsname}%
+    \edef\@mn@currxpos{\expandafter\@secondoftwo\@mn@currpage}%
+    \ifx\@mn@currxpos\@empty\else
+      \edef\@mn@currxpos{\the\dimexpr \@mn@currxpos -\hoffset\relax}%
+      \begingroup\expandafter\expandafter\expandafter\endgroup
+      \expandafter\ifx\csname pdfhorigin\endcsname\relax\else
+        \begingroup\expandafter\expandafter\expandafter\endgroup
+        \expandafter\ifx\csname pdfoutput\endcsname\relax
+          \begingroup\expandafter\expandafter\expandafter\endgroup
+          \expandafter\ifx\csname outputmode\endcsname\relax\else
+            \ifnum \outputmode=1 %
+              \edef\@mn@currxpos{\the\dimexpr \@mn@currxpos -\pdfhorigin
+                +1in\relax}%
+            \fi
+          \fi
+        \else
+          \ifnum \pdfoutput=1 %
+            \edef\@mn@currxpos{\the\dimexpr \@mn@currxpos -\pdfhorigin
+              +1in\relax}%
+          \fi
+        \fi
+      \fi
+      \ifdefined\mn@pagewidth
+        \@mn@if@RTL{%
+          \PackageInfo{marginnote}{Margin note
+            \@mn@thispage.\@mn@atthispage\space in RTL mode}%
+          \edef\@mn@currxpos{%
+            \the\dimexpr\mn@pagewidth-\@mn@currxpos\relax
+          }%
+        }{}%
+      \fi
+    \fi
+    \edef\@mn@currpage{\expandafter\@firstoftwo\@mn@currpage}%
+    \if@mn@verbose
+      \PackageInfo{marginnote}{Margin note \@mn@thispage.\@mn@atthispage\space
+        is on absolute page \@mn@currpage}%
+    \fi
+    \if@twoside
+      \ifodd\@mn@currpage\relax
+        \@tempswatrue
+        \if@twocolumn
+          \ifdim \@mn@currxpos
+                 < \dimexpr\oddsidemargin+\columnwidth+\columnsep\relax
+            \@tempswafalse
+          \fi
+        \fi
+      \else
+        \@tempswafalse
+        \if@twocolumn
+          \ifdim\@mn@currxpos>\dimexpr\evensidemargin+\columnwidth\relax
+            \@tempswatrue
+          \fi
+        \fi
+      \fi
+    \else
+      \if@mn@verbose
+        \PackageInfo{marginnote}{right page because not two side mode}%
+      \fi
+      \@tempswatrue
+      \if@twocolumn
+        \ifdim \@mn@currxpos
+               < \dimexpr\oddsidemargin+\columnwidth+\columnsep\relax
+          \@tempswafalse
+        \fi
+      \fi
+    \fi
+  \fi
+}
+\newcommand*{\@mn@if@RTL}{%
+  \begingroup\expandafter\expandafter\expandafter\endgroup
+  \expandafter\ifx\csname if@RTL\endcsname\iftrue
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi
+}
+\newcommand*{\marginnote}{%
+  \@dblarg\@mn@marginnote
+}
+\newcommand{\@mn@marginnote}[2][]{%
+  \ifhmode
+    \@bsphack
+    \begingroup
+    \ifdim\@savsk>\z@\else
+      \def\:{\@xifnch}\expandafter\def\: { \futurelet\@let@token\@ifnch}%
+    \fi
+  \else
+    \begingroup
+  \fi
+  \@ifnextchar [{\@mn@@marginnote[{#1}]{#2}}{\@mn@@marginnote[{#1}]{#2}[\z@]}%
+}
+\newcommand{\@mn@@marginnote}{}
+\long\def\@mn@@marginnote[#1]#2[#3]{%
+  \endgroup
+  \ifhmode
+    \@mn@@@marginnote[{#1}]{#2}[{#3}]%
+    \@esphack
+  \else
+    \@mn@@@marginnote[{#1}]{#2}[{#3}]%
+  \fi
+}
+\newcommand{\@mn@@@marginnote}{}
+\long\def\@mn@@@marginnote[#1]#2[#3]{%
+  \begingroup
+    \ifmmode\mn@strut\let\@tempa\mn@vadjust\else
+      \if@inlabel\leavevmode\fi
+      \ifhmode\mn@strut\let\@tempa\mn@vadjust\else\let\@tempa\mn@vlap\fi
+    \fi
+    \@tempa{%
+      \vbox to\z@{%
+        \vss
+        \@mn@margintest
+        \if@reversemargin\if@tempswa
+            \@tempswafalse
+          \else
+            \@tempswatrue
+        \fi\fi
+        \if@tempswa
+          \rlap{%
+            \if@mn@verbose
+              \PackageInfo{marginnote}{xpos seems to be \@mn@currxpos}%
+            \fi
+            \begingroup
+              \ifx\@mn@currxpos\relax\else\ifx\@mn@currxpos\@empty\else
+                  \kern-\dimexpr\@mn@currxpos\relax
+              \fi\fi
+              \ifx\@mn@currpage\relax
+                \let\@mn@currpage\@ne
+              \fi
+              \if@twoside\ifodd\@mn@currpage\relax
+                  \kern\oddsidemargin
+                \else
+                  \kern\evensidemargin
+                \fi
+              \else
+                \kern\oddsidemargin
+              \fi
+              \kern 1in
+            \endgroup
+            \kern\marginnotetextwidth\kern\marginparsep
+            \vbox to\z@{\kern\marginnotevadjust\kern #3
+              \vbox to\z@{%
+                \hsize\marginparwidth
+                \linewidth\hsize
+                \kern-\parskip
+                \mn@parboxrestore
+                \marginfont\raggedrightmarginnote\strut\hspace{\z@}%
+                \ignorespaces#2\endgraf
+                \vss}%
+              \vss}%
+          }%
+        \else
+          \llap{%
+            \vbox to\z@{\kern\marginnotevadjust\kern #3
+              \vbox to\z@{%
+                \hsize\marginparwidth
+                \linewidth\hsize
+                \kern-\parskip
+                \mn@parboxrestore
+                \marginfont\raggedleftmarginnote\strut\hspace{\z@}%
+                \ignorespaces#1\endgraf
+                \vss
+              }%
+              \vss
+            }%
+            \if@mn@verbose
+              \PackageInfo{marginnote}{xpos seems to be \@mn@currxpos}%
+            \fi
+            \begingroup
+              \ifx\@mn@currxpos\relax\else\ifx\@mn@currpos\@empty\else
+                  \kern\@mn@currxpos
+              \fi\fi
+              \ifx\@mn@currpage\relax
+                \let\@mn@currpage\@ne
+              \fi
+              \if@twoside\ifodd\@mn@currpage\relax
+                  \kern-\oddsidemargin
+                \else
+                  \kern-\evensidemargin
+                \fi
+              \else
+                \kern-\oddsidemargin
+              \fi
+              \kern-1in
+            \endgroup
+            \kern\marginparsep
+          }%
+        \fi
+      }%
+    }%
+  \endgroup
+}
+\newcommand*{\marginnotevadjust}{}
+\let\marginnotevadjust\z@
+\newcommand{\mn@vlap}[1]{%
+  \setbox\@tempboxa\vbox to \ht\strutbox{#1\vss}%
+  \box\@tempboxa\vskip-\baselineskip
+}
+\newcommand{\mn@vadjust}[1]{%
+  \mn@zbox{\kern-\parskip
+    \leavevmode\vadjust{#1}%
+    \kern\parskip
+  }%
+}
+\providecommand*{\marginfont}{}
+\newcommand*{\raggedleftmarginnote}{\raggedleft}
+\newcommand*{\raggedrightmarginnote}{\raggedright}
+\endinput
+%%
+%% End of file `marginnote.sty'.

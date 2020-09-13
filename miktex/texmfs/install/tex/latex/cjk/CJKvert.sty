@@ -1,0 +1,159 @@
+% This is the file CJKvert.sty of the CJK package
+%   for vertical typesetting.
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesPackage{CJKvert}[\filedate\space\fileversion]
+
+\RequirePackage{graphicx}
+
+\newif\ifCJK@useBaselinestretch@
+\CJK@useBaselinestretch@false
+
+\DeclareOption{usebaselinestretch}{\CJK@useBaselinestretch@true}
+
+\ProcessOptions
+
+\newcommand{\CJKbaselinestretch}{1.3}
+
+
+% we suppress any unwanted spaces produced by linefeeds.
+
+\endlinechar \m@ne
+
+
+\newif\ifCJK@vertical@
+\CJK@vertical@false
+
+\ifCJK@useBaselinestretch@
+  \edef\CJK@horzBaselinestretch{\baselinestretch}
+\fi
+
+\newcommand{\CJKvert}{
+  \CJK@vertical@true
+  \gdef\CJK@direction{v}
+
+  \ifCJK@useBaselinestretch@
+    \edef\CJK@horzBaselinestretch{\baselinestretch}
+    \dimen@ 1pt
+    \dimen@ \CJK@horzBaselinestretch\dimen@
+    \dimen@ \CJKbaselinestretch\dimen@
+    \edef\baselinestretch{\strip@pt\dimen@}
+  \else
+    \edef\baselinestretch{\CJKbaselinestretch}
+  \fi
+
+  \normalfont}
+
+\newcommand{\CJKhorz}{
+  \CJK@vertical@false
+  \gdef\CJK@direction{h}
+
+  \ifCJK@useBaselinestretch@
+    \edef\baselinestretch{\CJK@horzBaselinestretch}
+  \else
+    \edef\baselinestretch{1}
+  \fi
+
+  \normalfont}
+
+\AtBeginDocument{\CJKvert}
+
+
+% we redefine \CJKsymbol so that pseudo bold characters will be shifted
+%     vertically, not horizontally.
+%
+% for fonts without vertical representation forms, some glyphs shouldn't
+%     be rotated; \CJKsymbolsimple can be then used for a redefinition in
+%     the `.fdx' file.
+
+\newcommand{\CJKsymbolsimple}[1]{
+  \edef\CJK@temp{\csname \CJK@enc/\CJK@family/simpleoffset\endcsname}
+  \expandafter\ifx\CJK@temp \relax
+    \edef\CJK@temp{0pt}
+  \fi
+  \ifCJK@bold@
+    \raise \CJK@temp \hbox{\symbol{#1}}
+    \raise \CJK@temp \hbox to \z@{\hss \raise\CJKboldshift\hbox{\symbol{#1}}}
+    \raise \CJK@temp \hbox to \z@{\hss \raise-\CJKboldshift\hbox{\symbol{#1}}}
+  \else
+    \raise \CJK@temp \hbox{\symbol{#1}}
+  \fi
+}
+
+\DeclareRobustCommand{\CJKsymbol}[1]{
+  \ifCJK@vertical@
+    \expandafter\ifx\csname \CJK@enc/\CJK@family/norotate/v\endcsname \relax
+      \edef\CJK@tempa{\csname \CJK@enc/\CJK@family/offset/v\endcsname}
+      \expandafter\ifx\CJK@tempa \relax
+        \edef\CJK@tempa{0pt}
+      \fi
+      \edef\CJK@tempb{\csname \CJK@enc/\CJK@family/fullheight/v\endcsname}
+      \expandafter\ifx\CJK@tempb \relax
+        \def\CJK@temp{\rotatebox[x=\CJK@tempa]{90}{\symbol{#1}}}
+      \else
+        \edef\CJK@tempc{\csname \CJK@enc/\CJK@family/height/v\endcsname}
+        \expandafter\ifx\CJK@tempc \relax
+          \edef\CJK@tempc{0pt}
+        \fi
+        \setbox\@tempboxa\hbox{\symbol{#1}}
+        \ht\@tempboxa \CJK@tempc
+        \@tempdima\CJK@tempb
+        \advance\@tempdima -\CJK@tempc
+        \dp\@tempboxa \@tempdima
+        \def\CJK@temp{
+          \rotatebox[x=\CJK@tempa]{90}{\copy\@tempboxa}}
+      \fi
+    \else
+      \def\CJK@temp{\symbol{#1}}
+    \fi
+    \ifCJK@bold@
+      \CJK@temp
+      \hbox to \z@ {\hss \raise\CJKboldshift\hbox{\CJK@temp}}
+      \hbox to \z@ {\hss \raise-\CJKboldshift\hbox{\CJK@temp}}
+    \else
+      \CJK@temp
+    \fi
+  \else
+    \edef\CJK@tempa{\csname \CJK@enc/\CJK@family/offset/h\endcsname}
+    \expandafter\ifx\CJK@tempa \relax
+      \edef\CJK@tempa{0pt}
+    \fi
+    \edef\CJK@temp{\raise\CJK@tempa\hbox{\symbol{#1}}}
+    \leavevmode
+    \ifCJK@bold@
+      \CJK@temp
+      \hbox to \CJKboldshift{\hss\CJK@temp}
+      \hbox to \CJKboldshift{\hss\CJK@temp}
+    \else
+      \CJK@temp
+    \fi
+  \fi}
+
+
+% reset endline character.
+
+\endlinechar `\^^M
+
+\endinput

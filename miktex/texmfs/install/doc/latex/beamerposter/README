@@ -1,0 +1,33 @@
+# The LaTeX beamerposter package
+
+## LaTeX poster with beamerposter - beamer - a0poster	
+Creating a scientific LaTeX poster with the beamerposter package
+
+The LaTeX beamerposter package was created by [Philippe Dreuw](http://www-i6.informatik.rwth-aachen.de/~dreuw/) and [Thomas Deselaers](http://thomas.deselaers.de). It is an extension of the LaTeX beamer and the a0poster classes in order to create LaTeX posters, e.g. a DIN-A0 size LaTeX poster in landscape or portrait orientation. Furthermore it is possible to scale the poster fonts to your needs.
+
+The package allows you to benefit from the nice color box handling and alignment in the beamer class (e.g. with rounded corners and shadows) in order to create quite fast pretty conference posters.
+
+### Features:
+
+ * scalable fonts using the fp and type1cm packages
+ * posters in DIN-A0, DIN-A1, DIN-A2, DIN-A3, DIN-A4, and custom sizes like double DIN-A0 possible
+ * still applicable to custom beamer slides, e.g. 16:9 slides for a widescreen (i.e. 1.78 aspect ratio)
+ * orientation: landscape or portrait
+ * debug mode
+
+### LaTeX requirements:
+
+ * [beamer class](http://www.ctan.org/pkg/beamer) (all examples with beamer v.3.07 - Note: with beamer 3.10 do NOT use option hyperref={pdfpagelabels=false})
+ * [fp package](http://www.ctan.org/pkg/fp)
+ * [xkeyval package](http://www.ctan.org/pkg/xkeyval) (in a version supporting choice keys, e.g. v2.5f)
+ * [type1cm package](http://www.ctan.org/pkg/type1cm) for scalable and huge math fonts
+ * [paralist package](http://www.ctan.org/pkg/paralist)
+
+The beamerposter package is available from CTAN:
+
+ * CTAN release: http://www.ctan.org/pkg/beamerposter
+
+We received so many congratulations and also interesting questions about the beamerposter package that we created a [beamerposter googlegroup](http://groups.google.com/group/beamerposter). Feel free to post your questions, source files, templates, or new style files there.
+
+PLEASE: If you have any beamerposter related question, [post it there](http://groups.google.com/group/beamerposter) so that we don't need to answer the same questions multiple times and others may benefit from your questions.
+

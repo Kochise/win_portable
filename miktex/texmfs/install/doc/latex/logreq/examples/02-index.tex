@@ -1,0 +1,99 @@
+\documentclass{minimal}
+\usepackage{logreq}
+
+% indexing example
+% (e.g., if index.sty were to support logreq)
+
+% sample preamble:
+
+% \usepackage{index}
+% \newindex{default}{idx}{ind}{Subject Index}
+% \newindex{names}{ndx}{nnd}{Name Index}
+% \newindex{titles}{tdx}{tnd}{Title Index}
+
+% workflow:
+
+% latex file
+% makeindex -o file.ind file.idx (= makeindex file)
+% makeindex -o file.nnd file.ndx
+% makeindex -o file.tnd file.tdx
+% latex file
+
+\logrequest[package=index,priority=8,active=0]{%
+  \generic{makeindex}
+  \cmdline{
+    \binary{makeindex}
+    \option{-o example.ind}
+    \infile{\jobname.idx}
+  }
+  \input{
+    \file{\jobname.idx}
+  }
+  \output{
+    \file{\jobname.ind}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.ind}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.idx}
+  }
+}
+
+\logrequest[package=index,priority=8,active=0]{%
+  \generic{makeindex}
+  \cmdline{
+    \binary{makeindex}
+    \option{-o example.nnd}
+    \infile{\jobname.ndx}
+  }
+  \input{
+    \file{\jobname.ndx}
+  }
+  \output{
+    \file{\jobname.nnd}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.nnd}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.ndx}
+  }
+}
+
+\logrequest[package=index,priority=8,active=0]{%
+  \generic{makeindex}
+  \cmdline{
+    \binary{makeindex}
+    \option{-o example.tnd}
+    \infile{\jobname.tdx}
+  }
+  \input{
+    \file{\jobname.tdx}
+  }
+  \output{
+    \file{\jobname.tnd}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.tnd}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.tdx}
+  }
+}
+
+\ltxrequest{index}{0}{
+  \provides[type=dynamic]{
+    \file{\jobname.idx}
+    \file{\jobname.ndx}
+    \file{\jobname.tdx}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.ind}
+    \file{\jobname.nnd}
+    \file{\jobname.tnd}
+  }
+}
+
+\begin{document}
+\end{document}

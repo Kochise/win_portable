@@ -1,0 +1,1092 @@
+% This is the file CJK.enc of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{CJK.enc}[\filedate\space\fileversion]
+
+
+% we first define a macro to load an encoding file xxx.enc if
+%     \CJK@xxxEncoding is still undefined. \CJK@xxxEncoding will only be
+%     executed if it is not the actual encoding.
+
+\edef\CJK@actualEncoding{}
+
+\def\CJK@loadEncoding#1{
+  \expandafter\ifx\csname CJK@#1Encoding\endcsname \relax
+    \CJK@input{#1.enc}
+  \fi
+
+  \edef\CJK@temp{#1}
+  \ifx\CJK@temp \CJK@actualEncoding
+  \else
+    \csname CJK@#1Encoding\endcsname
+    \CJK@global\edef\CJK@actualEncoding{#1}
+  \fi}
+
+% this loads the appropriate xxx.chr file if \CJK@xxxChr is still undefined.
+%     \CJK@xxxChr will only be executed if it is not the actual character
+%     macro set.
+
+\edef\CJK@actualChr{}
+
+\def\CJK@loadChr#1{
+  \expandafter\ifx\csname CJK@#1Chr\endcsname \relax
+    \CJK@input{#1.chr}
+  \fi
+
+  \edef\CJK@temp{#1}
+  \ifx\CJK@temp \CJK@actualChr
+  \else
+    \csname CJK@#1Chr\endcsname
+    \CJK@global\edef\CJK@actualChr{#1}
+  \fi}
+
+% this loads the appropriate xxx.bdg file if \CJK@xxxBinding is still
+%     undefined. \CJK@xxxBinding will only be executed if it is not the
+%     actual binding.
+%
+% if the flag \ifCJK@nobind@ is set we do nothing.
+
+\newif\ifCJK@nobind@
+
+\edef\CJK@actualBinding{}
+
+\def\CJK@loadBinding#1{
+  \ifCJK@nobind@
+  \else
+    \expandafter\ifx\csname CJK@#1Binding\endcsname \relax
+      \CJK@input{#1.bdg}
+    \fi
+
+    \edef\CJK@temp{#1}
+    \ifx\CJK@temp \CJK@actualBinding
+    \else
+      \csname CJK@#1Binding\endcsname
+      \CJK@global\edef\CJK@actualBinding{#1}
+    \fi
+  \fi}
+
+
+% define macros for individual characters (i.e. the first byte); each active
+%     character selects the appropriate subfont. The assignments actually
+%     happen in the encoding specific .enc files.
+
+\def\CJK@namegdef#1{
+  \@tempcnta `#1
+  \edef\CJK@temp{\the\@tempcnta}
+  \expandafter\CJK@global\expandafter\def\csname CJK@\CJK@temp\endcsname}
+
+
+% some encodings can't be reliably processed if \MakeUppercase is active.
+%     The following macro disables it. It is used in the encoding specific
+%     .enc files.
+
+\ifx\CJKpreproc \relax
+  \def\CJK@disableMakeUppercase{
+    \CJK@global\let\CJKuppercase \MakeUppercase
+    \CJK@global\let\MakeUppercase \relax
+
+    \PackageWarningNoLine{CJK}{
+      `\CJK@actualEncoding' encoding used in non-preprocessed mode.\MessageBreak
+      \protect\MakeUppercase\space disabled}
+    \CJK@global\let\CJK@disableMakeUppercase \relax}
+\else
+  \let\CJK@disableMakeUppercase \relax
+\fi
+
+
+% single shifts (EUC-TW, EUC-JP), three-byte, and four-byte UTF8 values
+%     can't be used in preprocessed mode
+
+\def\CJK@shiftError{
+  \PackageError{CJK}{
+    Single shifts in `\CJK@actualEncoding' encoding
+    can't be used in preprocessed mode
+  }
+  {Maybe you've forgotten to change the encoding?}}
+\def\CJK@unicodeError{
+  \PackageError{CJK}{
+    Three-Byte UTF8 values can't be used in preprocessed mode
+  }
+  {Maybe you've forgotten to change the encoding?}}
+\def\CJK@unicodexError{
+  \PackageError{CJK}{
+    Four-Byte UTF8 values can't be used in preprocessed mode
+  }
+  {Maybe you've forgotten to change the encoding?}}
+
+
+% the following macro is used to map the CJK (font) encoding to the
+%     corresponding NFSS font encodings. It also registers the encoding;
+%     we define an empty macro for the font name in \DeclareFontSubstitution
+%     since LaTeX2e tests without a subplane appended.
+
+\def\CJK@mapToNFSS#1#2#3#4#5{
+  \expandafter\edef\csname CJK@#1@nfssenc\endcsname{#2}
+  \DeclareFontEncoding{#2}{}{}
+  \DeclareFontSubstitution{#2}{#3}{#4}{#5}
+  \expandafter\def\csname #2/#3/#4/#5\endcsname{}}
+
+
+% an ugly environment which redefines the characters `\', `{', and `}' to
+%     `/', `(', and `)' respectively since some CJK encodings need these
+%     characters as second bytes.
+%
+% to include \CJK@global we define the low level environment macros
+%     directly.
+
+\def\CJK@makeEnvironment#1{
+  \@ifundefined{#1text}{
+    \CJK@global\@namedef{#1text}{
+      \catcode`\\=12
+      \catcode`\{=12
+      \catcode`\}=12
+      \def\/{/}
+      \def\({(}
+      \def\){)}
+      \catcode`\/=0
+      \catcode`\(=1
+      \catcode`\)=2}
+    \CJK@global\@namedef{end#1text}{}}{}}
+
+
+% here an overview of all encodings/font encodings:
+%
+% Chinese:      Bg5     C00
+%               Bg5pmC  C01
+%
+%               HK      C05
+%
+%               Bg5+    C09
+%
+%               GB      C10
+%               GBpmC   C11
+%
+%               GBK     C19
+%
+%               GBt     C20
+%               GBtpmC  C21
+%
+%               CNS1-7  C31-37
+%
+% Japanese:     JIS     C40
+%               JISpmC  C41
+%               JISdnp  C42
+%               JISwn   C43
+%
+%               JIS2    C50
+%               JIS2dnp C52
+%
+%               SJIS    ->  kana        C49
+%               SJISdnp ->  kana        C49
+%
+% Korean:       KS      ->  hanja       C60
+%                       ->  hangul      C61
+%               KSpmC   C62
+%               KSHL    ->  hangulHL    C63
+%                       ->  symbolHL    C64
+%                       ->  hanjaHL     C65
+%
+% Unicode:      UTF8    C70
+%
+% CEF:          CEFX    C80
+%               CEFY    C81
+
+
+% here are the punctuation tables. We suppress spaces additionally in this
+%     group.
+
+\begingroup
+  \catcode`\ 9\relax
+
+  \CJK@prePunct  {Bg5}{A1}{5D, 5F, 61, 63, 65, 67, 69, 6B, 6D, 6F, 71, 73,
+                           75, 77, 79, 7B, 7D, A1, A3,
+                           A5, A7, A9, AB,
+                           AD, B1, CC, CD}
+  \CJK@postPunct {Bg5}{A1}{41, 42, 43, 44, 45, 46, 47, 48,
+                           49, 4A, 4B, 4C, 4D, 4E, 4F, 50, 51,
+                           52, 53, 54, 57,
+                           5E, 60, 62, 64, 66, 68, 6A, 6C, 6E, 70, 72, 74,
+                           76, 78, 7A, 7C, 7E, A2, A4,
+                           A6, A8, AA, AC}
+  \CJK@prePunct  {Bg5}{A2}{43, 44, 45, 46, 47, 49,
+                           4C, 4E}
+  \CJK@postPunct {Bg5}{A2}{48, 4A, 4B, 4D,
+                           4F, 50, 51, 52, 53, 54, 55, 56, 57, 58}
+
+  \CJK@prePunct   {GB}{A1}{AE, B0, B2, B4, B6, B8, BA, BC, BE,
+                           E7, E8, E9, EA, EC, ED}
+  \CJK@postPunct  {GB}{A1}{A2, A3, A4, A9, AD,
+                           AF, B1, B3, B5, B7, B9, BB, BD, BF,
+                           C3, E3, E4, E5, E6, EB}
+  \CJK@prePunct   {GB}{A3}{A3, A4, A8, C0, DB, FB}
+  \CJK@postPunct  {GB}{A3}{A1, A5, A9, AC, AE, BA, BB, BF, DD, FD}
+
+  \CJK@prePunct  {JIS}{A1}{C6, C8, CA, CC, CE, D0, D2, D4, D6, D8, DA,
+                           EF, F0, F1, F2, F4, F7, F8}
+  \CJK@postPunct {JIS}{A1}{A2, A3, A4, A5, A6, A7, A8, A9, AA, AB, AC,
+                           B3, B4, B5, B6, B9, BA, BC,
+                           C4, C7, C9, CB, CD, CF, D1, D3, D5, D7, D9, DB,
+                           EB, EC, ED, EE, F3}
+  \CJK@prePunct  {JIS}{A2}{A9}
+% \CJK@postPunct {JIS}{A2}{}
+% \CJK@prePunct  {JIS}{A4}{}
+  \CJK@postPunct {JIS}{A4}{A1, A3, A5, A7, A9,
+                           C3, E3, E5, E7, EE}
+% \CJK@prePunct  {JIS}{A5}{}
+  \CJK@postPunct {JIS}{A5}{A1, A3, A5, A7, A9,
+                           C3, E3, E5, E7, EE,
+                           F5, F6}
+
+  \CJK@prePunct {SJIS}{81}{65, 67, 69, 6B, 6D, 6F, 71, 73, 75, 77, 79,
+                           8F, 90, 91, 92, 94, 97, 98,
+                           A7}
+  \CJK@postPunct{SJIS}{81}{41, 42, 43, 44, 45, 46, 47, 48, 49, 4A, 4B,
+                           52, 53, 54, 55, 58, 59, 5B,
+                           63, 66, 68, 6A, 6C, 6E, 70, 72, 74, 76, 78, 7A,
+                           8B, 8C, 8D, 8E, 93}
+% \CJK@prePunct {SJIS}{82}{}
+  \CJK@postPunct{SJIS}{82}{9F, A1, A3, A5, A7,
+                           C1, E1, E3, E5, EC}
+% \CJK@prePunct {SJIS}{83}{}
+  \CJK@postPunct{SJIS}{83}{40, 42, 44, 46, 48,
+                           62, 83, 85, 87, 8E,
+                           95, 96}
+
+  % half-width katakana
+  \CJK@prePunct    {C49}{}{A2}
+  \CJK@postPunct   {C49}{}{A1, A3, A4, A5, A7, A8, A9, AA, AB, AC, AD, AE, AF,
+                           B0, DE, DF}
+
+  \CJK@prePunct   {KS}{A1}{AE, B0, B2, B4, B6, B8, BA, BC,
+                           CB, CC, CD, D7, EC}
+  \CJK@postPunct  {KS}{A1}{A2, A3, A4, A5, A6,
+                           AF, B1, B3, B5, B7, B9, BB, BD,
+                           C6, C7, C8, C9, ED}
+  \CJK@prePunct   {KS}{A3}{A3, A4, A8, C0, DB, DC, FB}
+  \CJK@postPunct  {KS}{A3}{A1, A5, A9, AC, AE, BA, BB, BF, DD, FD}
+
+  \xdef\CJK@uniPunct{30, fe, ff}        % values must be lowercase for UTF 8
+
+  \CJK@prePunct {UTF8}{30}{08, 0A, 0C, 0E, 10, 12, 14, 16, 18, 1A, 1D, 1F, 36}
+  \CJK@postPunct{UTF8}{30}{01, 02, 05, 06,
+                           09, 0B, 0D, 0F, 11, 15, 17, 19, 1B, 1E,
+                           41, 43, 45, 47, 49, 63, 83, 85, 87, 8E,
+                           9B, 9C, 9D, 9E,
+                           A1, A3, A5, A7, A9, C3, E3, E5, E7, EE, F5, F6,
+                           FB, FC, FD, FE}
+  \CJK@prePunct {UTF8}{fe}{59, 5B, 5D, 5F, 60, 69, 6B}
+  \CJK@postPunct{UTF8}{fe}{50, 51, 52, 54, 55, 56, 57, 5A, 5C, 5E, 6A}
+  \CJK@prePunct {UTF8}{ff}{03, 04, 08, 20, 3B, 5B, E0, E1, E5, E6}
+  \CJK@postPunct{UTF8}{ff}{01, 05, 09, 0C, 0E, 1A, 1B, 1F, 3D, 5D,
+                           61, 63, 64, 65, 67, 68, 69, 6A, 6B, 6C, 6D, 6E, 6F,
+                           70, 9E, 9F}
+
+  \CJK@prePunct {CNS1}{A1}{BE, C2, C6, CA, CE, D2, D6, DA, DE, E0, E2,
+                           E4, E6, E8, EA,
+                           EC, F0}
+  \CJK@postPunct{CNS1}{A1}{A2, A3, A4, A5, A6, A7, A8, A9,
+                           AA, AC, AD, AE, AF, B0, B1, B2,
+                           B3, B4, B5,
+                           BF, C3, C7, CB, CF, D3, D7, DB, DF, E1, E3,
+                           E5, E7, E9, EB}
+  \CJK@prePunct {CNS1}{A2}{AD, AE, E3, E4, E5, E6, E7, E9,
+                           EC, EE}
+  \CJK@postPunct{CNS1}{A2}{E8, EA, EB, ED,
+                           EF, F0, F1, F2, F3, F4, F5, F6, F7, F8}
+
+  \CJK@prePunct  {GBK}{A1}{AE, B0, B2, B4, B6, B8, BA, BC, BE,
+                           E7, E8, E9, EA, EC, ED}
+  \CJK@postPunct {GBK}{A1}{A2, A3, A4, A9, AD,
+                           AF, B1, B3, B5, B7, B9, BB, BD, BF,
+                           C3, E3, E4, E5, E6, EB}
+  \CJK@prePunct  {GBK}{A3}{A3, A4, A8, C0, DB, FB}
+  \CJK@postPunct {GBK}{A3}{A1, A5, A9, AC, AE, BA, BB, BF, DD, FD}
+% \CJK@prePunct  {GBK}{A4}{}
+  \CJK@postPunct {GBK}{A4}{A1, A3, A5, A7, A9, C3, E3, E5, E7, EE}
+% \CJK@prePunct  {GBK}{A5}{}
+  \CJK@postPunct {GBK}{A5}{A1, A3, A5, A7, A9, C3, E3, E5, E7, EE, F5, F6}
+  \CJK@prePunct  {GBK}{A8}{93, 94}
+  \CJK@postPunct {GBK}{A8}{95}
+  \CJK@prePunct  {GBK}{A9}{76, 78, 7A, 7C, 7D, 86, 88}
+  \CJK@postPunct {GBK}{A9}{60, 61, 62, 63, 64, 65, 66, 67, 6F,
+                           70, 71, 72, 73, 74, 75, 77, 79, 7B, 87}
+\endgroup
+
+
+% dummy encoding for MULE.
+
+\def\CJK@@enc{\CJK@loadBinding{standard}}
+
+\edef\CJK@@fontenc{}
+
+
+% traditional Chinese characters
+%
+% character set: Big 5
+% encoding: Big 5
+% font encoding: CJK
+
+\CJK@mapToNFSS{Bg5}{C00}{song}{m}{n}
+\CJKencfamily{Bg5}{song}
+\CJKfontenc{Bg5}{}
+\@namedef{CJK@Bg5@hook}{}
+
+\@namedef{CJK@Bg5@enc}{
+  \CJK@makeEnvironment{Bg5}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "040%    don't forget `0' before the number,
+  \CJK@global\chardef\CJK@max "0FE%      otherwise german.sty will not work.
+
+  \CJK@loadEncoding{Bg5}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"040}}}
+
+% support for Hong Kong
+%
+% character set: Big 5 + HKSCS-2004 (or HKSCS-2001)
+% encoding: Big 5
+% font encoding: CJK
+
+\CJK@mapToNFSS{HK}{C05}{song}{m}{n}
+\CJKencfamily{HK}{song}
+\CJKfontenc{HK}{}
+\@namedef{CJK@HK@hook}{}
+
+\def\CJK@HK@enc{
+  \CJK@makeEnvironment{HK}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "040%    don't forget `0' before the number,
+  \CJK@global\chardef\CJK@max "0FE%      otherwise german.sty will not work.
+
+  \CJK@loadEncoding{HK}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"040}}}
+
+% Chinese characters (extension of Big 5)
+%
+% character set: Big 5+
+% encoding: extended
+% font encoding: CJK
+
+\CJK@mapToNFSS{Bg5+}{C09}{song}{m}{n}
+\CJKencfamily{Bg5+}{song}
+\CJKfontenc{Bg5+}{}
+\@namedef{CJK@Bg5+@hook}{}
+
+\@namedef{CJK@Bg5+@enc}{
+  \CJK@makeEnvironment{Bg5+}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "040
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{extended}
+
+  \CJK@global\edef\CJK@punctEnc{Bg5}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"040}}}
+
+
+% Chinese characters
+%
+% character set: GB 2312-80
+% encoding: EUC
+% font encoding: CJK
+
+\CJK@mapToNFSS{GB}{C10}{song}{m}{n}
+\CJKencfamily{GB}{song}
+\CJKfontenc{GB}{}
+\def\CJK@GB@hook{}
+
+\def\CJK@GB@enc{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{standard}
+
+  \CJK@global\edef\CJK@punctEnc{GB}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+% traditional Chinese characters
+%
+% character set: GB/T 12345-90
+% encoding: EUC
+% font encoding: CJK
+
+\CJK@mapToNFSS{GBt}{C20}{song}{m}{n}
+\CJKencfamily{GBt}{song}
+\CJKfontenc{GBt}{}
+\def\CJK@GBt@hook{}
+
+\let\CJK@GBt@enc \CJK@GB@enc
+
+% Chinese characters (extension of GB 2312)
+%
+% character set: GBK
+% encoding: extended
+% font encoding: CJK
+
+\CJK@mapToNFSS{GBK}{C19}{song}{m}{n}
+\CJKencfamily{GBK}{song}
+\CJKfontenc{GBK}{}
+\def\CJK@GBK@hook{}
+
+\def\CJK@GBK@enc{
+  \CJK@makeEnvironment{GBK}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "040
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{extended}
+
+  \CJK@global\edef\CJK@punctEnc{GBK}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% Japanese characters
+%
+% character set JIS X 0208:1997
+% encoding: EUC
+% font encoding: CJK
+
+\CJK@mapToNFSS{JIS}{C40}{song}{m}{n}
+\CJKencfamily{JIS}{song}
+\CJKfontenc{JIS}{}
+\def\CJK@JIS@hook{}
+
+\def\CJK@JIS@enc{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{standard}
+
+  \CJK@global\edef\CJK@punctEnc{JIS}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+% Japanese characters
+%
+% character set: JIS X 0208:1997
+% encoding: EUC
+% font encoding: DNP
+
+\CJK@mapToNFSS{JISdnp}{C42}{song}{m}{n}
+\CJKencfamily[dnp]{JIS}{song}
+
+\def\CJK@JISdnp@enc{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{JISdnp}
+
+  \CJK@global\edef\CJK@punctEnc{JIS}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+% Japanese characters
+%
+% character set: JIS X 0208:1997
+% encoding: EUC
+% font encoding: DNP (watanabe)
+
+\CJK@mapToNFSS{JISwn}{C43}{song}{m}{n}
+\CJKencfamily[wn]{JIS}{song}
+
+\let\CJK@JISwn@enc \CJK@JISdnp@enc
+
+% Japanese supplemental JIS characters
+%
+% character set: JIS X 0212-1990
+% encoding: EUC
+% font encoding: CJK
+
+\CJK@mapToNFSS{JIS2}{C50}{song}{m}{n}
+\CJKencfamily{JIS2}{song}
+\CJKfontenc{JIS2}{}
+\@namedef{CJK@JIS2@hook}{}
+
+\@namedef{CJK@JIS2@enc}{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{standard}
+
+  \CJK@global\edef\CJK@punctEnc{}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar[JIS]{"0A1}{"0A1}}}
+
+% Japanese supplemental JIS characters
+%
+% character set: JIS X 0212-1990
+% encoding: EUC
+% font encoding: DNP
+
+\CJK@mapToNFSS{JIS2dnp}{C52}{song}{m}{n}
+\CJKencfamily[dnp]{JIS2}{song}
+
+\@namedef{CJK@JIS2dnp@enc}{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{JISdnp}
+
+  \CJK@global\edef\CJK@punctEnc{}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar[JIS]{"0A1}{"0A1}}}
+
+% Japanese characters
+%
+% character sets: JIS X 0208:1997
+%                 half-width katakana (JIS X 0201-1997)
+% encoding: SJIS
+% font encoding: CJK
+%
+% Technical note: \CJK@altenc is used for SJIS, \CJK@altEnc for KS.
+
+\CJK@mapToNFSS{kana}{C49}{song}{m}{n}%  used internally only
+\CJKencfamily{SJIS}{song}
+\CJKfontenc{SJIS}{}
+\def\CJK@SJIS@hook{}
+
+% the relative order of JIS and SJIS encoded characters are identical
+%     except one byte characters.
+
+\def\CJK@@@SJIS@hook{
+  \CJK@global\edef\CJK@enc{\CJK@JIS@nfssenc}
+  \CJK@global\edef\CJK@altenc{\CJK@kana@nfssenc}}
+
+\def\CJK@SJIS@enc{
+  \CJK@makeEnvironment{SJIS}
+
+  \CJK@loadBinding{SJIS}
+
+  \CJK@global\chardef\CJK@min "040
+  \CJK@global\chardef\CJK@max "0FC
+
+  \CJK@loadEncoding{SJIS}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"081}{"040}}}
+
+% Japanese characters
+%
+% character sets: JIS X 0208:1997
+%                 half-width katakana (JIS X 0201-1997)
+% encoding: SJIS
+% font encoding: DNP
+
+\CJKencfamily[dnp]{SJIS}{song}
+
+% the relative order of JIS and SJIS encoded characters are identical
+%     except one byte characters.
+
+\def\CJK@@@SJISdnp@hook{
+  \CJK@global\edef\CJK@enc{\CJK@JISdnp@nfssenc}
+  \CJK@global\edef\CJK@altenc{\CJK@kana@nfssenc}}
+
+\def\CJK@SJISdnp@enc{
+  \CJK@makeEnvironment{SJIS}
+
+  \CJK@loadBinding{SJIS}
+
+  \CJK@global\chardef\CJK@min "040
+  \CJK@global\chardef\CJK@max "0FC
+
+  \CJK@loadEncoding{SJISdnp}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"081}{"040}}}
+
+
+% Korean characters
+%
+% character set: KS X 1001:1992 (=KS C 5601-1992)
+% encoding: EUC
+% font encoding: CJK
+%
+% the increased \tolerance compensates the lack of \CJKglue for Hangul
+%     syllables.
+
+% the following commands choose between C60xxx.fd (for hanja) and C61xxx.fd
+%     (for hangul) for the character range 0xB0A1 - 0xC8FE.
+
+\newif\ifCJK@hanja@
+\CJK@hanja@false
+
+\DeclareRobustCommand{\CJKhanja}{
+  \CJK@global\CJK@hanja@true
+  \edef\CJK@temp{KS}
+  \ifx\CJK@temp \CJK@@@enc
+    \edef\CJK@temp{\csname CJK@\CJK@@@enc @fontenc\endcsname}
+    \CJK@global\edef\CJK@altEnc{
+      \csname CJK@hanja\CJK@temp @nfssenc\endcsname}
+  \fi}
+\DeclareRobustCommand{\CJKhangul}{
+  \CJK@global\CJK@hanja@false
+  \edef\CJK@temp{KS}
+  \ifx\CJK@temp \CJK@@@enc
+    \edef\CJK@temp{\csname CJK@\CJK@@@enc @fontenc\endcsname}
+    \CJK@global\edef\CJK@altEnc{
+      \csname CJK@hangul\CJK@temp @nfssenc\endcsname}
+  \fi}
+
+\CJK@mapToNFSS{hanja}{C60}{mj}{m}{n}%   used internally only
+\CJK@mapToNFSS{hangul}{C61}{mj}{m}{n}%  used internally only
+\CJKencfamily{KS}{mj}
+\CJKfontenc{KS}{}
+\def\CJK@KS@hook{}
+
+\def\CJK@@@KS@hook{
+  \CJK@global\edef\CJK@enc{\CJK@hanja@nfssenc}
+  \ifCJK@hanja@
+    \CJK@global\edef\CJK@altEnc{\CJK@hanja@nfssenc}
+  \else
+    \CJK@global\edef\CJK@altEnc{\CJK@hangul@nfssenc}
+  \fi}
+
+\def\CJK@KS@enc{
+  \CJK@global\def\mj{\protect\CJK@mj}%              % from hLaTeX
+  \gdef\CJK@mj{\CJKencfamily{KS}{mj}}
+  \CJK@global\def\gt{\protect\CJK@gt}
+  \gdef\CJK@gt{\CJKencfamily{KS}{gt}}
+  \CJK@global\def\gs{\protect\CJK@gs}
+  \gdef\CJK@gs{\CJKencfamily{KS}{gs}}
+  \CJK@global\def\gr{\protect\CJK@gr}
+  \gdef\CJK@gr{\CJKencfamily{KS}{gr}}
+  \CJK@global\def\dr{\protect\CJK@dr}
+  \gdef\CJK@dr{\CJKencfamily{KS}{dr}}
+
+  \CJK@global\def\hgt{\protect\CJK@hgt}%            % from hjTeX
+  \gdef\CJK@hgt{\CJKencfamily{KS}{hgt}}
+  \CJK@global\def\hmj{\protect\CJK@hmj}
+  \gdef\CJK@hmj{\CJKencfamily{KS}{hmj}}
+  \CJK@global\def\hol{\protect\CJK@hol}
+  \gdef\CJK@hol{\CJKencfamily{KS}{hol}}
+  \CJK@global\def\hpg{\protect\CJK@hpg}
+  \gdef\CJK@hpg{\CJKencfamily{KS}{hpg}}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{KS}
+
+  \CJK@global\edef\CJK@punctEnc{KS}
+  \CJK@global\tolerance \CJKtolerance
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% Korean characters
+%
+% character set: KS X 1001:1992 (=KS C 5601-1992)
+% encoding: EUC
+% font encoding: HLaTeX (version >= 0.97)
+
+\CJK@mapToNFSS{hangulHL}{C63}{mj}{m}{n}%    used internally only
+\CJK@mapToNFSS{symbolHL}{C64}{mj}{m}{n}%    used internally only
+\CJK@mapToNFSS{hanjaHL}{C65}{mj}{m}{n}%     used internally only
+\CJKencfamily[HL]{KS}{mj}
+
+\def\CJK@@@KSHL@hook{
+  \CJK@global\edef\CJK@enc{\CJK@hanjaHL@nfssenc}
+  \CJK@global\edef\CJK@altEnc{\CJK@hangulHL@nfssenc}
+  \CJK@global\edef\CJK@symbEnc{\CJK@symbolHL@nfssenc}}
+
+\def\CJK@KSHL@enc{
+  \CJK@global\def\bm{\protect\CJK@bm}
+  \gdef\CJK@bm{\CJKencfamily[HL]{KS}{bm}}
+  \CJK@global\def\dn{\protect\CJK@dn}
+  \gdef\CJK@dn{\CJKencfamily[HL]{KS}{dn}}
+  \CJK@global\def\gr{\protect\CJK@gr}
+  \gdef\CJK@gr{\CJKencfamily[HL]{KS}{gr}}
+  \CJK@global\def\gs{\protect\CJK@gs}
+  \gdef\CJK@gs{\CJKencfamily[HL]{KS}{gs}}
+  \CJK@global\def\gt{\protect\CJK@gt}
+  \gdef\CJK@gt{\CJKencfamily[HL]{KS}{gt}}
+  \CJK@global\def\jgt{\protect\CJK@jgt}
+  \gdef\CJK@jgt{\CJKencfamily[HL]{KS}{jgt}}
+  \CJK@global\def\jmj{\protect\CJK@jmj}
+  \gdef\CJK@jmj{\CJKencfamily[HL]{KS}{jmj}}
+  \CJK@global\def\jnv{\protect\CJK@jnv}
+  \gdef\CJK@jnv{\CJKencfamily[HL]{KS}{jnv}}
+  \CJK@global\def\jsr{\protect\CJK@jsr}
+  \gdef\CJK@jsr{\CJKencfamily[HL]{KS}{jsr}}
+  \CJK@global\def\mj{\protect\CJK@mj}
+  \gdef\CJK@mj{\CJKencfamily[HL]{KS}{mj}}
+  \CJK@global\def\ol{\protect\CJK@ol}
+  \gdef\CJK@ol{\CJKencfamily[HL]{KS}{mj}}
+  \CJK@global\def\pg{\protect\CJK@pg}
+  \gdef\CJK@pg{\CJKencfamily[HL]{KS}{pg}}
+  \CJK@global\def\pga{\protect\CJK@pga}
+  \gdef\CJK@pga{\CJKencfamily[HL]{KS}{pga}}
+  \CJK@global\def\ph{\protect\CJK@ph}
+  \gdef\CJK@ph{\CJKencfamily[HL]{KS}{ph}}
+  \CJK@global\def\pn{\protect\CJK@pn}
+  \gdef\CJK@pn{\CJKencfamily[HL]{KS}{pn}}
+  \CJK@global\def\sh{\protect\CJK@sh}
+  \gdef\CJK@sh{\CJKencfamily[HL]{KS}{sh}}
+  \CJK@global\def\sm{\protect\CJK@sm}
+  \gdef\CJK@sm{\CJKencfamily[HL]{KS}{mj}}
+  \CJK@global\def\tz{\protect\CJK@tz}
+  \gdef\CJK@tz{\CJKencfamily[HL]{KS}{tz}}
+  \CJK@global\def\vd{\protect\CJK@vd}
+  \gdef\CJK@vd{\CJKencfamily[HL]{KS}{vd}}
+  \CJK@global\def\yt{\protect\CJK@yt}
+  \gdef\CJK@yt{\CJKencfamily[HL]{KS}{yt}}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{KSHL}
+
+  \CJK@global\edef\CJK@punctEnc{KS}
+  \CJK@global\tolerance \CJKtolerance
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% Unicode
+%
+% character set: Unicode
+% encoding: UTF 8
+% font encoding: CJK
+
+\CJK@mapToNFSS{UTF8}{C70}{song}{m}{n}
+\CJKencfamily{UTF8}{song}
+\CJKfontenc{UTF8}{}
+\@namedef{CJK@UTF8@hook}{}
+
+\@namedef{CJK@UTF8@enc}{
+  \CJK@loadBinding{UTF8}
+
+  \CJK@global\chardef\CJK@min "080
+  \CJK@global\chardef\CJK@max "0BF
+
+  \CJK@loadEncoding{UTF8}
+
+  \CJK@global\def\CJK@spaceChar{\Unicode{"030}{"000}}}
+
+
+% Chinese characters in CNS encoding.
+%
+% character set: CNS 11643-1992
+% encoding: EUC
+% font encoding: CJK
+
+% please note that internally character codes with the 8th bit set are
+%     used, whereas Wittern's CEF use the seven bit form.
+
+% plane 1.
+
+\CJK@mapToNFSS{CNS1}{C31}{song}{m}{n}
+\CJKencfamily{CNS1}{song}
+\CJKfontenc{CNS1}{}
+\@namedef{CJK@CNS1@enc}{}
+
+\@namedef{CJK@CNS1@enc}{
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{standard}
+
+  \CJK@global\edef\CJK@punctEnc{CNS1}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar[CNS1]{"0A1}{"0A1}}}
+
+% plane 2-7.
+
+\CJK@mapToNFSS{CNS2}{C32}{song}{m}{n}
+\CJKencfamily{CNS2}{song}
+\CJKfontenc{CNS2}{}
+\@namedef{CJK@CNS2@hook}{}
+\CJK@mapToNFSS{CNS3}{C33}{song}{m}{n}
+\CJKencfamily{CNS3}{song}
+\CJKfontenc{CNS3}{}
+\@namedef{CJK@CNS3@hook}{}
+\CJK@mapToNFSS{CNS4}{C34}{song}{m}{n}
+\CJKencfamily{CNS4}{song}
+\CJKfontenc{CNS4}{}
+\@namedef{CJK@CNS4@hook}{}
+\CJK@mapToNFSS{CNS5}{C35}{song}{m}{n}
+\CJKencfamily{CNS5}{song}
+\CJKfontenc{CNS5}{}
+\@namedef{CJK@CNS5@hook}{}
+\CJK@mapToNFSS{CNS6}{C36}{song}{m}{n}
+\CJKencfamily{CNS6}{song}
+\CJKfontenc{CNS6}{}
+\@namedef{CJK@CNS6@hook}{}
+\CJK@mapToNFSS{CNS7}{C37}{song}{m}{n}
+\CJKencfamily{CNS7}{song}
+\CJKfontenc{CNS7}{}
+\@namedef{CJK@CNS7@hook}{}
+
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS2@enc\expandafter\endcsname
+ \csname CJK@JIS2@enc\endcsname
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS3@enc\expandafter\endcsname
+ \csname CJK@CNS2@enc\endcsname
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS4@enc\expandafter\endcsname
+ \csname CJK@CNS2@enc\endcsname
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS5@enc\expandafter\endcsname
+ \csname CJK@CNS2@enc\endcsname
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS6@enc\expandafter\endcsname
+ \csname CJK@CNS2@enc\endcsname
+\expandafter\expandafter\expandafter\let
+ \expandafter\csname CJK@CNS7@enc\expandafter\endcsname
+ \csname CJK@CNS2@enc\endcsname
+
+
+% special CEF encodings
+
+\CJK@mapToNFSS{CEFX}{C80}{song}{m}{n}
+\CJKencfamily{CEFX}{song}
+\CJKfontenc{CEFX}{}
+\def\CJK@CEFX@hook{}
+\CJK@mapToNFSS{CEFY}{C81}{song}{m}{n}
+\CJKencfamily{CEFY}{song}
+\CJKfontenc{CEFY}{}
+\def\CJK@CEFY@hook{}
+
+\expandafter\let\expandafter\CJK@CEFX@enc \csname CJK@CNS2@enc\endcsname
+\expandafter\let\expandafter\CJK@CEFY@enc \csname CJK@CNS2@enc\endcsname
+
+
+% traditional Chinese characters
+%
+% character set: Big 5
+% encoding: Big 5
+% font encoding: pmC
+
+\CJK@mapToNFSS{Bg5pmC}{C01}{song}{m}{n}
+\CJKencfamily[pmC]{Bg5}{song}
+
+\@namedef{CJK@Bg5pmC@enc}{
+  \CJK@global\def\pmCsmall{\protect\CJK@pmCsmall}
+  \gdef\CJK@pmCsmall{
+    \CJK@loadEncoding{pmCsmall}}
+  \CJK@global\def\pmCbig{\protect\CJK@pmCbig}
+  \gdef\CJK@pmCbig{
+    \PackageError{CJK}{
+      No big font for pmC Big 5 encoding available}{}}
+
+  \CJK@makeEnvironment{Bg5}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "040
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@global\edef\CJK@punctEnc{Bg5}
+
+  \pmCsmall
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"040}}}
+
+% simplified Chinese characters
+%
+% character set: GB 2312-80
+% encoding: EUC
+% font encoding: pmC
+
+\CJK@mapToNFSS{GBpmC}{C11}{song}{m}{n}
+\CJKencfamily[pmC]{GB}{song}
+
+\def\CJK@GBpmC@enc{
+  \CJK@pmC{GB}}
+
+% traditional Chinese characters
+%
+% character set: GB/T 12345-90
+% encoding: EUC
+% font encoding: pmC
+
+\CJK@mapToNFSS{GBtpmC}{C21}{song}{m}{n}
+\CJKencfamily[pmC]{GBt}{song}
+
+\let\CJK@GBtpmC@enc \CJK@GBpmC@enc
+
+% Japanese characters
+%
+% character set: JIS X 0208:1997
+% encoding: EUC
+% font encoding: pmC
+
+\CJK@mapToNFSS{JISpmC}{C41}{song}{m}{n}
+\CJKencfamily[pmC]{JIS}{song}
+
+\def\CJK@JISpmC@enc{
+  \CJK@pmC{JIS}}
+
+% Korean characters
+%
+% character set: KS X 1001:1992 (=KS C 5601-1992)
+% encoding: EUC
+% font encoding: pmC
+
+\CJK@mapToNFSS{KSpmC}{C62}{song}{m}{n}
+\CJKencfamily[pmC]{KS}{song}
+
+\def\CJK@KSpmC@enc{
+  \CJK@pmC{KS}}
+
+\def\CJK@pmC#1{
+  \CJK@global\def\pmCsmall{\protect\CJK@pmCsmall}
+  \gdef\CJK@pmCsmall{
+    \CJK@loadEncoding{pmCsmall}}
+  \CJK@global\def\pmCbig{\protect\CJK@pmCbig}
+  \gdef\CJK@pmCbig{
+    \CJK@loadEncoding{pmCbig}}
+
+  \CJK@loadBinding{standard}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@global\edef\CJK@punctEnc{#1}
+
+  \pmCsmall
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% EUC-JP
+%
+% character sets: half-width katakana (JIS X 0201-1997)
+%                 JIS X 0208:1997
+%                 JIS X 0212-1992
+% encoding: EUC-JP
+% font encoding: CJK
+%
+% Technical note: JIS X 0212 is directly accessed via
+%                 \CJKchar[JIS2]{...}{...}
+
+\CJKencfamily{EUC-JP}{song}
+\CJKfontenc{EUC-JP}{}
+\@namedef{CJK@EUC-JP@hook}{}
+
+\@namedef{CJK@@@EUC-JP@hook}{
+  \CJK@global\edef\CJK@enc{\CJK@JIS@nfssenc}
+  \CJK@global\edef\CJK@altenc{\CJK@kana@nfssenc}}
+
+\@namedef{CJK@EUC-JP@enc}{
+  \CJK@loadBinding{EUC-JP}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{EUC-JP}
+
+  \CJK@global\edef\CJK@punctEnc{JIS}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% EUC-JP
+%
+% character sets: half-width katakana (JIS X 0201-1997)
+%                 JIS X 0208:1997
+%                 JIS X 0212-1992
+% encoding: EUC-JP
+% font encoding: dnp
+%
+% Technical note: JIS X 0212 is directly accessed via
+%                 \CJKchar[JIS2dnp]{...}{...}
+
+\CJKencfamily[dnp]{EUC-JP}{song}
+
+\@namedef{CJK@@@EUC-JPdnp@hook}{
+  \CJK@global\edef\CJK@enc{\CJK@JISdnp@nfssenc}
+  \CJK@global\edef\CJK@altenc{\CJK@kana@nfssenc}}
+
+\@namedef{CJK@EUC-JPdnp@enc}{
+  \CJK@loadBinding{EUC-JP}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{EUC-JPdnp}
+
+  \CJK@global\edef\CJK@punctEnc{JIS}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+
+% EUC-TW
+%
+% character sets: CNS 11643-1992 planes 1-7
+% encoding: EUC-TW
+% font encoding: CJK
+%
+% Technical note: CNS 11643-1992 planes 2-7 are directly accessed via
+%                 \CJKchar[CNSx]{...}{...}
+
+\CJKencfamily{EUC-TW}{song}
+\CJKfontenc{EUC-TW}{}
+\@namedef{CJK@EUC-TW@hook}{}
+
+\@namedef{CJK@@@EUC-TW@hook}{
+  \CJK@global\edef\CJK@enc{\csname CJK@CNS1@nfssenc\endcsname}}
+
+\@namedef{CJK@EUC-TW@enc}{
+  \CJK@loadBinding{EUC-TW}
+
+  \CJK@global\chardef\CJK@min "0A1
+  \CJK@global\chardef\CJK@max "0FE
+
+  \CJK@loadEncoding{EUC-TW}
+
+  \CJK@global\edef\CJK@punctEnc{CNS1}
+
+  \CJK@global\def\CJK@spaceChar{\CJKchar{"0A1}{"0A1}}}
+
+\endinput

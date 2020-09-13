@@ -1,0 +1,66 @@
+%%
+%% This is file `pdfbase-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,pdfbase-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{pdfbase-xetex-bidi.def}[2020/05/13 v0.3 bidi adaptations for pdfbase package for XeTeX engine]
+\ExplSyntaxOn
+\cs_set_eq:NN\pbs_outputpage_orig:\@outputpage
+\cs_set_nopar:Npn\@outputpage{
+  \int_gincr:N\g_pbs_page_int
+  \iow_now:Nx\@mainaux{
+    \token_to_str:N\pbs@newkey{pbs@last@page}{\int_use:N\g_pbs_page_int}
+  }
+  \box_if_vertical:cTF{@outputbox}{
+    \bool_set_true:N\l_pbs_is_vertical_bool
+  }{
+    \bool_set_false:N\l_pbs_is_vertical_bool
+  }
+  \hbox_set:Nn\@outputbox{
+    %begin of page
+    \hbox_overlap_right:n{\seq_map_inline:Nn\g_pbs_bop_seq{##1}}
+    \box_use_drop:N\@outputbox
+    %end of page
+    \hbox_overlap_right:n{\seq_map_inline:Nn\g_pbs_eop_seq{##1}}
+  }
+  \bool_if:NT\l_pbs_is_vertical_bool{
+    \vbox_set:Nn\@outputbox{\box_use_drop:N\@outputbox}
+  }
+  \pbs_outputpage_orig:
+}
+\ExplSyntaxOff
+\endinput
+%%
+%% End of file `pdfbase-xetex-bidi.def'.

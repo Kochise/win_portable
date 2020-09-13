@@ -1,0 +1,92 @@
+% This is the file READMEgb.tex of the CJK package
+%   for installing the CJK package for LaTeX 2e (in GB encoding).
+%
+% written by Fude Yao <yao@everest.micro.umass.edu}
+% Version 4.1.3 (20-Jun-1997)
+
+\documentclass[12pt]{report}
+
+\usepackage{CJK}
+
+\begin{document}
+
+\begin{CJK*}{GB}{gbsn}
+\CJKtilde
+
+\chapter*{CJK~安装说明书}
+
+　　本文是~Werner Lemberg~的~CJK~的安装说明书. 在此仅就作者使用的
+~Alpha-Linux~平台进行讨论, 并着重于~teTeX-0.4p16~这一版本的~\TeX
+
+\begin{enumerate}
+\item
+  用~ftp~匿名存取方式获得~CJK．例如: \\
+  ftp ftp.tex.ac.uk (or ftp.dante.de) \\
+  anonymous \\
+  yao@everest.micro.umass.edu \\
+  bin \\
+  cd tex-archive/language/chinese \\
+  get CJK.tar.gz CJK-4.1.3.src.tar.gz (按：虽然看不到~CJK.tar.gz,
+  但本命令仍有效，参看~CJK-4.1.3.src/README) \\
+  bye
+\item
+  将压缩文件解压：\\
+  gzip -d CJK-4.1.3.src.tar.gz \\
+  tar xvf CJK-4.1.3.src.tar \\
+  cd CJK/4$_{-}$1.3
+\item
+  将~doc/teTeX~里的全部补丁文件~*.diff~移至~\$TEXDIR/bin/alpha-linux \\
+  用~patch~命令修补，比如: patch $<$ MakeTeXPK.diff \\
+  (其中~special.map.diff~应移至~\$TEXMF/fontname~修补) \\
+  注意修补是否全部成功 \\
+  (注：\$TEXDIR=/usr/lib/texmf; \$TEXMF=/usr/lib/texmf/texmf)
+\item
+  将~CJK~中全部文件移至~\$TEXMF/tex/latex/CJK (保留该结构)
+\item
+  将~utils/ttf2pk~的全部文件移至~\$TEXMF/ttf2pk： \\
+  cd \$TEXMF/ttf2pk/src \\
+  make all OS=unix \\
+  将~utils/hbf2gf~的全部文件移至~\$TEXMF/hbf2gf： \\
+  cd \$/TEXMF/hbf2gf \\
+  make all OS=unix
+\item
+  cd utils/Bg5conv (CEFconv, SJISconv) \\
+  compile *conv.c, 比如：~gcc cefconv.c -o cefconv \\
+  将所得的二进制文件连同~*latex~一起移至~\$TEXDIR/bin/alpha-linux
+\item
+  将全部可执行文件移到~\$TEXDIR/bin/alpha-linux~中，或建立联系，比如 \\
+  ln -s \$TEXMF/ttf2pk/ttf2pk \$TEXDIR/bin/alpha-linux
+\item
+  检查~\$TEXDIR/texmf.cnf~中~\$HBF2GFDIR~与~\$TTF2PKDIR \\
+  是否正确
+\item
+  安装~CJK~字库, truetype~或~hbf~格式的国标，大五，日文，朝鲜文 \\
+  在~ftp.tex.ac.uk/tex-archive/fonts/CJK~里有各种字库，用匿名存取方式
+  取回，注意使用二进制方式
+\item
+  解压文件 \\
+  将字库放在~\$TEXMF/fonts/hbf(truetype)/chinese(japanese, korean) \\
+  如果是~hbf~字库，将~*.cfg~移至~\$TEXMF/hbf2gf； \\
+  如果是~truetype~字库，检查\$TEXMF/ttf2pk/ttf2pk.cfg~中是否有该字库名
+  字
+\item
+  试验样本文件，检查设置是否完整，比如~GB.tex： \\
+  GB.tex~中用到什么字库：$\backslash$begin\{CJK*\}\{GB\}\{so\} \\
+  \$TEXMF/tex/latex/CJK~中有~c10so.fd~字库吗？它涉及哪些名字？ \\
+  \$TEXMF/fontname/special.map~中是否有该字库的名字？ \\
+  \$TEXDIR/texmf.cnf~中~\$HBF2GFDIR~与~\$TTF2PKDIR~正确吗？ \\
+  如果是~hbf~字库，\$TEXMF/hbf2gf~中有该字库的~cfg~文件吗？ \\
+  检查~cfg~文件的路径名是是否正确？ \\
+  如果是~truetype~字库，\$TEXMF/ttf2p/ttf2pk.cfg~中有该字库名字吗？ \\
+  路径名正确吗？
+\item
+  运行~texhash (每次改动之后，都要运行~texhash)
+\item
+  latex examples/GB.tex, 看是否正常．在~doc/~子目录中有很多帮助文件，
+  应仔细阅读
+\end{enumerate}
+
+\end{CJK*}
+\end{document}
+
+\EOF

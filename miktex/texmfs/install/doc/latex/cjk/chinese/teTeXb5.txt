@@ -1,0 +1,327 @@
+
+本文提供一個簡單的範例，說明如何將 CJK-4_2.0 安裝在 tetex-0.9, kpathsea-3.2
+的環境下。由於自 4_2.0 版以後， CJK 將不再包含 ttf2pk 等工具程式，而 ttf2pk
+也已移到 FreeType package 之中。因此若想要使用 TTF 字型來轉換成 CJK 的字型
+的話，還要另外抓 FreeType package 回來安裝。本文試圖將整個步驟做一個整理，
+以方便大家參考。
+
+(PS. 感謝 CJK 的作者 Werner LEMBERG <wl@gnu.org> 對本文所做的 comment :-))
+
+
+A. 所需的 package:
+===================
+
+1. CJK-4_2.0:
+   ftp://ftp1.sinica.edu.tw/pub2/tex/languages/chinese/CJK
+
+2. FreeType:
+   ftp://ftp.freetype.org/pub/freetype/devel/freetype-current.tar.gz
+   ftp://apollo.ce.ntu.edu.tw/pub/freetype
+
+
+B. 安裝路徑:
+=============
+
+由於我的 tetex-0.9 是隨著 Debian Linux 2.0 distribution 而來的，其所在
+的主路徑是 /usr, 而現在要加裝 CJK 的支援，我打算將 CJK 與 ttf2pk 的部分
+儘可能地安裝在 /usr/local 之下，以便與 Debian 所附的 distribution 有所
+區格。因此，我便把所需的安裝路徑安排如下:
+
+	執行檔:  		     BINLOCAL=/usr/local/bin
+	CJK 與 ttf2pk 的相關設定檔:  TEXMFLOCAL=/usr/local/lib/texmf 
+
+同時我們還需要配合 (修改) TEXMFCNF=/etc/texmf/texmf.cnf 中的相關設定來
+安裝檔案, 使得 latex 與 ttf2pk 在運作過程中能找到所有所需的檔案。
+
+PS.  1. $TEXMFCNF 是 tetex 的各種路徑設定檔，檔名為 texmf.cnf, 但它的位
+	置可能依不同的 distribution 而有不同: 可能在 /etc/ 下，也可能在 
+	/etc/texmf/ 下。
+
+     2. $TEXMFLOCAL 的值是依 $TEXMFCNF 的設定而定，請自行參考您系統中的
+	設定。
+
+     3. 在我的系統中， $TEXMFCNF 中有一行是這樣的:
+
+		TEXMF = {$HOMETEXMF,!!$TEXMFLOCAL,!!$TEXMFMAIN}
+
+	其意義是，凡是使用 $TEXMF 做為路徑開頭者，則系統在搜尋時會自動尋
+	找 $HOMETEXMF, $TEXMFLOCAL, $TEXMFMAIN 等目錄底下的路徑。其中:
+
+		HOMETEXMF = $HOME/texmf		% 使用者自己的 tex 目錄位置
+		TEXMFMAIN = /usr/lib/texmf	% tetex 主目錄
+
+     4. latex/xdvi/dvips/ttf2pk 等程式在運作的過程中，所產生的 tfm 與 pk 字
+	型檔，會放到 $VARTEXFONTS 底下。根據 $TEXMFCNF 的預設，其值為
+
+		VARTEXFONTS = /var/spool/texmf
+
+     5. 關於相關的字型路徑名稱，可以參考 CJK-4_2.0..../doc/TDS.txt 的建議。
+
+
+C. 安裝步驟:
+=============
+
+1. TTF 字型我用 moe_kai.ttf, 放在 $TEXMFLOCAL/fonts/truetype 下。
+   (PS. $TEXMFCNF 中的預設為:  TTFONTS = .:$TEXMF/fonts/truetype//)
+
+2. 將  CJK-4_2.0/.../texinput/ 整個拷到 $TEXMFLOCAL/tex/CJK。
+   (PS. $TEXMFCNF 中的預設為: 
+	TEXINPUTS.latex2e = .:$TEXMF/tex/{latex,generic,latex209,}//
+	TEXINPUTS.latex = .:$TEXMF/tex/{latex,generic,latex209,}//)
+
+3. 修改 /usr/lib/texmf/tex/latex/CJK/Bg5/c00kai.fd, 那是定義 CJK kai
+   所用的字型，在此我們將使用 moe_kai 的字型。請將
+
+\DeclareFontShape{C00}{kai}{m}{n}{<-> CJK * b5ka12}{}
+\DeclareFontShape{C00}{kai}{bx}{n}{<-> CJKb * b5ka12}{\CJKbold}
+
+   改成
+
+\DeclareFontShape{C00}{kai}{m}{n}{<-> CJK * moekai}{}
+\DeclareFontShape{C00}{kai}{bx}{n}{<-> CJKb * moekai}{\CJKbold}
+
+   由於目前的 FreeType - ttf2pk 尚不支援將中文字轉 90 度，故在此我們
+   不去修改 c00kair.fd 檔。
+
+   (PS. 請注意，在此所使用的字型名請儘量不要有 "_" 字元，以免造成問題)
+
+4. 修改 $TEXMFMAIN/fontnames/special.map, 加入
+
+moekai         big5         moekai
+
+   其義意是， CJK 所需的 .tfm, .pk 等字型將會放在: 
+
+   	moekai*.tfm  ===>  $VARTEXFONTS/tfm/big5/moekai/
+	moekai*pk    ===>  $VARTEXFONTS/pk/big5/moekai/
+
+   底下。
+
+5. Compile 一下 CJK-4_2.0/utils/Bg5conv/bg5conv.c, 並將它放到 $BINLOCAL
+   下。同時也將 bg5latex 也放過去。
+
+6. 安裝 FreeType lib 。請到 FreeType 的目錄下，執行:
+
+	./configure --prefix=/usr/local --with-locale-dir=/usr/share/locale
+	make
+	make install
+
+7. 安裝 ttf2pk 。請到 freetype/contrib/ttf2pk 底下，執行:
+
+	./configure --prefix=/usr/local --with-kpathsea-dir=/usr
+	make
+	make install
+
+   在此因為我的系統中有 kpathsea lib, 是放在 /usr 底下，因此我做了這樣的
+   的設定。若您的系統中沒有 kpathsea lib, 則不要設 --with-kpathsea-dir。
+   建議您使用 kpathsea lib, 因為這樣的話 ttf2pk package 可以很完整地與
+   tetex 系統整合在一起。
+
+   (PS. 請注意，根據 Werner LEMBERG 的 comment, 這樣的做法可能在某些
+	情況下會失效。最一般的做法，是將 ttf2pk 的執行檔安裝在與其他
+	tetex 的執行檔相同的目錄下，在上述的例子即為 /usr/bin 。同時，
+	在 configure 時 --prefix 也應該設為 /usr 才對。若您發現用上述
+	的方式無法 work 時，請您試著將 ttf2pk 安裝在與 tetex 的執行檔
+	安裝在一起。除此之外，使用 symbolic link 將 /usr/local/bin/ttf2pk
+	link 到 /usr/bin/ttf2pk 可能也沒用)
+
+8. 現在我將 ttf2pk 的相關資料檔放到 $TEXMFLOCAL/ttf2pk 下:
+
+	mkdir $TEXMFLOCAL/ttf2pk
+	cp freetype/contrib/ttf2pk/data/*  $TEXMFLOCAL/ttf2pk
+	ln -s $TEXMFLOCAL/ttf2pk $TEXMFLOCAL/ttf2tfm
+
+   然後修改 $TEXMFCNF, 加入以下兩行:
+
+	TTF2PKINPUTS  = $TEXMF/ttf2pk/
+	TTF2TFMINPUTS = $TEXMF/ttf2pk/
+
+   以明確指定 ttf2tfm 以及 ttf2pk 所需的設定與資料檔的位置)
+
+9. 做出所有的 tfm 字型 (本指令的詳細意義請見 man ttf2tfm):
+
+	ttf2tfm moe_kai -P 3 -E 4 moekai@Big5@
+
+   在程式執行終了會印出這一行:
+
+moekai@Big5@   moe_kai Pid=3 Eid=4
+
+   請將這一行寫到 $TEXMFLOCAL/ttf2pk/ttfonts.map 檔中。ttf2pk 即使用此資
+   料來產生所需的 pk 字型檔。
+
+   然後，再將產生出來的 .tfm 字型全部移到 $VARTEXFONTS/tfm/big5/moekai
+   底下。
+
+10. 跑一下 texconfig rebuild ls-R data base. 若您的系統沒有這個指令，則
+    跑一下 mktexlsr <path_name>. 請注意，每次您重新做出 tfm 字型，或增加、
+    刪除 tetex 底下的檔案時，您都必須做這一步，以更新 ls-R data base 的內
+    容。使用 texconfig 時會出現一個選單，您可以選取 "rebuild ls-R database"
+    即可。若您使用 mktexlsr, 則要指明路徑，如
+
+	mktexlsr /var/spool/texmf
+	mktexlsr /usr/local/lib/texmf
+
+11. Patch tetex-0.9 的 mktexpk script。其 diff 檔是在
+    freetype/contrib/ttf2pk/scripts/web2c-7.2/ 底下。如此 latex 系統
+    在需要時，就會呼叫 ttf2pk 來產生所需的 pk 字型。
+
+    (PS. 若您所用的是最新的 teTeX 0.9-beta 的話，其 mktexpk 已包含了以上
+	 的 patch, 所以您不必做這一步。最新的 teTeX 0.9-beta 可以在這裏
+	 找到:
+
+	ftp://ftp.rrzn.uni-hannover.de/pub/local/misc/teTeX-beta/)
+
+12. 完成! 您可以試試編譯 CJK_4_2.0/doc/chinese/READMEb5.tex, 看有沒
+    有其他問題。
+
+
+
+C. LaTeX/CJK 的工作原理 (for tetex-0.9, CJK-4_2.0):
+====================================================
+
+以下為就我所知的 LaTeX 編譯文章的步驟與目前 CJK 的工作原理稍微說明一下，
+以幫助讀了解以上設定的意義。
+
+首先，當 TeX/LaTeX 在讀入一個 .tex 檔，並試圖地做出一個 .dvi 檔時，它必須
+要用到 .tfm 的字型。 .tfm 的字型檔只記錄了該種字型最基本的資訊，它甚至與
+字型的實際大小無關，它純粹只用來做排版用的。TeX/LaTeX 預設狀況下都會到 
+$TEXMFDIR/fonts/tfm/ 底下找 .tfm 字型 (各位可以看看 /etc/texmf/texmf.cnf
+的設定) ，因此，假設在 tfm/ 下還有很多目錄，如
+
+	..../tfm/big5/moekai/
+	..../tfm/big5/moesung/
+	..../tfm/ams/
+	...........
+
+等等，則這些子目錄底下所有的 .tfm 字型檔都會被搜尋到。而 $TEXMFDIR 則代表
+了你系統中 TeX 的主目錄。萬一找不到字型，它會呼叫 mktextfm 來產生字型，所
+產生出來的字型就丟到 $TEXMFDIR/fonts/tfm/.... 下。
+
+mktextfm 是一個 shell script ，它在工作時首先會先分析所需產生的字型種類與
+應在的路徑名，並再次檢查該字型是否存在，如果真不存在，則它會呼叫字型產生
+程式 mf 來把字型做出來。
+
+然而，不管是做什麼樣的字型，都一定要有一個供參考的字型「樣板」才行，在 TeX 
+系統中，預設的字型樣版為 MetaFont, 這是系統最基本的字型樣版。當然，我們可
+以加入其他的字型做為樣版，而這些加入的字型就記錄在一個叫 special.map 的檔
+中，此檔有三個欄位如下:
+
+% Font          source  typeface
+%
+A               public  hieroglyph
+Aa              public  hieroglyph
+B               public  hieroglyph
+C               public  hieroglyph
+D               public  hieroglyph
+DeadSea         public  hebrew
+
+其中第一欄是字型名稱，第二欄和第三欄是字型類別。TeX/LaTeX 即根據 special.map
+的內容，在 $TEXMF/fonts/tfm 下尋找所需的 .tfm 字型。預設情況下，它就以
+字型類別名稱做為該字型的存在路徑，例如當需要 DeadSea*.tfm 時，其存在的路行即
+為 $TEXMF/fonts/tfm/public/hebrew/ 。若路徑不存在或字型不存在，則視需要
+產生該路徑，並呼叫 mktextfm 來產生字型檔， mktextfm 則會進一步呼叫 mf 程式來
+工作。
+
+當 .dvi 檔出來後，我們可以用 xdvi 來做預視，這時候就需要 .pk 的字型，此為
+點陣字型，就與實際所需的字型大小有關。同樣的， xdvi 會先到 
+$TEXMF/fonts/pk/..../ 看看該字型是否已存在，找不到它就會去呼叫
+mktexpk 來做出字型。mktexpk 的工作機制與 mktextfm 完全一樣，所以就不再重覆。
+當然，我們也可以用 dvips 來產生 PostScript 的文件檔，在這裏同樣要使用 .pk 
+的字型，也是用 mktexpk 來做。
+
+就以上的說明，我們可以知道，若要用 CJK 來產生中文文件，則需要具備以下條件:
+
+1. 用來定義中文文件格式的 texinput style 檔。
+
+2. 中文字型 .tfm 以及 .pk 。
+
+其中第一個條件很容易，也就是我在上一節的「安裝步驟」中的第二步所提到的。除
+此之外，我們還需要一個 bg5conv 的程式，它負責讀入中文 .tex 原始檔，經編碼
+後轉成 .cjk 編輸出，然後才交給 latex 進行產生 .dvi 檔的動作。
+
+比較麻煩的是字型的部分。就 .tfm 字型而言，在過去安裝 CJK 時，我們可能不會
+預先將所有需要的 .tfm 預先做出來，而是採用線上產生的方式，這時我們需要修
+改 mktextfm, 以便在需要時呼叫 ttf2pk 之類的程式自 TTF 字型做出 .tfm 字型。
+但現在我們使用新版的 ttf2pk package, 其 ttf2tfm 程式可以很容易地將所有的
+.tfm 字型產生出來，並預先安裝到正確的目錄中，如此我們就不需要去修改 mktextfm
+了。而這就是上一節「安裝步驟」中的第 9 步所做的工作，其命令的意義為:
+
+    ttf2tfm <TTF filename> -P <platform ID> -E <encoding ID> <TFM filename>
+
+其中 <TTF filename> 檔名格式為 <name>XX.tfm, <name> 是字型名稱， XX 是一個
+數字，代表了該字型 encoding 的序號，例如: moekai03.tfm 。對於一套完整的
+字型，其序號必須足以包含所有的中文字，以 Big5 碼為例，其完整的序號是從 01
+到 58, 也就是必須產生 58 個字型檔。在新版的 ttf2tfm 中，您不需要呼叫 ttf2tfm
+58 次，注意到在安裝步驟中， <TFM filename> 這一個參數是
+
+	moekai@Big5@
+
+其中 moekai 即為 <name>, 而 @Big5@ 是指序號的部分，在這裏是用一個
+Big5.sfd 這個檔來代替 (程式會自動加入 .sfd 這個附檔名) ，注意到在「安裝
+步驟」中的第 8 步我們已將這個檔案拷到了適當位置，而該檔就記錄了 Big5 碼字
+型所有序號等相關資訊， ttf2tfm 可以直接參考這個檔的內容將所有的字型全部
+做出來。
+
+在 ttf2tfm 工作完成之後，它會印出一行訊息 (見「安裝步驟」第 9 步)，這一
+行是給 ttf2pk 參考用的，必須寫入 ttf2pk 專屬的設定檔 ttfonts.map 中。最
+後，我們再將所有的 .tfm 字型移至適當目錄，即完成了 .tfm 字型的部分。
+
+對於 .pk 字型，由於這裏還牽涉了不同的字型大小有不同的檔，我們無法預先知
+道需要那些大小的字型，因此在此我們採用了線上產生的方式，需要時才產生 pk
+字型。於是，我們必須修改 mktexpk，在需要中文字型時呼叫 ttf2pk 自 TTF 字
+型將所需的字型做出來 (見「安裝步驟」第 11 步)。
+
+pk 字型檔名的格式如下:
+
+	<name>XX.<SSSS>pk
+
+其中 <name> 是字型名， XX 是 encoding 序號， <SSSS> 即為該字型的大小 (dpi)。
+
+還有一點，由於新版的 ttf2pk 已能使用 kpathsea lib 來搜尋它所需的檔案，包
+括字型檔以及設定檔，而設定檔的部分我們就必須將它的位置寫在 
+/etc/texmf/texmf.cnf 中，並且要跑 mktexlsr 或 texconfig 後 (見「安裝步驟」
+的第 8 步與第 10 步)，如此 kpathsea lib 才能找到設定檔的位置。
+
+
+綜上所述，以下我描述一下整個 LaTeX/CJK 的 compile 過程，做為總結。
+
+
+1. 執行 bg5latex, 這是一個 script, 它呼叫 bg5conv 讀入 .tex 原始檔，並轉
+   成編碼後的 .cjk 檔。
+
+2. bg5latex 接著呼叫 latex, 讀入 .cjk 檔，在判定它需要 CJK package 時，
+   如:
+
+	\usepackage{CJK}
+	\begin{CJK*}{Bg5}{kai}
+
+   便讀入一系列的 CJK texinput style 檔，並跟據 Bg5, kai, 讀取 
+   .../Bg5/c00kai.fd 這個字型定義檔。
+
+3. 根據 c00kai.fd 檔的定義， latex 知道中文的部分需要 moe_kai 字型。於是，
+   在產生 .dvi 檔的過程中，它根據 special.map 檔的內容，在適當的路徑中尋找
+   所需的 .tfm 檔，若找不到則呼叫 mktextfm 來產生它。由於事先我們已安裝好
+   所有的 .tfm 字型，因此這一步不需要呼叫 mktextfm 即可完成。
+
+4. .dvi 檔出來後，假設我們要用 dvips 來產生 .ps 檔，則 dvips 在發現需要
+   moekai 字型時，會跟據 special.map 的內容，到適當的路徑去尋找 moekai*pk
+   檔。
+
+5. 若找不到，則它會呼叫 mktexpk 來產生字型檔。修改過的 mktexpk 在發現所需
+   產生的字型是 moekai 時，便會呼叫 ttf2pk 來工作。
+
+6. ttf2pk 首先透過 kpathsea lib, 藉由 /etc/texmf/texmf.cnf 中的設定找到其
+   設定檔 ttfonts.map 的位置，讀入設定檔後，根據 moekai 那一行，它知道了:
+
+   a. 所需要的字型樣版為 $TEXMFLOCAL/fonts/truetype/moe_kai.ttf 。
+
+   b. 該字型的 encoding 序號資料存放在與 ttfonts.map 相同目錄下的 Big5.sfd
+      檔中。
+
+   c. 其他如 Platform ID 與 Encoding ID 的資訊。
+
+   ttf2pk 即利用這些資訊，將所需的 moekai*pk 檔做出來，並交由 mktexpk 將該
+   檔放到正確的路徑下，以備日後重複利用。
+
+7. 完成。
+
+

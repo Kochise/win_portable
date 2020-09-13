@@ -1,0 +1,229 @@
+% This is the file HLaTeX.chr of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{HLaTeX.chr}[\filedate\space\fileversion]
+
+
+% define macros for handling hangul fonts and characters.
+
+\gdef\CJK@HLaTeXChr{
+
+% KS symbols -- for Hiragana and Katagana, no kinsoku shori is provided!
+
+  \CJK@global\def\CJK@symbA##1##2##3{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \edef\CJK@plane{##1}
+     \usefont{\CJK@symbEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##2/\number ##3/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##2}{##3}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}
+
+  \CJK@global\def\CJK@symbB##1{
+    {\CJK@numbToHex{\CJK@gtemp}{##1}
+     \CJK@testLastCJK
+     \ifCJK@
+       \CJK@testPostPunct{KS}{A3}{\CJK@gtemp}
+       \ifCJK@
+       \else
+         \discretionary{}{}{}
+       \fi
+     \fi
+
+     \ifnum ##1 = 220\relax
+       \edef\CJK@plane{04}
+     \else
+       \edef\CJK@plane{07}
+     \fi
+     \usefont{\CJK@symbEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/163/\number ##1/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{163}{##1}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@testPrePunct{KS}{A3}{\CJK@gtemp}
+     \ifCJK@
+       \CJK@kern
+     \else
+       \CJK@CJK
+     \fi}}
+
+  \CJK@global\def\CJK@symbC##1##2##3{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \ifnum ##3 < ##1\relax
+       \edef\CJK@plane{07}
+     \else
+       \ifnum ##3 > 245\relax
+         \edef\CJK@plane{06}
+       \else
+         \edef\CJK@plane{04}
+       \fi
+     \fi
+     \usefont{\CJK@symbEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##2/\number ##3/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##2}{##3}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}
+
+  \CJK@global\def\CJK@symbD##1{
+    {\CJK@numbToHex{\CJK@gtemp}{##1}
+     \CJK@testLastCJK
+     \ifCJK@
+       \CJK@testPostPunct{KS}{A1}{\CJK@gtemp}
+       \ifCJK@
+       \else
+         \discretionary{}{}{}
+       \fi
+     \fi
+
+     \edef\CJK@plane{05}
+     \usefont{\CJK@symbEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/161/\number ##1/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{161}{##1}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@testPrePunct{KS}{A1}{\CJK@gtemp}
+     \ifCJK@
+       \CJK@kern
+     \else
+       \CJK@CJK
+     \fi}}
+
+
+% Hangul syllables
+
+  \CJK@global\def\CJK@altchar##1##2##3{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \edef\CJK@plane{##1}
+     \usefont{\CJK@altEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##2/\number ##3/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##2}{##3}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}
+
+% the same, but the plane crosses the font file boundary.
+
+  \CJK@global\def\CJK@altcharx##1##2##3##4##5{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \ifnum ##5 < ##3\relax
+       \edef\CJK@plane{##1}
+     \else
+       \edef\CJK@plane{##2}
+     \fi
+     \usefont{\CJK@altEnc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##4/\number ##5/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##4}{##5}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}
+
+% Hanja
+
+  \CJK@global\def\CJK@char##1##2##3{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \edef\CJK@plane{##1}
+     \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##2/\number ##3/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##2}{##3}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}
+
+% the same, but the plane crosses the font file boundary.
+
+  \CJK@global\def\CJK@charx##1##2##3##4##5{
+    {\CJK@testLastCJK
+     \ifCJK@
+       \discretionary{}{}{}
+     \fi
+
+     \ifnum ##5 < ##3\relax
+       \edef\CJK@plane{##1}
+     \else
+       \edef\CJK@plane{##2}
+     \fi
+     \usefont{\CJK@enc}{\CJK@family}{\CJK@series}{\CJK@shape}
+     \edef\reserved@a{
+       \curr@fontshape/\number ##4/\number ##5/\CJK@direction}
+     \expandafter\ifx\csname\reserved@a\endcsname \relax
+       \CJKsymbols{##4}{##5}
+     \else
+       \csname\reserved@a\endcsname
+     \fi
+
+     \CJK@CJK}}}
+
+\endinput

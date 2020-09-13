@@ -33,7 +33,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2020/07/13 3.47 The Babel package]
+\ProvidesPackage{babel}[2020/09/01 3.48 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
    \let\bbl@debug\@firstofone}
@@ -232,7 +232,7 @@
   \bbl@warning{%
     Some functions for '#1' are tentative.\\%
     They might not work as expected and their behavior\\%
-    could change in the future.\\%
+    may change in the future.\\%
     Reported}}
 \def\@nolanerr#1{%
   \bbl@error
@@ -509,8 +509,10 @@
        \set@typeset@protect
        \expandafter\select@language@x\expandafter{\bbl@main@language}%
        \let\protect\noexpand
-       \edef\thepage{% TODO. Only with bidi. See also above
-         \noexpand\babelsublr{\unexpanded\expandafter{\thepage}}}}%
+       \ifcase\bbl@bidimode\else % Only with bidi. See also above
+         \edef\thepage{%
+           \noexpand\babelsublr{\unexpanded\expandafter{\thepage}}}%
+       \fi}%
    \fi}
   {\ifbbl@single\else
      \bbl@ifunset{markright }\bbl@redefine\bbl@redefinerobust
@@ -587,10 +589,6 @@
          \def\@currname{hhline}\input{hhline.sty}\makeatother
        \fi}%
       {}}}
-\AtBeginDocument{%
-  \ifx\pdfstringdefDisableCommands\@undefined\else
-    \pdfstringdefDisableCommands{\languageshorthands{system}}%
-  \fi}
 \DeclareRobustCommand{\FOREIGNLANGUAGE}[1]{%
   \lowercase{\foreignlanguage{#1}}}
 \def\substitutefontfamily#1#2#3{%

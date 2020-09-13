@@ -1,0 +1,364 @@
+%% FONTMAP: CID-keyed font mapping file for dvipdfmx
+%% =================================================
+%%
+%% Last modified: April 2, 2002
+%%
+%%
+%% SYNOPSIS
+%% --------
+%%
+%% TFMNAME[@SFDNAME@] ENCNAME [:INDEX:][!]FONTNAME[,VARIANT] [OPTIONS]
+%%
+%%
+%% DESCRIPTION
+%% -----------
+%%
+%% 1) TFMNAME[@SFDNAME@]
+%%
+%%    TFM name is specified in the field `TFMNAME' without extension (.tfm),
+%%    and the subfont definition name in the field `SFDNAME' without
+%%    extension (.sfd). For example, jbtm@UKS@ specifies the TFM names,
+%%    jbtm01 - jbtm35, used in the CJK package.
+%%
+%% 2) ENCNAME
+%%
+%%    CMap resource name is specified in the field `ENCNAME'. It is used in
+%%    dvipdfmx to convert double-byte character codes to CID numbers.
+%%    For more details, see `doc/README'.
+%%
+%% 3) [:INDEX:][!]FONTNAME[,VARIANT]
+%%
+%%    Font name is specified in the field `FONTNAME' with or without
+%%    extension. The field `INDEX' is used for TrueType collections (.ttc)
+%%    to specify the font index number. In the case of ordinary TrueType
+%%    fonts (.ttf) the field should be `0'. The character `!' enables the
+%%    no-embedding option. The stylistic variants (Bold, Italic, BoldItalic)
+%%    are specified in the filed `VARIANT'. See examples below.
+%%
+%% 4) [OPTIONS]
+%%
+%%    All options available in the original dvipdfm are also valid here.
+%%    However, the slant option [-s number] is ignored for vertical mode,
+%%    and the remap option [-r] is always ignored since it doesn't make
+%%    sense for CID-keyed fonts.
+%%
+%%
+%% ** IMPORTANT **
+%%
+%% There is no default CMap, and the keyword `none' in the `ENCNAME' field is
+%% not allowed for CID-keyed font. Valid CMap name should be recorded in the
+%% `ENCNAME' field. Otherwise, the font will not be treated as a CID-keyed font.
+%%
+%% The format of the font mapping file is not compatible with the jpatch patch
+%% which expects keyword `none' or `default' in the `ENCNAME' field.
+%%
+%% Be sure that all CMaps used in the font mapping file are under the directory
+%% `${TEXMF}/dvipdfm/CMap', and all subfont definition files under the
+%% directory `${TEXMF}/dvipdfm/base'. CMap file name should coincide with CMap
+%% name.
+%%
+%%
+%% EXAMPLES
+%% --------
+%%
+%% 1) Pre-defined CIDFonts
+%%
+%%    Minimal font information required by PDF viewers are available from
+%%    dvipdfmx built-in data. The built-in data does not contain any glyph
+%%    data required to render actual shape of each characters. Hence, PDF
+%%    viewers must substitute those fonts with suitable one available from
+%%    the system. The reproducibility and the correctness of document layout
+%%    opened on the remote system is not always guaranteed, however, it seems
+%%    not to cause any problems in general if you does not use special
+%%    characters in your document. Please use those fonts if you are sure that
+%%    all peoples that receives your documents have usable fonts installed on
+%%    their system. It greatly reduces size of resulting PDF documents because
+%%    no glyph data are embedded.
+%%
+%%    Here is the list of pre-defined CIDFonts in dvipdfmx.
+%%
+%%    ---------------------------------------------------------
+%%    Language              Acrobat pre-defined CIDFonts
+%%    ---------------------------------------------------------
+%%    Chinese/Simplified    STSong-Light
+%%    Chinese/Traditional   MHei-Medium, MSung-Light
+%%    Japanese              HeiseiMin-W3, HeiseiKakuGo-W5
+%%    Korean                HYGoThic-Medium, HYSMyeongJo-Medium
+%%    ---------------------------------------------------------
+
+%rml  H HeiseiMin-W3
+%gbm  H HeiseiKakuGo-W5
+%rmlv V HeiseiMin-W3
+%gbmv V HeiseiKakuGo-W5
+
+%% ** PostScript "standard" fonts (Japanese) are also pre-defined.
+%%
+%%    Ryumin-Light, GothicBBB-Medium (Adobe-Japan1-2)
+
+rml  H Ryumin-Light
+gbm  H GothicBBB-Medium
+rmlv V Ryumin-Light
+gbmv V GothicBBB-Medium
+
+%%    Note. If you apply vertical version (WMode 1) of CMaps to horizontal
+%%    fonts (e.g., rml), dvipdfmx does horizontal positioning while PDF
+%%    viewers apply vertical positioning for that font.
+%%
+%%    Note. On some Mac platforms, Ryumin-Light and GothicBBB-Medium are not
+%%    handled properly by Adobe products. Especially, if you have those fonts
+%%    in the OCF format, you may want to avoid them.
+%%
+%%
+%% 2) OpenType CIDFonts (CIDFontType0)
+%%
+%%    Postscript CID-keyed fonts are supported only in the CFF OpenType format
+%%    with Type 2 charstrings.
+%%
+%%    o Kozuka-Mincho sold by Adobe:
+
+kml H KozMinPro-Regular.otf
+
+%%    o CFF/OpenType version of Kochi CIDFont:
+
+kochi-min H Kochi-Mincho.otf
+kochi-got H Kochi-Gothic.otf
+
+%%    The suffix `.otf' is optional. Please use suffix `.otf' if needed.
+%%
+%%
+%% 3) TrueType CIDFonts (CIDFontType2)
+%%
+%%    TrueType (.ttf) and TrueType collection (.ttc) are supported.
+%%
+%%    o Japanese MS-Windows fonts
+
+msmin H :0:msmincho
+msgot H :0:msgothic
+
+%%      MS-Mincho with proportional latin and kana:
+
+msminp H :1:msmincho
+
+%%    o Kochi is TrueType (not a collection):
+
+kmin H :0:kochi-mincho
+kgot H :0:kochi-gothic
+
+%%    o Korean MS-Windows fonts with stylistic variants (no-embedding)
+
+%jbtm@UKS@  UniKS-UCS2-H :0:!batang.ttc
+%jbtmo@UKS@ UniKS-UCS2-H :0:!batang.ttc,Italic
+%jbtb@UKS@  UniKS-UCS2-H :0:!batang.ttc,Bold
+%jbtbo@UKS@ UniKS-UCS2-H :0:!batang.ttc,BoldItalic
+
+%%    o Baekmuk fonts (used with HLaTeX package)
+
+%bbtm@KS-HLaTeX@   KSCms-UHC-H  :0:batang.ttf
+%bbtmo@UKS-HLaTeX@ UniKS-UCS2-H :0:batang.ttf -s .167
+
+
+%% Font Licensing Issue
+%% --------------------
+%%
+%% If you try to use the following font,
+
+hgskai H :0:hgrsksj
+
+%% you will see the following message:
+%%
+%%   ** Embedding disabled due to licensing restriction **
+%%
+%% As this message indicates, font embedding is disabled because embedding
+%% is not allowed for this font. Also, please note that any documents that
+%% contains font with `Preview & Print' embedding licensing can be opened
+%% only for the purpose of previewing and/or printing. When fonts with this
+%% type of license are encountered, you will see the following message:
+%%
+%%   ** NOTICE: This document contains `Preview & Print' only licensed font **
+%%
+%% In this case, you cannot distribute resulting PDF document if you are not
+%% absolutely sure that you are not violating license you acquired.
+%%
+%%
+%% Other Encodings
+%% ---------------
+%%
+%% Only 16-bit encodings are supported. The DVI format specification allows
+%% 24-bit and 32-bit (signed) long character codes, though.
+%%
+%% 1) JIS C 6226 (JIS78) character set with NEC extensions, ISO-2022-JP encoding:
+
+rmlx Ext-H Ryumin-Light
+
+%%    or Shift-JIS encoding:
+
+rmlsjx Ext-RKSJ-H Ryumin-Light
+
+%% 2) Hojo-Kanji (JIS X 0212-1990): Adobe-Japan2 character collection
+
+hjmin  Hojo-H :0:msmincho
+hjminv Hojo-V :0:msmincho
+
+%%    You need ToUnicode CMap for the Adobe-Japan2 character collection.
+%%    If you cannot find it, copy and paste from the "ToUnicode Mapping File
+%%    Tutorial" (Adobe Technical Note #5411). Please change the CMap name and
+%%    the ordering string from `Adobe-Japan2-000' to `Adobe-Japan2-UCS2' and
+%%    from `Adobe_Japan2_000' to `Adobe_Japan2_UCS2', respectively. You must
+%%    save it as Adobe-Japan2-UCS2.
+%%
+%% 3) Unicode encodings, Omega requires them. (not fully tested.)
+%%
+%%    o Chinese
+
+ombkai UniCNS-UCS2-H :0:bkai00mp
+ombsmi UniCNS-UCS2-H :0:bsmi00lp
+omgkai UniGB-UCS2-H  :0:gkai00mp
+omgbsn UniGB-UCS2-H  :0:gbsn00lp
+
+%%    o Japanese
+
+omrml UniJIS-UCS2-H Ryumin-Light
+
+%%    o Korean
+
+omgtm UniKS-UCS2-H HYGoThic-Medium
+omubt UniKS-UCS2-H :0:batang
+
+%% 4) UTF8 encodings with CJK package
+%%
+%%    It is possible to use several languages in a document with CJK package
+%%    via the UTF8 encoding.
+
+cyberb@Unicode@        Identity-H   :0:cyberbit.ttf
+
+%%    Bitstream Cyberbit font is available at:
+%%
+%%    http://ftp.netscape.com/pub/communicator/extras/fonts/windows/ReadMe.htm
+%%
+%%
+%% Custom CMap and Specialized Font
+%% --------------------------------
+%%
+%% All TrueType font should have TrueType cmap (character codes to
+%% glyph indices mapping) table with platform ID 3, and encoding ID
+%% 1. If you are using CMap `Dummy-H' having, say, registry string
+%% `My' and ordering string `Ordering' to map character codes used in
+%% the DVI file to CIDs, you must also have CMap resource named
+%% `My-Ordering-UCS2' (for encoding ID 1) which defines mapping from
+%% CID to character code used in the TrueType font:
+%%
+%%   myfont Dummy-H :0:myfont.ttf
+%%
+%% Some font that have 511 glyphs (one for .notdef), split into two
+%% single-byte fonts for use with `plain' TeX, tied up to a single
+%% CID-keyed font:
+%%
+%%   math1 Math-Symbol1 :0:msymbol.ttf
+%%   math2 Math-Symbol2 :0:msymbol.ttf
+%%
+%% Arabic as CID-Keyed font:
+%%
+%%   omarb UniArab-UCS2 :0:arabuni.ttf
+%%
+%% At present, accessing glyphs via glyph indices directly is not supported.
+%% It will be supported if someone need it.
+%%
+%% Please make your CMap resource file as simple as possible. The built-in
+%% CMap parser will fail if the structure of CMap file is too complicated.
+%%
+%%
+%% TODO
+%% ----
+%%
+%% o Supports TrueType UCS4 cmap table
+%%
+%% o Supports TrueType Symbol cmap table (under consideration)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hin-Tak Leung's custom setup below: %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cwtb@UBig5@ UniCNS-UCS2-H :0:bbttf.ttf
+cwtf@UBig5@ UniCNS-UCS2-H :0:fttf.ttf
+cwtk@UBig5@ UniCNS-UCS2-H :0:kttf.ttf
+cwtm@UBig5@ UniCNS-UCS2-H :0:mttf.ttf
+cwtr@UBig5@ UniCNS-UCS2-H :0:rttf.ttf
+%
+mekl@Big5@ ETen-B5-H :0:kai-linux.ttf
+mest@Big5@ ETen-B5-H :0:edustd-15.ttf
+mesx@Big5@ ETen-B5-H :0:edustds1.ttf
+mesy@Big5@ ETen-B5-H :0:edustds2.ttf
+meko@Big5@ ETen-B5-H :0:moe_kai.ttf
+meso@Big5@ ETen-B5-H :0:moe_sung.ttf
+%
+bkai@UBig5@ UniCNS-UCS2-H :0:bkai00mp.ttf
+bsmi@UBig5@ UniCNS-UCS2-H :0:bsmi00lp.ttf
+%
+gbsn@UGB@ UniGB-UCS2-H :0:gbsn00lp.ttf
+gkai@UGB@ UniGB-UCS2-H :0:gkai00mp.ttf
+%
+ntbr@Big5@ ETen-B5-H :0:ntu_br.ttf
+ntfs@Big5@ ETen-B5-H :0:ntu_fs_m.ttf
+ntka@Big5@ ETen-B5-H :0:ntu_kai.ttf
+ntli@Big5@ ETen-B5-H :0:ntu_li_m.ttf
+ntmb@Big5@ ETen-B5-H :0:ntu_mb.ttf
+ntmm@Big5@ ETen-B5-H :0:ntu_mm.ttf
+ntmr@Big5@ ETen-B5-H :0:ntu_mr.ttf
+nttw@Big5@ ETen-B5-H :0:ntu_tw.ttf
+%
+wclj@Big5@ ETen-B5-H :0:wcl-01.ttf
+wclk@Big5@ ETen-B5-H :0:wcl-02.ttf
+wcll@Big5@ ETen-B5-H :0:wcl-03.ttf
+wclm@Big5@ ETen-B5-H :0:wcl-04.ttf
+wcln@Big5@ ETen-B5-H :0:wcl-05.ttf
+wclp@Big5@ ETen-B5-H :0:wcl-06.ttf
+wclq@Big5@ ETen-B5-H :0:wcl-07.ttf
+wclr@Big5@ ETen-B5-H :0:wcl-08.ttf
+wcls@Big5@ ETen-B5-H :0:wcl-09.ttf
+wclt@Big5@ ETen-B5-H :0:wcl-10.ttf
+%
+zysg@UGB@ UniGB-UCS2-H :0:zysong.ttf
+%
+wnmc@SJIS@ Ext-RKSJ-H :0:watanabe-mincho.ttf
+wdgt@SJIS@ Ext-RKSJ-H :0:wadalab-gothic.ttf
+%
+kcgt@UJIS@ UniJIS-UCS2-H :0:kochi-gothic.ttf
+kcmc@UJIS@ UniJIS-UCS2-H :0:kochi-mincho.ttf
+%
+ykah@Big5@ ETen-B5-H  :0:yka00hp.ttf
+gtrl@Big5@ ETen-B5-H  :0:gtr00lp.ttf
+gtrm@Big5@ ETen-B5-H  :0:gtr00mp.ttf
+leim@Big5@ ETen-B5-H  :0:lei00mp.ttf
+heim@Big5@ ETen-B5-H  :0:hei01mp.ttf
+sunm@Big5@ ETen-B5-H  :0:sun00mp.ttf
+%
+gbsnl@EUC@ GB-EUC-H   :0:gbsn00l.ttf
+ggtrl@EUC@ GB-EUC-H   :0:ggtr00l.ttf
+gkaim@EUC@ GB-EUC-H   :0:gkai00m.ttf
+gleim@EUC@ GB-EUC-H   :0:glei00m.ttf
+gsinm@EUC@ GB-EUC-H   :0:gsin00m.ttf
+tgtrl@EUC@ GB-EUC-H   :0:tgtr00l.ttf
+tkaim@EUC@ GB-EUC-H   :0:tkai00m.ttf
+tleim@EUC@ GB-EUC-H   :0:tlei00m.ttf
+tooru@EUC@ GB-EUC-H   :0:toor00u.ttf
+tovru@EUC@ GB-EUC-H   :0:tovr00u.ttf
+tsinm@EUC@ GB-EUC-H   :0:tsin00m.ttf
+%
+dcaiq@UJIS@   UniJIS-UCS2-H  :0:dcai5.ttc
+dcailq@UJIS@  UniJIS-UCS2-H  :0:dcail5.ttc
+dcaisq@UJIS@  UniJIS-UCS2-H  :0:dcais5.ttc
+dccryq@UJIS@  UniJIS-UCS2-H  :0:dccry5.ttc
+dchgmq@UJIS@  UniJIS-UCS2-H  :0:dchgm5.ttc
+dchleiq@UJIS@ UniJIS-UCS2-H  :0:dchlei5.ttc
+dcinlq@UJIS@  UniJIS-UCS2-H  :0:dcinl5.ttc
+dckgmc@UJIS@  UniJIS-UCS2-H  :0:dckgmc.ttc
+dclkaiq@UJIS@ UniJIS-UCS2-H  :0:dclkai5.ttc
+dcysmr@UJIS@  UniJIS-UCS2-H  :0:dcysm7.ttc
+dfcrdp@UJIS@  UniJIS-UCS2-H  :0:dfcrd3.ttc
+dffrsp@UJIS@  UniJIS-UCS2-H  :0:dffrs3.ttc
+dfgskr@UJIS@  UniJIS-UCS2-H  :0:dfgsk7.ttc
+dfkaie@UJIS@  UniJIS-UCS2-H  :0:dfkaie.ttc
+dfkbtp@UJIS@  UniJIS-UCS2-H  :0:dfkbt3.ttc
+dfoyjq@UJIS@  UniJIS-UCS2-H  :0:dfoyj5.ttc
+dfryss@UJIS@  UniJIS-UCS2-H  :0:dfrys9.ttc
+dfshtq@UJIS@  UniJIS-UCS2-H  :0:dfsht5.ttc
+dfshtr@UJIS@  UniJIS-UCS2-H  :0:dfsht7.ttc
+dfskair@UJIS@ UniJIS-UCS2-H  :0:dfskai7.ttc

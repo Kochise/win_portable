@@ -7,9 +7,9 @@
 
 local ProvidesLuaModule = { 
     name          = "luaotfload-parsers",
-    version       = "3.14",       --TAGVERSION
-    date          = "2020-05-06", --TAGDATE
-    description   = "luaotfload submodule / filelist",
+    version       = "3.15",       --TAGVERSION
+    date          = "2020-09-02", --TAGDATE
+    description   = "luaotfload submodule / parsers",
     license       = "GPL v2.0"
 }
 
@@ -779,19 +779,20 @@ local parse_config      = Ct (ini_sections)
 
 --doc]=]--
 
+luaotfload.parsers = {
+  --- parameters
+  traversal_maxdepth    = traversal_maxdepth,
+  --- main parsers
+  read_fonts_conf       = read_fonts_conf,
+  font_request          = font_request,
+  config                = parse_config,
+  --- common patterns
+  stripslashes          = stripslashes,
+  splitcomma            = splitcomma,
+}
+
 return function ()
   logreport = luaotfload.log.report
-  luaotfload.parsers = {
-    --- parameters
-    traversal_maxdepth    = traversal_maxdepth,
-    --- main parsers
-    read_fonts_conf       = read_fonts_conf,
-    font_request          = font_request,
-    config                = parse_config,
-    --- common patterns
-    stripslashes          = stripslashes,
-    splitcomma            = splitcomma,
-  }
   return true
 end
 

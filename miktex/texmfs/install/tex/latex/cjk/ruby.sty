@@ -1,0 +1,174 @@
+% This is the file ruby.sty of the CJK package
+%   for displaying ruby (i.e. furigana).
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\NeedsTeXFormat{LaTeX2e}[1995/06/01]
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesPackage{ruby}[\filedate\space\fileversion]
+
+
+\RequirePackage{CJK}[1996/11/20]
+
+\newif\ifruby@overlap@
+\newif\ifruby@CJK@
+
+\DeclareOption{overlap}{\ruby@overlap@true}
+\DeclareOption{nooverlap}{\ruby@overlap@false}
+\DeclareOption{CJK}{\ruby@CJK@true}
+\DeclareOption{latin}{\ruby@CJK@false}
+
+\ExecuteOptions{overlap, CJK}
+
+\ProcessOptions
+
+
+% we suppress any unwanted spaces produced by linefeeds.
+
+\endlinechar \m@ne
+
+% to get a small separation between adjacent lines.
+
+\lineskiplimit 1pt
+
+
+\newdimen\ruby@width
+\edef\ruby@kern{\kern -5sp\kern 5sp}
+
+\newcommand{\rubysize}{0.4}
+\newcommand{\rubysep}{-0.5ex}
+\newcommand{\rubyoverlap}{\ruby@overlap@true}
+\newcommand{\rubynooverlap}{\ruby@overlap@false}
+\newcommand{\rubyCJK}{\ruby@CJK@true}
+\newcommand{\rubylatin}{\ruby@CJK@false}
+
+
+% #1 is the base character; #2 is the ruby.
+
+\DeclareRobustCommand{\ruby}[2]{
+  {\@tempdimc \f@size\p@
+   \@tempdimc \rubysize\@tempdimc
+   \sbox\z@{\vrule\@height.7\baselineskip\@depth\z@\@width\z@ #1}
+   \sbox\@tempboxa{\fontsize{\@tempdimc}{1.2\@tempdimc}\selectfont
+                   \vrule\@height\z@\@depth.3\baselineskip\@width\z@ #2}
+
+   % save width value of previous ruby (if applicable)
+   \@tempdimb\ruby@width
+
+   \global\ruby@width \wd\@tempboxa
+   \global\advance\ruby@width -\wd\z@
+   \ifdim\ruby@width > \z@
+     \global\divide\ruby@width \tw@
+   \else
+     \global\ruby@width \z@
+   \fi
+
+   % we first compute the box of the ruby with its base character(s).
+   \ifruby@overlap@
+     \setbox\@tempboxa \vbox{
+       \hbox to \wd0{\hss \box\@tempboxa \hss}
+       \nointerlineskip
+       \kern\rubysep
+       \box\z@}
+   \else
+     \ifdim\ruby@width > \z@
+       \@tempdima \wd\@tempboxa
+     \else
+       \@tempdima \wd\z@
+     \fi
+     \setbox\@tempboxa \vbox{
+       \hbox to \@tempdima{\hss \box\@tempboxa \hss}
+       \nointerlineskip
+       \kern\rubysep
+       \hbox to \@tempdima{\hss \box\z@ \hss}}
+   \fi
+
+   % are we at the beginning of a paragraph?
+   \ifvmode
+     \leavevmode
+     \ifruby@overlap@
+       \kern\ruby@width
+     \fi
+   \else
+
+     % has previous character a ruby with \ruby@width > 0?
+     \ifnum\lastkern = 5%        \ruby@kern
+       \kern\@tempdimb
+       \ifruby@CJK@
+         \nobreak
+         \CJKglue
+         \nobreak
+       \fi
+       \ifruby@overlap@
+         \kern\ruby@width
+       \fi
+     \else
+
+       \ifruby@CJK@
+
+         % is previous character an ordinary CJK character?
+         \ifnum\lastkern = \@ne%        \CJK@CJK
+           \ifdim\ruby@width > \z@
+             \nobreak
+             \CJKglue
+             \nobreak
+           \else
+             \CJKglue
+           \fi
+         \else
+
+           % is previous character a punctuation character?
+           \ifnum\lastkern = \tw@%      \CJK@kern
+             \nobreak
+             \CJKglue
+             \nobreak
+           \fi
+         \fi
+       \fi
+     \fi
+   \fi
+  
+   \box\@tempboxa
+
+   \ifdim\ruby@width > \z@
+     \ruby@kern
+     \ifruby@overlap@
+     \else
+       \global\ruby@width\z@
+     \fi
+   \else
+     \kern -1sp
+     \kern 1sp
+     \global\ruby@width\z@
+   \fi}
+
+  \ifruby@CJK@
+    \ignorespaces
+  \fi}
+
+
+% reset endline character.
+
+\endlinechar `\^^M
+
+\endinput

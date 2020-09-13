@@ -1,0 +1,425 @@
+How to make PDF files using CJK/LaTeX with embedded TrueType fonts
+
+Hin-Tak Leung <htl10@users.sourceforge.net>
+December 2003
+
+
+Introduction
+------------
+
+Existing CJK/LaTeX instruction for high-quality print-out tends to suggest
+permanently converting TrueType fonts (which had a better availability) to
+postscript sub-fonts; this document covers how to use TrueType fonts
+directly, and also preparing such PDF documents. Today, the PDF output
+format is slightly more popular than PostScript; also, even on US English
+systems, CJK font packs are available for font substitution in Adobe Acrobat
+Reader (and similar mechanisms exist for xpdf and ghostscript), which allows
+the generation of PDF files containing only important textual content but no
+embedded fonts. Such files are small enough to be e-mailed while preserving
+formatting, provided the recipient has the font packs installed. This
+document also covers the issues with no-embedded-font PDF files at the very
+end as well.
+
+The following steps are discussed below in greater detail:
+
+   1. Finding the fonts.
+   2. Getting and building some software: ttf2tfm, dvipdfmx.
+      Some other nice optional software: oto, the other freetype/freetype2
+      demo tools, ttfm, ttx.
+   3. Using ttf2tfm, generating *.tfm and *.enc files for each font.
+   4. Putting the fonts, the *.tfm files, and the *.enc files into the right
+      place in your system.
+   5. Configuring dvipdfmx to use the new fonts.
+   6. (optional) Configuring pdflatex to use the new fonts also.
+   7. Configuring CJK/LaTeX to use those fonts.
+   8. Testing.
+   9. Problems and tips.
+
+I can read both traditional and simplified Chinese, and a substantial amount
+of Japanese, but there isn't any Korean-specific info here. Hopefully this
+is useful enough as a starting point at least for Korean-related
+experiments.
+
+The two most important references during this venture was the FreeBSD
+(Taiwan) Chinese HOWTO (it is substantially better and more up-to-date than
+the GNU/Linux one), and Edward G. J. Lee's various treatises on the net,
+particularly his `mycjk' notes. Unfortunately both are available in Chinese
+only, I believe.
+
+
+1. Fonts
+========
+
+  Chinese
+  -------
+
+  Arphic donated 4 high-quality Chinese fonts to the open-source community:
+  two for traditional and two for simplified Chinese, respectively. They are
+  shipped with Redhat 9 (which I used for most of this work) and Debian 3
+  and possibly also other GNU/Linux distributions; they can be downloaded
+  from Arphic's home site and, probably more convenient, from
+
+    ftp://ftp.gnu.org/gnu/non-gnu/chinese-fonts-truetype/
+
+  and its mirrors. Tip: Use `unzip -L' to convert file names to lowercase.
+
+  Redhat 9 also ships zysong, a simplified Chinese font. This font seems to
+  be licensed to Redhat only since it isn't found in other GNU/Linux
+  distributions. It is part of the package "ttfonts-zh_CN-2.12-1.noarch.rpm",
+  together with the two Arphic simplified Chinese fonts, on the 3rd CD 
+  of the Redhat 9 CD set.
+
+  The Ministry of Education in Taiwan released a few fonts for
+  standardization: Currently two are available from the ministry's home page
+  (http://www.edu.tw/mandr/index.htm), but there are old versions with 
+  different type faces floating around in the net.
+
+  CwTeX (a Chinese-enabled LaTeX implementation in Taiwan) ships 5 fonts.
+  (http://ccms.ntu.edu.tw/~ntut019/cwtex/cwtex.html)
+
+  Still available is the set of 8 TrueType fonts from NTU which were widely
+  used previously for CJK/LaTeX documents (http://input.cpatch.org/font/ntu/).
+
+  There is also a set of 10 quite fancy and unusual fonts for traditional
+  Chinese, developed by Dr Hann-Tzong Wang 
+  (http://140.135.64.77/teacher/htwang/htwang.htm). It is distributed as
+  one of the standard font sets for FreeBSD Taiwan.
+  (http://www.freebsd.org/cgi/pds.cgi?ports/chinese/wangttf).
+
+  Japanese
+  --------
+
+  Redhat 9 and SuSE both ship the Kochi Gothic and Mincho fonts; Debian
+  ships Watanabe Mincho and Wadalab Gothic as part of the XTT TrueType font
+  server. The packages are: "ttfonts-ja-1.2-21.noarch.rpm" on the 3rd disc 
+  of the Redhat 9 CD set, "ttf-kochi-mincho-0.2.20020727-81.noarch.rpm" and 
+  "ttf-kochi-gothic-0.2.20030118-17.noarch.rpm" on SuSe 8.2, 
+  "xtt-fonts" for Debian systems.
+
+  Other source of fonts (e.g. Win2k/WinXP/Win2k3 ships a few as standard,
+  and also localized version of MS Office, etc.) are mostly proprietary.
+
+  These instructions are known to work on those also, but I don't want to
+  go into specific details...
+
+
+2. ttf2tfm and dvipdfmx
+=======================
+
+  The specific details about compiler switches, include paths, are for
+  the Redhat 9 distribution. You may have to adapt them.
+
+  ttf2tfm
+  -------
+
+  ttf2tfm is part of ttf2pk package which is itself part of
+  freetype-contrib, a suite of programs depending on the FreeType 1 library.
+  Most GNU/Linux systems ship both FreeType 2 and FreeType 1 (that's the
+  case for RH9, in fact), which are *not* compatible. So I decided to build
+  the latest FreeType 1 static version and made freetype-contrib depend on
+  that to avoid using the out-dated library shipped with my system. The
+  mentioned packages can be downloaded from ftp.freetype.org.
+
+  Unpack freetype-current (adapt the `/home/hleung' part to suit yourself),
+  then do
+
+    cd /home/hleung/freetype-current
+    ./configure  --enable-static --disable-shared --prefix=/home/hleung
+    make
+
+  Now unpack freetype-contrib-current inside the freetype-current tree, then
+  do
+
+    cd freetype-contrib-current/ttf2pk
+    CFLAGS=-I../../lib/ LDFLAGS=-L../../lib/.libs ./configure \
+      --with-kpathsea-lib=/usr/lib --with-kpathsea-include=/usr/include
+    make
+    make install
+
+  Important: At the end, you need to manually copy the data/*.sfd files into
+  ${TEXMF}/ttf2tfm and also ${TEXMF}/ttf2pk (a soft link from
+  ${TEXMF}/ttf2tfm to ${TEXMF}/ttf2pk will do also).
+
+  [The recent TeX directory structure (TDS), version 1.1, comes with a new
+   subdirectory fonts/sfd, to be accessed with the kpathsea variable
+   $SFDFONTS. ttf2tfm and other programs available in the TeXLive
+   distribution have already been updated to use it.]
+
+  The man pages of ttf2tfm and ttf2pk give detailed explanation of all
+  command line arguments.
+
+  Tip: I find a utility called "checkinstall" quite useful. Instead of `make
+  install' one calls `checkinstall' which does the same as `make install'
+  but also integrates the data nicely into the package management system for
+  Redhat/Debian/Slackware; this gives cleaner upgrades and uninstalls.
+
+  dvipdfmx
+  --------
+
+  http://project.ktug.or.kr/dvipdfmx/
+
+  For dvipdfmx I use
+
+    CFLAGS='-I/usr/kerberos/include -O2 -march=i386 -mcpu=i686' ./configure
+    make
+    make install
+
+  The include path is due to dependency on the kerberos library for PDF
+  encryption. Important: The 10 Wang fonts have some peculiarities; I
+  submitted a preliminary patch which the author has much refined and
+  incoporated into a new release. You need a version newer than 2003-08-11
+  if you want to use this set of fonts. From the ChangLog of dvipdfmx:
+
+    2003-08-11  Jin-Hwan Cho <chofchof@ktug.or.kr>
+        * A faked font name was used for TrueType fonts without any PS
+          font name as suggested by Hin-Tak Leung.
+
+  [The recent TeX directory structure (TDS), version 1.1, comes with a new
+   subdirectory fonts/sfd, to be accessed with the kpathsea variable
+   $SFDFONTS. dvipdfmx and other programs available in the TeXLive
+   distribution have already been updated to use it.]
+
+
+3. Generating ttf and enc files
+===============================
+
+  OpenType Organizer (oto) : http://sourceforge.net/projects/oto/
+  True Type Font Manager (ttfm): 
+     - part of Chinese GNU/Linux Extention http://cle.linux.org.tw/
+
+  You need to know what cmap (character map) the TrueType font (*.ttf or
+  *.ttc) contains. The utility programs oto, ftdump (two versions! --
+  FreeType 1 and FreeType 2 both have this demo program, showing quite
+  different information), and ttfinfo (part of ttfm) can show this info, and
+  some other information about your font as well. Only ftdump works on
+  TrueType collections (*.ttc), but the other two have their strengths also
+  (ttfinfo gives the most straightforward info, while oto gives some details
+  that ftdump doesn't show).
+
+  For detailed information on cmaps in a font you can use ttx, a tool to
+  assemble and disassemble OpenType fonts. It is available from
+  http://fonttools.sf.net.
+
+  If there is a Unicode cmap you can use ttf2tfm's `U*.sfd' files (see the
+  `@...@' argument for ttf2tfm); the command line for ttf2tfm is simpler
+  also. Otherwise you need to specify the platform (-P) and encoding (-E)
+  IDs.
+
+  Here is what works for me for the fonts I mentioned. Important: The font
+  stem name needs to be unique. Additionally, dvipdfmx doesn't like numbers
+  in the font stem name. I use a 4-letter combination. By LaTeX convention
+  it shouldn't be longer than 5 letters.
+
+    ttf2tfm bkai00mp.ttf -q -w bkai@UBig5@
+    ttf2tfm bsmi00lp.ttf -q -w bsmi@UBig5@
+    ttf2tfm gbsn00lp.ttf -q -w gbsn@UGB@
+    ttf2tfm gkai00mp.ttf -q -w gkai@UGB@
+
+    ttf2tfm zysong.ttf -q -w zysg@UGB@
+
+    ttf2tfm kai-linux.ttf -P 3 -E 4 -q -w mekl@Big5@
+    ttf2tfm edustd-15.ttf -P 3 -E 4 -q -w mest@Big5@
+    ttf2tfm moe_kai.ttf   -P 3 -E 4 -q -w meko@Big5@
+    ttf2tfm moe_sung.ttf  -P 3 -E 4 -q -w meso@Big5@
+
+    ttf2tfm ntu_li_m.ttf  -P 3 -E 4 -q -w ntli@Big5@
+    ttf2tfm ntu_br.ttf    -P 3 -E 4 -q -w ntbr@Big5@
+    ttf2tfm ntu_fs_m.ttf  -P 3 -E 4 -q -w ntfs@Big5@
+    ttf2tfm ntu_kai.ttf   -P 3 -E 4 -q -w ntka@Big5@
+    ttf2tfm ntu_mb.ttf    -P 3 -E 4 -q -w ntmb@Big5@
+    ttf2tfm ntu_mm.ttf    -P 3 -E 4 -q -w ntmm@Big5@
+    ttf2tfm ntu_mr.ttf    -P 3 -E 4 -q -w ntmr@Big5@
+    ttf2tfm ntu_tw.ttf    -P 3 -E 4 -q -w nttw@Big5@
+
+    ttf2tfm mttf.ttf  -q -w cwtm@UBig5@
+    ttf2tfm kttf.ttf  -q -w cwtk@UBig5@
+    ttf2tfm fttf.ttf  -q -w cwtf@UBig5@
+    ttf2tfm bbttf.ttf -q -w cwtb@UBig5@
+    ttf2tfm rttf.ttf  -q -w cwtr@UBig5@
+
+    ttf2tfm kochi-gothic.ttf -w kcgt@UJIS@
+    ttf2tfm kochi-mincho.ttf -w kcmc@UJIS@
+
+    ttf2tfm wadalab-gothic.ttf  -P 3 -E 2 -w wdgt@SJIS@
+    ttf2tfm watanabe-mincho.ttf -P 3 -E 2 -w wnmc@SJIS@
+
+    The Wang's font set has some unusual properties, and need either
+    a new version of freetype 1 (after 2003-10 from CVS), or a slightly
+    modified "Big5.sfd", called "wcl.sfd" here:
+
+    ttf2tfm wcl-01.ttf -P 3 -E 4 -q -w wclj@wcl@
+    ttf2tfm wcl-02.ttf -P 3 -E 4 -q -w wclk@wcl@
+    ttf2tfm wcl-03.ttf -P 3 -E 4 -q -w wcll@wcl@
+    ttf2tfm wcl-04.ttf -P 3 -E 4 -q -w wclm@wcl@
+    ttf2tfm wcl-05.ttf -P 3 -E 4 -q -w wcln@wcl@
+    ttf2tfm wcl-06.ttf -P 3 -E 4 -q -w wclp@wcl@
+    ttf2tfm wcl-07.ttf -P 3 -E 4 -q -w wclq@wcl@
+    ttf2tfm wcl-08.ttf -P 3 -E 4 -q -w wclr@wcl@
+    ttf2tfm wcl-09.ttf -P 3 -E 4 -q -w wcls@wcl@
+    ttf2tfm wcl-10.ttf -P 3 -E 4 -q -w wclt@wcl@
+
+  As an example, here is what I do for a well-known proprietary simplified
+  Chinese font which has only a cmap for simplified Chinese:
+
+    ttf2tfm gkai00m.ttf -P 3 -E 3 -q -w gkaim@EUC@
+
+  Here an example for a TrueType collection:
+
+    ttf2tfm dcai5.ttc -q -w dcaiq@UJIS@
+
+
+4. Putting the files where they should be
+=========================================
+
+  This is somewhat related to how kpathsea works and how latex (the program)
+  find its files. It is possible to set individual environment variables for
+  each of these items, but it is easier to set one: $TEXMF to a list of 
+  locations, with a tree parallel to the system tree. Then do the following:
+
+  . Put the *.tfm files into a subdirectory of ${TEXMF}/fonts/tfm.
+  . Put the *.enc files into a subdirectory of ${TEXMF}/dvips.
+  . Put the *.ttf (or *.ttc) files into a subdirectory of
+    ${TEXMF}/fonts/truetype.
+  . Put the *.sfd files into ${TEXMF}/ttf2tfm or a subdirectory of it.
+    Don't forget to either copy them into ${TEXMF}/ttf2pk also or to set up
+    a link from ${TEXMF}/ttf2pk to ${TEXMF}/ttf2tfm.
+
+    Reason: dvipdfmx searches SFD files (which it needs for reassembling)
+    under ${TEXMF}/ttf2pk although we don't use ttf2pk anywhere. ttf2tfm
+    looks for them under its own name, of course.
+
+    [The recent TeX directory structure (TDS), version 1.1, comes with a new
+     subdirectory fonts/sfd, to be accessed with the kpathsea variable
+     $SFDFONTS. dvipdfmx and other programs available in the TeXLive
+     distribution have already been updated to use it.]
+
+  Important: Run texhash (mktexlsr) to rebuild the kpathsea database,
+  otherwise files won't be found. You have been warned!
+
+
+5., 6. Configuring dvipdfmx and (optionally) pdflatex
+=====================================================
+
+  cid-x.map, dvipdfmx.cfg, *.map
+
+  See for example, my own "cid-x.map" for the main font config file of 
+  dvipdfmx -- all my own customization is at the very end after the line 
+  "Hin-Tak Leung's custom setup below:". For each font xxxx, one needs 
+  to add a line "f xxxx.map" into "dvipdfmx.cfg", and a fontmap 
+  file "xxxx.map" into the dvipdfmx config directory --
+  ${TEXMF}/dvipdfm/config/ on my system (the missing
+  "x" is not a typo, as dvipdfmx originally derived from dvipdfm).
+  I have included cwbt.map, for one of the CwTeX fonts, as an example,
+  and my dvipdfmx.cfg as well.
+  
+  Because I have a fair number of fonts I like to add, I wrote a little
+  perl script "gen-map.pl", which generates all the *.map files plus
+  a file called "map.list" which I can simply append to dvipdfmx.cfg,
+  from an internal table at the very top of the script.
+    
+  pdflatex needs the same fontmap files for each new font - copy them into 
+  ${TEXMF}/dvips/config/. Modify the updmap script which is used for 
+  updating both pdflatex.cfg and dvips.cfg, and run the updmap script. 
+  On teTeX 1.0.x, one needs to add to the "extra_modules=" entry the 
+  *.map files for each font. My modified updmap is included as an 
+  example "updmap.my", found as "/usr/share/texmf/dvips/config/updmap" on
+  a RH 9 system. On teTeX 2.0.x, updmap has a separate config file
+  updmap.cfg located in ${TEXMF}/web2c/.
+
+
+7. Configuring CJK/LaTeX
+========================
+
+  Copy the whole `texinput' directory of the CJK package into a directory
+  which is in your $TEXINPUTS path. Also create some new *.fd files there.
+  My "c00cwtb.fd" is included as an example; again, since I have quite
+  a few font files, I have created some template fd files as c*tmpl.fd,
+  and duplicating and change every "tmpl" string to "cwtb" inside 
+  as needed like this:
+    cp c00tmpl.fd c00cxtb.fd
+    perl -pi -e "s/tmpl/cwtb/;" c00cwtb.fd
+
+  If you use Big5 or Shift-JIS encoding, compile the bg5conv and 
+  sjisconv utilities; under Unix-like systems you can use the bg5pdflatex
+  and sjispdflatex scripts to access them conveniently.
+
+
+8. Testing
+==========
+
+   Just pick the relevant files in the CJK/examples directory and change the
+   font name to match. Either call pdflatex or call latex followed by
+   dvipdfmx. In general, I found that dvipdfmx generates much smaller files
+   (1/3 to 1/2 size).
+
+
+9. Problems
+===========
+
+  a. files can't be found
+
+    This is the most frequent problem. Setting the environment variable
+    KPATHSEA_DEBUG to -1 activates full debugging; you can then check
+    how latex/dvipdfmx/pdflatex tries to find those files. See the
+    kpathsea info pages for more details on debugging output.
+
+    For latex (the program) you only need the new custom-made *.fd files,
+    the files from CJK/texinput, and the tfm files. The *.fd files could be
+    broken -- check their contents. latex (the program) neither needs the
+    *.enc files nor the font files themselves.
+
+    If latex (the program) works, but dvipdfmx doesn't, then your dvipdfmx
+    configuration probably needs some tuning. Alternatively, the map files
+    or the font files are not found, etc. Note that dvipdfmx neither needs
+    the tfm files, nor the CJK/LaTeX input files, but it does need the 
+    enc files.
+
+    pdflatex does everything in one step, so everything needs to be in the
+    right place.
+
+  b. Acrobat on GNU/Linux doesn't print PDF files generated with dvipdfmx
+
+    The problem is probably caused by ghostscript version 7.x which chokes
+    on the intermediate postscript file under some command options.
+    Upgrading to ghostscript 8.x should fix this printfilter problem. It is
+    *strongly* recommended to use ghostscript 8.11 or newer due to severe
+    problems with earlier versions.
+
+  c. no-font-embedded PDF files
+
+    This is quite simple to do with dvipdfmx: Just put an extra `!'
+    (exclamation mark) in the dvipdfmx configuration file in front of the
+    font which shouldn't be embedded.
+
+    A problem can arise if the PDF reader is not able to find a proper
+    substitution font if the font specified in the document isn't available.
+    I did some investigation and had a long discussion with the author of
+    dvipdfmx about this. Basically, it seems that win32 Acrobat Reader 6.x
+    will substitute any missing fonts with fonts from the Adobe CJK font
+    packs or from the system. Acrobat reader 5.x for GNU/Linux will only do
+    so -- and only with fonts from the CJK packs, not from the X server --
+    if the font name is one of the well-known ones for that region: 
+    SimHei, SimSun (found on most MS Windows boxes), and some fonts of Arphic 
+    and Dynafont which are very popular in the far east. Otherwise, 
+    it aborts with an error message.
+
+    Besides the proprietary fonts mentioned in the last paragraph, only
+    Wang's fonts can be configured currently to be not embedded so that
+    acroread on GNU/Linux accepts them. I have spent much time looking 
+    into this issue and apparently Acroread on GNU/Linux seems to do 
+    font substitutions by looking at the capital letters in the font name.
+    Due to the missing PS name of the Wang's fonts (and our dvipdfmx 
+    work-around on 2003-08-11 using the file name -- happened to be all 
+    lowercase -- as the missing font name), they work by luck.
+
+    Both xpdf and ghostscript will substitute any missing fonts with a
+    specific font per language, if suitably configured. On Redhat 9, the
+    heavily adapted ghostscript will substitute automatically if some named
+    fonts from the CD are installed (without any extra effort); for xpdf it
+    is an extra few lines of configuration in ${HOME}/.xpdfrc to tell it
+    what font to use from the X server for substituting a missing font for a
+    particular language. So ghostscript works out of the box for a full RH
+    installation, whereas xpdf doesn't, but xpdf is more configurable and
+    the setting of what fall-back font to use can differ per user.
+
+---End of HOWTO.txt---

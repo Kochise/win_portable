@@ -1,0 +1,89 @@
+% This is the file thaicjk.ldf of the CJK package
+%   for handling Thai.
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+%
+%
+% It is based on a similar file of the thailatex package, written
+% by Surapant Meknavin <surapan@nectec.or.th> with modifications by
+% Theppitak Karoonboonyanan <thep@links.nectec.or.th>.
+
+\ProvidesLanguage{thaicjk}
+        [CJK 4.8.4 Thai support for the babel system]
+
+\LdfInit{thaicjk}{captionsthaicjk}
+
+\ifx\l@thaicjk\@undefined
+  \adddialect\l@thaicjk0
+\fi
+
+\addto\captionsthaicjk{%
+  \def\prefacename{บทนำ}%
+  \def\refname{หนังสืออ้างอิง}%
+  \def\abstractname{บทคัดย่อ}%
+  \def\bibname{บรรณานุกรม}%
+  \def\chaptername{บทที่}%
+  \def\appendixname{ภาคผนวก}%
+  \def\contentsname{สารบัญ}%
+  \def\listfigurename{สารบัญรูป}%
+  \def\listtablename{สารบัญตาราง}%
+  \def\indexname{ดรรชนี}%
+  \def\figurename{รูปที่}%
+  \def\tablename{ตารางที่}%
+  \def\partname{ภาค}%
+  \def\enclname{สิ่งที่แนบมาด้วย}%
+  \def\ccname{สำเนาถึง}%
+  \def\headtoname{เรียน}%
+  \def\pagename{หน้า}%
+  \def\seename{ดู}%
+  \def\alsoname{ดูเพิ่มเติม}%
+  \def\proofname{พิสูจน์}%
+  }
+
+\def\th@month{%
+  \ifcase\month\or
+    มกราคม\or
+    กุมภาพันธ์\or
+    มีนาคม\or
+    เมษายน\or
+    พฤษภาคม\or
+    มิถุนายน\or
+    กรกฎาคม\or
+    สิงหาคม\or
+    กันยายน\or
+    ตุลาคม\or
+    พฤศจิกายน\or
+    ธันวาคม\fi}
+\newcount\th@year
+\th@year=\year
+\advance\th@year by 543
+\def\datethaicjk{%
+  \def\today{\number\day \space \th@month\space พ.ศ.~\number\th@year}}
+
+\addto\extrasthaicjk{\bbl@frenchspacing}
+\addto\noextrasthaicjk{\bbl@nonfrenchspacing}
+
+\addto\extrasthaicjk{\renewcommand{\baselinestretch}{1.2}}
+\addto\noextrasthaicjk{\renewcommand{\baselinestretch}{1}}
+
+\def\fnum@figure{\figurename\nobreakspace\thefigure}
+\def\fnum@table{\tablename\nobreakspace\thetable}
+
+\InputIfFileExists{c90enc.def}{%
+  \message{Loading definitions for the Thai C90 font encoding}}{%
+  \errhelp{I can't find file `c90enc.def' for Thai fonts}%
+  \errmessage{Since I do not know what the C90 encoding means^^J
+    I can't typeset Thai.^^J
+    I stop here, while you get a suitable c90enc.def file}\@@end
+ }
+
+\ldf@finish{thaicjk}
+
+\endinput
+
+%%% Local Variables:
+%%% coding: tis-620
+%%% mode: latex
+%%% End:

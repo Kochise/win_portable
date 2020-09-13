@@ -1,5 +1,6 @@
-%% xetex.def Copyright (C) 2005-2017 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
-%%                                      (with contributions from many others)
+%% xetex.def
+%% Copyright (C) 2005-2020 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
+%%                         (with contributions from many others)
 %%
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3c
@@ -16,7 +17,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{xetex.def}
-  [2017/06/24 v5.0h Graphics/color driver for xetex]
+  [2020/08/26 v5.0i Graphics/color driver for xetex]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -83,7 +84,8 @@
         background \current@color}}
 \def\define@color@named#1#2{%
   \expandafter\let\csname col@#1\endcsname\@nnil}
-      \def\no@page@color{\special{background \string"newpath clip}}
+% white is special cased as "no bacground color" by dvipdfmx
+\def\no@page@color{\special{background gray 1}}
 \@ifundefined{Gin@decode}
   {\let\Gin@decode\@empty}
   {}

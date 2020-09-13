@@ -1,0 +1,108 @@
+%%
+%% This is file `bidi-perpage.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,bidi-perpage.sty')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bidi-perpage}[2018/10/04 v0.4 Reset counter(s) on every page]
+\newcount\bidi@page@count
+\bidi@page@count\@ne
+\newcommand*{\ResetCounterPerPage}[2][\z@]{%
+  \if@bidi@csundef{bidi@stepcounterhook@@#2}{%
+    \expandafter\gdef\csname bidi@stepcounterhook@@#2\endcsname{}%
+  }{}%
+  \if@bidi@csundef{if@bidi@reset@#2@rerun}{%
+    \expandafter\newif\csname if@bidi@reset@#2@rerun\endcsname
+  }{}%
+  \if@bidi@csundef{bidi@#2@count}{%
+    \expandafter\newcount\csname bidi@#2@count\endcsname
+  }{}%
+  \csname bidi@#2@count\endcsname\z@
+  \if@bidi@csundef{bidi@previous@page@@#2@count}{%
+    \expandafter\newcount\csname
+    bidi@previous@page@@#2@count\endcsname
+  }{}%
+  \csname bidi@previous@page@@#2@count\endcsname\z@
+  \if@bidi@csundef{bidi@reset@#2@perpage}{%
+    \bidi@AfterEndDocumentCheckLabelsRerun{%
+      \csname if@bidi@reset@#2@rerun\endcsname
+        \PackageWarningNoLine{bidi-perpage}{%
+          Counter `#2' may not have been reset per page.
+          Rerun to reset counter `#2' per page%
+        }%
+      \fi
+    }%
+  }{}%
+  \expandafter\gdef\csname bidi@reset@#2@perpage\endcsname{%
+    \global\advance\csname bidi@#2@count\endcsname\@ne
+    \if@filesw
+      \edef\@tempa{%
+        \write\@auxout{%
+          \string\bidi@counter@page{#2}%
+          {\number\csname bidi@#2@count\endcsname}%
+          {\noexpand\number\noexpand\bidi@page@count}%
+        }%
+      }%
+      \@tempa
+    \fi
+  \begingroup\expandafter\expandafter\expandafter\endgroup
+  \expandafter\ifx\csname bidi@#2@@\number\csname
+  bidi@#2@count\endcsname\endcsname\relax
+    \global\csname @bidi@reset@#2@reruntrue\endcsname
+  \else
+    \global\csname @bidi@reset@#2@rerunfalse\endcsname
+    \expandafter\@tempcnta\csname bidi@#2@@\number
+    \csname bidi@#2@count\endcsname\endcsname\relax
+    \ifnum\@tempcnta=\csname
+    bidi@previous@page@@#2@count\endcsname
+    \else
+      \global\csname
+      bidi@previous@page@@#2@count\endcsname\@tempcnta
+      \global\csname c@#2\endcsname#1\relax
+    \fi
+  \fi
+  }%
+  \expandafter\bidi@gappto\csname
+  bidi@stepcounterhook@@#2\endcsname{%
+    \csname bidi@reset@#2@perpage\endcsname
+  }%
+}
+\def\bidi@counter@page#1#2#3{\bidi@namegdef{bidi@#1@@#2}{#3}}
+\bidi@AtEndOutputPage{%
+  \global\advance\bidi@page@count\@ne
+}
+\endinput
+%%
+%% End of file `bidi-perpage.sty'.

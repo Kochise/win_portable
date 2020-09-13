@@ -1,0 +1,330 @@
+%%
+%% This is file `scrlayer-fancyhdr.sty',
+%% generated with the docstrip utility, extended by scrdocstrip.
+%%
+%% The original source files were:
+%%
+%% scrlayer-fancyhdr.dtx  (with options: `interface,trace,fancyhdr,identify')
+%% scrlayer.dtx  (with options: `interface,trace,fancyhdr,init')
+%% scrlayer-fancyhdr.dtx  (with options: `interface,trace,fancyhdr,init')
+%% scrlayer.dtx  (with options: `interface,trace,fancyhdr,options')
+%% scrlayer-fancyhdr.dtx  (with options: `interface,trace,fancyhdr,options')
+%% scrlayer.dtx  (with options: `interface,trace,fancyhdr,body')
+%% scrlayer-fancyhdr.dtx  (with options: `interface,trace,fancyhdr,body')
+%% scrlogo.dtx  (with options: `logo')
+%% 
+%% Copyright (c) 2018-2019 Markus Kohm [komascript at gmx info]
+%% 
+%% This file was generated from file(s) of the KOMA-Script bundle.
+%% ---------------------------------------------------------------
+%% 
+%% It may be distributed under the conditions of the
+%% LaTeX Project Public License in the version distributed together
+%% with KOMA-Script, see file `lppl.txt' or `lppl-de.txt'.
+%% 
+%% This file may only be distributed together with a copy of the
+%% KOMA-Script bundle.  You may however distribute the
+%% KOMA-Script bundle without all such generated files.  See also
+%% `lppl.txt' or `lppl-de.txt' for additional information.
+%% 
+%% The list of files belonging to KOMA-Script distribution is given in
+%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% additional information.
+%% 
+%% If this file is a beta version, you may not be allowed to distribute
+%% it.  Look at the comments below to see if this is the case.
+%% 
+%% English and German manuals are part of KOMA-Script bundle.
+%% ----------------------------------------------------------
+%% 
+%% See `README'.
+%% 
+%% The KOMA-Script bundle (but maybe not this file) was based upon the
+%% LaTeX 2.09 Script family created by Frank Neukam 1993 and the LaTeX2e
+%% standard classes created by The LaTeX3 Project 1994-1996.  You can
+%% find a complete unmodified copy of LaTeX2e at
+%% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
+%% 
+%%% From File: $Id: scrlayer-fancyhdr.dtx 3138 2019-04-04 06:24:53Z kohm $
+%%%            (run: identify)
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{scrlayer-fancyhdr}[%
+  2018/05/03 v0.1.3138 ALPHA KOMA-Script 
+  package
+  (end user interface for scrlayer)]
+\PackageWarningNoLine{scrlayer-fancyhdr}{%
+  THIS IS AN ALPHA VERSION OF AN\MessageBreak
+  EXPERIMENTAL PACKAGE!\MessageBreak
+  YOU SHOULD NOT USE THIS PACKAGE FOR\MessageBreak
+  ANYTHING ELSE BUT TESTING%
+}
+%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%%            (run: init)
+\RequirePackage{scrlayer}
+\scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
+  \AtEndOfPackage{\let\scrlayer@AtEndOfPackage\@firstofone}%
+}{%
+  \ifx\scrlayer@AtEndOfPackage\@firstofone
+    \AtEndOfPackage{\let\scrlayer@AtEndOfPackage\@firstofone}%
+  \fi
+}
+\let\scrlayer@AtEndOfPackage\AtEndOfPackage
+\scrlayerInitInterface
+%%% From File: $Id: scrlayer-fancyhdr.dtx 3138 2019-04-04 06:24:53Z kohm $
+%%%            (run: init)
+%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%%            (run: options)
+\KOMA@key{markcase}{%
+  \begingroup
+    \KOMA@set@ncmdkey{markcase}{reserved@a}{%
+      {upper}{0},{lower}{1},{used}{2},%
+      {ignoreuppercase}{3},{nouppercase}{3},%
+      {ignoreupper}{3},{noupper}{3}%
+    }{#1}%
+    \ifx\FamilyKeyState\FamilyKeyStateProcessed
+      \aftergroup\FamilyKeyStateProcessed
+      \ifnum \reserved@a>\m@ne
+        \aftergroup\let\aftergroup\MakeMarkcase
+        \ifcase \reserved@a
+          \aftergroup\MakeUppercase
+          \aftergroup\scrlayer@forceignoreuppercasefalse
+        \or
+          \aftergroup\MakeLowercase
+          \aftergroup\scrlayer@forceignoreuppercasefalse
+        \or
+          \aftergroup\@firstofone
+          \aftergroup\scrlayer@forceignoreuppercasefalse
+        \else
+          \aftergroup\scrlayer@ignoreuppercase
+          \aftergroup\scrlayer@forceignoreuppercasetrue
+        \fi
+      \fi
+    \else
+      \aftergroup\FamilyKeyStateUnknownValue
+    \fi
+  \endgroup
+  \ifx\FamilyKeyState\FamilyKeyStateProcessed
+    \KOMA@kav@removekey{.scrlayer.sty}{markcase}%
+    \KOMA@kav@xadd{.scrlayer.sty}{markcase}{#1}%
+  \fi
+}
+\KOMA@key{autooneside}[true]{%
+  \KOMA@set@ifkey{autooneside}{scrlayer@autooneside}{#1}%
+  \KOMA@kav@replacebool{.scrlayer.sty}{autooneside}{scrlayer@autooneside}%
+}
+\KOMA@key{automark}[]{%
+  \scrlayer@testunexpectedarg{automark}{#1}%
+  \scrlayer@AtEndOfPackage{%
+    \if@chapter
+      \scr@ifundefinedorrelax{section}{%
+        \automark{chapter}%
+      }{%
+        \automark[section]{chapter}%
+      }%
+    \else
+      \scr@ifundefinedorrelax{section}{%
+        \automark{}%
+      }{%
+        \scr@ifundefinedorrelax{subsection}{%
+          \automark{section}%
+        }{%
+          \automark[subsection]{section}%
+        }
+      }%
+    \fi
+  }%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@removekey{.scrlayer.sty}{automark}%
+  \KOMA@kav@removekey{.scrlayer.sty}{manualmark}%
+  \KOMA@kav@add{.scrlayer.sty}{automark}{}%
+}
+\KOMA@key{manualmark}[]{%
+  \scrlayer@testunexpectedarg{manualmark}{#1}%
+  \scrlayer@AtEndOfPackage{\manualmark}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@removekey{.scrlayer.sty}{automark}%
+  \KOMA@kav@removekey{.scrlayer.sty}{manualmark}%
+  \KOMA@kav@add{.scrlayer.sty}{manualmark}{}%
+}
+\KOMA@key{onpsselect}{%
+  \l@addto@macro{\@ps@initialhook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsselect}{#1}%
+}
+\KOMA@key{onpsinit}{%
+  \l@addto@macro{\@ps@hook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsinit}{#1}%
+}
+\KOMA@key{onpsoneside}{%
+  \l@addto@macro{\@ps@onesidehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsoneside}{#1}%
+}
+\KOMA@key{onpstwoside}{%
+  \l@addto@macro{\@ps@twosidehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpstwoside}{#1}%
+}
+\KOMA@key{onpsoddpage}{%
+  \l@addto@macro{\@ps@oddpagehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsoddpage}{#1}%
+}
+\KOMA@key{onpsevenpage}{%
+  \l@addto@macro{\@ps@evenpagehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsevenpage}{#1}%
+}
+\KOMA@key{onpsfloatpage}{%
+  \l@addto@macro{\@ps@floatpagehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsfloatpage}{#1}%
+}
+\KOMA@key{onpsnonfloatpage}{%
+  \l@addto@macro{\@ps@nonfloatpagehook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsnonfloatpage}{#1}%
+}
+\KOMA@key{onpsbackground}{%
+  \l@addto@macro{\@ps@backgroundhook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsbackground}{#1}%
+}
+\KOMA@key{onpsforeground}{%
+  \l@addto@macro{\@ps@foregroundhook}{#1}%
+  \FamilyKeyStateProcessed
+  \KOMA@kav@add{.scrlayer.sty}{onpsforeground}{#1}%
+}
+\KOMA@ifkey{singlespacing}{@ps@singlespacing}
+\KOMA@key{deactivatepagestylelayers}[true]{%
+  \KOMA@set@ifkey{deactivatepagestylelayers}{scrlayer@deactivate@layers}{#1}%
+  \KOMA@kav@replacebool{.scrlayer.sty}{deactivatepagestylelayers}
+                       {scrlayer@deactivate@layers}%
+}
+\KOMA@key{draft}[true]{%
+  \KOMA@set@ifkey{draft}{scrlayer@draft}{#1}%
+  \KOMA@kav@replacebool{.scrlayer.sty}{draft}{scrlayer@draft}%
+}
+\KOMA@key{forceoverwrite}[true]{%
+  \KOMA@set@ifkey{forceoverwrite}{scrlayer@forceoverwrite}{#1}%
+  \KOMA@kav@replacebool{.scrlayer.sty}{forceoverwrite}{scrlayer@forceoverwrite}%
+}
+\KOMA@key{autoremoveinterfaces}[true]{%
+  \KOMA@set@ifkey{autoremoveinterfaces}{scrlayer@autoremoveinterfaces}{#1}%
+  \KOMA@kav@replacebool{.scrlayer.sty}{autoremoveinterfaces}
+                       {scrlayer@autoremoveinterfaces}%
+}
+%%% From File: $Id: scrlayer-fancyhdr.dtx 3138 2019-04-04 06:24:53Z kohm $
+%%%            (run: options)
+%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%%            (run: body)
+\KOMAProcessOptions\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @markcase\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @autooneside\endcsname\relax
+\expandafter\let\csname KV@KOMA.\@currname.\@currext @automark\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @automark@default\endcsname\relax
+\expandafter\let\csname KV@KOMA.\@currname.\@currext @manualmark\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @manualmark@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsselect\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsselect@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsinit\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsinit@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsoneside\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsoneside@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpstwoside\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpstwoside@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsoddpage\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsoddpage@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsevenpage\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsevenpage@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsfloatpage\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsfloatpage@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsnonfloatpage\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsnonfloatpage@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsbackground\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsbackground@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsforeground\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @onpsforeground@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @deactivatepagestylelayers\endcsname
+  \relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @deactivatepagestylelayers@default\endcsname
+  \relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @draft\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @draft@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @forceoverwrite\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @forceoverwrite@default\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces\endcsname\relax
+\expandafter\let
+  \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces@default\endcsname
+  \relax
+%%% From File: $Id: scrlayer-fancyhdr.dtx 3138 2019-04-04 06:24:53Z kohm $
+%%%            (run: body)
+\RequirePackage{fancyhdr}
+\DeclareNewLayer[%
+  background,oddpage,
+  head,
+  contents={\hb@xt@ \layerwidth{%
+      \f@nch@head\f@nch@Oolh\f@nch@olh\f@nch@och\f@nch@orh\f@nch@Oorh}}
+]{fancy.head.odd}
+\DeclareNewLayer[%
+  background,evenpage,
+  head,
+  contents={\hb@xt@ \layerwidth{%
+      \f@nch@head\f@nch@Oelh\f@nch@elh\f@nch@ech\f@nch@erh\f@nch@Oerh}}
+]{fancy.head.even}
+\DeclareNewLayer[%
+  foreground,oddpage,
+  foot,
+  contents={\hb@xt@ \layerwidth{%
+      \f@nch@foot\f@nch@Oolf\f@nch@olf\f@nch@ocf\f@nch@orf\f@nch@Oorf}}
+]{fancy.foot.odd}
+\DeclareNewLayer[%
+  foreground,evenpage,
+  foot,
+  contents={\hb@xt@ \layerwidth{%
+      \f@nch@foot\f@nch@Oelf\f@nch@elf\f@nch@ecf\f@nch@erf\f@nch@Oerf}}
+]{fancy.foot.even}
+\DeclarePageStyleByLayers[
+  onselect={\def\@mkboth{\protect\markboth}},
+]{@fancy}{%
+  fancy.head.odd,fancy.head.even,fancy.foot.odd,fancy.foot.even
+}
+%%% From File: $Id: scrlogo.dtx 2640 2017-05-08 09:36:55Z kohm $
+\@ifundefined{KOMAScript}{%
+  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
+      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+\endinput
+%%
+%% End of file `scrlayer-fancyhdr.sty'.

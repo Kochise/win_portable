@@ -1,4 +1,4 @@
-## Babel 3.47
+## Babel 3.48
 
 This package manages culturally-determined typographical (and other)
 rules, and hyphenation patterns for a wide range of languages.  Many
@@ -7,9 +7,9 @@ lualatex out of the box.  A few even work with plain formats.
 
 The latest stable version is available on <https://ctan.org/pkg/babel>.
 
-Changes in version 3.47 are described in:
+Changes in version 3.48 are described in:
 
-https://github.com/latex3/babel/wiki/What's-new-in-babel-3.47
+https://github.com/latex3/babel/wiki/What's-new-in-babel-3.48
 
 Included is a set of ini files for about 200 languages. 
 
@@ -44,6 +44,16 @@ respective authors.
 ### Latest changes
 
 ```
+3.48   2020-09-01
+       - New (tentative) tools to customize some labels (like chapters
+         in CJK and Hungarian). 
+       - Warning instead of error if neither 0 nor ZERO WIDTH SPACE is
+         found in some Southeast Asian languages.
+       - Fixes:
+         - \babelshorthand didn't work with some dialects (#91).
+         - \selectlanguage and otherlanguage raised an error inside
+           tabular.
+
 3.47   2020-07-13
        - Fixes:
          - Spurious spaces when autoloading locales (bug introduced
@@ -53,7 +63,8 @@ respective authors.
        - New - \getlocaleproperty*, which doesn't raise an error.
        - Basic ini+tex templates for about 500 languages in the GitHub
          repository.
-         
+https://github.com/latex3/babel/wiki/What's-new-in-babel-3.47
+
 3.46   2020-07-06
        - Languages can now be optionally selected with their BCP 47
          tags.
@@ -69,7 +80,7 @@ respective authors.
            in some OSs (#80).
          - The [..|..] syntax in ini dates didn't recognize 'digits'.
 https://github.com/latex3/babel/wiki/What's-new-in-babel-3.46
-         
+
 3.45   2020-06-10
        - Minor fixes in Hindi, Ancient Greek, Macedonian.
        - Improvements in Kurdish, Marathi.
@@ -103,7 +114,7 @@ See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.45
            the pattern was ].       
          - \babelposthyphenation is now deativated in math.
 https://github.com/latex3/babel/wiki/What's-new-in-babel-3.44
-       
+
 3.43   2020-04-28
        - Autoloading based on the BCP47 codes, with basic lookup.
        - Now only a few essential commands are loaded in the format.
@@ -116,7 +127,7 @@ https://github.com/latex3/babel/wiki/What's-new-in-babel-3.44
            and \guillemetleft (#63).
          - A couple of bugs related to autoloading.
 https://github.com/latex3/babel/wiki/What's-new-in-babel-3.43
-       
+
 3.42   2020-03-22
        - \getlocaleproperty, to get the value of a field from the loaded
          ini files.
@@ -134,7 +145,7 @@ https://github.com/latex3/babel/wiki/What's-new-in-babel-3.43
          - Locale was not switched correctly with COMBINING characters
            (#54).
 See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.42
-           
+
 3.41   2020-02-27
        - Counters and numerals added in some ini files, based on those
          defined in CSS (Abjad, Alphabetic Hebrew, Japanese, etc.).
@@ -143,7 +154,7 @@ See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.42
        - Fix - Error when french was loaded and an ini file read (#50).
        - Fix - A typo in Greek files: Miriad must read Myriad.
 See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.41
-       
+
 3.40   2020-02-14
        - New ini files for Latin and Greek (xe/lua).
        - Add 'other' characters used in hyphenation patters (eg,
@@ -176,49 +187,11 @@ See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.39
          file loaded by languages.
 See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.38
 
-3.37   2019-12-08
-       - Preliminary code for non-standard hyphenation, like ff ->
-         ff-f (lua).
-       - \babelprovide now can be used to add or modify values for the
-         keys in ini files.
-       - Line breaking in South East Asian and CKJ is assimilated to
-         hyphenation, and it is activated even without 'import' (lua).      
+3.37   2019-12-08    
 See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.37
 
-3.36   2019-11-14
-       - New - \babeladjust, with options: bidi.text, bidi.mirroring,
-         bidi.mapdigits, layout.tabular, layout.lists, linebreak.sea,
-         linebreak.cjk. There are still some limitations (lua).
-       - New - ini for Polytonic Greek, thanks to Claudio Beccari.
-       - Fix - Language and script set for Chinese Tradicional and
-         Chinese Simplified.        
+3.36   2019-11-14 
 See https://github.com/latex3/babel/wiki/What's-new-in-babel-3.36
-
-3.35   2019-10-15
-       - \markboth and \markright made robust with a recent LaTeX.
-       - Shorthands work in bibs and refs even with safe=none.
-       - Fix - Another issue related to \ensureascii and LGR (#30)
-       - A temporary hack for issue #25.
-
-3.34   2019-09-27
-       - Improved compatibility for \babelfont vs \setmainfont.
-       - Fix - active ' entered in an infinite loop with lua (#27).
-       - Fix - main in \babelprovide was not set until begin document.
-
-3.33   2019-07-19
-       - \prehyphenchar set to 0 in languages requiring it: kannada,
-         marathi, tamil, etc. (lua).
-       - \AddBabelHook can be set for specific languages.
-       - Fix - !\grq in T1 behaved like the ligature !` (#19).
-       - Minimal preliminary support for the experimental harftex.
-
-3.32   2019-06-03
-       - CJK line breaking is now disabled in verbatim (lua).
-       - New - \babelcharproperty, to change the direction, mirroring
-         glyph and line break properties (lua).
-       - Basic support for the picture environment (with pict2e) and pgf
-         (lua, somewhat experimental).
-       - Start support for harftex (just try - it may work).
 ```
 
 Javier Bezos

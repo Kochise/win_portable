@@ -1,0 +1,357 @@
+From c300711@ms5.hinet.net Fri Feb 07 02:13:02 1997
+Newsgroups: tw.bbs.comp.tex
+Subject: emtex+cjk410(ttf2pk) on Msdos 安裝紀.
+From: KUO Yi-Liang <c300711@ms5.hinet.net>
+Date: Thu, 06 Feb 1997 18:13:02 GMT
+
+本文以emtex\doc\english\quick.eng為基礎:
+試圖安裝emtex+cjk4.1.0(ttf2pk) on MSDOS
+--------
+檔案
+--------
+首先在 mirror CTAN 的 ftp站
+例如 dongpo.math.ncu.edu.tw: /tex-archive/systems/msdos/emtex/下抓
+*.zip檔,
+-rw-rw-r--   1 mattes   server    160090 Aug  7  1995 bibtex4b.zip
+-rw-rw-r--   1 mattes   server   1148514 Apr 10 16:22 dvid16f1.zip
+-rw-rw-r--   1 mattes   server    824290 Apr 10 16:22 dvid16f2.zip
+-rw-rw-r--   1 mattes   server     94959 Aug  7  1995 dvisp10b.zip
+-rw-rw-r--   1 mattes   server    180206 May 24 14:17 emxrsx.zip
+-rw-rw-r--   1 mattes   server    127810 Sep  2 13:24 first.zip
+-rw-rw-r--   1 mattes   server    651946 Jun 26  1995 fontams.zip
+-rw-rw-r--   1 mattes   server    411129 Jun 26  1995 fontcm.zip
+-rw-rw-r--   1 mattes   server   1031835 Sep  2 13:24 fontdc.zip
+-rw-rw-r--   1 mattes   server      7080 Jun 26  1995 fontemsy.zip
+-rw-rw-r--   1 mattes   server     47495 Jun 26  1995 fontltx.zip
+-rw-rw-r--   1 mattes   server    110991 May  4 21:05 german.zip
+-rw-rw-r--   1 mattes   server    930861 Jun 21 14:59 l2base.zip
+-rw-rw-r--   1 mattes   server    409888 Jun 21 14:59 l2input.zip
+-rw-rw-r--   1 mattes   server     87336 Jun 26  1995 l2kurz.zip
+-rw-rw-r--   1 mattes   server    209194 Jun 21 14:59 l2tools.zip
+-rw-rw-r--   1 mattes   server    347068 Jun 26  1995 latex209.zip
+-rw-rw-r--   1 mattes   server     81115 Jun 26  1995 lkurz.zip
+-rw-rw-r--   1 mattes   server     83493 Jun 26  1995 makeindx.zip
+-rw-rw-r--   1 mattes   server    990552 Jun 21 14:59 mf4b.zip
+-rw-rw-r--   1 mattes   server    166052 Sep 19  1995 mfjob12c.zip
+-rw-rw-r--   1 mattes   server    227054 Jun 26  1995 mfware.zip
+-rw-rw-r--   1 mattes   server     39887 Jun 26  1995 pictex.zip
+-rw-rw-r--   1 mattes   server    113473 Jun 26  1995 pkedit.zip
+-rw-rw-r--   1 mattes   server     38705 Jun 26  1995 srcmkidx.zip
+-rw-rw-r--   1 mattes   server     88251 Jun 26  1995 srctcad.zip
+-rw-rw-r--   1 mattes   server   1173697 Jun 21 14:59 tex4b.zip
+-rw-rw-r--   1 mattes   server    131010 Jun 26  1995 texcad.zip
+-rw-rw-r--   1 mattes   server    260671 Sep 11  1995 texware.zip
+-rw-rw-r--   1 mattes   server    236301 Jun 26  1995 unz512.exe
+-rw-rw-r--   1 mattes   server    236134 Jun 26  1995 unz512x3.exe
+-rw-rw-r--   1 mattes   server    124738 Aug 23  1995 web.zip
+不過可以先抓這幾個(以安裝LaTeX2e來說)
+  first.zip......一些說明檔
+  emxrsx.zip.....類似dos extender的東西(純屬個人猜測)
+  mfjob12c.zip...將.mf(英文字型的source檔)轉換成.pk所需要的資料
+  dvid16f1.zip...各式的dvi driver-partI
+  dvid16f2.zip...各式的dvi driver-partII
+  tex4b.zip......tex的主執行檔
+  mf4b.zip.......這...我也不知道, sorry
+  fontcm.zip.....cm系列的字型檔.mf
+  fontltx.zip....latex所需的字型檔.mf
+  l2input.zip....latex所需的texinput檔
+  l2tools.zip....額外的texinput檔
+
+補充一點:pkunzip這個解壓程式沒有的人應該不多吧,如果沒有的話去抓個unzip回來!
+-rw-rw-r--   1 mattes   server    236301 Jun 26  1995 unz512.exe
+-rw-rw-r--   1 mattes   server    236134 Jun 26  1995 unz512x3.exe
+再DOS 提示符號下(這是quick.eng 所述,個人我沒試過)
+    unz512x3 unzip386.exe
+    ren unzip386.exe unzip.exe
+
+還有看你用那台printer
+就抓那一個字型檔(不抓也可以,個人我就是自己建造起來的)
+    bj_base.fli         Base fonts for the Canon BubbleJet (360 DPI)
+    dj_base.fli         Base fonts for the HP DeskJet (300 DPI)
+    fax_base.fli        Base fonts for Fax (204x196 DPI)
+    fx_base.fli         Base fonts for 9-pin printers (240x216 DPI)
+    ito_base.fli        Base fonts for the C.ITOH 8510A (160x144 DPI)
+    ljh_base.fli        Base fonts for the HP LaserJet 4 (600 DPI)
+    lj_base.fli         Base fonts for the HP LaserJet (300 DPI)
+    p6h_base.fli        Base fonts for 24-pin printers (360 DPI)
+    p6l_base.fli        Base fonts for 24-pin printers (180 DPI)
+    p6m_base.fli        Base fonts for 24-pin printers (360x180 DPI)
+    qj_base.fli         Base fonts for the HP QuietJet (192 DPI)
+    sty_base.fli        Base fonts for the EPSON Stylus 800 (360 DPI)
+
+再進到./dvips(或../dviware/dvips/dvips558.pc) 下抓
+-rw-rw-r--   1 ftpmaint server     27831 Nov  6  1995 dvips.doc
+-rw-rw-r--   1 ftpmaint server    182491 Nov  6  1995 dvipsfnt.zip
+-rw-rw-r--   1 ftpmaint server    421777 Nov  6  1995 dvipsini.zip
+-rw-rw-r--   1 ftpmaint server    173767 Nov  6  1995 dvipssrc.zip
+..source檔,應該不用抓
+-----------
+初步設定
+-----------
+以個人我安裝在D:碟為例,而所有的.zip檔擺在d:\emtex.zip\下
+  d:
+  cd d:\
+  pkunzip -d
+d:\emtex.zip\*.zip......如此會依壓縮前原訂目錄位置解壓擺好
+
+並照quick.eng中建議將d:\emtex\bin與d:\emx\bin加入path中
+並於 c:\autoexec.bat 中 加入:
+    set emtexdir=d:\emtex
+    set dvidrvfonts=d:\texfonts
+    set mfjobopt=/3
+    set tmp=c:\temp
+
+在c:\config.sys中 files=xx其中xx需大於20
+還有將config.sys中`BREAK=ON'那行刪掉
+然後重開機使 autoexec.bat 設定新的path
+
+補充一點:個人我並非如上所述,而是將emtex\bin\set_tex.bat 加以擴充,
+   將上面的path,emtexdir,dvidrvfont,mfjobopt,tmp,...這些環境變數
+   全都加在set_tex.bat了,反正稍後還有另外一些環境變數要設.
+-------------------------
+建造pk字型
+-------------------------
+以下從install.eng中 節錄
+  如果你和我一樣沒有抓上面xxx_base.fli的話,請你跟我這樣作
+    到\emtex\mfjob\modes.mfj 中
+    將 'def target=[............]'改成你放置.pk的texfonts目錄
+    例如 我的 def target=[d:\texfonts];
+    假設已經將fontcm.zip 與 fontltx.zip 展開後,
+      則在dos 提示符號下執行
+      mfjob base m=MODE
+      fli_base PREFIX RES c:\texfonts
+where MODE, PREFIX, and RES depend on the font set:
+
+MODE | PREFIX | RES | Font library | Description
+-----+--------+-----+--------------+-------------------------
+bj   | bj     | 360 | bj_base.fli  | Canon BubbleJet (360 DPI)
+dj   | dj     | 300 | dj_base.fli  | HP DeskJet (300 DPI)
+FAX  | fax    | 204 | fax_base.fli | Fax (204x196 DPI)
+fx   | fx     | 240 | fx_base.fli  | 9-pin printers (240x216 DPI)
+ito  | ito    | 160 | ito_base.fli | C.ITOH 8510A (160x144 DPI)
+lj   | lj     | 300 | lj_base.fli  | HP LaserJet (300 DPI)
+ljh  | ljh    | 600 | ljh_base.fli | HP LaserJet 4 (600 DPI)
+lqh  | p6h    | 360 | p6h_base.fli | 24-pin printers (360 DPI)
+lql  | p6l    | 180 | p6l_base.fli | 24-pin printers (180 DPI)
+lqm  | p6m    | 360 | p6m_base.fli | 24-pin printers (360x180 DPI)
+qj   | qj     | 192 | qj_base.fli  | HP QuietJet (192 DPI)
+sty  | sty    | 360 | sty_base.fli | EPSON Stylus 800 (360 DPI)
+
+To let MFjob call mf386, use the /3 option.  It is recommended to set
+this option in the MFJOBOPT environment variable:
+
+    set mfjobopt=/3
+
+    例如我用的 epson stylus 200 則
+      mfjob base m=sty
+      fli_base sty 360 d:\texfonts.........(下面的這行我沒有作過:()
+
+然後 如 節錄至 quick.eng 的 片段,step by step
+---------------------------------------------------------------------
+6. Creating format files
+---------------------------------------------------------------------
+
+Type the following commands to create format files:
+
+    cd \emtex\btexfmts
+    makefmt 386 plain US     <--- if you need PLAIN TeX
+    makefmt 386 latex2e US 8bit -b \emtex\bin\latex2e <---產生一個
+latex2e.bat
+
+---------------------------------------------------------------------
+7. Creating base files
+---------------------------------------------------------------------
+
+Type the following commands to create the PLAIN base file:
+
+    cd \emtex\bmfbases
+    makebas 386 plain
+
+---------------------------------------------------------------------
+8. Testing the installation
+---------------------------------------------------------------------
+
+Type the following commands to typeset a sample document:
+
+    md \test
+    cd \test
+    latex2e sample2e  <----測試emtex\bin\latex2e.bat可不可以動??
+
+8.1. Viewing the sample output under DOS
+----------------------------------------
+
+Type
+
+    v @XX sample2e
+---->以我的epson stylus 200 為例,則是鍵入 "v @sty sample2e"
+.....然後一陣唏哩嘩啦的訊息,大致上是說它缺了些字型,要不要現『作』?
+
+The following message will be displayed:
+
+    Warning 1209: do you want to call MFjob to generate 1 missing
+font now?
+    Type Y, N, or ?:
+
+Reply `y'.  If you have not installed fonts, computing the fonts for
+the sample will take a while.
+
+When the page shows up (white background), you can scale the output
+by
+typing `-'.  To quit, type `q'.
+
+回答'y'之後應該可以看到了 something output on screen
+可以zoom in/zoom out 用 '+' / '-'
+----------------------------------------------------
+關於CJK 410抓檔-----用以設定ttf2pk的部份,不含ntu2cjk
+----------------------------------------------------
+先archie 找 CJK-4.1.0.bin.tar.gz
+    並抓回來 CJK-4.1.0.rest.tar.gz
+            CJK-4.1.0.src.tar.gz--------?
+補充一點:我是從下面這個地方,將整個樹狀子目錄ftp回來的,用modem耶,好累:(
+      dongpo.math.ncu.edu.tw:/tex-archive/language/chinese/CJK/4_1.0
+      雖然看到CJK/4_1.0/readme中所寫著有CJK-4.1.0.src.tar.gz這個檔案
+      但是卻archie不到:(
+補充二點:使用在msdos下使用cjk需要4dos/ndos,如果沒有請自行設法.
+       其中4dos/ndos 是命令解譯器,取代msdos的command.com用的
+------------------------
+解開
+------------------------
+ 解開的程序大致上是:
+   gzip386 -d xxx.tgz (或xxx.gz) 得到 xxx.tar(或xxx.)
+   tar -xvf xxx.tar (或 xxx.)
+ (ps:gzip386 解壓時,會將原先的檔案蓋到(rename?);
+ ....與arj,pkunzip不太一樣;如果怕操作錯誤,先copy一份起來)
+ 然後將三個cjk-4.1.0.bin.tar.gz 展開
+ 變成一個樹狀子目錄cjk/4_1.0/.................?
+補充一點:
+   這些檔案是.tar.gz,解開它們需要dos 版的gzip與tar
+   我是在交大出的雲觀CD片上弄到的,不要問我網路上那裡有,sorry!
+---------------------------------
+重新檔案分配位置
+--------------------------------
+以下是我的配置,只是可以執行,並非最佳設定
+bin/下 所有的exe,bat,btm搬到emtex/bin/
+例如
+BG5CONV.EXE
+BG5LATEX.BAT
+F_NAME.BAT
+INSTFONT.BTM
+MAKETEXP.BTM
+MAKETTFP.BTM
+TTF2PK.EXE
+util/f_name.bat 也搬到emtex/bin
+texinput 整個子目錄 搬到emtex/texinput/下 並改名為emtex/texinput/cjk
+texinputs/bg5 整個子目錄 搬到emtex/texinput/bg5
+----------------
+修改一些檔案設定
+----------------
+---------------------------------------
+emtex/texinput/bg5/ttf2pk/ttf2pk.cfg中:
+    ntukai: -e Big5 $TEXMF/fonts/truetype/chinese/ntu_kai.ttf
+    ------ -------- -----------------------------------------
+    ^      ^        ^
+    |      |        |__你用的.ttf檔名(含全部路徑)
+    |      |            不要管$texmf,直接c:\cwin31\system\....ttf
+    |      |__編碼型態?
+    |__字形名稱,最好不要超過六個字
+
+加入數行關於你的字形檔的敘述,以全真字庫為例:
+avkv: -e Big5 c:/cwin\cttf/avkv.ttf
+avbkv: -e Big5 c:/cwin/cttf/avbkv.ttf
+avmv: -e Big5 c:/cwin/cttf/avmmv.ttf
+avbmv: -e Big5 c:/cwin/cttf/avbmv.ttf
+-------------------------------------------
+
+emtex/texinput/bg5/c00kai.fd:
+     \DeclareFontShape{C00}{kai}{m}{n}{<-> CJK * avkv}{}
+                                                 ^^^^
+     \DeclareFontShape{C00}{kai}{bx}{n}{<-> CJKb * avbkv}{\CJKbold}
+或是 你需要明體及粗明體就:                              ^^^^^
+emtex/texinput/bg5/c00ming.fd
+     \DeclareFontShape{C00}{ming}{m}{n}{<-> CJK * avmv}{}
+                                                  ^^^^
+     \DeclareFontShape{C00}{ming}{bx}{n}{<-> CJKb * avbmv}{\CJKbold}
+                                                    ^^^^^
+箭號^^^^處將與ttf2pk.cfg所加入的那幾行相對應,以便找到實際的TrueTypeFont
+--------------------------------------------
+
+emtex/data/dvips的子目錄下加入你所需的.cfg
+
+ 以我的epson stylus 200為例便是一個sty.cfg
+ 於是依據dj.cfg 並參考../sty.cnf 與 ../dj.cnf
+  自己掰出一個sty.cfg,(應該不算難才對)
+  其中 有一行原先在dj.cfg中是
+ P $(DVIDRVFONTS)\pixel.dj\%ddpi\%f.%p;
+ 改成
+ P
+$(DVIDRVFONTS)\pixel.sty\%ddpi\%f.%p;$(DVIDRVFONTS)\pixel.cjk\%ddpi\%
+f.%p
+
+ 它的意思大概是會在d:\texfont\pixel.sty\???dpi\*.pk
+                 與d:\texfont\pixel.cjk\???dpi\*.pk 找所需的pk字型檔
+
+  並於autoexec.bat 或是 emtex\bin\set_tex.bat中
+    設定 SET PRINTER=STY 使 dvips16 及 dvips32 參考使用
+    設定 SET DVIPS_STDERR 使dvips 將 stderr 重新導向輸出
+    設定 SET MAKETEXPK=MAKETEXP %%N %%D %%B %%M 使dvips能call
+MakeTexPK?
+         SET EMXOPT=-P .........給emx用的, I don't know
+         SET GS_LIB=.............設定你的ghostscript所在
+         SET DVIDRVGRAPH=.........設定......I don't know
+-----------
+BTM檔的修改
+-----------
+.btm是指4dos/ndos專用的批次檔.
+
+在此由於原先CJK410的package給定之btm檔不合於我目前使用中之4dos/ndos,
+   於是花了好大的力氣"努力"的亂改一通,您大概手氣不會像我那麼糟,
+-----------------
+Instfont 安裝字型
+-----------------
+鍵入 Instfont xxx -e enc res [res2]
+其中xxx 字型名稱如ntukai,avkv,avbkv,...
+    -e enc 如 -e BIg5
+    res 如 360
+我的epson stylus 200則是鍵入:
+ instfont avkv -e Big5 360
+然後會建好55個字形
+--------
+測試
+--------
+在"原先"的cjk/4_1.0/example/下有個big5.tex
+  可以鍵入
+    bg5latex big5.tex
+  將big5.tex 編譯成 big5.dvi,然後鍵入
+    dvips16 big5
+  會顯示一些訊息,說是缺了一些字型(.pk檔?),
+  要現在建造,之後"應該"就可以得到big5.ps,可以用GhostScript來看
+  也可以 v @xx big5 從螢幕上看到outputs
+另外在cjk/4_1.0/doc/chinese/big5/下有一個readmeb5.tex也可以用來測試
+  但是要先安裝l2tools.zip:
+    先pkunzip -d l2tools.zip 將會把檔案解在
+emtex\dist....\tool\.........下
+    再跳到emtex\dist..\tool\...下 鍵入:
+       latex2e  xxxx.ins(就是那個唯一的.ins)
+    完成後就把今天在這目錄下新產生的檔全搬到emtex\texinput\latex2e\
+    如果你的哈滴空間不夠,現在應該就可以把emtex\dist..\tool\...先砍了
+  安裝好了之後就可以
+    bg5latex readme.tex
+  雖然還是產生很多警告訊息,可是還可以產生readmeb5.dvi
+  之後還是用dvips16 或 dvips32 產生 readmeb5.ps
+  與 v @xx readmeb5 看輸出
+---------
+後註
+---------
+一、我在安裝CJK的時候,遇到一些麻煩,可能是4dos/ndos的版本有所差異,
+    有些功能及函數並未提供,所以對原先給定之btm檔有多處修改,不及備載?
+    如您不幸也遭遇類似麻煩,那就......!-R
+二、我的dvips16 在處理readmeb5.dvi時出現記憶體不足的訊號,
+    而dvips32又無法自動呼叫MakeTexPk 來產生fonts.btm,
+    所以只好自己動手寫了一個fontss.btm 來分析%dvips_stderr%的輸出檔,
+    再呼叫MakeTexPK 來產生fonts.btm,多此一舉:(
+三、這文件並非一邊安裝一邊撰寫,而是事後再行整理,可能有些項目有所疏漏,
+    很有可能無法照著 STEP by STEP
+的進行,而且我第一次寫這種長篇的post(?)
+    如有不當之處請指正!-R,
+    Thank you!
+

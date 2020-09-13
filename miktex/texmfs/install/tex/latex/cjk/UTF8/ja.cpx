@@ -1,0 +1,83 @@
+% This is the file ja.cpx of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{ja.cpx}[\filedate\space\fileversion]
+
+
+% Japanese captions
+%
+% character set: JIS X 0208:1997 (or JIS X 0208-1990)
+% encoding: UTF-8
+
+\newif\ifheisei
+\let\ifheisei=\iffalse
+\def\heisei{\let\ifheisei=\iftrue}
+
+\renewcommand\contentsname{目次}
+
+\renewcommand\listfigurename{図目次}
+% \newcommand\listfigurename{図一覧}
+
+\renewcommand\listtablename{表目次}
+% \newcommand\listtablename{表一覧}
+
+\CJK@ifundefined\chapter
+  {\renewcommand\refname{参考文献}
+  }
+  {\renewcommand\bibname{関連書籍}
+%  \renewcommand\bibname{参考文献}
+  }
+\renewcommand\indexname{索引}
+
+\renewcommand\figurename{図}
+\renewcommand\tablename{表}
+
+\newcommand\prepartname{第}
+\newcommand\postpartname{部}
+\renewcommand\partformat{\prepartname\CJKnumber{\value{part}}\postpartname}
+
+% \renewcommand{\appendixname}{附録}
+
+\CJK@ifundefined\mainmatter
+  {\renewcommand\abstractname{要旨}}{}
+
+\renewcommand\today{{\ifheisei\count0=\year\else\count0=\year
+                     \advance\count0 -1988 平成\,\fi
+                     \ifnum\count0=1 元\else\number\count0\fi
+                     \,年\hspace{.5em}\nobreak\number\month
+                     \,月\hspace{.5em}\nobreak\number\day\,日}}
+\CJK@ifundefined\CJKnumber
+  {\def\CJKnumber #1{\ifcase #1\or
+                     一\or 二\or 三\or 四\or 五\or
+                     六\or 七\or 八\or 九\or 十\fi}}{}
+
+\endinput
+
+%%% Local Variables:
+%%% coding: utf-8
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

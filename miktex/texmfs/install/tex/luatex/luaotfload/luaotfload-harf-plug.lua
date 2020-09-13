@@ -5,9 +5,9 @@
 do -- block to avoid to many local variables error
  local ProvidesLuaModule = { 
      name          = "luaotfload-harf-plug",
-     version       = "3.14",       --TAGVERSION
-     date          = "2020-05-06", --TAGDATE
-     description   = "luaotfload submodule / database",
+     version       = "3.15",       --TAGVERSION
+     date          = "2020-09-02", --TAGDATE
+     description   = "luaotfload submodule / HarfBuzz shaping",
      license       = "GPL v2.0",
      author        = "Khaled Hosny, Marcel Krüger",
      copyright     = "Luaotfload Development Team",     
@@ -18,7 +18,8 @@ do -- block to avoid to many local variables error
  end  
 end
 
-local hb = luaotfload.harfbuzz
+local hb                = luaotfload.harfbuzz
+local logreport         = luaotfload.log.report
 
 local assert            = assert
 local next              = next
@@ -50,8 +51,7 @@ local getattrs          = direct.getattributelist
 local setattrs          = direct.setattributelist
 local getchar           = direct.getchar
 local setchar           = direct.setchar
-local getdir            = direct.getdir
-local setdir            = direct.setdir
+local getdirection      = direct.getdirection
 local getdisc           = direct.getdisc
 local setdisc           = direct.setdisc
 local getfont           = direct.getfont
@@ -59,6 +59,8 @@ local getdata           = direct.getdata
 local setdata           = direct.setdata
 local getfont           = direct.getfont
 local setfont           = direct.setfont
+local getwhatsitfield   = direct.getwhatsitfield or direct.getfield
+local setwhatsitfield   = direct.setwhatsitfield or direct.setfield
 local getfield          = direct.getfield
 local setfield          = direct.setfield
 local getid             = direct.getid
@@ -174,7 +176,7 @@ local function itemize(head, fontid, direction)
 
   local runs, codes = {}, {}
   local dirstack = {}
-  local currdir = direction or "TLT"
+  local currdir = direction or 0
   local lastskip, lastdir = true
   local lastrun = {}
 
@@ -203,18 +205,19 @@ local function itemize(head, fontid, direction)
         skip = true
       end
     elseif id == dir_t then
-      local dir = getdir(n)
-      if dir:sub(1, 1) == "+" then
-        -- Push the current direction to the stack.
-        tableinsert(dirstack, currdir)
-        currdir = dir:sub(2)
-      else
-        assert(currdir == dir:sub(2))
+      local dir, cancel = getdirection(n)
+      local direction, kind = getdirection(n)
+      if cancel then
+        assert(currdir == dir)
         -- Pop the last direction from the stack.
         currdir = tableremove(dirstack)
+      else
+        -- Push the current direction to the stack.
+        tableinsert(dirstack, currdir)
+        currdir = dir
       end
     elseif id == localpar_t then
-      currdir = getdir(n)
+      currdir = getdirection(n)
     end
 
     codes[#codes + 1] = code
@@ -225,7 +228,7 @@ local function itemize(head, fontid, direction)
         start = #codes,
         len = 1,
         font = fontid,
-        dir = currdir == "TRT" and dir_rtl or dir_ltr,
+        dir = currdir == 1 and dir_rtl or dir_ltr,
         skip = skip,
         codes = codes,
       }
@@ -265,6 +268,7 @@ local function makesub(run, codes, nodelist)
     nodelist = nil
   end
   nodelist, nodelist, glyphs = shape(nodelist, nodelist, subrun)
+  assert(glyphs, [[Shaping discretionary list failed. This shouldn't happen.]])
   return { glyphs = glyphs, run = subrun, head = nodelist }
 end
 
@@ -428,7 +432,8 @@ function shape(head, firstnode, run)
             while startglyph > 1
               and codes[glyphs[startglyph - 1].cluster + 1] ~= 0x20
               and codes[glyphs[startglyph - 1].cluster + 1] ~= 0xFFFC
-              and unsafetobreak(glyphs[startglyph]) do
+              and (unsafetobreak(glyphs[startglyph])
+                or glyphs[startglyph].cluster == glyphs[startglyph-1].cluster) do
               startglyph = startglyph - 1
             end
             -- Get the corresponding character index.
@@ -550,9 +555,23 @@ function shape(head, firstnode, run)
       end
     end
     return head, firstnode, glyphs, run.len - len
+  else
+    if not fontdata.shaper_warning then
+      local shaper = shapers[1]
+      if shaper then
+        tex.error("luaotfload | harf : Shaper failed", {
+          string.format("You asked me to use shaper %q to shape", shaper),
+          string.format("the font %q", fontdata.name),
+          "but the shaper failed. This probably means that either the shaper is not",
+          "available or the font is not compatible.",
+          "Maybe you should try the default shaper instead?"
+        })
+      else
+        tex.error(string.format("luaotfload | harf : All shapers failed for font %q.", fontdata.name))
+      end
+      fontdata.shaper_warning = true -- Only warn once for every font
+    end
   end
-
-  return head, firstnode, {}, 0
 end
 
 local function color_to_rgba(color)
@@ -687,6 +706,7 @@ local function tonodes(head, node, run, glyphs)
             if layers then
               local cmds = {} -- Every layer will add 5 cmds
               local prev_color = nil
+              local k = 1 -- k == j except that k does only get increased if the layer isn't dropped
               for j = 1, #layers do
                 local layer = layers[j]
                 local layerchar = characters[gid_offset + layer.glyph]
@@ -700,13 +720,16 @@ local function tonodes(head, node, run, glyphs)
                 -- color, we don’t check for it here explicitly since we will
                 -- get nil anyway.
                 local color = palette[layer.color_index]
-                cmds[5*j - 4] = (color and not prev_color) and save_cmd or nop_cmd
-                cmds[5*j - 3] = prev_color == color and nop_cmd or (color and {"pdf", "page", color_to_rgba(color)} or restore_cmd)
-                cmds[5*j - 2] = push_cmd
-                cmds[5*j - 1] = {"char", layer.glyph + gid_offset}
-                cmds[5*j] = pop_cmd
-                fontglyphs[layer.glyph].used = true
-                prev_color = color
+                if not color or color.alpha ~= 0 then
+                  cmds[5*k - 4] = (color and not prev_color) and save_cmd or nop_cmd
+                  cmds[5*k - 3] = prev_color == color and nop_cmd or (color and {"pdf", "page", color_to_rgba(color)} or restore_cmd)
+                  cmds[5*k - 2] = push_cmd
+                  cmds[5*k - 1] = {"char", layer.glyph + gid_offset}
+                  cmds[5*k] = pop_cmd
+                  fontglyphs[layer.glyph].used = true
+                  prev_color = color
+                  k = k+1
+                end
               end
               cmds[#cmds + 1] = prev_color and restore_cmd
               if not character.colored then
@@ -888,10 +911,11 @@ local function shape_run(head, current, run)
     -- shaping.
     local glyphs, offset
     head, current, glyphs, offset = shape(head, current, run)
-    return offset, tonodes(head, current, run, glyphs)
-  else
-    return 0, head, run.after
+    if glyphs then
+      return offset, tonodes(head, current, run, glyphs)
+    end
   end
+  return 0, head, run.after
 end
 
 function process(head, font, _attr, direction)
@@ -912,8 +936,8 @@ end
 
 local function pageliteral(data)
   local n = newnode(whatsit_t, pdfliteral_t)
-  setfield(n, "mode", 1) -- page
-  setdata(n, data)
+  setwhatsitfield(n, "mode", 1) -- page
+  setwhatsitfield(n, "data", data) -- page
   return n
 end
 
@@ -994,7 +1018,16 @@ local utfchar = utf8.char
 local function get_glyph_info(n)
   n = todirect(n)
   local props = properties[n]
-  return props and props.glyph_info or utfchar(getchar(n)):gsub('\0', '^^@')
+  local info = props and props.glyph_info
+  if info then return info end
+  local c = getchar(n)
+  if c == 0 then
+    return '^^@'
+  elseif c < 0x110000 then
+    return utfchar(c)
+  else
+    return string.format("^^^^^^%06X", c)
+  end
 end
 
 fonts.handlers.otf.registerplugin('harf', process)

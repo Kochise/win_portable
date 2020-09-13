@@ -1,0 +1,1234 @@
+% This is the file pinyin.sty of the CJK package
+%   to input Chinese in pinyin transcription
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+%
+% This style file works with plain TeX also.
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+
+\catcode`@=11
+\endlinechar \m@ne
+
+% Older versions of the PostScript virtual files don't contain a macron
+%     accent at all (e.g. Palatino). Under LaTeX, you can activate the
+%     CM macron version with the package option `useCMmacron'.
+
+\newif\ifpy@useCMmacron@
+\py@useCMmacron@false
+
+\ifx\NeedsTeXFormat \@undefined
+  \message{Package: pinyin \filedate\space\fileversion}
+\else
+  \ProvidesPackage{pinyin}[\filedate\space\fileversion]
+
+  \DeclareOption{useCMmacron}{\py@useCMmacron@true}
+  \ProcessOptions
+\fi
+
+
+% Similar to the CJK and ruby packages we need a special kern to indicate
+%     hyphenation between pinyin syllables. Values 1sp-3sp are already used
+%     by those packages.
+
+\edef\py@sp{\kern -4sp\kern 4sp}
+
+
+% We must preserve various TeX macros because their names overlap with
+%     pinyin syllables. The only exception is the internal command \long which
+%     can't be renamed because almost all other packages would fail.
+%
+% Note that \ding is not a basic LaTeX macro but defined in pifont.sty, part
+%     of the psnfss package.
+%
+% All other pinyin syllables will be defined below.
+
+\let\PYa=\a
+\let\PYchi=\chi
+\let\PYcong=\cong
+\let\PYding=\ding
+\let\PYge=\ge
+\let\PYhang=\hang
+\let\PYle=\le
+%\let\PYlong=\long -> we use \Long and \LONG instead
+\let\PYmin=\min
+\let\PYmu=\mu
+\let\PYne=\ne
+\let\PYni=\ni
+\let\PYnu=\nu
+\let\PYo=\o
+\let\PYO=\O
+\let\PYpi=\pi
+\let\PYPi=\Pi
+\let\PYRe=\Re
+\let\PYtan=\tan
+\let\PYxi=\xi
+\let\PYXi=\Xi
+
+\def\PYactivate{
+  \let\a=\py@@a
+  \let\chi=\py@chi
+  \let\cong=\py@cong
+  \let\ding=\py@ding
+  \let\ge=\py@ge
+  \let\hang=\py@hang
+  \let\le=\py@le
+  \let\min=\py@min
+  \let\mu=\py@mu
+  \let\ne=\py@ne
+  \let\ni=\py@ni
+  \let\nu=\py@nu
+  \let\o=\py@@o
+  \let\O=\py@@O
+  \let\pi=\py@pi
+  \let\Pi=\py@Pi
+  \let\Re=\py@Re
+  \let\tan=\py@tan
+  \let\xi=\py@xi
+  \let\Xi=\py@Xi}
+
+\def\PYdeactivate{
+  \let\a=\PYa
+  \let\chi=\PYchi
+  \let\cong=\PYcong
+  \let\ding=\PYding
+  \let\ge=\PYge
+  \let\hang=\PYhang
+  \let\le=\PYle
+  \let\min=\PYmin
+  \let\mu=\PYmu
+  \let\ne=\PYne
+  \let\ni=\PYni
+  \let\nu=\PYnu
+  \let\o=\PYo
+  \let\O=\PYO
+  \let\pi=\PYpi
+  \let\Pi=\PYPi
+  \let\Re=\PYRe
+  \let\tan=\PYtan
+  \let\xi=\PYxi
+  \let\Xi=\PYXi}
+
+
+% We use our own names for the accent macros so they will also work in
+%     tabbing environments.
+
+\let\py@acute \'
+\let\py@hacek \v
+\let\py@grave \`
+
+
+% Macrons of the EC fonts are far too high for the first tone, and most
+%     T1 encoded fonts follow this for compatibility reasons. However,
+%     T5 encoded fonts don't exhibit this behaviour.
+
+\def\py@macron#1#2{
+  \edef\py@mcorr{0}
+  \edef\py@temp{T1}
+  \ifx\f@encoding \py@temp
+    \chardef\py@mcr 9\relax%        T1 fonts
+  \else
+    \edef\py@temp{T5}
+    \ifx\f@encoding \py@temp
+      \chardef\py@mcr 9\relax%      T5 fonts
+      \edef\py@mcorr{-.3}
+    \else
+      \chardef\py@mcr 22\relax%     OT1 fonts
+    \fi
+  \fi
+
+  {\leavevmode
+   \dimen@ii 1ex
+   \ifpy@useCMmacron@
+     \edef\py@temp{\f@family}
+     \fontfamily{cmr}
+     \selectfont
+   \fi
+   \setbox\z@ \hbox{\char\py@mcr}
+   \dimen@ -#2ex
+   \advance\dimen@ \py@mcorr ex
+   \advance\dimen@ \ht\z@
+   \ifdim 1ex < \dimen@
+     \fontdimen5\font \dimen@
+   \fi
+   \accent\py@mcr
+   \ifpy@useCMmacron@
+     \fontfamily\py@temp
+     \selectfont
+   \fi
+   \fontdimen5\font \dimen@ii
+   #1}}
+
+% Here a replacement version for bookmarks in PDFs.
+
+\def\py@hr@macron#1#2{
+  \=#1
+}
+
+
+% The following command outputs the kern between two letters.
+
+\def\py@kern#1#2{
+  {\setbox\z@ \hbox{#1#2}
+   \dimen@ \wd\z@
+   \setbox\z@ \hbox{#1{}#2}
+   \advance\dimen@ -\wd\z@
+   \kern\dimen@}}
+
+
+% To make \MakeUppercase and \MakeLowercase work, we use a generic macro
+%     which constructs the necessary pinyin macros by using the first
+%     argument.
+
+\def\py@#1{
+  \csname py@#1\endcsname
+}
+
+% Here are the macros to produce various accents over the vocals.
+
+\def\py@@#1#2#3#4{
+  \py@kern{#2}#1
+  \ifcase #4
+    \or\py@macron #1{.3}\or\py@acute #1\or\py@hacek #1\or\py@grave #1\or #1
+  \fi
+  \py@kern #1{#3}}
+
+\def\py@a{\py@@ a}
+\def\py@A{\py@@ A}
+
+\def\py@e{\py@@ e}
+\def\py@E{\py@@ E}
+
+\def\py@i#1#2#3{
+  \py@kern{#1}i
+  \ifcase #3
+    \or\py@macron\i{.3}\or\py@acute\i\or\py@hacek\i\or\py@grave\i\or i
+  \fi
+  \py@kern i{#2}}
+\def\py@I{\py@@ I}
+
+\def\py@o{\py@@ o}
+\def\py@O{\py@@ O}
+
+\def\py@u{\py@@ u}
+\def\py@U{\py@@ U}
+
+% the previous definitions are almost trivial. The only tricky macro is the
+%     following one. Above the u with umlaut dots we must place the four tone
+%     modifiers. To get a better appearance, we lower the umlaut dots as much
+%     as possible. The algorithm used here has been tested with the standard
+%     cm, ec, and PostScript fonts; it was taken from german.sty .
+
+\def\py@@v#1#2#3#4{
+  \edef\py@temp{T1}
+  \ifx\f@encoding \py@temp
+    \chardef\py@umlaut 4\relax%       T1 fonts
+    \chardef\py@ac \@ne
+    \chardef\py@gr \z@
+  \else
+    \edef\py@temp{T5}
+    \ifx\f@encoding \py@temp
+      \chardef\py@umlaut 4\relax%     T5 fonts
+      \chardef\py@ac \@ne
+      \chardef\py@gr \z@
+    \else
+      \chardef\py@umlaut 127\relax%   OT1 fonts
+      \chardef\py@ac 19\relax
+      \chardef\py@gr 18\relax
+    \fi
+  \fi
+
+  {\leavevmode
+   \dimen@ii 1ex
+   \setbox\z@ \hbox{\char\py@umlaut}
+   \dimen@ -.4ex
+   \advance\dimen@ \ht\z@
+   \ifdim 1ex < \dimen@
+     \fontdimen5\font \dimen@
+     \dimen@ .55ex
+   \else
+     \dimen@ .7ex
+   \fi
+   \py@kern{#2}#1
+   \rlap{\accent\py@umlaut #1}
+   \fontdimen5\font \dimen@
+   \ifcase #4
+     \or\py@macron #1{1.1}
+     \or\accent\py@ac #1
+     \or\py@hacek #1
+     \or\accent\py@gr #1
+     \or #1
+   \fi
+   \py@kern #1{#3}
+   \fontdimen5\font \dimen@ii}}
+
+\def\py@v{\py@@v u}
+\def\py@V{\py@@v U}
+
+% Here a replacement version for bookmarks in PDFs.
+
+\def\py@hr@@v#1#2#3#4{
+  \ifcase #4
+    \or\py@hr@dm #1\or\py@hr@da #1\or\py@hr@dh #1\or\py@hr@dg #1\or #1
+  \fi
+}
+
+
+% Here our small macro to test whether we should insert a soft hyphen or
+%     not. Since it is the first macro in all syllable definitions, we
+%     also ensure horizontal mode.
+
+\def\py@hy{
+  \leavevmode
+  \ifnum\lastkern = 4\relax%        \py@sp
+    \-
+  \fi
+}
+
+
+% Bookmarks need Unicode characters and nothing else.
+
+\ifx\AtBeginDocument \undefined
+\else
+  \AtBeginDocument{
+    \ifx\pdfstringdefDisableCommands \undefined
+    \else
+      % We add some definitions to the PU encoding so that \MakeUppercase
+      %     and \MakeLowercase work with the pinyin characters which have
+      %     two diacritics.
+      \DeclareTextCommand{\py@hr@dm}{PU}[1]{
+        \TextSymbolUnavailable{\py@hr@dm{#1}}#1}
+      \DeclareTextCommand{\py@hr@da}{PU}[1]{
+        \TextSymbolUnavailable{\py@hr@da{#1}}#1}
+      \DeclareTextCommand{\py@hr@dh}{PU}[1]{
+        \TextSymbolUnavailable{\py@hr@dh{#1}}#1}
+      \DeclareTextCommand{\py@hr@dg}{PU}[1]{
+        \TextSymbolUnavailable{\py@hr@dg{#1}}#1}
+
+      \DeclareTextCompositeCommand{\py@hr@dm}{PU}{U}{\81\325}% U umlaut macron
+      \DeclareTextCompositeCommand{\py@hr@dm}{PU}{u}{\81\326}% u umlaut macron
+      \DeclareTextCompositeCommand{\py@hr@da}{PU}{U}{\81\327}% U umlaut acute
+      \DeclareTextCompositeCommand{\py@hr@da}{PU}{u}{\81\330}% u umlaut acute
+      \DeclareTextCompositeCommand{\py@hr@dh}{PU}{U}{\81\331}% U umlaut hacek
+      \DeclareTextCompositeCommand{\py@hr@dh}{PU}{u}{\81\332}% u umlaut hacek
+      \DeclareTextCompositeCommand{\py@hr@dg}{PU}{U}{\81\333}% U umlaut grave
+      \DeclareTextCompositeCommand{\py@hr@dg}{PU}{u}{\81\334}% u umlaut grave
+
+      \pdfstringdefDisableCommands{
+        \let\py@hy \relax
+        \let\py@kern \@gobbletwo
+        \let\py@sp \relax
+        \let\py@macron \py@hr@macron
+        \let\py@@v \py@hr@@v
+      }
+    \fi
+  }
+\fi
+
+% Finally the pinyin syllables themselves in lower- and uppercase forms. As
+%     mentioned above, the only exceptions are \Long and \LONG instead of the
+%     expected \long and \Long macros.
+
+\ifx\AtBeginDocument \undefined
+  \def\py@DRC#1#2{
+    \def#1##1{\py@hy #2\py@sp{}}
+  }
+\else
+  \def\py@DRC#1#2{
+    \DeclareRobustCommand#1[1]{\py@hy #2\py@sp{}}
+  }
+\fi
+
+\py@DRC{\py@@a}{\py@ a{}{}#1}
+\py@DRC{\ai}{\py@ a{}i#1i}
+\py@DRC{\an}{\py@ a{}n#1n}
+\py@DRC{\ang}{\py@ a{}n#1ng}
+\py@DRC{\ao}{\py@ a{}o#1o}
+
+\py@DRC{\ba}{b\py@ ab{}#1}
+\py@DRC{\bai}{b\py@ abi#1i}
+\py@DRC{\ban}{b\py@ abn#1n}
+\py@DRC{\bang}{b\py@ abn#1ng}
+\py@DRC{\bao}{b\py@ abo#1o}
+\py@DRC{\bei}{b\py@ ebi#1i}
+\py@DRC{\ben}{b\py@ ebn#1n}
+\py@DRC{\beng}{b\py@ ebn#1ng}
+\py@DRC{\bi}{b\py@ ib{}#1}
+\py@DRC{\bian}{bi\py@ ain#1n}
+\py@DRC{\biao}{bi\py@ aio#1o}
+\py@DRC{\bie}{bi\py@ ei{}#1}
+\py@DRC{\bin}{b\py@ ibn#1n}
+\py@DRC{\bing}{b\py@ ibn#1ng}
+\py@DRC{\bo}{b\py@ ob{}#1}
+\py@DRC{\bu}{b\py@ ub{}#1}
+
+\py@DRC{\ca}{c\py@ ac{}#1}
+\py@DRC{\cai}{c\py@ aci#1i}
+\py@DRC{\can}{c\py@ acn#1n}
+\py@DRC{\cang}{c\py@ acn#1ng}
+\py@DRC{\cao}{c\py@ aco#1o}
+\py@DRC{\ce}{c\py@ ec{}#1}
+\py@DRC{\cen}{c\py@ ecn#1n}
+\py@DRC{\ceng}{c\py@ ecn#1ng}
+\py@DRC{\cha}{ch\py@ ah{}#1}
+\py@DRC{\chai}{ch\py@ ahi#1i}
+\py@DRC{\chan}{ch\py@ ahn#1n}
+\py@DRC{\chang}{ch\py@ ahn#1ng}
+\py@DRC{\chao}{ch\py@ aho#1o}
+\py@DRC{\che}{ch\py@ eh{}#1}
+\py@DRC{\chen}{ch\py@ ehn#1n}
+\py@DRC{\cheng}{ch\py@ ehn#1ng}
+\py@DRC{\py@chi}{ch\py@ ih{}#1}
+\py@DRC{\chong}{ch\py@ ohn#1ng}
+\py@DRC{\chou}{ch\py@ ohu#1u}
+\py@DRC{\chu}{ch\py@ uh{}#1}
+\py@DRC{\chua}{chu\py@ au{}#1}
+\py@DRC{\chuai}{chu\py@ aui#1i}
+\py@DRC{\chuan}{chu\py@ aun#1n}
+\py@DRC{\chuang}{chu\py@ aun#1ng}
+\py@DRC{\chui}{chu\py@ iu{}#1}
+\py@DRC{\chun}{ch\py@ uhn#1n}
+\py@DRC{\chuo}{chu\py@ ou{}#1}
+\py@DRC{\ci}{c\py@ ic{}#1}
+\py@DRC{\py@cong}{c\py@ ocn#1ng}
+\py@DRC{\cou}{c\py@ ocu#1u}
+\py@DRC{\cu}{c\py@ uc{}#1}
+\py@DRC{\cuan}{cu\py@ aun#1n}
+\py@DRC{\cui}{cu\py@ iu{}#1}
+\py@DRC{\cun}{c\py@ ucn#1n}
+\py@DRC{\cuo}{cu\py@ ou{}#1}
+
+\py@DRC{\da}{d\py@ ad{}#1}
+\py@DRC{\dai}{d\py@ adi#1i}
+\py@DRC{\dan}{d\py@ adn#1n}
+\py@DRC{\dang}{d\py@ adn#1ng}
+\py@DRC{\dao}{d\py@ ado#1o}
+\py@DRC{\de}{d\py@ ed{}#1}
+\py@DRC{\dei}{d\py@ edi#1i}
+\py@DRC{\den}{d\py@ edn#1n}
+\py@DRC{\deng}{d\py@ edn#1ng}
+\py@DRC{\di}{d\py@ id{}#1}
+\py@DRC{\dian}{di\py@ ain#1n}
+\py@DRC{\diao}{di\py@ aio#1o}
+\py@DRC{\die}{di\py@ ei{}#1}
+\py@DRC{\py@ding}{d\py@ idn#1ng}
+\py@DRC{\diu}{di\py@ ui{}#1}
+\py@DRC{\dong}{d\py@ odn#1ng}
+\py@DRC{\dou}{d\py@ odu#1u}
+\py@DRC{\du}{d\py@ ud{}#1}
+\py@DRC{\duan}{du\py@ aun#1n}
+\py@DRC{\dui}{du\py@ iu{}#1}
+\py@DRC{\dun}{d\py@ udn#1n}
+\py@DRC{\duo}{du\py@ ou{}#1}
+
+\py@DRC{\e}{\py@ e{}{}#1}
+\py@DRC{\ei}{\py@ e{}i#1i}
+\py@DRC{\en}{\py@ e{}n#1n}
+\py@DRC{\eng}{\py@ e{}n#1ng}
+\py@DRC{\er}{\py@ e{}r#1r}
+
+\py@DRC{\fa}{f\py@ af{}#1}
+\py@DRC{\fan}{f\py@ afn#1n}
+\py@DRC{\fang}{f\py@ afn#1ng}
+\py@DRC{\fei}{f\py@ efi#1i}
+\py@DRC{\fen}{f\py@ efn#1n}
+\py@DRC{\feng}{f\py@ efn#1ng}
+\py@DRC{\fiao}{fi\py@ aio#1o}
+\py@DRC{\fo}{f\py@ of{}#1}
+\py@DRC{\fou}{f\py@ ofu#1u}
+\py@DRC{\fu}{f\py@ uf{}#1}
+
+\py@DRC{\ga}{g\py@ ag{}#1}
+\py@DRC{\gai}{g\py@ agi#1i}
+\py@DRC{\gan}{g\py@ agn#1n}
+\py@DRC{\gang}{g\py@ agn#1ng}
+\py@DRC{\gao}{g\py@ ago#1o}
+\py@DRC{\py@ge}{g\py@ eg{}#1}
+\py@DRC{\gei}{g\py@ egi#1i}
+\py@DRC{\gen}{g\py@ egn#1n}
+\py@DRC{\geng}{g\py@ egn#1ng}
+\py@DRC{\gong}{g\py@ ogn#1ng}
+\py@DRC{\gou}{g\py@ ogu#1u}
+\py@DRC{\gu}{g\py@ ug{}#1}
+\py@DRC{\gua}{gu\py@ au{}#1}
+\py@DRC{\guai}{gu\py@ aui#1i}
+\py@DRC{\guan}{gu\py@ aun#1n}
+\py@DRC{\guang}{gu\py@ aun#1ng}
+\py@DRC{\gui}{gu\py@ iu{}#1}
+\py@DRC{\gun}{g\py@ ugn#1n}
+\py@DRC{\guo}{gu\py@ ou{}#1}
+
+\py@DRC{\ha}{h\py@ ah{}#1}
+\py@DRC{\hai}{h\py@ ahi#1i}
+\py@DRC{\han}{h\py@ ahn#1n}
+\py@DRC{\py@hang}{h\py@ ahn#1ng}
+\py@DRC{\hao}{h\py@ aho#1o}
+\py@DRC{\he}{h\py@ eh{}#1}
+\py@DRC{\hei}{h\py@ ehi#1i}
+\py@DRC{\hen}{h\py@ ehn#1n}
+\py@DRC{\heng}{h\py@ ehn#1ng}
+\py@DRC{\hong}{h\py@ ohn#1ng}
+\py@DRC{\hou}{h\py@ ohu#1u}
+\py@DRC{\hu}{h\py@ uh{}#1}
+\py@DRC{\hua}{hu\py@ au{}#1}
+\py@DRC{\huai}{hu\py@ aui#1i}
+\py@DRC{\huan}{hu\py@ aun#1n}
+\py@DRC{\huang}{hu\py@ aun#1ng}
+\py@DRC{\hui}{hu\py@ iu{}#1}
+\py@DRC{\hun}{h\py@ uhn#1n}
+\py@DRC{\huo}{hu\py@ ou{}#1}
+
+\py@DRC{\ji}{j\py@ ij{}#1}
+\py@DRC{\jia}{ji\py@ ai{}#1}
+\py@DRC{\jian}{ji\py@ ain#1n}
+\py@DRC{\jiang}{ji\py@ ain#1ng}
+\py@DRC{\jiao}{ji\py@ aio#1o}
+\py@DRC{\jie}{ji\py@ ei{}#1}
+\py@DRC{\jin}{j\py@ ijn#1n}
+\py@DRC{\jing}{j\py@ ijn#1ng}
+\py@DRC{\jiong}{ji\py@ oin#1ng}
+\py@DRC{\jiu}{ji\py@ ui{}#1}
+\py@DRC{\ju}{j\py@ uj{}#1}
+\py@DRC{\juan}{ju\py@ aun#1n}
+\py@DRC{\jue}{ju\py@ eu{}#1}
+\py@DRC{\jun}{j\py@ ujn#1n}
+
+\py@DRC{\ka}{k\py@ ak{}#1}
+\py@DRC{\kai}{k\py@ aki#1i}
+\py@DRC{\kan}{k\py@ akn#1n}
+\py@DRC{\kang}{k\py@ akn#1ng}
+\py@DRC{\kao}{k\py@ ako#1o}
+\py@DRC{\ke}{k\py@ ek{}#1}
+\py@DRC{\kei}{k\py@ eki#1i}
+\py@DRC{\ken}{k\py@ ekn#1n}
+\py@DRC{\keng}{k\py@ ekn#1ng}
+\py@DRC{\kong}{k\py@ okn#1ng}
+\py@DRC{\kou}{k\py@ oku#1u}
+\py@DRC{\ku}{k\py@ uk{}#1}
+\py@DRC{\kua}{ku\py@ au{}#1}
+\py@DRC{\kuai}{ku\py@ aui#1i}
+\py@DRC{\kuan}{ku\py@ aun#1n}
+\py@DRC{\kuang}{ku\py@ aun#1ng}
+\py@DRC{\kui}{ku\py@ iu{}#1}
+\py@DRC{\kun}{k\py@ ukn#1n}
+\py@DRC{\kuo}{ku\py@ ou{}#1}
+
+\py@DRC{\la}{l\py@ al{}#1}
+\py@DRC{\lai}{l\py@ ali#1i}
+\py@DRC{\lan}{l\py@ aln#1n}
+\py@DRC{\lang}{l\py@ aln#1ng}
+\py@DRC{\lao}{l\py@ alo#1o}
+\py@DRC{\py@le}{l\py@ el{}#1}
+\py@DRC{\lei}{l\py@ eli#1i}
+\py@DRC{\leng}{l\py@ eln#1ng}
+\py@DRC{\li}{l\py@ il{}#1}
+\py@DRC{\lia}{li\py@ ai{}#1}
+\py@DRC{\lian}{li\py@ ain#1n}
+\py@DRC{\liang}{li\py@ ain#1ng}
+\py@DRC{\liao}{li\py@ aio#1o}
+\py@DRC{\lie}{li\py@ ei{}#1}
+\py@DRC{\lin}{l\py@ iln#1n}
+\py@DRC{\ling}{l\py@ iln#1ng}
+\py@DRC{\liu}{li\py@ ui{}#1}
+\py@DRC{\Long}{l\py@ oln#1ng}
+\py@DRC{\lou}{l\py@ olu#1u}
+\py@DRC{\lu}{l\py@ ul{}#1}
+\py@DRC{\luan}{lu\py@ aun#1n}
+\py@DRC{\lun}{l\py@ uln#1n}
+\py@DRC{\luo}{lu\py@ ou{}#1}
+\py@DRC{\lv}{l\py@ vl{}#1}
+\py@DRC{\lve}{l\"{u}\py@ ele#1}
+
+\py@DRC{\ma}{m\py@ am{}#1}
+\py@DRC{\mai}{m\py@ ami#1i}
+\py@DRC{\man}{m\py@ amn#1n}
+\py@DRC{\mang}{m\py@ amn#1ng}
+\py@DRC{\mao}{m\py@ amo#1o}
+\py@DRC{\me}{m\py@ em{}#1}
+\py@DRC{\mei}{m\py@ emi#1i}
+\py@DRC{\men}{m\py@ emn#1n}
+\py@DRC{\meng}{m\py@ emn#1ng}
+\py@DRC{\mi}{m\py@ im{}#1}
+\py@DRC{\mian}{mi\py@ ain#1n}
+\py@DRC{\miao}{mi\py@ aio#1o}
+\py@DRC{\mie}{mi\py@ ei{}#1}
+\py@DRC{\py@min}{m\py@ imn#1n}
+\py@DRC{\ming}{m\py@ imn#1ng}
+\py@DRC{\miu}{mi\py@ ui{}#1}
+\py@DRC{\mo}{m\py@ om{}#1}
+\py@DRC{\mou}{m\py@ omu#1u}
+\py@DRC{\py@mu}{m\py@ um{}#1}
+
+\py@DRC{\na}{n\py@ an{}#1}
+\py@DRC{\nai}{n\py@ ani#1i}
+\py@DRC{\nan}{n\py@ ann#1n}
+\py@DRC{\nang}{n\py@ ann#1ng}
+\py@DRC{\nao}{n\py@ ano#1o}
+\py@DRC{\py@ne}{n\py@ en{}#1}
+\py@DRC{\nei}{n\py@ eni#1i}
+\py@DRC{\nen}{n\py@ enn#1n}
+\py@DRC{\neng}{n\py@ enn#1ng}
+\py@DRC{\py@ni}{n\py@ in{}#1}
+\py@DRC{\nian}{ni\py@ ain#1n}
+\py@DRC{\niang}{ni\py@ ain#1ng}
+\py@DRC{\niao}{ni\py@ aio#1o}
+\py@DRC{\nie}{ni\py@ ei{}#1}
+\py@DRC{\nin}{n\py@ inn#1n}
+\py@DRC{\ning}{n\py@ inn#1ng}
+\py@DRC{\niu}{ni\py@ ui{}#1}
+\py@DRC{\nong}{n\py@ onn#1ng}
+\py@DRC{\nou}{n\py@ onu#1u}
+\py@DRC{\py@nu}{n\py@ un{}#1}
+\py@DRC{\nuan}{nu\py@ aun#1n}
+\py@DRC{\nuo}{nu\py@ ou{}#1}
+\py@DRC{\nv}{n\py@ vn{}#1}
+\py@DRC{\nve}{n\"{u}\py@ ene#1}
+
+\py@DRC{\py@@o}{\py@ o{}{}#1}
+\py@DRC{\ou}{\py@ o{}u#1u}
+
+\py@DRC{\pa}{p\py@ ap{}#1}
+\py@DRC{\pai}{p\py@ api#1i}
+\py@DRC{\pan}{p\py@ apn#1n}
+\py@DRC{\pang}{p\py@ apn#1ng}
+\py@DRC{\pao}{p\py@ apo#1o}
+\py@DRC{\pei}{p\py@ epi#1i}
+\py@DRC{\pen}{p\py@ epn#1n}
+\py@DRC{\peng}{p\py@ epn#1ng}
+\py@DRC{\py@pi}{p\py@ ip{}#1}
+\py@DRC{\pian}{pi\py@ ain#1n}
+\py@DRC{\piao}{pi\py@ aio#1o}
+\py@DRC{\pie}{pi\py@ ei{}#1}
+\py@DRC{\pin}{p\py@ ipn#1n}
+\py@DRC{\ping}{p\py@ ipn#1ng}
+\py@DRC{\po}{p\py@ op{}#1}
+\py@DRC{\pou}{p\py@ opu#1u}
+\py@DRC{\pu}{p\py@ up{}#1}
+
+\py@DRC{\qi}{q\py@ iq{}#1}
+\py@DRC{\qia}{qi\py@ ai{}#1}
+\py@DRC{\qian}{qi\py@ ain#1n}
+\py@DRC{\qiang}{qi\py@ ain#1ng}
+\py@DRC{\qiao}{qi\py@ aio#1o}
+\py@DRC{\qie}{qi\py@ ei{}#1}
+\py@DRC{\qin}{q\py@ iqn#1n}
+\py@DRC{\qing}{q\py@ iqn#1ng}
+\py@DRC{\qiong}{qi\py@ oin#1ng}
+\py@DRC{\qiu}{qi\py@ ui{}#1}
+\py@DRC{\qu}{q\py@ uq{}#1}
+\py@DRC{\quan}{qu\py@ aun#1n}
+\py@DRC{\que}{qu\py@ eu{}#1}
+\py@DRC{\qun}{q\py@ uqn#1n}
+
+\py@DRC{\ran}{r\py@ arn#1n}
+\py@DRC{\rang}{r\py@ arn#1ng}
+\py@DRC{\rao}{r\py@ aro#1o}
+\py@DRC{\re}{r\py@ er{}#1}
+\py@DRC{\ren}{r\py@ ern#1n}
+\py@DRC{\reng}{r\py@ ern#1ng}
+\py@DRC{\ri}{r\py@ ir{}#1}
+\py@DRC{\rong}{r\py@ orn#1ng}
+\py@DRC{\rou}{r\py@ oru#1u}
+\py@DRC{\ru}{r\py@ ur{}#1}
+\py@DRC{\rua}{ru\py@ au{}#1}
+\py@DRC{\ruan}{ru\py@ aun#1n}
+\py@DRC{\rui}{ru\py@ iu{}#1}
+\py@DRC{\run}{r\py@ urn#1n}
+\py@DRC{\ruo}{ru\py@ ou{}#1}
+
+\py@DRC{\sa}{s\py@ as{}#1}
+\py@DRC{\sai}{s\py@ asi#1i}
+\py@DRC{\san}{s\py@ asn#1n}
+\py@DRC{\sang}{s\py@ asn#1ng}
+\py@DRC{\sao}{s\py@ aso#1o}
+\py@DRC{\se}{s\py@ es{}#1}
+\py@DRC{\sen}{s\py@ esn#1n}
+\py@DRC{\seng}{s\py@ esn#1ng}
+\py@DRC{\sha}{sh\py@ ah{}#1}
+\py@DRC{\shai}{sh\py@ ahi#1i}
+\py@DRC{\shan}{sh\py@ ahn#1n}
+\py@DRC{\shang}{sh\py@ ahn#1ng}
+\py@DRC{\shao}{sh\py@ aho#1o}
+\py@DRC{\she}{sh\py@ eh{}#1}
+\py@DRC{\shei}{sh\py@ ehi#1i}
+\py@DRC{\shen}{sh\py@ ehn#1n}
+\py@DRC{\sheng}{sh\py@ ehn#1ng}
+\py@DRC{\shi}{sh\py@ ih{}#1}
+\py@DRC{\shou}{sh\py@ ohu#1u}
+\py@DRC{\shu}{sh\py@ uh{}#1}
+\py@DRC{\shua}{shu\py@ au{}#1}
+\py@DRC{\shuai}{shu\py@ aui#1i}
+\py@DRC{\shuan}{shu\py@ aun#1n}
+\py@DRC{\shuang}{shu\py@ aun#1ng}
+\py@DRC{\shui}{shu\py@ iu{}#1}
+\py@DRC{\shun}{sh\py@ uhn#1n}
+\py@DRC{\shuo}{shu\py@ ou{}#1}
+\py@DRC{\si}{s\py@ is{}#1}
+\py@DRC{\song}{s\py@ osn#1ng}
+\py@DRC{\sou}{s\py@ osu#1u}
+\py@DRC{\su}{s\py@ us{}#1}
+\py@DRC{\suan}{su\py@ aun#1n}
+\py@DRC{\sui}{su\py@ iu{}#1}
+\py@DRC{\sun}{s\py@ usn#1n}
+\py@DRC{\suo}{su\py@ ou{}#1}
+
+\py@DRC{\ta}{t\py@ at{}#1}
+\py@DRC{\tai}{t\py@ ati#1i}
+\py@DRC{\py@tan}{t\py@ atn#1n}
+\py@DRC{\tang}{t\py@ atn#1ng}
+\py@DRC{\tao}{t\py@ ato#1o}
+\py@DRC{\te}{t\py@ et{}#1}
+\py@DRC{\tei}{t\py@ eti#1i}
+\py@DRC{\teng}{t\py@ etn#1ng}
+\py@DRC{\ti}{t\py@ it{}#1}
+\py@DRC{\tian}{ti\py@ ain#1n}
+\py@DRC{\tiao}{ti\py@ aio#1o}
+\py@DRC{\tie}{ti\py@ ei{}#1}
+\py@DRC{\ting}{t\py@ itn#1ng}
+\py@DRC{\tong}{t\py@ otn#1ng}
+\py@DRC{\tou}{t\py@ otu#1u}
+\py@DRC{\tu}{t\py@ ut{}#1}
+\py@DRC{\tuan}{tu\py@ aun#1n}
+\py@DRC{\tui}{tu\py@ iu{}#1}
+\py@DRC{\tun}{t\py@ utn#1n}
+\py@DRC{\tuo}{tu\py@ ou{}#1}
+
+\py@DRC{\wa}{w\py@ aw{}#1}
+\py@DRC{\wai}{w\py@ awi#1i}
+\py@DRC{\wan}{w\py@ awn#1n}
+\py@DRC{\wang}{w\py@ awn#1ng}
+\py@DRC{\wei}{w\py@ ewi#1i}
+\py@DRC{\wen}{w\py@ ewn#1n}
+\py@DRC{\weng}{w\py@ ewn#1ng}
+\py@DRC{\wo}{w\py@ ow{}#1}
+\py@DRC{\wu}{w\py@ uw{}#1}
+
+\py@DRC{\py@xi}{x\py@ ix{}#1}
+\py@DRC{\xia}{xi\py@ ai{}#1}
+\py@DRC{\xian}{xi\py@ ain#1n}
+\py@DRC{\xiang}{xi\py@ ain#1ng}
+\py@DRC{\xiao}{xi\py@ aio#1o}
+\py@DRC{\xie}{xi\py@ ei{}#1}
+\py@DRC{\xin}{x\py@ ixn#1n}
+\py@DRC{\xing}{x\py@ ixn#1ng}
+\py@DRC{\xiong}{xi\py@ oin#1ng}
+\py@DRC{\xiu}{xi\py@ ui{}#1}
+\py@DRC{\xu}{x\py@ ux{}#1}
+\py@DRC{\xuan}{xu\py@ aun#1n}
+\py@DRC{\xue}{xu\py@ eu{}#1}
+\py@DRC{\xun}{x\py@ uxn#1n}
+
+\py@DRC{\ya}{y\py@ ay{}#1}
+\py@DRC{\yan}{y\py@ ayn#1n}
+\py@DRC{\yang}{y\py@ ayn#1ng}
+\py@DRC{\yao}{y\py@ ayo#1o}
+\py@DRC{\ye}{y\py@ ey{}#1}
+\py@DRC{\yi}{y\py@ iy{}#1}
+\py@DRC{\yin}{y\py@ iyn#1n}
+\py@DRC{\ying}{y\py@ iyn#1ng}
+\py@DRC{\yo}{y\py@ oy{}#1}
+\py@DRC{\yong}{y\py@ oyn#1ng}
+\py@DRC{\you}{y\py@ oyu#1u}
+\py@DRC{\yu}{y\py@ uy{}#1}
+\py@DRC{\yuan}{yu\py@ aun#1n}
+\py@DRC{\yue}{yu\py@ eu{}#1}
+\py@DRC{\yun}{y\py@ uyn#1n}
+
+\py@DRC{\za}{z\py@ az{}#1}
+\py@DRC{\zai}{z\py@ azi#1i}
+\py@DRC{\zan}{z\py@ azn#1n}
+\py@DRC{\zang}{z\py@ azn#1ng}
+\py@DRC{\zao}{z\py@ azo#1o}
+\py@DRC{\ze}{z\py@ ez{}#1}
+\py@DRC{\zei}{z\py@ ezi#1i}
+\py@DRC{\zen}{z\py@ ezn#1n}
+\py@DRC{\zeng}{z\py@ ezn#1ng}
+\py@DRC{\zha}{zh\py@ ah{}#1}
+\py@DRC{\zhai}{zh\py@ ahi#1i}
+\py@DRC{\zhan}{zh\py@ ahn#1n}
+\py@DRC{\zhang}{zh\py@ ahn#1ng}
+\py@DRC{\zhao}{zh\py@ aho#1o}
+\py@DRC{\zhe}{zh\py@ eh{}#1}
+\py@DRC{\zhei}{zh\py@ ehi#1i}
+\py@DRC{\zhen}{zh\py@ ehn#1n}
+\py@DRC{\zheng}{zh\py@ ehn#1ng}
+\py@DRC{\zhi}{zh\py@ ih{}#1}
+\py@DRC{\zhong}{zh\py@ ohn#1ng}
+\py@DRC{\zhou}{zh\py@ ohu#1u}
+\py@DRC{\zhu}{zh\py@ uh{}#1}
+\py@DRC{\zhua}{zhu\py@ au{}#1}
+\py@DRC{\zhuai}{zhu\py@ aui#1i}
+\py@DRC{\zhuan}{zhu\py@ aun#1n}
+\py@DRC{\zhuang}{zhu\py@ aun#1ng}
+\py@DRC{\zhui}{zhu\py@ iu{}#1}
+\py@DRC{\zhun}{zh\py@ uhn#1n}
+\py@DRC{\zhuo}{zhu\py@ ou{}#1}
+\py@DRC{\zi}{z\py@ iz{}#1}
+\py@DRC{\zong}{z\py@ ozn#1ng}
+\py@DRC{\zou}{z\py@ ozu#1u}
+\py@DRC{\zu}{z\py@ uz{}#1}
+\py@DRC{\zuan}{zu\py@ aun#1n}
+\py@DRC{\zui}{zu\py@ iu{}#1}
+\py@DRC{\zun}{z\py@ uzn#1n}
+\py@DRC{\zuo}{zu\py@ ou{}#1}
+
+
+\py@DRC{\A}{\py@ A{}{}#1}
+\py@DRC{\Ai}{\py@ A{}i#1i}
+\py@DRC{\An}{\py@ A{}n#1n}
+\py@DRC{\Ang}{\py@ A{}n#1ng}
+\py@DRC{\Ao}{\py@ A{}o#1o}
+
+\py@DRC{\Ba}{B\py@ aB{}#1}
+\py@DRC{\Bai}{B\py@ aBi#1i}
+\py@DRC{\Ban}{B\py@ aBn#1n}
+\py@DRC{\Bang}{B\py@ aBn#1ng}
+\py@DRC{\Bao}{B\py@ aBo#1o}
+\py@DRC{\Bei}{B\py@ eBi#1i}
+\py@DRC{\Ben}{B\py@ eBn#1n}
+\py@DRC{\Beng}{B\py@ eBn#1ng}
+\py@DRC{\Bi}{B\py@ iB{}#1}
+\py@DRC{\Bian}{Bi\py@ ain#1n}
+\py@DRC{\Biao}{Bi\py@ aio#1o}
+\py@DRC{\Bie}{Bi\py@ ei{}#1}
+\py@DRC{\Bin}{B\py@ iBn#1n}
+\py@DRC{\Bing}{B\py@ iBn#1ng}
+\py@DRC{\Bo}{B\py@ oB{}#1}
+\py@DRC{\Bu}{B\py@ uB{}#1}
+
+\py@DRC{\Ca}{C\py@ aC{}#1}
+\py@DRC{\Cai}{C\py@ aCi#1i}
+\py@DRC{\Can}{C\py@ aCn#1n}
+\py@DRC{\Cang}{C\py@ aCn#1ng}
+\py@DRC{\Cao}{C\py@ aCo#1o}
+\py@DRC{\Ce}{C\py@ eC{}#1}
+\py@DRC{\Cen}{C\py@ eCn#1n}
+\py@DRC{\Ceng}{C\py@ eCn#1ng}
+\py@DRC{\Cha}{Ch\py@ ah{}#1}
+\py@DRC{\Chai}{Ch\py@ ahi#1i}
+\py@DRC{\Chan}{Ch\py@ ahn#1n}
+\py@DRC{\Chang}{Ch\py@ ahn#1ng}
+\py@DRC{\Chao}{Ch\py@ aho#1o}
+\py@DRC{\Che}{Ch\py@ eh{}#1}
+\py@DRC{\Chen}{Ch\py@ ehn#1n}
+\py@DRC{\Cheng}{Ch\py@ ehn#1ng}
+\py@DRC{\Chi}{Ch\py@ ih{}#1}
+\py@DRC{\Chong}{Ch\py@ ohn#1ng}
+\py@DRC{\Chou}{Ch\py@ ohu#1u}
+\py@DRC{\Chu}{Ch\py@ uh{}#1}
+\py@DRC{\Chuai}{Chu\py@ aui#1i}
+\py@DRC{\Chuan}{Chu\py@ aun#1n}
+\py@DRC{\Chuang}{Chu\py@ aun#1ng}
+\py@DRC{\Chui}{Chu\py@ iu{}#1}
+\py@DRC{\Chun}{Ch\py@ uhn#1n}
+\py@DRC{\Chuo}{Chu\py@ ou{}#1}
+\py@DRC{\Ci}{C\py@ iC{}#1}
+\py@DRC{\Cong}{C\py@ oCn#1ng}
+\py@DRC{\Cou}{C\py@ oCu#1u}
+\py@DRC{\Cu}{C\py@ uC{}#1}
+\py@DRC{\Cuan}{Cu\py@ aun#1n}
+\py@DRC{\Cui}{Cu\py@ iu{}#1}
+\py@DRC{\Cun}{C\py@ uCn#1n}
+\py@DRC{\Cuo}{Cu\py@ ou{}#1}
+
+\py@DRC{\Da}{D\py@ aD{}#1}
+\py@DRC{\Dai}{D\py@ aDi#1i}
+\py@DRC{\Dan}{D\py@ aDn#1n}
+\py@DRC{\Dang}{D\py@ aDn#1ng}
+\py@DRC{\Dao}{D\py@ aDo#1o}
+\py@DRC{\De}{D\py@ eD{}#1}
+\py@DRC{\Dei}{D\py@ eDi#1i}
+\py@DRC{\Deng}{D\py@ eDn#1ng}
+\py@DRC{\Di}{D\py@ iD{}#1}
+\py@DRC{\Dian}{Di\py@ ain#1n}
+\py@DRC{\Diao}{Di\py@ aio#1o}
+\py@DRC{\Die}{Di\py@ ei{}#1}
+\py@DRC{\Ding}{D\py@ iDn#1ng}
+\py@DRC{\Diu}{Di\py@ ui{}#1}
+\py@DRC{\Dong}{D\py@ oDn#1ng}
+\py@DRC{\Dou}{D\py@ oDu#1u}
+\py@DRC{\Du}{D\py@ uD{}#1}
+\py@DRC{\Duan}{Du\py@ aun#1n}
+\py@DRC{\Dui}{Du\py@ iu{}#1}
+\py@DRC{\Dun}{D\py@ uDn#1n}
+\py@DRC{\Duo}{Du\py@ ou{}#1}
+
+\py@DRC{\E}{\py@ E{}{}#1}
+\py@DRC{\Ei}{\py@ E{}i#1i}
+\py@DRC{\En}{\py@ E{}n#1n}
+\py@DRC{\Eng}{\py@ E{}n#1ng}
+\py@DRC{\Er}{\py@ E{}r#1r}
+
+\py@DRC{\Fa}{F\py@ aF{}#1}
+\py@DRC{\Fan}{F\py@ aFn#1n}
+\py@DRC{\Fang}{F\py@ aFn#1ng}
+\py@DRC{\Fei}{F\py@ eFi#1i}
+\py@DRC{\Fen}{F\py@ eFn#1n}
+\py@DRC{\Feng}{F\py@ eFn#1ng}
+\py@DRC{\Fiao}{Fi\py@ aio#1o}
+\py@DRC{\Fo}{F\py@ oF{}#1}
+\py@DRC{\Fou}{F\py@ oFu#1u}
+\py@DRC{\Fu}{F\py@ uF{}#1}
+
+\py@DRC{\Ga}{G\py@ aG{}#1}
+\py@DRC{\Gai}{G\py@ aGi#1i}
+\py@DRC{\Gan}{G\py@ aGn#1n}
+\py@DRC{\Gang}{G\py@ aGn#1ng}
+\py@DRC{\Gao}{G\py@ aGo#1o}
+\py@DRC{\Ge}{G\py@ eG{}#1}
+\py@DRC{\Gei}{G\py@ eGi#1i}
+\py@DRC{\Gen}{G\py@ eGn#1n}
+\py@DRC{\Geng}{G\py@ eGn#1ng}
+\py@DRC{\Gong}{G\py@ oGn#1ng}
+\py@DRC{\Gou}{G\py@ oGu#1u}
+\py@DRC{\Gu}{G\py@ uG{}#1}
+\py@DRC{\Gua}{Gu\py@ au{}#1}
+\py@DRC{\Guai}{Gu\py@ aui#1i}
+\py@DRC{\Guan}{Gu\py@ aun#1n}
+\py@DRC{\Guang}{Gu\py@ aun#1ng}
+\py@DRC{\Gui}{Gu\py@ iu{}#1}
+\py@DRC{\Gun}{G\py@ uGn#1n}
+\py@DRC{\Guo}{Gu\py@ ou{}#1}
+
+\py@DRC{\Ha}{H\py@ aH{}#1}
+\py@DRC{\Hai}{H\py@ aHi#1i}
+\py@DRC{\Han}{H\py@ aHn#1n}
+\py@DRC{\Hang}{H\py@ aHn#1ng}
+\py@DRC{\Hao}{H\py@ aHo#1o}
+\py@DRC{\He}{H\py@ eH{}#1}
+\py@DRC{\Hei}{H\py@ eHi#1i}
+\py@DRC{\Hen}{H\py@ eHn#1n}
+\py@DRC{\Heng}{H\py@ eHn#1ng}
+\py@DRC{\Hong}{H\py@ oHn#1ng}
+\py@DRC{\Hou}{H\py@ oHu#1u}
+\py@DRC{\Hu}{H\py@ uH{}#1}
+\py@DRC{\Hua}{Hu\py@ au{}#1}
+\py@DRC{\Huai}{Hu\py@ aui#1i}
+\py@DRC{\Huan}{Hu\py@ aun#1n}
+\py@DRC{\Huang}{Hu\py@ aun#1ng}
+\py@DRC{\Hui}{Hu\py@ iu{}#1}
+\py@DRC{\Hun}{H\py@ uHn#1n}
+\py@DRC{\Huo}{Hu\py@ ou{}#1}
+
+\py@DRC{\Ji}{J\py@ iJ{}#1}
+\py@DRC{\Jia}{Ji\py@ ai{}#1}
+\py@DRC{\Jian}{Ji\py@ ain#1n}
+\py@DRC{\Jiang}{Ji\py@ ain#1ng}
+\py@DRC{\Jiao}{Ji\py@ aio#1o}
+\py@DRC{\Jie}{Ji\py@ ei{}#1}
+\py@DRC{\Jin}{J\py@ iJn#1n}
+\py@DRC{\Jing}{J\py@ iJn#1ng}
+\py@DRC{\Jiong}{Ji\py@ oin#1ng}
+\py@DRC{\Jiu}{Ji\py@ ui{}#1}
+\py@DRC{\Ju}{J\py@ uJ{}#1}
+\py@DRC{\Juan}{Ju\py@ aun#1n}
+\py@DRC{\Jue}{Ju\py@ eu{}#1}
+\py@DRC{\Jun}{J\py@ uJn#1n}
+
+\py@DRC{\Ka}{K\py@ aK{}#1}
+\py@DRC{\Kai}{K\py@ aKi#1i}
+\py@DRC{\Kan}{K\py@ aKn#1n}
+\py@DRC{\Kang}{K\py@ aKn#1ng}
+\py@DRC{\Kao}{K\py@ aKo#1o}
+\py@DRC{\Ke}{K\py@ eK{}#1}
+\py@DRC{\Kei}{K\py@ eKi#1i}
+\py@DRC{\Ken}{K\py@ eKn#1n}
+\py@DRC{\Keng}{K\py@ eKn#1ng}
+\py@DRC{\Kong}{K\py@ oKn#1ng}
+\py@DRC{\Kou}{K\py@ oKu#1u}
+\py@DRC{\Ku}{K\py@ uK{}#1}
+\py@DRC{\Kua}{Ku\py@ au{}#1}
+\py@DRC{\Kuai}{Ku\py@ aui#1i}
+\py@DRC{\Kuan}{Ku\py@ aun#1n}
+\py@DRC{\Kuang}{Ku\py@ aun#1ng}
+\py@DRC{\Kui}{Ku\py@ iu{}#1}
+\py@DRC{\Kun}{K\py@ uKn#1n}
+\py@DRC{\Kuo}{Ku\py@ ou{}#1}
+
+\py@DRC{\La}{L\py@ aL{}#1}
+\py@DRC{\Lai}{L\py@ aLi#1i}
+\py@DRC{\Lan}{L\py@ aLn#1n}
+\py@DRC{\Lang}{L\py@ aLn#1ng}
+\py@DRC{\Lao}{L\py@ aLo#1o}
+\py@DRC{\Le}{L\py@ eL{}#1}
+\py@DRC{\Lei}{L\py@ eLi#1i}
+\py@DRC{\Leng}{L\py@ eLn#1ng}
+\py@DRC{\Li}{L\py@ iL{}#1}
+\py@DRC{\Lia}{Li\py@ ai{}#1}
+\py@DRC{\Lian}{Li\py@ ain#1n}
+\py@DRC{\Liang}{Li\py@ ain#1ng}
+\py@DRC{\Liao}{Li\py@ aio#1o}
+\py@DRC{\Lie}{Li\py@ ei{}#1}
+\py@DRC{\Lin}{L\py@ iLn#1n}
+\py@DRC{\Ling}{L\py@ iLn#1ng}
+\py@DRC{\Liu}{Li\py@ ui{}#1}
+\py@DRC{\LONG}{L\py@ oLn#1ng}
+\py@DRC{\Lou}{L\py@ oLu#1u}
+\py@DRC{\Lu}{L\py@ uL{}#1}
+\py@DRC{\Luan}{Lu\py@ aun#1n}
+\py@DRC{\Lun}{L\py@ uLn#1n}
+\py@DRC{\Luo}{Lu\py@ ou{}#1}
+\py@DRC{\Lv}{L\py@ vL{}#1}
+\py@DRC{\Lve}{L\"{u}\py@ eLe#1}
+
+\py@DRC{\Ma}{M\py@ aM{}#1}
+\py@DRC{\Mai}{M\py@ aMi#1i}
+\py@DRC{\Man}{M\py@ aMn#1n}
+\py@DRC{\Mang}{M\py@ aMn#1ng}
+\py@DRC{\Mao}{M\py@ aMo#1o}
+\py@DRC{\Mei}{M\py@ eMi#1i}
+\py@DRC{\Men}{M\py@ eMn#1n}
+\py@DRC{\Meng}{M\py@ eMn#1ng}
+\py@DRC{\Mi}{M\py@ iM{}#1}
+\py@DRC{\Mian}{Mi\py@ ain#1n}
+\py@DRC{\Miao}{Mi\py@ aio#1o}
+\py@DRC{\Mie}{Mi\py@ ei{}#1}
+\py@DRC{\Min}{M\py@ iMn#1n}
+\py@DRC{\Ming}{M\py@ iMn#1ng}
+\py@DRC{\Miu}{Mi\py@ ui{}#1}
+\py@DRC{\Mo}{M\py@ oM{}#1}
+\py@DRC{\Mou}{M\py@ oMu#1u}
+\py@DRC{\Mu}{M\py@ uM{}#1}
+
+\py@DRC{\Na}{N\py@ aN{}#1}
+\py@DRC{\Nai}{N\py@ aNi#1i}
+\py@DRC{\Nan}{N\py@ aNn#1n}
+\py@DRC{\Nang}{N\py@ aNn#1ng}
+\py@DRC{\Nao}{N\py@ aNo#1o}
+\py@DRC{\Ne}{N\py@ eN{}#1}
+\py@DRC{\Nei}{N\py@ eNi#1i}
+\py@DRC{\Nen}{N\py@ eNn#1n}
+\py@DRC{\Neng}{N\py@ eNn#1ng}
+\py@DRC{\Ni}{N\py@ iN{}#1}
+\py@DRC{\Nian}{Ni\py@ ain#1n}
+\py@DRC{\Niang}{Ni\py@ ain#1ng}
+\py@DRC{\Niao}{Ni\py@ aio#1o}
+\py@DRC{\Nie}{Ni\py@ ei{}#1}
+\py@DRC{\Nin}{N\py@ iNn#1n}
+\py@DRC{\Ning}{N\py@ iNn#1ng}
+\py@DRC{\Niu}{Ni\py@ ui{}#1}
+\py@DRC{\Nong}{N\py@ oNn#1ng}
+\py@DRC{\Nou}{N\py@ oNu#1u}
+\py@DRC{\Nu}{N\py@ uN{}#1}
+\py@DRC{\Nuan}{Nu\py@ aun#1n}
+\py@DRC{\Nuo}{Nu\py@ ou{}#1}
+\py@DRC{\Nv}{N\py@ vN{}#1}
+\py@DRC{\Nve}{N\"{u}\py@ eNe#1}
+
+\py@DRC{\py@@O}{\py@ O{}{}#1}
+\py@DRC{\Ou}{\py@ O{}u#1u}
+
+\py@DRC{\Pa}{P\py@ aP{}#1}
+\py@DRC{\Pai}{P\py@ aPi#1i}
+\py@DRC{\Pan}{P\py@ aPn#1n}
+\py@DRC{\Pang}{P\py@ aPn#1ng}
+\py@DRC{\Pao}{P\py@ aPo#1o}
+\py@DRC{\Pei}{P\py@ ePi#1i}
+\py@DRC{\Pen}{P\py@ ePn#1n}
+\py@DRC{\Peng}{P\py@ ePn#1ng}
+\py@DRC{\py@Pi}{P\py@ iP{}#1}
+\py@DRC{\Pian}{Pi\py@ ain#1n}
+\py@DRC{\Piao}{Pi\py@ aio#1o}
+\py@DRC{\Pie}{Pi\py@ ei{}#1}
+\py@DRC{\Pin}{P\py@ iPn#1n}
+\py@DRC{\Ping}{P\py@ iPn#1ng}
+\py@DRC{\Po}{P\py@ oP{}#1}
+\py@DRC{\Pou}{P\py@ oPu#1u}
+\py@DRC{\Pu}{P\py@ uP{}#1}
+
+\py@DRC{\Qi}{Q\py@ iQ{}#1}
+\py@DRC{\Qia}{Qi\py@ ai{}#1}
+\py@DRC{\Qian}{Qi\py@ ain#1n}
+\py@DRC{\Qiang}{Qi\py@ ain#1ng}
+\py@DRC{\Qiao}{Qi\py@ aio#1o}
+\py@DRC{\Qie}{Qi\py@ ei{}#1}
+\py@DRC{\Qin}{Q\py@ iQn#1n}
+\py@DRC{\Qing}{Q\py@ iQn#1ng}
+\py@DRC{\Qiong}{Qi\py@ oin#1ng}
+\py@DRC{\Qiu}{Qi\py@ ui{}#1}
+\py@DRC{\Qu}{Q\py@ uQ{}#1}
+\py@DRC{\Quan}{Qu\py@ aun#1n}
+\py@DRC{\Que}{Qu\py@ eu{}#1}
+\py@DRC{\Qun}{Q\py@ uQn#1n}
+
+\py@DRC{\Ran}{R\py@ aRn#1n}
+\py@DRC{\Rang}{R\py@ aRn#1ng}
+\py@DRC{\Rao}{R\py@ aRo#1o}
+\py@DRC{\py@Re}{R\py@ eR{}#1}
+\py@DRC{\Ren}{R\py@ eRn#1n}
+\py@DRC{\Reng}{R\py@ eRn#1ng}
+\py@DRC{\Ri}{R\py@ iR{}#1}
+\py@DRC{\Rong}{R\py@ oRn#1ng}
+\py@DRC{\Rou}{R\py@ oRu#1u}
+\py@DRC{\Ru}{R\py@ uR{}#1}
+\py@DRC{\Ruan}{Ru\py@ aun#1n}
+\py@DRC{\Rui}{Ru\py@ iu{}#1}
+\py@DRC{\Run}{R\py@ uRn#1n}
+\py@DRC{\Ruo}{Ru\py@ ou{}#1}
+
+\py@DRC{\Sa}{S\py@ aS{}#1}
+\py@DRC{\Sai}{S\py@ aSi#1i}
+\py@DRC{\San}{S\py@ aSn#1n}
+\py@DRC{\Sang}{S\py@ aSn#1ng}
+\py@DRC{\Sao}{S\py@ aSo#1o}
+\py@DRC{\Se}{S\py@ eS{}#1}
+\py@DRC{\Sen}{S\py@ eSn#1n}
+\py@DRC{\Seng}{S\py@ eSn#1ng}
+\py@DRC{\Sha}{Sh\py@ ah{}#1}
+\py@DRC{\Shai}{Sh\py@ ahi#1i}
+\py@DRC{\Shan}{Sh\py@ ahn#1n}
+\py@DRC{\Shang}{Sh\py@ ahn#1ng}
+\py@DRC{\Shao}{Sh\py@ aho#1o}
+\py@DRC{\She}{Sh\py@ eh{}#1}
+\py@DRC{\Shei}{Sh\py@ ehi#1i}
+\py@DRC{\Shen}{Sh\py@ ehn#1n}
+\py@DRC{\Sheng}{Sh\py@ ehn#1ng}
+\py@DRC{\Shi}{Sh\py@ ih{}#1}
+\py@DRC{\Shou}{Sh\py@ ohu#1u}
+\py@DRC{\Shu}{Sh\py@ uh{}#1}
+\py@DRC{\Shua}{Shu\py@ au{}#1}
+\py@DRC{\Shuai}{Shu\py@ aui#1i}
+\py@DRC{\Shuan}{Shu\py@ aun#1n}
+\py@DRC{\Shuang}{Shu\py@ aun#1ng}
+\py@DRC{\Shui}{Shu\py@ iu{}#1}
+\py@DRC{\Shun}{Sh\py@ uhn#1n}
+\py@DRC{\Shuo}{Shu\py@ ou{}#1}
+\py@DRC{\Si}{S\py@ iS{}#1}
+\py@DRC{\Song}{S\py@ oSn#1ng}
+\py@DRC{\Sou}{S\py@ oSu#1u}
+\py@DRC{\Su}{S\py@ uS{}#1}
+\py@DRC{\Suan}{Su\py@ aun#1n}
+\py@DRC{\Sui}{Su\py@ iu{}#1}
+\py@DRC{\Sun}{S\py@ uSn#1n}
+\py@DRC{\Suo}{Su\py@ ou{}#1}
+
+\py@DRC{\Ta}{T\py@ aT{}#1}
+\py@DRC{\Tai}{T\py@ aTi#1i}
+\py@DRC{\Tan}{T\py@ aTn#1n}
+\py@DRC{\Tang}{T\py@ aTn#1ng}
+\py@DRC{\Tao}{T\py@ aTo#1o}
+\py@DRC{\Te}{T\py@ eT{}#1}
+\py@DRC{\Tei}{T\py@ eTi#1i}
+\py@DRC{\Teng}{T\py@ eTn#1ng}
+\py@DRC{\Ti}{T\py@ iT{}#1}
+\py@DRC{\Tian}{Ti\py@ ain#1n}
+\py@DRC{\Tiao}{Ti\py@ aio#1o}
+\py@DRC{\Tie}{Ti\py@ ei{}#1}
+\py@DRC{\Ting}{T\py@ iTn#1ng}
+\py@DRC{\Tong}{T\py@ oTn#1ng}
+\py@DRC{\Tou}{T\py@ oTu#1u}
+\py@DRC{\Tu}{T\py@ uT{}#1}
+\py@DRC{\Tuan}{Tu\py@ aun#1n}
+\py@DRC{\Tui}{Tu\py@ iu{}#1}
+\py@DRC{\Tun}{T\py@ uTn#1n}
+\py@DRC{\Tuo}{Tu\py@ ou{}#1}
+
+\py@DRC{\Wa}{W\py@ aW{}#1}
+\py@DRC{\Wai}{W\py@ aWi#1i}
+\py@DRC{\Wan}{W\py@ aWn#1n}
+\py@DRC{\Wang}{W\py@ aWn#1ng}
+\py@DRC{\Wei}{W\py@ eWi#1i}
+\py@DRC{\Wen}{W\py@ eWn#1n}
+\py@DRC{\Weng}{W\py@ eWn#1ng}
+\py@DRC{\Wo}{W\py@ oW{}#1}
+\py@DRC{\Wu}{W\py@ uW{}#1}
+
+\py@DRC{\py@Xi}{X\py@ iX{}#1}
+\py@DRC{\Xia}{Xi\py@ ai{}#1}
+\py@DRC{\Xian}{Xi\py@ ain#1n}
+\py@DRC{\Xiang}{Xi\py@ ain#1ng}
+\py@DRC{\Xiao}{Xi\py@ aio#1o}
+\py@DRC{\Xie}{Xi\py@ ei{}#1}
+\py@DRC{\Xin}{X\py@ iXn#1n}
+\py@DRC{\Xing}{X\py@ iXn#1ng}
+\py@DRC{\Xiong}{Xi\py@ oin#1ng}
+\py@DRC{\Xiu}{Xi\py@ ui{}#1}
+\py@DRC{\Xu}{X\py@ uX{}#1}
+\py@DRC{\Xuan}{Xu\py@ aun#1n}
+\py@DRC{\Xue}{Xu\py@ eu{}#1}
+\py@DRC{\Xun}{X\py@ uXn#1n}
+
+\py@DRC{\Ya}{Y\py@ aY{}#1}
+\py@DRC{\Yan}{Y\py@ aYn#1n}
+\py@DRC{\Yang}{Y\py@ aYn#1ng}
+\py@DRC{\Yao}{Y\py@ aYo#1o}
+\py@DRC{\Ye}{Y\py@ eY{}#1}
+\py@DRC{\Yi}{Y\py@ iY{}#1}
+\py@DRC{\Yin}{Y\py@ iYn#1n}
+\py@DRC{\Ying}{Y\py@ iYn#1ng}
+\py@DRC{\Yo}{Y\py@ oY{}#1}
+\py@DRC{\Yong}{Y\py@ oYn#1ng}
+\py@DRC{\You}{Y\py@ oYu#1u}
+\py@DRC{\Yu}{Y\py@ uY{}#1}
+\py@DRC{\Yuan}{Yu\py@ aun#1n}
+\py@DRC{\Yue}{Yu\py@ eu{}#1}
+\py@DRC{\Yun}{Y\py@ uYn#1n}
+
+\py@DRC{\Za}{Z\py@ aZ{}#1}
+\py@DRC{\Zai}{Z\py@ aZi#1i}
+\py@DRC{\Zan}{Z\py@ aZn#1n}
+\py@DRC{\Zang}{Z\py@ aZn#1ng}
+\py@DRC{\Zao}{Z\py@ aZo#1o}
+\py@DRC{\Ze}{Z\py@ eZ{}#1}
+\py@DRC{\Zei}{Z\py@ eZi#1i}
+\py@DRC{\Zen}{Z\py@ eZn#1n}
+\py@DRC{\Zeng}{Z\py@ eZn#1ng}
+\py@DRC{\Zha}{Zh\py@ ah{}#1}
+\py@DRC{\Zhai}{Zh\py@ ahi#1i}
+\py@DRC{\Zhan}{Zh\py@ ahn#1n}
+\py@DRC{\Zhang}{Zh\py@ ahn#1ng}
+\py@DRC{\Zhao}{Zh\py@ aho#1o}
+\py@DRC{\Zhe}{Zh\py@ eh{}#1}
+\py@DRC{\Zhei}{Zh\py@ ehi#1i}
+\py@DRC{\Zhen}{Zh\py@ ehn#1n}
+\py@DRC{\Zheng}{Zh\py@ ehn#1ng}
+\py@DRC{\Zhi}{Zh\py@ ih{}#1}
+\py@DRC{\Zhong}{Zh\py@ ohn#1ng}
+\py@DRC{\Zhou}{Zh\py@ ohu#1u}
+\py@DRC{\Zhu}{Zh\py@ uh{}#1}
+\py@DRC{\Zhua}{Zhu\py@ au{}#1}
+\py@DRC{\Zhuai}{Zhu\py@ aui#1i}
+\py@DRC{\Zhuan}{Zhu\py@ aun#1n}
+\py@DRC{\Zhuang}{Zhu\py@ aun#1ng}
+\py@DRC{\Zhui}{Zhu\py@ iu{}#1}
+\py@DRC{\Zhun}{Zh\py@ uhn#1n}
+\py@DRC{\Zhuo}{Zhu\py@ ou{}#1}
+\py@DRC{\Zi}{Z\py@ iZ{}#1}
+\py@DRC{\Zong}{Z\py@ oZn#1ng}
+\py@DRC{\Zou}{Z\py@ oZu#1u}
+\py@DRC{\Zu}{Z\py@ uZ{}#1}
+\py@DRC{\Zuan}{Zu\py@ aun#1n}
+\py@DRC{\Zui}{Zu\py@ iu{}#1}
+\py@DRC{\Zun}{Z\py@ uZn#1n}
+\py@DRC{\Zuo}{Zu\py@ ou{}#1}
+
+
+% We enable all pinyin syllables as the default.
+
+\PYactivate
+
+
+\endlinechar `\^^M
+\catcode`@=12
+
+\endinput

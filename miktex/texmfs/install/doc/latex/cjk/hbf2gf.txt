@@ -1,0 +1,382 @@
+This is the file hbf2gf.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+Using hbf2gf
+-------------
+
+hbf2gf converts CJK bitmaps with an HBF header file into GF files.
+
+Additional documentation can be found in the man page utils/hbf2gf/hbf2gf.1
+(pre-formatted versions of this document can be found in the `cjk-doc'
+bundle of CJK).
+
+
+Syntax:
+
+    hbf2gf [-q] configuration_file[.cfg]
+    hbf2gf [options] subfont_name x_resolution [y_scale | y_resolution]
+    hbf2gf -t [-q] font_name
+    hbf2gf --version | --help
+
+Options:
+    -q      make hbf2gf quiet
+    -p      don't create a PL file
+    -g      don't create a GF file
+    -n      use no resolution in extension (only `.gf')
+    -t      test for font_name (returns 0 on success)
+
+
+Keywords in the configuration file must start a line, the appropriate values
+being on the same line separated with one or more blanks or tabs.
+Environment variables names start with `$'; to get a dollar sign you must
+type `$$'.
+
+The expansion of environment variables in hbf2gf itself (without the help of
+the kpathsea library) is very limited; this feature has been carried over
+from previous versions. It can't expand variables set in texmf.cnf; it also
+can't handle more than one directory as the variable's value. Don't use it
+except for the `pk_directory' and `tfm_directory' parameters!
+
+Here is an example configuration file gsfs14.cfg (please refer to hbf2gf.1
+and hbf2gf.dvi for a description of the keywords) to be run under OS/2:
+
+hbf_header     jfs56.hbf
+mag_x          1
+design_size    14.4
+
+y_offset       -13
+comment        jianti fansongti 56x56 pixel font scaled and adapted to 14.4pt
+
+nmb_files      -1
+tfm_files      yes
+
+output_name    gsfs14
+
+checksum       123456789
+
+dpi_x          300
+
+coding         codingscheme GB 2312-80 encoded TeX text
+
+pk_directory   $HBF_TARGET\pixel.lj\432dpi\
+tfm_directory  $HBF_TARGET\tfm\
+
+rm_command     del
+cp_command     copy
+long_extension off
+job_extension  .cmd
+
+
+Installation of a complete set of subfonts
+------------------------------------------
+
+Here are the results of a sample run of the above configuration file
+(assuming that the environment variable %HBF_TARGET% points to d:\china):
+
+    input files: jfs56.a - jfs56.e, jfs56.hbf
+
+    program call: hbf2gf gsfs14.cfg
+
+    intermediate files: gsfs14.cmd, gsfs1401.gf - gsfs1432.gf, gsfs14.pl
+
+    batch file call: gsfs14.cmd
+
+    output files: d:\china\pixel.lj\432dpi\gsfs1401.pk - gsfs1432.pk,
+                  d:\china\tfm\gsfs1401.tfm - gsfs1432.tfm
+
+
+[gsfs: GuoBiao simple encoded FanSong style
+       ^       ^              ^  ^
+It's hard to overcome the DOS restriction of 8 characters in a file name if
+you need two characters as a running number...]
+
+
+Using MakeTeXPK or mktexpk
+--------------------------
+
+*****************************************************************************
+*                                                                           *
+* For teTeX >=1.0 and web2c >= 7.3.1, no patches are necessary for either   *
+* mktexpk or mktextfm.                                                      *
+*                                                                           *
+*****************************************************************************
+
+The simpler way to create PK fonts is to apply the patches in the
+utils/hbf2gf/scripts directory. In case you can't become root make sure that
+the patched file is found in the path *before* the original MakeTeXPK (or
+mktexpk) script.
+
+First of all, move the HBF files together with the bitmap font files to its
+final destination which has to be added to the variables $MISCFONTS, which
+can be either modified in texmf.cnf or set in the environment (please read
+the kpathsea info files how to do that). Now do the same with all `.cfg'
+files; the corresponding configuration variable is $HBF2GFINPUTS.
+
+Then, create a set of TFM files for the specified CJK bitmap font. This
+should be done with the hbf2gf configuration parameters `tfm_files yes' and
+`pk_files no' (to be modified in the `.cfg' files; see hbf2gf.dvi for a
+detailed description of all needed keywords). After calling the produced
+shell script the TFM files are installed. Note that if you change any hbf2gf
+parameters which alter the appearance of the font (the metrics, to be more
+exact) you must repeat this step so that TFM and PK files fit together.
+
+The previous step can be omitted in case you patch MakeTeXTFM or mktextfm
+too so that TFM files can be created on-the-fly.
+
+Please note further that in case you write a new hbf2gf configuration file,
+the name of that file must be the name stem of the CJK subfont (as defined
+in the appropriate FD file and the hbf2gf configuration file) plus `.cfg':
+
+    Example:
+
+        searched: gsfs1021.pk
+        configuration file: gsfs10.cfg
+
+The final step for web2c 6.x or teTeX 0.4 is to edit texmf.cnf (the kpathsea
+configuration file, usually in /usr/local/lib/texmf/web2c) and change the
+two variables
+
+        $PKFONTS.xdvi
+        $PKFONTS
+
+by appending
+
+        :$pkdir/hbf2gf
+
+to define an own `mode' for hbf2gf, similar to the modes `cx', `ljfour',
+etc. The TeX Directory Structure (TDS) standard suggests `modeless' for this
+name which is already defined in teTeX 1.0 and web2c 7.x.
+
+Example:
+
+  PKFONTS.xdvi=.:$pkdir/$MAKETEX_MODE:$pkdir/gsftopk:
+               $pkdir/ps2pk:$pkdir/hbf2gf
+  PKFONTS=.:$TEXMF/fonts//pk/$MAKETEX_MODE:$pkdir/hbf2gf
+
+The line break above is given for convenience only and should not appear
+in the texmf.cnf file (no space before and after the `:').
+
+[If you cannot become root, copy texmf.cnf into your home directory and do
+the modifications there; make sure that your personal config file is found
+in the search path first since web2c uses the first definition of each
+variable encountered.]
+
+If you use hbf2gf with two parameters (as in MakeTeXPK), only one GF file
+and one PL file is produced, and no batch file is created; the `pk_files'
+parameter is ignored. You can control with the switches -g and -p whether a
+GF or PL file is created at all.
+
+
+Using dvidrv.btm [emTeX for DOS and OS/2]
+-------------------------------------------
+
+This batch file does the same as MakeTeXPK and mktexpk; it is a replacement
+for dvidrv.exe of emTeX which can handle ttf2pk, hbf2gf, and ps2pk
+additionally (the ps2pk part is untested yet; it uses ps2pkmfj of the
+4allTeX distribution and was basically copied from a similar script, also
+part of 4allTeX).
+
+First of all, create and install a set of TFM files as described in the
+previous section.
+
+Then configure the following variables in dvidrv.btm:
+
+    ps2pk       ... set it to `yes' if you want to use this program
+    ttf2pk      ... ditto
+    hbf2gf      ... ditto
+
+    pkdir       ... the place where PK files created by ps2pk, ttf2pk,
+                    or hbf2gf should go to. dvidrv.btm adds
+                    `\modeless\XXXdpi' resp. `\modeless\dpiXXX' to this
+                    string (depending on the variables `pre_dpi' and
+                    `post_dpi')
+
+    ttfonts     ... where the TrueType fonts files reside
+    ttfcfg      ... where the auxiliary data files of ttf2pk reside
+
+    hbfonts     ... where the HBF files reside
+    hbfcfg      ... the place where the hbf2gf configuration files are
+
+The last four variables in the above list support trailing `!' and `!!' for
+recursive directory searching (see the dvidrv.doc of the emTeX package for
+details).
+
+Alternatively, you can set these variables in the environment; please note
+that no spaces are allowed before and after the equal sign, e.g.,
+
+  set foo=bar
+
+is OK, but
+
+  set foo = bar
+
+fails.
+
+Rename dvidrv.exe to dvidrv.ori or something similar and copy dvidrv.btm to
+a directory in the path.
+
+Don't forget to update the DVIDRVFONTS and TEXTFM environment variables if
+necessary.
+
+Under OS/2 dvips calls mfjob or hbf2gf itself; under DOS it creates a batch
+file which must be called afterwards.
+
+
+Adjusting the font parameters
+-----------------------------
+
+It is possible to convert bitmap fonts to PK files almost automatically. The
+HBF header file already has the entry `HBF_BITMAP_BOUNDING_BOX' which
+defines vertical and horizontal offsets (in pixels), but these values are
+not in all cases optimal for the desired target size. If you omit `x_offset'
+and `y_offset' in the CFG file, the third and fourth parameter of
+`HBF_BITMAP_BOUNDING_BOX' is used (except for rotated glyphs), scaled to
+design size (to say it in other words: x_offset and y_offset always apply to
+the design size to be synchronous with the TFM files).
+
+Don't confuse scaling and magnification: Scaling here means that you choose
+a (arbitrary) design size and compute scaling values (mag_x and mag_y; the
+parameter names are a bit misleading) which scales the bitmap to this
+particular design size at a certain (arbitrarily chosen) resolution (dpi_x
+and dpi_y). Magnification means that the scaled bitmap is then magnified to
+a certain target size while still using the font parameters (i.e., TFM file)
+of the design size.
+
+In the sample, you have a 56x56 bitmap font which is scaled to 14.4pt having
+a resolution of 300 dpi; here we compute the theoretical scaling value to
+reach the design size (14.4pt):
+
+        1 pt are 300 / 72.27 = 4.1511 pixel;
+        14.4 pt are 4.1511 x 14.4 = 59.78 pixel;
+        thus the theoretical magnification value is 59.78 / 56 = 1.0675 .
+
+But especially for small sizes, this may be not the best value if the font
+should harmonize with, say, Knuth's Computer Modern fonts. I recommend to to
+compute, say, five PK fonts, then check the CJK font with different TeX
+fonts to see whether the offsets and/or the magnification value is good. The
+greater the design size the finer you can control the offsets---as an
+example you could use a design size of 30pt (nevertheless there is an
+arbitrary compile-time constant MAX_CHAR_SIZE which limits the maximal
+character size; default is 1023 pixels).
+
+Testing has shown that in the above example a magnification value of 1 is
+better than 1.07; additionally if you use this font at 14.4pt you get the
+original bitmap without any distortions introduced by scaling.
+
+If you have found optimal offsets, you can produce many different
+magnifications of the CJK font using the same set of TFM files in analogy to
+ordinary TeX fonts; as a simplification, we assume that PK files with a
+resolution of XXXdpi and a design size of 10pt have the extension `.XXXpk'
+(respectively come into a `XXXdpi' subdirectory)---this is the reason why in
+the above example for the 14.4pt design size with 300dpi a `432dpi' target
+directory has been used. Now we can use the following formula:
+
+                                              your_target_size
+    needed_dpi = your_horizontal_resolution * ----------------
+                                                    10.0
+
+Example: Assuming that your printer has a resolution of 300 x 400dpi,
+and you want 14.4pt:
+
+          14.4
+    300 * ---- = 432
+          10.0
+
+The vertical scaling value is 400 / 300 = 1.3333. Use these values now to
+call hbf2gf in METAFONT--like mode:
+
+    hbf2gf hbf2gf.cfg 432 1.3333
+
+Assuming you have created a complete set of hanja fonts (ksmj10) for 10pt
+design size, the proper entry in c60mj.fd would be
+
+  \DeclareFontShape{C60}{mj}{m}{n}{<5><6><7><8><9><10>
+                                   <10.95><12><14.4>
+                                   <17.28><20.74><24.88> CJK * ksmj10}{}
+
+If you use the (modified) mktexpk to create PK fonts on demand it is
+sufficient to write
+
+  \DeclareFontShape{C60}{mj}{m}{n}{<-> CJK * ksmj10}{}
+
+if one CJK bitmap font should cover the whole size range.
+
+
+Compiling hbf2gf
+----------------
+
+You need an ANSI C compiler.
+
+Under Unix-like systems say
+
+    ./configure --prefix=/usr/local/TeX \
+                --with-kpathsea-include=<INCLUDEDIR> \
+                --with-kpathsea-lib=<LIBDIR>
+    make
+    make install
+
+for a normal compilation and installation. Replace `/usr/local/TeX' with a
+path to your TeX distribution.
+
+[Note 1:
+  Try to find `libkpathsea.*' on your system. Use this directory as the
+  argument for --with-kpathsea-lib. Then try to find `kpathsea/tex-file.h'
+  and use the parent directory of kpathsea as the argument for
+  --with-kpathsea-include. This should work in most cases. If you can't find
+  the library, you probably have a web2c package with statically linked
+  binaries. This means that you have to get the web2c sources from CTAN,
+  configure it with something like
+
+    ./configure --prefix=/usr/local/TeX --datadir=/usr/local/TeX \
+                --enable-shared --disable-static
+
+  according to your setup; then change to the kpathsea directory and say
+  `make' and `make install' (Do the latter with caution not to overwrite
+  original binaries like kpsewhich).
+
+  It even works with the source tree from the TeX Live CD! You just have
+  to add a proper --srcdir option to the configure script.
+
+ Note 2:
+  It seems that c-auto.h created during the kpathsea library compiling
+  process won't be installed for some older web2c versions. You should add
+  it manually, i.e., copy <web2c source tree>/kpathsea/c-auto.h to the
+  location where the other kpathsea header files have been installed.
+
+ Note 3:
+  As a last resort or for testing purposes, you can even compile hbf2gf
+  without any search library; a simple call to fopen() is used instead.]
+
+
+
+Use Makefile.gnu for emx + GNU make and say
+
+    make -f Makefile.gnu
+
+to get a help screen with the possible options.
+
+[Note: It should work with djgpp too, but I haven't tested this.]
+
+
+If necessary, `touch' hbf2gf.c (in case you don't have ctangle) to made the
+time stamp of the file more recent; otherwise, the `make' program complains.
+
+Under some older SunOS versions, gcc (without the GNU C-library) has
+problems; if possible, install the GNU C-library. Otherwise you get a bunch
+of warning messages about missing prototypes which can be ignored. The only
+missing function is strtoul(). If your system has gdb or some other GNU
+utils, you are almost done. Search for the libiberty.a library (usually in
+/usr/local/lib), copy it into the hbf2gf subdir and link it with the other
+modules:
+
+    LDFLAGS=-liberty ./configure ...
+
+If you don't have libiberty, replace strtoul() with strtol() in the hbf2gf.w
+(or hbf2gf.c) file.
+
+It was reported that on the NeXT an older version of gcc has difficulties to
+process the '%i' printf parameter correctly; simply replace all occurrences
+with '%d' (most notably in hbf.c).
+
+
+---End of hbf2gf.txt---

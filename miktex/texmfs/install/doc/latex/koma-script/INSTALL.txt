@@ -1,0 +1,151 @@
+KOMA Script 
+a versatile LaTeX2e bundle
+----------------------------------------------------------------------------
+
+INSTALLATION DIRECTIONS 
+-----------------------
+
+There are various ways that KOMA Script can be distributed.  The primary
+distribution from the KOMA Script maintainers consists of a complete TEXMF
+tree (also known as the/a TDS tree).  This TEXMF tree in its original form is
+provided as a ZIP archive.  It may also be distributed in other archival
+formats.  When the following text refers to an archive, it therefore does not
+necessarily refer to a ZIP archive.  When creating a new archive, 
+distributors are strongly encouraged to preserve the structure and contents
+of the TEXMF tree so that these instructions remain valid.  Distributors are
+otherwise urged to provide their own instructions for installation.
+
+Distribution of the expanded TEXMF tree is also permitted.  Should, as a
+result, the structure or the contents of the TEXMF tree be modified (within
+the framework of that which is permitted by the license) such that these
+installation instructions partially or entirely no longer apply, the
+distributor should provide new directions.
+
+The user should therefore first check to see whether the distributor has
+included further installation directions.  Logically the name of these
+directions would also begin with `INSTALLD.', immediately followed by the
+distributor's name or acronym.  A `README' file should likewise created.
+
+
+Easy installation using TeX Live repository or MiKTeX installation file
+-----------------------------------------------------------------------
+
+TeX Live users can easily install the current release of KOMA-Script from 
+the KOMA repository for TeX Live.  See <http://www.komascript.de/current> 
+for more information.  But if you want to install another release, you have
+to read the installation instructions below.
+
+MiKTeX users can easily install the current release of KOMA-Script using
+the self extracting archive for windows also known as MiKTeX installation
+file.  See <http://www.komascript.de/current> for more information.  But 
+if you want to install another release, you have to read the installation
+instructions below.
+
+
+Installation from an archive
+----------------------------
+
+If you received the KOMA Script archive with a complete TEXMF tree, the
+installation is quite easy.  First check to see whether the archive does in
+fact contain a complete TEXMF tree.  Take a look at the contents of the
+archive; there should be three directories: `doc/latex/koma-script',
+`tex/latex/koma-script' and `source/latex/koma-script', the last with
+additional subdirectories.  In each of these directories there are several
+files.  A file `README' should be found at least at
+`doc/latex/koma-script/README'.  It may be found outside the archive as well.
+
+When you unpack such an archive be sure to preserve the directory structure,
+but without creating a new directory, either in the local TEXMF tree or in a
+private TEXMF tree.  More information about the local TEXMF tree and the
+question of a private TEXMF tree, as well as how one makes this known to the
+system can be found in the directions for your TEX system.
+
+Finally, update or `refresh' the filename database.  With teTeX and
+teTeX-based systems this is done with the program `texconfig' or directly with
+`texhash' or `mktexlsr'.  With MiKTeX you will find the corresponding button
+in the application `MiKTeX Options'.  Depending on the permissions set for
+your installation directory, you may have to do this as administrator or 
+root.  For more information about this see the manual of your TeX system!
+
+
+Installation of an expanded TEXMF tree
+--------------------------------------
+
+If KOMA Script is already present as an expanded TEXMF tree, you can either
+register it in the system as a further TEXMF tree or you can copy the contents
+of this TEXMF tree -- while preserving the directory structure -- into a
+private or local TEXMF tree.
+
+Here too a refresh of the filename database is necessary.  See the last
+paragraph of the previous section for more information.
+
+
+Installation from a minimal distribution
+----------------------------------------
+
+Installation from a minimal distribution, which only includes those files
+listed as minimally necessary in the `manifest.txt', is not as simple.  For
+this Gnu-make and other UNIX tools are essential!
+
+With this in mind, the process is as follows:
+
+- Create a Makefile.cfg file.
+
+- Copy one of the lines that begins with `#INSTALLTEXMF' from the file
+  `Makefile.baseinit' into this new file. 
+
+- Remove the hash symbol (#) from the beginning.
+
+- Edit this line so that the name of the directory where the TEXMF tree is to
+  be installed appears following the equal sign.
+  CAUTION: No forward slash (/) or backslash (\) at the end of the directory
+  name!
+
+- Run your `make' program.
+
+- After `make' has successfully been run with no errors, run `make install'.
+
+Finally, update or `refresh' the filename database.  With teTeX and
+teTeX-based systems this is done with the program `texconfig' or directly with
+`texhash' or `mktexlsr'.  With MiKTeX you will find the corresponding button
+in the application `MiKTeX Options'.  Depending on the permissions set for
+your installation directory, you may have to do this as administrator or 
+root.  For more information about this see the manual of your TeX system!
+
+
+`Last resort' installation from a minimal distribution
+------------------------------------------------------
+
+Even if you do not have the necessary Gnu-make or other UNIX tools needed to
+install using `make', it is still possible to properly install the KOMA Script
+package from the minimal distribution.  It just means doing more of the work
+yourself.
+
+- First create the following new directories in the TEXMF tree in which you
+  wish to install KOMA Script: `source/latex/koma-script',
+  `doc/latex/koma-script' and `tex/latex/koma-script'.
+
+- Copy all of the files from the KOMA Script distribution into the new
+  directory `source/latex/koma-script'.
+
+- Copy all files with filenames ending in `.pdf', `.html', or `.txt' and the
+  `README' file into the directory `doc/latex/koma-script'.
+
+- Change directory to 'source/latex/koma-script'.
+
+- Run the command `tex scrmain.ins'. Answer any possible questions with `y'
+  for `yes'.
+
+- Copy all newly created files whose filenames end in `.cls', `.sty', `.hak',
+  or `.lco' into the directory `tex/latex/koma-script'.
+
+Finally, update or `refresh' the filename database.  With teTeX and
+teTeX-based systems this is done with the program `texconfig' or directly with
+`texhash' or `mktexlsr'.  With MiKTeX you will find the corresponding button
+in the application `MiKTeX Options'.  Depending on the permissions set for
+your installation directory, you may have to do this as administrator or
+root.  For more information about this see the manual of your TeX system!
+
+--------------------------------------------------------
+German text by Markus Kohm, 2014/2016
+Translation by Kevin Pfeiffer and Markus Kohm, 2014/2016

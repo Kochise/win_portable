@@ -1,0 +1,162 @@
+%%
+%% This is file `bidi.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,bidi.tex')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\def\bididate{2020/05/17}
+\catcode`@=11
+\def\bidi@version{36.3}
+\let \protect \relax
+\newlinechar`\^^J
+\edef\@bidi@info{****************************************************^^J%
+* ^^J%
+* bidi package (Bidirectional typesetting in^^J%
+* plain TeX and LaTeX, using XeTeX engine)^^J%
+* ^^J%
+* Description: A convenient interface for^^J%
+* typesetting bidirectional texts in plain TeX^^J%
+* and LaTeX.  The package includes adaptations^^J%
+* for use with many other commonly-used packages.^^J%
+* ^^J%
+* Copyright (c) 2007--2020 Vafa Khalighi^^J%
+* Copyright (c) 2018--2020 bidi-tex GitHub organization^^J%
+* ^^J%
+* v\bidi@version, \bididate^^J%
+* ^^J%
+* License: LaTeX Project Public License, version^^J%
+* 1.3c or higher (your choice)^^J%
+* ^^J%
+* Location on CTAN: /macros/xetex/latex/bidi^^J%
+* ^^J%
+* Issue tracker: https://github.com/persiantex/bidi/issues^^J%
+* ^^J%
+* Primary author of bidi package: Vafa Khalighi.^^J%
+* ^^J%
+****************************************************}
+\message{\@bidi@info}
+\edef\bidi@everyjob{\the\everyjob}
+\everyjob{\bidi@everyjob\message{\@bidi@info}}
+\def\bidiversion{%
+  \relax
+  \ifmmode
+    \bidi@version
+  \else
+    $\bidi@version$
+  \fi
+}
+\input iftex.sty
+\RequireXeTeX
+\newif\if@bidi@pdfm@mark
+\newif\if@RTLmain
+\newif\if@RTL
+\newif\if@hboxRconstruct
+\newif\if@sentdir
+\newif\if@RTL@footnote
+\@RTLmainfalse
+\def\setRTLmain{%
+  \if@RTLmain\else
+    \if@RTL\@RTLmaintrue%
+    \else\@RTLmainfalse%
+    \fi%
+  \fi%
+}
+\let\n@xt=\
+\protected\def\LRE{\protect\pLRE}%
+\def\pLRE{\protect\afterassignment\moreLRE \let\n@xt= }
+\protected\def\RLE{\protect\pRLE}
+\def\pRLE{\protect\afterassignment\moreRLE \let\n@xt= }
+\def\bracetext{\ifcat\n@xt{\else\ifcat\n@xt}\fi
+  \errmessage{Missing left brace has been substituted}\fi \bgroup}
+\newinsert\@bidi@copyins@
+\skip\@bidi@copyins@=12\p@
+\dimen\@bidi@copyins@=40pc
+\count\@bidi@copyins@=1000
+\def\@bidi@inslogo@{\insert\@bidi@copyins@{\@bidi@logo@}}
+\def\@bidi@logo@hb@xt@{%
+  \if@RTLmain
+    \hboxR to
+  \else
+    \hboxL to
+  \fi
+}
+\def\@bidi@logo#1{%
+  \toks@{%
+    \setbox\z@\hbox{%
+      \special{%
+        pdf:image width 50pt height 50pt (#1)%
+      }
+    }%
+    \dp\z@\z@
+    \ht\z@=50pt
+    \wd\z@=50pt
+    \beginL
+      \lower20pt\box\z@
+    \endL
+  }%
+  \the\toks@
+}
+\def\@bidi@logo@{\@bidi@logo@hb@xt@\hsize{\hss\LRE{\bf Typeset by the bidi package\quad\@bidi@logo{bidi-logo.pdf}}}}
+\def\nobidilogo{\let\@bidi@logo@\@empty \let\@bidi@inslogo@\@empty}
+\def\@bidi@pdfcreator{%
+  The bidi package, v\bidi@version, \bididate
+}
+\def\@bidi@pdfproducer{%
+  The bidi package, v\bidi@version, \bididate
+}
+\def\@bidi@pdfcustomproperties{%
+  This is the bidi package, Version \bidi@version,
+  Released May 17, 2020.
+}
+\def\bidi@pdfm@mark{%
+  \special{pdf:%
+    docinfo<<%
+    \if@bidi@pdfm@mark
+      /Creator(\@bidi@pdfcreator)%
+      /Producer(\@bidi@pdfproducer)%
+    \fi
+    /BIDI.Fullbanner(\@bidi@pdfcustomproperties)%
+      >>%
+    }%
+}
+\def\bidipdfinfoon{\@bidi@pdfm@marktrue}
+\def\bidipdfinfooff{\@bidi@pdfm@markfalse}
+\input plain-xetex-bidi.def
+\@bidi@inslogo@
+\outer\def\bye{\par\vfill\supereject\bidi@pdfm@mark\end}
+\catcode`@=12
+\bidipdfinfoon
+\endinput
+%%
+%% End of file `bidi.tex'.

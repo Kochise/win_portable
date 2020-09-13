@@ -1,0 +1,139 @@
+This is the file ruby.txt of the CJK macro package ver. 4.8.4 (18-Apr-2015).
+
+What is ruby?
+-------------
+
+To cite Martin Duerst (mduerst@w3.org) who wrote a proposal for ruby in HTML
+documents:
+
+
+   Ruby are small characters used for annotations of a text, at the right
+   side for vertical text, and atop for horizontal text, to indicate the
+   reading (pronounciation) of ideographic characters. [...]
+   
+   The name `ruby' is the name of the 5.5 point type size in British
+   terminology; this was the size most used for ruby. [...]
+
+   Ruby are in most cases set at half the size of the main letters,
+   resulting in a possible two ruby characters per main character, and
+   taking up half of the width of the main characters. However, at least up
+   to five ruby characters per main character are possible (an example is
+   `u-ke-ta-ma-wa-...'), and so various solutions, from leaving white space
+   in the main text to having the ruby overlap the next characters of the
+   main text, are possible (the later is possible in Japanese especially
+   because in many cases, the characters around an ideograph with ruby are
+   syllabic, and therefore the assignment of ruby to main characters poses
+   no problems for the reader). [...]
+
+   Ruby are particularly frequent in Japanese, because of the way CJK
+   ideographs are used in Japanese. Ideographs can have many different
+   readings (pronounciations) because different readings were taken over
+   from different regions of China and at different times when the
+   characters where adopted in Japan. Also, these characters are used to
+   write indigenous Japanese words, and many readings may be possible
+   because the ideograph might cover many different concepts distinguished
+   in the Japanese language. [...] The main use of ruby today is in
+   magazines of all levels, and of course in educational material. Ruby are
+   also used in educational material in China and Taiwan.
+
+   In Japan, the term `furigana' is also used instead of `ruby'. `Furigana'
+   is composed of the verb `furu' (to attach, sprinkle, ...) and `gana'
+   (either hiragana or katakana, one of the two Japanese syllabaries usually
+   used for ruby).
+
+
+
+Usage
+-----
+
+Here a typical example:
+
+
+    \documentclass{article}
+
+    \usepackage{CJK}
+    \usepackage[overlap, CJK]{ruby}
+
+
+    \begin{document}
+
+    \begin{CJK*}{JIS}{song}
+
+    ....Japanese text.....\ruby{base character(s)}{ruby}....
+
+    \end{CJK*}
+
+    \end{document}
+
+
+The following options can be selected:
+
+  `overlap' and `nooverlap', as described above. \rubyoverlap and
+  \rubynooverlap are the corresponding commands to modify the overlap flag.
+  `overlap' is the default.
+
+  `CJK' and `latin'. The corresponding commands are \rubyCJK and \rubylatin.
+  Use these commands similar to \CJKnospace and \CJKspace to suppress or not
+  suppress spaces after a \ruby macro and to get/avoid insertion of glue.
+  `CJK' is the default.
+
+The command \rubysize defines the factor between the size of the base
+character and the ruby. Its default value is 0.4 . Usually you get some
+error messages about size substitution (the reason is that LaTeX 2e always
+defines a default error font) which can be safely ignored if you use ttf2pk
+or hbf2gf since these programs compute fonts for (almost) any font size. In
+the unlikely case that you need latin fonts as ruby it may be necessary to
+adapt your FD definition files if the particular font supports non-standard
+sizes (e.g., EC, Sauter, PS) and you really want exactly that size.
+
+The command \rubysep defines the separation between the base character and
+the ruby. Its default value is -0.5ex.
+
+To avoid lines sticking together the value of \lineskiplimit has been set
+to 1pt. It may be necessary to increase this value for larger font sizes.
+
+Note that all \ruby... commands are local, i.e., they obey groups.
+
+
+Implementation specific details
+-------------------------------
+
+There are a number of possibilities how ruby can interact with other CJK
+characters.
+
+    o   The ruby has a smaller width than its base character:
+
+        The behaviour is identical to an ordinary CJK character.
+
+    o   The ruby has a greater width than its base character:
+
+        +   Overlapping ruby:
+
+            .   If the previous or next character is a CJK character
+                (ordinary or punctuation), insert unbreakable glue between.
+
+            .   If the previous or next character is a ruby, handle both
+                ruby as non-overlapping and insert unbreakable glue between.
+
+            .   A ruby at the beginning of a paragraph is treated as if the
+                nonoverlap option had been set. To force an overlapping ruby
+                you have to start the paragraph with a \leavevmode command.
+
+        +   Non-overlapping ruby:
+
+            .   If the previous or next character is a CJK character
+                (ordinary or punctuation), insert unbreakable glue between.
+
+If `latin' is active, no glue at all is inserted.
+
+
+Technical details
+-----------------
+
+ruby.sty introduces a third variation of a small kern (3sp) to inform the
+next CJK or ruby macro that the previous character was an overlapping ruby
+with the ruby's width greater than its base character. The global variable
+\ruby@width then contains this width.
+
+
+---End of ruby.txt---

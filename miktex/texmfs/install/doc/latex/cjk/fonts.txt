@@ -1,0 +1,311 @@
+This is the file fonts.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+The fonts
+---------
+
+This file describes how to set up CJK fonts inside of LaTeX 2e. For a
+description how to install TrueType or bitmap fonts please refer to the
+INSTALL file.
+
+
+CJK.sty uses NFSS (New Font Selection Scheme, part of LaTeX 2e) which has
+some advantages over the font selection offered with pmC (for plain TeX and
+LaTeX 2.09):
+
+    o   TeX fonts are loaded only on demand. This is especially useful with
+        Asian logographs. If you have e.g., three Chinese characters in your
+        text, pmC must load the whole Chinese font (about 85 TeX subfonts),
+        whereas LaTeX 2e loads only three subfonts normally.
+
+    o   As long as the limit of 256 TeX fonts is not exceeded, you can use
+        as many CJK fonts as you like (e.g., simplified and traditional
+        Chinese characters together with Japanese fonts in different sizes)
+        ---pmC is limited to two sizes and can only have two CJK fonts at
+        the same time.
+
+        In the web2c TeX package (for Unix) you find a patch which allows
+        the use of more than 256 TeX fonts (up to about 1000; this is a
+        standard feature of web2c 7.2 and newer versions).
+
+        Omega can use up to approx. 65000 fonts.
+
+    o   You need not care about the right size of CJK fonts in footnotes,
+        etc. They obey the NFSS (except encoding).
+
+        Of course you must have access to CJK fonts.
+
+        . Use pdftex and dvipdfmx which can handle TrueType fonts directly.
+          It is very easy to set up dvipdfmx for handling CJK subfonts; with
+          pdftex this is more complicated. See the file doc/pdf/HOWTO.txt
+          for more information.
+
+        . Use fontforge to convert TrueType fonts to PS subfonts. Such
+          subfonts work with virtually all dvi drivers. The directory
+          utils/subfonts contain some scripts which help in the conversion
+          process.
+
+        . Use hbf2gf for HBF pixel fonts to convert them to TFM and PK
+          fonts.
+
+        . Use ttf2pk (and ttf2tfm) to convert TrueType fonts to TFM and PK
+          fonts.
+
+If you chose one font per active character as with the pmC macros, you would
+waste character space (256 characters per font are possible starting with
+TeX 3). Therefore CJK.sty expects the whole CJK font split in TeX subfonts
+with 256 characters each.
+
+An example:
+
+    GuoBiao-encoded simplified characters in song style at 12pt:
+    ^               ^                        ^^            ^^
+
+              first byte  second byte     TeX subfont  offset
+              -----------------------------------------------
+                 0xA1      0xA1-0xFE       gsso1201      0
+                 0xA2      0xA1-0xFE       gsso1201     94
+                 0xA3      0xA1-0xE4       gsso1201    188
+                 0xA3      0xE5-0xFE       gsso1202      0
+                 0xA4      0xA1-0xFE       gsso1202     26
+                 0xA5      0xA1-0xFE       gsso1202    120
+                                     .
+                                     .
+                                     .
+                 0xFE      0xA1-0xFE       gsso1235     38
+
+
+To convert bitmap fonts to PK files with hbf2gf, you must get the
+appropriate HBF (Hanzi Bitmap Font) header files or create if you can't find
+the right one; these HBF files document CJK fonts completely.
+
+The HBF specification can be found here:
+
+  http://www.ibiblio.org/pub/packages/ccic/software/info/HBF-1.1/
+
+Various bitmap fonts together with HBF header files are collected here:
+
+  http://www.ibiblio.org/pub/packages/ccic/software/fonts/
+
+
+The font definition files
+-------------------------
+
+CJK fonts can be installed as easy as normal TeX fonts! (Well, probably this
+is the first time you have to install a font for TeX---I strongly recommend
+that you process and read the `fntguide' documentation which is part of the
+LaTeX 2e base package. There you can also find a description of size
+commands.)
+
+CJK.sty defines six new size commands:
+
+    `CJK'         corresponds to `' (empty)
+    `sCJK'        corresponds to `s'
+    `CJKfixed'    corresponds to `fixed'
+    `sCJKfixed'   corresponds to `sfixed'
+    `CJKsub'      corresponds to `sub'
+    `CJKssub'     corresponds to `ssub'       .
+
+For dnp fonts (i.e., real dnp fonts and Watanabe dnp fonts) and Watanabe
+jfonts (which both use the same font encoding scheme) two additional
+commands are provided:
+
+    `DNP'         corresponds to `' (empty)
+    `DNPgen'      corresponds tp `gen'        .
+
+Note that PS Wadalab fonts don't use these size functions (but are still in
+DNP font order).
+
+For poor-man's boldface these size commands have been defined:
+
+    `CJKb', `sCJKb', `CJKfixedb', `sCJKfixedb', `DNPb', `DNPgenb'      .
+
+They are completely identical to its counterparts without the final `b'. The
+only reason to use them is to make the fifth parameter of \DeclareFontShape
+for bold series different from the one for medium series (LaTeX2e uses this
+parameter as a macro name to execute loading-settings, thus they must not be
+equal).
+
+The difference between the size functions just introduced and the original
+commands defined by LaTeX 2e is that a CJK size function defines a class of
+fonts: if you say as an example
+
+    \DeclareFontShape{C00}{song}{m}{n}{<6> <7> <8> sCJKfixed * b5so07}{}   ,
+
+LaTeX 2e searches for fonts named b5so0701 - b5so0755 if the font size is 6,
+7, or 8 pt; in other words, the CJK size functions append two digits to the
+font name to select the proper subfonts. These digits are defined in the
+`\CJK@...Encoding' macros; the macro \CJK@plane holds the current value (in
+pmC compatibility mode and for UTF8 encoding, \CJK@plane holds hexadecimal
+numbers; see JISdnp.enc for the dnp subfont names which are again
+different).
+
+Here a more detailed example:
+
+    \DeclareFontFamily{C10}{fs}{}
+
+    \DeclareFontShape{C10}{fs}{m}{n}{<-> CJK * gsfs14}{}
+    \DeclareFontShape{C10}{fs}{bx}{n}{<-> CJKb * gsfs14}{\CJKbold}
+
+This defines a GB encoded font (LaTeX font encoding `C10') which has
+fangsong shape (fs) in medium series (m) and emulated bold extended (bx)
+series. The names of the subfonts are gsfs1401 - gsfs1432; all sizes are
+available. (This is actually a font definition for a bitmap font which
+corresponds to a size of 14pt if the printer resolution were 300 dpi; hbf2gf
+magnifies it to any desired size.)
+
+The corresponding CJK environment would be
+
+    \begin{CJK*}{GB}{fs}
+    ...
+    \end{CJK*}          .
+
+To be consistent with the CJK package it is recommended that for each font
+shape `m' and `bx' series are defined (some PS font styles from PSNFSS
+define `b' instead of `bx'; in this case you should add a font substitution
+entry in the FD file). The default CJK FD files define a `song' shape for
+each encoding except for KS so that
+
+    \begin{CJK*}{your-encoding}{}
+    ...
+    \end{CJK*}
+
+works (note the empty last parameter). See below for an additional reason.
+
+Here a table of the CJK (font) encodings and the corresponding NFSS font
+encodings.
+
+        Chinese:      Bg5     C00
+                      Bg5pmC  C01
+                      Bg5+    C09
+
+                      GB      C10
+                      GBpmC   C11
+                      GBK     C19
+
+                      GBt     C20
+                      GBtpmC  C21
+
+                      CNS1-7  C31-37
+
+        Japanese:     JIS     C40
+                      JISpmC  C41
+                      JISdnp  C42
+                      JISwn   C43
+
+                      JIS2    C50
+                      JIS2dnp C52
+
+        SJIS                  ->  kana        C49 (additionally)
+
+        Korean:       KS      ->  hanja       C60
+                              ->  hangul      C61
+                      KSpmC   C62
+                      KSHL    ->  hangulHL    C63
+                              ->  symbolHL    C64
+                              ->  hanjaHL     C65
+
+        Unicode:      UTF8    C70
+
+        CEF:          CEFX    C80
+                      CEFY    C81
+
+       [Thai:                 C90]
+
+
+Some remarks:
+
+    o   An NFSS font encoding for the CJK package consists of the letter `C'
+        followed by two digits; the first represents the CJK (input)
+        encoding, the second the CJK font encoding. Some CJK encodings need
+        more than one NFSS encoding to fully represent all characters.
+
+        Note: Since LaTeX version 1996/12/01, the name of an FD file
+        consists only of lowercase letters, e.g., c00fs.fd.
+
+    o   You can't use the NFSS encodings (as defined above) directly! You
+        should always use the CJK interface (the exception is Thai; please
+        read cjk-enc.txt and thaifont.txt for details).
+
+    o   According to the NFSS rules the family name must not be longer than
+        five characters. In early versions of CJK the family `fangsong' was
+        used. This is no longer allowed and has been replaced with `fs'.
+
+        This restriction is mainly for ancient operating systems like MS-DOS
+        which are limited to 8.3 filenames; today, there is no reason any
+        more to artificially shorten the family name.
+
+    o   If you declare an NFSS font encoding in the standard way the
+        corresponding FD file for the default font is loaded. Since a font
+        encoding can be defined only in the preamble, all CJK font encodings
+        must be registered before the document starts even if you use only
+        one or two encodings. For the CJK package this would cause the
+        loading of almost 30 font definition files (see the table above)
+        which is inacceptable.
+
+        To avoid this overhead NFSS is faked with some rudimentary
+        definitions just enough to pass the NFSS tests of LaTeX 2e. Of
+        course this has a disadvantage: an unknown CJK family causes an
+        error instead of switching to the fallback family usually defined
+        with \DeclareFontSubstitution. Nevertheless, replacing an undefined
+        series or shape works correctly.
+
+
+Setting up cyberbit.ttf for UTF-8 encoding
+------------------------------------------
+
+Note 1: I strongly discourage the use of this font, especially for CJKV
+        scripts. The main reason is that correct glyph shapes depend on the
+        language; this means that a glyph representation form for a given
+        Unicode value looks differently in Japanese, Korean, and Chinese (a
+        famous example is character U+9038). Cyberbit doesn't provide such
+        different glyph shapes.
+
+Note 2: The following describes a setup for dvipdfmx only. Furthermore, it
+        assumes a recent TeXLive installation.
+
+
+1. Copy cyberbit.ttf to your local TeXLive tree; a proper location is
+
+     <TeXLive>/texmf-local/fonts/truetype/cyberbit/
+
+   (on e.g. Windows) or
+
+     ~/texmf/fonts/truetype/cyberbit/
+
+   (on e.g. GNU/Linux) or something similar. <TeXLive> indicates the root
+   directory of TeXLive's texmf tree, for example C:\TeXLive2007 or
+   /usr/local/texlive2007.
+
+2. In the file <TeXLive>/texmf/fonts/map/dvipdfm/dvipdfmx/cid-x.map there is
+   already an entry for cyberbit.ttf. Remove the comment character in front
+   of the line.
+
+3. Change to an empty directory and create TFM files with the following call
+   on the command line:
+
+     ttf2tfm cyberbit.ttf -q cyberb@Unicode@
+
+4. Move  all resulting TFM files to
+
+     <TeXLive>/texmf-local/fonts/bitstrea/cyberb/
+
+   or
+
+     ~/texmf/fonts/bitstrea/cyberb
+
+   or something similar.
+
+5. Say
+
+     mktexlsr
+
+   on the command line to regenerate TeXLive's file name database.
+
+
+That's it. Within the CJK package, the font can be activated with
+
+  \begin{CJK}{UTF8}{song}
+
+
+---End of fonts.txt---

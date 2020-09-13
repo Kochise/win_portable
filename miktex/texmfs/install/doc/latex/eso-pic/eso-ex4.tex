@@ -1,0 +1,46 @@
+
+% file `eso-ex4.tex'; a framed text area example
+% Rolf Niepraschk, 2015-07-14, Rolf.Niepraschk@gmx.de
+
+\listfiles\setcounter{errorcontextlines}{100}
+\documentclass[a4paper,twoside]{article}
+\usepackage{graphicx,color}
+\usepackage{eso-pic}
+\definecolor{lightgray}{gray}{.75}
+
+\AddToShipoutPicture{%
+  \AtTextLowerLeft{%
+    \framebox(\LenToUnit{\textwidth},\LenToUnit{\textheight}){}}}
+
+\setlength\parindent{0pt}
+
+\begin{document}
+
+  \section*{First page}
+
+  This page and all the following have a frame around the
+  text area.
+
+  \vfill
+  X \hfill X\newpage
+
+  \section*{Second page}
+
+  \AddToShipoutPicture*{%
+    \AtTextCenter{%
+      \makebox(0,0)[c]{\resizebox{\textwidth}{!}{%
+        \rotatebox{45}{\textsf{\textbf{\color{lightgray}DRAFT}}}}}
+    }
+  }
+
+  Only this page has rotated text in the center of the text area.
+
+  \vfill
+  X \hfill X\newpage
+
+  \section*{Last page}
+
+  \vfill
+  X \hfill X
+
+\end{document}

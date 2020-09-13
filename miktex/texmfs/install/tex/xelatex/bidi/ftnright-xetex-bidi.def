@@ -1,0 +1,283 @@
+%%
+%% This is file `ftnright-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,ftnright-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50426}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{ftnright-xetex-bidi.def}[2018/09/29 v0.6 bidi adaptations for ftnright package for XeTeX engine]
+
+\def\prepare@bidi@copyins{%
+  \global\bidi@rcol@copyinsskip\skip\@bidi@copyins@
+  \global\skip\@bidi@copyins@\z@
+  \global\count\@bidi@copyins@\z@
+  \global\dimen\@bidi@copyins@\textheight}
+
+\newskip\bidi@rcol@copyinsskip
+
+\def\LTR@outputdblcol{%
+  \if@firstcolumn
+    \global\@firstcolumnfalse
+    \global\setbox\@leftcolumn\copy\@outputbox
+    \global\count\footins\@m
+    \global\skip\footins\rcol@footinsskip
+    \global\count\@bidi@copyins@\@m
+    \global\skip\@bidi@copyins@\bidi@rcol@copyinsskip
+    \splitmaxdepth\maxdimen
+    \vbadness\maxdimen
+     \setbox\@outputbox\vbox{\unvbox\@outputbox\unskip}%
+     \setbox\@outputbox\vsplit\@outputbox to\maxdimen
+    \toks@\expandafter{\topmark}%
+    \xdef\@firstcoltopmark{\the\toks@}%
+    \toks@\expandafter{\splitfirstmark}%
+    \xdef\@firstcolfirstmark{\the\toks@}%
+    \ifx\@firstcolfirstmark\@empty
+      \global\let\@setmarks\relax
+    \else
+      \gdef\@setmarks{%
+        \let\firstmark\@firstcolfirstmark
+        \let\topmark\@firstcoltopmark}%
+    \fi
+  \else
+   \preparefootins
+   \prepare@bidi@copyins
+    \global\@firstcolumntrue
+    \setbox\@outputbox\vbox{%
+     \hb@xt@\textwidth{%
+        \hb@xt@\columnwidth{%
+        \bidi@firstcolumn@status@write%
+        \box\@leftcolumn \hss}%
+        \hfil
+        {\normalcolor\vrule \@width\columnseprule}%
+        \hfil
+       \hb@xt@\columnwidth{%
+       \bidi@lastcolumn@status@write%
+       \box\@outputbox \hss}}}%
+  \@combinedblfloats
+    \@setmarks
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi{\@outputpage
+     \@startdblcolumn}%
+    \endgroup
+  \fi}%
+
+\def\RTL@outputdblcol{%
+  \if@firstcolumn
+    \global\@firstcolumnfalse
+    \global\setbox\@leftcolumn\copy\@outputbox
+    \global\count\footins\@m
+    \global\skip\footins\rcol@footinsskip
+    \global\count\@bidi@copyins@\@m
+    \global\skip\@bidi@copyins@\bidi@rcol@copyinsskip
+    \splitmaxdepth\maxdimen
+    \vbadness\maxdimen
+     \setbox\@outputbox\vbox{\unvbox\@outputbox\unskip}%
+     \setbox\@outputbox\vsplit\@outputbox to\maxdimen
+    \toks@\expandafter{\topmark}%
+    \xdef\@firstcoltopmark{\the\toks@}%
+    \toks@\expandafter{\splitfirstmark}%
+    \xdef\@firstcolfirstmark{\the\toks@}%
+    \ifx\@firstcolfirstmark\@empty
+      \global\let\@setmarks\relax
+    \else
+      \gdef\@setmarks{%
+        \let\firstmark\@firstcolfirstmark
+        \let\topmark\@firstcoltopmark}%
+    \fi
+  \else
+   \preparefootins
+   \prepare@bidi@copyins
+    \global\@firstcolumntrue
+    \setbox\@outputbox\vbox{%
+     \hb@xt@\textwidth{%
+       \hskip \columnwidth
+       \hfil
+       {\normalcolor\vrule \@width\columnseprule}%
+       \hfil
+        \hb@xt@\columnwidth{%
+        \bidi@firstcolumn@status@write%
+        \box\@leftcolumn \hss}%
+        \hskip -\textwidth
+       \hb@xt@\columnwidth{%
+       \bidi@lastcolumn@status@write%
+       \box\@outputbox \hss}%
+       \hskip \columnsep
+      \hskip \columnwidth }}%
+  \@combinedblfloats
+    \@setmarks
+    \@outputpage
+    \begingroup
+      \@dblfloatplacement
+      \@startdblcolumn
+      \@whilesw\if@fcolmade \fi{\@outputpage
+     \@startdblcolumn}%
+    \endgroup
+  \fi}%
+
+\def\@startcolumn{%
+ \ifx\@deferlist\@empty
+   \global\@fcolmadefalse
+   \global\@colroom\@colht
+ \else
+   \ifvoid\footins\else
+     \ftn@amount\ht\footins
+     \advance\ftn@amount\dp\footins
+     \advance\ftn@amount\skip\footins
+   \fi
+   \ifvoid\@bidi@copyins@\else
+     \bidi@copyins@amount\ht\@bidi@copyins@
+     \advance\bidi@copyins@amount\dp\@bidi@copyins@
+     \advance\bidi@copyins@amount\skip\@bidi@copyins@
+   \fi
+   \global\advance\@colht-\ftn@amount
+   \global\advance\@colht-\bidi@copyins@amount
+   \global\@colroom\@colht
+   \@xstartcol
+   \global\advance\@colht\ftn@amount
+   \global\advance\@colroom\ftn@amount
+   \global\advance\@colht\bidi@copyins@amount
+   \global\advance\@colroom\bidi@copyins@amount
+ \fi
+ \if@fcolmade
+  \setbox\@cclv\box\@outputbox
+  \@makecol
+ \else
+   \ifvoid\footins\else
+     \insert\footins{\unvbox\footins}\fi
+   \ifvoid\@bidi@copyins@\else
+     \insert\@bidi@copyins@{\unvbox\@bidi@copyins@}\fi
+ \fi}
+
+\newdimen\bidi@copyins@amount
+
+\def\@makecol{\if@firstcolumn
+  \setbox\@outputbox\box\@cclv
+  \if@twocolumn \else
+    \ifvoid\footins \else
+      \@latexerr{ftnright package
+                 used in one-column mode}%
+   {The ftnright package was designed to
+    work with LaTeX's standard^^Jtwocolumn
+    option. It does *not* work with the
+    multicol package.^^JSo please specify
+    `twocolumn' in the
+    \noexpand\documentclass command.}%
+      \shipout\box\footins \fi
+    \ifvoid\@bidi@copyins@ \else
+      \@latexerr{ftnright package
+                 used in one-column mode}%
+   {The ftnright package was designed to
+    work with LaTeX's standard^^Jtwocolumn
+    option. It does *not* work with the
+    multicol package.^^JSo please specify
+    `twocolumn' in the
+    \noexpand\documentclass command.}%
+      \shipout\box\@bidi@copyins@ \fi\fi
+  \ifnum\insertpenalties>\z@
+      \@latexerr{ftnright package
+                 scrambled footnotes}%
+    {There is too much footnote material in
+     the first column  and ftnright^^Jis
+     unable to cope with this.^^JYou need
+     to reduce the amount to get a properly
+     formatted page.}%
+  \fi
+ \else
+  \ifvoid\footins
+    \ifvoid\@bidi@copyins@
+      \setbox\@outputbox\box\@cclv
+    \else
+      \setbox\@outputbox\vbox
+        {\ifvoid\@cclv \else
+           \unvbox\@cclv
+           \vskip \skip\@bidi@copyins@
+         \fi
+           \color@begingroup
+           \normalcolor
+           \unvbox \@bidi@copyins@
+           \color@endgroup}%
+    \fi
+  \else
+    \setbox\@outputbox\vbox
+      {\ifvoid\@cclv \else
+        \unvbox\@cclv
+        \vskip\skip\footins\fi
+        \color@begingroup
+        \normalcolor
+        \footnoterule\unvbox\footins
+        \color@endgroup
+        \ifvoid\@bidi@copyins@
+        \else
+          \vskip \skip\@bidi@copyins@
+          \color@begingroup
+          \normalcolor
+          \unvbox \@bidi@copyins@
+          \color@endgroup
+        \fi
+      }%
+  \fi
+ \fi
+  \xdef\@freelist{\@freelist\@midlist}%
+  \global \let \@midlist \@empty
+  \@combinefloats
+  \ifvbox\@kludgeins
+    \@makespecialcolbox
+  \else
+   \setbox\@outputbox\vbox to\@colht
+     {\boxmaxdepth\maxdepth
+      \@texttop
+      \@tempdima\dp\@outputbox
+      \unvbox\@outputbox
+      \vskip-\@tempdima
+      \@textbottom}%
+  \fi
+  \global\maxdepth\@maxdepth}
+
+\let\leftfootnoterule\@empty
+\let\rightfootnoterule\@empty
+\let\textwidthfootnoterule\@empty
+\let\autofootnoterule\@empty
+\let\footnoterule\@empty
+\long\def\@makefntext#1{\parindent 1em
+   \noindent\hbox to 2em{}%
+   \llap{\@thefnmark\hbox{.}\,\,}#1}
+
+\setlength{\skip\@bidi@copyins@}
+          {10pt plus 5pt minus 3pt}
+\AtBeginDocument{\prepare@bidi@copyins}
+\endinput
+%%
+%% End of file `ftnright-xetex-bidi.def'.

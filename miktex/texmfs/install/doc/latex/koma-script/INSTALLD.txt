@@ -1,0 +1,153 @@
+KOMA-Script
+Eine Sammlung von Klassen und Paketen für LaTeX2e
+----------------------------------------------------------------------------
+
+INSTALLATIONSANLEITUNG
+----------------------
+
+Für KOMA-Script sind verschiedene Arten der Verteilung zulässig. Die primäre
+Verteilung des KOMA-Script-Betreuers besteht aus einem kompletten TEXMF-Baum
+(auch bekannt als TDS-Baum). Dieser TEXMF-Baum liegt originär als ZIP-Archiv
+vor. Eine Verpackung in andere Archivformate ist zulässig. Wenn im folgenden
+von einem Archiv die Rede ist, ist daher nicht ausschließlich das ZIP-Archiv
+gemeint. Distributoren wird jedoch empfohlen, Struktur und Inhalt des TEXMF-
+Baums beim Anlegen neuer Archive zu übernehmen, damit diese Anleitung gültig
+bleibt. Anderenfalls sind die Distributoren angehalten eine eigene Anleitung
+für die Installation zuzufügen.
+
+Die Verteilung eines ausgepackten TEXMF-Baums ist ebenfalls zulässig. Sollte
+dabei die Struktur oder der Inhalt des TEXMF-Baums im Rahmen dessen, was die
+Lizenz zulässt, verändert werden und somit diese Installationsanleitung ganz
+oder in Teilen nicht mehr zutreffen, so sollte der Distributor wiederum eine
+eigene Installationsanleitung hinzufügen.
+
+Der Anwender sollte daher nun kontrollieren, ob der Distributor eine weitere
+Installationsanleitung hinzugefügt hat. Sinnvollerweise wäre der Name dieser
+Anleitung dann auch "INSTALLD." und dem Namen oder Kürzel eines Distributors
+zusammengesetzt. Eventuell gibt es auch eine entsprechend aufgebaute README-
+Datei.
+
+
+Installation mit einem TeX Live repository oder MiKTeX Installationspaket
+-------------------------------------------------------------------------
+
+Anwender von TeX Live können die jeweils aktuelle Version von KOMA-Script
+einfach aus dem KOMA repository für TeX Live installieren. Sie finden die
+Installationsanleitung dafür unter <http://www.komascript.de/current>. Um
+jedoch eine andere Version zu installieren, sei auf die Instruktionen der
+nachfolgenden Abschnitte verwiesen.
+
+Anwender von MiKTeX können die jeweils aktuelle Version von KOMA-Script am
+einfachsten mit Hilfe eines selbstextrahierenden Archivs für Windows, also
+mit einer MiKTeX-Installations-Datei installieren. Eine Erklärung dazu mit
+einer Installationsanleitung gibt <http://www.komascript.de/current>. Soll
+jedoch eine andere Version installiert werden, so sind die Erklärungen der
+nachfolgenden Abschnitte relevant.
+
+
+Installation aus einem Archiv
+-----------------------------
+
+Wenn Sie KOMA-Script als Archiv mit einem vollständigen TEXMF-Baum erhalten
+haben, so ist die Installation denkbar einfach. Kontrollieren Sie zunächst,
+ob das Archiv vermutlich einen vollständigen TEXMF-Baum enthält. Lassen Sie
+sich hierzu den Inhalt des Archives anzeigen. Im TEXMF-Archiv befinden sich
+die drei Verzeichnisse "doc/latex/koma-script", "tex/latex/koma-script" und 
+"source/latex/koma-script", letzteres enthält weiteren Unterverzeichnissen.
+In jedem der Verzeichnisse befinden sich mehrere Dateien. Eine Datei Namens
+"README" ist mindestens als "doc/latex/koma-script/README" zu finden. Diese
+Datei kann zusätzlich außerhalb des Verzeichnisses abgelegt sein.
+
+Entpacken Sie das TEXMF-Archiv unter Beibehaltung aller Unterverzeichnisse,
+ohne jedoch ein neues Verzeichnis anzulegen, entweder im lokalen TEXMF-Baum 
+oder in Ihrem persönlichen TEXMF-Baum. Näheres zu lokalen oder persönlichen 
+TEXMF-Bäumen ist der Anleitung Ihres TeX-Systems zu entnehmen.
+
+Zum Schluss führen Sie einen Refresh der Filename Database durch. Bei teTeX
+oder teTeX-basierten TeX-Systemen geschieht dies mit dem Programm texconfig
+oder direkt mit texhash oder mktexlsr. Bei Verwendung von MiKTeX findet man
+einen entsprechenden Knopf in der Applikation "MiKTeX Options". Je nach dem
+Verzeichnis der Installation ist der Refresh nur als Administrator oder als
+root möglich. Näheres entnehmen Sie bitte der Anleitung des TeX-Systems!
+
+
+Installation eines entpackten TEXMF-Baums
+-----------------------------------------
+
+Liegt KOMA-Script bereits als entpackter TEXMF-Baum vor, so können Sie diesen
+entweder als weiteren TEXMF-Baum anmelden oder Sie kopieren den Inhalt dieses
+TEXMF-Baums unter Beibehaltung der Verzeichnisstruktur in einen privaten oder
+lokalen TEXMF-Baum. 
+
+Auch dann ist ein Refresh der Filename Database notwendig. Näheres hierzu ist
+dem letzten Absatz des vorherigen Abschnitts zu entnehmen.
+
+
+Installation aus einer Minimaldistribution
+------------------------------------------
+
+Die Installation aus einer Minimaldistibution, die nur die Dateien enthält,
+die in manifest.txt als Minimum aufgeführt sind, ist weniger einfach. Dafür
+werden zwingend Gnu-Make und diverse Unix-Werkzeuge benötigt!
+
+Unter dieser Voraussetzung gehen Sie dan wie folgt vor:
+
+- Legen Sie eine Datei Makefile.cfg an.
+
+- Kopieren Sie eine der mit "#INSTALLTEXMF" beginnenden Zeilen aus der Datei
+  Makefile.baseinit in diese Datei.
+
+- Entfernen Sie das "#" am Anfang.
+
+- Ändern Sie die Zeile so, dass nach dem Gleichheitszeichen das Verzeichnis
+  des gewünschten TEXMF-Baums für die Installation steht.
+  ACHTUNG: Am Ende des Verzeichnisses darf KEIN "/" stehen!
+
+- Rufen Sie das Programm "make" auf.
+
+- Wenn "make" ohne Fehler beendet wurde, rufen Sie "make install" auf.
+
+Zum Schluss führen Sie einen Refresh der Filename Database durch. Bei teTeX
+oder teTeX-basierten TeX-Systemen geschieht dies mit dem Programm texconfig
+oder direkt mit texhash oder mktexlsr. Bei Verwendung von MiKTeX findet man
+einen entsprechenden Knopf in der Applikation "MiKTeX Options". Je nach dem
+Verzeichnis der Installation ist der Refresh nur als Administrator oder als
+root möglich. Näheres entnehmen Sie bitte der Anleitung des TeX-Systems!
+
+
+Notinstallation aus einer Minimaldistribution
+---------------------------------------------
+
+Falls Sie nicht über Gnu-Make oder die sonstigen notwendigen Werkzeuge für 
+die Installation über "make" verfügen, so können Sie das KOMA-Script-Paket
+trotzdem aus einer Minimaldistribution korrekt installieren. Dies ist dann
+nur mit etwas mehr Handarbeit verbunden.
+
+- Legen Sie zunächst in dem TEXMF-Baum, in den Sie KOMA-Script installieren
+  wollen, die Verzeichnisse source/latex/koma-script, doc/latex/koma-script
+  und tex/latex/koma-script an.
+
+- Kopieren Sie alle Dateien aus der KOMA-Script-Verteilung in das angelegte
+  Verzeichnis source/latex/koma-script.
+
+- Kopieren Sie alle Dateien mit der Endung ".pdf", ".html" oder ".txt" und
+  die Datei README in das Verzeichnis doc/latex/koma-script.
+
+- Wechseln Sie in das Verzeichnis source/latex/koma-script.
+
+- Rufen Sie
+    tex scrmain.ins
+  auf. Beantworten Sie alle eventuell gestellte Fragen mit "y" für "yes".
+
+- Kopieren Sie alle neu entstandenen Dateien mit der Endung ".cls", ".sty",
+  ".hak" oder ".lco" in das Verzeichnis tex/latex/koma-script.
+
+Zum Schluss führen Sie einen Refresh der Filename Database durch. Bei teTeX
+oder teTeX-basierten TeX-Systemen geschieht dies mit dem Programm texconfig
+oder direkt mit texhash oder mktexlsr. Bei Verwendung von MiKTeX findet man
+einen entsprechenden Knopf in der Applikation "MiKTeX Options". Je nach dem
+Verzeichnis der Installation ist der Refresh nur als Administrator oder als
+root möglich. Näheres entnehmen Sie bitte der Anleitung des TeX-Systems!
+
+----------------------
+Markus Kohm, 2014/2016

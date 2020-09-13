@@ -22,11 +22,14 @@ Some useful Windows programs in one portable package
 **LICEcap** : record a part of your screen directly into animated gif<br>
 **lite** : lightweight source code editor coded in lua<br>
 **miktex** : LaTeX tools needed by texmaker (includes its own package updater)<br>
+**mscgen-0.20** : command line based Message Sequence Charts generator<br>
+**Msc-generator** : run Msc-generator.exe and select 'Signalling Chart'<br>
 **MyDefrag** : best defragger, select System Disk Monthly, then your Windows disk<br>
 **Notepad++** : the best code editor with some extensions installed (regex works there)<br>
 **Notepad2-mod** : the best code editor 2 (Alt+z or Alt+o are best there)<br>
 **NumLocker** : like Capsunlock but for Numlock (doesn't work on Windows 10)<br>
 **paint.net** : the better Paint or Gimp, with layers and stuff<br>
+**PDFtk* : pdf file manipulator but not generator or converter<br>
 **Picat** : sat based functional language (inspired from B-Prolog)<br>
 **PrivaZer** : remove trails and stuff, CCleaner upgraded<br>
 **PureText** : Windows+v paste raw text without formatting<br>
@@ -41,6 +44,7 @@ Some useful Windows programs in one portable package
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>
 **WinMerge** : the file comparator and merger, as good as kdiff3<br>
+**XpdfReader** : pdf file viewer, manipulation and conversion tools<br>
 
 In each folder a url file links the original source (might be obsolete, use web.archive.org to get there).
 

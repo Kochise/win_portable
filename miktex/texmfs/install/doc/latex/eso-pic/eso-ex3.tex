@@ -1,0 +1,42 @@
+
+% file `eso-ex3.tex'; an example for import pages of another (pdf) document.
+% This works only with `pdfTeX' (maybe `VTeX'?).
+% Based on an article from Andreas Matthias <amat@kabsi.at> in d.c.t.t
+%
+% A much better solution is Andreas' package `pdfpages'.
+%
+% Rolf Niepraschk, 2015-07-14, Rolf.Niepraschk@gmx.de
+
+\documentclass[a4paper]{article}
+\usepackage[pdftex]{graphicx}%
+% `pdftex.def' >= 2000/05/12 v0.02u and `pdftex' >= v0.14 are needed.
+\usepackage{ifthen,calc,eso-pic}
+
+\newcounter{thispdfpage}\newcounter{afterlastpdfpage}
+\newcommand{\includepdfpages}[3]
+{%
+  \setcounter{thispdfpage}{#2}\setcounter{afterlastpdfpage}{#3+1}%
+  \newpage
+  \whiledo{\value{thispdfpage} < \value{afterlastpdfpage}}%
+  {%
+    \AddToShipoutPicture*
+    {%
+      \put(0,0){%
+        \includegraphics[width=\paperwidth,height=\paperheight,%
+                         keepaspectratio,page=\arabic{thispdfpage}]{#1}}%
+    }
+    \thispagestyle{empty}\mbox{}\newpage
+    \stepcounter{thispdfpage}%
+  }
+}
+
+\begin{document}
+
+\section{First page of the main document}
+
+% import pages 1 to 3 of an external document.
+\includepdfpages{ltx3info.pdf}{1}{3}
+
+\section{First page after the imported pages of the external document}
+
+\end{document}

@@ -1,0 +1,140 @@
+% This is the file UTF8.enc of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{UTF8.enc}[\filedate\space\fileversion]
+
+
+% UTF 8 encoding:
+
+\CJK@global\@namedef{CJK@UTF8Encoding}{
+  \CJK@loadChr{UTF8}
+
+  % two-byte characters
+  %
+  % 110xxxxx 10xxxxxx
+  %       |
+  %
+  % 1. Byte * 64 ->       xxxxx000000
+  % 2. Byte      -> 128 +      xxxxxx
+  %
+  \CJK@namegdef{^^c0}##1{\@empty\CJK@char{00}{-128}{##1}}
+  \CJK@namegdef{^^c1}##1{\@empty\CJK@char{00}{ -64}{##1}}
+  \CJK@namegdef{^^c2}##1{\@empty\CJK@char{00}{   0}{##1}}
+  \CJK@namegdef{^^c3}##1{\@empty\CJK@char{00}{  64}{##1}}
+  \CJK@namegdef{^^c4}##1{\@empty\CJK@char{01}{-128}{##1}}
+  \CJK@namegdef{^^c5}##1{\@empty\CJK@char{01}{ -64}{##1}}
+  \CJK@namegdef{^^c6}##1{\@empty\CJK@char{01}{   0}{##1}}
+  \CJK@namegdef{^^c7}##1{\@empty\CJK@char{01}{  64}{##1}}
+  \CJK@namegdef{^^c8}##1{\@empty\CJK@char{02}{-128}{##1}}
+  \CJK@namegdef{^^c9}##1{\@empty\CJK@char{02}{ -64}{##1}}
+  \CJK@namegdef{^^ca}##1{\@empty\CJK@char{02}{   0}{##1}}
+  \CJK@namegdef{^^cb}##1{\@empty\CJK@char{02}{  64}{##1}}
+  \CJK@namegdef{^^cc}##1{\@empty\CJK@char{03}{-128}{##1}}
+  \CJK@namegdef{^^cd}##1{\@empty\CJK@char{03}{ -64}{##1}}
+  \CJK@namegdef{^^ce}##1{\@empty\CJK@char{03}{   0}{##1}}
+  \CJK@namegdef{^^cf}##1{\@empty\CJK@char{03}{  64}{##1}}
+  \CJK@namegdef{^^d0}##1{\@empty\CJK@char{04}{-128}{##1}}
+  \CJK@namegdef{^^d1}##1{\@empty\CJK@char{04}{ -64}{##1}}
+  \CJK@namegdef{^^d2}##1{\@empty\CJK@char{04}{   0}{##1}}
+  \CJK@namegdef{^^d3}##1{\@empty\CJK@char{04}{  64}{##1}}
+  \CJK@namegdef{^^d4}##1{\@empty\CJK@char{05}{-128}{##1}}
+  \CJK@namegdef{^^d5}##1{\@empty\CJK@char{05}{ -64}{##1}}
+  \CJK@namegdef{^^d6}##1{\@empty\CJK@char{05}{   0}{##1}}
+  \CJK@namegdef{^^d7}##1{\@empty\CJK@char{05}{  64}{##1}}
+  \CJK@namegdef{^^d8}##1{\@empty\CJK@char{06}{-128}{##1}}
+  \CJK@namegdef{^^d9}##1{\@empty\CJK@char{06}{ -64}{##1}}
+  \CJK@namegdef{^^da}##1{\@empty\CJK@char{06}{   0}{##1}}
+  \CJK@namegdef{^^db}##1{\@empty\CJK@char{06}{  64}{##1}}
+  \CJK@namegdef{^^dc}##1{\@empty\CJK@char{07}{-128}{##1}}
+  \CJK@namegdef{^^dd}##1{\@empty\CJK@char{07}{ -64}{##1}}
+  \CJK@namegdef{^^de}##1{\@empty\CJK@char{07}{   0}{##1}}
+  \CJK@namegdef{^^df}##1{\@empty\CJK@char{07}{  64}{##1}}
+
+  % if in preprocessed mode, `\@gobble' will be gobbled, and
+  %     \CJK@unicodeError becomes active
+
+  % three-byte characters
+  %
+  % 1110xxxx 10xxxxxx 10xxxxxx
+  %                |
+  %
+  % 1. Byte * 16 ->       xxxx0000
+  % 2. Byte / 4  ->  32 +     xxxx
+  %
+  \CJK@namegdef{^^e0}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{-32}{##1}{##2}}
+  \CJK@namegdef{^^e1}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{-16}{##1}{##2}}
+  \CJK@namegdef{^^e2}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{  0}{##1}{##2}}
+  \CJK@namegdef{^^e3}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@punctchar{\CJK@uniPunct}{ 16}{##1}{##2}}
+  \CJK@namegdef{^^e4}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{ 32}{##1}{##2}}
+  \CJK@namegdef{^^e5}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{ 48}{##1}{##2}}
+  \CJK@namegdef{^^e6}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{ 64}{##1}{##2}}
+  \CJK@namegdef{^^e7}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{ 80}{##1}{##2}}
+  \CJK@namegdef{^^e8}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{ 96}{##1}{##2}}
+  \CJK@namegdef{^^e9}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{112}{##1}{##2}}
+  \CJK@namegdef{^^ea}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{128}{##1}{##2}}
+  \CJK@namegdef{^^eb}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{144}{##1}{##2}}
+  \CJK@namegdef{^^ec}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{160}{##1}{##2}}
+  \CJK@namegdef{^^ed}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{176}{##1}{##2}}
+  \CJK@namegdef{^^ee}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@altchar{192}{##1}{##2}}
+  \CJK@namegdef{^^ef}##1##2{\@gobble\CJK@unicodeError
+                            \CJK@punctchar{\CJK@uniPunct}{208}{##1}{##2}}
+
+  % four-byte characters
+  %
+  % 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+  %              |          |
+  %
+  % 1. Byte * 1024 ->        xxx00 00000000
+  % 2. Byte * 16   -> 2048 +    xx xxxx0000
+  % 3. Byte / 4    ->   32 +           xxxx
+  %
+  \CJK@namegdef{^^f0}##1##2##3{\@gobble\CJK@unicodexError
+                               \CJK@altxchar{-2080}{##1}{##2}{##3}}
+  \CJK@namegdef{^^f1}##1##2##3{\@gobble\CJK@unicodexError
+                               \CJK@altxchar{-1056}{##1}{##2}{##3}}
+  \CJK@namegdef{^^f2}##1##2##3{\@gobble\CJK@unicodexError
+                               \CJK@altxchar{  -32}{##1}{##2}{##3}}
+  \CJK@namegdef{^^f3}##1##2##3{\@gobble\CJK@unicodexError
+                               \CJK@altxchar{  992}{##1}{##2}{##3}}
+  \CJK@namegdef{^^f4}##1##2##3{\@gobble\CJK@unicodexError
+                               \CJK@altxchar{ 2016}{##1}{##2}{##3}}}
+
+\endinput

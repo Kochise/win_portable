@@ -1,0 +1,66 @@
+\documentclass{minimal}
+\usepackage{logreq}
+
+% biblatex example
+% (this is a mockup of code which will be used in biblatex >= 0.9b)
+
+% sample preamble:
+
+% \usepackage[backend=biber]{biblatex}
+% \bibliography{bibfile1,bibfile2,bibfile3}
+
+% workflow:
+
+% latex file	(-> both requests active)
+% biber file
+% latex file	(-> both requests inactive)
+
+% The Biber (> 0.5.3) workflow will be straightforward even if
+% there are refsection environments, but additional latex passes
+% may be required to resolve labels:
+
+% latex file	(-> both requests active)
+% bibtex file
+% latex file	(-> latex request active, biber request inactive)
+% latex file	(-> both requests inactive)
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{biber}
+  \cmdline{
+    \binary{biber}
+    \infile{\jobname}
+  }
+  \input{
+    \file{\jobname.bcf}
+  }
+  \output{
+    \file{\jobname.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.bcf}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile1,bibfile2,bibfile3}
+  }
+}
+
+\ltxrequest{biblatex}{1}{
+  \provides[type=dynamic]{
+    \file{\jobname.bcf}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=static]{
+    \let\do=\file
+    \docsvlist{biblatex.def,numeric.bbx,standard.bbx,numeric.cbx,
+               biblatex.cfg,american.lbx,english.lbx}
+  }
+}
+
+\begin{document}
+\end{document}

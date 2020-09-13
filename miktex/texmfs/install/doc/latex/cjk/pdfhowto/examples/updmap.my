@@ -1,0 +1,161 @@
+#!/bin/sh
+# Thomas Esser, 1998, 1999. Public domain.
+
+###########################################################################
+# updmap: create psfonts.map, ps2pk.map and pdftex.map from smaller
+# "modules". To recreate the map files, just run the command:
+#    ./updmap
+###########################################################################
+
+###########################################################################
+# Configuration section:
+###########################################################################
+
+# Add any extra modules here. See the definition of common_modules below
+# for an example of the correct syntax. If you just want to use the type1
+# version for the computer modern fonts by default in dvips (instead of
+# the metafont based bitmap fonts), just change the definition of
+# type1_default that is given below.
+#
+# An alternative to adding map files here is to edit the files
+#   config/dvips/config.ps
+#   pdftex/config/pdftex.cfg
+# in a local texmf tree.
+extra_modules="
+cwtb.map
+cwtf.map
+cwtk.map
+cwtm.map
+cwtr.map
+mekl.map
+mest.map
+mesx.map
+mesy.map
+meko.map
+meso.map
+bkai.map
+bsmi.map
+gbsn.map
+gkai.map
+ntbr.map
+ntfs.map
+ntka.map
+ntli.map
+ntmb.map
+ntmm.map
+ntmr.map
+nttw.map
+wclj.map
+wclk.map
+wcll.map
+wclm.map
+wcln.map
+wclp.map
+wclq.map
+wclr.map
+wcls.map
+wclt.map
+zysg.map
+wnmc.map
+wdgt.map
+kcgt.map
+kcmc.map
+acrj.map
+acrg.map
+acrb.map
+"
+
+###########################################################################
+# Set up the  standard Laserwriter fonts:
+#   urw-kb:   these are included in teTeX's texmf tree
+#   urw-urw:  these are included in ghostscript 4.0 and later. Adjust the
+#             search paths for type1 and afm files in texmf.cnf if you set
+#             this
+#   adobe-kb: use this if you have the original Adobe fonts. Install the
+#             type1 and afm files with Berry names.
+###########################################################################
+
+lw35=urw-kb		# URW fonts (download type1 files using Berry names)
+# lw35=urw-urw		# URW fonts (download type1 files using URW names)
+# lw35=adobe-kb		# Adobe fonts (download type1 files using Berry names)
+
+###########################################################################
+# Set to true to use postscript type1 versions for fonts with existing
+# metafont versions.
+###########################################################################
+
+type1_default=false
+# type1_default=true
+
+###########################################################################
+# Add common map files here:
+###########################################################################
+common_modules="
+  charter.map context.map lucidabr.map marvosym.map mathpi.map
+  mathpple-ext.map mt-plus.map mt-yy.map omega.map utopia.map
+  xypic.map txr4.map pxr4.map pazo.map $extra_modules
+"
+
+###########################################################################
+# End of configuration section.
+###########################################################################
+
+###########################################################################
+# Type1 fonts with Metafont equivalents. When not generating resolution
+# independent postscript or pdf, we prefer the Metafont variants for these.
+###########################################################################
+mf_modules="
+  bsr.map bsr-interpolated.map cmcyr.map cs.map hoekwater.map pl.map
+"
+
+###########################################################################
+# These are used by dvips:
+###########################################################################
+lw35_modules="
+  *-adobe-bi.map
+  $common_modules
+"
+
+###########################################################################
+# Add CM + AMS fonst if configured:
+###########################################################################
+if test "x$type1_default" = xtrue; then
+  lw35_modules="$lw35_modules $mf_modules"
+fi
+
+###########################################################################
+# ps2pk has no "built in" fonts and needs to download everything:
+###########################################################################
+ps2pk_modules="
+  *-$lw35.map
+"
+
+###########################################################################
+# pdftex has the acrobat fonts (subset of the lw35 fonts) built in, but
+#   needs to download fonts for ExtendFont / SlantFont:
+###########################################################################
+pdftex_modules="
+  $mf_modules
+
+  *ar-ext-$lw35.map
+  *ar-std-adobe-bi.map
+  *lw35extra-$lw35.map
+  mtsupp-ext-$lw35.map
+  mtsupp-std-adobe-bi.map
+
+  $common_modules
+"
+
+# Create psfonts.map ps2pk.map and pdftex.map:
+for file in psfonts.map ps2pk.map pdftex.map; do
+cat >$file <<eof
+% $file: maintained by the script updmap in \$TEXMFMAIN/dvips/config.
+%   The preferred way to add things to this file is to put the extra lines
+%   into a separate file and add that filename to the updmap script. Then,
+%   run the updmap script to recreate this file.
+eof
+done
+
+cat $lw35_modules   | grep -v '^%' | grep . | sort | uniq >> psfonts.map
+cat $ps2pk_modules  | grep -v '^%' | grep . | sort | uniq >> ps2pk.map
+cat $pdftex_modules | grep -v '^%' | grep . | sort | uniq >> pdftex.map

@@ -20,8 +20,8 @@ local authors = "\z
 -- version number is used below!
 local ProvidesLuaModule = { 
     name          = "luaotfload-main",
-    version       = "3.14",       --TAGVERSION
-    date          = "2020-05-06", --TAGDATE
+    version       = "3.15",       --TAGVERSION
+    date          = "2020-09-02", --TAGDATE
     description   = "luaotfload entry point",
     author        = authors,
     copyright     = authors,
@@ -40,7 +40,6 @@ luaotfload.log                    = luaotfload.log or { }
 local logreport
 luaotfload.version                = ProvidesLuaModule.version
 luaotfload.loaders                = { }
-luaotfload.min_luatex_version     = { 0, 95, 0 }
 luaotfload.fontloader_package     = "reference"    --- default: from current Context
 
 if not tex or not tex.luatexversion then
@@ -48,21 +47,14 @@ if not tex or not tex.luatexversion then
 end
 
 --- version check
-local major    = tex.luatexversion / 100
-local minor    = tex.luatexversion % 100
-local revision = tex.luatexrevision --[[ : string ]]
-local revno    = tonumber (revision)
-local minimum  = luaotfload.min_luatex_version
-local actual   = { major, minor, revno or 0 }
-if actual [1] < minimum [1]
-    or actual == minimum and actual [2] < minimum [2]
-    or actual == minimum and actual [2] == minimum [2] and actual [3] < minimum [3]
-then
+local revno   = tonumber(tex.luatexrevision)
+local minimum = { 110, 0 }
+if tex.luatexversion < minimum[1] or tex.luatexversion == minimum[1] and revno < minimum[2] then
     texio.write_nl ("term and log",
                     string.format ("\tFATAL ERROR\n\z
                                     \tLuaotfload requires a Luatex version >= %d.%d.%d.\n\z
                                     \tPlease update your TeX distribution!\n\n",
-                                   (unpack or table.unpack) (minimum)))
+                                   math.floor(minimum[1] / 100), minimum[1] % 100, minimum[2]))
     error "version check failed"
 end
 
@@ -234,13 +226,13 @@ local function context_loader (name, path)
     local t_end = osgettimeofday ()
     timing_info.t_load [name] = t_end - t_0
 
-    if ret ~= true then
+    if ret ~= nil then
         --- require () returns “true” upon success unless the loaded file
         --- yields a non-zero exit code. This isn’t per se indicating that
         --- something isn’t right, but against HH’s coding practices. We’ll
         --- silently ignore this ever happening on lower log levels.
         luaotfload.log.report ("log", 4, "load",
-                               "Module %q returned %q.", ret)
+                               "Module %q returned %q.", modname, ret)
     end
     return ret
 end
@@ -334,6 +326,9 @@ luaotfload.main = function ()
     loadmodule "szss"       --- missing glyph handling
     initialize "auxiliary"    --- additional high-level functionality
     loadmodule "tounicode"
+    if tex.outputmode == 0 then
+        loadmodule "dvi"          --- allow writing fonts to DVI files
+    end
 
     luaotfload.aux.start_rewrite_fontname () --- to be migrated to fontspec
 

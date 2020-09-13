@@ -1,0 +1,79 @@
+\documentclass{minimal}
+\usepackage{logreq}
+
+% biblatex example
+% (this is a mockup of code which will be used in biblatex >= 0.9b)
+
+% sample preamble:
+
+% \usepackage[latin9]{inputenc}
+% \usepackage[american]{babel}
+% \usepackage[style=authoryear,backend=bibtex8,mincrossrefs=1,bibencoding=inputenc]{biblatex}
+% \bibliography{bibfile1,bibfile2,bibfile3}
+
+% workflow:
+
+% latex file	(-> both requests active)
+% bibtex file
+% latex file	(-> both requests inactive)
+
+% additional bibtex passes may be required to resolve xrefs,
+% additional latex passes may be required to resolve labels;
+% i.e., the workflow may get as complex as this:
+
+% latex file	(-> both requests active)
+% bibtex file
+% latex file	(-> both requests active)
+% bibtex file
+% latex file	(-> latex request active, bibtex request inactive)
+% latex file	(-> both requests inactive)
+
+\logrequest[package=biblatex,priority=5,active=1]{
+  \generic{bibtex}
+  \cmdline{
+    \binary{bibtex8}
+    \option{--wolfgang}
+    \option{--min_crossrefs 1}
+    \option{--csfile latin9.csf}
+    \infile{\jobname}
+  }
+  \input{
+    \file{\jobname.aux}
+  }
+  \output{
+    \file{\jobname.bbl}
+  }
+  \provides[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=editable]{
+    \let\do=\file
+    \docsvlist{bibfile1,bibfile2,bibfile3}
+  }
+  \requires[type=static]{
+    \file{biblatex.bst}
+    \file{latin9.csf}
+  }
+}
+
+\ltxrequest{biblatex}{1}{
+  \provides[type=dynamic]{
+    \file{\jobname.aux}
+    \file{\jobname-blx.bib}
+  }
+  \requires[type=dynamic]{
+    \file{\jobname.bbl}
+  }
+  \requires[type=static]{
+    \let\do=\file
+    \docsvlist{biblatex.def,authoryear.bbx,standard.bbx,authoryear.cbx,
+               biblatex.cfg,american.lbx,english.lbx}
+  }
+}
+
+\begin{document}
+\end{document}

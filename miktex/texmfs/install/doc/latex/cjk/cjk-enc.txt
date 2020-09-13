@@ -1,0 +1,438 @@
+This is the file cjk-enc.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+cjk-enc.el
+----------
+
+Mule, the multilingual Emacs, is one of the most powerful editors available
+for Unix systems like Linux. It is capable to edit and display texts which
+are, among other scripts, written in various CJK languages; as an example
+you can have traditional and simplified Chinese at the same time. Mule is
+distributed under the GNU Public License; it is now integrated into the
+source code emacs 20.
+
+The CJK package enables LaTeX to do the same (with some restrictions, see
+below), but the interface is different. Mule uses additional bits internally
+to store the encoding of a character, whereas the CJK package needs \CJKenc
+macros to select encodings.
+
+Now enters cjk-enc.el . This small output filter for Mule (written in Lisp)
+converts text as entered in Mule into a form TeX can understand. Double-byte
+encodings which can be processed by CJK are usually converted into EUC form
+preceded by \CJKenc{...} macros, single-byte encodings (Latin-1, etc.) into
+equivalent LaTeX 2e macros (e.g., Latin-1 character 0xC4 (umlaut A) into
+\"A). Some of these macros are undefined by default in standard LaTeX 2e
+because CM or EC fonts have no characters for it. Vietnamese, Cyrillic
+scripts, Modern Greek, and Thai are also supported (see below).
+
+cjk-enc.el comes in two versions.
+
+  .  An old version for Mule 2.3 with limited capabilities since it is no
+     longer supported (but updated if necessary).
+
+  .  A new version with enhanced commands which works with emacs versions
+     >= 20.3 and xemacs versions >= 21.1 (the latter without Thai support).
+
+Support for emacs versions < 20.3 has been dropped. Please upgrade. In the
+following, `Mule' is used for all emacs flavours.
+
+
+Installation
+------------
+
+To load cjk-enc.el into Mule, put the following line into your .emacs file:
+
+    (load-library "cjk-enc")
+
+this assumes that cjk-enc.el is in a directory searched by Mule. A good
+place for it is the site-lisp subdirectory (e.g.,
+/usr/local/share/emacs/site-lisp).
+
+After loading, a new (output) encoding scheme is defined: `*cjk-coding*'.
+[This is called `cjk-coding' under emacs 20---Please note further that the
+ prefix for Mule commands has changed to `C-x RET' for emacs 20 instead of
+ `C-x C-k'.]
+
+Note: `*cjk-coding*' (`cjk-coding') can't be used to save documents! It
+      is intended only to create the *.cjk file which is then directly
+      processed by LaTeX.
+
+
+Usage (LaTeX 2e part)
+---------------------
+
+A sample of a multilingual document (muletest.{tex,cjk,dvi,pdf}) can be
+found in the examples subdirectory (only the TEX file is in the src package
+of CJK, the other files are in the doc package).
+
+European languages based on the Latin script:
+
+    Simply write your documents! Characters like `u umlaut' or `c hacek' are
+    converted into LaTeX 2e macros. You don't need to write "u or something
+    else (nevertheless it's possible). It is recommended to use LaTeX 2e's
+    T1 font encoding scheme to have a) most of the European diacritics
+    available and b) correct hyphenation for accented characters.
+
+    The lower half of JIS X 0201 is treated similarly.
+
+    Note that the default CM fonts of LaTeX are OT1 encoded. You should
+    rather use the EC fonts which are based on T1 (or virtual T1 fonts
+    mapped onto OT1).
+
+    For correct hyphenation you still have to change languages, thus a
+    system like Babel should be used additionally.
+
+CJK languages:
+
+    Don't start a CJK (or CJK*) environment! cjk-enc.el does this
+    automatically for you at the `\begin{document}' command. It also inserts
+    \CJKspace and \CJKnospace commands (\CJKspace for Korean, \CJKnospace
+    for all other CJK scripts; but see the section `Problems' below also).
+
+    In CJK.enc the default font family for all encodings is `song' (except
+    for Korean Hangul where it is `mj'). Two commands are available to
+    change the CJK font encoding and family in combination with cjk-enc.el
+    (see CJK.txt and commands.txt for a detailed description):
+
+        \CJKencfamily[<fontencoding>]{<encoding>}{<family>}
+            Change family for a certain encoding (and fontencoding).
+
+        \CJKfontenc{<encoding>}{<fontencoding>} 
+             Change fontencoding for a certain encoding.
+
+    The second command is primarily for users who use Japanese DNP fonts
+    (see the Japanese documentation subdirectory for further details) or
+    Korean HLaTeX fonts.
+
+    For the upper half of JIS X 0201 encoding, the katakana range of the
+    SJIS encoding of the CJK package is used.
+
+Vietnamese:
+
+    Vietnamese uses accented characters not contained in EC or CM fonts. To
+    assure proper kerning you must explicitly activate T5 font encoding
+    (this can't be done automatically) to access a Vietnamese font.
+
+    The VnTeX bundle contains Vietnamese fonts and support files; it also
+    defines T5 encoding. It is available from http://vntex.sf.net.
+    (Note that the now obsolete vncmr package is no longer supported.)
+
+Russian and other languages using the cyrillic script:
+
+    Cyrillic LaTeX encodings (T2A, T2B, T2C, and X2) are now supported
+    within the LaTeX 2e distribution (starting with version 1998/12/01).
+    Cyrillic fonts and auxiliary files supporting these encodings are
+    available at CTAN from fonts/cyrillic and macros/latex/contrib/t2); most
+    TeX distributions already come with Cyrillic fonts installed.
+
+    The current implemention needs a lot of temporary disk space for
+    Cyrillic scripts (e.g., a 100 kByte document written only with Cyrillic
+    letters has an intermediate output file of about 800 kByte). On the
+    other hand, it is still possible to recognize the Cyrillic characters
+    name macros in the log file in case of error messages---if I used the
+    shortest possible representation, only numbers would be visible, and the
+    size of the intermediate output file would still have 500 kByte...
+
+    You must explicitly activate one of the T2* (or X2) encodings for
+    Cyrillic. Russian needs T2A.
+
+Greek:
+
+    You must use the LGR encoding and fonts as defined in the Babel package:
+    ISO-8859-7 characters are mapped back to ASCII characters which are then
+    displayed as Greek characters, using the ligature mechanism extensively.
+
+Thai:
+
+    It is implemented only in the emacs 20.3 version of cjk-enc.el. Instead
+    of using an external program, Ken'ichi Handa has written thai-word.el
+    which implements the word-breaking algorithm in Lisp, based on the the
+    C-TTeX package version 1.15 written by Vuthichai Ampornaramveth
+    <vuthi@ctrl.titech.ac.jp>. `thai.sty' is still very rudimentary---any
+    improvements are welcome.
+
+    The used encoding is C90 (this is the only case where you have to
+    specify a `C' encoding directly, either by using the `thaicjk' language
+    for Babel or by saying `\DeclareFontEncoding{C90}{}{}' in the preamble);
+    the default fonts specified in c90gar.fd and c90nrsr.fd are taken from
+    the thailatex package, which can be found at
+
+      http://linux.thai.net/plone/TLWG/thailatex
+
+    You should use version 0.3.5.1 or newer. Note that this package is not
+    compatible with CJK; neither its metric files nor its LaTeX support
+    files should be used. Please read the file thaifont.txt for details how
+    to install the fonts.
+
+    Whitespace between Thai characters are always respected; newlines
+    together with trailing and leading whitespace are not by default. Use
+    \Thaispace to make trailing and leading whitespace respected also (the
+    opposite command is \Thainospace). Note that the space width of the Thai
+    font (which is usually larger than for a Roman font) is used for
+    whitespace between Thai words:
+
+      Thai Thai
+      Thai
+
+    is approximately translated to
+
+      {\thaifont Thai Thai\nospaces
+       Thai}
+
+    (if \Thainospace is active), whereas
+
+      Thai\ Thai\
+      Thai
+
+    is approximately translated to
+
+     {\thaifont Thai}{\romanfont\ }{\thaifont Thai}{\romanfont\ }
+     {\thaifont Thai}
+
+    To improve appearance, \Thaiglue (which is defined in MULEenc.sty) is
+    used as intercharacter glue; this value can be modified similarly to
+    \CJKglue.
+
+
+Usage (Mule part)
+-----------------
+
+Simply load your document into Mule and call cjk-write-file (which is
+defined in cjk-enc.el) to create a preprocessed file. For most files this
+file's name is formed by replacing the extension with `.cjk'. However,
+BibTeX files are given the extension `-cjk.bib' because the BibTeX program
+requires `.bib' as the extension. This also avoids conflicts with the CJK
+file produced by a LaTeX file by the same name. Because of this you should
+use the command \CJKbibliography{foo} in your LaTeX source file (which
+finally expands to foo-cjk.bib). A similar macro is \CJKinclude{bar} which
+expands to `bar.cjk' instead of bar.tex. Finally, you can say
+\CJKinput{foo.bar} to input file `foo.bar'; if the file name has no
+extension, `cjk' is appended: \CJKinput{foo} loads `foo.cjk'.
+
+cjk-write-file is the only user function provided by cjk-enc.el for
+Mule 2.3.
+
+If you want to process a file which includes some other files, use the
+function cjk-write-all-files in combination with \CJKinclude, \CJKinput, and
+\CJKbibliography. If used interactively, you have to supply a file name
+which is then scanned for occurrences of \CJKinclude, \CJKinput, and
+\CJKbibliography; all files found plus the master file are converted.
+
+Example:
+
+  `a.tex' contains:
+
+    \CJKenc{Bg5}
+    Chinese text
+
+  `b.tex' contains:
+
+    \CJKenc{JIS}
+    Japanese text
+
+  `c.tex' contains:
+
+    \CJKenc{UTF8}
+    Some Unicode text
+
+  `master.tex' can now include the files as follows:
+
+    Some Korean text
+
+    \CJKinput{a}
+    \input{b}
+    \input{c}
+
+  Calling cjk-write-all-files automatically converts `master.tex' and
+  `a.tex'.
+
+The functions batch-cjk-write-file and batch-force-write-file are intended
+to be used in Makefiles; please read the function documentation for more
+details.
+
+It is recommended that you assign cjk-write-file or cjk-write-all-files to a
+key (e.g., with global-set-key) in your `.emacs' configuration file.
+
+
+Unicode encoding
+................
+
+Note that the forthcoming Emacs 22 has no native Unicode support. Instead,
+Unicode encoded date is mapped onto the internal character sets of Emacs;
+this process heavily depends on the selected (Emacs) language environment.
+For example, if you select `Chinese-BIG5', Emacs first tries to map Unicode
+characters to Big 5. If that fails, it tries the GB 2312 character set, then
+KS X 1001, and so on. To get typographically satisfying output you would
+need identical font shapes for different CJK encodings, a very unlikely
+situation.
+
+For this reason it is strongly recommended to *not* use data files encoded
+in UTF-8 with cjk-enc.el. Instead, UTF-8 should be directly handled by a CJK
+environment (i.e., `\begin{CJK}{UTF8}{...}').
+
+
+Usage with AUC TeX
+------------------
+
+Append the data between >>> and <<< to your .emacs file to have special CJK
+support within AUC TeX:
+
+
+>>>
+
+  (defun TeX-run-CJK-LaTeX (name command file)
+    "Create a process for NAME using COMMAND to format FILE with CJK/LaTeX."
+
+; use next code line for Mule instead of the (balanced) expression
+; containing `cjk-write-all-files'
+; -- no multifile document support!
+;   (cjk-write-file)
+
+    (cjk-write-all-files (concat (TeX-master-directory)
+                                 (file-name-nondirectory file)
+                                 ".tex"))
+    (TeX-run-LaTeX name command file))
+
+  ;; replace the error source file `*.cjk' with `*.tex' (and `*-cjk.bib'
+  ;; with `*.bib'), then C-c ` can be used as usual.
+
+  (add-hook 'TeX-translate-location-hook
+            '(lambda ()
+               (if (string-match "\\(.*\\)\.cjk$" file)
+                   (setq file
+                         (concat
+                           (substring file
+                                      (match-beginning 1)
+                                      (match-end 1))
+                           ".tex"))
+                 (if (string-match "\\(.*\\)-cjk\.bib$" file)
+                     (setq file
+                           (concat
+                             (substring file
+                                        (match-beginning 1)
+                                        (match-end 1))
+                             ".bib"))))))
+
+  (require 'tex)
+  (add-to-list 'TeX-command-list  
+    '("CJKLaTeX" "%l '\\nonstopmode\\input{%s.cjk}'" TeX-run-CJK-LaTeX nil t))
+
+<<<
+
+
+To process a CJK document with AUC TeX use C-c C-c on your LaTeX source file
+and select CJKLaTeX as the formatting command. It also works with multiple
+files; only modified files are converted (again).
+
+Note that only the master file is processed with cjk-enc and scanned for
+\CJKinclude and \CJKinput!
+
+If you mainly write text in Japanese or Chinese, consider the use of
+cjkspace.el or cjktilde.el for inserting a tilde character (which has been
+redefined to a shibuaki space) if you hit the space key. Please read the
+documentation in the two files for differences. cjkspace.el works with
+AUC TeX only, cjktilde.el works in every mode.
+
+In case you use an Emacs input method (quail) for your Asian language
+(contrary to an external input method provided by the operating system), you
+can add `rules' with the following code added to your .emacs file; the
+special space handling is then active only when the corresponding input
+method is active too.
+
+  (add-hook 'quail-activate-hook
+            (function
+             (lambda () 
+               (if (equal (quail-name) "chinese-py-punct-b5")
+                   (progn
+                     (quail-defrule " " "~")
+                     (quail-defrule "  " " "))))))
+
+Replace `chinese-py-punct-b5' with your favourite input encoding. In case
+you use more than one input method, repeat the above lisp code for each
+method.
+
+
+Technical notes
+---------------
+
+cjk-enc.el loads MULEenc.sty or CJK.sty in the first output line which
+contains all needed definitions for LaTeX 2e.
+
+To assure working in verbatim environments, \CJKenc and the LaTeX 2e macros
+are not output directly. The active character 0x7F is used to output
+\CJKenc, \CJKspace, Latin characters, etc.
+
+CNS 1-CNS 7 and JIS2 encoded characters are output as \CJKchar macros. The
+reason for this choice is the infrequency of CNS and JIS2 characters in
+normal text. Since \CJKchar does not select a new binding this macro is
+executed faster for single CNS and JIS2 characters.
+
+
+Problems and Tips
+-----------------
+
+. cjk-enc.el starts a CJK environment only if it finds at least one CJK
+  character in the master file; this character can appear in a comment also.
+  Example:
+
+    % some Chinese text in this comment
+    \CJKinput{a}
+    \CJKbibliography{b}
+
+. If you need some CJK processing in the preamble you must start a CJK
+  environment there manually because cjk-enc.el uses the \AtBeginDocument
+  hook for its commands. This interferes with the \CJKspace/\CJKnospace
+  insertion mechanism of cjk-enc.el because the Lisp code always assumes a
+  single, global CJK environment. A similar problem exists if you start a
+  new language in a comment. To overcome this, simply insert a \CJKspace or
+  \CJKnospace command (whatever appropriate) right after the
+  `\begin{document}' macro to synchronize again with cjk-enc.el .
+
+  Example:
+
+    \documentclass{article}
+
+    \begin{CJK*}{}{}
+      some Japanese macro stuff
+    \end{CJK*}
+
+    \begin{document}
+    \CJKnospace
+    more Japanese text
+    ...
+
+. Another consequence of the \CJKspace/\CJKnospace insertion mechanism of
+  cjk-enc.el is that in cases like
+
+    Latin_text Chinese_text\ Latin_text
+
+  you can't omit the final `\ ' after the Chinese phrase---only for Korean
+  words it is not necessary to use a (protected) space.
+
+. Usually, Emacs can automatically recognize the encoding of a given file
+  (e.g., using a language environment or setting `file-coding-system-alist';
+  please read the chapter `Recognizing Coding Systems' in the emacs info
+  files for further details). But sometimes this fails (e.g., to find out
+  whether a text is in latin-1 or in, say, latin-3 is impossible), and you
+  have to use a file variable to define the encoding.
+
+  Here an example how to specify `Big 5' encoding for a TeX input file (the
+  following lines are to be inserted at the very end):
+
+    % Local Variables:
+    % coding: big5
+    % End:
+
+  If AUCTeX already has created local variables like `TeX-master', simply
+  add the line `coding: big5' and you are done.
+
+. Another useful local variable for AUCTeX is `TeX-command-default':
+
+    % Local Variables:
+    % TeX-command-default: "CJKLaTeX"
+    % End:
+
+  selects `CJKLaTeX' as the default command if you type `C-c C-c'.
+
+
+---End of cjk-enc.txt---

@@ -1,0 +1,62 @@
+This is the file pinyin.txt of the CJK macro package ver. 4.8.4
+(18-Apr-2015).
+
+pinyin.sty
+----------
+
+This style file (which can be also used under plain TeX) enables the input
+of pinyin syllables with tones.
+
+Say
+
+    \usepackage{pinyin}
+
+to load all pinyin macros under LaTeX2e; say `\input pinyin.sty' under plain
+TeX.
+
+An example explains best how to input pinyin:
+
+    \Wo3 \hen3 \xi3\huan1 \chi1 \Zhong1\guo2 \cai4.
+
+Note there is no fifth tone marker in pinyin (Zhuyinfuhao uses a dot to
+indicate the fifth tone; on the other hand no marker is used for the first
+tone). Nevertheless you can say e.g., \ne5 to get the syllable `ne' without a
+tone.
+
+
+There are some special cases: 
+
+    o   use `v' instead of `u umlaut' in pinyin syllables (these are \lv,
+        \lve, \nv, \nve and its uppercase forms). Example:
+
+            \nv3'\er2       daughter
+
+        The appearance of u umlaut with additional tone markers has been
+        tested with the standard cm, ec, and PostScript fonts.
+
+    o   use \Long and \LONG instead of \long and \Long (which you would
+        expect): \long is a very important internal TeX command. Many
+        packages would fail if we redefined \long.
+
+
+Problems:
+
+    The following macros are redefined if you load pinyin.sty:
+
+        \a, \chi, \cong, \ding, \ge, \hang, \le, \min, \mu, \ne, \ni, \nu,
+        \o, \O, \pi, \Pi, \Re, \tan, \xi, \Xi.
+
+    They are available as \PY... (\PYchi, \PYcong, etc.).
+
+    If this is not enough, you can say \PYdeactivate to restore the original
+    definitions (and reactivate these syllables with \PYactivate).
+
+    In case you use the hyperref package earlier than version 6.75a
+    (2006-Feb-12) together with the `hpdftex' driver you should load
+    pinyin.sty *after* hyperref.sty (contrary to what the hyperref manual
+    says). Reason is that \ding is defined in pifont.sty which is
+    automatically loaded by hpdftex.def -- the latest hyperref version no
+    longer uses pifont.sty .
+
+
+---End of pinyin.txt---

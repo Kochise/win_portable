@@ -1,0 +1,86 @@
+This is the file CEF.txt of the CJK macro package ver. 4.8.4 (18-Apr-2015).
+
+The Chinese Encoding Framework (CEF)
+------------------------------------
+
+Christian Wittern (http://www.kanji.zinbun.kyoto-u.ac.jp/~wittern/),
+developed CEF, the Chinese Encoding Framework. It is a method to embed CJK
+characters in seldom used encodings (which usually no editor provides) in
+ordinary text (which may be of any encoding). This is done by using SGML
+(Standardized Generalized Markup Language) macros of the form
+
+    &xx-yyzz; 
+
+To input these characters Wittern wrote KanjiBase for Windows, essentially a
+character data base search engine written in Visual Basic. This application
+is rather obsolete today.
+
+
+`xx' in the SGML macro can have the following values:
+
+    C0  Big 5 encoded characters
+    C1  characters from CNS plane 1
+    ...
+    C7  characters from CNS plane 7
+    CX  characters from a reserved encoding defined by IRIZ
+    CY  private encoding
+    U   Unicode characters
+
+`yy' and `zz' are the first and second byte in hexadecimal notation.
+For C0-C7, CX, and CY the 7bit notation must be used (GL).
+
+Examples:
+
+    &C0-A4CD;
+    &C4-275F;
+    &U-DCFF;
+
+
+TeX can't process these macros directly. They must be converted with one of
+the following preprocessors:
+
+    cefconv         standard converter (also for use with cjk-enc.el)
+    cef5conv        also converts Big 5 characters to preprocessed form
+    cefsconv        also converts SJIS characters to preprocessed form
+
+ceflatex.bat is a simple batch file for DOS to show how to use the converter
+(cef5ltx.bat and cefsltx.bat are its siblings---for Unix, the scripts are
+called ceflatex, cef5latex, and cefslatex, respectively).
+
+Say
+
+    ceflatex mytext[.tex]
+
+to get mytext.tex processed. All CEF macros must be inside of a CJK (or
+CJK*) environment.
+
+To input CEF characters without preprocessing you can use the \CJKchar
+macro. Here an example:
+
+    \CJKchar[CNS4]{"27}{"5F}
+
+Note: The OS/2 script files ceflatex.cmd, etc., need REXX which you probably
+      have to install first.
+
+
+Availability
+------------
+
+The file
+
+  http://iriz.hanazono.ac.jp/pdf/eb4/x-level_kanjibase_codes.pdf
+
+contains a list of X level CJK characters defined by IRIZ. It isn't very
+useful because the document is a just a scan of some pages of the magazine
+`The Electronic Bodhidharma', published by the International Research
+Institute for Zen Buddhism (IRIZ) at the Hanazono University in Kyoto, Japan
+(iriz.hanazono.ac.jp). Note that this institute still publishes many
+Buddhist documents using CEF (there it is called `KanjiBase').
+
+More data about CEF and KanjiBase can be found at Christian Wittern's old
+home page
+
+  http://www.chibs.edu.tw/~chris/gwdg/home.htm
+
+
+---End of CEF.txt---

@@ -1,0 +1,80 @@
+% This is the file JIS.cpx of the CJK package
+%   for using Asian logographs (Chinese/Japanese/Korean) with LaTeX2e
+%
+% created by Werner Lemberg <wl@gnu.org>
+%
+% Version 4.8.4 (18-Apr-2015)
+
+% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+%
+% This program is free software; you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation; either version 2 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program in doc/COPYING; if not, write to the Free
+% Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+% MA 02110-1301 USA
+
+\def\fileversion{4.8.4}
+\def\filedate{2015/04/18}
+\ProvidesFile{JIS.cpx}[\filedate\space\fileversion]
+
+
+% Japanese captions
+%
+% character set: JIS X 0208:1997 (or JIS X 0208-1990)
+% encoding: EUC
+%
+% preprocessed
+
+\newif\ifheisei
+\let\ifheisei=\iffalse
+\def\heisei{\let\ifheisei=\iftrue}
+
+\renewcommand\contentsname{Ì220¼161}
+
+\renewcommand\listfigurename{¿222Ì220¼161}
+% \newcommand\listfigurename{¿222°236Í247}
+
+\renewcommand\listtablename{É189Ì220¼161}
+% \newcommand\listtablename{É189°236Í247}
+
+\CJK@ifundefined\chapter
+  {\renewcommand\refname{»178¹205Ê184¸165}
+  }
+  {\renewcommand\bibname{´216Ï162½241À210}
+%  \renewcommand\bibname{»178¹205Ê184¸165}
+  }
+\renewcommand\indexname{º247°250}
+
+\renewcommand\figurename{¿222}
+\renewcommand\tablename{É189}
+
+\newcommand\prepartname{Â232}
+\newcommand\postpartname{É244}
+\renewcommand\partformat{\prepartname\CJKnumber{\value{part}}\postpartname}
+
+% \renewcommand{\appendixname}{É237Ï191}
+
+\CJK@ifundefined\mainmatter
+  {\renewcommand\abstractname{Í215»221}}{}
+
+\renewcommand\today{{\ifheisei\count0=\year\else\count0=\year
+                     \advance\count0 -1988 Ê191À174\,\fi
+                     \ifnum\count0=1 ¸181\else\number\count0\fi
+                     \,Ç175\hspace{.5em}\nobreak\number\month
+                     \,·238\hspace{.5em}\nobreak\number\day\,Æ252}}
+\CJK@ifundefined\CJKnumber
+  {\def\CJKnumber#1{%
+     \ifcase #1\or
+     °236\or Æ243\or »176\or »205\or ¸222\or
+     Ï187\or ¼183\or È172\or ¶229\or ½189\fi}}{}
+
+\endinput

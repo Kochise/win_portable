@@ -1,0 +1,9 @@
+# bigintcalc
+
+bigintcalc package for LaTeX
+
+
+This package provides expandable arithmetic operations
+with big integers that can exceed TeX's number limits.
+
+

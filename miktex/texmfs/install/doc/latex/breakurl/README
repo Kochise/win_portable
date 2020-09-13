@@ -1,0 +1,84 @@
+README for breakurl, version 1.40 (2013/04/10)
+
+
+INTRODUCTION
+============
+
+The breakurl is an extension to hyperref package that allows line-breakable
+\url-like links when compiling via latex + dvips + ps2pdf.
+
+
+DESCRIPTION
+===========
+
+This package provides a command much like hyperref's \url that typesets a URL
+using a typewriter-like font.  However, if the dvips driver is being used, the
+original \url doesn't allow line breaks in the middle of the created link: the
+link comes in one atomic piece.  This package allows such line breaks in the
+generated links.
+
+Note that this package is intended only for those using the dvips driver.
+Users of the pdflatex driver already have this feature.
+
+
+INSTALLATION
+============
+
+Eventually breakurl may be pre-configured on your system. These instructions
+are relevant only if your LaTeX system complains about missing `breakurl.sty'.
+
+If you use MiKTeX, the utility "MiKTeX Package Manager" (Start menu > Programs
+> MiKTeX > Browse Packages or MiKTeX Package Manager) is your friend. Just
+select `breakurl' and click on Task > Install.
+
+Some Linux systems provide an easy way to install breakurl. As far as I know,
+recent Debian and Ubuntu distros provide the "texlive-latex-extra" system
+package in the default repository.
+
+If you need to do a manual installation (eventually needed under Unix-like
+systems), following instructions may come in handy:
+
+a) Download the package files from CTAN or the TUG server.
+
+b) Generate the `breakurl.sty' file:
+
+     latex breakurl.ins
+
+c) Install the file `breakurl.sty' into your TDS tree:
+
+     mkdir [prefix]/texmf/tex/latex/breakurl
+     cp breakurl.sty [prefix]/texmf/tex/latex/breakurl/
+
+   where `[prefix]' is the prefix of your TDS tree.
+
+d) Update the databases if necessary, eg. for teTeX:
+
+     mktexlsr [prefix]/texmf
+
+
+DOCUMENTATION
+=============
+
+Please see the breakurl.pdf for a more comprehensive description of the
+package, its options, issues, etc. Or generate a dvi version using the
+following:
+
+     latex breakurl.dtx
+
+
+LICENSE
+=======
+
+This file may be distributed and/or modified under the conditions of the LaTeX
+Project Public License, either version 1.2 of this license or (at your option)
+any later version.  The latest version of this license is in:
+
+    http://www.latex-project.org/lppl.txt
+
+and version 1.2 or later is part of all distributions of LaTeX version
+1999/12/01 or later.
+
+-- 
+Vilar da Camara Neto
+Manaus, Amazonas, Brazil
+breakurl@vilarneto.com

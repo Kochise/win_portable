@@ -1,0 +1,105 @@
+<html><head><title>
+LaTeX2e package for typesetting Braille
+</title></head><body bgcolor="whitesmoke">
+<center>
+<p><big><big>LaTeX2e package for typesetting Braille</big></big></p>
+<p><big>William Park <a href="mailto:opengeometry@yahoo.ca">&lt;opengeometry@yahoo.ca&gt;</a></big></p>
+<p><big>April 1999</big></p>
+</center>
+<h2><a name="Sec1">1&nbsp;&nbsp;&nbsp;&nbsp;Introduction</a></h2>
+<p>This package allows user to produce Braille documents on
+paper for the blind without knowing Braille which can take years to
+learn.  Essentially, Python scripts <b>grade1.py</b> and
+<b>grade2.py</b> convert ordinary text to grade 1 and 2 braille tags;
+then, LaTeX2e package <b>braille.sty</b> takes the tags and prints out
+corresponding braille symbols.  
+<h2><a name="Sec2">2&nbsp;&nbsp;&nbsp;&nbsp;braille.sty</a></h2>
+LaTeX2e package <b>braille.sty</b> defines macros, commands,
+and fonts to typeset 6-dot braille symbols.  Both Grade 1 and 2
+Braille are supported.  All 189 grade 2 contractions are defined;
+however, some puctuation symbols are missing simply because I couldn't
+find them.  List of TeX macros and braille symbols can be found in
+<b>summary.tex</b> and <b>summary.pdf</b>.  
+The full usage is 
+<xmp>\usepackage[puttinydots,useemptybox]{braille}</xmp>
+where <tt>puttinydots</tt> puts <tt>{\tiny.}</tt> at all dot positions
+for visual check, and <tt>useemptybox</tt> uses empty braille box
+instead of <tt>\hskip</tt>.  In addition, 4 macros are available to
+the user:
+<ul>
+<li><tt>\braillebox{}</tt> -- LaTeX picture box used as braille font
+<li><tt>\brailleunit</tt> -- <tt>\unitlength</tt> for <tt>\braillebox{}</tt>
+<li><tt>\brailledot{}</tt> -- actual dot printed in <tt>\braillebox{}</tt>
+<li><tt>\braille{}</tt> -- main user command 
+</ul>  
+The command <tt>\braille{}</tt> is used to print braille
+"text" or tags which are made up of
+<ul>
+<li> single characters, such as <tt>a</tt>, <tt>b</tt>, <tt>1</tt>,
+<tt>?</tt>, <tt>!</tt>
+<li> string enclosed in {}, such as <tt>{this}</tt>, <tt>{every}</tt>,
+<tt>{his}</tt>, <tt>{''}</tt>
+</ul>
+For example, given input text of <tt>I {like} {com}put{er}</tt>, it
+will print braille symbols for <i>I</i>, <i>like</i>, <i>com</i>,
+<i>p</i>, <i>u</i>, <i>t</i>, <i>er</i>, along with the 2 spaces.  
+Therefore, you can type braille paragraph just as you would
+type normal text paragraph.  To print single character, type that
+character.  To print multi-character contraction, type that string
+enclosed in {}.  Because of the way TeX processes macro arguments, if
+the argument is more than one line, then put at least one space after
+newline (<tt>\n</tt>).  Spaces at the end of line, and tabs and
+newlines everywhere are ignored; but, multiple spaces in between words
+collapse to single space.  
+<p>For example, if you want to insult someone,
+<pre>
+\usepackage{braille}
+\braille{May you live in an interesting time.}
+</pre>
+will print grade 1 braille, 
+<p> <img height="72" width="636" src="braillegif1.gif">
+<p>and 
+<pre>\braille{May {you} live {in} an {in}t{er}e{st}{ing} {time}.}</pre>
+will print grade 2 braille, 
+<p> <img height="72" width="534" src="braillegif2.gif">
+<p>Now, if you can read and write Braille, then you can type
+the braille tags manually.  But, since my knowledge of Braille is
+limited and recent, I wrote Python scripts to generate the braille
+tags automatically.  
+<h2><a name="Sec3">3&nbsp;&nbsp;&nbsp;&nbsp;grade1.py, grade2.py</a></h2>
+<p>Grade 1 Braille is simple character-by-character
+translation of text.  Most braille tags are the same as text
+characters.  However, some puctuation markups, such as double and
+single quotations, are made up of multi-character string which must be
+enclosed in {} in order to be understood by LaTeX.  
+<p>Grade 2 Braille defines translation of 189 common strings
+and where they can be used.  Since braille tags here are the same
+multi-character string as the text, they must be enclosed in {}.  The
+complexity of grade 2 is not so much in the replacement of strings,
+words, or part of words, but it is in figuring out whether the
+replacement can take place.  The rules for applying grade 2
+contractions are complicated with many exceptions; sometimes you can
+replace it, sometimes you can't.  
+<p>The Python scripts <b>grade1.py</b> and <b>grade2.py</b>
+take ordinary text and generate grade 1 and 2 braille tags as defined
+by <b>braille.sty</b>.  Since the output is returned all in one line,
+the scripts are originally designed to be used from text editor which
+can format a long line into multi-line paragraph.  The command line
+usages are
+<dl>
+<dd>python grade1.py &lt; <i>text_file</i> &gt; <i>tag_file</i>
+<dd>python grade2.py &lt; <i>text_file</i> &gt; <i>tag_file</i>
+</dl>
+or their usage as python module are
+<dl>
+<dd><i>string</i> = grade1.convert(<i>string</i>)
+<dd><i>string</i> = grade2.convert(<i>string</i>)
+</dl>  
+<h2><a name="Sec4">4&nbsp;&nbsp;&nbsp;&nbsp;Table of Contents</a></h2>
+<ul>
+<li> <a href="#Sec1">1&nbsp;&nbsp;&nbsp;&nbsp;Introduction</a>
+<li> <a href="#Sec2">2&nbsp;&nbsp;&nbsp;&nbsp;braille.sty</a>
+<li> <a href="#Sec3">3&nbsp;&nbsp;&nbsp;&nbsp;grade1.py, grade2.py</a>
+<li> <a href="#Sec4">4&nbsp;&nbsp;&nbsp;&nbsp;Table of Contents</a>
+</ul>
+</body></html>

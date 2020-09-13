@@ -1,0 +1,172 @@
+This is the file TDS.txt of the CJK macro package ver. 4.8.4 (18-Apr-2015).
+
+The TeX Directory Structure (TDS)
+---------------------------------
+
+A working group of the American TeX Users Group (TUG) has developed the TDS
+standard (available from the CTAN hosts in tex-archive/tds). That document
+describes a default directory structure where and how to store the many
+different files needed for a complete TeX system.
+
+The following describes the recommended default directories used in the CJK
+package for its files; $TEXMF stands for the place where the texmf directory
+resides (a possibly better place for distributions based on web2c is
+$TEXMFLOCAL; see texmf.cnf of your TeX package for details):
+
+We follow TDS 1.1 and the setup of TeXLive 2005; this corresponds to
+kpathsea 3.5.5. Some of the variables don't exist in older kpathsea
+implementations---please read the man page of ttf2tfm for more information
+on the old locations.
+
+
+CJK TeX files (you should move the whole `texinput' tree of the CJK package
+               to this place):
+
+    $TEXMF/tex/latex/CJK/<CJK subdirs>/<CJK TeX files>
+
+  example:
+    /usr/local/web2c-7.0/texmf/tex/latex/CJK/Bg5/Bg5.cap
+
+  affected variable: $TEXINPUTS
+
+
+TrueType fonts:
+
+    $TEXMF/fonts/truetype/<supplier>/<truetype font>
+
+  example:
+    /usr/local/teTeX/texmf/fonts/truetype/arphic/gbsn00lp.ttf
+
+  affected variable: $TTFONTS
+
+  You should append proper entries for all subfonts to special.map to make
+  web2c's name parsing algorithm happy (otherwise it can happen that the
+  created PK and TFM files are placed into rather strangely named
+  directories).
+
+  Example lines to append for the above font:
+
+    gbsnlp01  arphic  gbsnlp
+    gbsnlp02  arphic  gbsnlp
+    ...
+
+
+HBF fonts:
+
+    $TEXMF/fonts/misc/hbf/<supplier>/<hbf name stem>/<hbf files>
+
+    [If no supplier is given, you should use `public' instead.]
+
+  example:
+    /usr/local/share/texmf/fonts/misc/hbf/public/kanji48/kanji48.{bin,hbf}
+
+  affected variable: $MISCFONTS
+
+  You should append proper entries for all subfonts to special.map to make
+  web2c's name parsing algorithm happy (otherwise it can happen that the
+  created PK and TFM files are placed into rather strangely named
+  directories).
+
+  Example lines to append for the above font:
+
+    kanji4801  public  kanji48
+    kanji4802  public  kanji48
+    ...
+
+
+ttf2pk configuration and replacement files (ttf2pk.cfg and *.rpl):
+
+    $TEXMF/ttf2pk
+
+  example:
+    /usr/local/texmf/ttf2pk/ttf2pk.cfg
+
+  affected variable: $TTF2PKINPUTS
+
+
+ttf2pk map files (*.map):
+
+    $TEXMF/fonts/map/ttf2pk
+
+  example:
+    /usr/local/texmf/fonts/map/ttf2pk/config/ttfonts.map
+
+  affected variable: $TEXFONTMAPS
+
+
+ttf2pk encoding files (*.enc):
+
+    $TEXMF/fonts/enc/ttf2pk
+
+  example:
+    /usr/local/texmf.local/fonts/enc/ttf2pk/base/T1-WGL4.enc
+
+  affected variable: $ENCFONTS
+
+  [Note that this location is normally found by ttf2tfm also since the
+   `ttf2pk' path component doesn't appear explicitly in web2c's $ENCFONTS
+   value. Instead, it starts subdirectory searching one level higher.]
+
+
+ttf2pk subfont definition files (*.sfd):
+
+    $TEXMF/fonts/sfd
+
+  example:
+    /home/sx0005/texmf/fonts/sfd/Bg5.sfd
+
+  affected variable: $SFDFONTS
+
+
+hbf2gf configuration files:
+
+    $TEXMF/hbf2gf/<config files>
+
+  example:
+    /dos/texmf/hbf2gf/gsfs14.cfg
+
+  affected variable: $HBF2GFINPUTS
+
+
+TFM files (<supplier> and <name stem> as specified in special.map):
+
+    $TEXMF/fonts/tfm/<supplier>/<name stem>/<tfm file>
+
+  example:
+    /usr/local/teTeX/texmf/fonts/tfm/arphic/gbsnlp/gbsnlp23.tfm
+
+  affected variable: $TFMFONTS
+
+
+PK files (<supplier> and <name stem> as specified in special.map)
+
+    $TEXMF/fonts/pk/modeless/<supplier>/<name stem>/<pk file>
+
+  example:
+    /usr/local/share/texmf/fonts/pk/modeless/uw/uwcxmf/uwcxmf23.3252pk
+
+  affected variable: $PKFONTS
+
+[There are further possibilities how to store PK files:
+
+ 1. instead of <name>.<dpi>pk you can use dpi<dpi>/<name>.pk
+
+    example:
+      /texmf/fonts/pk/modeless/public/b5ka12/dpi600/b5ka1217.pk
+
+ 2. teTeX additionally allows you to omit either <supplier> or <name stem>
+    or both (for PK, TFM, and MF files)
+
+    example:
+      /texmf/fonts/pk/modeless/b5ka12/dpi600/b5ka1217.pk
+
+
+ The first option is necessary on operating systems like DOS which only
+ allow 8.3 filenames. The second option enables you to use the `!' feature
+ of the emTeX subdirectory searching algorithm (only one level) instead of
+ `!!' (search all subdirectory levels) together with its template mechanism
+ to make emTeX much faster in finding PK files. Now teTeX and emTeX could
+ share one common texmf tree.]
+
+
+---End of TDS.txt---

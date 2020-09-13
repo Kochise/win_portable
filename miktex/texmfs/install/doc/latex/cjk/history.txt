@@ -1,0 +1,1549 @@
+This file is part of the CJK package.
+
+
+History of the CJK package
+==========================
+
+
+Version 1.0:    first release.
+01-June-1994
+
+
+Version 1.1:    new:
+20-Aug-1994         \CJK@char(x) simplified.
+
+                    CJK.txt updated.
+
+                    diff.txt added.
+
+
+Version 2.0:    new:
+15-Sep-1994         support for Hangul:
+                      virtual fonts / tfm files for Hangul standard fonts.
+
+                changed:
+                    font selection: modified .fd-files needed:
+                      structure of .fd-files much more simplified.
+
+
+Version 2.1:    new:
+28-Sep-1994         optional parameters to CJK size functions added.
+
+                    sCJK size function added.
+
+                    CJK* environment added: spaces after CJK characters are
+                      swallowed.
+
+                    Utility programs hbf2hbf and hbf2cjk added.
+
+                changed:
+                    new Big 5 encoded fonts needed (more compressed)---saves
+                      about 13 TeX subfonts per Big 5 encoded font.
+
+                    modified example .fd-files .
+
+                errors:
+                    Bg5text environment to pmC-Bg5 environment added.
+
+                    pmC emulation now uses compatible font names, i.e.,
+                      wcb5a1, wcb5a2, etc.
+
+
+Version 2.2:    new:
+18-Oct-1994         CJK now supports hangul and hanja together. Two different
+                      sets of subfonts are used as defined in Uhangul.fd and
+                      Uhanja.fd .
+
+                    CJK punctuation characters (fullwidth comma, colon,
+                      semicolon, etc.) don't start a line. CJK opening
+                      braces, etc., don't end a line.
+
+                    \uppercase and \lowercase is now disabled if Big 5
+                      encoding is active.
+
+                    \lccode's is only reset if the new `lowercase' option is
+                      set. This function is so seldom used that I decided to
+                      separate it from setting \uccode's. You need less save
+                      size if `encapsulated' is used without `lowercase'.
+
+                    C source of hbf2cjk replaced with CWEB source.
+                      .dvi files of hbf2hbf and hbf2cjk added.
+                      C source files of hbf2hbf and hbf2cjk produced by
+                      CTANGLE added.
+
+                    \CJKtolerance added - this command for Hangul syllables
+                      is the pendant to \CJKglue.
+
+                changed:
+                    hangul environment renamed to KS.
+
+                    modified example .fd-files.
+
+                    new Hangul .vf and .tfm files.
+
+                    definition of \CJKglue changed.
+
+                    HBF API now supports HBF 1.1 (CHARS optional).
+
+                    fine-tuning to hbf2cjk added
+                      (Sam Chiu <ccc11@cus.cam.ac.uk>).
+
+                errors:
+                    CJK* didn't work in sectioning commands
+                      (Wu Guangxi <wuxi@unixg.ubc.ca>).
+
+
+Version 2.21:   errors:
+25-Oct-1994         CJK* didn't suppress spaces
+(only CJK.sty)        (Sam Chiu <ccc11@cus.cam.ac.uk>)
+
+
+Version 2.3:    new:
+15-Nov-1994         JIS coding scheme/environment added.
+
+                    pmC-KS and pmC-JIS environments added.
+
+                    CNS coding scheme added.
+
+                    hbf2gf added.
+                      This program merges bmf2gf, hbf2cjk, and hbf2hbf; it
+                      is about 10 times faster than hbf2cjk.
+                      Consequently, hbf2cjk and hbf2hbf were removed.
+
+                changed:
+                    only \uppercase disabled (see error).
+
+                    \CJK@char, etc., simplified.
+
+                errors:
+                    verbatim environments didn't work in Big 5 encoding
+                      (Lee Chun-Yu <d791013@ce.ntu.edu.tw>).
+
+
+Version 2.4:    new:
+03-Jan-1995         UTF 8 (Unicode) scheme added.
+
+                    option `unicode' to hbf2gf added: if `on', a two-digit
+                      hexadecimal number is used as a running number
+                      starting with the value of the first byte of the first
+                      code range.
+
+                    Bg5conv.tex added: this is a small preprocessor which
+                      converts Big 5 encoded characters `XY' into the form
+                      `XZZZ.' . Now you can use Big 5 encoding without the
+                      annoying Bg5text environment.
+                      Auxiliary files: Bg5pp.enc, pmCsmpp.enc, and
+                      bg5latex.bat .
+
+                changed:
+                    new versions of emx.exe, emx.dll (ver. 0.9a) and rsx.exe
+                      (rel. 5)
+
+                errors:
+                    hbf2gf sometimes drew one pixel too much
+                      (You Rey-Jer <you@gi4.bauingenieure.uni-stuttgart.de>).
+
+                    pmC encodings didn't work
+                      (Zhang Zhengyou <Zhengyou.Zhang@sophia.inria.fr>).
+
+                    \CJK@charToHex and \CJK@numbToHex could erroneously change
+                      page counter (Li Yu-Ray <r82111@ew.ee.ntu.edu.tw>).
+
+
+Version 2.5:    never released; 7 beta versions published. See file
+                history.2_5.
+
+
+Version 3.0     there are too many changes to be described here in full
+10-Oct-1995     detail. Please reread the various documentation files and
+                check the file history.2_5 too.
+
+                new:
+                    two contributed packages: ntu2cjk and ttf2pk.
+
+                    SJIS coding scheme added.
+
+*                   a new unifying fontencoding scheme has been introduced:
+*                     max. 4 characters encoding + max. 3 characters
+*                     fontencoding
+*
+*                       examples:
+*                         JISdnp, JISpmC, etc.
+*
+*                     this change causes many files to be renamed (e.g.,
+*                     Uhanja.fd->Uhanj.fd); there is also a bunch of new/
+*                     redefined functions to support this:
+*                       \CJKenc
+*                       \CJKfontenc
+*                       \CJKshape
+*                       \CJKencshape
+*                       CJK and CJK* environment
+*
+*                     SOME OF THE ABOVE CHANGES ARE NOT COMPATIBLE WITH
+*                     PREVIOUS VERSIONS!
+
+                    two fontencodings added: `dnp' for DNP fonts and `wn'
+                      for Watanabe fonts.
+
+                    four new size functions: `CJKsub', `CJKssub', `DNP', and
+                      `DNPgen'.
+
+                    \CJKchar has now an optional parameter to select the
+                      encoding. You can also use this command with Unicode
+                      encoding; additionally you can enter characters with
+                      or without the 8th bit set (GL or GR form) except for
+                      SJIS, Bg5 and UTF8 encoding.
+
+                    a new internal level introduced:
+                      we now have
+
+                            active characters
+                                |
+                                +--------------> bindings (normal,
+                                |                preprocessed) <- new
+                                |
+                            active character macros
+                                |
+                                +--------------> encodings (GB, Bg 5, ...) +
+                                |                font encodings (none, dnp,
+                                |                pmC)
+                                |
+                            subfont selecting macros
+                                |
+                                +--------------> character macro sets
+                                |                (standard, Big 5, ...)
+                                |
+                            character selecting macros
+
+                    a new style option has been added: `active'. If
+                      activated, bindings are local. Default is still
+                      `local' (with global bindings). You need this option
+                      if you want to mix preprocessed text with
+                      non-preprocessed text in nested CJK environments. This
+                      can happen if you merge texts in various encodings.
+
+                    options `dos' and `dosdebug' to makefiles added for
+                      compiling with djgpp.
+
+                    new keywords `design_size', `target_size', `tfm_files',
+                      and `pk_files' added to hbf2gf. If `tfm_files'
+                      (`pk_files') is `no', creation of .tfm-files
+                      (.pk-files) is suppressed.
+
+                    new calling mode for hbf2gf for use with MakeTeXPK:
+                      hbf2gf configuration_file [subfont_number resolution]
+
+                    a modified MakeTeXPK (and maketexp.btm) added to process
+                      Chinese TrueType fonts (with ttf2pk) and CJK bitmap
+                      fonts (with hbf2gf).
+
+                    pinyin.sty for writing pinyin syllables with tones.
+
+                    \CJKtilde and \standardtilde for embedding ordinary words
+                      in CJK text.
+
+                    new command \CJKcaption to load a caption file.
+
+                    new commands \CJKCJKchar, \CJKhangulchar and
+                      \CJKlatinchar added to specify character handling
+                      (glue, discretionary). Only for UTF8 encoding needed.
+                      Default is \CJKCJKchar.
+
+                    various caption files (.cap) added to be used in
+                      conjunction with the KOMA-script document classes.
+
+                    MULE to CJK converter added.
+
+                changed:
+                    the protection scheme has been completely rewritten.
+                      Encoding changes now work in sectioning commands too.
+
+                    reorganization of source tree.
+
+                    all occurrences of utf8 changed to UTF8 including
+                      filenames.
+
+                    all occurrences of GBs changed to GB including filenames.
+
+*                   handling of intercharacter glue enhanced. Now there is
+*                     no \CJKglue before and after a block of CJK
+*                     characters. Note that this is a visually incompatible
+*                     change to the previous versions of CJK! (See the
+*                     command \CJKtilde also.)
+
+                    the definition of the CEF encoding has changed; it uses
+                      now HTML-macros to identify CNS codes. Various
+                      preprocessors has been added to handle these macros.
+
+                    CNS.sty removed. Has been integrated into CJK.sty .
+
+                    if only one of the keywords `dpi_x' or `dpi_y' is given
+                      in the hbf2gf config file the other printer resolution
+                      is set equal to the given one.
+
+                    the key values `on' and `off' in the hbf2gf config file
+                      are replaced with `yes' and `no'.
+
+                errors:
+                    if two Big 5 environments were stacked, the Bg5text
+                      environment was defined twice causing an error
+                      (Yang Jinn S. <v30yjs@v0sun11.ccl.itri.org.tw>).
+
+                    \CJK@punctEnc was undefined in pmC-Bg5 environment
+                      (Yang Jinn S. <v30yjs@v0sun11.ccl.itri.org.tw>).
+
+                    pmC-Bg5 encoding did not work in preprocessed mode
+                      (Yang Jinn S. <v30yjs@v0sun11.ccl.itri.org.tw>).
+
+                    Bg5conv.tex and CEFconv.tex/CEF5conv.tex fail under the
+                      web2c-TeX implementation because \write commands don't
+                      output 8bit characters. C programs which do the same
+                      were added.
+
+                    wrong \CJK@min and \CJK@max values for some encodings.
+
+                    some punctuation characters with Big 5 encoding had wrong
+                      offsets (Li Yu-Ray <r82111@ew.ee.ntu.edu.tw>).
+
+                    `global' option didn't work correctly.
+
+                    \CJKchar didn't work in preprocessed mode
+                      (Rob Lahaye <lahaye@amolf.amolf.nl>).
+
+                    all .bat and .cmd files call f_name.bat (f_name.cmd) to
+                      replace the extension (usually .tex) with .cjk .
+
+
+Version 3.0.1   new:
+20-Nov-1995         hbf2gf config files for CNS added.
+
+                changed:
+                    .vf and .tfm files for Hangul have been removed; they
+                      are now part of the Hangul font packages.
+
+                    CNS font definition files modified.
+
+                    `~', if \CJKtilde has been executed, now suppresses
+                      spaces afterwards.
+
+                    (hopefully) better installation documentation.
+
+                    ttf2pk: improved scripts.
+
+                    the font directories (for web2c) in the various
+                      script/config files have been standardized:
+
+                      the source bitmap fonts and its HBF header files are
+                      now assumed to be in
+
+/usr/local/lib/font/{china,japan,korea,...}/font_name/
+
+                      the hbf2gf configuration files in
+
+/usr/local/lib/hbf2gf/
+
+                      the TeX font files in
+
+/usr/local/lib/texmf/fonts/{chinese,japanese,korean,...}/font_name/pk/CJK/
+/usr/local/lib/texmf/fonts/{chinese,japanese,korean,...}/font_name/{tfm,vf}/
+
+                      the NTU TrueType fonts in
+
+/usr/local/lib/font/china/truetype          .
+
+
+                errors:
+                    standard.chr redefined the altchar macros erroneously
+                      (Patrick Tuttle <n8442161@toad.lake.cs.wwu.edu>).
+
+                    MULEenc.sty failed with german.sty in sectioning
+                      commands.
+
+                    mule2cjk didn't work with CNS planes 3-7.
+
+
+Version 3.1.0:  new:
+20-Feb-1996         MakeTeXPK now supports DC (and TC) 1.2 fonts.
+
+                    JIS supplement character set (JIS X 0212-1990)
+                      implemented.
+
+                    hbf2gf config file j2so12.cfg (for a JIS X 0212 font)
+                      added.
+
+                    New parameter for hbf2gf: slant. Note that slanted
+                      fonts are not common for CJK languages and should
+                      be used only in special situations.
+
+                    Documentation about Japanese TeX systems and how to
+                      handle Japanese with CJK contributed by TANAKA
+                      Shinichiro <tanaka3@ifos.se.fujitsu.co.jp>.
+
+                    An introduction into the CJK package in Chinese
+                      contributed by Lee Chun-Yu <d791013@ce.ntu.edu.tw>.
+                      Consequently the outdated README.bg5 together with
+                      bg5_test.tex has been removed.
+
+                    ntu2cjk version 1.3 .
+
+                    CEF example added.
+
+                changed:
+                    MULEenc.sty, mule2cjk:
+                      \textcdot dropped; replaced with \textperiodcentered.
+
+                    MULEenc.sty:
+                      definition of \textregistered dropped since it is
+                      defined for all encodings in the latest LaTeX2e
+                      release.
+
+                    CJK.sty:
+                      \nbs is now defined as a shorthand for \nobreakspace.
+
+                      \space's added to font size functions analogously to
+                      the latest LaTeX release.
+
+                    mule2cjk:
+                      \nbs replaced with \nobreakspace.
+
+                    maketexp.btm:
+                      small enhancements.
+
+                    f_name.bat:
+                      slightly modified to make it run under 4DOS too.
+
+                    hbf2gf:
+                      hbf.c updated to latest hbf version (17-Oct-1995).
+                errors:
+                    maketexp.btm:
+                      the ttfdir environment variable in the created
+                      fonts.btm file was not set.
+
+                      Oh, oh, font creation with hbf2gf also didn't work...
+
+                      at one place two `%%' used instead of one.
+
+                    UJISwn.fd should now search for the right fonts.
+
+                    *.cap:
+                      erroneously contained \@undefined instead of
+                      \undefined.
+
+                    JIS.cap:
+                      completely broken (sigh). Unbalanced \if... statements
+                      caused unrecoverable errors.
+
+
+Version 3.1.1:  new:
+20-Jun-1996         \CJKspace switches (inside of a CJK or CJK* environment)
+                      from CJK* to CJK mode.
+                    \CJKnospace switches from CJK to CJK* mode.
+
+                    support for Vietnamese with Mule. You need the vncmr-2.1
+                    package for fonts and LaTeX2e support.
+
+                    Latin 5 (ISO 8859-9) for Mule implemented.
+
+                changed:
+                    mule2cjk removed and replaced with cjk-enc.el which
+                    defines a new output encoding scheme for Mule
+                    (*cjk-coding*). See cjk-enc.doc for details.
+
+                    new protection scheme and changed macro definitions in
+                    MULEenc.sty enables kerning for non-CJK languages. This
+                    also makes most of the CJK macros significantly smaller.
+
+                    f_name.bat replaced with the latest version.
+
+                    some documentation improvements.
+
+                    \CJKhanja and \CJKhangul now also make sense outside of
+                    KS encoding (useful in connection with mule2cjk).
+
+                errors:
+                    f_name.cmd doesn't work. All *.cmd removed. I have first
+                      to learn REXX to write such batch files for OS/2.
+
+                    ttf2pk failed if the PK package size of a character was
+                      1024 (the same error is also in the pbm2pk program).
+
+                    hbf2gf didn't initialize mag_x/mag_y and dpi_x/dpi_y
+                      correctly (Zhang Zhengyou
+                      <Zhengyou.Zhang@sophia.inria.fr>).
+
+                    after closing a CJK environment not all characters above
+                      0x80 had been made non-active (a typo).
+
+                    pinyin.sty did not preserve the \a macro (used in
+                      tabbing environments).
+
+                    single byte characters didn't work in SJIS encoding (a
+                      typo).
+
+                    `:' and `.' do not work as parameter delimiters if these
+                      characters are active (Daniel Flipo <?@?>). Now ^^ff
+                      is used; the old macro ^^ff is now ^^a0; ^^a0 has
+                      become ^^80. The old ^^80 macro has been removed since
+                      the new version of mule2cjk always use the `global'
+                      option of CJK which allows the use of (the new) ^^80
+                      instead.
+
+                    \CJKenc{SJIS} didn't work (Thomas Piekenbrock
+                      <piekenbro@msmzid.frankfurt.hoechst-ag.d400.de>).
+
+                    SJISconv.tex didn't run (a senseless line called the
+                      nonexistent macro \CJK@other) (Thomas Piekenbrock
+                      <piekenbro@msmzid.frankfurt.hoechst-ag.d400.de>).
+
+                    JIS.cap didn't work (a typo).
+
+                    SJIS.cap didn't work either (forgot to edit).
+
+
+Version 4.0.0:  new:
+20-Sep-1996         I did the final step. All CJK encodings now have all
+                      NFSS attributes, namely family, series, and shape
+                      (represented by \CJK@family, \CJK@series, and
+                      \CJK@shape). \CJK@family is set by entering a CJK
+                      environment in the same way as it was done in former
+                      versions of this package. \CJK@series and \CJK@shape
+                      are (usually) controlled by the standard NFSS commands
+                      (e.g., \slshape, \textbf, etc.).
+
+                      To achieve this it was necessary to define (NFSS)
+                      font encodings for the CJK package. All CJK font
+                      encodings map to NFSS font encodings which start with
+                      the letter `C', followed by two digits. Here is a
+                      table:
+
+                        Chinese:      Bg5     C00
+                                      Bg5pmC  C01
+
+                                      GB      C10
+                                      GBpmC   C11
+
+                                      GBt     C20
+                                      GBtpmC  C21
+
+                                      CNS1-7  C31-37
+
+                        Japanese:     JIS     C40
+                                      JISpmC  C41
+                                      JISdnp  C42
+                                      JISwn   C43
+
+                                      JIS2    C50
+
+                                      SJIS    ->  kana        C49
+                                                  (additionally)
+
+                        Korean:       KS      ->  hanja       C60
+                                              ->  hangul      C61
+                                      KSpmC   C62
+                                      KSHL    ->  hanjaHL     C63
+                                              ->  hangulHL    C64
+                                              ->  HLsymbolJ   C65
+                                              ->  HLsymbolK   C66
+
+                        Unicode:      UTF8    C70
+
+                        CEF:          CEFX    C80
+                                      CEFY    C81
+
+                      The first digit corresponds to a CJK (input) encoding
+                      like Bg5 or JIS, the second digit represents either a
+                      CJK font encoding or internal encodings necessary to
+                      cover the selected CJK encoding.
+
+                      One consequence of this step is that you have to adapt
+                      all .fd files to the new scheme. Look at the example
+                      font definition files of the CJK package how to do it.
+
+                      You can't use e.g., `C01' directly! Use the CJK
+                      interface (in this example \CJKfontenc[pmC]{Bg5}).
+
+                      Another consequence is that you are now limited to
+                      five characters for the family name since it is part
+                      of the .fd name (together with the NFSS font
+                      encoding): e.g., `fangsong' is not longer allowed. I've
+                      renamed this to `fs'.
+
+                    the new font encoding scheme of the HLaTeX package is
+                      supported. You can select it with \CJKfontenc[HL]{KS}
+                      or \begin{CJK}[HL]{KS}{...} . This is _not_ an
+                      emulation of HLaTeX! See CJK.doc for details.
+
+                    poor-man's bold font has been introduced. To do this all
+                      occurrences of \symbol has been replaced with the new
+                      command \CJKsymbol which honours the \ifCJK@bold@
+                      flag. If set, a character is printed three times with
+                      a small horizontal shift. You can modify this flag
+                      with \CJKnormal and \CJKbold. These commands are
+                      intended for use with \DeclareFontShape:
+
+            \DeclareFontShape{C00}{CNS}{m}{n}{<-> CJK * csso12}{}
+            \DeclareFontShape{C00}{CNS}{bx}{n}{<-> CJKb * csso12}{\CJKbold}
+
+                      Additionally four size functions (CJKb, sCJKb,
+                      CJKfixedb, sCJKfixedb) has been introduced which are
+                      completely identical to its counterparts without the
+                      final `b'. The only reason to use them is, as shown in
+                      the above example, to make the fifth parameter of
+                      \DeclareFontShape for bold series different from the
+                      one for medium series (LaTeX2e uses this parameter as
+                      a macro name to execute loading-settings, thus they
+                      must not be equal). Redefine \CJKboldshift if the
+                      default shift value of 0.015em is not optimal for the
+                      specific font.
+
+                    support for ruby (= furigana) added. See rubi.doc for
+                      details.
+
+                    ttf2pk:
+                      TTF specific error handling enabled.
+
+                      Big 5 encoded TTF in format 4 can now be handled.
+
+                    hbf2gf: you can now use environment variables ($FOO or
+                      ${FOO}) in the configuration file. Use $$ to get a
+                      dollar sign.
+
+                    man pages added.
+
+                    more examples added.
+
+                    REXX scripts bg5latex.cmd, etc. (for OS/2) added
+                      (contributed by Wonkoo Kim <wkim+@pitt.edu>).
+
+                    teTeX.doc added.
+
+                changed:
+*                   The CJK distribution has been divided into three
+*                     packages:
+*                       src     The sources. Needed for all platforms
+*                       bin     Binaries compiled with emx for DOS and OS/2.
+*                       rest    Preformatted documentation (.dvi, .ps,
+*                               output from cjk-enc.el)
+*
+*                   ALL FONT DEFINITION FILES HAVE BEEN CHANGED AND RENAMED!
+*
+                    \CJKshape and \CJKencshape renamed to \CJKfamily and
+                      \CJKencfamily respectively. For backward compatibility
+                      you can still use the old names. Nevertheless, they
+                      now modify the font family parameter and no longer the
+                      font shape parameter.
+
+                    all *conv.tex and its batch files removed.
+
+                    all converter programs now do not change the number of
+                      lines in the output file.
+*
+*                   the UN*X converter batch files now replace the extension
+*                     with .cjk instead of appending it. E.g.
+*                     test.tex -> test.cjk (instead of test.tex.cjk)
+*
+                    f_name.bat provides a new environment variable %fu%
+                      for a Unix-like path (using `/' instead of `\'). Now
+                      you can run bg5latex.bat and the other DOS batch files
+                      having a file name with a path as an argument. Please
+                      replace all these batch files with the new ones.
+
+                    starting with this version ttf2pk is a direct part of
+                      the CJK package. I maintain it. As a consequence the
+                      ttf2pk directory tree has been moved into the utils
+                      subdirectory.
+
+                    MakeTeXPK, MakeTTFPK: environment variable ttfdir and
+                      hbf2gfdir renamed to TTFDIR and HBF2GFDIR
+                      respectively.
+
+                    hbf2gf: sample configuration files now contain TDS
+                      compliant directories.
+
+                    ttf2pk:
+                      -c option removed which never worked.
+
+                      some redundant code removed.
+
+                      heavily reformatted.
+
+                errors:
+*                   PLEASE RECREATE ALL .TFM AND .PK FILES PRODUCED BY
+*                   TTF2PK!
+*                     Reason: the width values were resolution dependent.
+*                     You should use the InstallFont script or instfont.btm
+*                     for this job since the very bug in ttf2pk has not yet
+*                     been fixed. Additionally you must install the new
+*                     MakeTTFPK script.
+
+                    ttf2pk:
+                      endchar didn't work correctly.
+
+                    punctuation characters in KS were not handled correctly.
+
+                    \CJKchar failed sometimes (Jinn S. Yang
+                      <v30yjs@v0sun11.ccl.itri.org.tw>).
+
+                    Big 5/SJIS characters failed in headers, etc., if used
+                      without preprocessor (Jinn S. Yang
+                      <v30yjs@v0sun11.ccl.itri.org.tw>).
+
+
+Version 4.0.1:  appeared as a diff only---a typo in utils/ttf2pk/findex.c
+26-Sep-1996
+
+
+Version 4.1.0:  new:
+20-Nov-1996         ttf2pk:
+                      a new parameter -e has been introduced for selecting
+                      the font encoding; possible values are `Big5' (the
+                      default), `EUC' for extended Unix codes (JIS, GB, KS,
+                      etc.), `SJIS', and `X'. The last value treats the TTF
+                      file as SJIS encoded but expects start_char in JIS
+                      encoding (routines are in coding.{c,h}).
+
+                      a new parameter -r has been introduced for rotating
+                      the glyphs 90 degrees counter-clockwise if its value
+                      is non-zero. See ttf2pk.1 for details.
+
+                      Some preliminary support for composite glyphs has been
+                      included. Since hinting instructions are not supported
+                      yet this is only of some academic interest. You can
+                      watch the funny results with the mingli system font of
+                      the traditional Chinese Windows 3.1 .
+
+                      Support for different horizontal and vertical
+                      resolutions has been added. Now you have one more
+                      parameter to call ttf2pk:
+
+                        ttf2pk pkname tfmname xres yscale startch nmbch ...
+
+                      Currently you have to change yscale by hand in
+                      MakeTTFPK (or makettfp.btm). [yres = xres * scale]
+
+                      The source code has been prepared for pretty-printing
+                      with c2cweb. Say `make documentation OS=<SYSTEM>' to
+                      produce it (of course after installing the c2cweb
+                      package). You find precomputed .dvi files in the
+                      `rest' part of the CJK package.
+
+                    HSIEH Tung-Han <thhsieh@twclx.phys.ntu.edu.tw>
+                      contributed NTeXb5.doc for installing the CJK package
+                      under NTeX.
+
+                    hbf2gf:
+                      if called in METAFONT-like mode, one additional
+                      parameter has been added to allow printers with
+                      different horizontal and vertical resolutions:
+
+                        hbf2gf config_file subfont_nmb x_resolution y_scale
+
+                      (y_resolution = x_resolution * y_scale; y_scale must
+                      be a real number > 0; currently you must change y_scale
+                      by hand in MakeTeXPK/maketexp.btm)
+
+                      hbf2gf now produces a .pl file even if in
+                      METAFONT-like mode.
+
+                      a new config file option `rotation' rotates the glyphs
+                      90 degrees counter-clockwise if set to `yes'.
+
+                    vertical presentation forms of Big5 punctuation
+                      characters added to punctuation tables in CJK.enc .
+
+                    CJKvert.sty for vertical typesetting added. This is an
+                      experimental feature! Please read vertical.doc for
+                      further details.
+
+*                   MakeTeXPK and friends:
+*                     it's no longer necessary to rename TTF files to avoid
+*                     underline characters. A configuration file is now used
+*                     (ttf2pk.cfg) which resides in $TTF2PKDIR (usually
+*                     $TEXMF/ttf2pk) to describe the various TTF files.
+*                     Please rename e.g., ntukai.ttf back to ntu_kai.ttf .
+*                     The environment variable $TTFDIR has become obsolete.
+
+                      The teTeX variants of the scripts can now produce tfm
+                      files on demand---it's sufficient to simply install
+                      the source files of a new font.
+
+                changed:
+*                   rubi.sty has been renamed to ruby.sty; the same is
+*                     true for all commands in it: \ruby, \rubyoverlap, etc.
+
+                    new version (1.5) of ntu2cjk.
+
+                    hbf2gf:
+                      the option `target_size' has been removed. It is
+                      ignored now.
+
+                      under DOS and OS/2 both `\' and `/' are now recognized
+                      as a path separator.
+
+                    ttf2pk:
+                      the -s parameter (to select a design size) has been
+                      removed. The program now always assume a design size
+                      of 10pt.
+
+                      the parameter end_char has been replaced with
+                      nmb_of_char (max. 256).
+
+                      begin_char can now be either decimal, hexadecimal
+                      (prefix `0x'), or octal (prefix `0').
+
+                      x_offset and y_offset behave now similar to hbf2gf
+                      (and most people would expect it that way): a positive
+                      x (y) value shifts right (up); default is zero for
+                      both parameters using the default placement as given
+                      in the TTF file. The values are no longer integers but
+                      real numbers and should be multiples of design size.
+
+                      horz_esc and vert_esc are now real numbers too and
+                      should be multiples of design size.
+
+                      you no longer need to use -W, -H, and -D for getting
+                      resolution independent .tfm files. ttf2pk now
+                      correctly uses the values of the TTF file.
+
+*                     PLEASE RECREATE ALL .TFM (AND .PK) FILES! Sorry for
+*                     this inconvenience. I hope it is the last time. Due to
+*                     some optimizations the .pk files are about 5% smaller
+*                     now.
+
+                      The TTF part of the source code has been transformed
+                      into a library (ttflib); the makefile has been
+                      rewritten with a new syntax. Say `make' for details.
+
+                    utils/ttf2pk/README.b5 and INSTALL.bg5 removed. They
+                      were out of date.
+
+                    modified MakeTTFPK/MakeTeXPK/InstallFont and
+                      makettfp.btm/maketexp.btm/instfont.btm scripts.
+
+
+Version 4.1.1:  appeared as a diff only.
+02-Dec-1996
+                new:
+                    cjktilde.el:
+                      this file contains a minor mode (`cjk-tilde-mode') for
+                      emacs to exchange the ` ' key with the `~' key. See
+                      the documentation of \CJKtilde for details.
+
+                changed:
+                    directory cjk-enc renamed to lisp.
+
+                errors:
+                    the fullwidth double colon in GB encoding was missing in
+                    the punctuation tables.
+
+
+Version 4.1.2:  new:
+20-Feb-1997         ntu2cjk ver. 1.6 now supports the Jackson font (a Big 5
+                      encoded PostScript font).
+
+                    cjkspace.el: similar to cjktilde.el for cooperation with
+                      AUCTeX.
+
+                    support files for NDOS contributed by KUO Yi-Liang
+                      <c300711@ms5.hinet.net> .
+
+                    emTeX support documentation also contributed by
+                      KUO Yi-Liang <c300711@ms5.hinet.net> .
+
+                changed:
+                    ttf2pk/src/Makefile: uses -C switch of GNU make now for
+                      entering subdirectories.
+
+                    adaptation to LaTeX release 1996/12/01:
+                      all .fd files now start with e.g., c00 instead of C00
+                      (nevertheless, the encoding is still called `C00').
+
+                    all executables are now finished with exit() to avoid
+                      additional security holes.
+
+                    Bg5rot.tex renamed to Bg5vert.tex .
+
+                errors:
+                    MakeTTFPK:
+                      some sed programs can't understand the `\w' special
+                      character (indicating a word constituent character);
+                      has been replaced with `.'.
+
+                    it was not possible to open a CJK environment with
+                      SJIS encoding a second time (Thomas Piekenbrock
+                      <piekenbro@smzid.frankfurt.hoechst-ag.d400.de>).
+
+                    the same problem existed with UTF 8 encoding;
+                      additionally the macros failed for protected
+                      arguments.
+
+                    cjktilde.el:
+                      if you assigned the minor mode to a key, the status
+                      line was not updated.
+
+                    ttf2pk:
+                      problems with empty glyphs fixed.
+
+                      problems with invalid index tables now lead to a
+                      warning instead of a fatal error.
+
+
+Version 4.1.3:  new:
+20-Jun-1997         hbf2gf can now create virtual Omega (.ofm) files.
+
+                    ttf2pk (and its scripts) now supports Unicode encoded
+                      fonts.
+
+                    cjk-enc.el for emacs 20.
+
+                    Russian support (in T2 encoding) for Mule/emacs 20.
+                      Please contact me for fonts, hyphenation patterns, and
+                      macro packages.
+
+                    JIS X 0201 support for Mule/emacs 20.
+
+                    experimental support for Thai (only emacs 20). This is
+                      basically C-TTeX version 1.51 adapted to CJK. Anybody
+                      who is interested in this stuff (and has some
+                      knowledge on Thai contrary to me :-) please contact
+                      me so I can improve it. Please read cjk-enc.doc for
+                      more details.
+
+                    ntu2cjk version 1.8:
+                      now supports partial downloading of NTU fonts with
+                      dvips.
+
+                    installation checklist added to INSTALL.
+
+                    installation instructions written in Chinese GB
+                      contributed by YAO Fude <yao@everest.micro.umass.edu>.
+
+                    UTF8.tex example added.
+
+                changed:
+                    MULEenc.sty:
+                      \hbar and \HBAR replaced with \textmalteseh and
+                      \textmalteseH respectively according to the LaTeX2e
+                      release June 1997.
+
+                      further simplifications.
+
+                    external CJK font packages, script and documentation
+                      files updated to TDS standard.
+
+                    c70song.fd:
+                      now uses cyberbit.ttf as default font.
+
+                errors:
+                    make*.btm scripts now really work :-) (thanks to
+                    <rshuang@ms11.hinet.net>).
+
+                    c00cns.fd was incorrectly stored as c00CNS.fd .
+
+                    MULEenc.sty:
+                      expansion macro improved (the old version prevented
+                      kerning if used with e.g., \MakeUppercase).
+
+                    hbf2gf:
+                      support for Unicode encoded HBF files was totally
+                      broken.
+
+                      always used non-rotated x and y input sizes.
+
+                      the HBF interface now uses only one file handle per
+                      opened font---previously it used one file handle per
+                      HBF_CODE_RANGE line (Mark Leisher
+                      <mleisher@crl.nmsu.edu>).
+
+                    ttf2pk:
+                      can now handle fonts like avkv.ttf which have a
+                      non-standard way to handle the end of the glyph index.
+
+                      a nasty allocation bug removed due to missing modulo
+                      65536 operations (thanks to YANG Ching-Hsiang
+                      <jsyang@vlsi.ccl.itri.org.tw>).
+
+
+Version 4.2.0:  new:
+13-Dec-1998         pinyin.sty:
+                      support for EC fonts: the macron bar has been lowered
+                      considerably.
+
+                      kerning in pinyin syllables is now identical to
+                      unaccented syllables.
+
+                    teTeXb5.doc:
+                      How to set up CJK with teTeX 0.9 (in Chinese).
+                      Contributed by HSIEH Tung-Han
+                      <thhsieh@twcpro.phys.ntu.edu.tw>.
+
+                    CJKnumb.sty:
+                      new package for converting a number into a CJK
+                      representation. It provides just one command,
+                      \CJKnumber.
+
+                    CJK.sty:
+                      new command \CJKaddEncHook for adding code which is
+                      executed each time a certain encoding is selected.
+
+                    contrib/wadalab:
+                      how to use Wadalab Japanese PostScript fonts with CJK.
+                      Contributed by LEUNG Hin-Tak <htl10@cus.cam.ac.uk>.
+
+                    CJK.enc:
+                      added C52 encoding (JIS2 in dnp font encoding).
+
+                changed:
+                    MULEenc.sty, cjk-enc.el:
+                      updated to latest LaTeX 2e changes (1997/12/01 and
+                      1998/06/01):
+                      \DH, \dh renamed to \DJ, \dj; LaTeX2e now provides
+                      \textdegree, \textordfeminine, and \textordmasculine.
+
+                      updated to latest T2 changes: \CYRUKRI, \CYRUKRE and
+                      its lowercase forms are renamed to \CYRII and \CYRIE
+                      respectively.
+
+                      there is now a version of cjk-enc.el for emacs 20.3
+                      too.
+
+                    muletest.tex:
+                      new translations; Russian now standard.
+
+                    thaiconv:
+                      updated to include cttex 1.15 changes.
+
+                    a revised TDS structure for storing CJK fonts and
+                      configuration files (see TDS.doc for details).
+
+                    compile.doc has been removed.
+
+                    NTeXb5.doc has been removed.
+
+                    ttf2pk.doc has been removed (it is now in the ttf2pk-old
+                      package).
+
+                    the whole ttf2pk subdirectory has been removed. Get the
+                      new ttf2pk program of the FreeType project (available
+                      from ftp.freetype.org in the directory
+                      pub/freetype/devel as the package
+                      freetype-current.tar.gz)---the new ttf2pk can work
+                      with composite fonts too and supports hinting. The old
+                      ttf2pk is still available as ttf2pk-old.tar.gz .
+
+                    the whole ntu2cjk subdirectory has been removed. Get the
+                      new ttf2pfb program of the FreeType project (see just
+                      above for the location). ntu2cjk is still available as
+                      ntu2cjk.tar.gz .
+
+                    the whole NDOS subdirectory has been removed because it
+                      is completely out of date.
+
+                    CJK.sty:
+                      caption files for preprocessed mode have now the
+                      extension `.cpx' to simplify editing of cap files.
+
+*                   hbf2gf:
+*                     completely redesigned to make calls in scripts for
+*                     creating PK fonts easier. Please refer to hbf2gf.1
+*                     or hbf2gf.dvi for details.
+*
+*                   maketexp.btm, etc.:
+*                     replaced with dvidrv.btm, a replacement for emTeX's
+*                     dvidrv.exe; it is documented in dvidrv.doc .
+
+                    fonts from HLaTeX >= 0.97 are now supported. As a
+                      consequence, support for older HLaTeX versions has
+                      been withdrawn. The internal encoding C66 no longer
+                      exists.
+
+                    cjk-enc.el:
+                      function write-cjk-file added (thanks to David Fox
+                      <fox@cat.nyu.edu>).
+
+                errors:
+                    pinyin.sty:
+                      \O wasn't handled specially.
+
+                    CJK.sty now coexists with ArabTeX.
+
+                    possible save size overflow fixed (\CJK@temp was
+                      assigned locally and globally at the same time).
+
+
+Version 4.3.0:  An intermediate version containing most features of 4.5.0
+04-Apr-2000     published on the TeX Live 5 CD. It has never been officially
+                released.
+
+
+Version 4.4.0:  An intermediate version containing most features of 4.5.0
+17-Apr-2001     published on the TeX Live 6 CD. It has never been officially
+                released.
+
+Version 4.5.0:  An intermediate version containing most features of 4.5.1
+01-May-2002     published on the TeX Live 7 CD. It has never been officially
+                released.
+
+Version 4.5.1:  new:
+17-Jun-2002         CJKulem.sty:
+                      Full underlining support using the latest version of
+                      ulem.sty.
+
+                    Bg5+ and GBK charsets and encodings added (together with
+                      `Bg5+text' and `GBKtext' environments). The encodings
+                      are C09 and C19, respectively.
+
+                      `bg5+latex' and `gbklatex' scripts added (together
+                      with its DOS and OS/2 pendants); both call the new
+                      converter `extconv'.
+
+                    EUC-JP and EUC-TW encodings (*with* single shifts) added.
+
+                    SJIS encoding with DNP fontencoding.
+
+                    A configuration file `CJK.cfg' is read by CJK.sty just
+                      before the \endinput command.
+
+                    CJKnumb.sty:
+                      Added the macro \CJKdigits to CJKnumb.sty for printing
+                      a (integer) number with CJK digits.
+
+                      Added macro \CJKnullspace to control the amount of
+                      space inserted before and after a circle character
+                      used for CJK digit zero.
+
+                    Added the macro \CJKindent to CJK.sty which sets the
+                      paragraph indentation to two ideographic spaces.
+
+                    Added a test file `CJKbabel.tex' for testing CJK,
+                      emacs 20, and the babel package.
+
+                    Thai support for Babel added.
+
+                    Added a test file `thai.tex' for testing Thai.
+
+                    cjk-enc.el:
+                      Now works with XEmacs also (except for Thai).
+
+                      Support for ISO-8859-7 (Greek) added.
+
+*                     Support for multifile documents added. As a
+*                     consequence, it is now necessary to specify the
+*                     encoding of all files with local variables for Emacs
+*                     (see the comments at the end of the files in the
+*                     `examples' directory how to do that; the `coding: ...'
+*                     line must exist.
+
+                      The translation tex->cjk is now executed only if the
+                      source file is more recent than the corresponding
+                      output file (it is still possible to force translation
+                      though).
+
+                    Hyphenation patterns for unaccented pinyin syllables
+                      (together with support for the Babel package) in
+                      utils/pyhyphen. Documentation is in doc/pyhyphen.doc.
+
+                    pinyin.sty:
+                      Added option `useCMmacron' (for LaTeX only) to use
+                      a macron accent from the CM fonts in case the current
+                      font doesn't have it (e.g., some versions of virtual
+                      files for Palatino).
+
+                      Compound syllables can now be hyphenated.
+
+                    MULEenc.sty:
+                      Added \CJKinclude{<file>}, \CJKinput{<file>}, and
+                      \CJKbibliography{<file>} macros which behave similar
+                      to \include, \input, and \bibliography but include
+                      (input) <file>.cjk and <file>-cjk.bib instead.
+
+                    CJK.sty/MULEenc.sty:
+                      The command \CJKverbatim suppresses insertion of glue
+                      between CJK and Thai characters in verbatim
+                      environments if the `verbatim' package is used. This
+                      is useful if you have overlong lines.
+
+                changed:
+                    Thai support has been redesigned. The external program
+                      `thaiconv' has been replaced by a Lisp file called
+                      thai-word.el; ligatures in virtual Thai fonts are now
+                      used to select the proper glyph representation forms.
+                      See thaifont.doc and cjk-enc.doc for details.
+
+                    CNS stuff moved into a `CNS' directory.
+
+*                   CJK.sty/MULEenc.sty,
+*                   cefconv, cef5conv, cefsconv, bg5conv, sjisconv,
+*                   cjk-enc.el:
+*                     The character slot 0xA0 is no longer used for
+*                     \CJKchar; instead, the multiplex character 0x7F
+*                     interface now handles this also. Additionally,
+*                     character 0x7F (instead of 0xFF) is used as delimiting
+*                     character. 0x7F is used for all CJK characters also in
+*                     preprocessed mode---as a consequence, preprocessed and
+*                     non-preprocessed data can be used simultaneously.
+*
+*                     You *must* update the *conv programs (if you use
+*                     them). \CJKpreproc and \CNSpreproc now contain the
+*                     current version string so you can check whether really
+*                     the new versions are called.
+
+                    cjk-enc.el:
+                      ET5 encoding for Vietnamese replaced with T5 encoding.
+
+                      The version for emacs 20 has been removed. Please
+                      upgrade your emacs to 20.7 or newer.
+
+                    contrib/wadalab:
+                      Use CJK font size functions instead of DNP ones.
+
+                    hbf2gf:
+                      The configure option --with-kpathsea-dir has been
+                      replaced with --with-kpathsea-include and
+                      --with-kpathsea-lib to support web2c installations
+                      with multiple architectures.
+
+                errors:
+                    cjk-enc.el:
+                      The formatting parameter `%i' has been replaced with
+                      `%d'.
+
+                    pmC.chr:
+                      Missing \ifCJK@ added.
+
+                      Punctuation macros fixed.
+
+                    Bg5.chr:
+                      Fixed a typo \CJK@temp -> \CJK@gtemp.
+
+                    hbf2gf:
+                      Now works correctly with very large pixel sizes.
+
+                    Punctuation with half-width katakana in SJIS encoding
+                      improved.
+
+                    A bug fixed which prevented the usage of caption files
+                      together with hyperref.
+
+                    KS encoding with HLaTeX fontencoding now supports
+                      punctuation also.
+
+                    Specifying a font size factor (like `CJK * [1.5]') in
+                      FD files no longer produces a warning message for
+                      all subfonts.
+
+Version 4.5.2:  new:
+28-Mar-2003         The new macro \CJKnohwkatakana prevents the use of the
+                      C49 encoding for half-width katakana; instead, the
+                      characters are mapped to full-width glyphs. The
+                      opposite command is \CJKhwkatakana (the default).
+
+                    Improved support for pseudo-vertical typesetting.
+
+                      . CJKvert.sty provides new commands \CJKvert (the
+                        default) and \CJKhorz to toggle pseudo-vertical
+                        typesetting.
+
+                      . After loading CJKvert.sty, LaTeX reads file
+                        `<foo>.fdv' (if it exists) immediately after reading
+                        `<foo>.fd'. Such a file contains additional
+                        information how to typeset a font vertically. Most
+                        importantly, outline fonts can be configured so that
+                        they are rotated with the graphicx package, making
+                        it work with both dvips and pdfTeX. See
+                        `vertical.doc' for more information.
+
+                errors:
+                    \CJKchar sometimes didn't accept 7bit representations.
+
+                    pinyin.sty:
+                      Added missing syllables \chua, \den, \rua.
+                      Make it work properly in tables.
+
+                    contrib/wadalab:
+                      Older versions of the `makefont' script produce bad
+                      hints for all Wadalab fonts. Either use the new
+                      version to regenerate all fonts or use the new script
+                      `fixwada' to correct fonts created with an old version
+                      of `makefont'.
+
+                    EUC-TW.chr: Make it really work.
+
+Version 4.6.0:  new:
+11-Aug-2005         CJKutf8.sty merges basic LaTeX's and CJK's UTF-8 support.
+                    See CJKutf8.doc for details.
+
+                    The two new macros \Thaispace and \Thainospace can be
+                    used to control the EOL behaviour in Thai text blocks
+                    if processed with cjk-enc.el.
+
+                    There are now scripts (for Unix) to call pdflatex
+                    instead of latex: bg5pdflatex, sjispdflatex, etc.;
+                    all scripts now pass parameters to latex (the program).
+
+                    New documentation files giving hints how to set up the
+                    CJK package for optimal PDF output.
+
+                    New documentation file `reftex.doc' describing
+                    customization for RefTeX (which is part of Emacs).
+
+                    CJKfntef.sty provides more font effects specific to
+                    CJK scripts. See the example file CJKfntef.tex for
+                    typical usage.
+
+*                   All .fdv-files have been renamed to use the suffix
+*                   `.fdx' since they are no longer restricted to vertical
+*                   writing direction. See the new file `fdxfiles.doc'
+*                   for more information.
+
+                changed:
+                    All plain text documentation files now have the suffix
+                    `.txt'.
+
+*                   Thai support has been improved.
+*
+*                     . Internally, the font creation process now uses
+*                       fontinst to create the TFM files. As a consequence,
+*                       virtual fonts are no longer necessary.
+*
+*                     . Due to an uncertain license, the `dbtt' font family
+*                       has been replaced with `garuda', taken from
+*                       thailatex version 0.3.5.1 which you can find at
+*
+*                         http://linux.thai.net/plone/TLWG/thailatex
+*
+*                     . The directory tree below `utils/thaifont' has been
+*                       updated to reflect TDS 1.1, as supported by the
+*                       forthcoming TeXLive 2005 and teTeX 3.0.
+*
+*                     Please replace all files related to Thai fonts in your
+*                     TEXMF tree with the new fonts and font support files.
+
+*                   HLaTeX support has been updated to handle fonts from
+*                   version 1.0.1---there are no longer MF source files,
+*                   only PS fonts. Support for non-uhc fonts have been
+*                   removed; you should upgrade to the latest HLaTeX font
+*                   archives from CTAN. Please consult CJK.doc, section
+*                   `Korean input', for the (slightly) changed font names of
+*                   HLaTeX support.
+
+                errors:
+                    Some characters in Big 5 encoding disappeared without
+                    a warning if pseudo-vertical writing was active.
+
+                    pinyin.sty:
+                      Umlaut u with diacritic appeared bold.
+
+                      Umlaut u with macron above was broken.
+
+                    CJKulem.sty:
+                      User-defined \CJKglue value was ignored.
+
+                      Line breaks before a post-punctuation CJK glyph
+                      weren't disabled when \uline and friends were used.
+
+                    MULEenc.sty:
+                      \textordfeminine and \textordmasculine were exchanged
+                      if used with cjk-enc.el.
+
+                    contrib/wadalab/*.fdx:
+                      Handle Hiragana-Katagana prolongation mark correctly.
+
+                    cjk-enc.el:
+                      Multifile support was partially broken.
+
+                    CJKvert.sty:
+                      Both \CJKvert and \CJKhorz had both local and global
+                      effects. Now they are completely local.
+
+
+Version 4.7.0:
+17-Oct-2006
+                new:
+                    A new encoding `HK' (C05) is available for Hong Kong's
+                    HKSCS-2004, used in combination with Big 5.
+
+*                   `UTF8' encoding now supports full Unicode (up to
+*                   U+10FFFF). Subfont planes for ranges greater than U+FFFF
+*                   consist of four hexadecimal digits (for example
+*                   `foo025e' which covers U+25E00-U+25EFF). The \Unicode
+*                   command (and \CJKchar) has been extended to accept
+*                   Unicode values greater than U+FFFF.
+
+                    CJKutf8.sty:
+                      Support Unicode encoded bookmarks if the hyperref
+                      package is used.
+
+                      Automatically generate ToUnicode cmaps for pdftex
+                      (tested with pdftex version 3.141592-1.30.4-2.2; it
+                      currently doesn't work with virtual fonts).
+
+                    Caption files in UTF-8 encoding have been added; the
+                    files are identical to the encoding-specific versions.
+
+                      ja        Japanese
+                      ko-Hang   Korean using Hangul
+                      ko-Hang2  another version using Hangul
+                      ko-Hani   Korean using Hanja
+                      zh-Hans   Chinese simplified
+                      zh-Hant   Chinese traditional
+
+                errors:
+                    UTF-8 input character 0x80 was handled only partially.
+
+                    pinyin.sty:
+                      The package didn't preserve `\ding' which is defined
+                      in pifont.sty, causing problems with older versions of
+                      the hyperref package and its `hpdftex' driver option.
+
+                    CJK.sty:
+                      Make it work with font definition files (like the ones
+                      from the fourier package) which expect that the
+                      loading-settings are called only once.
+
+                    The use of caption files within the `scrartcl' class
+                    made \chapter a defined command (instead of reporting
+                    an error).
+
+                    With the koma-script classes, all CJK caption files
+                    except for Korean produced bad looking TOC entries for
+                    \part.
+
+
+Version 4.8.0:
+22-May-2008
+                new:
+                    Support for EUC-JP with DNP font encoding has been
+                    added.
+
+                    Support for XeLaTeX has been contributed by SUN
+                    Wen-Chang <sunwch@hotmail.com> (in file `xCJK.sty'). 
+                    Note that this is just a rudimentary emulation layer;
+                    most users are probably better off using XeLaTeX's
+                    Unicode and font support directly. See `xCJK.txt' for
+                    more details.
+
+                    pinyin.sty:
+                      Added support for T5 encoding.
+
+		    CJKvert.sty:
+                      Added command \CJKbaselinestretch to adjust the
+                      baseline stretch used in vertical typesetting.
+                      Previously, the value 1.3 was hardcoded.
+
+                      Added package option `usebaselinestretch' to use
+                      the \baselinestretch value set before loading
+                      CJKvert.sty; \CJKbaselinestretch then becomes a
+                      factor to adjust it.
+
+                      Add support for \CJKhdef{offset}{...} in .fdx-files.
+                      For example, to vertically shift all glyphs of the
+                      `bsmi' font shape in Big 5 encoding (for horizontal
+                      writing), put
+
+                        \CJKhdef{offset}{-.07em}
+
+                      into c00bsmi.fdx and add
+
+                        \usepackage{CJKvert}
+                        \CJKhorz
+
+                      to your preamble.
+
+                errors:
+                    \CJK@bold didn't work properly for C49 (half-width
+                    katakana) encoding. Now C49 is handled as a CJK
+                    encoding, this is, you should use the various size
+                    functions (`CJK', `CJKb', etc.).
+
+
+Version 4.8.1:
+10-Aug-2008
+                new:
+                    SUN Wen-Chang has contributed the CJKspace.sty package
+                    which modifies the `CJK*' environment to suppress spaces
+                    only after CJK characters. See CJKspace.txt for
+                    details.
+
+                errors:
+                    Pinyin syllable macros (defined in pinyin.sty) were not
+                    robust, causing problems with indices, for example.
+
+                    Some Chinese .fd and .fdx files were missing for fonts
+                    which are present in the forthcoming TeXLive
+                    distribution.
+
+
+Version 4.8.2:
+29-Dec-2008
+                new:
+                    CJKnumb.sty:
+                      The new command \CJKdigits* is the same as \CJKdigits
+                      but uses the traditional glyph for digit zero.
+
+                changed:
+                    The various directories `norasi' and `garuda' have been
+                    changed to `norasi-c90' and `garuda-c90', respectively.
+
+                    Thai support has been updated to use the fonts from
+                    thailatex version 0.4.2. For easier maintainance it is
+                    now expected that the PFB and AFM files (for `norasi'
+                    and `garuda') are no longer renamed.
+
+                errors:
+                    Poor-man's bold fonts could work incorrectly for
+                    substituted fonts.
+
+                    \Unicode didn't use proper glyph representation forms in
+                    vertical mode.
+
+
+Version 4.8.3:
+07-May-2012
+                new:
+                  CJKfntef.sty:
+                    New commands \varCJKunderline, \CJKunderanyline,
+                    \CJKunderanysymbol. See the example file `CJKfntef.tex'
+                    for typical usage.
+
+                  cjk-enc.el:
+                    Emacs 23 and newer is now supported, thanks to patches
+                    from Leung Hin-Tak.
+
+                    Leung Hin-Tak also contributed Thai support for UTF-8
+                    encoding, making emacs an alternative to Thai word
+                    separator programs like `cttex' or `swath'.  See the
+                    example file `thai_utf8.tex' for a typical usage.
+
+                changed:
+                  Special XeTeX support has been removed (file `xCJK.sty'
+                  and others). Please use the separate `xeCJK' package
+                  instead.
+
+                  Peter Breitenlohner contributed various minor fixes and
+                  improvements to the many conversion programs like
+                  `cjklatex' or `bg5conv'.
+
+                  The Thai metrics files for `norasi' and `garuda' were
+                  updated to version 0.5 of the `font-tlwg' bundle.
+
+                errors:
+                  CJKfntef.sty:
+                    An incompatibility with recent versions of `ulem.sty'
+                    was fixed.
+
+                  ruby.sty:
+                    Fix case where furigana is smaller than base glyph.
+
+
+Version 4.8.4:
+18-Apr-2015
+                errors:
+                  CJKutf8.sty:
+                    Fix space handling of non-CJK characters.
+
+                  CJK.sty:
+                    In \Unicode, fix conditional to allow line breaks.
+
+
+---End of history.txt---

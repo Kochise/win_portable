@@ -1,7 +1,9 @@
-%% pdftex.def Copyright (C) 2000-2015 David Carlisle, Sebastian Rahtz,
-%%                                    Hans Hagen, Heiko Oberdiek and
-%%                                    Martin Schr\"oder
-%%            Copyright (C) 2016-2018 LaTeX3 project and Heiko Oberdiek
+%% pdftex.def
+%% Copyright (C) 2000-2015 David Carlisle, Sebastian Rahtz,
+%%                         Hans Hagen, Heiko Oberdiek and
+%%                         Martin Schr\"oder
+%% Copyright (C) 2016-2018 LaTeX3 project and Heiko Oberdiek
+%% Copyright (C) 2018-2020 LaTeX3 project
 %%
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3c
@@ -18,7 +20,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{pdftex.def}
-  [2018/01/08 v1.0l Graphics/color driver for pdftex]
+  [2020/08/26 v1.2 Graphics/color driver for pdftex]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -139,23 +141,84 @@ E     \else
 \def\no@page@color{%
   \global\GPT@pagecolorfalse
 }
+
+\def\@tempa{LaTeX2e}%
+\ifx\fmtname\@tempa
+  \expandafter\@firstofone
+\else
+  \expandafter\@gobble
+\fi
+ {%
+ \@ifl@t@r\fmtversion{2020/10/01}
+  {%
+    \def\set@page@color{%
+     \global\GPT@pagecolortrue
+     \global\let\current@page@color\current@color
+    }%
+    \g@addto@macro\@kernel@before@shipout@background
+     {%
+      \ifGPT@pagecolor
+        \put(-\hoffset,-\pdfpageheight+\voffset)%
+          {%
+           \pdfcolorstack\@pdfcolorstack push{\current@page@color}%
+            \aftergroup\reset@color
+            \rule{\pdfpagewidth}{\pdfpageheight}%
+          }%
+      \fi
+     }%
+  }%
+ }
 \AtBeginDocument{%
   \def\KV@Gin@bbllx{%
     \PackageError{pdftex.def}{%
-      Options `bblly', `bblly', `bburx' and `bbury'\MessageBreak
-      are not supported by pdftex driver:\MessageBreak
+      Options `bblly', `bblly', `bburx', `bbury',\MessageBreak
+      `natheight' and `natwidth' are not\MessageBreak
+      supported by pdftex driver:\MessageBreak
       use `viewport' instead%
     }\@ehc
   }%
   \let\KV@Gin@bblly\KV@Gin@bbllx
   \let\KV@Gin@bburx\KV@Gin@bbllx
   \let\KV@Gin@bbury\KV@Gin@bbllx
+  \let\KV@Gin@natwidth\KV@Gin@bbllx
+  \let\KV@Gin@natheight\KV@Gin@bbllx
   \def\KV@Gin@bb{%
     \PackageInfo{pdftex.def}%
-      {Option `bb' equivalent to `viewport' with pdftex driver}%
+      {Option `bb' equivalent to `viewport' with the pdftex driver}%
     \KV@Gin@viewport
   }%
+  \let\Gin@iii\Gin@iii@vp
 }
+
+%%% this definition will be added to graphics.sty
+\def\Gin@iii@vp[#1,#2][#3,#4]#5{%
+  \begingroup
+  \let\Gin@viewport@code\Gin@viewport
+  \Gin@defaultbp\Gin@vllx{#1}%
+  \Gin@defaultbp\Gin@vlly{#2}%
+  \Gin@defaultbp\Gin@vurx{#3}%
+  \Gin@defaultbp\Gin@vury{#4}%
+  \Ginclude@graphics{#5}%
+  \endgroup}
+
+
+%%% this definition needs moving from graphicx.sty to graphics.sty
+\def\Gin@viewport{%
+  \let\Gin@ollx\Gin@llx
+  \let\Gin@olly\Gin@lly
+  \let\Gin@ourx\Gin@urx
+  \let\Gin@oury\Gin@ury
+  \dimen@\Gin@llx\p@\advance\dimen@ \Gin@vurx\p@
+                      \edef\Gin@urx{\strip@pt\dimen@}%
+  \dimen@\Gin@lly\p@\advance\dimen@ \Gin@vury\p@
+                      \edef\Gin@ury{\strip@pt\dimen@}%
+  \dimen@\Gin@llx\p@\advance\dimen@ \Gin@vllx\p@
+                      \edef\Gin@llx{\strip@pt\dimen@}%
+  \dimen@\Gin@lly\p@\advance\dimen@ \Gin@vlly\p@
+                      \edef\Gin@lly{\strip@pt\dimen@}}
+%%% end of temp addition
+
+
 \def\Gread@pdftex#1{%
   \expandafter\ifx\expandafter\relax\pdffilesize{#1}\relax
     \expandafter\@secondoftwo
@@ -585,18 +648,18 @@ E     \else
 % b) and shell escape (\write18) is enabled (possibly restricted),
 % c) and \DoNotLoadEpstopdf either does not exist or is not \relax,
 % d) and neither pst-pdf nor pdftricks is loaded (by \begin{document}).
-% 
+%
 % In other words, by default .eps files will be automatically
 % converted to .pdf files when outputting pdf.  This can be wrong!
 % If the .pdf is the source, rather than the .eps, you should put
 %  \newcommand{\DoNotLoadEpstopdf}{}
 % before even the \documentclass line of your document.
-% 
+%
 % More information about the epstopdf run will be in the .log file;
 % see http://ctan.org/pkg/epstopdf-pkg for more info about the
 % epstopdf package itself.  In turn, it calls the epstopdf script
 % (http://ctan.org/pkg/epstopdf).
-% 
+%
 % For the first discussion and background on this, see the thread on latex-l:
 % http://thread.gmane.org/gmane.comp.tex.latex.latex3/1465
 %
