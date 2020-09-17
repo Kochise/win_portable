@@ -14,6 +14,7 @@ Some useful Windows programs in one portable package
 **Erlang** : distributed functional language (inspired from Prolog)<br>
 **FileZilla** : ftp client (better use Total Commander in passive mode)<br>
 **Firefox** : ready to use Firefox browser with some privacy extensions installed<br>
+**ImageMagick** : image manipulator, converter, whatever (cli only, strange syntax)<br>
 **IrfanView** : image viewer and more, lightweight image editing with F12<br>
 **JoyToKey** : as the name says, transform joystick into keyboard moves<br>
 **Keyboard Status** : display the status of Capslock and Numlock<br>
