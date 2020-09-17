@@ -15,6 +15,7 @@ Some useful Windows programs in one portable package
 **FileZilla** : ftp client (better use Total Commander in passive mode)<br>
 **Firefox** : ready to use Firefox browser with some privacy extensions installed<br>
 **ImageMagick** : image manipulator, converter, whatever (cli only, strange syntax)<br>
+**inkscape** : vectorial image tools, default svg editor and converter for **miktex**<br>
 **IrfanView** : image viewer and more, lightweight image editing with F12<br>
 **JoyToKey** : as the name says, transform joystick into keyboard moves<br>
 **Keyboard Status** : display the status of Capslock and Numlock<br>
@@ -22,7 +23,7 @@ Some useful Windows programs in one portable package
 **LastActivityView** : we know what you did last summer<br>
 **LICEcap** : record a part of your screen directly into animated gif<br>
 **lite** : lightweight source code editor coded in lua<br>
-**miktex** : LaTeX tools needed by texmaker (includes its own package updater)<br>
+**miktex** : LaTeX tools needed by **texmaker** (includes its own package updater)<br>
 **MMCE** : Marble Marcher Community Edition, mind blowing utility<br>
 **mscgen-0.20** : command line based Message Sequence Charts generator<br>
 **Msc-generator** : run Msc-generator.exe and select 'Signalling Chart'<br>
@@ -41,7 +42,7 @@ Some useful Windows programs in one portable package
 **Subtitle Edit** : best subtitle editor, can shift time for several lines<br>
 **SuperFastClicker** : console program, press Capslock for mouse fast clicking<br>
 **SysinternalsSuite** : the stuff that should be included with every Windows<br>
-**texmaker** : LaTeX Editor that needs miktex (run texmaker.bat to setup the path)<br>
+**texmaker** : LaTeX Editor that needs **miktex** (run <ins>texmaker.bat</ins> to setup the path)<br>
 **Total Commander** : the stuff that should replace Windows (at least the explorer)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>
