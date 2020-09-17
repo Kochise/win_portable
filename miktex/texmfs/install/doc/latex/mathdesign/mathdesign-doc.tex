@@ -1,0 +1,1784 @@
+\documentclass[10pt]{article}
+
+\usepackage[english]{babel}
+
+\usepackage[euro, mdput, expert, ttscaled=true, sfscaled=true]{mathdesign}
+
+\usepackage{textcomp}
+
+%% -------------------------------------------------------------------
+
+\usepackage{url}
+\usepackage{texlogos}
+\usepackage{xspace}
+
+%% -------------------------------------------------------------------
+
+% Logical styles.
+\newcommand{\pkgname}[1]{%
+  \textsf{#1}%
+  }
+\newcommand{\optname}[1]{%
+  \textsf{#1}%
+  }
+\newcommand{\filename}[1]{%
+  \texttt{#1}%
+}
+\newcommand{\PSfont}[1]{%
+  #1%
+}
+\newcommand{\PSchar}[1]{%
+  \texttt{#1}%
+}
+
+
+%% -------------------------------------------------------------------
+
+%% Margins, etc.
+
+%% \setlength\hoffset{-1in}
+%% \setlength\voffset{-1in}
+
+\setlength\oddsidemargin{28pt}
+\setlength\textwidth{398pt}
+
+\setlength\headsep{24pt}
+\setlength\topmargin{-33pt}
+
+\setlength\footskip{36pt}
+\setlength\textheight{626pt}
+
+
+
+%\DeclareRobustCommand{\person}[2]{#1\index{#2, #1} #2}
+
+%% -------------------------------------------------------------------
+
+\usepackage{hyperref}
+
+% Scott Pakin Comprehensive code
+\makeatletter
+\newcommand{\notpredefinedmessage}{%
+  \begin{tablenote}[*]
+    Not predefined in \LaTeX.  
+  \end{tablenote}
+}
+\newcommand{\notpredefinedmessageextra}{%
+  \begin{tablenote}[*]
+    Not predefined in \LaTeX.  
+  \end{tablenote}
+}
+
+% Redefine the LaTeX commands that are replaced by textcomp.
+% This was swiped right out of ltoutenc.dtx, but with "\text..."
+% changed to "\ltext...".
+\DeclareTextCommandDefault{\ltextcopyright}{\textcircled{c}}
+\DeclareTextCommandDefault{\ltextregistered}{\textcircled{\scshape r}}
+\DeclareTextCommandDefault{\ltexttrademark}{\textsuperscript{TM}}
+\DeclareTextCommandDefault{\ltextordfeminine}{\textsuperscript{a}}
+\DeclareTextCommandDefault{\ltextordmasculine}{\textsuperscript{o}}
+
+% Define an environment in which to write a single table of symbols.  The
+% environment looks a lot like a table, but it doesn't float, and it gets
+% an entry in the table of contents (as a subsubsection that looks like a
+% subsection), as opposed to the list of tables.
+%
+% The first argument is a conditional.  The table will appear only if
+% the value of the conditional is true.  The second argument is the
+% table's caption.
+
+% Sometimes, we need a little more horizontal spacing, too.
+\def\qqquad{\hskip3em\relax}
+\def\dquad{\hskip.5em\relax}
+
+\def\fnum@table{\textbf{\tablename}~\thetable}
+
+\newcommand{\savecaption}[1]{\global\def\currentcaption{#1}}
+
+\newenvironment{symtable}[1]{%
+    \noindent%
+    \begin{minipage}[t]{\linewidth}    % Prevent page breaks
+        \begin{center}
+            \addtocounter{table}{1}%
+            \protected@edef\@currentlabel{\thetable}%
+            \addcontentsline{toc}{subsubsection}{%
+                \protect\numberline{\tablename~\thetable:}{\quad #1}}%
+           \savecaption{#1}
+        }{%
+\@makecaption{\fnum@table}{\currentcaption}\end{center}
+\end{minipage}
+\bigskip
+}
+
+
+% Same as the above, but allows page breaks.
+
+\newenvironment{longsymtable}[2][true]{%
+  \expandafter\global\expandafter\let%
+    \expandafter\ifshowsymtable\csname if#1\endcsname
+  \ifshowsymtable
+    \mbox{}%
+    \begin{center}%
+    \addtocounter{table}{1}%
+    \protected@edef\@currentlabel{\thetable}%
+    \addcontentsline{toc}{subsubsection}{%
+      \protect\numberline{\tablename~\thetable:}{#2}}%
+    \@makecaption{\fnum@table}{#2}%
+    \def\lt@indexed{}%
+    \let\next=\relax
+  \else
+    % The following was taken verbatim from verbatim.sty.
+    \let\do\@makeother\dospecials\catcode`\^^M\active
+    \let\verbatim@startline\relax
+    \let\verbatim@addtoline\@gobble
+    \let\verbatim@processline\relax
+    \let\verbatim@finish\relax
+    \let\next=\verbatim@
+  \fi
+  \next
+}{%
+  \ifshowsymtable
+    \let\@elt=\index\lt@indexed  % Close our index ranges.
+    \end{center}
+    \addtocounter{table}{-1}     % Make up for longtable's counter increment.
+    \vskip 8ex minus 2ex
+  \fi
+}
+
+
+% Many tables have notes beneath them.  Define an environment in which to
+% display such a note, with an optional, superscripted math symbol
+% preceding it.
+\newenvironment{tablenote}[1][]{
+  \makebox[1em]{\ensuremath{^{#1}}}%
+  \begin{minipage}[t]{0.75\textwidth}%
+  \setlength{\parskip}{2ex}
+}{%
+  \end{minipage}%
+}
+
+
+\def\docttfamily{\ttfamily\small}
+
+\def\N@opt@arg[#1]#2{$#1$ & $\Big#1$ &\docttfamily\string#2}
+\def\N@no@opt@arg#1{$#1$ & $\Big#1$ &\docttfamily\string#1}
+\def\N{\@ifnextchar[{\N@opt@arg}{\N@no@opt@arg}}
+                                % We use \displaystyle so that variable-sized symbols will be big.
+
+\def\Q#1{ #1{A} \dquad #1{a} &
+         \docttfamily\string#1\string{A\string}\string#1\string{a\string}}
+
+\def\QQ#1{ #1{AA} \dquad #1{aa} &
+         \docttfamily\string#1\string{AA\string}\string#1\string{aa\string}}
+
+\def\R@opt@arg[#1]#2{$#1$ & $\displaystyle#1$ &\docttfamily\string#2}
+\def\R@no@opt@arg#1{$#1$ & $\displaystyle#1$ &\docttfamily\string#1}
+\def\R{\@ifnextchar[{\R@opt@arg}{\R@no@opt@arg}}
+
+\newcommand{\V}[2][]{#1 & #2 &\docttfamily\string#2}
+  \def\W@opt@arg[#1]#2#3{%
+      $#1{#3}$ &\docttfamily\string#2\string{#3\string}}
+  \def\W@no@opt@arg#1#2{%
+      $#1{#2}$ &\docttfamily\string#1\string{#2\string}}
+  \def\W{\@ifnextchar[{\W@opt@arg}{\W@no@opt@arg}}
+\def\DX#1{$\displaystyle#1$ &\docttfamily\string#1}
+\def\X#1{$#1$ &\docttfamily\string#1}
+\def\T#1{#1 &\docttfamily\string#1}
+
+\def\Y#1{$\big#1$ & $\Bigg#1$ &\docttfamily\string#1}
+
+\def\C#1{{\docttfamily\string#1}~($#1$)\xspace}
+\def\CC#1#2{{\docttfamily\string#1}~($#2$)\xspace}
+\def\CT#1{{\docttfamily\string#1}~(#1)\xspace}
+
+
+
+% TXfonts code
+
+\newcount\curchar \newcount\currow \newcount\curcol
+\newdimen\indexwd \newdimen\tempcellwd
+\setbox0\hbox{\sffamily D\kern.2em}
+\indexwd=\wd0
+
+\def\hexnumber#1{\ifcase\expandafter\ident\expandafter{\number#1} 0\or
+1\or 2\or 3\or 4\or 5\or 6\or 7\or 8\or 9\or A\or B\or C\or D\or E\or
+F\else ?\fi}
+
+\def\ident#1{#1}
+\def\rownumber{\sffamily\hexnumber\currow}
+\def\colnumber{\sffamily\hexnumber\curcol \global\advance\curcol 1 }
+\def\colnumbers{\hbox to\hsize{\global\curcol 0
+  \def\1{\hbox to\cellwd{\curcol}{\hfil\colnumber\hfil}}%
+  \kern\indexwd\hfil\hfil
+  \1\1\1\1\hfil\hfil \1\1\1\1\hfil\hfil
+  \1\1\1\1\hfil\hfil \1\1\1\1\hfil\hfil
+  \kern\indexwd}%
+}
+
+\def\charnumber{\setbox0=\hbox{\char\curchar}%
+  \ifdim\ht0>7.5pt\reposition
+  \else\ifdim\dp0>2.5pt\reposition\fi\fi
+  \box0 \global\advance\curchar1 }
+\def\reposition{\setbox0=\hbox{$\vcenter{\kern1.5pt\box0\kern1.5pt}$}}
+\def\measurecolwidths#1{%
+  \tempcellwd\hsize \advance\tempcellwd-2\indexwd
+  \advance\tempcellwd -12pt
+  \divide\tempcellwd 16
+  \xdef\cellwd##1{\the\tempcellwd}%
+}
+
+\def\dochartA#1{%
+  \begingroup
+  \global\curchar=0 \global\currow=0 \global\curcol=0
+  \def\hline{\kern2pt\hrule\kern3pt }%
+  \setbox0\vbox{#1%
+    \def\0{\hbox to\cellwd{\curcol}{\hss\charnumber\hss}}%
+    \colnumbers
+    \hline
+    \setrow\setrow\setrow\setrow
+    \hline
+    \setrow\setrow\setrow\setrow
+    \hline
+    \setrow\setrowX\setrow\setrowX %
+%    \hline %
+%%     \setrowX\setrowX\setrowX\setrowX %
+    \hline %
+    \colnumbers
+  }%
+  \null\hfil\hbox{\vbox{%
+    \hbox to\hsize{\kern\indexwd
+      \def\fullrule{\hfil\vrule height\ht0 depth\dp0\hfil}%
+      \fullrule\kern\cellwd{0}\kern\cellwd{1}\kern\cellwd{2}\kern\cellwd{3}%
+      \fullrule\kern\cellwd{4}\kern\cellwd{5}\kern\cellwd{6}\kern\cellwd{7}%
+      \fullrule\kern\cellwd{8}\kern\cellwd{9}\kern\cellwd{10}\kern\cellwd{11}%
+      \fullrule\kern\cellwd{12}\kern\cellwd{13}\kern\cellwd{14}\kern\cellwd{15}%
+      \fullrule\kern\indexwd}%
+    \kern-\ht0 \kern-\dp0 \unvbox0}}\hfil%
+  \endgroup
+}
+\def\dochartB#1{%
+  \begingroup
+  \global\curchar=0 \global\currow=0 \global\curcol=0
+  \def\hline{\kern2pt\hrule\kern3pt }%
+  \setbox0\vbox{#1%
+    \def\0{\hbox to\cellwd{\curcol}{\hss\charnumber\hss}}%
+    \colnumbers
+    \hline
+    \setrow\setrow\setrow\setrow
+    \hline
+    \setrow\setrow\setrow\setrow
+    \hline
+    \setrow\setrow\setrow\setrow %
+   \hline %
+    \setrow\setrow\setrow\setrow %
+    \hline %
+    \colnumbers
+  }%
+  \vbox{%
+    \hbox to\hsize{\kern\indexwd
+      \def\fullrule{\hfil\vrule height\ht0 depth\dp0\hfil}%
+      \fullrule\kern\cellwd{0}\kern\cellwd{1}\kern\cellwd{2}\kern\cellwd{3}%
+      \fullrule\kern\cellwd{4}\kern\cellwd{5}\kern\cellwd{6}\kern\cellwd{7}%
+      \fullrule\kern\cellwd{8}\kern\cellwd{9}\kern\cellwd{10}\kern\cellwd{11}%
+      \fullrule\kern\cellwd{12}\kern\cellwd{13}\kern\cellwd{14}\kern\cellwd{15}%
+      \fullrule\kern\indexwd}%
+    \kern-\ht0 \kern-\dp0 \unvbox0}%
+  \endgroup
+}
+\def\dochartC#1{%
+  \begingroup
+  \global\curchar=0 \global\currow=0 \global\curcol=0
+  \def\hline{\kern2pt\hrule\kern3pt }%
+  \setbox0\vbox{#1%
+    \def\0{\hbox to\cellwd{\curcol}{\hss\charnumber\hss}}%
+    \colnumbers
+    \hline
+    \setrow\setrow\setrow\setrow
+    \hline
+    \setrow\setrow\setrow\setrow
+%%     \hline
+%%     \setrow\setrow\setrow\setrow %
+%%    \hline %
+%%     \setrowX\setrow\setrowX\setrow %
+    \hline %
+    \colnumbers
+  }%
+  \vbox{%
+    \hbox to\hsize{\kern\indexwd
+      \def\fullrule{\hfil\vrule height\ht0 depth\dp0\hfil}%
+      \fullrule\kern\cellwd{0}\kern\cellwd{1}\kern\cellwd{2}\kern\cellwd{3}%
+      \fullrule\kern\cellwd{4}\kern\cellwd{5}\kern\cellwd{6}\kern\cellwd{7}%
+      \fullrule\kern\cellwd{8}\kern\cellwd{9}\kern\cellwd{10}\kern\cellwd{11}%
+      \fullrule\kern\cellwd{12}\kern\cellwd{13}\kern\cellwd{14}\kern\cellwd{15}%
+      \fullrule\kern\indexwd}%
+    \kern-\ht0 \kern-\dp0 \unvbox0}%
+  \endgroup
+}
+
+\def\setrow{\hbox to\hsize{%
+  \hbox to\indexwd{\hfil\rownumber\kern.2em}\hfil\hfil
+  \0\0\0\0\hfil\hfil \0\0\0\0\hfil\hfil
+  \0\0\0\0\hfil\hfil \0\0\0\0\hfil\hfil
+  \hbox to\indexwd{\sffamily\kern.2em \rownumber\hfil}}%
+  \global\advance\currow 1 }%
+
+\def\setrowX{\global\advance\curchar16\global\advance\currow 1\relax}
+
+\def\cellwd#1{20pt}% initialize
+
+\def\measurecolwidths#1{%
+  \tempcellwd\hsize \advance\tempcellwd-2\indexwd
+  \advance\tempcellwd -12pt
+  \divide\tempcellwd 16
+  \xdef\cellwd##1{\the\tempcellwd}%
+}
+\def \tableA #1#2#3{\par\penalty-200 \bigskip
+  \font #1=#2 \relax
+  \centerline{\vbox{\hsize=29pc
+    \measurecolwidths{#1}%
+    \centerline{#3}%
+    \medskip
+    \dochartA{#1}%
+}}}
+\def \tableB #1#2#3{\par\penalty-200 \bigskip
+  \font #1=#2 \relax
+  \centerline{\vbox{\hsize=29pc
+    \measurecolwidths{#1}%
+    \centerline{#3}%
+    \medskip
+    \dochartB{#1}%
+}}}
+\def \tableC #1#2#3{\par\penalty-200 \bigskip
+  \font #1=#2 \relax
+  \centerline{\vbox{\hsize=29pc
+    \measurecolwidths{#1}%
+    \centerline{#3}%
+    \medskip
+    \dochartC{#1}%
+}}}
+
+\def\comment#1{\begingroup \small \noindent {\textit{Comment:}} #1 \endgroup}
+
+%% \renewcommand*\descriptionlabel[1]{\hspace\labelsep
+%%     \normalfont#1}
+
+\def\FSS#1#2{\fontfamily{#1}\selectfont #1
+    & \quad \fontfamily{#1}\selectfont #2}
+
+\def\FTT#1#2{\fontfamily{#1}\selectfont #1 &
+    \quad \fontfamily{#1}\selectfont #2}
+
+\newcommand\slightsize{\@setfontsize\slightsize{27}{30}}
+\makeatother
+
+\renewcommand\sfdefault{fvs}
+\renewcommand\ttdefault{fvm}
+
+\begin{document}
+
+\title{The \pkgname{mathdesign}  package}
+
+\author{Paul Pichaureau\footnote{\texttt{paul.pichaureau@alcandre.net}} \\ 
+{\Large \mdlogo} }
+
+\date{\today}
+
+\maketitle
+
+
+\section{Introduction}
+
+The package \pkgname{mathdesign} replaces all the default mathematical
+fonts of \TeX\ with a complete set of mathematical fonts, designed to
+be combined with a text font of your choice.  
+
+Provided fonts cover the full family of symbol of plain \TeX{} and
+\LaTeX{}, the full set of the American Mathematical Society (\AmS)
+symbols, the Ralph Smith's Formal Script symbol fonts (RSFS). Some
+symbol used by the package \pkgname{textcomp}. Some extra symbols are
+also defined. 
+
+More fonts will be created and shared in the future!
+
+\subsection{Requirements}
+
+A complete \TeX{} installation is required. In particular, the text
+fonts you want to use must be already present on your system.
+
+A \emph{recent} \TeX{} distribution is recommended (e.g. Mik\TeX{}\ 
+v2.2 or later, te\TeX{} v3.0 or later) as the configuration is
+really simple with the \pkgname{updmap} utility.
+
+%% \subsection{The Math Design project}
+
+%% The main goal of the Math Design project is to provide
+%% mathematical fonts for most of the text font freely available. 
+
+%% All comments, glyph requests, piece of advice, opinions about these
+%% fonts, will be warmly welcomed.
+
+\section{Installation}
+
+This package alone is useless. You have to install one of the full
+set of fonts available. Please consult the provided README file. It deals
+with all the installation and system configuration process.
+
+\section{Interesting features}
+
+\begin{itemize}
+        \item All the symbols are provided in normal and bold versions.
+        \item Support of all \LaTeX and \AmS symbols including
+    blackboard bold letters ($\mathbb Q$, $\mathbb R$, $\mathbb Z$). 
+        \item Extra symbols, including  \CT\euro \C\smallin \C\intclockwise
+    \C\ointclockwise \C\oiint \C\oiiint.
+        \item Various greek alphabets available.
+        \item Support of scaled sans serif and typewriter fonts.
+\end{itemize}
+
+\pagebreak
+
+\section{Usage and configuration}
+
+To use one the font in your document call the \pkgname{mathdesign}
+package with the appropriate option.
+
+\begin{center}
+    \begin{tabular}{p{3.5cm}|p{5.5cm}p{3cm}}
+        {\bf Text fonts} & \textbf{Option name} & \textbf{Package name }\\
+       \hline \hline
+       Adobe Utopia & \optname{adobe-utopia}, \optname{utopia} 
+       & \pkgname{mdput} \\
+       URW Garamond & \optname{urw-garamond}, \optname{garamond} 
+       & \pkgname{mdugm} \\
+       Bitstream Charter& \optname{bitstream-charter}, \optname{charter} 
+       & \pkgname{mdbch} 
+    \end{tabular}
+\end{center}
+
+In the preceding table, option on the same line are equivalent. Then,
+the following lines are equivalent:
+\begin{verbatim}
+    \usepackage[adobe-utopia]{mathdesign}
+    \usepackage[utopia]{mathdesign}
+\end{verbatim}
+
+The package tries to redefine all the commands related to the glyphs
+present in the fonts. As far as I know, they work fine, but you
+shouldn't use package like \pkgname{amsfonts} or \pkgname{mathrsfs} in
+conjunction with \pkgname{mathdesign}. A package warning will be
+emitted in such case.
+
+Don't forget that many packages redefine the same command than
+\pkgname{mathdesign} (the euro currency symbol is the worst example of
+this situation). You have to take care of the possible
+package clashes.
+
+The default encoding is automatically set to T1.
+
+\subsection{Options}
+
+\label{sec:options}
+
+Some \pkgname{mathdesign} options use the \pkgname{keyval} interface. As usual with  \pkgname{keyval}, any spaces between words are ignored and multiple lines are allowed. Moreover, options are order-independent.
+
+For example, the following line asks for Bitstream Charter and upright
+capitals letters :
+\begin{verbatim}
+    \usepackage[charter, uppercase=upright]{mathdesign}
+\end{verbatim}
+
+The following options are available:
+\begin{description}
+        \item[\optname{greekfamily} = <value>] three greek fonts are
+    available : the default mathdesign font, \texttt{didot} which came
+    from GFS Didot, and \texttt{bodoni} taken from GFS Bodoni. These two fonts
+    are released by the Greek Font
+    Society\footnote{\texttt{http://greekfontsociety.gr/}}.
+    
+    % The last font is  extracted from the commercial font Adobe Minion
+    % Pro. This family is shipped with recent versions of Adobe Acrobat Reader
+    
+        \item[\optname{expert}] if the corresponding postscript font
+    are available on your system, this option activates them. See
+    section \ref{sec:sc} for more informations.
+
+        \item[\optname{euro}] activates the \pkgname{mathdesign}
+    version of the euro currency symbol (\CT{\euro}). This
+    redefinition takes place \verb:\AtBeginDocument:. Default value:
+    \texttt{true}.
+
+        \item[\optname{scaled}= <value> {true}]  Scale all the
+    mathdesign fonts (including math and small caps when available).
+    Default value: \texttt{1.0}.
+
+        \item[\optname{sfscaled}= \texttt{true} \emph{or}
+    \texttt{false}] Use a scaled version of common sans serif fonts 
+    (see explanations in section \ref{sec:scaled}). Default value:
+    \texttt{true}.
+ 
+        \item[\optname{ttscaled}= \texttt{true} \emph{or}
+    \texttt{false}] Use a scaled version of common typewriter fonts
+    (see explanations in section \ref{sec:scaled}). Default value:
+    \texttt{true}.
+
+%%         \item[\optname{extrasymb}] activates some extra symbols and
+%%     commands. See section \ref{sec:extras}.
+%%         \item[\optname{fraktur}] defines a scaled version of the \AmS{}
+%%     Euler Fraktur font. This font is available \emph{via} the
+%%     \verb|\mathfrak| command:
+%%     \begin{quotation}
+%%         \verb|$\mathfrak{AC}$| \qquad gives \qquad $\mathfrak{AC}$
+%%     \end{quotation}
+
+        \item[\optname{uppercase}\ = \texttt{upright} \emph{or}
+    \texttt{italicized}] \par
+    In math mode, use \texttt{upright} or \texttt{italicized}
+    uppercase letters. Default value: \texttt{italicized}.
+
+        \item[\optname{lowercase}\ = \texttt{upright} \emph{or}
+    \texttt{italicized}] \par
+    In math mode, use \texttt{upright} or \texttt{italicized}
+    lowercase letters. Default value: \texttt{italicized}.
+
+        \item[\optname{greekuppercase}= \texttt{upright} \emph{or}
+    \texttt{italicized}] 
+
+    In math mode, use \texttt{upright} or \texttt{italicized}
+    uppercase greek letters. Default value: \texttt{upright}.
+ 
+       \item[\optname{greeklowercase}= \texttt{upright} \emph{or}
+    \texttt{italicized}] 
+
+    In math mode, use \texttt{upright} or \texttt{italicized}
+    lowercase greek letters. Default value: \texttt{italicized}.
+
+%%        \item[\optname{mdcal}] the \verb|\mathcal| command points to
+%%     the formal script letters:
+%%     \begin{quotation}
+%%         \verb|$\mathcal{AC}$| \qquad gives \qquad $\mathscr{AC}$
+%%     \end{quotation}
+    
+%%     \item[\optname{cmcal}] the \verb|\mathcal| command points to
+%%     a scaled version of the \TeX{} calligraphic font:
+%%     \begin{quotation}
+%%         \verb|$\mathcal{AC}$| \qquad gives \qquad $\mathcal{AC}$
+%%     \end{quotation}
+%%     this is the default behaviour. Whatever the option, the
+%%     \verb|\mathscr| command produces formal script letters (i.e.
+%%     \verb|$\mathscr{AC}$| gives $\mathscr{AC}$ with both options).
+  
+\end{description}
+
+In french traditional typography, uppercase letters and lowercase
+greek letters are not italicised contrary to the english usage.  For
+example
+$$ \forall t \in [0,1], \qquad (1-t)\mathrm{A} + t \mathrm{B} \in
+[\mathrm{AB}] $$
+$$ \mathrm{R} = a^2 + b^2, \qquad \thetaup = \arctan \frac{a}{b} \quad
+\Longrightarrow \quad a\cos \alphaup + b \sin \alphaup = \mathrm{R} \cos
+(\alphaup + \thetaup)$$
+are the ``french'' version of
+$$ \forall t \in [0,1], \qquad (1-t)A + t B \in [AB] $$
+$$ R = a^2 + b^2, \qquad \theta = \arctan \frac{a}{b} \quad
+    \Longrightarrow \quad a\cos \alpha + b \sin \alpha = R \cos
+    (\alpha + \theta)$$
+
+    If you want to typeset a document in the old french traditions, use
+    the following options:
+\begin{verbatim}
+  \usepackage[uppercase=upright, greeklowercase=upright, garamond]{mathdesign}
+\end{verbatim}
+
+Please, note that upright and slanted versions of the greek letters
+are always available, using commands $\verb|\alphaup|$,
+$\verb|\alphait|$, etc.  (see tables \ref{tab:greekup} and
+\ref{tab:greekit}).
+
+\subsection{Small capitals and oldstyle figures}
+
+\subsubsection{Faked small capitals}
+
+\label{sec:sc}
+
+It is not in the goals of the Math Design project to provide small
+capitals and typographic refinements of this sort. Anyway, ``faked''
+small caps are defined by default\footnote{Two new \textsf{nfss} shape
+    are defined and associated with these faked small capitals :
+    \texttt{\textbackslash fscshape} (variant \texttt{fsc}) for the
+    upright faked small capitals and \texttt{\textbackslash ficshape}
+    (variante \texttt{fix}) for the slanted faked small caps}. If you
+don't load the package with the option \optname{expert} then these
+small capitals will be used in your document.
+
+\subsubsection{Commercial small capitals}
+
+Alternatively you can buy the corresponding commercial fonts and use
+them with the \pkgname{mathdesign} package.
+
+To use commercial small capitals with the charter and utopia version of the
+fonts, you must:
+\begin{enumerate}
+        \item Obtain the corresponding commercial fonts from your favorite font
+   seller. This is the font you'll need :
+
+   \begin{tabular}{l|ll}
+       Bitstream Charter \qquad 
+       & Charter Small Cap         \qquad &(bchrc8a.pfb)  \\
+       & Charter Bold Small Cap    \qquad & (bchbc8a.pfb) \\[12 pt]
+       Adobe Utopia \qquad 
+       &  Utopia Expert Regular \qquad &    (putr8x.pfb) \\
+       & Utopia Expert Bold \qquad &       (putb8x.pfb)
+   \end{tabular}
+
+You need the Windows Postscript versions of the fonts. 
+
+    \item Rename the preceding font files. I have indicated in
+parenthesis the new name of each file.
+
+    \item Put the renamed file somewhere \TeX will be able to find
+them: \verb|$TEXMF/fonts/type1/bitsrea/charter| or \verb|$TEXMF/fonts/type1/adobe/utopia| should be fine.
+
+    \item Refresh your texmf file database, by running an utility like
+\texttt{mktexlsr} or \texttt{texconfig rehash}.
+
+    \item \textsc{That's it !} Now use the \pkgname{mathdesign}
+package with the option \optname{expert}. Small caps and oldstyle
+figure are available with the command \verb|\textsc{...}|.
+
+\end{enumerate}
+
+\textbf{Disclaimer} The preceding informations are only
+\emph{indications} of a possible way to install and use commercial
+products. I'm not responsible for any damage caused, in whole or in
+part, by following these instructions.
+
+Anyway, I'll try to help you the best I can to properly install any
+commercial fonts you have.
+
+\subsection{Sans serif and typewriter fonts}
+\label{sec:scaled}
+
+\begin{table}[t]
+    \label{tab:scaledfont}
+    \centering
+    \begin{tabular}{l|l}
+        \textbf{Nickname} & \textbf{Font} \\ \hline \hline
+        \FSS{cmss} {Computer Modern Sans Serif} \\
+        \FSS{fvs}  {Bera sans (aka Bitstream Vera Sans)} \\
+        \FSS{phv}  {Adobe Helvetica} \\
+%%         \FSS{uag}  {URW Gothic} \\
+%%         \FSS{uhv}  {URW Helvetica} \\
+        \\
+        \FSS{fvm}  {Bera mono (aka Bitstream Vera Mono)} \\
+        \FTT{cmtt} {Computer Modern Typewriter} \\
+        \FTT{pcr}  {Adobe Courier} \\
+%%         \FTT{ucr}  {URW Courier} \\
+    \end{tabular}
+    \caption{Scaled fonts defined.}
+\end{table}
+
+In addition to the mathematical fonts, the \pkgname{mathdesign}
+package defines ``scaled'' versions of the common sans serif and
+typewriter fonts.
+
+For example, in \LaTeX, if you want to set Adobe Helvetica as your
+main sans serif font, you use the following command
+\begin{quotation}
+    \verb|\renewcommand{\sfdefault}{phv}|
+\end{quotation}
+where \texttt{phv} is the name of Adobe Helvetica using Karl Berry's
+fontname convention.
+
+\renewcommand{\sfdefault}{phv}
+
+But Adobe Helvetica will not fit well with your text font. Letters
+have different heights:
+\begin{quotation}
+\Huge a{\slightsize\textsf{a}}%
+\Huge b{\slightsize\textsf{b}}%
+\Huge A{\slightsize\textsf{A}}%
+\Huge e{\slightsize\textsf{e}}%
+\Huge D{\slightsize\textsf{D}}
+\end{quotation}
+
+\pkgname{mathdesign} defines a scaled version of this font. This version automatically replace the normal one. So, with the option \optname{sfscaled}, the usual command
+\begin{quotation}
+    \verb|\renewcommand{\sfdefault}{phv}|
+\end{quotation}
+will give you an optically adjusted version of Adobe Helvetica:
+\begin{quotation}
+   \Huge a\textsf{a}b\textsf{b}A\textsf{A}c\textsf{c}D\textsf{D}
+\end{quotation}
+As you can see on the above example, lowercase letters have now the
+same height. It is not necessary the case of uppercase letters. 
+
+Don't expect amazing result of these feature. If you mix sans serif
+and typewriter fonts in the text, then the design disparities will be
+become quickly obvious.
+
+The table \ref{tab:scaledfont} enumerates all the scaled fonts defined by
+the mathdesign package. 
+
+\subsection{Configuration file}
+
+Each family has its own configuration file (e.g.
+\filename{mdput.cfg}).  You can put in these file all the commands
+that \LaTeX{} should load with the family. Consult the provided files
+for more informations.
+
+\section{More fonts and symbols}
+
+\begin{table}[t]
+    
+    \centering
+    \begin{tabular}{*3{ll}}
+\X\alphaup      & \X\iotaup       & \X\sigmaup         \\
+\X\betaup       & \X\kappaup      & \X\varsigmaup      \\
+\X\gammaup      & \X\lambdaup     & \X\tauup           \\
+\X\deltaup      & \X\muup         & \X\upsilonup       \\
+\X\epsilonup    & \X\nuup         & \X\phiup           \\
+\X\varepsilonup & \X\xiup         & \X\varphiup        \\
+\X\zetaup       & \X\piup         & \X\chiup           \\
+\X\etaup        & \X\varpiup      & \X\psiup           \\
+\X\thetaup      & \X\rhoup        & \X\omegaup         \\
+\X\varthetaup   & \X\varrhoup     \\
+\\
+\X \varkappaup$^{\dagger}$ & \X\digammaup$^{\dagger}$\\
+\\
+\\
+ \X\Gammaup      & \X\Xiup      & \X\Phiup            \\
+ \X\Deltaup      & \X\Piup      &  \X\Psiup           \\
+ \X\Thetaup      & \X\Sigmaup   & \X\Omegaup          \\
+ \X\Lambdaup     & \X\Upsilonup \\
+\end{tabular}
+\caption{Upright Greek Letters \label{tab:greekup}}
+\end{table}
+\begin{table}[t]
+    
+    \centering
+  \begin{tabular}{*3{ll}}
+\X\alphait      & \X\iotait       & \X\sigmait         \\
+\X\betait       & \X\kappait      & \X\varsigmait      \\
+\X\gammait      & \X\lambdait     & \X\tauit           \\
+\X\deltait      & \X\muit         & \X\upsilonit       \\
+\X\epsilonit    & \X\nuit         & \X\phiit           \\
+\X\varepsilonit & \X\xiit         & \X\varphiit        \\
+\X\zetait       & \X\piit         & \X\chiit           \\
+\X\etait        & \X\varpiit      & \X\psiit           \\
+\X\thetait      & \X\rhoit        & \X\omegait         \\
+\X\varthetait   & \X\varrhoit \\
+\\
+\X \varkappait$^{\dagger}$ & \X\digammait$^{\dagger}$\\
+\\
+ \X\Gammait      & \X\Xiit      & \X\Phiit            \\
+ \X\Deltait      & \X\Piit      &  \X\Psiit           \\
+ \X\Thetait      & \X\Sigmait   & \X\Omegait          \\
+ \X\Lambdait     & \X\Upsilonit \\
+\end{tabular}
+    \caption{Italicised Greek Letters \label{tab:greekit}}
+\end{table}
+
+\subsection{Script and fraktur alphabets}
+
+The commands \verb|\mathfrak|, \verb|\mathscr| and \verb|\mathbb| are
+defined by \pkgname{mathdesign} and have the usual meanings:
+\begin{itemize}
+        \item \verb|\mathfrak| for fraktur letters \emph{e.g.}
+    \verb|\mathfrak{A, B, S, a, b, s}| gives $\mathfrak{A}, \mathfrak{B}, 
+    \mathfrak{S}, \mathfrak{a}, \mathfrak{b}, \mathfrak{s}$ 
+        \item \verb|\mathscr| for script letters \emph{e.g.}
+    \verb|\mathscr{A, B, S }| gives $\mathscr{A}, \mathscr{B}, \mathscr{S}$ 
+     \item \verb|\mathbb| for blackboard letters \emph{e.g.}
+    \verb|\mathbb{A, B, S }| gives $\mathbb{A}, \mathbb{B}, \mathbb{S}$
+\end{itemize}
+
+\subsection{Extra symbols}\label{sec:extras}
+
+For completeness, some commands and symbols have been added:
+\begin{itemize}
+        \item The command \C\iddots typesets diagonal dots, similar to
+    \AmS's \C\ddots.
+
+        \item Two new big delimiters are available,
+    \CC\leftwave{\leftwave\right.} and \CC\leftevaw{\leftevaw\right.}
+(and the corresponding right delimiters, of course). This is an example:
+$$ \leftwave \frac{a+b+c}{3} \rightwave $$
+
+    \item The commands \C\utimes, \C\dtimes and \C\udtimes are
+    similar to \AmS's  \C\ltimes, \C\rtimes and \C\Join.
+
+        \item The \C\in symbol has now a small version \C\smallin,
+    which can be negated (\C\notsmallin). \C\owns has also a small
+    version (\C\smallowns and \C\notsmallowns).
+
+    \item Various new integrals are defined : \C\intclockwise
+    \C\ointclockwise \C\oiint \C\oiiint.
+
+    \item The {\docttfamily\string\figurecircled} command is the
+equivalent of \verb|\textcircled| circled command, but the circle is
+especially designed for figures : \verb|\figurecircled{1}| gives
+\figurecircled{1} (better than \verb|\textcircled{1}| : 
+\textcircled{1}).
+
+\end{itemize}
+
+Some Text Companion symbols are also defined, including \CT\texteuro
+(see table \ref{text-comp}).  To use them, you must load the
+\pkgname{textcomp} package.
+
+
+\subsection{Copyright notice}
+
+The fonts provided by the Math Design project are free software;
+you can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation;
+either version 2 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License (appendix \ref{app:gpl} of this document) for
+more details.
+
+\subsection{Acknowledgements}
+
+I have borrowed many codes, ideas, glyphs from various sources, and I
+would like to thanks all the authors of the original material, among
+others Alan Jeffrey and Jeremy Gibbons (\pkgname{stmaryrd}), Yannis
+Haralambous (\pkgname{yhmath} and the great greek fonts from $\Omega$),
+Young Ryu (\pkgname{txfonts/pxfonts}), Antony Phan (\pkgname{mathabx})
+and the \AmS.
+
+I would like to thank in particular C\'eline Chevalier, S\'ebastien
+Desvreux and Walter Appel for their kind support and friendly help.
+
+%% horizontal brace
+
+%% wave
+
+% llbracket
+
+% wide accents
+
+%% \subsection{Technical extra}
+
+%% Following an idea of the \pkgname{fontinst} package, the following
+%% \verb|fontdimen| have been defined. These parameters concerns the text font:
+%% \smallskip
+%% \begin{center}
+%% \begin{tabular}[t]{c|c|l}
+%% \hline
+%% \textbf{Parameter} & \textbf{Name} & \textbf{Description} \\\hline\hline 
+%% \verb|fontdimen8| & capheight      & \quad Postscript CapHeight \\
+%% \verb|fontdimen9| & ascender       & \quad Postscript Ascender \\
+%% \verb|fontdimen10| & acccapheight  & \quad accented cap height \\
+%% \verb|fontdimen11| & descender     & \quad Postscript Descender \\
+%% \verb|fontdimen12| & maxheight     & \quad max height (from Postscript
+%% FontBBox) \\
+%% \verb|fontdimen13| & maxdepth      & \quad max depth (from Postscript
+%% FontBBox)\\
+%% \verb|fontdimen14| & digitwidth    & \quad digit width (width of the 6)\\
+%% %% \verb|fontdimen15| & verticalstem  & dominant width of verical stems \\
+%% \verb|fontdimen16| & baselineskip  & \quad baselineskip (12pt)
+%% \end{tabular}
+%% \end{center}
+
+
+%% \section{Known issues and workarounds}
+
+%% Some fonts use
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\appendix
+
+\section{Commands available}
+
+This is a remind of all the commands redefined in the
+\pkgname{mathdesign} package\footnote{The following table are strongly
+    inspired from the excellent Scoot Pakin's \emph{Comprehensive
+        \LaTeX{} Symbol List}
+    \url{http://www.ctan.org/tex-archive/help/Catalogue/entries/comprehe
+        nsive.html}}.
+
+\begin{symtable}{Math Design extra symbols}
+\label{mdbin}
+\begin{tabular}{*4{cl}}
+\X\smallin &
+\X\smallowns &
+\X\notsmallin &
+\X\notsmallowns \\
+\X\rightangle 
+\end{tabular}
+
+%% \bigskip
+%% \notpredefinedmessage
+\end{symtable}
+
+\begin{symtable}{Variable-sized Math Design Operators}
+\label{mdop}
+\renewcommand{\arraystretch}{1.75}  
+\begin{tabular}{*2{c@{$\:$}cl@{\qquad}}c@{$\:$}cl}
+\R\intclockwise &
+\R\ointclockwise &
+\R\ointctrclockwise \\
+\R\oiint &
+\R\oiiint \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{Binary Operators}
+\label{bin}
+\begin{tabular}{*4{cl}}
+\X\amalg           & \X\cup          & \X\oplus    & \X\times           \\
+\X\ast             & \X\dagger       & \X\oslash   & \X\triangleleft    \\
+\X\bigcirc         & \X\ddagger      & \X\otimes   & \X\triangleright   \\
+\X\bigtriangledown & \X\diamond      & \X\pm       & \X\unlhd$^*$       \\
+\X\bigtriangleup   & \X\div          & \X\rhd$^*$  & \X\unrhd$^*$       \\
+\X\bullet          & \X\lhd$^*$      & \X\setminus & \X\uplus           \\
+\X\cap             & \X\mp           & \X\sqcap    & \X\vee             \\
+\X\cdot            & \X\odot         & \X\sqcup    & \X\wedge           \\
+\X\circ            & \X\ominus       & \X\star     & \X\wr              \\
+\end{tabular}
+
+\bigskip
+\notpredefinedmessage
+\end{symtable}
+
+
+\begin{symtable}{Variable-sized Math Operators}
+\label{op}
+\renewcommand{\arraystretch}{1.75}  
+\begin{tabular}{*2{c@{$\:$}cl@{\qquad}}c@{$\:$}cl}
+\R\bigcap    & \R\bigotimes & \R\bigwedge       \\
+\R\bigcup    & \R\bigsqcup  & \R\sum       \\
+\R\bigodot   & \R\biguplus  & \R\int       \\
+\R\bigoplus  & \R\bigvee    & \R\oint      \\
+\R\prod      & \R\coprod  \end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{Binary Relations}
+\label{rel}
+\begin{tabular}{*4{cl}}
+\X\approx   & \X\equiv    & \X\perp     & \X\smile  \\
+\X\asymp    & \X\frown    & \X\prec     & \X\succ   \\
+\X\bowtie   & \X\Join$^*$ 
+& \X\preceq   & \X\succeq \\
+\X\cong     & \X\mid      & \X\propto   & \X\vdash  \\
+\X\dashv    & \X\models   & \X\sim                  \\
+\X\doteq    & \X\parallel & \X\simeq                \\
+\end{tabular}
+\bigskip
+\notpredefinedmessage
+\end{symtable}
+
+
+
+\begin{symtable}{Subset and Superset Relations}
+\label{subsets}
+\begin{tabular}{*3{cl}}
+\X\sqsubset$^*$ 
+& \X\sqsupseteq & \X\supset   \\
+\X\sqsubseteq   & \X\subset     & \X\supseteq \\
+\X\sqsupset$^*$ 
+& \X\subseteq                 \\
+\end{tabular}
+\bigskip
+\notpredefinedmessage
+\end{symtable}
+
+\begin{symtable}{Inequalities}
+\label{inequal-rel}
+\begin{tabular}{*5{cl}}
+\X\geq & \X\gg & \X\leq & \X\ll & \X\neq \\
+\end{tabular}
+\end{symtable}
+
+
+
+\begin{symtable}{Arrows}
+\label{arrow}
+\begin{tabular}{*3{cl}}
+\X\Downarrow          & \X\longleftarrow      & \X\nwarrow     \\
+\X\downarrow          & \X\Longleftarrow      & \X\Rightarrow  \\
+\X\hookleftarrow      & \X\longleftrightarrow & \X\rightarrow  \\
+\X\hookrightarrow     & \X\Longleftrightarrow & \X\searrow     \\
+\X\leadsto$^*$        & \X\longmapsto         & \X\swarrow     \\
+\X\leftarrow          & \X\Longrightarrow     & \X\uparrow     \\
+\X\Leftarrow          & \X\longrightarrow     & \X\Uparrow     \\
+\X\Leftrightarrow     & \X\mapsto             & \X\updownarrow \\
+\X\leftrightarrow     & \X\nearrow            & \X\Updownarrow \\
+\end{tabular}
+\notpredefinedmessage
+\end{symtable}
+
+
+\begin{symtable}{Harpoons}
+\label{harpoons}
+\begin{tabular}{*2{cl}}
+\X\leftharpoondown   & \X\rightharpoondown   \\
+\X\leftharpoonup     & \X\rightharpoonup                           \\
+ \X\rightleftharpoons
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{Letter-like Symbols}
+\label{letter-like}
+\begin{tabular}{*5{cl}}
+\X\bot    & \X\forall & \X\imath & \X\ni      & \X\top \\
+\X\ell    & \X\hbar   & \X\in    & \X\partial & \X\wp  \\
+\X\exists & \X\Im     & \X\jmath & \X\Re               \\
+\end{tabular}
+\end{symtable}
+
+
+
+\begin{symtable}{Extension Characters}
+\label{ext}
+\begin{tabular}{*2{cl}}
+\X\relbar & \X\Relbar \\
+\end{tabular}
+\end{symtable}
+
+
+
+
+\begin{symtable}{Variable-sized Delimiters}
+\label{dels}
+\renewcommand{\arraystretch}{1.75}  
+\begin{tabular}{ccl@{\quad}ccl@{\quad}ccl@{\quad}ccl}
+\N\downarrow & \N\Downarrow & \N{[}           & \N{]} \\
+\N\langle    & \N\rangle    & \N|             & \N\| \\
+\N\lceil     & \N\rceil     & \N\uparrow      & \N\Uparrow          \\
+\N\lfloor    & \N\rfloor    & \N\updownarrow  & \N\Updownarrow      \\
+\N(          & \N)          & \N\{           & \N\}               \\
+\N/          & \N\backslash                                         \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{Large, Variable-sized Delimiters}
+\label{ldels}
+\renewcommand{\arraystretch}{2.5}  
+\begin{tabular}{*3{ccl@{\qquad}}ccl}
+\Y\lmoustache & \Y\rmoustache & \Y\lgroup    & \Y\rgroup \\
+\Y\arrowvert  & \Y\Arrowvert  & \Y\bracevert
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{Math-mode Accents}
+\label{math-accents}
+\begin{tabular}{*4{cl}}
+\W\acute{a}    & \W\check{a}    & \W\grave{a}    & \W\tilde{a} \\
+\W\bar{a}      & \W\ddot{a}     & \W\hat{a}      & \W\vec{a}   \\
+\W\breve{a}    & \W\dot{a}      & \W\mathring{a}               \\
+\end{tabular}
+
+\end{symtable}
+
+
+
+\begin{symtable}{Extensible Accents}
+\label{extensible-accents}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{*4l}
+\W\widetilde{abc}$^*$         & \W\widehat{abc}$^*$    \\
+\W\overleftarrow{abc}$^\dag$  & \W\overrightarrow{abc}$^\dag$ \\
+\W\overline{abc}              & \W\underline{abc}      \\
+\W\overbrace{abc}             & \W\underbrace{abc}     \\[5pt]
+\W\sqrt{abc}                                   \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{\AmS\ Extensible Accents}
+\label{extensible-arrows}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{cl@{\qquad}cl}
+\W\overleftrightarrow{abcde}  & \W\underleftrightarrow{abcde} \\
+\W\underleftarrow{abcde}      & \W\underrightarrow{abcde}     \\
+\W\xleftarrow{abcde}          & \W\xrightarrow{abcde}         \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{Dots}
+\begin{tabular}{*{3}{cl@{\hspace*{1.5cm}}}cl}
+\X\cdotp & \X\colon  & \X\ldotp & \X\vdots  \\
+\X\cdots & \X\ddots & \X\ldots  & \X\iddots$^*$ \\
+\end{tabular}
+\bigskip
+\notpredefinedmessage
+\end{symtable}
+
+
+
+
+\begin{symtable}{Miscellaneous \LaTeX {} Symbols}
+\label{ord}
+\begin{tabular}{*4{cl}}
+\X\aleph          & \X\Diamond$^*$    & \X\infty   & \X\prime     \\
+\X\angle          & \X\diamondsuit    & \X\mho$^*$ & \X\sharp     \\
+\X\backslash      & \X\emptyset       & \X\nabla   & \X\spadesuit \\
+\X\Box$^{*}$      & \X\flat           & \X\natural & \X\surd      \\
+\X\clubsuit       & \X\heartsuit      & \X\neg     & \X\triangle  \\
+\end{tabular}
+\bigskip
+\notpredefinedmessage
+\end{symtable}
+
+\begin{symtable}{\LaTeX{} Commands Defined to Work in Both Math and Text Mode}
+\label{math-text}
+\begin{tabular}{*3{ccl@{\qqquad}}ccl}
+\V\$ & \V\_              & \V\ddag    & \V\{ \\
+\V\P & \V\copyright      & \V\dots    & \V\} \\
+\V\S & \V\dag            & \V\pounds          \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{Predefined \LaTeX{} Text-mode Commands}
+\label{text-predef}
+\begin{tabular}{ccl@{\qqquad}ccl}
+\V\textasciicircum     & \V\textless            \\
+\V\textasciitilde      & \V\textordfeminine    \\
+\V\textasteriskcentered & \V\textordmasculine \\
+\V\textbackslash       & \V\textparagraph       \\
+\V\textbar             & \V\textperiodcentered  \\
+\V\textbraceleft       & \V\textquestiondown    \\
+\V\textbraceright      & \V\textquotedblleft    \\
+\V\textbullet          & \V\textquotedblright   \\
+\V\textcopyright
+                       & \V\textquoteleft       \\
+\V\textdagger          & \V\textquoteright      \\
+\V\textdaggerdbl       & \V\textregistered      \\
+\V\textdollar          & \V\textsection         \\
+\V\textellipsis        & \V\textsterling        \\
+\V\textemdash          & \V\texttrademark        \\
+\V\textendash          & \V\textunderscore      \\
+\V\textexclamdown      & \V\textvisiblespace    \\
+\V\textgreater         \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{Text-mode Accents}
+\label{text-accents}
+  \begin{tabular}{*3{cl@{\hspace*{3em}}}cl}
+  \Q\"     & \Q\`   & \Q\k \\
+  \Q\'     & \Q\b   & \Q\r \\
+  \Q\.     & \Q\c   & \QQ\t \\
+  \Q\=     & \Q\d   & \Q\u \\      
+  \Q\^     & \Q\H   & \Q\v \\
+   \Q\~    \\
+  \end{tabular}
+\par\medskip
+\begin{tabular}{cl@{\hspace*{3em}}cl}
+ \Q\textcircled
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Commands Defined to Work in Both Math and Text Mode}
+\label{ams-math-text}
+\begin{tabular}{*2{cl@{\qquad}}cl}
+\X\checkmark & \X\circledR & \X\maltese
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Binary Operators}
+\label{ams-bin}
+\begin{tabular}{*3{cl}}
+\X\barwedge        & \X\circledcirc     & \X\intercal        \\
+\X\boxdot          & \X\circleddash     & \X\Join            \\
+\X\boxminus        & \X\Cup             & \X\leftthreetimes  \\
+\X\boxplus         & \X\curlyvee        & \X\ltimes          \\
+\X\boxtimes        & \X\curlywedge      & \X\rightthreetimes \\
+\X\Cap             & \X\divideontimes   & \X\rtimes          \\
+\X\centerdot       & \X\dotplus         & \X\smallsetminus   \\
+\X\circledast      & \X\doublebarwedge  & \X\veebar          \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Extra Binary Operators (see section~\ref{sec:extras})}
+\label{ams-extra-bin}
+\begin{tabular}{*3{cl}}
+\X\utimes          & \X\dtimes          & \X\udtimes \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Variable-sized Math Operators}
+\label{ams-large}
+\renewcommand{\arraystretch}{1.85}  
+\begin{tabular}{c@{$\:$}cl@{\qquad}c@{$\:$}cl}
+\R\idotsint & \R\iiint \\[12pt]
+\R\iiiint   & \R\iint  \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Binary Relations}
+\label{ams-rel}
+\begin{tabular}{*3{cl}}
+\X\approxeq      & \X\eqcirc        & \X\succapprox    \\
+\X\backepsilon   & \X\fallingdotseq & \X\succcurlyeq   \\
+\X\backsim       & \X\multimap      & \X\succsim       \\
+\X\backsimeq     & \X\pitchfork     & \X\therefore     \\
+\X\because       & \X\precapprox    & \X\thickapprox   \\
+\X\between       & \X\preccurlyeq   & \X\thicksim      \\
+\X\Bumpeq        & \X\precsim       & \X\varpropto     \\
+\X\bumpeq        & \X\risingdotseq  & \X\Vdash         \\
+\X\circeq        & \X\shortmid      & \X\vDash         \\
+\X\curlyeqprec   & \X\shortparallel & \X\Vvdash        \\
+\X\curlyeqsucc   & \X\smallfrown    &                  \\
+\X\doteqdot      & \X\smallsmile    &                  \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{\AmS\ Negated Binary Relations}
+\label{ams-nrel}
+\begin{tabular}{*3{cl}}
+\X\ncong     & \X\nshortparallel & \X\nVDash      \\
+\X\nmid      & \X\nsim           & \X\precnapprox \\
+\X\nparallel & \X\nsucc          & \X\precnsim    \\
+\X\nprec     & \X\nsucceq        & \X\succnapprox \\
+\X\npreceq   & \X\nvDash         & \X\succnsim    \\
+\X\nshortmid & \X\nvdash                          \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Subset and Superset Relations}
+\label{ams-subsets}
+\begin{tabular}{*3{cl}}
+\X\nsubseteq  & \X\subseteqq  & \X\supsetneqq    \\
+\X\nsupseteq  & \X\subsetneq  & \X\varsubsetneq  \\
+\X\nsupseteqq & \X\subsetneqq & \X\varsubsetneqq \\
+\X\sqsubset   & \X\Supset     & \X\varsupsetneq  \\
+\X\sqsupset   & \X\supseteqq  & \X\varsupsetneqq \\
+\X\Subset     & \X\supsetneq                     \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Inequalities}
+\label{ams-inequal-rel}
+\begin{tabular}{*3{cl}}
+\X\eqslantgtr  & \X\gtrless     & \X\lneq      \\
+\X\eqslantless & \X\gtrsim      & \X\lneqq     \\
+\X\geqq        & \X\gvertneqq   & \X\lnsim     \\
+\X\geqslant    & \X\leqq        & \X\lvertneqq \\
+\X\ggg         & \X\leqslant    & \X\ngeq      \\
+\X\gnapprox    & \X\lessapprox  & \X\ngeqq     \\
+\X\gneq        & \X\lessdot     & \X\ngeqslant \\
+\X\gneqq       & \X\lesseqgtr   & \X\ngtr      \\
+\X\gnsim       & \X\lesseqqgtr  & \X\nleq      \\
+\X\gtrapprox   & \X\lessgtr     & \X\nleqq     \\
+\X\gtrdot      & \X\lesssim     & \X\nleqslant \\
+\X\gtreqless   & \X\lll         & \X\nless     \\
+\X\gtreqqless  & \X\lnapprox                   \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Triangle Relations}
+\label{ams-triangle-rel}
+\begin{tabular}{*4{cl}}
+\X\blacktriangleleft  & \X\ntriangleright   & \X\trianglerighteq  &  \\
+\X\blacktriangleright & \X\ntrianglerighteq  &   \X\vartriangleleft \\ 
+\X\ntriangleleft      &\X\ntrianglelefteq & \X\vartriangleright \\
+\X\trianglelefteq   &  \X\triangleq     \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Arrows}
+\label{ams-arrows}
+\begin{tabular}{*3{cl}}
+\X\circlearrowleft  & \X\leftleftarrows      & \X\rightleftarrows   \\
+\X\circlearrowright & \X\leftrightarrows     & \X\rightrightarrows  \\
+\X\curvearrowleft   & \X\leftrightsquigarrow & \X\rightsquigarrow   \\
+\X\curvearrowright  & \X\Lleftarrow          & \X\Rsh               \\
+\X\dashleftarrow    & \X\looparrowleft       & \X\twoheadleftarrow  \\
+\X\dashrightarrow   & \X\looparrowright      & \X\twoheadrightarrow \\
+\X\downdownarrows   & \X\Lsh                 & \X\upuparrows        \\
+\X\leftarrowtail    & \X\rightarrowtail      &                      \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{\AmS\ Negated Arrows}
+\label{ams-narrows}
+\begin{tabular}{*3{cl}}
+\X\nLeftarrow      & \X\nLeftrightarrow & \X\nRightarrow     \\
+\X\nleftarrow      & \X\nleftrightarrow & \X\nrightarrow     \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{\AmS\ Harpoons}
+\label{ams-harpoons}
+\begin{tabular}{*3{cl}}
+\X\downharpoonleft  & \X\leftrightharpoons                        & \X\upharpoonleft  \\
+\X\downharpoonright & \X\rightleftharpoons & \X\upharpoonright \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Hebrew Letters}
+\label{ams-hebrew}
+\begin{tabular}{*6l}
+\X\beth & \X\gimel & \X\daleth
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Letter-like Symbols}
+\label{ams-letter-like}
+\begin{tabular}{*3{cl}}
+\X\Bbbk       & \X\complement & \X\hbar    \\
+\X\circledR   & \X\Finv       & \X\hslash  \\
+\X\circledS   & \X\Game       & \X\nexists \\
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Delimiters}
+\label{ams-del}
+\begin{tabular}{*2{cl}}
+\X\ulcorner & \X\urcorner \\
+\X\llcorner & \X\lrcorner
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{\AmS\ Math-mode Accents}
+\label{ams-math-accents}
+\begin{tabular}{cl@{\hspace*{2em}}cl}
+\W\dddot{a}    & \W\ddddot{a} \\
+\end{tabular}
+\end{symtable}
+
+
+\begin{symtable}{Miscellaneous \AmS\ Symbols}
+\label{ams-misc}
+\begin{tabular}{*3{cl}}
+\X\angle            & \X\blacktriangledown & \X\mho            \\
+\X\backprime        & \X\diagdown          & \X\sphericalangle \\
+\X\bigstar          & \X\diagup            & \X\square         \\
+\X\blacklozenge     & \X\eth               & \X\triangledown   \\
+\X\blacksquare      & \X\lozenge           & \X\varnothing     \\
+\X\blacktriangle    & \X\measuredangle     & \X\vartriangle    \\
+
+\end{tabular}
+\end{symtable}
+
+\begin{symtable}{Text Companion symbols (Not predefined in \LaTeX.  Use the package \pkgname{textcomp})}
+\label{text-comp}
+\begin{tabular}{*2{cl}}
+\T\textbardbl &
+\T\textbigcircle \\
+\T\textborn &
+\T\textbrokenbar \\
+\T\textbullet &
+\T\textcelsius \\
+\T\textcent &
+\T\textcentoldstyle \\ 
+\T\textcopyright &
+\T\textdagger \\
+\T\textdaggerdbl &
+\T\textdegree \\
+\T\textdied &
+\T\textdivorced \\
+\T\textdollar &
+\T\textdollaroldstyle \\
+\T\textdownarrow &
+\T\texteightoldstyle \\
+\T\textestimated &
+\T\textfiveoldstyle \\
+\T\textfouroldstyle &
+\T\textguarani \\ 
+\T\textlbrackdbl &
+\T\textleftarrow \\
+\T\textlira &
+\T\textmarried \\
+\T\textmu &
+\T\textnineoldstyle \\
+\T\textnumero &
+\T\textohm \\
+\T\textonehalf &
+\T\textoneoldstyle \\
+\T\textonequarter &
+\T\textopenbullet \\
+\T\textordfeminine &
+\T\textordmasculine \\
+\T\textpertenthousand &
+\T\textperthousand \\
+\T\textpm &
+\T\textrbrackdbl \\
+\T\textregistered &
+\T\textrightarrow \\
+\T\textsection &
+\T\textsevenoldstyle \\
+\T\textsixoldstyle &
+\T\textsterling \\ 
+\T\textsurd &
+\T\textthreeoldstyle \\
+\T\textthreequarters &
+\T\texttrademark \\
+\T\texttwooldstyle &
+\T\textuparrow \\
+\T\textuparrow &
+\T\textzerooldstyle \\
+\T\texteuro 
+\end{tabular}
+\end{symtable}
+
+
+\newpage
+
+\section*{The GNU General Public License}
+
+\label{app:gpl}
+
+\begin{center}
+{\parindent 0in
+
+Version 2, June 1991
+
+Copyright \copyright\ 1989, 1991 Free Software Foundation, Inc.
+
+\bigskip
+
+59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+
+\bigskip
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+}
+\end{center}
+
+\begin{center}
+{\bf\large Preamble}
+\end{center}
+
+
+The licenses for most software are designed to take away your freedom to
+share and change it.  By contrast, the GNU General Public License is
+intended to guarantee your freedom to share and change free software---to
+make sure the software is free for all its users.  This General Public
+License applies to most of the Free Software Foundation's software and to
+any other program whose authors commit to using it.  (Some other Free
+Software Foundation software is covered by the GNU Library General Public
+License instead.)  You can apply it to your programs, too.
+
+When we speak of free software, we are referring to freedom, not price.
+Our General Public Licenses are designed to make sure that you have the
+freedom to distribute copies of free software (and charge for this service
+if you wish), that you receive source code or can get it if you want it,
+that you can change the software or use pieces of it in new free programs;
+and that you know you can do these things.
+
+To protect your rights, we need to make restrictions that forbid anyone to
+deny you these rights or to ask you to surrender the rights.  These
+restrictions translate to certain responsibilities for you if you
+distribute copies of the software, or if you modify it.
+
+For example, if you distribute copies of such a program, whether gratis or
+for a fee, you must give the recipients all the rights that you have.  You
+must make sure that they, too, receive or can get the source code.  And
+you must show them these terms so they know their rights.
+
+We protect your rights with two steps: (1) copyright the software, and (2)
+offer you this license which gives you legal permission to copy,
+distribute and/or modify the software.
+
+Also, for each author's protection and ours, we want to make certain that
+everyone understands that there is no warranty for this free software.  If
+the software is modified by someone else and passed on, we want its
+recipients to know that what they have is not the original, so that any
+problems introduced by others will not reflect on the original authors'
+reputations.
+
+Finally, any free program is threatened constantly by software patents.
+We wish to avoid the danger that redistributors of a free program will
+individually obtain patent licenses, in effect making the program
+proprietary.  To prevent this, we have made it clear that any patent must
+be licensed for everyone's free use or not licensed at all.
+
+The precise terms and conditions for copying, distribution and
+modification follow.
+
+\begin{center}
+{\Large Terms and Conditions For Copying, Distribution and
+  Modification}
+\end{center}
+
+
+%\renewcommand{\theenumi}{\alpha{enumi}}
+\begin{enumerate}
+
+\addtocounter{enumi}{-1}
+
+\item 
+
+This License applies to any program or other work which contains a notice
+placed by the copyright holder saying it may be distributed under the
+terms of this General Public License.  The ``Program'', below, refers to
+any such program or work, and a ``work based on the Program'' means either
+the Program or any derivative work under copyright law: that is to say, a
+work containing the Program or a portion of it, either verbatim or with
+modifications and/or translated into another language.  (Hereinafter,
+translation is included without limitation in the term ``modification''.)
+Each licensee is addressed as ``you''.
+
+Activities other than copying, distribution and modification are not
+covered by this License; they are outside its scope.  The act of
+running the Program is not restricted, and the output from the Program
+is covered only if its contents constitute a work based on the
+Program (independent of having been made by running the Program).
+Whether that is true depends on what the Program does.
+
+\item You may copy and distribute verbatim copies of the Program's source
+  code as you receive it, in any medium, provided that you conspicuously
+  and appropriately publish on each copy an appropriate copyright notice
+  and disclaimer of warranty; keep intact all the notices that refer to
+  this License and to the absence of any warranty; and give any other
+  recipients of the Program a copy of this License along with the Program.
+
+You may charge a fee for the physical act of transferring a copy, and you
+may at your option offer warranty protection in exchange for a fee.
+
+\item
+
+You may modify your copy or copies of the Program or any portion
+of it, thus forming a work based on the Program, and copy and
+distribute such modifications or work under the terms of Section 1
+above, provided that you also meet all of these conditions:
+
+\begin{enumerate}
+
+\item 
+
+You must cause the modified files to carry prominent notices stating that
+you changed the files and the date of any change.
+
+\item
+
+You must cause any work that you distribute or publish, that in
+whole or in part contains or is derived from the Program or any
+part thereof, to be licensed as a whole at no charge to all third
+parties under the terms of this License.
+
+\item
+If the modified program normally reads commands interactively
+when run, you must cause it, when started running for such
+interactive use in the most ordinary way, to print or display an
+announcement including an appropriate copyright notice and a
+notice that there is no warranty (or else, saying that you provide
+a warranty) and that users may redistribute the program under
+these conditions, and telling the user how to view a copy of this
+License.  (Exception: if the Program itself is interactive but
+does not normally print such an announcement, your work based on
+the Program is not required to print an announcement.)
+
+\end{enumerate}
+
+
+These requirements apply to the modified work as a whole.  If
+identifiable sections of that work are not derived from the Program,
+and can be reasonably considered independent and separate works in
+themselves, then this License, and its terms, do not apply to those
+sections when you distribute them as separate works.  But when you
+distribute the same sections as part of a whole which is a work based
+on the Program, the distribution of the whole must be on the terms of
+this License, whose permissions for other licensees extend to the
+entire whole, and thus to each and every part regardless of who wrote it.
+
+Thus, it is not the intent of this section to claim rights or contest
+your rights to work written entirely by you; rather, the intent is to
+exercise the right to control the distribution of derivative or
+collective works based on the Program.
+
+In addition, mere aggregation of another work not based on the Program
+with the Program (or with a work based on the Program) on a volume of
+a storage or distribution medium does not bring the other work under
+the scope of this License.
+
+\item
+You may copy and distribute the Program (or a work based on it,
+under Section 2) in object code or executable form under the terms of
+Sections 1 and 2 above provided that you also do one of the following:
+
+\begin{enumerate}
+
+\item
+
+Accompany it with the complete corresponding machine-readable
+source code, which must be distributed under the terms of Sections
+1 and 2 above on a medium customarily used for software interchange; or,
+
+\item
+
+Accompany it with a written offer, valid for at least three
+years, to give any third party, for a charge no more than your
+cost of physically performing source distribution, a complete
+machine-readable copy of the corresponding source code, to be
+distributed under the terms of Sections 1 and 2 above on a medium
+customarily used for software interchange; or,
+
+\item
+
+Accompany it with the information you received as to the offer
+to distribute corresponding source code.  (This alternative is
+allowed only for noncommercial distribution and only if you
+received the program in object code or executable form with such
+an offer, in accord with Subsection b above.)
+
+\end{enumerate}
+
+
+The source code for a work means the preferred form of the work for
+making modifications to it.  For an executable work, complete source
+code means all the source code for all modules it contains, plus any
+associated interface definition files, plus the scripts used to
+control compilation and installation of the executable.  However, as a
+special exception, the source code distributed need not include
+anything that is normally distributed (in either source or binary
+form) with the major components (compiler, kernel, and so on) of the
+operating system on which the executable runs, unless that component
+itself accompanies the executable.
+
+If distribution of executable or object code is made by offering
+access to copy from a designated place, then offering equivalent
+access to copy the source code from the same place counts as
+distribution of the source code, even though third parties are not
+compelled to copy the source along with the object code.
+
+\item
+You may not copy, modify, sublicense, or distribute the Program
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense or distribute the Program is
+void, and will automatically terminate your rights under this License.
+However, parties who have received copies, or rights, from you under
+this License will not have their licenses terminated so long as such
+parties remain in full compliance.
+
+\item
+You are not required to accept this License, since you have not
+signed it.  However, nothing else grants you permission to modify or
+distribute the Program or its derivative works.  These actions are
+prohibited by law if you do not accept this License.  Therefore, by
+modifying or distributing the Program (or any work based on the
+Program), you indicate your acceptance of this License to do so, and
+all its terms and conditions for copying, distributing or modifying
+the Program or works based on it.
+
+\item
+Each time you redistribute the Program (or any work based on the
+Program), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the Program subject to
+these terms and conditions.  You may not impose any further
+restrictions on the recipients' exercise of the rights granted herein.
+You are not responsible for enforcing compliance by third parties to
+this License.
+
+\item
+If, as a consequence of a court judgment or allegation of patent
+infringement or for any other reason (not limited to patent issues),
+conditions are imposed on you (whether by court order, agreement or
+otherwise) that contradict the conditions of this License, they do not
+excuse you from the conditions of this License.  If you cannot
+distribute so as to satisfy simultaneously your obligations under this
+License and any other pertinent obligations, then as a consequence you
+may not distribute the Program at all.  For example, if a patent
+license would not permit royalty-free redistribution of the Program by
+all those who receive copies directly or indirectly through you, then
+the only way you could satisfy both it and this License would be to
+refrain entirely from distribution of the Program.
+
+If any portion of this section is held invalid or unenforceable under
+any particular circumstance, the balance of the section is intended to
+apply and the section as a whole is intended to apply in other
+circumstances.
+
+It is not the purpose of this section to induce you to infringe any
+patents or other property right claims or to contest validity of any
+such claims; this section has the sole purpose of protecting the
+integrity of the free software distribution system, which is
+implemented by public license practices.  Many people have made
+generous contributions to the wide range of software distributed
+through that system in reliance on consistent application of that
+system; it is up to the author/donor to decide if he or she is willing
+to distribute software through any other system and a licensee cannot
+impose that choice.
+
+This section is intended to make thoroughly clear what is believed to
+be a consequence of the rest of this License.
+
+\item
+If the distribution and/or use of the Program is restricted in
+certain countries either by patents or by copyrighted interfaces, the
+original copyright holder who places the Program under this License
+may add an explicit geographical distribution limitation excluding
+those countries, so that distribution is permitted only in or among
+countries not thus excluded.  In such case, this License incorporates
+the limitation as if written in the body of this License.
+
+\item
+The Free Software Foundation may publish revised and/or new versions
+of the General Public License from time to time.  Such new versions will
+be similar in spirit to the present version, but may differ in detail to
+address new problems or concerns.
+
+Each version is given a distinguishing version number.  If the Program
+specifies a version number of this License which applies to it and ``any
+later version'', you have the option of following the terms and conditions
+either of that version or of any later version published by the Free
+Software Foundation.  If the Program does not specify a version number of
+this License, you may choose any version ever published by the Free Software
+Foundation.
+
+\item
+If you wish to incorporate parts of the Program into other free
+programs whose distribution conditions are different, write to the author
+to ask for permission.  For software which is copyrighted by the Free
+Software Foundation, write to the Free Software Foundation; we sometimes
+make exceptions for this.  Our decision will be guided by the two goals
+of preserving the free status of all derivatives of our free software and
+of promoting the sharing and reuse of software generally.
+
+\begin{center}
+{\Large
+No Warranty
+}
+\end{center}
+
+\item
+\textbf { Because the program is licensed free of charge, there is no warranty
+for the program, to the extent permitted by applicable law.  Except when
+otherwise stated in writing the copyright holders and/or other parties
+provide the program ``as is'' without warranty of any kind, either expressed
+or implied, including, but not limited to, the implied warranties of
+merchantability and fitness for a particular purpose.  The entire risk as
+to the quality and performance of the program is with you.  Should the
+program prove defective, you assume the cost of all necessary servicing,
+repair or correction.}
+
+\item
+\textbf {In no event unless required by applicable law or agreed to in writing
+will any copyright holder, or any other party who may modify and/or
+redistribute the program as permitted above, be liable to you for damages,
+including any general, special, incidental or consequential damages arising
+out of the use or inability to use the program (including but not limited
+to loss of data or data being rendered inaccurate or losses sustained by
+you or third parties or a failure of the program to operate with any other
+programs), even if such holder or other party has been advised of the
+possibility of such damages.}
+
+\end{enumerate}
+
+
+\begin{center}
+{\Large End of Terms and Conditions}
+\end{center}
+
+
+
+
+
+\end{document}

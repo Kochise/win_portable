@@ -1,0 +1,348 @@
+2020-02-22  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* ntgclass.dtx: The mechanism to work around the hyperref code
+	being injected int the tabel of contents lines needed to be
+	changed. There's a fourth token to jump over and the use of
+	\MakeUppercase instead of \uppercase in the toc-lines for parts
+	(rapport and boek classes)  needed a different approach, made the
+	hyperref copmmand robust and protected it with \lowercase.
+
+2020-02-18  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* brief.dtx: Update to change copyright notice and address
+	information; synchronised with the standard document classes.
+
+	* a4.dtx: Update to change copyright notice and address
+	information.
+
+2020-02-18  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* ntgclass.dtx: Update to synchronize with classes.dtx
+
+2004-08-17  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* ntgclass.dtx: Various changes involving no longer passing
+	\toc@font and \toc@case settings through the .aux file because
+	they break when the hyperref package is used.
+	Fixed a bug in the toc-entry for \part: the spacing was wrong and
+	the pagenumber was put on a line by itself.
+
+2004-06-07  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* ntgclass.dtx : updated version to 2.1a as 2.0z should be the
+	last, but no major changes, added a missing fix related to pr3285
+
+2004-02-20  Johannes Braams  <texniek at braams.xs4all.nl>
+
+	* ntgclass.dtx: various changes to sychronise with classes.dtx,
+	mostly fixes for Problem reports in the bugs database
+
+Tue Sep  9 00:43:15 1997  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx: Repaired a few documentation buglets.
+
+	* brief.dtx : Added a few extra command synonimes, suggested by
+	Wybo Dekker (wybo at servaly.hobby.nl)
+	(subsubsection{The address window}): Put the \textbullet in a
+	group to keep the font change local
+	(subsubsection{The little rules}): Make the rules slightly thinner
+	and modify their position a little
+	(subsubsection{Page breaking control}): Added a \leavevmode in
+	\@afsluiting to make \afsluiting work as documented.
+	(subsection{Footnotes}): The footnotemarker should appear
+	different in the text from in the footnotes themselves, changed
+	definition of \@makefntext and use default \@makefnmark
+
+Tue Apr  1 00:15:34 1997  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{Footnotes}): Mixed the syntac for \def
+	and \newcommand (had #1 instead of [1]).
+	Found by Thorsten Schwander (schwander at ooo.lanl.gov)
+
+Sun Mar  2 00:17:17 1997  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{The title}): Use \textendash instead of
+	-- in label in footnotes on the titlepage.
+	(subsubsection{Itemize}): Now also \textasteriskcentered instead
+	of using math
+	(subsubsection{Equation and eqnarray}): Added test for chapter 0
+	in the definition of \theequation inb rapport and boek classes
+	(following classes.dtx)
+	(subsubsection{Figure}): Added test for chapter 0
+	(subsubsection{tabel}): Added test for chapter 0
+
+Mon Sep 23 23:12:21 1996  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsubsection{Itemize}): Replaced --, $\bullet$
+	and $\cdot$ with \text... commands, following a change in the
+	LaTeX classes.
+
+	* ntgclass.dtx (subsubsection{Itemize}): Replaced --, $\bullet$
+	and $\cdot$ with \text... commands, following a change in the
+	LaTeX classes.
+	(chapter*{...}): Changed \@xsect and \@ssect to follow a change in
+	the june 1996 release fo LaTeX which allows commands with an
+	argument in the last argument of \@sartsection.
+
+Mon Apr  1 19:26:32 1996  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx : use \renewcommand rather than \newcommand to
+	define \newblock
+	(subsection{Font changing}): Removed suerfluous
+	closing braces
+	(subsection{Footnotes}): Repaired definition of \@xmakefntext (it
+	had #1 in a \newcommand
+
+	* brief.dtx (subsubsection{The address window}): Repaired a typo
+	(\parksip instead of \parskip
+
+Sun Mar 31 23:25:10 1996  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx : Added \CodelineIndex to the driver in order
+	to really produce a .idx file for the index.
+
+Wed Mar 27 22:57:57 1996  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dst: Update to make use of the new docstrip
+	possibillity to produce multiple files in one go.
+
+Wed Nov 29 00:19:36 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsubsection{The reference line}): Also set
+	\parindent to zero in \@refveld
+	(subsubsection{The address window}): Set both \parksip and
+	\parindent to zero inside the \adresveld
+
+Thu Oct  5 22:29:06 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{The title}): Disable some more of the
+	commands that are only needed for \maketitle; empty internal
+	storage macros.
+	(subsection{Open bibliography}): openbib option reimplemented
+	Brought in sinc again with classes.dtx
+
+Tue Aug 22 23:57:27 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx : Added missing braces around negative arguments to
+	\addpenalty; make l@part only do something when \c@tocdepthd>-2.
+
+Thu Aug 10 01:04:30 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx : Brought up-to-date with LaTeX's letter.dtx in order
+	to make the classes run with LaTeX <1995/06/01>
+
+	* ntgclass.dtx : Brought up-to-date with LaTeX's classes.dtx in
+	order to make the classes run with LaTeX <1995/06/01>
+
+Sun May  7 23:45:33 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{Chapters and Sections}): Added \erlax
+	to the definition of \@svsec as a result of LaTeX pr/1596
+
+Fri Jan  6 14:09:51 1995  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{Chapters and Sections}): Changed
+        {\baselineskip\@plus... to
+	{1\baselineskip\@plus... in the defintion of \subsection and
+	\subsubsection in artikel2.
+	 Found by Dick Snippe (D.M.Snippe at el.utwente.nl)
+	 (subsubsection{Building blocks}): Use \protected@edef instead of
+	 the juggling with redefining \protect.
+
+Sat Dec 31 16:31:12 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsubsection{Page breaking control}): The printing
+	of the closing text generated an overfull hbox message. Removed
+	the extra \hbox (width \textwidth) inside the \parbox of width
+	.5\textwidth. 
+
+Fri Dec 30 14:25:00 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsection{Words}): Repaired a small typo (a bracket
+	was used instead of a brace)
+
+	* ntgclass.dtx: Repaired a number of typos that prevented
+	artikel2.cls from functioning properly.
+
+	* brief.dtx (section{Executing Options}): Added a \relax after
+	\ProcessOptions to prevent the \ifcase to be `eaten' in the search
+	for a *.
+
+Fri Dec 23 21:48:47 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx: Use \newcommand* instead of \newcommand in most
+	places.
+	(subsection{Customizing the labels}): Redefined	\mlabel to use the
+	new \parbox syntax instead of using  the \setbox primitive.
+	(subsection{Font changing}): Define \cal and \mit using
+	\DeclareRobustCommand 
+	(subsection{The generic letter commands}): Use
+	\let\protect\@unexpandable@protect instead of redefining it.
+
+	* ntgclass.dtx: More updates to go with the december 1994 release
+	of LaTeX.
+	-  Made the oneside option work for the boek class (LaTeX PR
+	#1195)
+	(section{Initial Code}): Moved the allocation of
+	\if@mainmatter to this section in order to let it be known when
+	the pagestyles are defined. The switch is used there and needs to
+	be known then; otherwise TeX finds the wrong \fi in an
+	\if@twoside...\else...\fi construct.
+
+Tue Dec 20 01:52:12 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx: Updates to go with the december 1994 release of
+	LaTeX.
+	- Use \newcommand* cs.
+	- Set the \@minipage flag in the caption
+	(subsubsection{Margins}): Moved the rounding of	\topmargin into
+	native mode only (LaTeX PR #93) 
+	(section{Cross Referencing}): Fixed a typo in the documentation of
+	\@tocrmarg. (LaTeX PR #904)
+	(subsection{Single or double sided printing}): removed typo (LaTeX
+	PR #881) 
+	(subsubsection{Chapters}): Made chapter titles more robust against
+	pagebreaks in the middle of them. Added an extra \nobreak but not
+	the extra \interlinepenalty\@M lines as that is taken care of by
+	\head@style (LaTeX PR #1016, #1135)
+	(subsection{Font changing}): Define \cal and \mit using
+	\DeclareRobustCommand 
+	(the driver): use \newcommand* for shorthands with argument
+	(whole file): Use \newcommand* for commands with arguments
+
+Tue Oct  4 00:12:26 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (section{The documentation driver file}): Added a
+	missing comma in the \DoNotIndex list
+
+Tue Jul 12 22:45:13 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsubsection{Defining the page styles}): Removed the
+	typo in \@othertheadheight
+
+Mon Jul 11 23:25:48 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsubsection{Itemize}): \labelitemiii was
+	mistakenly called \labelitemiiii (LaTeX bug report # 711)
+
+	* ntgclass.dtx (subsection{Paragraphing}): The definition of the
+	dimension \othermargin was erroneously left out of type2 document
+	classes. 
+	(subsection{Footnotes}): Moved the `.' that appeared in the
+	definition of \@xmakefntext to the definition of \@makefntext.
+	This should prevent it from appearing in a footnote produced by
+	\thanks. 
+
+Wed Jun 15 22:19:45 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (section{The documentation driver file}): Reorder the
+	DoNotIndex list.  Removed remnant from letter.dtx, now get the
+	file info from bief.dtx and also typeset brief.dtx instead of
+	trying to typeset letter.dtx.
+	
+
+Wed Jun  8 13:16:41 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (section{The documentation driver file}): The
+	documentation didn't run; had to shuffle some entries in
+	\DoNotIndex lines.
+
+	* artdoc.tex (subsection{Fonts in sectiekoppen}): Added a missing
+	brace 
+
+	* ntgclass.dtx (subsubsection{Chapters}): Removed yet another
+	carriage return that caused \if@mainmatter to end up in the
+	rapport classes.
+
+Mon Jun  6 00:03:19 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* brief.dtx (subsection{Global Declarations}): Using \newcommand
+	for internal storage macros causes the test against \@empty to
+	fail; a nempty long macro is not the same as an empytt macro. This
+	happened to \fromsig and \@subject.
+
+Fri Jun  3 14:25:27 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsubsection{Chapters}): Removed a carriage
+	return behind %<+boek> which caused \f@mainmatter to end up in the
+	rapport classes.
+
+	* brief.dtx: Finished upgrading for LaTeX2e
+
+	* briefdoc.tex: Updated for latex2e and the use of the babel
+	package. Contents may not be correct with the new version of the
+	code. 
+
+	* rapdoc.tex: Updated for latex2e and the use of the babel
+	package. Contents may not be correct with the new version of the
+	code. 
+
+	* artdoc.tex: Updated for latex2e and the use of the babel
+	package. Contents may not be correct with the new version of the
+	code. 
+
+Fri Jun  3 00:27:27 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (section{Identification}): The size files claimed
+	to have a name that starts with `size'; changed to `ntg'.
+
+	* ntgclass.dst: Added the stripping of brief.
+
+Thu Jun  2 00:30:21 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{The title}): Added check on number of
+	columns in use locally
+	(section{Identification}): Fixed bug that prevented LaTeX from
+	seeing the \ProvideFile command in the driver
+
+Wed Jun  1 14:15:21 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx: Added \Charactertable
+	Moved the identification and driver sections to the start of the
+	file; they no longer print.
+	Added 'v' to changes entries; wrapped some long lines.
+	(subsubsection{Captions}): Use \sbox\@tempboxa instead of
+	\setbox\@tempboxa\hbox to make @makecaption color safe.
+	(subsection{The title}): The boek classes always havve a
+	titlepage, forgot to remove the code for the \else part of
+	\if@titlepage.
+	(section*{\contentsname): Added a missing backslash
+
+Mon Apr 18 12:45:43 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsection{Fonts}): The size changing commands are
+	no longer defined in the kernel. Use \newcommand instead of
+	\renewcommand.
+	(subsection{Font changing}): \@renewfontswitch has gone;
+	\@newfontswitch has become \DeclareOldFontCommand
+	Synchronized with the changes to classes.dtx
+
+Sun Mar 20 00:53:17 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dst: Removed production of the documentation driver.
+
+	* ntgclass.dtx (section{Identification}): Removed the use of
+	\typeout statements as \Provides... does that now.
+	(section{The {\sc docstrip} modules}): This section added.
+	(section{The documentation driver file}): Moved this section to
+	the front in order not to need a searate driver.
+
+Sat Mar 19 17:40:24 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* ntgclass.dtx (subsubsection{Captions}): The \CaptionLabelFont
+	shouldn't influence the font in which the caption text comes out.
+	PUt a group around the label.
+
+	* ntgclass.dst: Removed \TopLevel, a remnant from classes.dst
+
+	* ntgclass.dtx (subsubsection{Abstract}): Treat the abstract like
+	a section and use \SectFont for the title.
+
+Tue Mar 15 11:54:32 1994  Johannes Braams  (texniek at braams.xs4all.nl)
+
+	* a4.dtx (subsection{The code}): The name of a package and the
+	name of the file should be the same.
+
+	(subsection{The code}): Added \ProcessOptions and moved it to the
+	end of the package.
+

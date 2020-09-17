@@ -1,0 +1,92 @@
+% Copyright 2018-2020 by Romano Giannetti
+% Copyright 2015-2020 by Stefan Lindner
+% Copyright 2013-2020 by Stefan Erhardt
+% Copyright 2007-2020 by Massimo Redaelli
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Public License.
+%
+% See the files gpl-3.0_license.txt and lppl-1-3c_license.txt for more details.
+
+\def\pgf@circ@handleSI#1{
+    \noexpandarg
+    \def\pgf@temp{}
+    \StrBetween{#1}{<}{>}[\pgf@circ@handleSI@unit]
+    \StrLen{\pgf@circ@handleSI@unit}[\pgf@circ@handleSI@unit@len]
+
+    \ifnum\pgf@circ@handleSI@unit@len=0
+    \pgf@circ@siunitx@resfalse
+    \else
+    \IfEndWith{#1}{>}{
+        \pgf@circ@siunitx@restrue
+        \noexpandarg
+        \StrBefore{#1}{<}[\pgf@circ@handleSI@val]
+        %\typeout{si |#1|}
+        }{
+        \pgf@circ@siunitx@resfalse
+        %\typeout{no si |#1|}
+    }
+\fi
+}
+
+\def\pgf@circ@ifkeyempty#1{
+    \pgfextra{
+        \ctikzset{#1/.get=\pgf@circ@temp}
+        \edef\pgf@temp{}
+    }
+    \ifx\pgf@circ@temp\pgf@temp
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%    Math routines
+
+\def\pgf@circ@stripdecimals#1.#2\pgf@nil{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% useful commands
+
+\ifpgfutil@format@is@latex
+    %% flipping text
+    \def\ctikzflipx#1{\scalebox{-1}[1]{#1}}
+    \def\ctikzflipy#1{\scalebox{1}[-1]{#1}}
+    \def\ctikzflipxy#1{\scalebox{-1}[-1]{#1}}
+    % text mode overbar
+    % Thanks to @egreg https://tex.stackexchange.com/a/24133/38080
+    \def\ctikztextnot#1{$\overline{\hbox{#1}}\m@th$}
+\else\ifpgfutil@format@is@plain
+    % text mode overbar
+    % Thanks to @egreg https://tex.stackexchange.com/a/24133/38080
+    \def\ctikztextnot#1{$\overline{\hbox{#1}}$}
+\else\ifpgfutil@format@is@context
+    % text mode overbar
+    % Thanks to @egreg https://tex.stackexchange.com/a/24133/38080
+    \def\ctikztextnot#1{$\overline{\hbox{#1}}$}
+\fi\fi\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% switch to use fpu in reciprocal scale transformations
+%%
+%% this code has been contributed by Schrödinger's cat
+%% https://tex.stackexchange.com/a/529159/38080
+%%
+%% Use the official key to use the fpu if installed, see
+%% https://github.com/pgf-tikz/pgf/issues/861
+%%
+%% Thanks to "muzimuzhi Z" https://tex.stackexchange.com/a/547085/38080
+%%
+\pgfkeysifdefined{/pgf/fpu/install only/.@cmd}{%
+    \pgfqkeys{/pgf}{use fpu reciprocal/.code={\pgfkeys{/pgf/fpu/install only={reciprocal}}}}%
+    }{%
+    \pgfqkeys{/pgf}{use fpu reciprocal/.code={%
+    \def\pgfmathreciprocal@##1{%
+        \begingroup
+        \pgfkeys{/pgf/fpu=true,/pgf/fpu/output format=fixed}%
+        \pgfmathparse{1/##1}%
+        \pgfmath@smuggleone\pgfmathresult
+        \endgroup
+    }}}%
+}
+
+\endinput

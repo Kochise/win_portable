@@ -1,0 +1,287 @@
+
+% Rolf Niepraschk, 2020-05-03, Rolf.Niepraschk@gmx.de
+
+\listfiles\errorcontextlines=100
+\documentclass[a4paper,draft,twoside]{article}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage[textwidth=12cm,marginparwidth=4cm]{geometry}
+\usepackage[final]{showexpl}
+
+\usepackage{iftex}
+
+\iftutex % LuaTeX, XeTeX
+  \usepackage{fontspec}
+  \setmonofont{DejaVuSansMono}[Scale=MatchUppercase]
+\else % old engines
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[scaled]{DejaVuSansMono}
+\fi
+
+\lstset{%
+  basicstyle=\ttfamily\small,
+  commentstyle=\itshape\ttfamily\small,
+  showspaces=false,
+  showstringspaces=false,
+  breaklines=true,
+  backgroundcolor=\color{lightgray},
+  breakautoindent=true,
+  captionpos=t
+}
+
+\iftrue
+\lstset{explpreset={numbers=left,numberstyle=\tiny,numbersep=.3em,
+  xleftmargin=1em,columns=flexible,language={}}}
+\fi
+
+\usepackage[font=small,labelfont=bf,justification=raggedright,%
+  singlelinecheck=false]{caption}
+\usepackage{amsmath}
+
+\AtBeginDocument{%
+  \renewcommand*\lstlistlistingname{Examples}
+  \renewcommand*\lstlistingname{Example}
+}
+
+\newcommand*{\MARKER}%
+  {\noindent\strut\vrule
+   \hrulefill~half text area~\hrulefill\vrule
+   \hrulefill~half text area~\hrulefill\vrule
+    \marginpar{\strut\vrule\hrulefill~margin area~\hrulefill\vrule}}
+    
+\begin{filecontents*}{ex1.tex}
+Line  1 \par
+Line  2 \par
+Line  3 \par
+Line  4 \par
+Line  5 \par
+Line  6 \par
+Line  7 \par
+Line  8 \par
+Line  9 \par
+Line 10 \par
+Line 11 \par
+Line 12 \par
+Line 13
+\end{filecontents*}
+
+\begin{document}
+
+\section*{The \LaTeX\ package \textsf{showexpl}}
+
+\bigskip
+
+\lstlistoflistings
+
+\subsection*{The \textsf{listings} parameters still works}
+
+\begin{LTXexample}[pos=t,numbers=none,
+  codefile=\jobname-\theltxexample.tex]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\MARKER
+
+\subsection*{The \texttt{pos}, \texttt{overhang}, and
+  \texttt{caption} parameters}
+
+\begin{LTXexample}[pos=b,overhang=.5\marginparwidth+.5\marginparsep,%
+  caption={The \texttt{overhang} parameter}]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+  
+\MARKER
+
+\begin{LTXexample}[pos=l,hsep=50pt,width=55mm]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\MARKER
+
+\subsection*{The \texttt{wide} parameter with inner and outer position}
+
+\begin{LTXexample}[pos=o,wide,caption={The \texttt{wide} parameter},%
+  label=ex:Gustav]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+  
+\MARKER
+
+\begin{LTXexample}[pos=i,wide]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+
+%--------------
+\newpage
+
+\subsection*{More examples on an even (left) page}
+
+\begin{LTXexample}[pos=t]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\MARKER
+
+\begin{LTXexample}[pos=b,overhang=.5\marginparwidth+.5\marginparsep,%
+  captionpos=b,caption={The \texttt{overhang} parameter again},%
+  label=ex:Fridolin]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+  
+\MARKER
+
+\begin{LTXexample}[pos=l,hsep=50pt,width=55mm]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\MARKER
+
+\begin{LTXexample}[pos=o,wide,captionpos=b,%
+  caption={The \texttt{wide} parameter again}]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+  
+\MARKER
+
+\begin{LTXexample}[pos=i,wide]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+  
+%--------------
+\newpage
+
+\subsection*{Whole \LaTeX{} documents as example code and 
+  the para\-meters \texttt{preset}, \texttt{rframe}, and \texttt{rangeaccept}}
+  
+\begin{LTXexample}[pos=r,wide,width=.65,preset=\LARGE,rframe={}]
+\documentclass[a4paper,twoside]{article}
+\begin{document}
+  \begin{equation}
+    \sigma(t)=\frac{1}{\sqrt{2\pi}}
+    \int^t_0 e^{-x^2/2} dx 
+  \end{equation}
+\end{document}
+\end{LTXexample}
+
+\MARKER
+
+\begin{LTXexample}[wide,width=.75,preset=\footnotesize,rframe=single,%
+  codefile=\jobname-\theltxexample.tex]
+\documentclass[a4paper,twoside]{article}
+\usepackage{amsmath}
+% enhancements for mathematical formulas
+\begin{document}
+\begin{equation}\label{eq:barwq}
+\begin{split}
+  H_c&=\frac{1}{2n} 
+  \sum^n_{l=0}(-1)^{l}(n-{l})^{p-2}
+  \sum_{l _1+\dots+ l _p=l}\prod^p_{i=1} 
+  \binom{n_i}{l _i}\\
+  &\quad\cdot[(n-l )-(n_i-l _i)]^{n_i-l _i}\cdot
+  \Bigl[(n-l )^2-\sum^p_{j=1}(n_i-l _i)^2\Bigr].
+\end{split}
+\end{equation}
+\end{document}
+\end{LTXexample}
+
+\LTXinputExample[%
+  pos=r,backgroundcolor=\color{Goldenrod!50},%
+  %firstline=3,lastline=6,%
+  linerange={3-6,8-10},%
+  float=tb,rangeaccept=true,%
+  caption={[Floating Example]%
+    This is a floating Example (parameter \texttt{rangeaccept=true})}]{ex1}
+
+\newpage
+
+\MARKER
+
+\subsection*{Using a graphic as the result}
+
+\begin{LTXexample}[pos=i,wide]
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\begin{LTXexample}[pos=i,wide,rframe={},%
+graphic=result-picture]% graphic=\jobname-\theltxexample
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\begin{LTXexample}[caption={The \texttt{graphic} parameter},captionpos=b,%
+  pos=i,wide,graphic={[width=.5\linewidth]result-picture}] 
+\Large\LaTeX{} \LaTeX{}
+\LaTeX{} \LaTeX{}
+\end{LTXexample}
+
+\newpage
+
+\subsection*{The parameter \texttt{varwidth}}
+
+\bigskip
+
+\MARKER
+
+\begin{LTXexample}[caption={Fix width of the result 
+  (side-by-side default: \texttt{0.5\textbackslash linewidth})},%
+  captionpos=b]
+\setlength{\unitlength}{1cm}
+\begin{picture}(2,2) \thicklines
+  \thicklines
+  \put(0,0){\line(1,1){2}}
+  \put(0,2){\line(1,-1){2}}
+\end{picture}
+\end{LTXexample} 
+
+\medskip
+
+\begin{LTXexample}[caption={[The \texttt{varwidth} parameter]%
+  Width of the result reduced to the ``natural'' 
+  width (\texttt{varwidth=true})},varwidth,captionpos=b]
+\setlength{\unitlength}{1cm}
+\begin{picture}(2,2) \thicklines
+  \put(0,0){\line(1,1){2}}
+  \put(0,2){\line(1,-1){2}}
+\end{picture}
+\end{LTXexample}
+
+\medskip
+
+\begin{LTXexample}[caption={Fix width of the result 
+  (default: \texttt{\textbackslash linewidth})},%
+  pos=t,captionpos=b]
+\setlength{\unitlength}{1cm}
+\begin{picture}(2,2) \thicklines
+  \put(0,0){\line(1,1){2}}
+  \put(0,2){\line(1,-1){2}}
+\end{picture}
+\end{LTXexample}
+
+\medskip
+
+\begin{LTXexample}[caption={[The \texttt{justification} parameter]%
+  Result is centered  (\texttt{varwidth=true})},%
+  varwidth,captionpos=b,pos=t,justification=\centering]
+\setlength{\unitlength}{1cm}
+\begin{picture}(2,2)
+  \thicklines
+  \put(0,0){\line(1,1){2}}
+  \put(0,2){\line(1,-1){2}}
+\end{picture}
+\end{LTXexample}
+
+\end{document}

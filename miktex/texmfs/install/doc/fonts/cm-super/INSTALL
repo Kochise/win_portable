@@ -1,0 +1,167 @@
+========================================================================
+
+These are generic installation instructions for the CM-Super font package.
+
+Below, we assume that your TeX system is compliant to the TDS
+(TeX Directory Structure) standard. If it is not so, refer to
+documentation of your TeX system for the proper locations of files of
+various types.
+
+To install the CM-Super font package in teTeX, fpTeX, TeX Live, MikTeX or
+VTeX/Free systems:
+
+1) Copy all Type 1 fonts (*.pfb files) to
+   .../texmf/fonts/type1/public/cm-super/ directory.
+
+2) [optional] Copy all AFM files to .../texmf/fonts/afm/public/cm-super/
+   and gunzip them: gunzip *.afm.gz
+   Note that the AFM files are not needed for using these fonts
+   with pdf(la)tex or dvips, and their uncompressed size is huge!
+
+3.1) [not for VTeX/Free]
+   Copy all dvips/*.map and dvips/*.enc files and dvips/config.cm-super
+   to .../texmf/dvips/cm-super/ directory.
+
+   These dvips/*.map files are suited to be used by BOTH dvips and
+   pdf(la)tex.
+
+   If you are using dvipdfm, then copy all dvipdfm/*.map files to
+   .../texmf/dvipdfm/config/ directory.
+
+3.2) [for VTeX/Free]
+   Copy all dvips/*.enc files to .../texmf/vtex/enc/ directory.
+   Copy all vtex/*.ali files to .../texmf/vtex/config/ directory.
+
+   You will need to generate all needed TFM files, because VTeX/Free can
+   not generate them on the fly (TFM files for EC/TC, EC Concrete and
+   EC Bright fonts are included into the VTeX/Free distribution).
+   You can generate these files e.g. by processing your document by
+   teTeX's latex. Put the TFM files to the curresponding subdirectories
+   under .../texmf/fonts/tfm/.
+
+3.3) If you wish to use the original CM germandbls (sharp s) shape,
+   rather than the new EC one, change "germandbls" to "germandbls.alt"
+   in cm-super-t1.enc.
+
+4) Instruct your TeX (pdftex, vtex, etc.) or drivers (dvips, dvipdfm,
+   etc.) to use these fonts. To accomplish this, do one of the following
+   points which corresponds to your TeX system (if it is not listed here,
+   please refer to the documentation).
+
+4.1) [not for VTeX/Free] Instruct dvips and pdftex to use these fonts:
+
+   a) [on teTeX, but not on TeX Live]
+      edit the file .../texmf/dvips/config/updmap
+      and add the following lines into the extra_modules section:
+
+../cm-super/cm-super-t1.map
+../cm-super/cm-super-ts1.map
+../cm-super/cm-super-t2a.map
+../cm-super/cm-super-t2b.map
+../cm-super/cm-super-t2c.map
+../cm-super/cm-super-x2.map
+
+   b) run the updmap script.
+
+4.2) If your TeX system does not have tools like updmap for
+   maintaining global MAP files (e.g. MikTeX), you can instead
+   configure each program which uses the Type 1 fonts:
+
+   a) edit the file .../texmf/dvips/config/config.ps and add the
+   following lines:
+
+p +cm-super-t1.map
+p +cm-super-ts1.map
+p +cm-super-t2a.map
+p +cm-super-t2b.map
+p +cm-super-t2c.map
+p +cm-super-x2.map
+
+   Alternatively, run dvips with the option "-Pcm-super".
+
+   b) edit the file .../texmf/pdftex/config/pdftex.cfg and add the
+   following lines:
+
+map +cm-super-t1.map
+map +cm-super-ts1.map
+map +cm-super-t2a.map
+map +cm-super-t2b.map
+map +cm-super-t2c.map
+map +cm-super-x2.map
+
+   c) edit the file .../texmf/dvipdfm/config/config and add the
+   following lines:
+
+f cm-super-t1.map
+f cm-super-ts1.map
+f cm-super-t2a.map
+f cm-super-t2b.map
+f cm-super-t2c.map
+f cm-super-x2.map
+
+4.3) [for VTeX/Free only] Edit the files .../texmf/vtex/config/ps.fm and
+   .../texmf/vtex/config/pdf.fm, and add the following lines into the
+   TYPE1 section:
+
+cm-super.ali
+cm-super-t1.ali
+cm-super-ts1.ali
+cm-super-t2a.ali
+cm-super-t2b.ali
+cm-super-t2c.ali
+cm-super-x2.ali
+
+   (at the beginning of that section, if you wish to use CM-Super
+   fonts even for EC/TC fonts which are now bundled with VTeX/Free)
+
+5) [not for VTeX/Free] Update the filename search database:
+   run "mktexlsr" on teTeX, TeX Live, or fpTeX;
+   run "initexmf.exe -u" on MikTeX (or do the same via a menu item)
+
+6) [optional, for advanced users]
+   If you wish to not download CM-Super fonts into your PS or PDF
+   files (to make them smaller), you may want to change the dvips
+   *.map files by removing "<" characters before *.pfb file names,
+   i.e. change lines like
+
+ecrm1000 SFRM1000 "T1Encoding ReEncodeFont" <cm-super-t1.enc <sfrm1000.pfb
+
+   to:
+
+ecrm1000 SFRM1000 "T1Encoding ReEncodeFont" <cm-super-t1.enc sfrm1000.pfb
+
+   [this should be done after step 3)]
+   If you have Perl, you can do this by running the command:
+
+perl -p -i.orig -e 's/<([a-z0-9]+\.pfb)$/$1/' cm-super-*.map
+
+   You also need to make the CM-Super fonts visible in Ghostscript.
+   To do this, install the file dvips/cm-super.GS into the Ghostscript's
+   "lib" directory, and add the following line to the file "Fontmap":
+
+(cm-super.GS) .runlibfile
+
+   and make sure that the CM-Super *.pfb font files are present in the
+   Ghostscript search path (see the "Font lookup" section in Use.htm
+   in Ghostscript distribution).
+
+   Note that if you distribute such PS or PDF files, you must make
+   sure that the recipient has the CM-Super fonts installed and
+   visible to Ghostscript or Acrobat Reader; otherwise, you should
+   embed fonts into the PS or PDF documents (which is used by default).
+
+7) You can install the CM-Super fonts as regular Windows fonts, if you
+   wish to use them in non-TeX applications (e.g. packages for
+   preparation of graphics which are to be included into your TeX
+   documents, or even word processors, etc.)
+
+   You will need Adobe Type Manager (either a regular version, or the
+   Lite version, which is available for free from the Adobe web site).
+
+   To do this, you will need to uncompress the AFM files provided with
+   this distribution (e.g. using WinZip).
+
+   Place all corresponding PFB, AFM, and INF files which you need to
+   install into the same directory, and feed it to ATM.
+
+========================================================================

@@ -1,0 +1,261 @@
+%% Copyright 2003 Paul Pichaureau for the MathDesign Project
+%% All rights reserved.
+%%
+%% --------------------------------------------------
+%%
+%% This program is free software; you can redistribute it and/or
+%% modify it under the terms of the GNU General Public License
+%% as published by the Free Software Foundation; either version 2
+%% of the License, or (at your option) any later version.
+
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+
+%% You should have received a copy of the GNU General Public License
+%% along with this program; if not, write to the Free Software
+%% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+%% Public LaTeX Project Public
+
+%% This file defines generic macros.
+
+%% For more information about options and configuration, please read
+%% the general MathDesign documentation mddoc.pdf.
+
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesPackage{mathdesign}
+[2013/08/29 v2.31 Math Design Project]
+
+%% -------------------------------------------------------------------
+%% Code to use a key-val like syntax in options
+%% -------------------------------------------------------------------
+
+\RequirePackage{keyval}
+\RequirePackage{ifthen}
+
+\@ifundefined{MD@unusedlist}{%
+  \let\MD@unusedlist\@empty}{}
+\@ifundefined{MD@extractkey}{%
+  \def\MD@extractkey#1=#2\MD@extractkey{#1}}{}
+\newcommand{\ProcessUnusedOptions}[1]{%
+  \let\MD@tempa\@empty
+  \let\MD@tempb\@empty
+  \@for\CurrentOption:=\MD@unusedlist\do{%
+    \expandafter\expandafter\expandafter\def
+    \expandafter\expandafter\expandafter\MD@key
+    \expandafter\expandafter\expandafter{%
+      \expandafter\MD@extractkey\CurrentOption=\MD@extractkey}%
+    \@ifundefined{KV@#1@\MD@key}{%
+      \edef\MD@tempa{\MD@tempa,\CurrentOption,}}{%
+      \edef\MD@tempb{\MD@tempb,\CurrentOption,}}}%
+  \@for\CurrentOption:=\MD@tempa\do{%
+    \ifx\CurrentOption\@empty\else
+      \PackageWarning{mathdesign}{`\CurrentOption' option not defined.}\fi}%
+  \edef\MD@tempb{%
+    \noexpand\setkeys{#1}{\MD@tempb}}%
+  \MD@tempb
+  \AtEndOfPackage{\let\@unprocessedoptions\relax}}
+
+\DeclareOption*{%
+  \expandafter\expandafter\expandafter\def
+  \expandafter\expandafter\expandafter\MD@unusedlist
+  \expandafter\expandafter\expandafter{%
+    \expandafter\MD@unusedlist\expandafter,%
+    \CurrentOption}}
+
+
+%% -------------------------------------------------------------------
+%% Options
+%% -------------------------------------------------------------------
+
+%% Avalaible families
+
+\define@key{MD}{family}[mdbch]{%
+    \gdef\MD@default@family{#1}}
+
+\DeclareOption{utopia}{\gdef\MD@default@family{mdput}}
+\DeclareOption{mdput}{\gdef\MD@default@family{mdput}}
+\DeclareOption{adobe-utopia}{\gdef\MD@default@family{mdput}}
+\DeclareOption{Adobe Utopia}{\gdef\MD@default@family{mdput}}
+
+\DeclareOption{garamond}{\gdef\MD@default@family{mdugm}}
+\DeclareOption{mdugm}{\gdef\MD@default@family{mdugm}}
+\DeclareOption{urw-garamond}{\gdef\MD@default@family{mdugm}}
+\DeclareOption{URW Garamond}{\gdef\MD@default@family{mdugm}}
+
+\DeclareOption{charter}{\gdef\MD@default@family{mdbch}}
+\DeclareOption{mdbch}{\gdef\MD@default@family{mdbch}}
+\DeclareOption{bitstream-charter}{\gdef\MD@default@family{mdbch}}
+\DeclareOption{Bitstream Charter}{\gdef\MD@default@family{mdbch}}
+
+% Commercial fonts
+\DeclareOption{utopiastd}{\gdef\MD@default@family{mdpus}}
+\DeclareOption{mdpus}{\gdef\MD@default@family{mdpus}}
+\DeclareOption{adobe-utopiastd}{\gdef\MD@default@family{mdpus}}
+\DeclareOption{Adobe UtopiaStd}{\gdef\MD@default@family{mdpus}}
+
+\DeclareOption{mdpgd}{\gdef\MD@default@family{mdpgd}}
+\DeclareOption{adobe-garamond}{\gdef\MD@default@family{mdpgd}}
+\DeclareOption{Adobe Garamond}{\gdef\MD@default@family{mdpgd}}
+
+\DeclareOption{itccharter}{\gdef\MD@default@family{mdici}}
+\DeclareOption{mdici}{\gdef\MD@default@family{mdici}}
+\DeclareOption{itc-charter}{\gdef\MD@default@family{mdici}}
+\DeclareOption{ITC Charter}{\gdef\MD@default@family{mdici}}
+
+%% Activate expert fonts
+\newif\if@MD@expert
+\DeclareOption{expert}{\@MD@experttrue}
+
+%% Slanted or upright version of various fonts
+
+\newif\if@MD@capupright \@MD@capuprightfalse
+\newif\if@MD@lowupright \@MD@lowuprightfalse
+\newif\if@MD@grupright  \@MD@gruprightfalse
+\newif\if@MD@GRupright  \@MD@GRuprighttrue
+
+\define@key{MD}{uppercase}[italicized]{%
+    \ifthenelse{\equal{#1}{italicized}}{\@MD@capuprightfalse}
+    {\ifthenelse{\equal{#1}{upright}}{\@MD@capuprighttrue}{}}}
+
+\define@key{MD}{lowercase}[italicized]{%
+    \ifthenelse{\equal{#1}{italicized}}{\@MD@lowuprightfalse}
+    {\ifthenelse{\equal{#1}{upright}}{\@MD@lowuprighttrue}{}}}
+
+\define@key{MD}{greekuppercase}[upright]{%
+    \ifthenelse{\equal{#1}{italicized}}{\@MD@GRuprightfalse}
+    {\ifthenelse{\equal{#1}{upright}}{\@MD@GRuprighttrue}{}}}
+
+\define@key{MD}{greeklowercase}[italicized]{%
+    \ifthenelse{\equal{#1}{italicized}}{\@MD@gruprightfalse}
+    {\ifthenelse{\equal{#1}{upright}}{\@MD@gruprighttrue}{}}}
+
+\gdef\MD@greek@family{letters}
+
+\define@key{MD}{greekfamily}[default]{%
+    \selectgreekfamily{#1}}
+
+\newcommand{\selectgreekfamily}[1]{%
+    \ifthenelse{\equal{#1}{bodoni}}{\gdef\MD@greek@family{mdgrb}}{}
+    \ifthenelse{\equal{#1}{didot}}{\gdef\MD@greek@family{mdgrd}}{}
+}
+
+%% euro symbol support
+\newif\if@MD@euro\@MD@eurotrue
+\define@key{MD}{euro}[true]{%
+    \ifthenelse{\equal{#1}{true}}{\global\@MD@eurotrue}
+    {\global\@MD@eurofalse}}
+
+%% scaled sans serif and typewritefonts
+\newif\if@MD@sfscaled\@MD@sfscaledtrue
+\define@key{MD}{sfscaled}[true]{%
+    \ifthenelse{\equal{#1}{true}}{\global\@MD@sfscaledtrue}
+    {\global\@MD@sfscaledfalse}}
+
+\newif\if@MD@ttscaled\@MD@ttscaledtrue
+\define@key{MD}{ttscaled}[true]{%
+    \ifthenelse{\equal{#1}{true}}{\global\@MD@ttscaledtrue}
+    {\global\@MD@ttscaledfalse}}
+
+%% Type of calligraphic alphabet
+\newif\if@MD@cmcal  \@MD@cmcalfalse
+
+\define@key{MD}{cal}[cmcal]{%
+    \ifthenelse{\equal{#1}{cmcal}}{\@MD@cmcaltrue }
+    {\ifthenelse{\equal{#1}{script}}{\@MD@cmcalfalse}{}}}
+
+\ProcessOptions
+
+\@ifundefined{MD@default@family}
+{\PackageWarning{mathdesign}{No font specified}}
+{\InputIfFileExists{mathdesign.cfg}{}{}
+    \InputIfFileExists{\MD@default@family.cfg}{}{}
+    \ExecuteOptions{\MD@default@family Options}}
+
+\ProcessUnusedOptions{MD}
+
+%% ----------------------------------------------------------------
+%% Detects possible package incompatibility
+%% ----------------------------------------------------------------
+
+\def\WarningIfLoaded#1#2{%
+    \AtBeginDocument{\@ifpackageloaded{#2}{\PackageWarning{mathdesign/#1}{%
+            Package '#2' shouldn't be used in conjonction with
+            package #1,}}{}}}
+
+\def\WarningIfLoadedNoOption#1#2{%
+    \AtBeginDocument{
+        \@ifpackageloaded{#2}{\PackageWarning{mathdesign/#1}{%
+            Package '#2' shouldn't be used in conjonction with
+            package #1 (use option #2 instead)}}{}}}
+
+
+%% ----------------------------------------------------------------
+%% Undefines symbol name before definition
+%% ----------------------------------------------------------------
+
+\def\MD@def#1#2{\global\let#2=\@undefined #1#2}
+
+%% ----------------------------------------------------------------
+%% Some 'faked' symbols
+%% ----------------------------------------------------------------
+
+% Redefine \textcircled
+\DeclareTextCommand{\textcircled}{OMS}[1]{\hmode@bgroup
+   \ooalign{%
+      \hfil \hbox {\upshape#1}\hfil \crcr
+      \char 13 % "0D
+   }%
+ \egroup}
+
+%Extra circled stuff
+\DeclareTextAccentDefault{\figurecircled}{MDB}
+\DeclareTextCommand{\figurecircled}{MDB}[1]{\hmode@bgroup
+   \ooalign{%
+      \hfil \hbox {\upshape#1}\hfil \crcr
+      \char 64
+   }%
+ \egroup}
+
+% The square root macro is defined with some hard coded dimensions. We
+% change that.
+\def\r@@t#1#2{%
+  \setbox\z@\hbox{$\m@th#1\sqrtsign{#2}$}%
+  \dimen@\ht\z@ \advance\dimen@-\dp\z@
+  \setbox\@tempboxa\hbox{$\m@th#1\sqrtsign{}$}%
+  \dimen@i\wd\@tempboxa
+  \kern.33\dimen@i\raise.66\dimen@\copy\rootbox
+  \kern-.66\dimen@i\box\z@}
+
+%% -------------------------------------------------------------------
+%% Define or undefine small caps
+%% -------------------------------------------------------------------
+
+\if@MD@expert\else\renewcommand\scdefault{fsc}\fi
+
+\newcommand{\fscshape}[1]{\fontshape{fsc}\selectfont #1}
+\newcommand{\ficshape}[1]{\fontshape{fic}\selectfont #1}
+
+
+%% -------------------------------------------------------------------
+%% Some tweaking
+%% -------------------------------------------------------------------
+
+%\delimiterfactor950
+
+%% -------------------------------------------------------------------
+%% Load the family style file
+%% -------------------------------------------------------------------
+\@ifundefined{MD@default@family}
+  {}
+  {\RequirePackage{\MD@default@family}}
+
+%% ----------------------------------------------------------------
+%% Encoding is automatically set to T1
+%% ----------------------------------------------------------------
+
+\RequirePackage[T1]{fontenc}
+
+\endinput

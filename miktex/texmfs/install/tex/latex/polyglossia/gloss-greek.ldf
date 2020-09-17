@@ -1,0 +1,409 @@
+\ProvidesFile{gloss-greek.ldf}[polyglossia: module for greek]
+
+\PolyglossiaSetup{greek}{
+  bcp47=el-monoton,
+  script=Greek,
+  scripttag=grek,
+  langtag=ELL,
+  frenchspacing=true,
+  indentfirst=true,
+  fontsetup=true,
+  localnumeral=greeknumerals,
+  Localnumeral=Greeknumerals
+  %TODO localalph={greek@alph,greek@Alph}
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*[variant=ancient]{greek}{grc}
+\setlanguagealias*[varant=polytonic]{greek}{el-polyton}
+\setlanguagealias*[variant=monotonic]{greek}{el-monoton}
+\setlanguagealias*{greek}{el}
+
+% Babel aliases
+\setlanguagealias[variant=polytonic]{greek}{polutonikogreek}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% The code in this file was initially adapted from the antomega
+%% module for greek. Currently large parts of it derive from the 
+%% package xgreek.sty (c) Apostolos Syropoulos 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% this file imported from xgreek fixes the \lccode and \uccode of Greek letters:
+\input{xgreek-fixes.def}
+
+\def\tmp@mono{mono}
+\def\tmp@monotonic{monotonic}
+\def\tmp@poly{poly}
+\def\tmp@polytonic{polytonic}
+\def\tmp@ancient{ancient}
+\def\tmp@ancientgreek{ancientgreek}
+
+\def\greek@variant{monogreek}
+
+\define@key{greek}{variant}[monotonic]{%
+  \def\@tmpa{#1}%
+  \xpg@ifdefined{greek}{}{%
+      \xpg@nopatterns{greek}%
+      \adddialect\l@greek\l@nohyphenation
+  }%
+  \ifx\@tmpa\tmp@poly\def\@tmpa{polytonic}\fi
+  \ifx\@tmpa\tmp@ancientgreek\def\@tmpa{ancient}\fi
+  \ifx\@tmpa\tmp@polytonic%
+    \xpg@ifdefined{polygreek}{}%
+      {\xpg@warning{No hyphenation patterns were loaded for Polytonic Greek\MessageBreak
+	            I will use the patterns loaded for \string\l@greek\space instead}%
+      \adddialect\l@polygreek\l@greek\relax}%
+    \def\greek@variant{polygreek}%
+    \def\captionsgreek{\polygreekcaptions}%
+    \def\dategreek{\datepolygreek}%
+    \SetLanguageKeys{greek}{babelname=polutonikogreek,bcp47=el-polyton}%
+    \xpg@info{Option: Polytonic Greek}%
+  \else
+    \ifx\@tmpa\tmp@ancient
+      \xpg@ifdefined{ancientgreek}{}%
+        {\xpg@warning{No hyphenation patterns were loaded for Ancient Greek\MessageBreak
+	              I will use the patterns loaded for \string\l@greek\space instead}%
+         \adddialect\l@ancientgreek\l@greek\relax}%
+      \def\greek@variant{ancientgreek}%
+      \def\captionsgreek{\ancientgreekcaptions}%
+      \def\dategreek{\dateancientgreek}%
+      \SetLanguageKeys{greek}{babelname=greek,bcp47=grc}%
+      \xpg@info{Option: Ancient Greek}%
+    \else %monotonic
+      \xpg@ifdefined{monogreek}{}%
+        {\xpg@warning{No hyphenation patterns were loaded for Monotonic Greek\MessageBreak
+	              I will use the patterns loaded for \string\l@greek\space instead}%
+         \adddialect\l@monogreek\l@greek\relax}%
+      \def\greek@variant{monogreek}% monotonic
+      \def\captionsgreek{\monogreekcaptions}%
+      \def\dategreek{\datemonogreek}%
+      \SetLanguageKeys{greek}{babelname=greek,bcp47=el-monoton}%
+      \xpg@info{Option: Monotonic Greek}%
+    \fi
+  \fi}
+
+\def\greek@language{%
+  \polyglossia@setup@language@patterns{\greek@variant}%
+}
+
+
+\newif\if@greek@numerals
+\define@key{greek}{numerals}[greek]{%
+  \ifstrequal{#1}{arabic}{\@greek@numeralsfalse}{\@greek@numeralstrue}%
+}
+
+\define@boolkey{greek}{attic}[true]{\xpg@warning{Greek option `attic' is no longer required.}}
+
+% Register default options
+\xpg@initialize@gloss@options{greek}{variant=monotonic,numerals=greek}
+% Register alias options
+\xpg@set@alias@values{greek}{variant}{monotonic}{mono}
+\xpg@set@alias@values{greek}{variant}{polytonic}{poly}
+
+\def\monogreekcaptions{%
+   \def\refname{Αναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Ευρετήριο}%
+   \def\figurename{Σχήμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε επίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Προς}%
+   \def\proofname{Απόδειξη}%
+   \def\glossaryname{Γλωσσάρι}}%
+
+\def\datemonogreek{%   
+   \def\today{\number\day\space%
+      \greek@month%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
+      \greek@month%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
+      \greek@month%
+      \space\Greeknumber\year}%
+   \def\greek@month{\ifcase\month\or%
+      Ιανουαρίου\or
+      Φεβρουαρίου\or
+      Μαρτίου\or
+      Απριλίου\or
+      Μαΐου\or
+      Ιουνίου\or
+      Ιουλίου\or
+      Αυγούστου\or
+      Σεπτεμβρίου\or
+      Οκτωβρίου\or
+      Νοεμβρίου\or
+      Δεκεμβρίου\fi}}%
+
+\def\polygreekcaptions{%
+   \def\refname{Ἀναφορές}%
+   \def\abstractname{Περίληψη}%
+   \def\bibname{Βιβλιογραφία}%
+   \def\prefacename{Πρόλογος}%
+   \def\chaptername{Κεφάλαιο}%
+   \def\appendixname{Παράρτημα}%
+   \def\contentsname{Περιεχόμενα}%
+   \def\listfigurename{Κατάλογος σχημάτων}%
+   \def\listtablename{Κατάλογος πινάκων}%
+   \def\indexname{Εὑρετήριο}%
+   \def\figurename{Σχῆμα}%
+   \def\tablename{Πίνακας}%
+   \def\partname{Μέρος}%
+   \def\pagename{Σελίδα}%
+   \def\seename{βλέπε}%
+   \def\alsoname{βλέπε ἐπίσης}%
+   \def\enclname{Συνημμένα}%
+   \def\ccname{Κοινοποίηση}%
+   \def\headtoname{Πρὸς}%
+   \def\proofname{Ἀπόδειξη}}%
+
+\def\datepolygreek{%   
+   \def\today{\number\day\space%
+      \greek@month%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
+      \greek@month%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
+      \greek@month%
+      \space\Greeknumber\year}%
+   \def\greek@month{\ifcase\month\or%
+      Ἰανουαρίου\or
+      Φεβρουαρίου\or
+      Μαρτίου\or
+      Ἀπριλίου\or
+      Μαΐου\or
+      Ἰουνίου\or
+      Ἰουλίου\or
+      Αὐγούστου\or
+      Σεπτεμβρίου\or
+      Ὀκτωβρίου\or
+      Νοεμβρίου\or
+      Δεκεμβρίου\fi}}%
+
+% this is copied verbatim from xgreek.sty:      
+\def\ancientgreekcaptions{%
+  \def\prefacename{Προοίμιον}%
+  \def\refname{Αναφοραί}%
+  \def\abstractname{Περίληψις}%
+  \def\bibname{Βιβλιογραφία}%
+  \def\chaptername{Κεφάλαιον}%
+  \def\appendixname{Παράρτημα}%
+  \def\contentsname{Περιεχόμενα}%
+  \def\listfigurename{Κατάλογος σχημάτων}%
+  \def\listtablename{Κατάλογος πινάκων}%
+  \def\indexname{Εὑρετήριον}%
+  \def\figurename{Σχήμα}%
+  \def\tablename{Πίναξ}%
+  \def\partname{Μέρος}%
+  \def\enclname{Συνημμένως}%
+  \def\ccname{Κοινοποίησις}%
+  \def\headtoname{Πρὸς}%
+  \def\pagename{Σελὶς}%
+  \def\seename{ὅρα}%
+  \def\alsoname{ὅρα ὡσαύτως}%
+  \def\proofname{Ἀπόδειξις}%
+  \def\glossaryname{Γλωσσάριον}%
+  \def\refname{Ἀναφοραὶ}%
+  \def\indexname{Εὑρετήριο}%
+  \def\figurename{Σχῆμα}%
+  \def\headtoname{Πρὸς}}%
+
+\def\dateancientgreek{%
+  \def\today{\number\day\space%
+      \greek@month%
+      \space\number\year}%
+   \def\greektoday{\greeknumber\day\space%
+      \greek@month%
+      \space\greeknumber\year}%
+   \def\Greektoday{\Greeknumber\day\space%
+      \greek@month%
+      \space\Greeknumber\year}%
+   \def\greek@month{\ifcase\month\or%
+      Ἰανουαρίου\or
+      Φεβρουαρίου\or
+      Μαρτίου\or
+      Ἀπριλίου\or
+      Μαΐου\or
+      Ἰουνίου\or
+      Ἰουλίου\or
+      Αὐγούστου\or
+      Σεπτεμβρίου\or
+      Ὀκτωβρίου\or
+      Νοεμβρίου\or
+      Δεκεμβρίου\fi}}
+
+% the code for alphabetic numbers and attic numerals 
+\newrobustcmd\anw@print{}
+\newrobustcmd\anw@false{%
+  \renewrobustcmd\anw@print{}}
+\newrobustcmd\anw@true{%
+   \renewrobustcmd\anw@print{ʹ}}
+\anw@true
+
+\newcommand{\greeknumerals}[2]{\greeknumber{#2}}
+\newcommand{\Greeknumerals}[2]{\Greeknumber{#2}}
+
+\protected\def\greeknumber#1{\expandafter\@greeknumber\expandafter{\number#1}}
+\def\@greeknumber#1{%
+  \ifnum#1<\@ne\space\gr@ill@value{#1}%
+  \else
+    \ifnum#1<10\expandafter\gr@num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\gr@num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\gr@num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\gr@num@iv\number#1%
+          \else
+            \ifnum#1<100000\expandafter\gr@num@v\number#1%
+            \else
+              \ifnum#1<1000000\expandafter\gr@num@vi\number#1%
+              \else
+                \space\gr@ill@value{#1}%
+              \fi
+            \fi
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+}
+\protected\def\Greeknumber#1{\expandafter\@Greeknumber\expandafter{\number#1}}
+\def\@Greeknumber#1{%
+  \ifnum#1<\@ne\space\gr@ill@value{#1}%
+  \else
+    \ifnum#1<10\expandafter\gr@Num@i\number#1%
+    \else
+      \ifnum#1<100\expandafter\gr@Num@ii\number#1%
+      \else
+        \ifnum#1<\@m\expandafter\gr@Num@iii\number#1%
+        \else
+          \ifnum#1<\@M\expandafter\gr@Num@iv\number#1%
+          \else
+            \ifnum#1<100000\expandafter\gr@Num@v\number#1%
+            \else
+              \ifnum#1<1000000\expandafter\gr@Num@vi\number#1%
+              \else
+                \space\gr@ill@value{#1}%
+              \fi
+            \fi
+          \fi
+        \fi
+      \fi
+    \fi
+  \fi
+}
+\let\greeknumeral=\greeknumber
+\let\Greeknumeral=\Greeknumber
+\def\gr@num@i#1{%
+  \ifcase#1\or α\or β\or γ\or δ\or ε\or Ϛ\or ζ\or η\or θ\fi
+  \ifnum#1=\z@\else\anw@true\fi\anw@print}
+\def\gr@num@ii#1{%
+  \ifcase#1\or ι\or κ\or λ\or μ\or ν\or ξ\or ο\or π\or ϟ\fi
+  \ifnum#1=\z@\else\anw@true\fi\gr@num@i}
+\def\gr@num@iii#1{%
+  \ifcase#1\or ρ\or σ\or τ\or υ\or φ\or χ\or ψ\or ω\or ϡ\fi
+  \ifnum#1=\z@\anw@false\else\anw@true\fi\gr@num@ii}
+\def\gr@num@iv#1{%
+  \ifnum#1=\z@\else ͵\fi
+  \ifcase#1\or α\or β\or γ\or δ\or ε\or Ϛ\or ζ\or η\or θ\fi
+  \gr@num@iii}
+\def\gr@num@v#1{%
+  \ifnum#1=\z@\else ͵\fi
+  \ifcase#1\or ι\or κ\or λ\or μ\or ν\or ξ\or ο\or π\or ϟ\fi
+  \gr@num@iv}
+\def\gr@num@vi#1{%
+  ͵\ifcase#1\or ρ\or σ\or τ\or υ\or φ\or χ\or ψ\or ω\or ϡ\fi
+  \gr@num@v}
+\def\gr@Num@i#1{%
+  \ifcase#1 \or Α\or Β\or Γ\or Δ\or Ε\or \MakeUppercase{Ϛ}\or Ζ\or Η\or θ\fi
+  \ifnum#1=\z@\else\anw@true\fi\anw@print}
+\def\gr@Num@ii#1{%
+  \ifcase#1 \or Ι\or Κ\or Λ\or Μ\or Ν\or Ξ\or Ο\or Π\or \MakeUppercase{ϟ}\fi
+  \ifnum#1=\z@\else\anw@true\fi\gr@Num@i}
+\def\gr@Num@iii#1{%
+  \ifcase#1 \or Ρ\or Σ\or Τ\or Υ\or Φ\or Χ\or Ψ\or Ω\or \MakeUppercase{ϡ}\fi
+  \ifnum#1=\z@\anw@false\else\anw@true\fi\gr@Num@ii}
+\def\gr@Num@iv#1{%
+  \ifnum#1=\z@\else ͵\fi
+  \ifcase#1 \or Α\or Β\or Γ\or Δ\or Ε\or \MakeUppercase{Ϛ}\or Ζ\or Η\or θ\fi
+  \gr@Num@iii}
+\def\gr@Num@v#1{%
+  \ifnum#1=\z@\else ͵\fi
+  \ifcase#1 \or Ι\or Κ\or Λ\or Μ\or Ν\or Ξ\or Ο\or Π\or \MakeUppercase{ϟ}\fi
+\gr@Num@iv}
+  \def\gr@Num@vi#1{%
+͵ \ifcase#1 \or Ρ\or Σ\or Τ\or Υ\or Φ\or Χ\or Ψ\or Ω\or \MakeUppercase{ϡ}\fi
+  \gr@Num@v}
+\def\gr@ill@value#1{\xpg@warning{Illegal value (#1) for Greek numeral}[$#1$]}
+
+%%%% Attic numerals (no longer optional)
+\newcount\@attic@num
+\DeclareRobustCommand*{\@@atticnum}[1]{%
+        \@attic@num#1\relax
+        \ifnum\@attic@num<\@ne%
+          \space%
+          \xpg@warning{Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
+        \else\ifnum\@attic@num>249999%
+          \space%
+	  \xpg@warning{Illegal value (\the\@attic@num) for acrophonic Attic numeral}%
+        \else
+            \@whilenum\@attic@num>49999\do{%
+               \char"10147\advance\@attic@num-50000}%
+            \@whilenum\@attic@num>9999\do{%
+               M\advance\@attic@num-\@M}%
+            \ifnum\@attic@num>4999%
+               \char"10146\advance\@attic@num-5000%
+            \fi\relax
+            \@whilenum\@attic@num>999\do{%
+               Χ\advance\@attic@num-\@m}%
+            \ifnum\@attic@num>499%
+               \char"10145\advance\@attic@num-500%
+            \fi\relax
+            \@whilenum\@attic@num>99\do{%
+               Η\advance\@attic@num-100}%
+            \ifnum\@attic@num>49%
+               \char"10144\advance\@attic@num-50%
+            \fi\relax
+            \@whilenum\@attic@num>9\do{%
+               Δ\advance\@attic@num by-10}%
+            \@whilenum\@attic@num>4\do{%
+               Π\advance\@attic@num-5}%
+            \ifcase\@attic@num\or Ι\or ΙΙ\or ΙΙΙ\or ΙΙΙΙ\fi%
+   \fi\fi}
+\def\@atticnum#1{%
+     \expandafter\@@atticnum\expandafter{\the#1}}
+\def\atticnumeral#1{%
+     \@attic@num#1\relax
+     \@atticnum{\@attic@num}}
+\let\atticnum=\atticnumeral
+
+\def\greek@numbers{%
+   \if@greek@numerals
+      \def\greek@alph##1{\expandafter\greeknumeral\expandafter{\the##1}}%
+      \def\greek@Alph##1{\expandafter\Greeknumeral\expandafter{\the##1}}%
+      \let\@alph\greek@alph%
+      \let\@Alph\greek@Alph%
+   \fi}
+
+\def\nogreek@numbers{%
+  \let\@alph\latin@alph%
+  \let\@Alph\latin@Alph%
+  \let\greek@alph\@undefined%
+  \let\greek@Alph\@undefined%
+  }
+
+\endinput
+

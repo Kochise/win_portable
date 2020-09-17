@@ -1,0 +1,69 @@
+% Translated by Paulius Sladkevičius <komsas@gmail.com>
+
+\ProvidesFile{gloss-lithuanian.ldf}[polyglossia: module for lithuanian]
+\PolyglossiaSetup{lithuanian}{
+  bcp47=lt,
+  hyphennames={lithuanian},
+  hyphenmins={2,2},
+  langtag=LTH,
+  indentfirst=true, % TODO Dokumentų rengimo taisyklių, patvirtintų Lietuvos vyriausiojo archyvaro 2011 m. liepos 4 d. įsakymu Nr. V-117, 29.1 punktą
+  fontsetup=true
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*{lithuanian}{lt}
+
+\def\captionslithuanian{%
+   \def\prefacename{Pratarmė}%
+   \def\refname{Literatūra}%
+   \def\abstractname{Santrauka}%
+   \def\bibname{Literatūra}%
+   \def\chaptername{Skyrius}% TODO letter case
+   \def\appendixname{Priedas}%
+   \def\contentsname{Turinys}%
+   \def\listfigurename{Iliustracijų sąrašas}%
+   \def\listtablename{Lentelių sąrašas}%
+   \def\indexname{Rodyklė}%
+   \def\figurename{pav.}%
+   \def\tablename{lentelė}% TODO any special reason for \protect in babel?
+   \def\partname{Dalis}%
+   \def\enclname{Įdėta}%
+   \def\ccname{Kopijos}%
+   \def\headtoname{Kam}% TODO empty in babel?
+   \def\pagename{puslapis}%
+   \def\seename{žiūrėk}%
+   \def\alsoname{taip pat}% TODO some other variants are considered in babel?
+   \def\proofname{Įrodymas}%
+   \def\glossaryname{Terminų žodynas}% TODO some other variants are considered in babel?
+}
+
+\def\datelithuanian{%
+   \def\lithuanianmonth{\ifcase\month\or
+      sausio\or
+      vasario\or
+      kovo\or
+      balandžio\or
+      gegužės\or
+      birželio\or
+      liepos\or
+      rugpjūčio\or
+      rugsėjo\or
+      spalio\or
+      lapkričio\or
+      gruodžio\fi}%
+   \def\today{\number\year~m.~\lithuanianmonth~\number\day~d.}%
+}
+
+\def\blockextras@lithuanian{%
+  \let\fnum@figure@orig\fnum@figure
+  \def\fnum@figure{\thefigure\nobreakspace\figurename}%
+  \let\fnum@table@orig\fnum@table
+  \def\fnum@table{\thetable\nobreakspace\tablename}%
+}
+
+\def\noextras@lithuanian{%
+  \let\fnum@figure\fnum@figure@orig
+  \let\fnum@table\fnum@table@orig
+}
+
+\endinput

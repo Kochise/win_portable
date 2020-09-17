@@ -1,0 +1,271 @@
+\documentclass[12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+% \usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{amsthm}
+%\usepackage{mathrsfs}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newenvironment{demo}{\noindent {\bf Dem.}}{\qed}
+\newenvironment{remarque}{\noindent {\bf Rem.} \small \itshape}{}
+\newenvironment{exemple}{\noindent {\bf Example}}{}
+
+\newcommand{\Lu}{L^1(\Rset)}
+\newcommand{\tf}[1]{{\cal F}\left(#1\right)}
+\newcommand{\ii}{{\mathrm{i}}}
+\newcommand{\Cn}{{\cal C}^{n}}
+\newcommand{\dd}{\mathrm{d}}
+% ;; \newcommand{\Rset}{{\mathbb R}}
+\newcommand{\Rset}{R}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb R}
+\newcommand{\ex}{\mathrm{e}}
+\newcommand{\Cinf}{{\cal C}^{\infty}}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\dx}{\dd x}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\vect}[1]{\overrightarrow{#1}}
+\newcommand{\Boule}[2]{\mathscr B(#1,#2)}
+\newcommand{\Cercle}[2]{\mathscr C(#1,#2)}
+\DeclareMathOperator{\Arg}{Arg}
+
+\newcommand{\dep}[2]{\ds \frac{\partial #1}{\partial #2}}
+
+\title{Example of the \textsf{mdpus} fonts.}
+
+\author{Paul Pichaureau}
+
+
+\usepackage[cal=scr,mdpus,greekfamily = didot]{mathdesign}
+%% \usepackage{amssymb}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    The package \textsf{mdpus} consists of a full set of
+    mathematical fonts, designed to be combined with Adobe
+    Utopia Std as the main text font.
+
+    This example is extracted from the excellent book {\em
+        Mathematics for Physics and Physicists}, {\sc W. Appel},
+    Princeton University Press, {\sc 2007}.
+
+\end{abstract}
+
+
+\section{Conformal maps}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Preliminaries}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Consider a change of variable  $(x,y)\mapsto
+(u,v)=\big(u(x,y),v(x,y)\big)$ in the plane $\R^2$, identified
+with~$\C$. This change of variable really only deserves the name if
+$f$ is locally bijective (i.e., one-to-one); this is the case if the
+jacobian of the map is nonzero (then so is the jacobian of the
+inverse map):
+\begin{equation*}
+  \left| \frac{{D}(u,v)}{{D}(x,y)}\right| =
+  \begin{vmatrix} 
+    \ds\frac{\displaystyle\partial u}{\displaystyle\partial x} &    
+    \ds\frac{\displaystyle\partial u}{\displaystyle\partial y} \\[4mm]
+    \ds\frac{\displaystyle\partial v}{\displaystyle\partial x} &
+    \ds\frac{\displaystyle\partial v}{\displaystyle\partial y} 
+  \end{vmatrix}\neq 0
+  \qquad\text{and}\qquad
+  \left| \frac{{D}(x,y)}{{D}(u,v)}\right|
+  =\begin{vmatrix}\ds\dep{x}{u} &\ds \dep{x}{v}\\[4mm]
+    \ds\dep{y}{u} &\ds \dep{y}{v} 
+  \end{vmatrix}\neq 0.
+\end{equation*}
+\begin{theorem}
+In a complex change of variable
+\begin{equation*}
+        z= x+\ii y\longmapsto w=f(z)=u+\ii v,
+\end{equation*}
+and \emph{if $f$ is holomorphic}, then the jacobian of the map is equal to
+\begin{equation*}
+  J_f(z)=\left| \frac{{D}(u,v)}{{D}(x,y)}\right|=
+  \abs{f'(z)}^2.
+\end{equation*}
+\end{theorem}
+\begin{demo}
+  Indeed, we have $f'(z)=\dep{u}{x}+\ii\dep{v}{x}$ and hence, by the
+  Cauchy-Riemann relations,
+  \begin{align*}
+    \abs{f'(z)}^2 & = 
+    \left(\dep{u}{x}\right)^2+\left(\dep{v}{x}\right)^2 
+    =
+    \dep{u}{x}\dep{v}{y}-\dep{v}{x}\dep{u}{y}=J_f(z).
+  \end{align*}
+\end{demo}
+
+\begin{definition}
+  \index{Conformal map}%
+  \index{Transformation!conformal ---}%
+  A \emph{conformal map} or \emph{conformal transformation} of an
+  open subset $\Omega\subset\R^2$ into another open subset
+  $\Omega'\subset\R^2$ is any map $f:\Omega\mapsto \Omega'$, locally
+  bijective, that preserves angles and orientation.
+\end{definition}
+
+\begin{theorem}
+  Any conformal map is given by a holomorphic function $f$ such
+  that the derivative of $f$ does not vanish.
+\end{theorem}
+
+This justifies the next definition:
+%% ----------------------------------------------------------------------  
+\begin{definition}
+  \index{Conformal map}%
+  \index{Transformation!conformal ---}%
+  A \emph{conformal transformation} or \emph{conformal map} of
+  an open subset 
+  $\Omega\subset\C$ into another open subset
+  $\Omega'\subset\C$ is any holomorphic function
+  $f:\Omega\mapsto \Omega'$ such that
+  $f'(z)\neq 0$ for all $z\in\Omega$.
+\end{definition}
+%% ----------------------------------------------------------------------  
+
+%% ----------------------------------------------------------------------  
+\begin{demo}[that the definitions are equivalent]
+  We will denote in general $w=f(z)$.  Consider, in the complex plane, two
+  line segments $\gamma_1$ and $\gamma_2$ contained inside the set $\Omega$
+  where $f$ is defined, and intersecting at a point $z_0$ in $\Omega$.
+  Denote by $\gamma'_1$ and $\gamma_2'$ their images by~$f$.
+  
+  We want to show that if the angle between $\gamma_1$ and $\gamma_2$ is
+  equal to $\theta$, then the same holds for their images, which means that
+  the angle between the tangent lines to $\gamma'_1$ and $\gamma'_2$ at
+  $w_0=f(z_0)$ is also equal to $\theta$.
+  
+  Consider a point $z\in\gamma_1$ close to~$z_0$. Its image $w=f(z)$
+  satisfies
+  \begin{equation*}
+    \lim_{z\to z_0} \frac{w-w_0}{z-z_0}=f'(z_0),
+  \end{equation*}
+  and hence
+  $$\displaystyle \lim_{z\to z_0} \Arg
+    (w-w_0)-\Arg(z-z_0) = \Arg f'(z_0), $$%
+  which shows that the angle between the curve $\gamma'_1$ and the real
+  axis is equal to the angle between the original segment $\gamma_1$ and
+  the real axis, plus the angle $\alpha=\Arg f'(z_0)$ (which is well
+  defined because $f'(z)\neq 0$).
+  
+  Similarly, the angle between the image curve $\gamma'_2$ and the real
+  axis is equal to that between the segment $\gamma_2$ and the real axis,
+  plus the same~$\alpha$.
+  
+  Therefore, the angle between the two image curves is the same as that
+  between the two line segments, namely, $\theta$.
+  
+  Another way to see this is as follows: the tangent vectors of the curves
+  are transformed according to the rule $\vect{V}'=\dd f_{z_0}\vect{V}$. But the
+  differential of $f$ (when $f$ is seen as a map from $\R^2$ to~$\R^2$) is
+  of the form
+  \begin{equation}
+    \displaystyle \dd f_{z_0}=\begin{pmatrix}
+      \displaystyle \dep{P}{x} & \displaystyle \dep{P}{y} \\[4mm]
+      \displaystyle \dep{Q}{x} & \displaystyle \dep{Q}{y}\end{pmatrix}
+    =
+    \abs{f'(z_0)}\begin{pmatrix}\cos\alpha& -\sin\alpha
+      \\ \sin\alpha &\cos\alpha \end{pmatrix},
+    \label{eq:FSimil}
+  \end{equation}
+  where $\alpha$ is the argument of $f'(z_0)$. This is the matrix of a
+  rotation composed with a homothety, that is, a similitude.
+  
+  \medskip
+%% ······································································  
+  % {\begin{picture}(300,100)
+      % \put(0,0){\epsfig{file=\Figures/TC.\Ext,height=3.2cm}}
+      % \put(20,65){$\gamma_2$} \put(80,55){$\theta$}
+      % \put(100,80){$\gamma_1$} \put(195,85){$\gamma'_1$}
+      % \put(245,35){$\theta$} \put(270,60){$\gamma'_2$}
+    % \end{picture}}
+%% ······································································  
+  
+  Conversely, if $f$ is a map which is $\R^2$-differentiable and preserves
+  angles, then at any point $\dd f$ is an endomorphism of~$\R^2$ which
+  preserves angles. Since $f$ also preserves orientation, its determinant
+  is positive, so $\dd f$ is a similitude, and its matrix is exactly
+  as in equation~\eqref{eq:FSimil}. The Cauchy-Riemann equations are
+  immediate consequences.
+\end{demo}
+%% ----------------------------------------------------------------------  
+
+%% ----------------------------------------------------------------------  
+\begin{remarque}
+  \index{Antiholomorphic function}%
+  \index{Function!antiholomorphic ---}%
+  An \emph{antiholomorphic} map also preserves angles, but it
+  reverses the orientation.
+\end{remarque}
+%% ----------------------------------------------------------------------  
+
+\newpage
+\subsection*{Calcul différentiel}
+
+
+
+Pour obtenir la différentielle totale de cette expression, considérée comme fonction de $x$, $y$, ..., donnons à $x$, $y$, ... des accroissements $d\!x$, $d\!y$, .... Soient $\Delta u$, $\Delta v$, ..., $\Delta f$ les accroissements correspondants de $u$, $v$, ...,$f$. On aura
+\begin{equation*}
+  \Delta f= \dfrac{\partial\! f}{\partial u} \Delta u +  \dfrac{\partial\! f}{\partial v} \Delta v + \hdots + R\Delta u + R_1 \Delta v + \hdots,    
+\end{equation*}
+$R$, $R_1$, ... tendant vers zéro avec $\Delta u$, $\Delta v$, ....
+
+Mais on a, d'autre part,
+\begin{align*}
+  \Delta u & =  \dfrac{\partial u}{\partial x} d\! x +   +  \dfrac{\partial u}{\partial y} \Delta y + \hdots + S\Delta x + S_1 \Delta y + \hdots \\
+& = du + Sd\! x + S_1 d\! y + \hdots \\
+ \Delta v & =  \dfrac{\partial v}{\partial x} d\! x +   +  \dfrac{\partial v}{\partial y} \Delta y + \hdots + T\Delta x + T_1 \Delta y + \hdots \\
+& = dv + Td\! x + T_1 d\! y + \hdots \\
+\hdots
+\end{align*}
+$S$, $S_1$, ..., $T$, $T_1$,... tendant vers zéro avec $d\! x$, $d\! y$, ....
+
+Substituant ces valeurs dans l'expression de $\Delta f$, il vient
+\begin{equation*}
+\begin{array}{rcl}
+ \vbox to 25pt {} \Delta f & = &\dfrac{\partial\! f}{\partial u} d u +  \dfrac{\partial\! f}{\partial v} d v + \hdots + \rho d\! x  + \rho_1 d\! y  + \hdots \\
+\vbox to 25pt {}& = & \phantom{+} \left( \dfrac{\partial\! f}{\partial u} \dfrac{\partial u}{\partial x} + \dfrac{\partial\! f}{\partial v} \dfrac{\partial v}{\partial x} + \hdots \right) d\! x \\
+\vbox to 25pt {}& & + \left( \dfrac{\partial\! f}{\partial u} \dfrac{\partial u}{\partial y} + \dfrac{\partial\! f}{\partial v} \dfrac{\partial v}{\partial y} + \hdots \right) d\! y \\
+\vbox to 25pt {}&& + \hdots + \rho d\! x  + \rho_1 d\! y  + \hdots
+\end{array}
+\end{equation*}
+$\rho$, $\rho_1$, ... tendant vers zéro avec $d\! x$, $d\! y$, ....
+
+On aura donc
+\begin{align*}
+  \dfrac{\partial\! f}{\partial x}& = \dfrac{\partial\! f}{\partial u} \dfrac{\partial u}{\partial x} + \dfrac{\partial\! f}{\partial v} \dfrac{\partial v}{\partial x} + \hdots, \\
+  \dfrac{\partial\! f}{\partial y}& = \dfrac{\partial\! f}{\partial u} \dfrac{\partial u}{\partial y} + \dfrac{\partial\! f}{\partial v} \dfrac{\partial v}{\partial y} + \hdots, \\
+\hdots
+\end{align*}
+et, d'autre part,
+\begin{equation*}
+    df  = \dfrac{\partial\! f}{\partial u} {\mathrm d} u +  \dfrac{\partial\! f}{\partial v}  {\mathrm d} v + \hdots ;
+\end{equation*}
+d'où les deux propositions suivantes :
+
+{\em La dérivée, par rapport à une variable indépendante $x$, d'une fonction composée $f(u,v,\hdots)$ s'obtient en ajoutant ensemble les dérivées partielles $\dfrac{\partial\! f}{\partial u}$, $\dfrac{\partial\! f}{\partial v}$, ..., respectivement multipliées par les dérivées de $u$, $v$, ... par rapport à $x$.
+
+La différentielle totale $df$ s'exprimer au moyen de $u$, $v$, ..., $du$, $dv$, ..., de la même manière que si $u$, $v$, ... étaient des variables indépendantes.
+} 
+
+\hbox to \textwidth { \hfill 
+    {\sc Camille Jordan}, {\em Cours d'analyse de l'\'Ecole polytechnique}
+}
+
+\end{document}

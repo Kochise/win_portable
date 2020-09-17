@@ -1,0 +1,138 @@
+% Copyright (c) 2020 Robert Ryszard Paciorek <rrp@opcode.eu.org>
+% 
+% MIT License
+% 
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+% 
+% The above copyright notice and this permission notice shall be included in all
+% copies or substantial portions of the Software.
+% 
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+
+% Version 1.0 (2020-07-13): first public release
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tikzPackets}
+
+\RequirePackage{tikz}
+
+\RequirePackage{xparse}
+
+% need by \packetsPrintRangeOnRight:
+\ifdefined\tcbsetmacrotoheightofnode\else\RequirePackage[skins]{tcolorbox}\fi
+\RequirePackage{pbox}
+
+%
+% init counters, etc
+%
+
+\newdimen\packetsBitWidth\packetsBitWidth=5mm
+\newcounter{packets@FieldCounter}
+
+\newcommand{\packetsInit}{
+	\let\packetsFirstNodeInLastLine\undefined
+	\let\packets@ContinueLine\undefined
+	\setcounter{packets@FieldCounter}{0}
+	\newcommand{\packetsBitFont}{\tiny}
+	\packetsBitWidth=5mm
+	\tikzstyle{protocolsFieldBase}=[
+		anchor = north west, outer sep = 0pt % node position <=> position of left upper node corner
+	]
+	\tikzstyle{protocolsField}=[
+		protocolsFieldBase,
+		draw, minimum height = 1cm,
+	]
+	\tikzstyle{bitScaleInfo}=[
+		protocolsFieldBase, inner sep = 0pt,
+		minimum width = \packetsBitWidth, minimum height = 8pt,
+		node font=\packetsBitFont
+	]
+}
+
+%
+% print bits numbering
+%
+
+
+\newcommand{\packetsPrintBitNumber}[1]{
+	\parbox[b][5pt]{\packetsBitWidth}{\hspace{1pt}#1}
+}
+
+\newcommand{\packetsPrintBitScale}[1]{
+	\node [bitScaleInfo] (bitScaleInfo_0)  {\packetsPrintBitNumber{0}};
+	\foreach \n[remember=\n as \lastn (initially 0)] in {1,...,#1} {
+		\node [bitScaleInfo] (bitScaleInfo_\n) [] at (bitScaleInfo_\lastn.north east) {\packetsPrintBitNumber{\n}};
+		\draw[thin] (bitScaleInfo_\n.south west) |- (bitScaleInfo_\n.north west);
+	}
+	\draw (bitScaleInfo_0.south west)  |- (bitScaleInfo_0.north west);
+	\draw (bitScaleInfo_#1.south east) |- (bitScaleInfo_#1.north east);
+	
+	\def\packetsFirstNodeInLastLine{bitScaleInfo_0}
+	\def\packetsLastNode{bitScaleInfo_#1}
+}
+
+\newcommand{\packetsPrintRangeOnRight}[3][\packetsLastNode]{
+	\tcbsetmacrotoheightofnode{\packets@NodeHeight}{#1}
+	\node [anchor = south, outer sep = 2pt, inner sep = 0pt, rotate = -90, align=center, node font=\packetsBitFont] [] at (#1.east) {\pbox{\packets@NodeHeight}{#2-#3}};
+}
+
+\newcommand{\packetsPrintRangeOnLeft}[3][\packetsFirstNodeInLastLine]{
+	\node [anchor = east, outer sep = 2pt, inner sep = 0pt, align=center, node font=\packetsBitFont] [] at (#1.west) {#2};
+}
+
+%
+% add protocol fields
+%
+%\newcommand{\packetsPutField}[3][protocolsField]{
+\NewDocumentCommand{\packetsPutField}{ O{protocolsField} m o m } {
+	% if provide custom node name, use it
+	\IfValueTF {#3} {
+		\edef\packets@NewNodeName{#3}
+	}{
+		% otherwise get new node name and step counter
+		\edef\packets@NewNodeName{packetsFieldNode_\arabic{packets@FieldCounter}}
+		\stepcounter{packets@FieldCounter}
+	}
+	
+	% if continue line
+	\ifdefined\packets@ContinueLine
+		\node[#1, minimum width=#2\packetsBitWidth] (\packets@NewNodeName) [] at (\packetsLastNode.north east) {#4};
+	% if start new line
+	\else
+		% if not first line
+		\ifdefined\packetsFirstNodeInLastLine
+			\node[#1, minimum width=#2\packetsBitWidth] (\packets@NewNodeName) [] at (\packetsFirstNodeInLastLine.south west) {#4};
+		\else
+			\node[#1, minimum width=#2\packetsBitWidth] (\packets@NewNodeName) {#4};
+		\fi
+		\let\packetsFirstNodeInLastLine\packets@NewNodeName
+		\def\packets@ContinueLine{true}
+	\fi
+	
+	% remember new node name as \packetsLastNode
+	\let\packetsLastNode\packets@NewNodeName
+}
+
+%
+% finish line of fields
+%
+
+\newcommand{\packetsNextLine}{
+	\let\packets@ContinueLine\undefined
+}
+
+\newcommand{\packetsEndLine}[2]{
+	\packetsPrintRangeOnLeft{#1}{#2}
+	\packetsNextLine
+}

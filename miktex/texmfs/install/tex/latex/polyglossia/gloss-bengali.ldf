@@ -1,0 +1,136 @@
+% Translations provided by সাজেদুর রহিম জোয়ারদার <toshazed@gmail.com>
+% TODO implement Bengali calendar
+
+\ProvidesFile{gloss-bengali.ldf}[polyglossia: module for bengali]
+
+\ifluatex
+  \xpg@warning{Bengali is not supported with LuaTeX.\MessageBreak
+               I will proceed with the compilation, but\MessageBreak
+               the output is not guaranteed to be correct\MessageBreak
+               and may look very wrong.}
+\fi
+
+\RequirePackage{devanagaridigits}
+\RequirePackage{bengalidigits}
+
+\PolyglossiaSetup{bengali}{
+  bcp47=bn,
+  script=Bengali,
+  scripttag=beng,
+  langtag=BEN,
+  hyphennames={bengali},
+  hyphenmins={2,2},%CHECK
+  fontsetup=true,
+  localnumeral=bengalinumerals
+  %TODO nouppercase=true,
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*{bengali}{bn}
+
+\newif\ifbengali@devanagari@numerals
+\newif\ifbengali@bengali@numerals
+\define@choicekey*+{bengali}{numerals}[\xpg@val\xpg@nr]{Devanagari,Bengali,Western}[Devanagari]{%
+   \ifcase\xpg@nr\relax
+      % Devanagari:
+      \bengali@bengali@numeralsfalse%
+      \bengali@devanagari@numeralstrue%
+   \or
+      % Bengali:
+      \bengali@bengali@numeralstrue%
+      \bengali@devanagari@numeralsfalse%
+   \or
+      % Western:
+      \bengali@bengali@numeralsfalse%
+      \bengali@devanagari@numeralsfalse%
+   \fi
+   \xpg@info{Option: Bengali, numerals=\xpg@val}%
+}{\xpg@warning{Unknown Bengali numeral `#1'}}
+
+\def\extras@bengali{}
+\def\noextras@bengali{}
+
+\define@boolkey{bengali}[bengali@]{changecounternumbering}[true]{}
+
+% Register default options
+\xpg@initialize@gloss@options{bengali}{changecounternumbering=false,numerals=Devanagari}
+
+\def\captionsbengali{%
+  \def\refname{তথ্যসূত্রসমূহ}%
+  \def\abstractname{সারসংক্ষেপ}%
+  \def\bibname{তথ্যবিবরণ}%
+  \def\prefacename{পূর্বকথা}%
+  \def\chaptername{অধ্যায়}%
+  \def\appendixname{পরিশিষ্ট}%
+  \def\contentsname{সূচীপত্র}%
+  \def\listfigurename{ছবি/নকশা সমূহের তালিকা}%
+  \def\listtablename{তালিকাসারণী}%
+  \def\indexname{সূচক/নির্দেশক}%
+  \def\figurename{চিত্র}%
+  \def\tablename{সারণী}%
+  %\def\thepart{}% TODO
+  \def\partname{খন্ড}%
+  \def\pagename{পৃষ্ঠা}%
+  \def\seename{দেখুন}%
+  \def\alsoname{আরও দেখুন}%
+  \def\enclname{সংযুক্তি}%
+  \def\ccname{অনুলিপি}%
+  \def\headtoname{প্রতি}%
+  \def\proofname{প্রমাণ}%
+  \def\glossaryname{পরিভাষার শব্দসম্ভার}%
+}
+\def\datebengali{%
+  \def\bengalimonth{%
+    \ifcase\month\or
+      জানুয়ারি\or
+      ফেব্রুয়ারি\or
+      মার্চ\or
+      এপ্রিল\or
+      মে\or
+      জুন\or
+      জুলাই\or
+      আগস্ট\or
+      সেপ্টেম্বর\or
+      অক্টোবর\or
+      নভেম্বর\or
+      ডিসেম্বর\fi}%
+  \def\today{\bengalinumber\day\space\bengalimonth\space\bengalinumber\year}%
+}
+
+\newcommand{\bengalinumerals}[2]{\bengalinumber{#2}}
+
+\def\bengalinumber#1{%
+  \ifbengali@devanagari@numerals
+    \devanagaridigits{\number#1}%
+  \else
+    \ifbengali@bengali@numerals
+      \bengalidigits{\number#1}%
+    \else % Assumed Western
+      \number#1%
+    \fi
+  \fi%
+}
+
+% Backwards compatibility. This command was never documented, but
+% some people might use it nevertheless (see #381).
+% This takes a counter.
+\newcommand\bengalinumeral[1]{\localnumeral*[lang=bengali]{#1}}
+
+\def\bengali@globalnumbers{%
+   \ifbengali@changecounternumbering
+     \let\@arabic\bengalinumber%
+     \renewcommand\thefootnote{\localnumeral*{footnote}}%
+  \fi
+}
+
+% Store original definition
+\let\xpg@save@arabic\@arabic
+
+\def\nobengali@globalnumbers{%
+  \let\@arabic\xpg@save@arabic%
+}
+
+\def\blockextras@bengali{\extras@bengali}
+\def\inlineextras@bengali{\extras@bengali}
+
+\endinput

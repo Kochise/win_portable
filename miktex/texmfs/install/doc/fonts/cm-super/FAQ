@@ -1,0 +1,131 @@
+Below are answers to some frequently asked questions about the
+CM-Super fonts.
+
+Q.1. Are the CM-Super fonts stable (version number 0.x)?
+
+A.1. I just prefer to number versions from 0, not from 1. And I
+consider the fonts quite stable. This does not mean that the fonts
+will not be developped and improved.
+
+General areas for future development:
+
+* Increase the number of glyphs in each super-font (e.g. cover Greek,
+  Vietnamese, ...)
+
+* Improve the quality of the fonts.
+
+There are some known problems which occur when using the fonts with
+old versions of dvips. They were already fixed and will propagate in
+the future versions of TeX distributions like teTeX, TeX Live, MikTeX.
+
+Meanwhile, if your dvips gives an error related to using the CM-Super
+fonts, you can use the option "-j0" as a workaround, to suppress
+partial font downloading. The problem in dvips which occurs when the
+same Type 1 font is re-encoded several times in one document (which
+could occur if you are using the CM-Super fonts) has also been solved,
+and the fixed version will appear in the future versions of TeX
+distributions.
+
+Note that VTeX/Free versions older than 7.6 had some bugs due to which
+there were problems with using CM-Super fonts. Please upgrade to VTeX/Free
+version 7.6 or higher.
+
+Q.2. Are the CM-Super fonts complete?
+
+A.2. Yes, they are rather complete even now: they cover the whole
+EC/TC, EC Concrete, EC Bright and LH font set. The number of CM-Super
+Type 1 fonts is 434, and they are a drop-in replacement for 2536 TeX
+fonts! Each CM-Super Type 1 font supports 6 LaTeX font encodings: T1,
+TS1, T2A, T2B, T2C, X2.
+
+[the following excerpt is from README]
+Note that a small number of (fortunately, rarely used) fonts are not
+included yet because of the bugs in EC font drivers which prevented
+their generation. We plan to provide these missing fonts soon.
+
+Each Type 1 super-font currently contains 585 glyphs per non-SC font
+and 468 glyphs per SC font.
+
+Q.3. Are the CM-Super fonts supported?
+
+A.3. Yes, as far as any free of charge product could be supported.
+The fonts are also free (in the sense of freedom to distribute and/or
+modify the fonts) and are licensed under the GNU General Public License.
+
+It appears that in practice, the support for free products may be even
+better than the support for commercial products.
+
+I make no official promises for supporting the fonts, but I will try
+to fix any reported bugs and will (if time permits) work on improving
+the fonts in the future.
+
+Q.4. Are the CM-Super fonts legal?
+
+A.4. Yes, the fonts are totally legal. Licenses of EC/TC, EC Concrete,
+EC Bright and LH fonts allow production and distribution of Type 1
+fonts.
+
+Q.5. What are the drawbacks? Size? Is it true that the converted fonts
+are more than 3 times larger than commercial fonts (statement on the
+TeXtrace site)?
+
+A.5. No, this is not applicable to CM-Super fonts. Their size is
+comparable to the size of commercial fonts. That is because the fonts
+were optimized (and hinted) using FontLab 3 which significantly
+reduced the number of control points used to encode the outlines.
+
+The size of Type 1 outline files (*.pfb) is big because each such font
+contains big number of glyphs (see A.2.). If a commercial-quality font
+would include the same set of glyphs, it's size would be about the
+same.
+
+Q.6. What's the quality? Do the CM-Super fonts display nicely on
+screen? When printed? Would you spot a difference to commercial
+versions?
+
+A.6. Printing quality is definitely very good. On-screen quality is at
+least satisfactory (I let you judge on this topic :-). In my
+experience, the PDF files produced using the CM-Super fonts look
+better in Acrobat Reader than DVI files with bitmap fonts (both
+previewers use anti-aliasing mechanisms).
+
+Q.7. What "super" means in the name of the CM-Super font package?
+
+A.7. The CM-Super package contains a collection of multilingual fonts
+covering big number of glyphs (super-fonts) originating from Computer
+Modern font families. It is NOT supposed to be a super-collection of
+Computer Modern fonts: it contains only multilingual Computer Modern
+fonts (super-fonts), but not all fonts related to Computer Modern.
+
+We may, however, add some related fonts (e.g. Concrete math fonts)
+which are not yet freely available in Type 1 format.
+
+Q.8. How do I use the CM-Super fonts? I couldn't find any *.sty file
+included with the CM-Super package.
+
+A.8. Just use the fonts with any encoding(s) supported by the CM-Super
+font package: T1, TS1, T2A, T2B, T2C, X2, with the default (Computer
+Modern) or Computer Modern Concrete font families
+(e.g. \usepackage[T1]{fontenc}). Once you have installed the CM-Super
+fonts properly, your pdflatex, dvips or whatever driver will use
+outline Type 1 fonts from the CM-Super bundle instead of the
+corresponding bitmap fonts (in PK format).
+
+Q.9. I would like to download the CM-Super package as one big file
+instead of downloading a lot of small files.
+
+A.9. All main CTAN nodes support archivation of files and directories
+on the fly. So you can point your browser e.g. to
+ftp://ftp.dante.de/tex-archive/fonts/ps-type1/cm-super.tar.gz
+and you will get a single tarball with the CM-Super package.
+Note that restarting of incomplete downloads will not work in this case,
+so you need a reasonably fast connection.
+
+Q.10. What needs to be done to make PDF files produced by pdflatex
+"searchable" in Acrobat Reader (and also make "cut-n-paste" work from
+Acrobat Reader to other applications)?
+
+A.10. You need to preload the CMap objects into the PDF file and
+associate them with the fonts depending on font encodings. This can be
+done by using the "cmap" package - see
+CTAN:macros/latex/contrib/cmap

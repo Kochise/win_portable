@@ -1,0 +1,195 @@
+\ProvidesFile{gloss-english.ldf}[polyglossia: module for english]
+
+\PolyglossiaSetup{english}{
+  bcp47=en-US,
+  hyphennames={english,american,usenglish,USenglish},
+  hyphenmins={2,3},
+  langtag=ENG,
+  fontsetup=true,
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*{english}{en}
+\setlanguagealias*[variant=australian]{english}{en-AU}
+\setlanguagealias*[variant=newzealand]{english}{en-NZ}
+\setlanguagealias*[variant=us]{english}{en-US}
+\setlanguagealias*[variant=british]{english}{en-GB}
+\setlanguagealias*[variant=canadian]{english}{en-CA}
+
+% Babel aliases
+\setlanguagealias[variant=us]{english}{american}
+\setlanguagealias[variant=australian]{english}{australian}
+\setlanguagealias[variant=british]{english}{british}
+\setlanguagealias[variant=canadian]{english}{canadian}
+\setlanguagealias[variant=newzealand]{english}{newzealand}
+
+\providebool{british@hyphen}
+\providebool{english@ordinalmonthday}
+\providebool{british@dateformat}
+
+% US English (\l@english) is default
+% Initialize its settings
+\def\english@variant{english}
+\british@hyphenfalse
+\english@ordinalmonthdayfalse
+\british@dateformatfalse
+
+% Option ordinalmonthday
+\define@boolkey{english}[english@]{ordinalmonthday}[true]{}
+
+\define@choicekey*+{english}{variant}[\xpg@val\xpg@nr]{uk,british,us,american,usmax,australian,newzealand,canadian}[us]{%
+   \ifcase\xpg@nr\relax
+      % uk:
+      \british@hyphentrue
+      \british@dateformattrue
+      \english@ordinalmonthdaytrue
+      \SetLanguageKeys{english}{babelname=british,bcp47=en-GB}%
+      \xpg@info{Option: English, variant=british}%
+   \or
+      % british:
+      \british@hyphentrue
+      \british@dateformattrue
+      \english@ordinalmonthdaytrue
+      \SetLanguageKeys{english}{babelname=british,bcp47=en-GB}%
+      \xpg@info{Option: english variant=british}%
+   \or
+      % us:
+      \british@hyphenfalse
+      \british@dateformatfalse
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=american,bcp47=en-US}%
+      \xpg@info{Option: English, variant=american}%
+   \or
+      % american:
+      \british@hyphenfalse
+      \british@dateformatfalse
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=american,bcp47=en-US}%
+      \xpg@info{Option: English, variant=american}%
+   \or
+      % usmax:
+      \british@hyphenfalse
+      \british@dateformatfalse
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=american,bcp47=en-US}%
+      \xpg@info{Option: english variant=american (with additional patterns)}%
+      \xpg@ifdefined{usenglishmax}{}%
+         {\xpg@warning{No hyphenation patterns were loaded for "US English Max"\MessageBreak
+                       I will use the standard patterns for US English instead}%
+          \adddialect\l@usenglishmax\l@english\relax%
+         }%
+      \def\english@variant{usenglishmax}%
+   \or
+      % australian:
+      % These use the british hyphenation patterns
+      % but date formats without ordinals
+      \british@hyphentrue
+      \british@dateformattrue
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=australian,bcp47=en-AU}%
+      \xpg@info{Option: English, variant=australian}%
+      \adddialect\l@australian\l@english%
+   \or
+      % newzealand:
+      % These use the british hyphenation patterns
+      % but date formats without ordinals
+      \british@hyphentrue
+      \british@dateformattrue
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=newzealand,bcp47=en-NZ}%
+      \xpg@info{Option: English, variant=newzealand}%
+      \adddialect\l@newzealand\l@english%
+   \or
+      % canadian:
+      % This is currently equivalent to usenglish (as in babel)
+      \british@hyphenfalse
+      \british@dateformatfalse
+      \english@ordinalmonthdayfalse
+      \SetLanguageKeys{english}{babelname=canadian,bcp47=en-CA}%
+      \xpg@info{Option: English, variant=american}%
+      \adddialect\l@canadian\l@english%
+   \fi
+   \ifbritish@hyphen
+      \xpg@ifdefined{ukenglish}{}%
+         {\xpg@warning{No hyphenation patterns were loaded for British English\MessageBreak
+                       I will use the patterns for US English instead}%
+          \adddialect\l@ukenglish\l@english\relax%
+         }%
+      \def\english@variant{ukenglish}%
+   \fi
+}{\xpg@warning{Unknown English variant `#1'}}
+
+% Register default options
+\xpg@initialize@gloss@options{english}{variant=us,ordinalmonthday=false}
+% Register alias options
+\xpg@set@alias@values{english}{variant}{us}{american}
+\xpg@set@alias@values{english}{variant}{uk}{british}
+
+\ifxetex
+   % Check if \l@english is defined. If not, try to set it to some variety
+   % (specific order as in the csv list below), or null language if everything fails
+   \xpg@ifdefined{english}{}{%
+      \def\do##1{%
+         \xpg@ifdefined{#1}%
+            {\csletcs{l@english}{l@#1}\listbreak}%
+            {%
+               \xpg@warning{No hyphenation patterns for English found"\MessageBreak
+                            I will use the 'null' language instead}%
+               \adddialect\l@english0
+            }%
+      }%
+      \docsvlist{british, american, usenglishmax, australian, newzealand}
+      \xpg@ifdefined{english}{}{}
+   }%
+\fi
+
+\def\english@language{%
+   \polyglossia@setup@language@patterns{\english@variant}%
+}%
+
+\def\captionsenglish{%
+   \def\prefacename{Preface}%
+   \def\refname{References}%
+   \def\abstractname{Abstract}%
+   \def\bibname{Bibliography}%
+   \def\chaptername{Chapter}%
+   \def\appendixname{Appendix}%
+   \def\contentsname{Contents}%
+   \def\listfigurename{List of Figures}%
+   \def\listtablename{List of Tables}%
+   \def\indexname{Index}%
+   \def\figurename{Figure}%
+   \def\tablename{Table}%
+   \def\partname{Part}%
+   \def\enclname{encl}%
+   \def\ccname{cc}%
+   \def\headtoname{To}%
+   \def\pagename{Page}%
+   \def\seename{see}%
+   \def\alsoname{see also}%
+   \def\proofname{Proof}%
+}
+\def\dateenglish{%
+   \def\english@day{%
+     \ifenglish@ordinalmonthday
+       \ifcase\day\or
+        1st\or 2nd\or 3rd\or 4th\or 5th\or
+        6th\or 7th\or 8th\or 9th\or 10th\or
+        11th\or 12th\or 13th\or 14th\or 15th\or
+        16th\or 17th\or 18th\or 19th\or 20th\or
+        21st\or 22nd\or 23rd\or 24th\or 25th\or
+        26th\or 27th\or 28th\or 29th\or 30th\or
+        31st\fi
+     \else\number\day\fi}%
+     \def\english@month{\ifcase\month\or
+      January\or February\or March\or April\or May\or June\or
+      July\or August\or September\or October\or November\or December\fi}%
+   \def\today{%
+    \ifbritish@dateformat
+      \english@day\space\english@month\space\number\year
+    \else
+      \english@month\space\english@day,\space\number\year
+    \fi}%
+}
+
+\endinput

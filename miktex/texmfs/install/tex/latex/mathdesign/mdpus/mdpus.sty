@@ -1,0 +1,860 @@
+%% Copyright 2003 Paul Pichaureau for the MathDesign Project
+%% All rights reserved.
+%%
+%% This file is part of the mdpus package v2.31
+%% --------------------------------------------------
+%%
+%% This program is free software; you can redistribute it and/or
+%% modify it under the terms of the GNU General Public License
+%% as published by the Free Software Foundation; either version 2
+%% of the License, or (at your option) any later version.
+
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+
+%% You should have received a copy of the GNU General Public License
+%% along with this program; if not, write to the Free Software
+%% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+%% Public LaTeX Project Public
+
+%% This file loads the mdpus font families.
+
+%% For more information about options and configuration, please read
+%% mdpusdoc.pdf or the general MathDesign documentation mddoc.pdf.
+
+\NeedsTeXFormat{LaTeX2e}%
+
+\ProvidesPackage{mdpus}%
+[2013/08/29 v2.31 adobe utopia std + mdpus (Math Design Project)]
+
+\@ifundefined{MD@default@family}{
+    \PackageError{mdpus}%
+    {Package mdpus cannot be loaded directly. Use mathdesign package.}
+    {Use mathdesign package with option mdpus.}}
+{\renewcommand{\rmdefault}{\MD@default@family}}
+
+
+%% ----------------------------------------------------------------
+%% External fonts can be scaled according to the following parameters (to
+%% ensure correct lining of the glyphs)
+%% ----------------------------------------------------------------
+
+%% Bera (alias Bistream Vera)
+\def\fvm@ratio{0.843}%
+\def\fvs@ratio{0.843}%
+\def\fve@ratio{0.843}%
+
+%% Typewriter fonts
+\def\pcr@ratio{1.082}%
+\def\ucr@ratio{1.106}%
+
+%% Sans Serif font
+\def\phv@ratio{0.881}%
+\def\uag@ratio{0.843}%
+\def\uhv@ratio{0.880}%
+
+%% Computer Modern fonts
+\def\cmsy@ratio{0.952}%
+\def\cmtt@ratio{1.071}%
+\def\cmss@ratio{1.037}%
+
+%% Euler fraktur
+\def\euf@ratio{0.976}%
+
+%% AMS blackboard bold
+\def\msb@ratio{0.952}%
+
+%% GFS Didot
+\def\grd@ratio{0.983}%
+%% GFS Bodoni
+\def\grb@ratio{0.935}
+%% Adobe Minion
+\def\grm@ratio{1.055}
+
+\input{mdfont.def}
+
+\if@MD@sfscaled
+  \input{mdsffont.def}
+\fi
+
+\if@MD@ttscaled
+  \input{mdttfont.def}
+\fi
+
+%% ----------------------------------------------------------------
+%% Script Math Alphabet
+%% ----------------------------------------------------------------
+
+\WarningIfLoaded{mdpus}{mathrsfs}%
+
+\if@MD@cmcal
+\DeclareSymbolFont{mdcal}{OMS}{xmdcmsy}{m}{n}%
+\SetSymbolFont{mdcal}{bold}{OMS}{xmdcmsy}{b}{n}%
+\else
+\DeclareSymbolFont{mdcal}{OMS}{mdpus}{m}{n}%
+\SetSymbolFont{mdcal}{bold}{OMS}{mdpus}{b}{n}%
+\fi
+\DeclareSymbolFontAlphabet{\mathcal}{mdcal}
+\DeclareSymbolFont{mdscr}{OMS}{mdpus}{m}{n}%
+
+\DeclareSymbolFontAlphabet{\mathscr}{mdscr}%
+\SetSymbolFont{mdscr}{bold}{OMS}{mdpus}{b}{n}%
+
+%% ----------------------------------------------------------------
+%% Fraktur symbols support
+%% ----------------------------------------------------------------
+
+\DeclareMathAlphabet{\mathfrak}{U}{xmdeuf}{m}{n}%
+\SetMathAlphabet{\mathfrak}{bold}{U}{xmdeuf}{b}{n}%
+\DeclareRobustCommand{\frak}[1]{%
+    {\@subst@obsolete{mdpus}\frak\mathfrak{#1}}}%
+
+%% -------------------------------------------------------------------
+%% Mathematical fonts definition
+%% -------------------------------------------------------------------
+
+% \DeclareMathVersion{mdpusnormal}
+% \DeclareMathVersion{mdpusbold}
+
+\SetSymbolFont{operators}   {normal}{OT1}{mdpus}{m}{n}%
+\SetSymbolFont{letters}     {normal}{OML}{mdpus}{m}{it}%
+\SetSymbolFont{symbols}     {normal}{OMS}{mdpus}{m}{n}%
+\SetSymbolFont{largesymbols}{normal}{OMX}{mdpus}{m}{n}%
+
+\SetSymbolFont{operators}   {bold}{OT1}{mdpus}{b}{n}%
+\SetSymbolFont{letters}     {bold}{OML}{mdpus}{b}{it}%
+\SetSymbolFont{symbols}     {bold}{OMS}{mdpus}{b}{n}%
+\SetSymbolFont{largesymbols}{bold}{OMX}{mdpus}{b}{n}%
+
+\SetMathAlphabet{\mathrm}{normal}{\encodingdefault}{\rmdefault}{m}{n}%
+\SetMathAlphabet{\mathbf}{normal}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathit}{normal}{\encodingdefault}{\rmdefault}{m}{it}%
+\SetMathAlphabet{\mathsf}{normal}{\encodingdefault}{\sfdefault}{m}{n}%
+\SetMathAlphabet{\mathtt}{normal}{\encodingdefault}{\ttdefault}{m}{n}%
+
+\SetMathAlphabet{\mathrm}{bold} {\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathbf}{bold} {\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathit}{bold} {\encodingdefault}{\rmdefault}{b}{it}%
+\SetMathAlphabet{\mathsf}{bold} {\encodingdefault}{\sfdefault}{b}{n}%
+\SetMathAlphabet{\mathtt}{bold} {\encodingdefault}{\ttdefault}{b}{n}%
+
+\DeclareSymbolFont{lettersupright}     {OML}{mdpus}{m}{n}
+\SetSymbolFont{lettersupright}   {bold}{OML}{mdpus}{b}{n}%
+\DeclareSymbolFontAlphabet{\mathrm}    {lettersupright}
+
+% -------------------------------------------------------------------
+% Greek alphabet
+
+\def\MDgrfamily{letters}
+
+\ifthenelse{\equal{\MD@greek@family}{letters}}
+{}
+{
+    \DeclareSymbolFont{\MD@greek@family}{OML}{\MD@greek@family}{m}{it}
+    \SetSymbolFont{\MD@greek@family}{bold}{OML}{\MD@greek@family}{b}{it}%
+    \DeclareSymbolFont{\MD@greek@family upright}{OML}{\MD@greek@family}{m}{n}
+    \SetSymbolFont{\MD@greek@family upright}{bold}{OML}{\MD@greek@family}{b}{n}
+}
+
+% -------------------------------------------------------------------
+% Calligraphic and script alphabet
+
+\if@MD@cmcal
+   \SetMathAlphabet{\mathcal}{normal}{OMS}{xmdcmsy}{m}{n}%
+\else
+   \SetMathAlphabet{\mathcal}{normal}{OMS}{mdpus}{m}{n}%
+\fi
+
+\DeclareSymbolFontAlphabet{\mathscr}{mdscr}%
+
+
+%% -------------------------------------------------------------------
+%% The name of the bold series
+%% -------------------------------------------------------------------
+
+\renewcommand\bfdefault{sb}
+
+
+%% ----------------------------------------------------------------
+%% Uppercase upright
+%% ----------------------------------------------------------------
+
+\RequirePackage{xkeyval}
+
+\renewcommand{\rmdefault}{mdpus}\rmfamily
+% \MDSelectGreekFont{\MD@default@gr@font}{}
+
+
+\if@MD@capupright
+\DeclareMathSymbol{A}{\mathalpha}{lettersupright}{`A}
+\DeclareMathSymbol{B}{\mathalpha}{lettersupright}{`B}
+\DeclareMathSymbol{C}{\mathalpha}{lettersupright}{`C}
+\DeclareMathSymbol{D}{\mathalpha}{lettersupright}{`D}
+\DeclareMathSymbol{E}{\mathalpha}{lettersupright}{`E}
+\DeclareMathSymbol{F}{\mathalpha}{lettersupright}{`F}
+\DeclareMathSymbol{G}{\mathalpha}{lettersupright}{`G}
+\DeclareMathSymbol{H}{\mathalpha}{lettersupright}{`H}
+\DeclareMathSymbol{I}{\mathalpha}{lettersupright}{`I}
+\DeclareMathSymbol{J}{\mathalpha}{lettersupright}{`J}
+\DeclareMathSymbol{K}{\mathalpha}{lettersupright}{`K}
+\DeclareMathSymbol{L}{\mathalpha}{lettersupright}{`L}
+\DeclareMathSymbol{M}{\mathalpha}{lettersupright}{`M}
+\DeclareMathSymbol{N}{\mathalpha}{lettersupright}{`N}
+\DeclareMathSymbol{O}{\mathalpha}{lettersupright}{`O}
+\DeclareMathSymbol{P}{\mathalpha}{lettersupright}{`P}
+\DeclareMathSymbol{Q}{\mathalpha}{lettersupright}{`Q}
+\DeclareMathSymbol{R}{\mathalpha}{lettersupright}{`R}
+\DeclareMathSymbol{S}{\mathalpha}{lettersupright}{`S}
+\DeclareMathSymbol{T}{\mathalpha}{lettersupright}{`T}
+\DeclareMathSymbol{U}{\mathalpha}{lettersupright}{`U}
+\DeclareMathSymbol{V}{\mathalpha}{lettersupright}{`V}
+\DeclareMathSymbol{W}{\mathalpha}{lettersupright}{`W}
+\DeclareMathSymbol{X}{\mathalpha}{lettersupright}{`X}
+\DeclareMathSymbol{Y}{\mathalpha}{lettersupright}{`Y}
+\DeclareMathSymbol{Z}{\mathalpha}{lettersupright}{`Z}
+\fi
+
+%% ----------------------------------------------------------------
+%% Lowercase upright
+%% ----------------------------------------------------------------
+
+\if@MD@lowupright
+\DeclareMathSymbol{a}{\mathalpha}{lettersupright}{`a}
+\DeclareMathSymbol{b}{\mathalpha}{lettersupright}{`b}
+\DeclareMathSymbol{c}{\mathalpha}{lettersupright}{`c}
+\DeclareMathSymbol{d}{\mathalpha}{lettersupright}{`d}
+\DeclareMathSymbol{e}{\mathalpha}{lettersupright}{`e}
+\DeclareMathSymbol{f}{\mathalpha}{lettersupright}{`f}
+\DeclareMathSymbol{g}{\mathalpha}{lettersupright}{`g}
+\DeclareMathSymbol{h}{\mathalpha}{lettersupright}{`h}
+\DeclareMathSymbol{i}{\mathalpha}{lettersupright}{`i}
+\DeclareMathSymbol{j}{\mathalpha}{lettersupright}{`j}
+\DeclareMathSymbol{k}{\mathalpha}{lettersupright}{`k}
+\DeclareMathSymbol{l}{\mathalpha}{lettersupright}{`l}
+\DeclareMathSymbol{m}{\mathalpha}{lettersupright}{`m}
+\DeclareMathSymbol{n}{\mathalpha}{lettersupright}{`n}
+\DeclareMathSymbol{o}{\mathalpha}{lettersupright}{`o}
+\DeclareMathSymbol{p}{\mathalpha}{lettersupright}{`p}
+\DeclareMathSymbol{q}{\mathalpha}{lettersupright}{`q}
+\DeclareMathSymbol{r}{\mathalpha}{lettersupright}{`r}
+\DeclareMathSymbol{s}{\mathalpha}{lettersupright}{`s}
+\DeclareMathSymbol{t}{\mathalpha}{lettersupright}{`t}
+\DeclareMathSymbol{u}{\mathalpha}{lettersupright}{`u}
+\DeclareMathSymbol{v}{\mathalpha}{lettersupright}{`v}
+\DeclareMathSymbol{w}{\mathalpha}{lettersupright}{`w}
+\DeclareMathSymbol{x}{\mathalpha}{lettersupright}{`x}
+\DeclareMathSymbol{y}{\mathalpha}{lettersupright}{`y}
+\DeclareMathSymbol{z}{\mathalpha}{lettersupright}{`z}
+\fi
+
+
+
+
+
+%% ----------------------------------------------------------------
+%% Lowercase greek upright
+%% ----------------------------------------------------------------
+
+\if@MD@grupright %
+\MD@def\DeclareMathSymbol{\alpha}{\mathord}{\MD@greek@family upright}{"0B}
+\MD@def\DeclareMathSymbol{\beta}{\mathord}{\MD@greek@family upright}{"0C}
+\MD@def\DeclareMathSymbol{\gamma}{\mathord}{\MD@greek@family upright}{"0D}
+\MD@def\DeclareMathSymbol{\delta}{\mathord}{\MD@greek@family upright}{"0E}
+\MD@def\DeclareMathSymbol{\epsilon}{\mathord}{\MD@greek@family upright}{"0F}
+\MD@def\DeclareMathSymbol{\zeta}{\mathord}{\MD@greek@family upright}{"10}
+\MD@def\DeclareMathSymbol{\eta}{\mathord}{\MD@greek@family upright}{"11}
+\MD@def\DeclareMathSymbol{\theta}{\mathord}{\MD@greek@family upright}{"12}
+\MD@def\DeclareMathSymbol{\iota}{\mathord}{\MD@greek@family upright}{"13}
+\MD@def\DeclareMathSymbol{\kappa}{\mathord}{\MD@greek@family upright}{"14}
+\MD@def\DeclareMathSymbol{\lambda}{\mathord}{\MD@greek@family upright}{"15}
+\MD@def\DeclareMathSymbol{\mu}{\mathord}{\MD@greek@family upright}{"16}
+\MD@def\DeclareMathSymbol{\nu}{\mathord}{\MD@greek@family upright}{"17}
+\MD@def\DeclareMathSymbol{\xi}{\mathord}{\MD@greek@family upright}{"18}
+\MD@def\DeclareMathSymbol{\pi}{\mathord}{\MD@greek@family upright}{"19}
+\MD@def\DeclareMathSymbol{\rho}{\mathord}{\MD@greek@family upright}{"1A}
+\MD@def\DeclareMathSymbol{\sigma}{\mathord}{\MD@greek@family upright}{"1B}
+\MD@def\DeclareMathSymbol{\tau}{\mathord}{\MD@greek@family upright}{"1C}
+\MD@def\DeclareMathSymbol{\upsilon}{\mathord}{\MD@greek@family upright}{"1D}
+\MD@def\DeclareMathSymbol{\phi}{\mathord}{\MD@greek@family upright}{"1E}
+\MD@def\DeclareMathSymbol{\chi}{\mathord}{\MD@greek@family upright}{"1F}
+\MD@def\DeclareMathSymbol{\psi}{\mathord}{\MD@greek@family upright}{"20}
+\MD@def\DeclareMathSymbol{\omega}{\mathord}{\MD@greek@family upright}{"21}
+\MD@def\DeclareMathSymbol{\varepsilon}{\mathord}{\MD@greek@family upright}{"22}
+\MD@def\DeclareMathSymbol{\vartheta}{\mathord}{\MD@greek@family upright}{"23}
+\MD@def\DeclareMathSymbol{\varpi}{\mathord}{\MD@greek@family upright}{"24}
+\MD@def\DeclareMathSymbol{\varrho}{\mathord}{\MD@greek@family upright}{"25}
+\MD@def\DeclareMathSymbol{\varsigma}{\mathord}{\MD@greek@family upright}{"26}
+\MD@def\DeclareMathSymbol{\varphi}{\mathord}{\MD@greek@family upright}{"27}
+\else
+\MD@def\DeclareMathSymbol{\alpha}{\mathord}{\MD@greek@family}{"0B}
+\MD@def\DeclareMathSymbol{\beta}{\mathord}{\MD@greek@family}{"0C}
+\MD@def\DeclareMathSymbol{\gamma}{\mathord}{\MD@greek@family}{"0D}
+\MD@def\DeclareMathSymbol{\delta}{\mathord}{\MD@greek@family}{"0E}
+\MD@def\DeclareMathSymbol{\epsilon}{\mathord}{\MD@greek@family}{"0F}
+\MD@def\DeclareMathSymbol{\zeta}{\mathord}{\MD@greek@family}{"10}
+\MD@def\DeclareMathSymbol{\eta}{\mathord}{\MD@greek@family}{"11}
+\MD@def\DeclareMathSymbol{\theta}{\mathord}{\MD@greek@family}{"12}
+\MD@def\DeclareMathSymbol{\iota}{\mathord}{\MD@greek@family}{"13}
+\MD@def\DeclareMathSymbol{\kappa}{\mathord}{\MD@greek@family}{"14}
+\MD@def\DeclareMathSymbol{\lambda}{\mathord}{\MD@greek@family}{"15}
+\MD@def\DeclareMathSymbol{\mu}{\mathord}{\MD@greek@family}{"16}
+\MD@def\DeclareMathSymbol{\nu}{\mathord}{\MD@greek@family}{"17}
+\MD@def\DeclareMathSymbol{\xi}{\mathord}{\MD@greek@family}{"18}
+\MD@def\DeclareMathSymbol{\pi}{\mathord}{\MD@greek@family}{"19}
+\MD@def\DeclareMathSymbol{\rho}{\mathord}{\MD@greek@family}{"1A}
+\MD@def\DeclareMathSymbol{\sigma}{\mathord}{\MD@greek@family}{"1B}
+\MD@def\DeclareMathSymbol{\tau}{\mathord}{\MD@greek@family}{"1C}
+\MD@def\DeclareMathSymbol{\upsilon}{\mathord}{\MD@greek@family}{"1D}
+\MD@def\DeclareMathSymbol{\phi}{\mathord}{\MD@greek@family}{"1E}
+\MD@def\DeclareMathSymbol{\chi}{\mathord}{\MD@greek@family}{"1F}
+\MD@def\DeclareMathSymbol{\psi}{\mathord}{\MD@greek@family}{"20}
+\MD@def\DeclareMathSymbol{\omega}{\mathord}{\MD@greek@family}{"21}
+\MD@def\DeclareMathSymbol{\varepsilon}{\mathord}{\MD@greek@family}{"22}
+\MD@def\DeclareMathSymbol{\vartheta}{\mathord}{\MD@greek@family}{"23}
+\MD@def\DeclareMathSymbol{\varpi}{\mathord}{\MD@greek@family}{"24}
+\MD@def\DeclareMathSymbol{\varrho}{\mathord}{\MD@greek@family}{"25}
+\MD@def\DeclareMathSymbol{\varsigma}{\mathord}{\MD@greek@family}{"26}
+\MD@def\DeclareMathSymbol{\varphi}{\mathord}{\MD@greek@family}{"27}
+\fi
+\ifthenelse{\equal{\MD@greek@family}{grb}}{\let\epsilon\varepsilon}{}
+\ifthenelse{\equal{\MD@greek@family}{grd}}{\let\epsilon\varepsilon}{}
+
+%% ----------------------------------------------------------------
+%% Uppercase greek slanted
+%% ----------------------------------------------------------------
+
+\if@MD@GRupright %
+\MD@def\DeclareMathSymbol{\Gamma}{\mathalpha}{\MD@greek@family upright}{"00}
+\MD@def\DeclareMathSymbol{\Delta}{\mathalpha}{\MD@greek@family upright}{"01}
+\MD@def\DeclareMathSymbol{\Theta}{\mathalpha}{\MD@greek@family upright}{"02}
+\MD@def\DeclareMathSymbol{\Lambda}{\mathalpha}{\MD@greek@family upright}{"03}
+\MD@def\DeclareMathSymbol{\Xi}{\mathalpha}{\MD@greek@family upright}{"04}
+\MD@def\DeclareMathSymbol{\Pi}{\mathalpha}{\MD@greek@family upright}{"05}
+\MD@def\DeclareMathSymbol{\Sigma}{\mathalpha}{\MD@greek@family upright}{"06}
+\MD@def\DeclareMathSymbol{\Upsilon}{\mathalpha}{\MD@greek@family upright}{"07}
+\MD@def\DeclareMathSymbol{\Phi}{\mathalpha}{\MD@greek@family upright}{"08}
+\MD@def\DeclareMathSymbol{\Psi}{\mathalpha}{\MD@greek@family upright}{"09}
+\MD@def\DeclareMathSymbol{\Omega}{\mathalpha}{\MD@greek@family upright}{"0A}
+\else
+\MD@def\DeclareMathSymbol{\Gamma}{\mathalpha}{\MD@greek@family}{"00}
+\MD@def\DeclareMathSymbol{\Delta}{\mathalpha}{\MD@greek@family}{"01}
+\MD@def\DeclareMathSymbol{\Theta}{\mathalpha}{\MD@greek@family}{"02}
+\MD@def\DeclareMathSymbol{\Lambda}{\mathalpha}{\MD@greek@family}{"03}
+\MD@def\DeclareMathSymbol{\Xi}{\mathalpha}{\MD@greek@family}{"04}
+\MD@def\DeclareMathSymbol{\Pi}{\mathalpha}{\MD@greek@family}{"05}
+\MD@def\DeclareMathSymbol{\Sigma}{\mathalpha}{\MD@greek@family}{"06}
+\MD@def\DeclareMathSymbol{\Upsilon}{\mathalpha}{\MD@greek@family}{"07}
+\MD@def\DeclareMathSymbol{\Phi}{\mathalpha}{\MD@greek@family}{"08}
+\MD@def\DeclareMathSymbol{\Psi}{\mathalpha}{\MD@greek@family}{"09}
+\MD@def\DeclareMathSymbol{\Omega}{\mathalpha}{\MD@greek@family}{"0A}
+\fi
+
+ %% upright greek letters are avalaible vi \alphaup like macros
+\MD@def\DeclareMathSymbol{\alphaup}{\mathord}{\MD@greek@family upright}{"0B}
+\MD@def\DeclareMathSymbol{\betaup}{\mathord}{\MD@greek@family upright}{"0C}
+\MD@def\DeclareMathSymbol{\gammaup}{\mathord}{\MD@greek@family upright}{"0D}
+\MD@def\DeclareMathSymbol{\deltaup}{\mathord}{\MD@greek@family upright}{"0E}
+\MD@def\DeclareMathSymbol{\epsilonup}{\mathord}{\MD@greek@family upright}{"0F}
+\MD@def\DeclareMathSymbol{\zetaup}{\mathord}{\MD@greek@family upright}{"10}
+\MD@def\DeclareMathSymbol{\etaup}{\mathord}{\MD@greek@family upright}{"11}
+\MD@def\DeclareMathSymbol{\thetaup}{\mathord}{\MD@greek@family upright}{"12}
+\MD@def\DeclareMathSymbol{\iotaup}{\mathord}{\MD@greek@family upright}{"13}
+\MD@def\DeclareMathSymbol{\kappaup}{\mathord}{\MD@greek@family upright}{"14}
+\MD@def\DeclareMathSymbol{\lambdaup}{\mathord}{\MD@greek@family upright}{"15}
+\MD@def\DeclareMathSymbol{\muup}{\mathord}{\MD@greek@family upright}{"16}
+\MD@def\DeclareMathSymbol{\nuup}{\mathord}{\MD@greek@family upright}{"17}
+\MD@def\DeclareMathSymbol{\xiup}{\mathord}{\MD@greek@family upright}{"18}
+\MD@def\DeclareMathSymbol{\piup}{\mathord}{\MD@greek@family upright}{"19}
+\MD@def\DeclareMathSymbol{\rhoup}{\mathord}{\MD@greek@family upright}{"1A}
+\MD@def\DeclareMathSymbol{\sigmaup}{\mathord}{\MD@greek@family upright}{"1B}
+\MD@def\DeclareMathSymbol{\tauup}{\mathord}{\MD@greek@family upright}{"1C}
+\MD@def\DeclareMathSymbol{\upsilonup}{\mathord}{\MD@greek@family upright}{"1D}
+\MD@def\DeclareMathSymbol{\phiup}{\mathord}{\MD@greek@family upright}{"1E}
+\MD@def\DeclareMathSymbol{\chiup}{\mathord}{\MD@greek@family upright}{"1F}
+\MD@def\DeclareMathSymbol{\psiup}{\mathord}{\MD@greek@family upright}{"20}
+\MD@def\DeclareMathSymbol{\omegaup}{\mathord}{\MD@greek@family upright}{"21}
+\MD@def\DeclareMathSymbol{\varepsilonup}{\mathord}{\MD@greek@family upright}{"22}
+\MD@def\DeclareMathSymbol{\varthetaup}{\mathord}{\MD@greek@family upright}{"23}
+\MD@def\DeclareMathSymbol{\varpiup}{\mathord}{\MD@greek@family upright}{"24}
+\MD@def\DeclareMathSymbol{\varrhoup}{\mathord}{\MD@greek@family upright}{"25}
+\MD@def\DeclareMathSymbol{\varsigmaup}{\mathord}{\MD@greek@family upright}{"26}
+\MD@def\DeclareMathSymbol{\varphiup}{\mathord}{\MD@greek@family upright}{"27}
+\MD@def\DeclareMathSymbol{\Gammaup}{\mathalpha}{\MD@greek@family upright}{"00}
+\MD@def\DeclareMathSymbol{\Deltaup}{\mathalpha}{\MD@greek@family upright}{"01}
+\MD@def\DeclareMathSymbol{\Thetaup}{\mathalpha}{\MD@greek@family upright}{"02}
+\MD@def\DeclareMathSymbol{\Lambdaup}{\mathalpha}{\MD@greek@family upright}{"03}
+\MD@def\DeclareMathSymbol{\Xiup}{\mathalpha}{\MD@greek@family upright}{"04}
+\MD@def\DeclareMathSymbol{\Piup}{\mathalpha}{\MD@greek@family upright}{"05}
+\MD@def\DeclareMathSymbol{\Sigmaup}{\mathalpha}{\MD@greek@family upright}{"06}
+\MD@def\DeclareMathSymbol{\Upsilonup}{\mathalpha}{\MD@greek@family upright}{"07}
+\MD@def\DeclareMathSymbol{\Phiup}{\mathalpha}{\MD@greek@family upright}{"08}
+\MD@def\DeclareMathSymbol{\Psiup}{\mathalpha}{\MD@greek@family upright}{"09}
+\MD@def\DeclareMathSymbol{\Omegaup}{\mathalpha}{\MD@greek@family upright}{"0A}
+
+\MD@def\DeclareMathSymbol{\alphait}{\mathord}{\MD@greek@family}{"0B}
+\MD@def\DeclareMathSymbol{\betait}{\mathord}{\MD@greek@family}{"0C}
+\MD@def\DeclareMathSymbol{\gammait}{\mathord}{\MD@greek@family}{"0D}
+\MD@def\DeclareMathSymbol{\deltait}{\mathord}{\MD@greek@family}{"0E}
+\MD@def\DeclareMathSymbol{\epsilonit}{\mathord}{\MD@greek@family}{"0F}
+\MD@def\DeclareMathSymbol{\zetait}{\mathord}{\MD@greek@family}{"10}
+\MD@def\DeclareMathSymbol{\etait}{\mathord}{\MD@greek@family}{"11}
+\MD@def\DeclareMathSymbol{\thetait}{\mathord}{\MD@greek@family}{"12}
+\MD@def\DeclareMathSymbol{\iotait}{\mathord}{\MD@greek@family}{"13}
+\MD@def\DeclareMathSymbol{\kappait}{\mathord}{\MD@greek@family}{"14}
+\MD@def\DeclareMathSymbol{\lambdait}{\mathord}{\MD@greek@family}{"15}
+\MD@def\DeclareMathSymbol{\muit}{\mathord}{\MD@greek@family}{"16}
+\MD@def\DeclareMathSymbol{\nuit}{\mathord}{\MD@greek@family}{"17}
+\MD@def\DeclareMathSymbol{\xiit}{\mathord}{\MD@greek@family}{"18}
+\MD@def\DeclareMathSymbol{\piit}{\mathord}{\MD@greek@family}{"19}
+\MD@def\DeclareMathSymbol{\rhoit}{\mathord}{\MD@greek@family}{"1A}
+\MD@def\DeclareMathSymbol{\sigmait}{\mathord}{\MD@greek@family}{"1B}
+\MD@def\DeclareMathSymbol{\tauit}{\mathord}{\MD@greek@family}{"1C}
+\MD@def\DeclareMathSymbol{\upsilonit}{\mathord}{\MD@greek@family}{"1D}
+\MD@def\DeclareMathSymbol{\phiit}{\mathord}{\MD@greek@family}{"1E}
+\MD@def\DeclareMathSymbol{\chiit}{\mathord}{\MD@greek@family}{"1F}
+\MD@def\DeclareMathSymbol{\psiit}{\mathord}{\MD@greek@family}{"20}
+\MD@def\DeclareMathSymbol{\omegait}{\mathord}{\MD@greek@family}{"21}
+\MD@def\DeclareMathSymbol{\varepsilonit}{\mathord}{\MD@greek@family}{"22}
+\MD@def\DeclareMathSymbol{\varthetait}{\mathord}{\MD@greek@family}{"23}
+\MD@def\DeclareMathSymbol{\varpiit}{\mathord}{\MD@greek@family}{"24}
+\MD@def\DeclareMathSymbol{\varrhoit}{\mathord}{\MD@greek@family}{"25}
+\MD@def\DeclareMathSymbol{\varsigmait}{\mathord}{\MD@greek@family}{"26}
+\MD@def\DeclareMathSymbol{\varphiit}{\mathord}{\MD@greek@family}{"27}
+\MD@def\DeclareMathSymbol{\Gammait}{\mathalpha}{\MD@greek@family}{"00}
+\MD@def\DeclareMathSymbol{\Deltait}{\mathalpha}{\MD@greek@family}{"01}
+\MD@def\DeclareMathSymbol{\Thetait}{\mathalpha}{\MD@greek@family}{"02}
+\MD@def\DeclareMathSymbol{\Lambdait}{\mathalpha}{\MD@greek@family}{"03}
+\MD@def\DeclareMathSymbol{\Xiit}{\mathalpha}{\MD@greek@family}{"04}
+\MD@def\DeclareMathSymbol{\Piit}{\mathalpha}{\MD@greek@family}{"05}
+\MD@def\DeclareMathSymbol{\Sigmait}{\mathalpha}{\MD@greek@family}{"06}
+\MD@def\DeclareMathSymbol{\Upsilonit}{\mathalpha}{\MD@greek@family}{"07}
+\MD@def\DeclareMathSymbol{\Phiit}{\mathalpha}{\MD@greek@family}{"08}
+\MD@def\DeclareMathSymbol{\Psiit}{\mathalpha}{\MD@greek@family}{"09}
+\MD@def\DeclareMathSymbol{\Omegait}{\mathalpha}{\MD@greek@family}{"0A}
+
+%% ----------------------------------------------------------------
+%% Additional symbols
+%% ----------------------------------------------------------------
+
+\def\iddots{\mathinner{\mkern1mu\raise1\p@
+        \vbox{\kern7\p@\hbox{.}}\mkern2mu
+        \raise4\p@\hbox{.}\mkern2mu\raise7\p@\hbox{.}\mkern1mu}}
+
+%% -------------------------------------------------------------------
+%% Wide accents
+%% -------------------------------------------------------------------
+
+\DeclareMathAccent{\widetilde}{\mathord}{largesymbols}{"65}
+\DeclareMathAccent{\widehat}{\mathord}{largesymbols}{"62}
+\DeclareMathAccent{\widetriangle}{\mathord}{largesymbols}{"E6}
+\DeclareMathAccent{\wideparen}{\mathord}{largesymbols}{"F3}
+\ifx\overset\@undefined\else
+\newcommand{\widering}[1]{\overset{\smash{\vbox to .2ex{%
+                \hbox{$\mathring{}$}}}}{\wideparen{#1}}}
+\fi
+
+
+%% -------------------------------------------------------------------
+%% Double left and right bracket
+%% -------------------------------------------------------------------
+
+\MD@def\DeclareMathDelimiter{\llbracket}{\mathopen} {largesymbols}{"B9}{largesymbols}{"83}
+\MD@def\DeclareMathDelimiter{\rrbracket}{\mathclose}{largesymbols}{"BA}{largesymbols}{"8D}
+
+%% -------------------------------------------------------------------
+%% Wavy vertical lines
+%% -------------------------------------------------------------------
+
+\MD@def\DeclareMathDelimiter{\lwave}{\mathopen} {largesymbols}{"D0}{largesymbols}{"D0}
+\MD@def\DeclareMathDelimiter{\rwave}{\mathclose}{largesymbols}{"D0}{largesymbols}{"D0}
+
+\MD@def\DeclareMathDelimiter{\levaw}{\mathopen} {largesymbols}{"D1}{largesymbols}{"D1}
+\MD@def\DeclareMathDelimiter{\revaw}{\mathclose}{largesymbols}{"D1}{largesymbols}{"D1}
+
+\def\leftwave{\left\lwave}
+\def\rightwave{\right\rwave}
+\def\leftevaw{\left\levaw}
+\def\rightevaw{\right\revaw}
+
+%% ----------------------------------------------------------------
+%% Additional fonts
+%% ----------------------------------------------------------------
+
+\WarningIfLoaded{mdpus}{amssymb}
+\WarningIfLoaded{mdpus}{amsfonts}
+
+\DeclareFontEncoding{MDA}{}{}
+\DeclareFontSubstitution{MDA}{cmr}{m}{n}
+\DeclareSymbolFont{mathdesignA}{MDA}{mdpus}{m}{n}%
+\SetSymbolFont{mathdesignA}   {bold}{MDA}{mdpus}{b}{n}%
+\DeclareSymbolFontAlphabet{\mdmathbb}{mathdesignA}
+\DeclareFontEncodingDefaults{\relax}{\def\accentclass@{7}}
+
+\DeclareFontEncoding{MDB}{}{}
+\DeclareFontSubstitution{MDB}{cmr}{m}{n}
+\DeclareSymbolFont{mathdesignB}{MDB}{mdpus}{m}{n}%
+\SetSymbolFont{mathdesignB}{bold}{MDB}{mdpus}{b}{n}%
+
+% The following code borrowed from amsfonts.sty and amsbsy.sty
+
+\long\def\@gobblethree#1#2#3{}
+\def\@subst@obsolete#1#2#3{\@obsolete{#1}#2#3\gdef#2{#3}#2}
+\if@compatibility
+\let\@obsolete\@gobblethree
+\else
+\def\@obsolete#1#2#3{\PackageWarning{#1}{%
+        Obsolete command \protect#2; \protect#3 should be used instead}}%
+\fi
+\DeclareRobustCommand{\bold}[1]{%
+    {\@subst@obsolete{amsfonts}\bold\mathbf{#1}}}
+
+\providecommand*{\@mathmeasure}[3]{%
+    \setbox#1\hbox{\frozen@everymath\@emptytoks\m@th$#2#3$}}
+
+\@ifundefined{@emptytoks}{\csname newtoks\endcsname\@emptytoks}{}
+    \let\mathbb\@undefined
+    \global\let\mathbb\mdmathbb
+    \MD@def\DeclareRobustCommand{\Bbb}[1]{%
+        {\@subst@obsolete{mdpus}\Bbb\mathbb{#1}}}
+
+    \xdef\yen{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}D5}
+    \xdef\checkmark{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}D8}
+    \xdef\circledR{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}F2}
+    \def\circledS{\textcircled{S}}
+    \xdef\maltese{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}FA}
+    \catcode`\"=12
+    \MD@def\DeclareMathDelimiter{\ulcorner}{\mathopen} {mathdesignA}{"F0}{mathdesignA}{"F0}
+    \MD@def\DeclareMathDelimiter{\urcorner}{\mathclose}{mathdesignA}{"F1}{mathdesignA}{"F1}
+    \MD@def\DeclareMathDelimiter{\llcorner}{\mathopen} {mathdesignA}{"F8}{mathdesignA}{"F8}
+    \MD@def\DeclareMathDelimiter{\lrcorner}{\mathclose}{mathdesignA}{"F9}{mathdesignA}{"F9}
+    \DeclareMathAccent{\widetilde}{\mathord}{largesymbols}{"65}
+    \DeclareMathAccent{\widehat}{\mathord}{largesymbols}{"62}
+    \MD@def\DeclareMathSymbol{\dabar@}{\mathord}{mathdesignA}{"B9}
+
+\xdef\dashrightarrow{\mathrel{\dabar@\dabar@
+            \mathchar"0\hexnumber@\symmathdesignA CB}}%
+    \xdef\dashleftarrow{\mathrel{\mathchar"0\hexnumber@\symmathdesignA CC\dabar@\dabar@}}%
+    \global\let\dasharrow\dashrightarrow
+
+%%   Begin AMSb declarations
+    \MD@def\DeclareMathSymbol{\lvertneqq}    {\mathrel}{mathdesignB}{"00}
+    \MD@def\DeclareMathSymbol{\gvertneqq}    {\mathrel}{mathdesignB}{"01}
+    \MD@def\DeclareMathSymbol{\nleq}         {\mathrel}{mathdesignB}{"02}
+    \MD@def\DeclareMathSymbol{\ngeq}         {\mathrel}{mathdesignB}{"03}
+    \MD@def\DeclareMathSymbol{\nless}        {\mathrel}{mathdesignB}{"04}
+    \MD@def\DeclareMathSymbol{\ngtr}         {\mathrel}{mathdesignB}{"05}
+    \MD@def\DeclareMathSymbol{\nprec}        {\mathrel}{mathdesignB}{"06}
+    \MD@def\DeclareMathSymbol{\nsucc}        {\mathrel}{mathdesignB}{"07}
+    \MD@def\DeclareMathSymbol{\lneqq}        {\mathrel}{mathdesignB}{"08}
+    \MD@def\DeclareMathSymbol{\gneqq}        {\mathrel}{mathdesignB}{"09}
+    \MD@def\DeclareMathSymbol{\nleqslant}    {\mathrel}{mathdesignB}{"0A}
+    \MD@def\DeclareMathSymbol{\ngeqslant}    {\mathrel}{mathdesignB}{"0B}
+    \MD@def\DeclareMathSymbol{\lneq}         {\mathrel}{mathdesignB}{"0C}
+    \MD@def\DeclareMathSymbol{\gneq}         {\mathrel}{mathdesignB}{"0D}
+    \MD@def\DeclareMathSymbol{\npreceq}      {\mathrel}{mathdesignB}{"0E}
+    \MD@def\DeclareMathSymbol{\nsucceq}      {\mathrel}{mathdesignB}{"0F}
+    \MD@def\DeclareMathSymbol{\precnsim}     {\mathrel}{mathdesignB}{"10}
+    \MD@def\DeclareMathSymbol{\succnsim}     {\mathrel}{mathdesignB}{"11}
+    \MD@def\DeclareMathSymbol{\lnsim}        {\mathrel}{mathdesignB}{"12}
+    \MD@def\DeclareMathSymbol{\gnsim}        {\mathrel}{mathdesignB}{"13}
+    \MD@def\DeclareMathSymbol{\nleqq}        {\mathrel}{mathdesignB}{"14}
+    \MD@def\DeclareMathSymbol{\ngeqq}        {\mathrel}{mathdesignB}{"15}
+    \MD@def\DeclareMathSymbol{\precneqq}     {\mathrel}{mathdesignB}{"16}
+    \MD@def\DeclareMathSymbol{\succneqq}     {\mathrel}{mathdesignB}{"17}
+    \MD@def\DeclareMathSymbol{\precnapprox}  {\mathrel}{mathdesignB}{"18}
+    \MD@def\DeclareMathSymbol{\succnapprox}  {\mathrel}{mathdesignB}{"19}
+    \MD@def\DeclareMathSymbol{\lnapprox}     {\mathrel}{mathdesignB}{"1A}
+    \MD@def\DeclareMathSymbol{\gnapprox}     {\mathrel}{mathdesignB}{"1B}
+    \MD@def\DeclareMathSymbol{\nsim}         {\mathrel}{mathdesignB}{"1C}
+    \MD@def\DeclareMathSymbol{\ncong}        {\mathrel}{mathdesignB}{"1D}
+    \MD@def\DeclareMathSymbol{\diagup}       {\mathord}{mathdesignA}{"1E}
+    \MD@def\DeclareMathSymbol{\diagdown}     {\mathord}{mathdesignA}{"1F}
+    \MD@def\DeclareMathSymbol{\varsubsetneq}   {\mathrel}{mathdesignB}{"20}
+    \MD@def\DeclareMathSymbol{\varsupsetneq}   {\mathrel}{mathdesignB}{"21}
+    \MD@def\DeclareMathSymbol{\nsubseteqq}     {\mathrel}{mathdesignB}{"22}
+    \MD@def\DeclareMathSymbol{\nsupseteqq}     {\mathrel}{mathdesignB}{"23}
+    \MD@def\DeclareMathSymbol{\subsetneqq}     {\mathrel}{mathdesignB}{"24}
+    \MD@def\DeclareMathSymbol{\supsetneqq}     {\mathrel}{mathdesignB}{"25}
+    \MD@def\DeclareMathSymbol{\varsubsetneqq}  {\mathrel}{mathdesignB}{"26}
+    \MD@def\DeclareMathSymbol{\varsupsetneqq}  {\mathrel}{mathdesignB}{"27}
+    \MD@def\DeclareMathSymbol{\subsetneq}      {\mathrel}{mathdesignB}{"28}
+    \MD@def\DeclareMathSymbol{\supsetneq}      {\mathrel}{mathdesignB}{"29}
+    \MD@def\DeclareMathSymbol{\nsubseteq}      {\mathrel}{mathdesignB}{"2A}
+    \MD@def\DeclareMathSymbol{\nsupseteq}      {\mathrel}{mathdesignB}{"2B}
+    \MD@def\DeclareMathSymbol{\nparallel}      {\mathrel}{mathdesignB}{"2C}
+    \MD@def\DeclareMathSymbol{\nmid}           {\mathrel}{mathdesignB}{"2D}
+    \MD@def\DeclareMathSymbol{\nshortmid}      {\mathrel}{mathdesignB}{"2E}
+    \MD@def\DeclareMathSymbol{\nshortparallel} {\mathrel}{mathdesignB}{"2F}
+    \MD@def\DeclareMathSymbol{\nvdash}         {\mathrel}{mathdesignB}{"30}
+    \MD@def\DeclareMathSymbol{\nVdash}         {\mathrel}{mathdesignB}{"31}
+    \MD@def\DeclareMathSymbol{\nvDash}         {\mathrel}{mathdesignB}{"32}
+    \MD@def\DeclareMathSymbol{\nVDash}         {\mathrel}{mathdesignB}{"33}
+    \MD@def\DeclareMathSymbol{\ntrianglerighteq}{\mathrel}{mathdesignB}{"34}
+    \MD@def\DeclareMathSymbol{\ntrianglelefteq}{\mathrel}{mathdesignB}{"35}
+    \MD@def\DeclareMathSymbol{\ntriangleleft}  {\mathrel}{mathdesignB}{"36}
+    \MD@def\DeclareMathSymbol{\ntriangleright} {\mathrel}{mathdesignB}{"37}
+    \MD@def\DeclareMathSymbol{\nleftarrow}     {\mathrel}{mathdesignB}{"38}
+    \MD@def\DeclareMathSymbol{\nrightarrow}    {\mathrel}{mathdesignB}{"39}
+    \MD@def\DeclareMathSymbol{\nLeftarrow}     {\mathrel}{mathdesignB}{"3A}
+    \MD@def\DeclareMathSymbol{\nRightarrow}    {\mathrel}{mathdesignB}{"3B}
+    \MD@def\DeclareMathSymbol{\nLeftrightarrow}{\mathrel}{mathdesignB}{"3C}
+    \MD@def\DeclareMathSymbol{\nleftrightarrow}{\mathrel}{mathdesignB}{"3D}
+    \MD@def\DeclareMathSymbol{\nexists}        {\mathord}{mathdesignB}{"3E}
+    \MD@def\DeclareMathSymbol{\divideontimes}  {\mathbin}{mathdesignA}{"3E}
+    \MD@def\DeclareMathSymbol{\varnothing}     {\mathord}{mathdesignA}{"3F}
+    \MD@def\DeclareMathSymbol{\Join}           {\mathbin}{mathdesignA}{"5C}
+    \MD@def\DeclareMathSymbol{\udtimes}        {\mathbin}{mathdesignA}{"5D}
+    \MD@def\DeclareMathSymbol{\utimes}         {\mathbin}{mathdesignA}{"5E}
+    \MD@def\DeclareMathSymbol{\dtimes}         {\mathbin}{mathdesignA}{"5F}
+    \MD@def\DeclareMathSymbol{\Finv}           {\mathord}{mathdesignA}{"60}
+    \MD@def\DeclareMathSymbol{\Game}           {\mathord}{mathdesignA}{"61}
+    \MD@def\DeclareMathSymbol{\mho}            {\mathord}{mathdesignA}{"66}
+    \MD@def\DeclareMathSymbol{\eth}            {\mathord}{mathdesignA}{"67}
+    \MD@def\DeclareMathSymbol{\eqsim}          {\mathrel}{mathdesignA}{"68}
+    \MD@def\DeclareMathSymbol{\beth}           {\mathord}{mathdesignA}{"69}
+    \MD@def\DeclareMathSymbol{\gimel}          {\mathord}{mathdesignA}{"6A}
+    \MD@def\DeclareMathSymbol{\daleth}         {\mathord}{mathdesignA}{"6B}
+    \MD@def\DeclareMathSymbol{\lessdot}        {\mathbin}{mathdesignA}{"6C}
+    \MD@def\DeclareMathSymbol{\gtrdot}         {\mathbin}{mathdesignA}{"6D}
+    \MD@def\DeclareMathSymbol{\ltimes}         {\mathbin}{mathdesignA}{"6E}
+    \MD@def\DeclareMathSymbol{\rtimes}         {\mathbin}{mathdesignA}{"6F}
+    \MD@def\DeclareMathSymbol{\shortmid}       {\mathrel}{mathdesignA}{"70}
+    \MD@def\DeclareMathSymbol{\shortparallel}  {\mathrel}{mathdesignA}{"71}
+    \MD@def\DeclareMathSymbol{\smallsetminus}  {\mathbin}{mathdesignA}{"72}
+    \MD@def\DeclareMathSymbol{\thicksim}       {\mathrel}{mathdesignA}{"73}
+    \MD@def\DeclareMathSymbol{\thickapprox}    {\mathrel}{mathdesignA}{"74}
+    \MD@def\DeclareMathSymbol{\approxeq}       {\mathrel}{mathdesignA}{"75}
+    \MD@def\DeclareMathSymbol{\succapprox}     {\mathrel}{mathdesignA}{"76}
+    \MD@def\DeclareMathSymbol{\precapprox}     {\mathrel}{mathdesignA}{"77}
+    \MD@def\DeclareMathSymbol{\curvearrowleft} {\mathrel}{mathdesignA}{"78}
+    \MD@def\DeclareMathSymbol{\curvearrowright}{\mathrel}{mathdesignA}{"79}
+    \MD@def\DeclareMathSymbol{\digammaup}      {\mathord}{mathdesignA}{"7A}
+    \MD@def\DeclareMathSymbol{\varkappaup}     {\mathord}{mathdesignA}{"7B}
+    \MD@def\DeclareMathSymbol{\digammait}      {\mathord}{mathdesignA}{"62}
+    \MD@def\DeclareMathSymbol{\varkappait}     {\mathord}{mathdesignA}{"63}
+    \if@MD@grupright
+    \MD@def\DeclareMathSymbol{\digamma}      {\mathord}{mathdesignA}{"7A}
+    \MD@def\DeclareMathSymbol{\varkappa}     {\mathord}{mathdesignA}{"7B}
+    \else
+    \MD@def\DeclareMathSymbol{\digamma}    {\mathord}{mathdesignA}{"62}
+    \MD@def\DeclareMathSymbol{\varkappa}   {\mathord}{mathdesignA}{"63}
+    \fi
+    \MD@def\DeclareMathSymbol{\Bbbk}           {\mathord}{mathdesignA}{"7C}
+    \xdef\hslash{\mathord{\mathchar"0\hexnumber@\symmathdesignA 7D h}}
+    \xdef\hbar{\mathord{\mathchar"0\hexnumber@\symmathdesignA 7E h}}%\mkern-13.8mu%
+    \MD@def\DeclareMathSymbol{\backepsilon}    {\mathrel}{mathdesignA}{"7F}
+
+    \MD@def\DeclareMathSymbol{\boxdot}       {\mathbin}{mathdesignA}{"80}
+    \MD@def\DeclareMathSymbol{\boxplus}      {\mathbin}{mathdesignA}{"81}
+    \MD@def\DeclareMathSymbol{\boxtimes}     {\mathbin}{mathdesignA}{"82}
+    \MD@def\DeclareMathSymbol{\square}       {\mathord}{mathdesignA}{"83}
+    \MD@def\DeclareMathSymbol{\blacksquare}  {\mathord}{mathdesignA}{"84}
+    \MD@def\DeclareMathSymbol{\centerdot}    {\mathbin}{mathdesignA}{"85}
+    \MD@def\DeclareMathSymbol{\lozenge}      {\mathord}{mathdesignA}{"86}
+    \MD@def\DeclareMathSymbol{\blacklozenge} {\mathord}{mathdesignA}{"87}
+    \MD@def\DeclareMathSymbol{\circlearrowright}   {\mathrel}{mathdesignA}{"88}
+    \MD@def\DeclareMathSymbol{\circlearrowleft}    {\mathrel}{mathdesignA}{"89}
+%% In amsfonts.sty:
+    \MD@def\DeclareMathSymbol{\rightleftharpoons}{\mathrel}{mathdesignA}{"8A}
+    \MD@def\DeclareMathSymbol{\leftrightharpoons}  {\mathrel}{mathdesignA}{"8B}
+    \MD@def\DeclareMathSymbol{\boxminus}     {\mathbin}{mathdesignA}{"8C}
+    \MD@def\DeclareMathSymbol{\Vdash}        {\mathrel}{mathdesignA}{"8D}
+    \MD@def\DeclareMathSymbol{\Vvdash}       {\mathrel}{mathdesignA}{"8E}
+    \MD@def\DeclareMathSymbol{\vDash}        {\mathrel}{mathdesignA}{"8F}
+    \MD@def\DeclareMathSymbol{\twoheadrightarrow}  {\mathrel}{mathdesignA}{"90}
+    \MD@def\DeclareMathSymbol{\twoheadleftarrow}   {\mathrel}{mathdesignA}{"91}
+    \MD@def\DeclareMathSymbol{\leftleftarrows}     {\mathrel}{mathdesignA}{"92}
+    \MD@def\DeclareMathSymbol{\rightrightarrows}   {\mathrel}{mathdesignA}{"93}
+    \MD@def\DeclareMathSymbol{\upuparrows}         {\mathrel}{mathdesignA}{"94}
+    \MD@def\DeclareMathSymbol{\downdownarrows} {\mathrel}{mathdesignA}{"95}
+    \MD@def\DeclareMathSymbol{\upharpoonright} {\mathrel}{mathdesignA}{"96}
+    \global\let\restriction\upharpoonright
+    \MD@def\DeclareMathSymbol{\downharpoonright}   {\mathrel}{mathdesignA}{"97}
+    \MD@def\DeclareMathSymbol{\upharpoonleft}  {\mathrel}{mathdesignA}{"98}
+    \MD@def\DeclareMathSymbol{\downharpoonleft}{\mathrel}{mathdesignA}{"99}
+    \MD@def\DeclareMathSymbol{\rightarrowtail} {\mathrel}{mathdesignA}{"9A}
+    \MD@def\DeclareMathSymbol{\leftarrowtail}  {\mathrel}{mathdesignA}{"9B}
+    \MD@def\DeclareMathSymbol{\leftrightarrows}{\mathrel}{mathdesignA}{"9C}
+    \MD@def\DeclareMathSymbol{\rightleftarrows}{\mathrel}{mathdesignA}{"9D}
+    \MD@def\DeclareMathSymbol{\Lsh}            {\mathrel}{mathdesignA}{"9E}
+    \MD@def\DeclareMathSymbol{\Rsh}            {\mathrel}{mathdesignA}{"9F}
+    \MD@def\DeclareMathSymbol{\rightsquigarrow}  {\mathrel}{mathdesignA}{"A0}
+    \MD@def\DeclareMathSymbol{\leftrightsquigarrow}{\mathrel}{mathdesignA}{"A1}
+    \MD@def\DeclareMathSymbol{\looparrowleft}  {\mathrel}{mathdesignA}{"A2}
+    \MD@def\DeclareMathSymbol{\looparrowright} {\mathrel}{mathdesignA}{"A3}
+    \MD@def\DeclareMathSymbol{\circeq}       {\mathrel}{mathdesignA}{"A4}
+    \MD@def\DeclareMathSymbol{\succsim}      {\mathrel}{mathdesignA}{"A5}
+    \MD@def\DeclareMathSymbol{\gtrsim}       {\mathrel}{mathdesignA}{"A6}
+    \MD@def\DeclareMathSymbol{\gtrapprox}    {\mathrel}{mathdesignA}{"A7}
+    \MD@def\DeclareMathSymbol{\multimap}     {\mathrel}{mathdesignA}{"A8}
+    \MD@def\DeclareMathSymbol{\therefore}    {\mathrel}{mathdesignA}{"A9}
+    \MD@def\DeclareMathSymbol{\because}      {\mathrel}{mathdesignA}{"AA}
+    \MD@def\DeclareMathSymbol{\doteqdot}     {\mathrel}{mathdesignA}{"AB}
+    \global\let\Doteq\doteqdot
+    \MD@def\DeclareMathSymbol{\triangleq}    {\mathrel}{mathdesignA}{"AC}
+    \MD@def\DeclareMathSymbol{\precsim}      {\mathrel}{mathdesignA}{"AD}
+    \MD@def\DeclareMathSymbol{\lesssim}      {\mathrel}{mathdesignA}{"AE}
+    \MD@def\DeclareMathSymbol{\lessapprox}   {\mathrel}{mathdesignA}{"AF}
+    \MD@def\DeclareMathSymbol{\eqslantless}  {\mathrel}{mathdesignA}{"B0}
+    \MD@def\DeclareMathSymbol{\eqslantgtr}   {\mathrel}{mathdesignA}{"B1}
+    \MD@def\DeclareMathSymbol{\curlyeqprec}  {\mathrel}{mathdesignA}{"B2}
+    \MD@def\DeclareMathSymbol{\curlyeqsucc}  {\mathrel}{mathdesignA}{"B3}
+    \MD@def\DeclareMathSymbol{\preccurlyeq}  {\mathrel}{mathdesignA}{"B4}
+    \MD@def\DeclareMathSymbol{\leqq}         {\mathrel}{mathdesignA}{"B5}
+    \MD@def\DeclareMathSymbol{\leqslant}     {\mathrel}{mathdesignA}{"B6}
+    \MD@def\DeclareMathSymbol{\lessgtr}      {\mathrel}{mathdesignA}{"B7}
+    \MD@def\DeclareMathSymbol{\backprime}    {\mathord}{mathdesignA}{"B8}
+    \MD@def\DeclareMathSymbol{\risingdotseq} {\mathrel}{mathdesignA}{"BA}
+    \MD@def\DeclareMathSymbol{\fallingdotseq}{\mathrel}{mathdesignA}{"BB}
+    \MD@def\DeclareMathSymbol{\succcurlyeq}  {\mathrel}{mathdesignA}{"BC}
+    \MD@def\DeclareMathSymbol{\geqq}         {\mathrel}{mathdesignA}{"BD}
+    \MD@def\DeclareMathSymbol{\geqslant}     {\mathrel}{mathdesignA}{"BE}
+    \MD@def\DeclareMathSymbol{\gtrless}      {\mathrel}{mathdesignA}{"BF}
+    \MD@def\DeclareMathSymbol{\sqsubset}    {\mathrel}{mathdesignA}{"C0}
+    \MD@def\DeclareMathSymbol{\sqsupset}    {\mathrel}{mathdesignA}{"C1}
+    \MD@def\DeclareMathSymbol{\vartriangleright}{\mathrel}{mathdesignA}{"C2}
+    \MD@def\DeclareMathSymbol{\vartriangleleft} {\mathrel}{mathdesignA}{"C3}
+    \MD@def\DeclareMathSymbol{\trianglerighteq} {\mathrel}{mathdesignA}{"C4}
+    \MD@def\DeclareMathSymbol{\trianglelefteq}  {\mathrel}{mathdesignA}{"C5}
+    \MD@def\DeclareMathSymbol{\bigstar}    {\mathord}{mathdesignA}{"C6}
+    \MD@def\DeclareMathSymbol{\between}    {\mathrel}{mathdesignA}{"C7}
+    \MD@def\DeclareMathSymbol{\blacktriangledown}  {\mathord}{mathdesignA}{"C8}
+    \MD@def\DeclareMathSymbol{\blacktriangleright} {\mathrel}{mathdesignA}{"C9}
+    \MD@def\DeclareMathSymbol{\blacktriangleleft}  {\mathrel}{mathdesignA}{"CA}
+    \MD@def\DeclareMathSymbol{\vartriangle}        {\mathrel}{mathdesignA}{"CD}
+    \MD@def\DeclareMathSymbol{\blacktriangle}      {\mathord}{mathdesignA}{"CE}
+    \MD@def\DeclareMathSymbol{\triangledown}       {\mathord}{mathdesignA}{"CF}
+    \MD@def\DeclareMathSymbol{\eqcirc}       {\mathrel}{mathdesignA}{"D0}
+    \MD@def\DeclareMathSymbol{\lesseqgtr}    {\mathrel}{mathdesignA}{"D1}
+    \MD@def\DeclareMathSymbol{\gtreqless}    {\mathrel}{mathdesignA}{"D2}
+    \MD@def\DeclareMathSymbol{\lesseqqgtr}   {\mathrel}{mathdesignA}{"D3}
+    \MD@def\DeclareMathSymbol{\gtreqqless}   {\mathrel}{mathdesignA}{"D4}
+    \MD@def\DeclareMathSymbol{\Rrightarrow}  {\mathrel}{mathdesignA}{"D6}
+    \MD@def\DeclareMathSymbol{\Lleftarrow}   {\mathrel}{mathdesignA}{"D7}
+    \MD@def\DeclareMathSymbol{\veebar}       {\mathbin}{mathdesignA}{"D9}
+    \MD@def\DeclareMathSymbol{\barwedge}     {\mathbin}{mathdesignA}{"DA}
+    \MD@def\DeclareMathSymbol{\doublebarwedge} {\mathbin}{mathdesignA}{"DB}
+    \MD@def\DeclareMathSymbol{\angle}        {\mathord}{mathdesignA}{"DC}
+    \MD@def\DeclareMathSymbol{\measuredangle}  {\mathord}{mathdesignA}{"DD}
+    \MD@def\DeclareMathSymbol{\sphericalangle} {\mathord}{mathdesignA}{"DE}
+    \MD@def\DeclareMathSymbol{\varpropto}    {\mathrel}{mathdesignA}{"DF}
+    \MD@def\DeclareMathSymbol{\smallsmile}   {\mathrel}{mathdesignA}{"E0}
+    \MD@def\DeclareMathSymbol{\smallfrown}   {\mathrel}{mathdesignA}{"E1}
+    \MD@def\DeclareMathSymbol{\Subset}       {\mathrel}{mathdesignA}{"E2}
+    \MD@def\DeclareMathSymbol{\Supset}       {\mathrel}{mathdesignA}{"E3}
+    \MD@def\DeclareMathSymbol{\Cup}          {\mathbin}{mathdesignA}{"E4}
+    \global\let\doublecup\Cup
+    \MD@def\DeclareMathSymbol{\Cap}          {\mathbin}{mathdesignA}{"E5}
+    \global\let\doublecap\Cap
+    \MD@def\DeclareMathSymbol{\curlywedge}   {\mathbin}{mathdesignA}{"E6}
+    \MD@def\DeclareMathSymbol{\curlyvee}     {\mathbin}{mathdesignA}{"E7}
+    \MD@def\DeclareMathSymbol{\leftthreetimes} {\mathbin}{mathdesignA}{"E8}
+    \MD@def\DeclareMathSymbol{\rightthreetimes}{\mathbin}{mathdesignA}{"E9}
+    \MD@def\DeclareMathSymbol{\subseteqq}    {\mathrel}{mathdesignA}{"EA}
+    \MD@def\DeclareMathSymbol{\supseteqq}    {\mathrel}{mathdesignA}{"EB}
+    \MD@def\DeclareMathSymbol{\bumpeq}       {\mathrel}{mathdesignA}{"EC}
+    \MD@def\DeclareMathSymbol{\Bumpeq}       {\mathrel}{mathdesignA}{"ED}
+    \MD@def\DeclareMathSymbol{\lll}          {\mathrel}{mathdesignA}{"EE}
+    \global\let\llless\lll
+    \MD@def\DeclareMathSymbol{\ggg}          {\mathrel}{mathdesignA}{"EF}
+    \global\let\gggtr\ggg
+    \MD@def\DeclareMathSymbol{\pitchfork}    {\mathrel}{mathdesignA}{"F4}
+    \MD@def\DeclareMathSymbol{\dotplus}      {\mathbin}{mathdesignA}{"F5}
+    \MD@def\DeclareMathSymbol{\backsim}      {\mathrel}{mathdesignA}{"F6}
+    \MD@def\DeclareMathSymbol{\backsimeq}    {\mathrel}{mathdesignA}{"F7}
+    \MD@def\DeclareMathSymbol{\complement}   {\mathord}{mathdesignA}{"FB}
+    \MD@def\DeclareMathSymbol{\intercal}     {\mathbin}{mathdesignA}{"FC}
+    \MD@def\DeclareMathSymbol{\circledcirc}  {\mathbin}{mathdesignA}{"FD}
+    \MD@def\DeclareMathSymbol{\circledast}   {\mathbin}{mathdesignA}{"FE}
+    \MD@def\DeclareMathSymbol{\circleddash}  {\mathbin}{mathdesignA}{"FF}
+    \global\let\lhd\vartriangleleft
+    \global\let\unlhd\vartriangleleft
+    \global\let\rhd\vartriangleright
+    \global\let\unrhd\trianglerighteq
+    \global\let\Box\square
+    \global\let\Diamond\lozenge
+    \global\let\leadsto\rightsquigarrow
+
+
+\MD@def\DeclareMathSymbol{\smallin}{\mathrel}{mathdesignA}{0}
+\MD@def\DeclareMathSymbol{\smallowns}{\mathrel}{mathdesignA}{1}
+\MD@def\DeclareMathSymbol{\notsmallin}{\mathrel}{mathdesignA}{2}
+\MD@def\DeclareMathSymbol{\notsmallowns}{\mathrel}{mathdesignA}{3}
+\MD@def\DeclareMathSymbol{\rightangle}{\mathord}{mathdesignA}{4}
+\MD@def\DeclareMathSymbol{\intclockwise}{\mathop}{mathdesignB}{128}
+\MD@def\DeclareMathSymbol{\ointclockwise}{\mathop}{mathdesignB}{130}
+\MD@def\DeclareMathSymbol{\ointctrclockwise}{\mathop}{mathdesignB}{132}
+\MD@def\DeclareMathSymbol{\oiint}{\mathop}{mathdesignB}{134}
+\MD@def\DeclareMathSymbol{\oiiint}{\mathop}{mathdesignB}{136}
+
+
+%% -------------------------------------------------------------------
+%% LaTeX Pictures fonts
+%% -------------------------------------------------------------------
+
+%% \font\tenln  =mdpusrline   \font\tenlnw  =mdpussbline \relax
+%% \font\tencirc=mdpusrcirc   \font\tencircw=mdpussbcirc\relax
+%% \let\@linefnt\tenln
+%% \let\@circlefnt\tencirc
+
+
+%% -------------------------------------------------------------------
+%% Various rule width
+%% -------------------------------------------------------------------
+
+\newlength{\rulethickness}
+\setlength{\rulethickness}{0.540bp}
+\setlength\fboxrule{0.540bp}
+\setlength\fboxsep{7\fboxrule}
+\setlength\arrayrulewidth{0.540bp}
+
+\renewcommand\footnoterule{%
+  \kern-3\p@
+  \hrule\@height \rulethickness \@width.4\columnwidth
+  \kern2.6\p@}
+
+\def\hrulefill{\leaders\hrule height \rulethickness\hfill}
+
+
+%% -------------------------------------------------------------------
+%% mathdesign logo
+%% -------------------------------------------------------------------
+
+\xdef\mdlogo{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}64}
+
+%% -------------------------------------------------------------------
+%% euro currency sign
+%% -------------------------------------------------------------------
+
+\if@MD@euro %
+  \AtBeginDocument{%
+        \xdef\euro{\noexpand\mathhexbox{\hexnumber@\symmathdesignA}65}
+    }
+\fi
+
+%% -------------------------------------------------------------------
+%% Extra configurations, if any
+%% -------------------------------------------------------------------
+
+% Small caps font available with Adobe Utopiastd
+\renewcommand\scdefault{sc}
+% Fix the \oldstylenums command (now italic oldstylenum are avalaible,
+% for example)
+\def\oldstylenums#1{%
+   \begingroup
+    \spaceskip\fontdimen\tw@\font
+    \usefont{OML}{\rmdefault}{\f@series}{\f@shape}%
+    \mathgroup\symletters #1%
+   \endgroup
+}
+\DeclareRobustCommand\semiseries
+        {\not@math@alphabet\blackseries\relax
+         \fontseries{sb}\selectfont}
+\DeclareRobustCommand\blackseries
+        {\not@math@alphabet\blackseries\relax
+         \fontseries{b}\selectfont}
+
+
+\endinput

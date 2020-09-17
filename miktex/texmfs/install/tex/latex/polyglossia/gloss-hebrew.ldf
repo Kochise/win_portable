@@ -1,0 +1,174 @@
+\ProvidesFile{gloss-hebrew.ldf}[polyglossia: module for hebrew]
+\ifluatex
+  \xpg@warning{Hebrew is not supported with LuaTeX.\MessageBreak
+I will proceed with the compilation, but\MessageBreak
+the output is not guaranteed to be correct\MessageBreak
+and may look very wrong.}
+\fi
+\RequireBidi
+\RequirePackage{hebrewcal}
+
+\PolyglossiaSetup{hebrew}{
+  bcp47=he,
+  script=Hebrew,
+  direction=RL,
+  scripttag=hebr,
+  langtag=IWR,
+  hyphennames={nohyphenation},
+  fontsetup=true,
+  localnumeral=hebrewnumerals
+  %TODO localalph={hebrewnumeral,Hebrewnumeral}
+  %digits = hebrewnumber
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*{hebrew}{he}
+
+\newif\if@calendar@hebrew
+\def\tmp@hebrew{hebrew}
+\define@key{hebrew}{calendar}[gregorian]{%
+	\message{Setting \string\if@calendar@hebrew}
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@hebrew%
+    \@calendar@hebrewtrue%
+	\else%
+    \@calendar@hebrewfalse%
+	\fi}
+
+\newif\if@xpg@hebrew@marcheshvan
+\@xpg@hebrew@marcheshvanfalse
+
+\define@boolkey{hebrew}[@xpg@hebrew@]{marcheshvan}[true]{}
+
+% hebrewcal.sty also defines the boolean key fullyear (default=false)
+
+\newif\if@hebrew@numerals
+\def\tmp@hebrew{hebrew}
+\define@key{hebrew}{numerals}[arabic]{%
+	\def\@tmpa{#1}%
+	\ifx\@tmpa\tmp@hebrew%
+	  \@hebrew@numeralstrue%
+	\else%
+    \@hebrew@numeralsfalse%
+	\fi}
+
+\setkeys{hebrew}{numerals}
+
+% Register default options
+\xpg@initialize@gloss@options{hebrew}{numerals=arabic,calendar=gregorian,marcheshvan=false}
+
+\def\captionshebrew{%
+  \def\prefacename{מבוא}%
+  \def\refname{מקורות}%
+  \def\abstractname{תקציר}%
+  \def\bibname{ביבליוגרפיה}%
+  \def\chaptername{פרק}%
+  \def\appendixname{נספח}%
+  \def\contentsname{תוכן העניינים}%
+  \def\listfigurename{רשימת האיורים}%
+  \def\listtablename{רשימת הטבלאות}%
+  \def\indexname{מפתח}%
+  \def\figurename{איור}%
+  \def\tablename{טבלה}%
+  \def\partname{חלק}%
+  \def\enclname{רצ"ב}%
+  \def\ccname{העתקים}%
+  \def\headtoname{אל}%
+  \def\pagename{עמוד}%
+  \def\psname{נ.ב.}%
+  \def\seename{ראה}%
+  \def\alsoname{ראה גם}% check
+  \def\proofname{הוכחה}
+  \def\glossaryname{מילון מונחים}% check
+}
+\def\datehebrew{%
+  \def\today{%
+    \if@calendar@hebrew%
+      \hebrewtoday%
+    \else%
+      \hebrewnumber\day%
+      \space ב\hebrewgregmonth{\month}\space%
+      \hebrewnumber\year%
+     \fi}%
+}
+
+\def\hebrewgregmonth#1{\ifcase#1%
+  \or ינואר% יאנואר
+    \or פברואר\or מרץ% מרס / מארס
+    \or אפריל\or מאי% מי
+    \or יוני\or יולי\or אוגוסט %אבגוסט
+    \or ספטמבר\or אוקטובר\or נובמבר\or דצמבר\fi}
+
+\input{babel-hebrewalph.def}
+
+\newcommand{\hebrewnumerals}[2]{\hebrewnumber{#2}}
+
+\def\hebrewnumber#1{%
+   \if@hebrew@numerals
+     \hebrewnumeral{#1}%
+   \else
+     \number#1%
+   \fi
+}
+
+% Bidi inserts an RTL mark (0x200f) before any number, forcing numbers to
+% RTL. Hebrew uses LTR numbers, though. So we insert an LTR mark to revert
+% the directionality
+\ifxetex
+  \newcommand\xpg@hebrew@DigitsDotDashInterCharToks{\ifbool{@nonlatin}{\char"200E }{}}
+\fi
+
+\def\hebrew@ltr@numbers{%
+    \ifxetex
+      \XeTeXinterchartoks \bidi@sepmark@charclass  \bidi@digits@charclass = {\xpg@hebrew@DigitsDotDashInterCharToks}%
+    \fi%
+}
+
+\def\nohebrew@ltr@numbers{%
+    \ifxetex
+      % This is bidi's original intervention
+      \XeTeXinterchartoks \bidi@sepmark@charclass  \bidi@digits@charclass = {\DigitsDotDashInterCharToks}%
+    \fi%
+}
+
+\def\hebrew@numbers{%
+   \let\@alph\hebrewnumeral%
+   \let\@Alph\Hebrewnumeral%
+   % Prevent bidi from setting the numbers RTL
+   \hebrew@ltr@numbers%
+}
+
+\def\nohebrew@numbers{%
+  \let\@alph\latin@alph%
+  \let\@Alph\latin@Alph%
+  % Restore previous bidi numbers definition
+  \nohebrew@ltr@numbers
+}
+
+\def\hebrew@globalnumbers{%
+   \let\@arabic\hebrewnumber%
+   \renewcommand\thefootnote{\localnumeral*{footnote}}%
+   % Prevent bidi from setting the numbers RTL
+   \hebrew@ltr@numbers%
+}
+
+% Store original definition
+\let\xpg@save@arabic\@arabic
+
+\def\nohebrew@globalnumbers{%
+  \let\@arabic\xpg@save@arabic%
+}
+
+% Save original \MakeUppercase definition
+\let\xpg@save@MakeUppercase\MakeUppercase
+
+\def\blockextras@hebrew{%
+   \def\MakeUppercase##1{##1}%
+}
+
+\def\noextras@hebrew{%
+   % restore original \MakeUppercase definition
+   \let\MakeUppercase\xpg@save@MakeUppercase%
+}
+
+\endinput
