@@ -44,6 +44,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **SuperFastClicker** : console program, press Capslock for mouse fast clicking<br>
 **SysinternalsSuite** : the stuff that should be included with every Windows<br>
 **texmaker** : LaTeX Editor that needs **miktex** (run <ins>texmaker.bat</ins> to setup the path)<br>
+**tinycc**: little standalone C compiler that can help, very fast but still alpha/beta/gamma/...<br>
 **Total Commander** : the stuff that should replace Windows (at least the explorer)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>
@@ -52,4 +53,4 @@ Some useful Windows programs in one portable package (some with source code incl
 
 In each folder a url file links the original source (might be obsolete, use web.archive.org to get there).
 
-Cannot add **Firefox** right now because one dll file is larger than 100MB (wtf seriously).
+Cannot add **Firefox** binaries right now because one dll file is larger than 100MB (wtf seriously).
