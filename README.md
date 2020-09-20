@@ -14,6 +14,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **Erlang** : distributed functional language (inspired from Prolog) <ins>EXTERNAL INSTALLER</ins><br>
 **FileZilla** : ftp client (better use Total Commander in passive mode)<br>
 **Firefox** : ready to use Firefox browser with some privacy extensions installed <ins>EXTERNAL INSTALLER</ins><br>
+**flux** : screen toning utility to change color scheme at night time <ins>INSTALLER</ins><br>
 **ImageMagick** : image manipulator, converter, whatever (cli only, strange syntax)<br>
 **inkscape** : vectorial image tools, default svg editor and converter for **miktex**<br>
 **IrfanView** : image viewer and more, lightweight image editing with F12<br>
