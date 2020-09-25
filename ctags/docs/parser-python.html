@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>The new Python parser &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The new Tcl parser" href="parser-tcl.html" />
+    <link rel="prev" title="puppetManifest parser" href="parser-puppetManifest.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="parser-tcl.html" title="The new Tcl parser"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="parser-puppetManifest.html" title="puppetManifest parser"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="parsers.html" accesskey="U">Parsers</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-new-python-parser">
+<span id="python"></span><h1>The new Python parser<a class="headerlink" href="#the-new-python-parser" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Maintainer</dt>
+<dd class="field-odd"><p>Colomban Wendling &lt;<a class="reference external" href="mailto:ban&#37;&#52;&#48;herbesfolles&#46;org">ban<span>&#64;</span>herbesfolles<span>&#46;</span>org</a>&gt;</p>
+</dd>
+</dl>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The old Python parser was a line-oriented parser that grew way beyond
+its capabilities, and ended up riddled with hacks and easily fooled by
+perfectly valid input.   By design, it especially had problems dealing
+with constructs spanning multiple lines, like triple-quoted strings
+or implicitly continued lines; but several less tricky constructs were
+also mishandled, and handling of lexical constructs was duplicated and
+each clone evolved in its own direction, supporting different features
+and having different bugs depending on the location.</p>
+<p>All this made it very hard to fix some existing bugs, or add new
+features.  To fix this regrettable state of things, the parser has been
+rewritten from scratch separating lexical analysis (generating tokens)
+from syntactical analysis (understanding what the lexemes mean).
+This moves understanding lexemes to a single location, making it
+consistent and easier to extend with new lexemes, and lightens the
+burden on the parsing code making it more concise, robust and clear.</p>
+<p>This rewrite allowed to quite easily fix all known bugs of the old
+parser, and add many new features, including:</p>
+<ul class="simple">
+<li><p>Tagging function parameters</p></li>
+<li><p>Extraction of decorators</p></li>
+<li><p>Proper handling of semicolons</p></li>
+<li><p>Extracting multiple variables in a combined declaration</p></li>
+<li><p>More accurate support of mixed indentation</p></li>
+<li><p>Tagging local variables</p></li>
+</ul>
+<p>The parser should be compatible with the old one.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The new Python parser</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="parser-puppetManifest.html"
+                        title="previous chapter">puppetManifest parser</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="parser-tcl.html"
+                        title="next chapter">The new Tcl parser</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="parser-tcl.html" title="The new Tcl parser"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="parser-puppetManifest.html" title="puppetManifest parser"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="parsers.html" >Parsers</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

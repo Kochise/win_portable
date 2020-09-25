@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Building with configure (*nix including GNU/Linux) &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Building/hacking/using on MS-Windows" href="windows.html" />
+    <link rel="prev" title="Building ctags" href="building.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="windows.html" title="Building/hacking/using on MS-Windows"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="building.html" title="Building ctags"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="building.html" accesskey="U">Building ctags</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="building-with-configure-nix-including-gnu-linux">
+<h1>Building with configure (*nix including GNU/Linux)<a class="headerlink" href="#building-with-configure-nix-including-gnu-linux" title="Permalink to this headline">¶</a></h1>
+<p>If you are going to build Universal-ctags on a popular GNU/Linux
+distribution, you can install the tools and libraries that Universal-ctags
+requires (or may use) as packages. See <a class="reference internal" href="#gnu-linux-distributions">GNU/Linux distributions</a> about
+the packages.</p>
+<p>Like most Autotools-based projects, you need to do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./autogen.sh
+$ ./configure --prefix=/where/you/want # defaults to /usr/local
+$ make
+$ make install # may require extra privileges depending on where to install
+</pre></div>
+</div>
+<p>After installation the <cite>ctags</cite> executable will be in <cite>$prefix/bin/</cite>.</p>
+<p><cite>autogen.sh</cite> runs <cite>autoreconf</cite> internally.
+If you use a (binary oriented) GNU/Linux distribution, <cite>autoreconf</cite> may
+be part of the <cite>autoconf</cite> package. In addition you may have to install
+<cite>automake</cite> and/or <cite>pkg-config</cite>, too.</p>
+<div class="section" id="gnu-linux-distributions">
+<h2>GNU/Linux distributions<a class="headerlink" href="#gnu-linux-distributions" title="Permalink to this headline">¶</a></h2>
+<p>Before running ./autogen.sh, install some packages.</p>
+<p>On Debian-based systems (including Ubuntu), do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo apt install \
+    gcc make \
+    pkg-config autoconf automake \
+    python3-docutils \
+    libseccomp-dev \
+    libjansson-dev \
+    libyaml-dev \
+    libxml2-dev
+</pre></div>
+</div>
+<p>On Fedora systems, do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo dnf install \
+    gcc make \
+    pkgconfig autoconf automake \
+    python3-docutils \
+    libseccomp-devel \
+    jansson-devel \
+    libyaml-devel \
+    libxml2-devel
+</pre></div>
+</div>
+</div>
+<div class="section" id="changing-the-executable-s-name">
+<h2>Changing the executable’s name<a class="headerlink" href="#changing-the-executable-s-name" title="Permalink to this headline">¶</a></h2>
+<p>On some systems, like certain BSDs, there is already a ‘ctags’ program in the base
+system, so it is somewhat inconvenient to have the same name for
+Universal-ctags. During the <code class="docutils literal notranslate"><span class="pre">configure</span></code> stage you can now change
+the name of the created executable.</p>
+<p>To add a prefix ‘ex’ which will result in ‘ctags’ being renamed to ‘exctags’:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ./configure --program-prefix<span class="o">=</span>ex
+</pre></div>
+</div>
+<p>To completely change the program’s name run the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ./configure --program-transform-name<span class="o">=</span><span class="s1">&#39;s/ctags/my_ctags/; s/etags/myemacs_tags/&#39;</span>
+</pre></div>
+</div>
+<p>Please remember there is also an ‘etags’ installed alongside ‘ctags’ which you may also want to rename as shown above.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Building with configure (*nix including GNU/Linux)</a><ul>
+<li><a class="reference internal" href="#gnu-linux-distributions">GNU/Linux distributions</a></li>
+<li><a class="reference internal" href="#changing-the-executable-s-name">Changing the executable’s name</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="building.html"
+                        title="previous chapter">Building ctags</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="windows.html"
+                        title="next chapter">Building/hacking/using on MS-Windows</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="windows.html" title="Building/hacking/using on MS-Windows"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="building.html" title="Building ctags"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="building.html" >Building ctags</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

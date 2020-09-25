@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tips for hacking &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Relationship between other projects" href="other-projects.html" />
+    <link rel="prev" title="ctags Internal API" href="internal.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="other-projects.html" title="Relationship between other projects"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="internal.html" title="ctags Internal API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tips-for-hacking">
+<h1>Tips for hacking<a class="headerlink" href="#tips-for-hacking" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fussy-syntax-checking">
+<h2>Fussy syntax checking<a class="headerlink" href="#fussy-syntax-checking" title="Permalink to this headline">¶</a></h2>
+<p>If -Wall of gcc is not enough, you may be interested in this.</p>
+<p>You can change C compiler warning options with ‘WARNING_CFLAGS’
+configure arg-var option.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./configure WARNING_CFLAGS=&#39;-Wall -Wextra&#39;
+</pre></div>
+</div>
+<p>If configure option ‘--with-sparse-cgcc’ is specified,
+cgcc is used as CC. cgcc is part of Sparse, Semantic Parser for C.
+It is used in development of Linux kernel for finding programming error.
+cgcc acts as a c compiler but more fussy. ‘-Wsparse-all’ is used as
+default option passed to cgcc but you can change with ‘CGCC_CFLAGS’
+configure arg-var option.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./configure --with-sparse-cgcc [CGCC_CFLAGS=&#39;-Wsparse-all&#39;]
+</pre></div>
+</div>
+</div>
+<div class="section" id="finding-performance-bottleneck">
+<h2>Finding performance bottleneck<a class="headerlink" href="#finding-performance-bottleneck" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference external" href="https://wiki.geany.org/howtos/profiling/gperftools">https://wiki.geany.org/howtos/profiling/gperftools</a> and #383</p>
+</div>
+<div class="section" id="checking-coverage">
+<h2>Checking coverage<a class="headerlink" href="#checking-coverage" title="Permalink to this headline">¶</a></h2>
+<p>Before starting coverage measuring, you need to specify
+‘--enable-coverage-gcov’ configure option.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./configure --enable-coverage-gcov
+</pre></div>
+</div>
+<p>After doing <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code>, you can build coverage measuring ready
+ctags by <code class="docutils literal notranslate"><span class="pre">make</span></code>. At this time <em>*.gcno</em> files are generated
+by the compiler. <em>*.gcno</em> files can be removed with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code>.</p>
+<p>After building ctags, you can run run-gcov target.  When running
+<em>*.gcda</em> files.  The target runs ctags with all input files under
+<em>Units/**/input.*</em>; and call gcov. Human readable result is
+printed. The detail can be shown in <em>*.gcov</em>. files. <em>*.gcda</em> files
+and <em>*.gcov</em> files can be removed with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean-gcov</span></code>.</p>
+</div>
+<div class="section" id="reviewing-the-result-of-units-test">
+<h2>Reviewing the result of Units test<a class="headerlink" href="#reviewing-the-result-of-units-test" title="Permalink to this headline">¶</a></h2>
+<p>Try misc/review. [TBW]</p>
+</div>
+<div class="section" id="running-cppcheck">
+<h2>Running cppcheck<a class="headerlink" href="#running-cppcheck" title="Permalink to this headline">¶</a></h2>
+<p>cppcheck is a tool for static C/C++ code analysis.</p>
+<p>To run it do as following after install cppcheck:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make cppcheck
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tips for hacking</a><ul>
+<li><a class="reference internal" href="#fussy-syntax-checking">Fussy syntax checking</a></li>
+<li><a class="reference internal" href="#finding-performance-bottleneck">Finding performance bottleneck</a></li>
+<li><a class="reference internal" href="#checking-coverage">Checking coverage</a></li>
+<li><a class="reference internal" href="#reviewing-the-result-of-units-test">Reviewing the result of Units test</a></li>
+<li><a class="reference internal" href="#running-cppcheck">Running cppcheck</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="internal.html"
+                        title="previous chapter">ctags Internal API</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="other-projects.html"
+                        title="next chapter">Relationship between other projects</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="other-projects.html" title="Relationship between other projects"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="internal.html" title="ctags Internal API"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

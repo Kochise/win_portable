@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Input validation for Units &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extending ctags" href="extending.html" />
+    <link rel="prev" title="Tinst installation test" href="tinst.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="extending.html" title="Extending ctags"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tinst.html" title="Tinst installation test"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="testing.html" accesskey="U">Testing ctags</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="input-validation-for-units">
+<h1>Input validation for <em>Units</em><a class="headerlink" href="#input-validation-for-units" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Maintainer</dt>
+<dd class="field-odd"><p>Masatake YAMATO &lt;<a class="reference external" href="mailto:yamato&#37;&#52;&#48;redhat&#46;com">yamato<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<p>We have to maintain parsers for languages that we don’t know well.  We
+don’t have enough time to learn the languages.</p>
+<p><em>Units</em> test cases help us not introduce wrong changes to a parser.</p>
+<p>However, there is still an issue; a developer who doesn’t know a
+target language well may write a broken test input file for the
+language.  Here comes “Input validation.”</p>
+<p>You can validate the test input files of <em>Units</em> with <em>validate-input</em>
+make target if a validator for a language is defined.</p>
+<div class="section" id="how-to-run-and-an-example-session">
+<h2>How to run and an example session<a class="headerlink" href="#how-to-run-and-an-example-session" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example validating an input file for JSON.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> make validate-input <span class="nv">VALIDATORS</span><span class="o">=</span>jq
+<span class="go">...</span>
+<span class="go">Category: ROOT</span>
+<span class="go">------------------------------------------------------------</span>
+<span class="go">simple-json.d/input.json with jq                                 valid</span>
+
+<span class="go">Summary</span>
+<span class="go">------------------------------------------------------------</span>
+<span class="gp">  #</span>valid:                                 <span class="m">1</span>
+<span class="gp">  #</span>invalid:                               <span class="m">0</span>
+<span class="gp">  #</span>skipped <span class="o">(</span>known invalidation<span class="o">)</span>           <span class="m">0</span>
+<span class="gp">  #</span>skipped <span class="o">(</span>validator unavailable<span class="o">)</span>        <span class="m">0</span>
+</pre></div>
+</div>
+<p>This example shows validating <em>simple-json.d/input.json</em> as an input
+file with <em>jq</em> validator. With VALIDATORS variable passed via
+command-line, you can specify validators to run. Multiple validators
+can be specified using a comma-separated list.  If you don’t give
+VALIDATORS, the make target tries to use all available validators.</p>
+<p>The meanings of “valid” and “invalid” in “Summary” are apparent.  In
+two cases, the target skips validating input files:</p>
+<p>#skipped (known invalidation)</p>
+<blockquote>
+<div><p>A test case specifies KNOWN-INVALIDATION in its <em>validator</em> file.</p>
+</div></blockquote>
+<p>#skipped (validator unavailable)</p>
+<blockquote>
+<div><p>A command for a validator is not available.</p>
+</div></blockquote>
+</div>
+<div class="section" id="validator-file">
+<h2><em>validator</em> file<a class="headerlink" href="#validator-file" title="Permalink to this headline">¶</a></h2>
+<p><em>validator</em> file in a <em>Units</em> test directory specifies which
+validator the make target should use.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cat Units/simple-json.d/validator
+<span class="go">jq</span>
+</pre></div>
+</div>
+<p>If you put <em>validator</em> file to a category directory (a directory
+having <em>.r</em> suffix), the make target uses the validator specified in
+the file as default.  The default validator can be overridden with a
+<em>validator</em> file in a subdirectory.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cat Units/parser-puppetManifest.r/validator
+<span class="go">puppet</span>
+<span class="gp">#</span> cat Units/parser-puppetManifest.r/puppet-append.d/validator
+<span class="go">KNOWN-INVALIDATION</span>
+</pre></div>
+</div>
+<p>In the example, the make target uses <em>puppet</em> validator for validating
+the most of all input files under <em>Units/parser-puppetManifest.r</em>
+directory. An exception is an input file under
+<em>Units/parser-puppetManifest.r/puppet-append.d</em> directory.  The
+directory has its specific <em>validator</em> file.</p>
+<p>If a <em>Unit</em> test case doesn’t have <em>expected.tags</em> file, the make
+target doesn’t run the validator on the file even if a default
+validator is given in its category directory.</p>
+<p>If a <em>Unit</em> test case specifies KNOWN-INVALIDATION in its <em>validator</em>
+file, the make target just increments “#skipped (known invalidation)”
+counter. The target reports the counter at the end of execution.</p>
+</div>
+<div class="section" id="validator-command">
+<h2>validator command<a class="headerlink" href="#validator-command" title="Permalink to this headline">¶</a></h2>
+<p>A validator specified in a <em>validator</em> file is a command file put
+under <em>misc/validators</em> directory.  The command must have “validator-”
+as prefix in its file name. For an example,
+<em>misc/validators/validator-jq</em> is the command for “jq”.</p>
+<p>The command file must be an executable. <em>validate-input</em> make target
+runs the command in two ways.</p>
+<p><em>is_runnable</em> method</p>
+<blockquote>
+<div><p>Before running the command as a validator, the target runs
+the command with “is_runnable” as the first argument.
+A validator command can let the target know whether the
+validator command is runnable or not with exit status.
+0 means ready to run. Non-zero means not ready to run.</p>
+<p>The make target never runs the validator command for
+validation purpose if the exit status is non-zero.</p>
+<p>For an example, <em>misc/validators/validator-jq</em> command uses <em>jq</em>
+command as its backend. If <em>jq</em> command is not available on a
+system, <em>validator-jq</em> can do nothing.  If such case,
+<em>is_runnable</em> method of <em>validator-jq</em> command should exit with
+non-zero value.</p>
+</div></blockquote>
+<p><em>validate</em> method</p>
+<blockquote>
+<div><p>The make target runs the command with “validate* and an input
+file name for validating the input file.  The command exits
+non-zero if the input file contains invalid syntax. This method
+will never run if <em>is_runnable</em> method of the command exits with
+non-zero.</p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Input validation for <em>Units</em></a><ul>
+<li><a class="reference internal" href="#how-to-run-and-an-example-session">How to run and an example session</a></li>
+<li><a class="reference internal" href="#validator-file"><em>validator</em> file</a></li>
+<li><a class="reference internal" href="#validator-command">validator command</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tinst.html"
+                        title="previous chapter"><em>Tinst</em> installation test</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="extending.html"
+                        title="next chapter">Extending ctags</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="extending.html" title="Extending ctags"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tinst.html" title="Tinst installation test"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="testing.html" >Testing ctags</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

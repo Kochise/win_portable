@@ -1,0 +1,1696 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Extending ctags with Regex parser (optlib) &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ctags Internal API" href="internal.html" />
+    <link rel="prev" title="Extending ctags" href="extending.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="internal.html" title="ctags Internal API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="extending.html" title="Extending ctags"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="extending.html" accesskey="U">Extending ctags</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="extending-ctags-with-regex-parser-optlib">
+<span id="optlib"></span><h1>Extending ctags with Regex parser (<em>optlib</em>)<a class="headerlink" href="#extending-ctags-with-regex-parser-optlib" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Maintainer</dt>
+<dd class="field-odd"><p>Masatake YAMATO &lt;<a class="reference external" href="mailto:yamato&#37;&#52;&#48;redhat&#46;com">yamato<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
+</dd>
+</dl>
+<hr class="docutils" />
+<div class="section" id="option-files">
+<h2>Option files<a class="headerlink" href="#option-files" title="Permalink to this headline">¶</a></h2>
+<p>An “option” file is a file in which command line options are written line
+by line. <code class="docutils literal notranslate"><span class="pre">ctags</span></code> loads it and runs as if the options in the file were
+passed through command line.</p>
+<p>The following file is an example of an option file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Exclude directories that don&#39;t contain real code</span>
+<span class="o">--</span><span class="n">exclude</span><span class="o">=</span><span class="n">Units</span>
+        <span class="c1"># indentation is ignored</span>
+        <span class="o">--</span><span class="n">exclude</span><span class="o">=</span><span class="n">tinst</span><span class="o">-</span><span class="n">root</span>
+<span class="o">--</span><span class="n">exclude</span><span class="o">=</span><span class="n">Tmain</span>
+</pre></div>
+</div>
+<p>The character <cite>#</cite> can be used as a start marker of a line comment.
+Whitespaces at the start of lines are ignored during loading.</p>
+<p>And it works exactly as if we had called:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>ctags --exclude<span class="o">=</span>Units --exclude<span class="o">=</span>tinst-root --exclude<span class="o">=</span>Tmain
+</pre></div>
+</div>
+<p>There are two categories of option files, though they both contain command
+line options: <strong>preload</strong> and <strong>optlib</strong> option files.</p>
+<div class="section" id="preload-option-file">
+<h3>Preload option file<a class="headerlink" href="#preload-option-file" title="Permalink to this headline">¶</a></h3>
+<p>Preload option files are option files loaded by <code class="docutils literal notranslate"><span class="pre">ctags</span></code> automatically
+at start-up time. Which files are loaded at start-up time are very different
+from Exuberant-ctags.</p>
+<p>At start-up time, Universal-ctags loads files having <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> as a
+file extension under the following statically defined directories:</p>
+<ol class="arabic simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/ctags</span></code>, or <code class="file docutils literal notranslate"><span class="pre">$HOME/.config/ctags</span></code> if <cite>$XDG_CONFIG_HOME</cite> is not defined (on other than <code class="docutils literal notranslate"><span class="pre">Windows</span></code>)</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">$HOME/.ctags.d</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">$HOMEDRIVE$HOMEPATH/ctags.d</span></code> (in <code class="docutils literal notranslate"><span class="pre">Windows</span></code>)</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">.ctags.d</span></code></p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">ctags.d</span></code></p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">ctags</span></code> visits the directories in the order listed above for preloading files.
+<code class="docutils literal notranslate"><span class="pre">ctags</span></code> loads files having <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> as file extension in alphabetical
+order (strcmp(3) is used for comparing, so for example
+<code class="file docutils literal notranslate"><span class="pre">.ctags.d/ZZZ.ctags</span></code> will be loaded <em>before</em> <code class="file docutils literal notranslate"><span class="pre">.ctags.d/aaa.ctags</span></code>).</p>
+<p>Quoted from man page of Exuberant-ctags:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>FILES
+           /ctags.cnf (on MSDOS, MSWindows only)
+           /etc/ctags.conf
+           /usr/local/etc/ctags.conf
+           $HOME/.ctags
+           $HOME/ctags.cnf (on MSDOS, MSWindows only)
+           .ctags
+           ctags.cnf (on MSDOS, MSWindows only)
+                          If any of these configuration files exist, each will
+                          be expected to contain a set of default options
+                          which are read in the order listed when ctags
+                          starts, but before the CTAGS environment variable is
+                          read or any command line options are read.  This
+                          makes it possible to set up site-wide, personal or
+                          project-level defaults. It is possible to compile
+                          ctags to read an additional configuration file
+                          before any of those shown above, which will be
+                          indicated if the output produced by the --version
+                          option lists the &quot;custom-conf&quot; feature. Options
+                          appearing in the CTAGS environment variable or on
+                          the command line will override options specified in
+                          these files. Only options will be read from these
+                          files.  Note that the option files are read in
+                          line-oriented mode in which spaces are significant
+                          (since shell quoting is not possible). Each line of
+                          the file is read as one command line parameter (as
+                          if it were quoted with single quotes). Therefore,
+                          use new lines to indicate separate command-line
+                          arguments.
+</pre></div>
+</div>
+<p>What follows explains the differences and their intentions…</p>
+<div class="section" id="directory-oriented-configuration-management">
+<h4>Directory oriented configuration management<a class="headerlink" href="#directory-oriented-configuration-management" title="Permalink to this headline">¶</a></h4>
+<p>Exuberant-ctags provides a way to customize ctags with options like
+<code class="docutils literal notranslate"><span class="pre">--langdef=&lt;LANG&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>. These options are
+powerful and make ctags popular for programmers.</p>
+<p>Universal-ctags extends this idea; we have added new options for
+defining a parser, and have extended existing options. Defining
+a new parser with the options is more than “customizing” in
+Universal-ctags.</p>
+<p>To make easier the maintenance a parser defined using the options, you can put
+each language parser in a different options file. Universal-ctags doesn’t
+preload a single file. Instead, Universal-ctags loads all the files having the
+<code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> extension under the previously specified directories. If you
+have multiple parser definitions, put them in different files.</p>
+</div>
+<div class="section" id="avoiding-option-incompatibility-issues">
+<h4>Avoiding option incompatibility issues<a class="headerlink" href="#avoiding-option-incompatibility-issues" title="Permalink to this headline">¶</a></h4>
+<p>The Universal-ctags options are different from those of Exuberant-ctags,
+therefore Universal-ctags doesn’t load any of the files Exuberant-ctags loads at
+start-up. Otherwise there would be incompatibility issues if Exuberant-ctags
+loaded an option file that used a newly introduced option in Universal-ctags,
+and vice versa.</p>
+</div>
+<div class="section" id="no-system-wide-configuration">
+<h4>No system wide configuration<a class="headerlink" href="#no-system-wide-configuration" title="Permalink to this headline">¶</a></h4>
+<p>To make the preload path list short and because it was rarely ever used,
+Universal-ctags does not load any option files for system wide configuration.
+(i.e., no <code class="file docutils literal notranslate"><span class="pre">/etc/ctags.d</span></code>)</p>
+</div>
+<div class="section" id="using-ctags-for-the-file-extension">
+<h4>Using <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> for the file extension<a class="headerlink" href="#using-ctags-for-the-file-extension" title="Permalink to this headline">¶</a></h4>
+<p>Extensions <code class="file docutils literal notranslate"><span class="pre">.cnf</span></code> and <code class="file docutils literal notranslate"><span class="pre">.conf</span></code> are obsolete.
+Use the unified extension <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> only.</p>
+</div>
+</div>
+<div class="section" id="optlib-option-file">
+<h3>Optlib option file<a class="headerlink" href="#optlib-option-file" title="Permalink to this headline">¶</a></h3>
+<p>From a syntax perspective, there is no difference between optlib option files
+and preload option files; <code class="docutils literal notranslate"><span class="pre">ctags</span></code> options are written line by line in a file.</p>
+<p>Optlib option files are option files not loaded at start-up time
+automatically. To load an optlib option file, specify a pathname
+for an optlib option file with <code class="docutils literal notranslate"><span class="pre">--options=PATHNAME</span></code> option
+explicitly. The pathname can be just the filename if it’s in the
+current directory.</p>
+<p>Exuberant-ctags has the <code class="docutils literal notranslate"><span class="pre">--options</span></code> option, but you can only specify a
+single file to load. Universal-ctags extends the option in two aspects:</p>
+<ul class="simple">
+<li><p>You can specify a directory, to load all the files in that directory.</p></li>
+<li><p>You can specify a PATH list to look in. See next section for details.</p></li>
+</ul>
+<div class="section" id="specifying-a-directory">
+<h4>Specifying a directory<a class="headerlink" href="#specifying-a-directory" title="Permalink to this headline">¶</a></h4>
+<p>If you specify a directory instead of a file as the argument for the
+<code class="docutils literal notranslate"><span class="pre">--options=PATHNAME</span></code>, Universal-ctags will load all files having a
+<code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> extension under said directory in alphabetical order.</p>
+</div>
+<div class="section" id="specifying-an-optlib-path-list">
+<h4>Specifying an optlib PATH list<a class="headerlink" href="#specifying-an-optlib-path-list" title="Permalink to this headline">¶</a></h4>
+<p>Much like a command line shell, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> has an “optlib PATH list” in which it
+can look for a file (or directory) to load.</p>
+<p>When loading a file (or directory) specified with <code class="docutils literal notranslate"><span class="pre">--options=PATHNAME</span></code>,
+ctags first checks if <code class="docutils literal notranslate"><span class="pre">PATHNAME</span></code> is an absolute path or a relative path.
+An absolute path starts with ‘<code class="docutils literal notranslate"><span class="pre">/</span></code>’ or ‘<code class="docutils literal notranslate"><span class="pre">.</span></code>’.
+If <code class="docutils literal notranslate"><span class="pre">PATHNAME</span></code> is an absolute path, ctags tries to load it immediately.</p>
+<p>If, on the contrary, is a relative path, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> does two things: First,
+looks for the file (or directory) in “optlib PATH list” and tries to load it.</p>
+<p>If the file doesn’t exist in the PATH list, <code class="docutils literal notranslate"><span class="pre">ctags</span></code>  treats <code class="docutils literal notranslate"><span class="pre">PATHNAME</span></code> as a
+path relative to the working directory and loads the file.</p>
+<p>By default, optlib path list is empty. To set or add a directory
+path to the list, use <code class="docutils literal notranslate"><span class="pre">--optlib-dir=PATH</span></code>.</p>
+<p>For setting (adding one after clearing):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">optlib</span><span class="o">-</span><span class="nb">dir</span><span class="o">=</span><span class="n">PATH</span>
+</pre></div>
+</div>
+<p>For adding:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">optlib</span><span class="o">-</span><span class="nb">dir</span><span class="o">=+</span><span class="n">PATH</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="tips-for-writing-an-option-file">
+<h3>Tips for writing an option file<a class="headerlink" href="#tips-for-writing-an-option-file" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">--quiet</span> <span class="pre">--options=NONE</span></code> to disable preloading.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--_echo=MSG</span></code> and  <code class="docutils literal notranslate"><span class="pre">--_force-quit=[NUM]</span></code> options are introduced for
+debugging the process of loading option files. See “OPTIONS”
+section of <a class="reference internal" href="man/ctags-optlib.7.html#ctags-optlib-7"><span class="std std-ref">ctags-optlib(7)</span></a>.</p></li>
+<li><p>Universal-ctags has an <code class="docutils literal notranslate"><span class="pre">optlib2c</span></code> script that translates an option file
+into C source code. Your optlib parser can thus easily become a built-in parser,
+by contributing to Universal-ctags’ github. You could be famous!
+Examples are in the <code class="docutils literal notranslate"><span class="pre">optlib</span></code> directory in Universal-ctags source tree.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="regular-expression-regex-engine">
+<h2>Regular expression (regex) engine<a class="headerlink" href="#regular-expression-regex-engine" title="Permalink to this headline">¶</a></h2>
+<p>Universal-ctags currently uses the same regex engine as Exuberant-ctags:
+the POSIX.2 regex engine in GNU glibc-2.10.1. By default it uses the Extended
+Regular Expressions (ERE) syntax, as used by most engines today; however it does
+<em>not</em> support many of the “modern” extensions such as lazy captures,
+non-capturing grouping, atomic grouping, possessive quantifiers, look-ahead/behind,
+etc. It is also notoriously slow when backtracking, and has some known “quirks”
+with respect to escaping special characters in bracket expressions.</p>
+<p>For example, a pattern of <code class="docutils literal notranslate"><span class="pre">[^\]]+</span></code> is invalid in POSIX.2, because the <code class="docutils literal notranslate"><span class="pre">]</span></code> is
+<em>not</em> special inside a bracket expression, and thus should <strong>not</strong> be escaped.
+Most regex engines ignore this subtle detail in POSIX.2, and instead allow
+escaping it with <code class="docutils literal notranslate"><span class="pre">\]</span></code> inside the bracket expression and treat it as the
+literal character <code class="docutils literal notranslate"><span class="pre">]</span></code>. GNU glibc, however, does not generate an error but
+instead considers it undefined behavior, and in fact it will match very odd
+things. Instead you <strong>must</strong> use the more unintuitive <code class="docutils literal notranslate"><span class="pre">[^]]+</span></code> syntax. The same
+is technically true of other special characters inside a bracket expression,
+such as <code class="docutils literal notranslate"><span class="pre">[^\)]+</span></code>, which should instead be <code class="docutils literal notranslate"><span class="pre">[^)]+</span></code>. The <code class="docutils literal notranslate"><span class="pre">[^\)]+</span></code> will
+appear to work usually, but only because what it is really doing is matching any
+character but <code class="docutils literal notranslate"><span class="pre">\</span></code> <em>or</em> <code class="docutils literal notranslate"><span class="pre">)</span></code>. The only exceptions for using <code class="docutils literal notranslate"><span class="pre">\</span></code> inside a
+bracket expression are for <code class="docutils literal notranslate"><span class="pre">\t</span></code> and <code class="docutils literal notranslate"><span class="pre">\n</span></code>, which ctags converts to their
+single literal character control codes before passing the pattern to glibc.</p>
+<p>Another detail to keep in mind is how the regex engine treats newlines.
+Universal-ctags compiles the regular expressions in the <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> options with REG_NEWLINE set. What that means is documented
+in the
+<a class="reference external" href="https://pubs.opengroup.org/onlinepubs/009695399/functions/regcomp.html">POSIX spec</a>.
+One obvious effect is that the regex special dot any-character <code class="docutils literal notranslate"><span class="pre">.</span></code> does not match
+newline characters, the <code class="docutils literal notranslate"><span class="pre">^</span></code> anchor <em>does</em> match right after a newline, and
+the <code class="docutils literal notranslate"><span class="pre">$</span></code> anchor matches right before a newline. A more subtle issue is this text from the
+<a class="reference external" href="https://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap09.html">Regular Expressions chapter</a>:
+“the use of literal &lt;newline&gt;s or any escape sequence equivalent produces undefined
+results”. What that means is using a regex pattern with <code class="docutils literal notranslate"><span class="pre">[^\n]+</span></code> is invalid,
+and indeed in glibc produces very odd results. <strong>Never</strong> use <code class="docutils literal notranslate"><span class="pre">\n</span></code> in patterns
+for <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>, and never use them in non-matching bracket expressions
+for <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> patterns. For the experimental <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>
+you can safely use <code class="docutils literal notranslate"><span class="pre">\n</span></code> because that regex is not compiled with REG_NEWLINE.</p>
+<p>You should always test your regex patterns against test files with strings that
+do and do not match. Pay particular emphasis to when it should <em>not</em> match, and
+how <em>much</em> it matches when it should. A common error is forgetting that a
+POSIX.2 ERE engine is always greedy; the <cite>*</cite> and <cite>+</cite> quantifiers match
+as much as possible, before backtracking from the end of their match.</p>
+<p>For example this pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">foo</span><span class="o">.*</span><span class="n">bar</span>
+</pre></div>
+</div>
+<p>Will match this <strong>entire</strong> string, not just the first part:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">foobar</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="ow">and</span> <span class="n">even</span> <span class="n">more</span> <span class="n">bar</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="regex-option-argument-flags">
+<h2>Regex option argument flags<a class="headerlink" href="#regex-option-argument-flags" title="Permalink to this headline">¶</a></h2>
+<p>Many regex-based options described in this document support additional arguments
+in the form of long flags. Long flags are specified with surrounding <code class="docutils literal notranslate"><span class="pre">{</span></code> and
+<code class="docutils literal notranslate"><span class="pre">}</span></code>.</p>
+<p>The general format and placement is as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">regex</span><span class="o">-&lt;</span><span class="n">LANG</span><span class="o">&gt;=&lt;</span><span class="n">PATTERN</span><span class="o">&gt;/&lt;</span><span class="n">NAME</span><span class="o">&gt;/</span><span class="p">[</span><span class="o">&lt;</span><span class="n">KIND</span><span class="o">&gt;/</span><span class="p">]</span><span class="n">LONGFLAGS</span>
+</pre></div>
+</div>
+<p>Some examples:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Pod</span><span class="o">=</span><span class="sr">/^=head1[ \t]+(.+)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/c/</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="sr">/set=[^;]+/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span><span class="p">{</span><span class="n">icase</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Man</span><span class="o">=</span><span class="sr">/^\.TH[[:space:]]{1,}&quot;([^&quot;]{1,})&quot;.*/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/t/</span><span class="p">{</span><span class="n">exclusive</span><span class="p">}{</span><span class="n">icase</span><span class="p">}{</span><span class="n">scope</span><span class="o">=</span><span class="nb">push</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Gdbinit</span><span class="o">=</span><span class="sr">/^#/</span><span class="o">/</span><span class="p">{</span><span class="n">exclusive</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that the last example only has two <code class="docutils literal notranslate"><span class="pre">/</span></code> forward slashes following
+the regex pattern, as a shortened form when no kind-spec exists.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> option also follows the above format. The
+experimental <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> option follows a slightly
+modified version as well.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--langdef=&lt;LANG&gt;</span></code> option also supports long flags, but not using
+forward-slash separators.</p>
+<div class="section" id="regex-control-flags">
+<h3>Regex control flags<a class="headerlink" href="#regex-control-flags" title="Permalink to this headline">¶</a></h3>
+<p>The regex matching can be controlled by adding flags to the <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code>, and experimental <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> options.
+This is done by either using the single character short flags <code class="docutils literal notranslate"><span class="pre">b</span></code>, <code class="docutils literal notranslate"><span class="pre">e</span></code> and
+<code class="docutils literal notranslate"><span class="pre">i</span></code> flags as explained in the <em>ctags.1</em> man page, or by using long flags
+described earlier. The long flags require more typing but are much more
+readable.</p>
+<p>The mapping between the older short flag names and long flag names is:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>short flag</p></th>
+<th class="head"><p>long flag</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>b</p></td>
+<td><p>basic</p></td>
+<td><p>Posix basic regular expression syntax.</p></td>
+</tr>
+<tr class="row-odd"><td><p>e</p></td>
+<td><p>extend</p></td>
+<td><p>Posix extended regular expression syntax (default).</p></td>
+</tr>
+<tr class="row-even"><td><p>i</p></td>
+<td><p>icase</p></td>
+<td><p>Case-insensitive matching.</p></td>
+</tr>
+</tbody>
+</table>
+<p>So the following <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> expression:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">m4</span><span class="o">=</span><span class="n">d</span><span class="p">,</span><span class="n">definition</span><span class="p">,</span><span class="n">definitions</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">m4</span><span class="o">=</span><span class="sr">/^m4_define\(\[([^]$\(]+).+$/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/d/x</span>
+</pre></div>
+</div>
+<p>is the same as:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">m4</span><span class="o">=</span><span class="n">d</span><span class="p">,</span><span class="n">definition</span><span class="p">,</span><span class="n">definitions</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">m4</span><span class="o">=</span><span class="sr">/^m4_define\(\[([^]$\(]+).+$/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/d/</span><span class="p">{</span><span class="n">extend</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The characters <code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code> may not be suitable for command line
+use, but long flags are mostly intended for option files.</p>
+</div>
+<div class="section" id="exclusive-flag-in-regex">
+<h3>Exclusive flag in regex<a class="headerlink" href="#exclusive-flag-in-regex" title="Permalink to this headline">¶</a></h3>
+<p>By default, lines read from the input files will be matched against <strong>all</strong> the
+regular expressions defined with <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>. Each successfully matched
+regular expression will emit a tag.</p>
+<p>In some cases another policy, exclusive-matching, is preferable to the
+all-matching policy. Exclusive-matching means the rest of regular
+expressions are not tried if one of regular expressions is matched
+successfully, for that input line.</p>
+<p>For specifying exclusive-matching the flags <code class="docutils literal notranslate"><span class="pre">exclusive</span></code> (long) and <code class="docutils literal notranslate"><span class="pre">x</span></code>
+(short) were introduced. For example, this is used in
+<code class="file docutils literal notranslate"><span class="pre">optlib/gdbinit.ctags</span></code> for ignoring comment lines in <code class="docutils literal notranslate"><span class="pre">gdb</span></code> files,
+as follows:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Gdbinit</span><span class="o">=</span><span class="sr">/^#/</span><span class="o">/</span><span class="p">{</span><span class="n">exclusive</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Comments in gbd files start with <code class="docutils literal notranslate"><span class="pre">#</span></code> so the above line is the first regex
+match line in <code class="file docutils literal notranslate"><span class="pre">gdbinit.ctags</span></code>, so that subsequent regex matches are
+not tried for the input line.</p>
+<p>If an empty name pattern(<code class="docutils literal notranslate"><span class="pre">//</span></code>) is used for the <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> option,
+ctags warns it as a wrong usage of the option. However, if the flags
+<code class="docutils literal notranslate"><span class="pre">exclusive</span></code> or <code class="docutils literal notranslate"><span class="pre">x</span></code> is specified, the warning is suppressed.</p>
+<p>NOTE: This flag does not make sense in the multi-line <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code>
+option nor the multi-table <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> option.</p>
+</div>
+<div class="section" id="experimental-flags">
+<h3>Experimental flags<a class="headerlink" href="#experimental-flags" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These flags are experimental. They apply to all regex option
+types: basic <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>, multi-line <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code>,
+and the experimental multi-table <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> option.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_extra</span></code></p>
+<blockquote>
+<div><p>This flag indicates the tag should only be generated if the given
+‘extra’ type is enabled, as explained in <a class="reference internal" href="#extras"><span class="std std-ref">Conditional tagging with extras</span></a>.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">_field</span></code></p>
+<blockquote>
+<div><p>This flag allows a regex match to add additional custom fields to the
+generated tag entry, as explained in <a class="reference internal" href="#fields"><span class="std std-ref">Adding custom fields to the tag output</span></a>.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">_role</span></code></p>
+<blockquote>
+<div><p>This flag allows a regex match to generate a reference tag entry and
+specify the role of the reference, as explained in <a class="reference internal" href="#roles"><span class="std std-ref">Capturing reference tags</span></a>.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">_anonymous=PREFIX</span></code></p>
+<blockquote>
+<div><p>This flag allows a regex match to generate an anonymous tag entry.
+ctags gives a name starting with <code class="docutils literal notranslate"><span class="pre">PREFIX</span></code> and emits it.
+This flag is useful to record the position for a language object
+having no name. A lambda function in a functional programming
+language is a typical example of a language object having no name.</p>
+<p>Consider following input (input.foo):</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">f</span> <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">+</span> <span class="mi">1</span> <span class="nv">x</span><span class="p">))))</span>
+        <span class="o">...</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>Consider following optlib file (foo.ctags):</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">Foo</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">Foo</span><span class="o">=+.</span><span class="n">foo</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="n">l</span><span class="p">,</span><span class="n">lambda</span><span class="p">,</span><span class="n">lambda</span> <span class="n">functions</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="sr">/.*\(lambda .*//l/</span><span class="p">{</span><span class="n">_anonymous</span><span class="o">=</span><span class="n">L</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>You can get following tags file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> u-ctags  --options<span class="o">=</span>foo.ctags -o - /tmp/input.foo
+<span class="go">Le4679d360100   /tmp/input.foo  /^(let ((f (lambda (x) (+ 1 x))))$/;&quot;   l</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="ghost-kind-in-regex-parser">
+<h3>Ghost kind in regex parser<a class="headerlink" href="#ghost-kind-in-regex-parser" title="Permalink to this headline">¶</a></h3>
+<p>If a whitespace is used as a kind letter, it is never printed when
+ctags is called with <code class="docutils literal notranslate"><span class="pre">--list-kinds</span></code> option.  This kind is
+automatically assigned to an empty name pattern.</p>
+<p>Normally you don’t need to know this.</p>
+</div>
+</div>
+<div class="section" id="scope-tracking-in-a-regex-parser">
+<h2>Scope tracking in a regex parser<a class="headerlink" href="#scope-tracking-in-a-regex-parser" title="Permalink to this headline">¶</a></h2>
+<p>About the <cite>{scope=..}</cite> flag itself for scope tracking, see “FLAGS FOR
+--regex-&lt;LANG&gt; OPTION” section of <a class="reference internal" href="man/ctags-optlib.7.html#ctags-optlib-7"><span class="std std-ref">ctags-optlib(7)</span></a>.</p>
+<p>Example 1:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in /tmp/input.foo</span>
+<span class="k">class</span> <span class="nc">foo</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="n">baz</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">baz</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">goo</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">gar</span><span class="p">(</span><span class="n">gaz</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">gaz</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># in /tmp/foo.ctags:</span>
+<span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">Foo</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">Foo</span><span class="o">=+.</span><span class="n">foo</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">class</span><span class="p">,</span><span class="n">classes</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="n">d</span><span class="p">,</span><span class="n">definition</span><span class="p">,</span><span class="n">definitions</span>
+
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="sr">/^class[[:blank:]]+([[:alpha:]]+):/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/c/</span><span class="p">{</span><span class="n">scope</span><span class="o">=</span><span class="n">set</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Foo</span><span class="o">=</span><span class="sr">/^[[:blank:]]+def[[:blank:]]+([[:alpha:]]+).*:/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/d/</span><span class="p">{</span><span class="n">scope</span><span class="o">=</span><span class="nb">ref</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags --options<span class="o">=</span>/tmp/foo.ctags -o - /tmp/input.foo
+<span class="go">bar     /tmp/input.foo  /^    def bar(baz):$/;&quot; d       class:foo</span>
+<span class="go">foo     /tmp/input.foo  /^class foo:$/;&quot;        c</span>
+<span class="go">gar     /tmp/input.foo  /^    def gar(gaz):$/;&quot; d       class:goo</span>
+<span class="go">goo     /tmp/input.foo  /^class goo:$/;&quot;        c</span>
+</pre></div>
+</div>
+<p>Example 2:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// in /tmp/input.pp</span>
+<span class="n">class</span> <span class="n">foo</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">bar</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># in /tmp/pp.ctags:</span>
+<span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">pp</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">pp</span><span class="o">=+.</span><span class="n">pp</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">pp</span><span class="o">=</span><span class="n">c</span><span class="p">,</span><span class="n">class</span><span class="p">,</span><span class="n">classes</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">pp</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">variable</span><span class="p">,</span><span class="n">variables</span>
+
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">pp</span><span class="o">=</span><span class="sr">/^[[:blank:]]*\}/</span><span class="o">/</span><span class="p">{</span><span class="n">scope</span><span class="o">=</span><span class="nb">pop</span><span class="p">}{</span><span class="n">exclusive</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">pp</span><span class="o">=</span><span class="sr">/^class[[:blank:]]*([[:alnum:]]+)[[[:blank:]]]*\{/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/c/</span><span class="p">{</span><span class="n">scope</span><span class="o">=</span><span class="nb">push</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">pp</span><span class="o">=</span><span class="sr">/^[[:blank:]]*int[[:blank:]]*([[:alnum:]]+)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span><span class="p">{</span><span class="n">scope</span><span class="o">=</span><span class="nb">ref</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags --options<span class="o">=</span>/tmp/pp.ctags -o - /tmp/input.pp
+<span class="go">bar     /tmp/input.pp   /^    include bar$/;&quot;   v       class:foo</span>
+<span class="go">foo     /tmp/input.pp   /^class foo {$/;&quot;       c</span>
+</pre></div>
+</div>
+<p>NOTE: This flag doesn’t work well with <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;=</span></code>.</p>
+</div>
+<div class="section" id="overriding-the-letter-for-file-kind">
+<h2>Overriding the letter for file kind<a class="headerlink" href="#overriding-the-letter-for-file-kind" title="Permalink to this headline">¶</a></h2>
+<p>One of the built-in tag kinds in Universal-ctags is the <code class="docutils literal notranslate"><span class="pre">F</span></code> file kind.
+Overriding the letter for file kind is not allowed in Universal-ctags.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Don’t use <code class="docutils literal notranslate"><span class="pre">F</span></code> as a kind letter in your parser. (See issue #317 on github)</p>
+</div>
+</div>
+<div class="section" id="generating-fully-qualified-tags-automatically-from-scope-information">
+<h2>Generating fully qualified tags automatically from scope information<a class="headerlink" href="#generating-fully-qualified-tags-automatically-from-scope-information" title="Permalink to this headline">¶</a></h2>
+<p>If scope fields are filled properly with <cite>{scope=…}</cite> regex flags,
+you can use the field values for generating fully qualified tags.
+About the <cite>{scope=..}</cite> flag itself, see “FLAGS FOR --regex-&lt;LANG&gt;
+OPTION” section of <a class="reference internal" href="man/ctags-optlib.7.html#ctags-optlib-7"><span class="std std-ref">ctags-optlib(7)</span></a>.</p>
+<p>Specify <cite>{_autoFQTag}</cite> to the end of <code class="docutils literal notranslate"><span class="pre">--langdef=&lt;LANG&gt;</span></code> option like
+<code class="docutils literal notranslate"><span class="pre">-langdef=Foo{_autoFQTag}</span></code> to make ctags generate fully qualified
+tags automatically.</p>
+<p><cite>.</cite> is the (ctags global) default separator combining names into a
+fully qualified tag. You can customize separators with
+<code class="docutils literal notranslate"><span class="pre">--_scopesep-&lt;LANG&gt;=...</span></code> option.</p>
+<p>input.foo:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">X</span>
+   <span class="n">var</span> <span class="n">y</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>foo.ctags:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>--langdef=foo{_autoFQTag}
+--map-foo=+.foo
+--kinddef-foo=c,class,classes
+--kinddef-foo=v,var,variables
+--regex-foo=/class ([A-Z]*)/\1/c/{scope=push}
+--regex-foo=/end///{placeholder}{scope=pop}
+--regex-foo=/[ \t]*var ([a-z]*)/\1/v/{scope=ref}
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ u-ctags --quiet --options=NONE --options=./foo.ctags -o - input.foo
+X       input.foo       /^class X$/;&quot;   c
+y       input.foo       /^      var y$/;&quot;       v       class:X
+
+$ u-ctags --quiet --options=NONE --options=./foo.ctags --extras=+q -o - input.foo
+X       input.foo       /^class X$/;&quot;   c
+X.y     input.foo       /^      var y$/;&quot;       v       class:X
+y       input.foo       /^      var y$/;&quot;       v       class:X
+</pre></div>
+</div>
+<p>“X.y” is printed as a fully qualified tag when <code class="docutils literal notranslate"><span class="pre">--extras=+q</span></code> is given.</p>
+<div class="section" id="customizing-scope-separators">
+<h3>Customizing scope separators<a class="headerlink" href="#customizing-scope-separators" title="Permalink to this headline">¶</a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--_scopesep-&lt;LANG&gt;=[&lt;parent-kindLetter&gt;]/&lt;child-kindLetter&gt;:&lt;sep&gt;</span></code>
+option for customizing if the language uses <cite>{_autoFQTag}</cite>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">parent-kindLetter</span></code></p>
+<blockquote>
+<div><p>The kind letter for a tag of outer-scope.</p>
+<p>You can use <cite>*</cite> for specifying as wildcards that means
+“any kinds” for a tag of outer-scope.</p>
+<p>If you omit <code class="docutils literal notranslate"><span class="pre">parent-kindLetter</span></code>, the separator is used as
+a prefix for tags having the kind specified with <code class="docutils literal notranslate"><span class="pre">child-kindLetter</span></code>.
+This prefix can be used to refer to global namespace or similar concepts if the
+language has one.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">child-kindLetter</span></code></p>
+<blockquote>
+<div><p>The kind letter for a tag of inner-scope.</p>
+<p>You can use <cite>*</cite> for specifying as wildcards that means
+“any kinds” for a tag of inner-scope.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">sep</span></code></p>
+<blockquote>
+<div><p>In a qualified tag, if the outer-scope has kind and <code class="docutils literal notranslate"><span class="pre">parent-kindLetter</span></code>
+the inner-scope has <code class="docutils literal notranslate"><span class="pre">child-kindLetter</span></code>, then <code class="docutils literal notranslate"><span class="pre">sep</span></code> is instead in
+between the scope names in the generated tags file.</p>
+</div></blockquote>
+<p>specifying <cite>*</cite> as both  <code class="docutils literal notranslate"><span class="pre">parent-kindLetter</span></code> and <code class="docutils literal notranslate"><span class="pre">child-kindLetter</span></code>
+sets <code class="docutils literal notranslate"><span class="pre">sep</span></code> as the language default separator. It is used as fallback.</p>
+<p>Specifying <cite>*</cite> as <code class="docutils literal notranslate"><span class="pre">child-kindLetter</span></code> and omitting <code class="docutils literal notranslate"><span class="pre">parent-kindLetter</span></code>
+sets <code class="docutils literal notranslate"><span class="pre">sep</span></code> as the language default prefix. It is used as fallback.</p>
+<p>NOTE: There is no ctags global default prefix.
+NOTE: <code class="docutils literal notranslate"><span class="pre">_scopesep-&lt;LANG&gt;=...</span></code> option affects only a parser that
+enables <code class="docutils literal notranslate"><span class="pre">_autoFQTag</span></code>. A parser building full qualified tags
+manually ignores the option.</p>
+<p>Let’s see an example.
+The input file is written in Tcl.  Tcl parser is not an optlib
+parser. However, it uses the <code class="docutils literal notranslate"><span class="pre">_autoFQTag</span></code> feature internally.
+Therefore, <code class="docutils literal notranslate"><span class="pre">_scopesep-Tcl=</span></code> option works well. Tcl parser
+defines two kinds <cite>n (namespace)</cite> and <cite>p (procedure)</cite>.</p>
+<p>By default, Tcl parser uses <cite>::</cite> as scope separator. The parser also
+uses <cite>::</cite> as root prefix.</p>
+<div class="highlight-tcl notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span> eval N <span class="k">{</span>
+        <span class="k">namespace</span> eval M <span class="k">{</span>
+                <span class="k">proc</span> pr0 <span class="k">{</span><span class="nv">s</span><span class="k">}</span> <span class="k">{</span>
+                        <span class="nb">puts</span> <span class="nv">$s</span>
+                <span class="k">}</span>
+        <span class="k">}</span>
+<span class="k">}</span>
+
+<span class="k">proc</span> pr1 <span class="k">{</span><span class="nv">s</span><span class="k">}</span> <span class="k">{</span>
+        <span class="nb">puts</span> <span class="nv">$s</span>
+<span class="k">}</span>
+</pre></div>
+</div>
+<p><cite>M</cite> is defined under the scope of <cite>N</cite>. <cite>pr0</cite> is defined under the scope
+of <cite>M</cite>. <cite>N</cite> and <cite>pr1</cite> are at top level (so they are candidates to be added
+prefixes). <cite>M</cite> and <cite>N</cite> are language objects with <cite>n (namespace)</cite> kind.
+<cite>pr0</cite> and <cite>pr1</cite> are language objects with <cite>p (procedure)</cite> kind.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags -o - --extras<span class="o">=</span>+q input.tcl
+<span class="go">::N     input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">::N::M  input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:::N</span>
+<span class="go">::N::M::pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:::N::M</span>
+<span class="go">::pr1   input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+<span class="go">M       input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:::N</span>
+<span class="go">N       input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:::N::M</span>
+<span class="go">pr1     input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+</pre></div>
+</div>
+<p>Let’s change the default separator to <cite>-&gt;</cite>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags -o - --extras<span class="o">=</span>+q --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;*/*:-&gt;&#39;</span> input.tcl
+<span class="go">::N     input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">::N-&gt;M  input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:::N</span>
+<span class="go">::N-&gt;M-&gt;pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:::N-&gt;M</span>
+<span class="go">::pr1   input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+<span class="go">M       input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:::N</span>
+<span class="go">N       input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:::N-&gt;M</span>
+<span class="go">pr1     input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+</pre></div>
+</div>
+<p>Let’s define ‘^’ as default prefix:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags -o - --extras<span class="o">=</span>+q --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;*/*:-&gt;&#39;</span> --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;/*:^&#39;</span> input.tcl
+<span class="go">M       input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:^N</span>
+<span class="go">N       input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">^N      input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">^N-&gt;M   input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:^N</span>
+<span class="go">^N-&gt;M-&gt;pr0      input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:^N-&gt;M</span>
+<span class="go">^pr1    input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+<span class="go">pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:^N-&gt;M</span>
+<span class="go">pr1     input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+</pre></div>
+</div>
+<p>Let’s override the specification of separator for combining a
+namespace and a procedure with ‘+’: (About the separator for
+combining a namespace and another namespace, ctags uses the default separator.)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags -o - --extras<span class="o">=</span>+q --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;*/*:-&gt;&#39;</span> --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;/*:^&#39;</span> <span class="se">\</span>
+                        --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;n/p:+&#39;</span> input.tcl
+<span class="go">M       input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:^N</span>
+<span class="go">N       input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">^N      input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">^N-&gt;M   input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:^N</span>
+<span class="go">^N-&gt;M+pr0       input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:^N-&gt;M</span>
+<span class="go">^pr1    input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+<span class="go">pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:^N-&gt;M</span>
+<span class="go">pr1     input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+</pre></div>
+</div>
+<p>Let’s override the definition of prefix for a namespace with ‘&#64;’:
+(About the prefix for procedures, ctags uses the default prefix.)</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ctags -o - --extras<span class="o">=</span>+q --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;*/*:-&gt;&#39;</span> --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;/*:^&#39;</span> <span class="se">\</span>
+                         --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;n/p:+&#39;</span> --_scopesep-Tcl<span class="o">=</span><span class="s1">&#39;/n:@&#39;</span> input.tcl
+<span class="go">@N      input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">@N-&gt;M   input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:@N</span>
+<span class="go">@N-&gt;M+pr0       input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:@N-&gt;M</span>
+<span class="go">M       input.tcl       /^      namespace eval M {$/;&quot;  n       namespace:@N</span>
+<span class="go">N       input.tcl       /^namespace eval N {$/;&quot;        n</span>
+<span class="go">^pr1    input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+<span class="go">pr0     input.tcl       /^              proc pr0 {s} {$/;&quot;      p       namespace:@N-&gt;M</span>
+<span class="go">pr1     input.tcl       /^proc pr1 {s} {$/;&quot;    p</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="multi-line-pattern-match">
+<h2>Multi-line pattern match<a class="headerlink" href="#multi-line-pattern-match" title="Permalink to this headline">¶</a></h2>
+<p>We often need to scan multiple lines to generate a tag, whether due to
+needing contextual information to decide whether to tag or not, or to
+constrain generating tags to only certain cases, or to grab multiple
+substrings to generate the tag name.</p>
+<p>Universal-ctags has two ways to accomplish this: multi-line regex options,
+and an experimental multi-table regex options described later.</p>
+<p>The newly introduced <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> is similar to <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>
+except the pattern is applied to the whole file’s contents, not line by line.</p>
+<p>This example is based on an issue #219 posted by &#64;andreicristianpetcu:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// in input.java:</span>
+
+<span class="nd">@Subscribe</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">catchEvent</span><span class="p">(</span><span class="n">SomeEvent</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nd">@Subscribe</span>
+<span class="kd">public</span> <span class="kt">void</span>
+<span class="nf">recover</span><span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above java code is similar to the Java <a class="reference external" href="https://spring.io">Spring</a>
+framework. The <code class="docutils literal notranslate"><span class="pre">&#64;Subscribe</span></code> annotation is a keyword for the framework, and the
+developer would like to have a tag generated for each method annotated with
+<code class="docutils literal notranslate"><span class="pre">&#64;Subscribe</span></code>, using the name of the method followed by a dash followed by the
+type of the argument. For example the developer wants the tag name
+<code class="docutils literal notranslate"><span class="pre">Event-SomeEvent</span></code> generated for the first method shown above.</p>
+<p>To accomplish this, the developer creates a <code class="file docutils literal notranslate"><span class="pre">spring.ctags</span></code> file with
+the following:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># in spring.ctags:</span>
+<span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">javaspring</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">javaspring:</span><span class="o">+.</span><span class="n">java</span>
+<span class="o">--</span><span class="n">mline</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">javaspring</span><span class="o">=</span><span class="sr">/@Subscribe([[:space:]])*([a-z ]+)[[:space:]]*([a-zA-Z]*)\(([a-zA-Z]*)/</span><span class="o">\</span><span class="mi">3</span><span class="o">-\</span><span class="mi">4</span><span class="sr">/s,subscription/</span><span class="p">{</span><span class="n">mgroup</span><span class="o">=</span><span class="mi">3</span><span class="p">}</span>
+<span class="o">--</span><span class="n">fields</span><span class="o">=+</span><span class="n">ln</span>
+</pre></div>
+</div>
+<p>And now using <code class="file docutils literal notranslate"><span class="pre">spring.ctags</span></code> the tag file has this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./ctags -o - --options<span class="o">=</span>./spring.ctags input.java
+<span class="go">Event-SomeEvent input.java      /^public void catchEvent(SomeEvent e)$/;&quot;       s       line:2  language:javaspring</span>
+<span class="go">recover-Exception       input.java      /^    recover(Exception e)$/;&quot;  s       line:10 language:javaspring</span>
+</pre></div>
+</div>
+<div class="section" id="multiline-pattern-flags">
+<h3>Multiline pattern flags<a class="headerlink" href="#multiline-pattern-flags" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These flags also apply to the experimental <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>
+option described later.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">{mgroup=N}</span></code></p>
+<blockquote>
+<div><p>This flag indicates the pattern should be applied to the whole file
+contents, not line by line. <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of a capture group in the
+pattern, which is used to record the line number location of the tag. In the
+above example <code class="docutils literal notranslate"><span class="pre">3</span></code> is specified. The start position of the regex capture
+group 3, relative to the whole file is used.</p>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You <strong>must</strong> add an <code class="docutils literal notranslate"><span class="pre">{mgroup=N}</span></code> flag to the multi-line
+<code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> option, even if the <code class="docutils literal notranslate"><span class="pre">N</span></code> is <code class="docutils literal notranslate"><span class="pre">0</span></code> (meaning the
+start position of the whole regex pattern). You do not need to add it for
+the multi-table <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">{_advanceTo=N[start|end]}</span></code></p>
+<blockquote>
+<div><p>A regex pattern is applied to whole file’s contents iteratively. This long
+flag specifies from where the pattern should be applied in the next
+iteration for regex matching. When a pattern matches, the next pattern
+matching starts from the start or end of capture group <code class="docutils literal notranslate"><span class="pre">N</span></code>. By default it
+advances to the end of the whole match (i.e., <code class="docutils literal notranslate"><span class="pre">{_advanceTo=0end}</span></code> is
+the default).</p>
+<p>Let’s think about following input</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">def</span> <span class="n">abc</span>
+</pre></div>
+</div>
+<p>Consider two sets of options, foo and bar.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># foo.ctags:</span>
+<span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">foo</span>
+<span class="o">--</span><span class="n">langmap</span><span class="o">=</span><span class="n">foo:</span><span class="o">.</span><span class="n">foo</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">foo</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="n">something</span><span class="p">,</span><span class="n">something</span>
+<span class="o">--</span><span class="n">mline</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">foo</span><span class="o">=</span><span class="sr">/def *([a-z]+)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/a/</span><span class="p">{</span><span class="n">mgroup</span><span class="o">=</span><span class="mi">1</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># bar.ctags:</span>
+<span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">bar</span>
+<span class="o">--</span><span class="n">langmap</span><span class="o">=</span><span class="n">bar:</span><span class="o">.</span><span class="n">bar</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">bar</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="n">something</span><span class="p">,</span><span class="n">something</span>
+<span class="o">--</span><span class="n">mline</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">bar</span><span class="o">=</span><span class="sr">/def *([a-z]+)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/a/</span><span class="p">{</span><span class="n">mgroup</span><span class="o">=</span><span class="mi">1</span><span class="p">}{</span><span class="n">_advanceTo</span><span class="o">=</span><span class="mi">1</span><span class="n">start</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><em>foo.ctags</em> emits following tags output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>def  input.foo       /^def def abc$/;&quot;       a
+</pre></div>
+</div>
+<p><em>bar.ctgs</em> emits following tags output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>def  input-0.bar     /^def def abc$/;&quot;       a
+abc  input-0.bar     /^def def abc$/;&quot;       a
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">_advanceTo=1start</span></code> is specified in <em>bar.ctags</em>.
+This allows ctags to capture “abc”.</p>
+<p>At the first iteration, the patterns of both
+<em>foo.ctags</em> and <em>bar.ctags</em> match as follows</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span>   <span class="mi">1</span>       <span class="p">(</span><span class="n">start</span><span class="p">)</span>
+<span class="n">v</span>   <span class="n">v</span>
+<span class="k">def</span> <span class="nf">def</span> <span class="n">abc</span>
+           <span class="o">^</span>
+           <span class="mi">0</span><span class="p">,</span><span class="mi">1</span>  <span class="p">(</span><span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>“def” at the group 1 is captured as a tag in
+both languages. At the next iteration, the positions
+where the pattern matching is applied to are not the
+same in the languages.</p>
+<p><em>foo.ctags</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>           <span class="mi">0</span><span class="n">end</span> <span class="p">(</span><span class="n">default</span><span class="p">)</span>
+           <span class="n">v</span>
+<span class="k">def</span> <span class="nf">def</span> <span class="n">abc</span>
+</pre></div>
+</div>
+<p><em>bar.ctags</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="mi">1</span><span class="n">start</span> <span class="p">(</span><span class="k">as</span> <span class="n">specified</span> <span class="ow">in</span> <span class="n">_advanceTo</span> <span class="n">long</span> <span class="n">flag</span><span class="p">)</span>
+        <span class="n">v</span>
+<span class="k">def</span> <span class="nf">def</span> <span class="n">abc</span>
+</pre></div>
+</div>
+<p>This difference of positions makes the difference of tags output.</p>
+<p>A more relevant use-case is when <code class="docutils literal notranslate"><span class="pre">{_advanceTo=N[start|end]}</span></code> is used in
+the experimental <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>, to “advance” back to the
+beginning of a match, so that one can generate multiple tags for the same
+input line(s).</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This flag doesn’t work well with scope related flags and <code class="docutils literal notranslate"><span class="pre">exclusive</span></code> flags.</p>
+</div>
+</div>
+</div>
+<div class="section" id="advanced-pattern-matching-with-multiple-regex-tables">
+<h2>Advanced pattern matching with multiple regex tables<a class="headerlink" href="#advanced-pattern-matching-with-multiple-regex-tables" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a highly experimental feature. This will not go into
+the man page of 6.0. But let’s be honest, it’s the most exciting feature!</p>
+</div>
+<p>In some cases, the <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> options are not
+sufficient to generate the tags for a particular language. Some of the common
+reasons for this are:</p>
+<ul class="simple">
+<li><p>To ignore commented lines or sections for the language file, so that
+tags aren’t generated for symbols that are within the comments.</p></li>
+<li><p>To enter and exit scope, and use it for tagging based on contextual
+state or with end-scope markers that are difficult to match to their
+associated scope entry point.</p></li>
+<li><p>To support nested scopes.</p></li>
+<li><p>To change the pattern searched for, or the resultant tag for the same
+pattern, based on scoping or contextual location.</p></li>
+<li><p>To break up an overly complicated <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> pattern into
+separate regex patterns, for performance or readability reasons.</p></li>
+</ul>
+<p>To help handle such things, Universal-ctags has been enhanced with multi-table
+regex matching. The feature is inspired by <cite>lex</cite>, the fast lexical analyzer
+generator, which is a popular tool on Unix environments for writing parsers, and
+<a class="reference external" href="http://pygments.org/docs/lexerdevelopment/">RegexLexer</a> of Pygments.
+Knowledge about them will help you understand the new options.</p>
+<p>The new options are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">--_tabledef-&lt;LANG&gt;</span></code></p>
+<blockquote>
+<div><p>Declares a new regex matching table of a given name for the language,
+as described in <a class="reference internal" href="#tabledef"><span class="std std-ref">Declaring a new regex table</span></a>.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code></p>
+<blockquote>
+<div><p>Adds a regex pattern and associated tag generation information and flags, to
+the given table, as described in <a class="reference internal" href="#mtable-regex"><span class="std std-ref">Adding a regex to a regex table</span></a>.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">--_mtable-extend-&lt;LANG&gt;</span></code></p>
+<blockquote>
+<div><p>Includes a previously-defined regex table to the named one.</p>
+</div></blockquote>
+<p>The above will be discussed in more detail shortly.</p>
+<p>First, let’s explain the feature with an example. Consider an
+imaginary language “<cite>X</cite>” has a similar syntax as JavaScript: “var” is
+used as defining variable(s), , and “/* … */” is used for block
+comments.</p>
+<p>Here is our input, <code class="file docutils literal notranslate"><span class="pre">input.x</span></code>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/* BLOCK COMMENT</span>
+<span class="cm">var dont_capture_me;</span>
+<span class="cm">*/</span>
+<span class="kd">var</span> <span class="n">a</span> <span class="cm">/* ANOTHER BLOCK COMMENT */</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>We want ctags to capture <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> - but it is difficult to write a parser
+that will ignore <code class="docutils literal notranslate"><span class="pre">dont_capture_me</span></code> in the comment with a classical regex
+parser defined with <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code>, because of
+the block comments.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> option only works on one line at a time, so can not know
+<code class="docutils literal notranslate"><span class="pre">dont_capture_me</span></code> is within comments. The <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> could
+do it in theory, but due to the greedy nature of the regex engine it is
+impractical and potentially inefficient to do so, given that there could be
+multiple block comments in the file, with <cite>*</cite> inside them, etc.</p>
+<p>A parser written with multi-table regex, on the other hand, can capture only
+<code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> safely. But it is more complicated to understand.</p>
+<p>Here is a 1st version of <code class="file docutils literal notranslate"><span class="pre">X.ctags</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">X</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">X</span><span class="o">=.</span><span class="n">x</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">variables</span>
+</pre></div>
+</div>
+<p>Not so interesting. It doesn’t really <em>do</em> anything yet. It just creates a new
+language named <code class="docutils literal notranslate"><span class="pre">X</span></code>, for files ending with a <code class="file docutils literal notranslate"><span class="pre">.x</span></code> suffix, and defines a
+new tag for variable kinds.</p>
+<p>When writing a multi-table parser, you have to think about the necessary states
+of parsing. For the parser of language <code class="docutils literal notranslate"><span class="pre">X</span></code>, we need the following states:</p>
+<ul class="simple">
+<li><p><cite>toplevel</cite> (initial state)</p></li>
+<li><p><cite>comment</cite> (inside comment)</p></li>
+<li><p><cite>vars</cite> (var statements)</p></li>
+</ul>
+<div class="section" id="declaring-a-new-regex-table">
+<span id="tabledef"></span><h3>Declaring a new regex table<a class="headerlink" href="#declaring-a-new-regex-table" title="Permalink to this headline">¶</a></h3>
+<p>Before adding regular expressions, you have to declare tables for each state
+with the <code class="docutils literal notranslate"><span class="pre">--_tabledef-&lt;LANG&gt;=&lt;TABLE&gt;</span></code> option.</p>
+<p>Here is the 2nd version of <code class="file docutils literal notranslate"><span class="pre">X.ctags</span></code> doing so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">X</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">X</span><span class="o">=.</span><span class="n">x</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">variables</span>
+
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="nb">vars</span>
+</pre></div>
+</div>
+<p>For table names, only characters in the range <code class="docutils literal notranslate"><span class="pre">[0-9a-zA-Z_]</span></code> are acceptable.</p>
+<p>For a given language, for each file’s input the ctags multi-table parser begins
+with the <em>first</em> declared table. For <code class="file docutils literal notranslate"><span class="pre">X.ctags</span></code>, <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> is the one.
+The other tables are only ever entered/checked if another table specified to do
+so, starting with the first table. In other words, if the first declared table
+does not find a match for the current input, and does not specify to go to
+another table, the other tables for that language won’t be used. The flags to go
+to another table are <code class="docutils literal notranslate"><span class="pre">{tenter}</span></code>, <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code>, and <code class="docutils literal notranslate"><span class="pre">{tjump}</span></code>, as described
+later.</p>
+</div>
+<div class="section" id="adding-a-regex-to-a-regex-table">
+<span id="mtable-regex"></span><h3>Adding a regex to a regex table<a class="headerlink" href="#adding-a-regex-to-a-regex-table" title="Permalink to this headline">¶</a></h3>
+<p>The new option to add a regex to a declared table is <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>,
+and it follows this form:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="sr">&lt;LANG&gt;</span><span class="o">=</span><span class="sr">&lt;TABLE&gt;/&lt;PATTERN&gt;/&lt;NAME&gt;/[&lt;KIND&gt;]/</span><span class="n">LONGFLAGS</span>
+</pre></div>
+</div>
+<p>The parameters for <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> look complicated. However,
+<code class="docutils literal notranslate"><span class="pre">&lt;PATTERN&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;NAME&gt;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;KIND&gt;</span></code> are the same as the parameters of the
+<code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> options. <code class="docutils literal notranslate"><span class="pre">&lt;TABLE&gt;</span></code> is simply
+the name of a table previously declared with the <code class="docutils literal notranslate"><span class="pre">--_tabledef-&lt;LANG&gt;</span></code> option.</p>
+<p>A regex pattern added to a parser with <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code> is matched
+against the input at the current byte position, not line. Even if you do not
+specify the <code class="docutils literal notranslate"><span class="pre">^</span></code> anchor at the start of the pattern, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> adds <code class="docutils literal notranslate"><span class="pre">^</span></code> to
+the pattern automatically. Unlike the <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> options, a <code class="docutils literal notranslate"><span class="pre">^</span></code> anchor does not mean “beginning of
+line” in <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>; instead it means the beginning of the
+input string (i.e., the current byte position).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">LONGFLAGS</span></code> include the already discussed flags for <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code>: <code class="docutils literal notranslate"><span class="pre">{scope=...}</span></code>, <code class="docutils literal notranslate"><span class="pre">{mgroup=N}</span></code>, <code class="docutils literal notranslate"><span class="pre">{_advanceTo=N}</span></code>,
+<code class="docutils literal notranslate"><span class="pre">{basic}</span></code>, <code class="docutils literal notranslate"><span class="pre">{extend}</span></code>, and <code class="docutils literal notranslate"><span class="pre">{icase}</span></code>. The <code class="docutils literal notranslate"><span class="pre">{exclusive}</span></code> flag does not
+make sense for multi-table regex.</p>
+<p>In addition, several new flags are introduced exclusively for multi-table
+regex use:</p>
+<p><code class="docutils literal notranslate"><span class="pre">{tenter}</span></code></p>
+<blockquote>
+<div><p>Push the current table on the stack, and enter another table.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">{tleave}</span></code></p>
+<blockquote>
+<div><p>Leave the current table, pop the stack, and go to the table that was
+just popped from the stack.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">{tjump}</span></code></p>
+<blockquote>
+<div><p>Jump to another table, without affecting the stack.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">{treset}</span></code></p>
+<blockquote>
+<div><p>Clear the stack, and go to another table.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">{tquit}</span></code></p>
+<blockquote>
+<div><p>Clear the stack, and stop processing the current input file for this
+language.</p>
+</div></blockquote>
+<p>To explain the above new flags, we’ll continue using our example in the
+next section.</p>
+</div>
+<div class="section" id="skipping-block-comments">
+<h3>Skipping block comments<a class="headerlink" href="#skipping-block-comments" title="Permalink to this headline">¶</a></h3>
+<p>Let’s continue with our example. Here is the 3rd version of <code class="file docutils literal notranslate"><span class="pre">X.ctags</span></code>:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">X</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">X</span><span class="o">=.</span><span class="n">x</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">variables</span>
+
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span>
+
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/./</span><span class="o">/</span>
+
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/\*\//</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/./</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>Four <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-X</span></code> lines are added for skipping the block comments. Let’s
+discuss them one by one.</p>
+<p>For each new file it scans, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> always chooses the first pattern of the
+first table of the parser. Even if it’s an empty table, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> will only try
+the first declared table. (in such a case it would immediately fail to match
+anything, and thus stop processing the input file and effectively do nothing)</p>
+<p>The first declared table (<code class="docutils literal notranslate"><span class="pre">toplevel</span></code>) has the following regex added to
+it first:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>A pattern of <code class="docutils literal notranslate"><span class="pre">\/\*</span></code> is added to the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table, to match the
+beginning of a block comment. A backslash character is used in front of the
+leading <code class="docutils literal notranslate"><span class="pre">/</span></code> to escape the separation character <code class="docutils literal notranslate"><span class="pre">/</span></code> that separates the fields
+of <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-&lt;LANG&gt;</span></code>. Another backslash inside the pattern is used
+before the asterisk <code class="docutils literal notranslate"><span class="pre">*</span></code>, to make it a literal asterisk character in regex.</p>
+<p>The last <code class="docutils literal notranslate"><span class="pre">//</span></code> means <code class="docutils literal notranslate"><span class="pre">ctags</span></code> should not tag something matching this pattern.
+In <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code> you never use <code class="docutils literal notranslate"><span class="pre">//</span></code> because it would be pointless to
+match something and not tag it using and single-line <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;</span></code>; in
+multi-line <code class="docutils literal notranslate"><span class="pre">--mline-regex-&lt;LANG&gt;</span></code> you rarely see it, because it would rarely
+be useful. But in multi-table regex it’s quite common, since you frequently
+want to transition from one state to another (i.e., <code class="docutils literal notranslate"><span class="pre">tenter</span></code> or <code class="docutils literal notranslate"><span class="pre">tjump</span></code>
+from one table to another).</p>
+<p>The long flag added to our first regex of our first table is <code class="docutils literal notranslate"><span class="pre">tenter</span></code>, which
+is a long flag for switching the table and pushing on the stack. <code class="docutils literal notranslate"><span class="pre">{tenter=comment}</span></code>
+means “switch the table from toplevel to comment”.</p>
+<p>So given the input file <code class="file docutils literal notranslate"><span class="pre">input.x</span></code> shown earlier, <code class="docutils literal notranslate"><span class="pre">ctags</span></code> will begin at
+the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table and try to match the first regex. It will succeed, and
+thus push on the stack and go to the <code class="docutils literal notranslate"><span class="pre">comment</span></code> table.</p>
+<p>It will begin at the top of the <code class="docutils literal notranslate"><span class="pre">comment</span></code> table (it always begins at the top
+of a given table), and try each regex line in sequence until it finds a match.
+If it fails to find a match, it will pop the stack and go to the table that was
+just popped from the stack, and begin trying to match at the top of <em>that</em> table.
+If it continues failing to find a match, and ultimately reaches the end of the
+stack, it will stop processing for this file. For the next input file, it will
+begin again from the top of the first declared table.</p>
+<p>Getting back to our example, the top of the <code class="docutils literal notranslate"><span class="pre">comment</span></code> table has this regex:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/\*\//</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Similar to the previous <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table pattern, this one for <code class="docutils literal notranslate"><span class="pre">\*\/</span></code> uses
+a backslash to escape the separator <code class="docutils literal notranslate"><span class="pre">/</span></code>, as well as one before the <code class="docutils literal notranslate"><span class="pre">*</span></code> to
+make it a literal asterisk in regex. So what it’s looking for, from a simple
+string perspective, is the sequence <code class="docutils literal notranslate"><span class="pre">*/</span></code>. Note that this means even though
+you see three backslashes <code class="docutils literal notranslate"><span class="pre">///</span></code> at the end, the first one is escaped and used
+for the pattern itself, and the <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-X</span></code> only has <code class="docutils literal notranslate"><span class="pre">//</span></code> to
+separate the regex pattern from the long flags, instead of the usual <code class="docutils literal notranslate"><span class="pre">///</span></code>.
+Thus it’s using the shorthand form of the <code class="docutils literal notranslate"><span class="pre">--_mtable-regex-X</span></code> option.
+It could instead have been:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/\*\////</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The above would have worked exactly the same.</p>
+<p>Getting back to our example, remember we’re looking at the <code class="file docutils literal notranslate"><span class="pre">input.x</span></code>
+file, currently using the <code class="docutils literal notranslate"><span class="pre">comment</span></code> table, and trying to match the first
+regex of that table, shown above, at the following location:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="p">,</span><span class="n">ctags</span> <span class="ow">is</span> <span class="n">trying</span> <span class="n">to</span> <span class="n">match</span> <span class="n">starting</span> <span class="n">here</span>
+  <span class="n">v</span>
+<span class="o">/*</span> <span class="n">BLOCK</span> <span class="n">COMMENT</span>
+<span class="n">var</span> <span class="n">dont_capture_me</span><span class="p">;</span>
+<span class="o">*/</span>
+<span class="n">var</span> <span class="n">a</span> <span class="o">/*</span> <span class="n">ANOTHER</span> <span class="n">BLOCK</span> <span class="n">COMMENT</span> <span class="o">*/</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The pattern doesn’t match for the position just after <code class="docutils literal notranslate"><span class="pre">/*</span></code>, because that
+position is a space character. So <code class="docutils literal notranslate"><span class="pre">ctags</span></code> tries the next pattern in the same
+table:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/./</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>This pattern matches any any one character including newline; the current
+position moves one character forward. Now the character at the current position is
+<code class="docutils literal notranslate"><span class="pre">B</span></code>. The first pattern of the table <code class="docutils literal notranslate"><span class="pre">*/</span></code> still does not match with the input. So
+<code class="docutils literal notranslate"><span class="pre">ctags</span></code> uses next pattern again. When the current position moves to the <code class="docutils literal notranslate"><span class="pre">*/</span></code>
+of the 3rd line of <code class="file docutils literal notranslate"><span class="pre">input.x</span></code>, it will finally match this:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/\*\//</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In this pattern, the long flag <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> is specified. This triggers table
+switching again. <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> makes <code class="docutils literal notranslate"><span class="pre">ctags</span></code> switch the table back to the last
+table used before doing <code class="docutils literal notranslate"><span class="pre">{tenter}</span></code>. In this case, <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> is the table.
+<code class="docutils literal notranslate"><span class="pre">ctags</span></code> manages a stack where references to tables are put. <code class="docutils literal notranslate"><span class="pre">{tenter}</span></code> pushes
+the current table to the stack. <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> pops the table at the top of the
+stack and chooses it.</p>
+<p>So now <code class="docutils literal notranslate"><span class="pre">ctags</span></code> is back to the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table, and tries the first regex
+of that table, which was this:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>It tries to match that against its current position, which is now the
+newline on line 3, between the <code class="docutils literal notranslate"><span class="pre">*/</span></code> and the word <code class="docutils literal notranslate"><span class="pre">var</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/*</span> <span class="n">BLOCK</span> <span class="n">COMMENT</span>
+<span class="n">var</span> <span class="n">dont_capture_me</span><span class="p">;</span>
+<span class="o">*/</span> <span class="o">&lt;---</span> <span class="n">ctags</span> <span class="ow">is</span> <span class="n">now</span> <span class="n">at</span> <span class="n">this</span> <span class="n">newline</span> <span class="p">(</span><span class="o">/</span><span class="n">n</span><span class="p">)</span> <span class="n">character</span>
+<span class="n">var</span> <span class="n">a</span> <span class="o">/*</span> <span class="n">ANOTHER</span> <span class="n">BLOCK</span> <span class="n">COMMENT</span> <span class="o">*/</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The first regex of the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table does not match a newline, so it tries
+the second regex:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/./</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>This matches a newline successfully, but has no actions to perform. So <code class="docutils literal notranslate"><span class="pre">ctags</span></code>
+moves one character forward (the newline it just matched), and goes back to the
+top of the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table, and tries the first regex again. Eventually we’ll
+reach the beginning of the second block comment, and do the same things as before.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">ctags</span></code> finally reaches the end of the file (the position after <code class="docutils literal notranslate"><span class="pre">b;</span></code>),
+it will not be able to match either the first or second regex of the
+<code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table, and quit processing the input file.</p>
+<p>So far, we’ve successfully skipped over block comments for our new <code class="docutils literal notranslate"><span class="pre">X</span></code>
+language, but haven’t generated any tags. The point of <code class="docutils literal notranslate"><span class="pre">ctags</span></code> is to generate
+tags, not just keep your computer warm. So now let’s move onto actually tagging
+variables…</p>
+</div>
+<div class="section" id="capturing-variables-in-a-sequence">
+<h3>Capturing variables in a sequence<a class="headerlink" href="#capturing-variables-in-a-sequence" title="Permalink to this headline">¶</a></h3>
+<p>Here is the 4th version of <code class="file docutils literal notranslate"><span class="pre">X.ctags</span></code>:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">X</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">X</span><span class="o">=.</span><span class="n">x</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">var</span><span class="p">,</span><span class="n">variables</span>
+
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span>
+<span class="o">--</span><span class="n">_tabledef</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span>
+
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+<span class="c1"># NEW</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/var[ \n\t]/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">vars</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/./</span><span class="o">/</span>
+
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/\*\//</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">comment</span><span class="sr">/./</span><span class="o">/</span>
+
+<span class="c1"># NEW</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/;/</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/([a-zA-Z][a-zA-Z0-9]*)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span>
+<span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/./</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>One pattern in <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> was added, and a new table <code class="docutils literal notranslate"><span class="pre">vars</span></code> with four
+patterns was also added.</p>
+<p>The new regex in <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> is this:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">toplevel</span><span class="sr">/var[ \n\t]/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">vars</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The purpose of this being in <cite>toplevel</cite> is to switch to the <cite>vars</cite> table when
+the keyword <code class="docutils literal notranslate"><span class="pre">var</span></code> is found in the input stream. We need to switch states
+(i.e., tables) because we can’t simply capture the variables <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>
+with a single regex pattern in the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table, because there might be
+block comments inside the <code class="docutils literal notranslate"><span class="pre">var</span></code> statement (as there are in our
+<code class="file docutils literal notranslate"><span class="pre">input.x</span></code>), and we also need to create <em>two</em> tags: one for <code class="docutils literal notranslate"><span class="pre">a</span></code> and one
+for <code class="docutils literal notranslate"><span class="pre">b</span></code>, even though the word <code class="docutils literal notranslate"><span class="pre">var</span></code> only appears once. In other words, we
+need to “remember” that we saw the keyword <code class="docutils literal notranslate"><span class="pre">var</span></code>, when we later encounter the
+names <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>, so that we know to tag each of them; and saving that
+“in-variable-statement” state is accomplished by switching tables to the
+<code class="docutils literal notranslate"><span class="pre">vars</span></code> table.</p>
+<p>The first regex in our new <code class="docutils literal notranslate"><span class="pre">vars</span></code> table is:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/;/</span><span class="o">/</span><span class="p">{</span><span class="n">tleave</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This pattern is used to match a single semi-colon <code class="docutils literal notranslate"><span class="pre">;</span></code>, and if it matches
+pop back to the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table using the <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> long flag. We
+didn’t have to make this the first regex pattern, because it doesn’t overlap
+with any of the other ones other than the <code class="docutils literal notranslate"><span class="pre">/.//</span></code> last one (which must be
+last for this example to work).</p>
+<p>The second regex in our <code class="docutils literal notranslate"><span class="pre">vars</span></code> table is:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/\/\*/</span><span class="o">/</span><span class="p">{</span><span class="n">tenter</span><span class="o">=</span><span class="n">comment</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We need this because block comments can be in variable definitions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">var</span> <span class="n">a</span> <span class="o">/*</span> <span class="n">ANOTHER</span> <span class="n">BLOCK</span> <span class="n">COMMENT</span> <span class="o">*/</span><span class="p">,</span> <span class="n">b</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>So to skip block comments in such a position, the pattern <code class="docutils literal notranslate"><span class="pre">\/\*</span></code> is used just
+like it was used in the <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> table: to find the literal <code class="docutils literal notranslate"><span class="pre">/*</span></code> beginning
+of the block comment and enter the <code class="docutils literal notranslate"><span class="pre">comment</span></code> table. Because we’re using
+<code class="docutils literal notranslate"><span class="pre">{tenter}</span></code> and <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> to push/pop from a stack of tables, we can
+use the same <code class="docutils literal notranslate"><span class="pre">comment</span></code> table for both <code class="docutils literal notranslate"><span class="pre">toplevel</span></code> and <code class="docutils literal notranslate"><span class="pre">vars</span></code> to go to,
+because <code class="docutils literal notranslate"><span class="pre">ctags</span></code> will “remember” the previous table and <code class="docutils literal notranslate"><span class="pre">{tleave}</span></code> will
+pop back to the right one.</p>
+<p>The third regex in our <code class="docutils literal notranslate"><span class="pre">vars</span></code> table is:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/([a-zA-Z][a-zA-Z0-9]*)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span>
+</pre></div>
+</div>
+<p>This is nothing special, but is the one that actually tags something: it
+captures the variable name and uses it for generating a <code class="docutils literal notranslate"><span class="pre">variable</span></code> (shorthand
+<code class="docutils literal notranslate"><span class="pre">v</span></code>) tag kind.</p>
+<p>The last regex in the <code class="docutils literal notranslate"><span class="pre">vars</span></code> table we’ve seen before:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">X</span><span class="o">=</span><span class="n">vars</span><span class="sr">/./</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>This makes <code class="docutils literal notranslate"><span class="pre">ctags</span></code> ignore any other characters, such as whitespace or the
+comma <code class="docutils literal notranslate"><span class="pre">,</span></code>.</p>
+</div>
+<div class="section" id="running-our-example">
+<h3>Running our example<a class="headerlink" href="#running-our-example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cat input.x
+<span class="go">/* BLOCK COMMENT</span>
+<span class="go">var dont_capture_me;</span>
+<span class="go">*/</span>
+<span class="go">var a /* ANOTHER BLOCK COMMENT */, b;</span>
+
+<span class="gp">$</span> u-ctags -o - --fields<span class="o">=</span>+n --options<span class="o">=</span>X.ctags input.x
+<span class="go">u-ctags -o - --fields=+n --options=X.ctags input.x</span>
+<span class="go">a       input.x /^var a \/* ANOTHER BLOCK COMMENT *\/, b;$/;&quot;   v       line:4</span>
+<span class="go">b       input.x /^var a \/* ANOTHER BLOCK COMMENT *\/, b;$/;&quot;   v       line:4</span>
+</pre></div>
+</div>
+<p>It works!</p>
+<p>You can find additional examples of multi-table regex in our github repo, under
+the <code class="docutils literal notranslate"><span class="pre">optlib</span></code> directory. For example <code class="docutils literal notranslate"><span class="pre">puppetManifest.ctags</span></code> is a serious
+example. It is the primary parser for testing multi-table regex parsers, and
+used in the actual <code class="docutils literal notranslate"><span class="pre">ctags</span></code> program for parsing puppet manifest files.</p>
+</div>
+</div>
+<div class="section" id="conditional-tagging-with-extras">
+<span id="extras"></span><h2>Conditional tagging with extras<a class="headerlink" href="#conditional-tagging-with-extras" title="Permalink to this headline">¶</a></h2>
+<p>If a matched pattern should only be tagged when an <code class="docutils literal notranslate"><span class="pre">extra</span></code> flag is enabled,
+mark the pattern with <code class="docutils literal notranslate"><span class="pre">{_extra=XNAME}</span></code> where <code class="docutils literal notranslate"><span class="pre">XNAME</span></code> is the name of the
+extra. You must define a <code class="docutils literal notranslate"><span class="pre">XNAME</span></code> with the
+<code class="docutils literal notranslate"><span class="pre">--_extradef-&lt;LANG&gt;=XNAME,DESCRIPTION</span></code> option before defining a regex flag
+marked <code class="docutils literal notranslate"><span class="pre">{_extra=XNAME}</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="n">do_something</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To capture the lines above in a python program(<em>input.py</em>), an <cite>extra</cite> flag can
+be used.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_extradef</span><span class="o">-</span><span class="n">Python</span><span class="o">=</span><span class="n">main</span><span class="p">,</span><span class="n">__main__</span> <span class="n">entry</span> <span class="n">points</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">Python</span><span class="o">=</span><span class="sr">/^if __name__ == &#39;__main__&#39;:/</span><span class="n">__main__</span><span class="sr">/f/</span><span class="p">{</span><span class="n">_extra</span><span class="o">=</span><span class="n">main</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The above optlib(<em>python-main.ctags</em>) introduces <code class="docutils literal notranslate"><span class="pre">main</span></code> extra to the Python parser.
+The pattern matching is done only when the <code class="docutils literal notranslate"><span class="pre">main</span></code> is enabled.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./ctags --options<span class="o">=</span>python-main.ctags -o - --extras-Python<span class="o">=</span><span class="s1">&#39;+{main}&#39;</span> input.py
+<span class="go">__main__        input.py        /^if __name__ == &#39;__main__&#39;:$/;&quot;        f</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-custom-fields-to-the-tag-output">
+<span id="fields"></span><h2>Adding custom fields to the tag output<a class="headerlink" href="#adding-custom-fields-to-the-tag-output" title="Permalink to this headline">¶</a></h2>
+<p>Exuberant-ctags allows just one of the specified groups in a regex pattern to
+be used as a part of the name of a tagEntry.</p>
+<p>Universal-ctags allows using the other groups in the regex pattern.</p>
+<p>An optlib parser can have its specific fields. The groups can be used as a
+value of the fields of a tagEntry.</p>
+<p>Let’s think about <em>Unknown</em>, an imaginary language.
+Here is a source file(<em>input.unknown</em>) written in <em>Unknown</em>:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="n">func</span> <span class="nf">foo</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+<span class="kd">protected</span> <span class="n">func</span> <span class="nf">bar</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+<span class="kd">private</span> <span class="n">func</span> <span class="nf">baz</span><span class="p">(</span><span class="n">n</span><span class="p">,...);</span>
+</pre></div>
+</div>
+<p>With <cite>--regex-Unknown=…</cite> Exuberant-ctags can capture <cite>foo</cite>, <cite>bar</cite>, and <cite>baz</cite>
+as names. Universal-ctags can attach extra context information to the
+names as values for fields. Let’s focus on <cite>bar</cite>. <cite>protected</cite> is a
+keyword to control how widely the identifier <cite>bar</cite> can be accessed.
+<cite>(n)</cite> is the parameter list of <cite>bar</cite>. <cite>protected</cite> and <cite>(n)</cite> are
+extra context information of <cite>bar</cite>.</p>
+<p>With the following optlib file(<em>unknown.ctags</em>), <code class="docutils literal notranslate"><span class="pre">ctags</span></code> can attach
+<cite>protected</cite> to the field protection and <cite>(n)</cite> to the field signature.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">unknown</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="n">f</span><span class="p">,</span><span class="n">func</span><span class="p">,</span><span class="n">functions</span>
+<span class="o">--</span><span class="nb">map</span><span class="o">-</span><span class="n">unknown</span><span class="o">=+.</span><span class="n">unknown</span>
+
+<span class="o">--</span><span class="n">_fielddef</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="n">protection</span><span class="p">,</span><span class="n">access</span> <span class="n">scope</span>
+<span class="o">--</span><span class="n">_fielddef</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="n">signature</span><span class="p">,</span><span class="n">signatures</span>
+
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="sr">/^((public|protected|private) +)?func ([^\(]+)\((.*)\)/</span><span class="o">\</span><span class="mi">3</span><span class="sr">/f/</span><span class="p">{</span><span class="n">_field</span><span class="o">=</span><span class="n">protection:</span><span class="o">\</span><span class="mi">1</span><span class="p">}{</span><span class="n">_field</span><span class="o">=</span><span class="n">signature:</span><span class="p">(</span><span class="o">\</span><span class="mi">4</span><span class="p">)}</span>
+
+<span class="o">--</span><span class="n">fields</span><span class="o">-</span><span class="n">unknown</span><span class="o">=+</span><span class="s">&#39;{protection}{signature}&#39;</span>
+</pre></div>
+</div>
+<p>For the line <cite>protected func bar(n);</cite> you will get following tags output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>bar     input.unknown   /^protected func bar(n);$/;&quot;    f       protection:protected    signature:(n)
+</pre></div>
+</div>
+<p>Let’s see the detail of <em>unknown.ctags</em>.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_fielddef</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="n">protection</span><span class="p">,</span><span class="n">access</span> <span class="n">scope</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--_fielddef-&lt;LANG&gt;=name,description</span></code> defines a new field for a parser
+specified by <cite>&lt;LANG&gt;</cite>.  Before defining a new field for the parser,
+the parser must be defined with <code class="docutils literal notranslate"><span class="pre">--langdef=&lt;LANG&gt;</span></code>. <cite>protection</cite> is
+the field name used in tags output. <cite>access scope</cite> is the description
+used in the output of <code class="docutils literal notranslate"><span class="pre">--list-fields</span></code> and <code class="docutils literal notranslate"><span class="pre">--list-fields=Unknown</span></code>.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_fielddef</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="n">signature</span><span class="p">,</span><span class="n">signatures</span>
+</pre></div>
+</div>
+<p>This defines a field named <cite>signature</cite>.</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">unknown</span><span class="o">=</span><span class="sr">/^((public|protected|private) +)?func ([^\(]+)\((.*)\)/</span><span class="o">\</span><span class="mi">3</span><span class="sr">/f/</span><span class="p">{</span><span class="n">_field</span><span class="o">=</span><span class="n">protection:</span><span class="o">\</span><span class="mi">1</span><span class="p">}{</span><span class="n">_field</span><span class="o">=</span><span class="n">signature:</span><span class="p">(</span><span class="o">\</span><span class="mi">4</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>This option requests making a tag for the name that is specified with the group 3 of the
+pattern, attaching the group 1 as a value for <cite>protection</cite> field to the tag, and attaching
+the group 4 as a value for <cite>signature</cite> field to the tag. You can use the long regex flag
+<cite>_field</cite> for attaching fields to a tag with the following notation rule:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">_field</span><span class="o">=</span><span class="n">FIELDNAME</span><span class="p">:</span><span class="n">GROUP</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--fields-&lt;LANG&gt;=[+|-]{FIELDNAME}</span></code> can be used to enable or disable specified field.</p>
+<p>When defining a new parser specific field, it is disabled by default. Enable the
+field explicitly to use the field. See <a class="reference internal" href="news.html#parser-specific-fields"><span class="std std-ref">Parser specific fields</span></a>
+about <cite>--fields-&lt;LANG&gt;</cite> option.</p>
+<p><cite>passwd</cite> parser is a simple example that uses <code class="docutils literal notranslate"><span class="pre">--fields-&lt;LANG&gt;</span></code> option.</p>
+</div>
+<div class="section" id="capturing-reference-tags">
+<span id="roles"></span><h2>Capturing reference tags<a class="headerlink" href="#capturing-reference-tags" title="Permalink to this headline">¶</a></h2>
+<p>To make a reference tag with an optlib parser, specify a role with
+<cite>_role</cite> long regex flag. Let’s see an example:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">langdef</span><span class="o">=</span><span class="n">FOO</span>
+<span class="o">--</span><span class="n">kinddef</span><span class="o">-</span><span class="n">FOO</span><span class="o">=</span><span class="n">m</span><span class="p">,</span><span class="n">module</span><span class="p">,</span><span class="n">modules</span>
+<span class="o">--</span><span class="n">_roledef</span><span class="o">-</span><span class="n">FOO</span><span class="o">.</span><span class="n">m</span><span class="o">=</span><span class="n">imported</span><span class="p">,</span><span class="n">imported</span> <span class="n">module</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">FOO</span><span class="o">=</span><span class="sr">/import[ \t]+([a-z]+)/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/m/</span><span class="p">{</span><span class="n">_role</span><span class="o">=</span><span class="n">imported</span><span class="p">}</span>
+<span class="o">--</span><span class="n">extras</span><span class="o">=+</span><span class="n">r</span>
+<span class="o">--</span><span class="n">fields</span><span class="o">=+</span><span class="n">r</span>
+</pre></div>
+</div>
+<p>A role must be defined before specifying it as value for <code class="docutils literal notranslate"><span class="pre">_role</span></code> flag.
+<code class="docutils literal notranslate"><span class="pre">--_roledef-&lt;LANG&gt;.&lt;KIND&gt;=&lt;ROLE&gt;,&lt;ROLEDESC&gt;</span></code> option is for defining a role.
+See the line, <code class="docutils literal notranslate"><span class="pre">--regex-FOO=...</span></code>.  In this parser <cite>FOO</cite>, the name of an
+imported module is captured as a reference tag with role <cite>imported</cite>.</p>
+<p>For specifing KIND where the role is defined, you can use either a
+kind letter or a kind name.  surrounded by <code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code>.</p>
+<p>The option has two parameters separated by a comma:</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;ROLE&gt;</span></code></p>
+<blockquote>
+<div><p>the role name, and</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;ROLEDESC&gt;</span></code></p>
+<blockquote>
+<div><p>the description of the role.</p>
+</div></blockquote>
+<p>The first parameter is the name of the role. The role is defined in
+the kind <code class="docutils literal notranslate"><span class="pre">&lt;KIND&gt;</span></code> of the language <code class="docutils literal notranslate"><span class="pre">&lt;LANG&gt;</span></code>. In the example,
+<cite>imported</cite> role is defined in the <cite>module</cite> kind, which is specified
+with <cite>m</cite>. You can use <code class="docutils literal notranslate"><span class="pre">{module}</span></code>, the name of the kind instead.</p>
+<p>The kind specified in <code class="docutils literal notranslate"><span class="pre">--_roledef-&lt;LANG&gt;.&lt;KIND&gt;</span></code> option must be
+defined <em>before</em> using the option. See the description of
+<code class="docutils literal notranslate"><span class="pre">--kinddef-&lt;LANG&gt;</span></code> for defining a kind.</p>
+<p>The roles are listed with <code class="docutils literal notranslate"><span class="pre">--list-roles=&lt;LANG&gt;</span></code>. The name and description
+passed to <code class="docutils literal notranslate"><span class="pre">--_roledef-&lt;LANG&gt;.&lt;KIND&gt;</span></code> option are used in the output like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./ctags --langdef=FOO --kinddef-FOO=m,module,modules \
+                        --_roledef-FOO.m=&#39;imported,imported module&#39; --list-roles=FOO
+#KIND(L/N) NAME     ENABLED DESCRIPTION
+m/module   imported on      imported module
+</pre></div>
+</div>
+<p>If specifying <code class="docutils literal notranslate"><span class="pre">_role</span></code> regex flag multiple times with different roles, you can
+assign multiple roles to a reference tag.  See following input of C language</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">x</span>  <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An ultra fine grained C parser may capture the variable <cite>x</cite> with
+<cite>lvalue</cite> role and the variable <cite>i</cite> with <cite>lvalue</cite> and <cite>incremented</cite>
+roles.</p>
+<p>You can implement such roles by extending the built-in C parser:</p>
+<div class="highlight-perl notranslate"><div class="highlight"><pre><span></span><span class="c1"># c-extra.ctags</span>
+<span class="o">--</span><span class="n">_roledef</span><span class="o">-</span><span class="n">C</span><span class="o">.</span><span class="n">v</span><span class="o">=</span><span class="n">lvalue</span><span class="p">,</span><span class="n">locator</span> <span class="nb">values</span>
+<span class="o">--</span><span class="n">_roledef</span><span class="o">-</span><span class="n">C</span><span class="o">.</span><span class="n">v</span><span class="o">=</span><span class="n">incremented</span><span class="p">,</span><span class="n">incremeted</span> <span class="n">with</span> <span class="o">++</span> <span class="n">operator</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">C</span><span class="o">=</span><span class="sr">/([a-zA-Z_][a-zA-Z_0-9]*) *=/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span><span class="p">{</span><span class="n">_role</span><span class="o">=</span><span class="n">lvalue</span><span class="p">}</span>
+<span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">C</span><span class="o">=</span><span class="sr">/([a-zA-Z_][a-zA-Z_0-9]*) *\+=/</span><span class="o">\</span><span class="mi">1</span><span class="sr">/v/</span><span class="p">{</span><span class="n">_role</span><span class="o">=</span><span class="n">lvalue</span><span class="p">}{</span><span class="n">_role</span><span class="o">=</span><span class="n">incremented</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>ctags with <code class="docutils literal notranslate"><span class="pre">--options=c-extra.ctags</span> <span class="pre">--extras=+r</span> <span class="pre">--fields=+r</span></code> emits</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>i       input.c /^i += 1;$/;&quot;   v       roles:lvalue,incremented
+x       input.c /^x = 0;$/;&quot;    v       roles:lvalue
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-a-guest-parser-with-guest-regex-flag">
+<span id="guest-regex-flag"></span><h2>Running a guest parser with <cite>_guest</cite> regex flag<a class="headerlink" href="#running-a-guest-parser-with-guest-regex-flag" title="Permalink to this headline">¶</a></h2>
+<p>With <cite>_guest</cite> regex flag, you can run a parser (a guest parser) on an
+area of the current input file.
+See <a class="reference internal" href="running-multi-parsers.html#host-guest-parsers"><span class="std std-ref">Applying a parser to specified areas of input file (guest/host)</span></a>
+about the concept of the guest parser.</p>
+<p>The <cite>_guest</cite> regex flag specifies <cite>guest spec</cite>, and attaches it to
+the associated regex pattern.</p>
+<p>A guest spec has three fields: <cite>PARSER</cite>, <cite>START of area</cite>, and <cite>END of area</cite>.
+The <cite>_guest</cite> regex flag has following forms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">_guest</span><span class="o">=</span><span class="n">PARSER</span><span class="p">,</span><span class="n">START</span><span class="p">,</span><span class="n">END</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ctags</span></code> maintains a data called <cite>guest request</cite> during parsing.  The
+guest request also has three fields: <cite>parser</cite>, <cite>start of area</cite>, and
+<cite>end of area</cite>.</p>
+<p>You, a parser developer, have to fill the fields of guest specs.
+<code class="docutils literal notranslate"><span class="pre">ctags</span></code> inquiries the guest spec when matching the regex pattern
+associated with it, tries to fill the fields of the guest request,
+and runs a guest parser when all the fields of the guest request are
+filled.</p>
+<p>If you don’t use <a class="reference internal" href="#multi-line-pattern-match">Multi-line pattern match</a> to define a host parser,
+<code class="docutils literal notranslate"><span class="pre">ctags</span></code> can fill fields of <cite>guest request</cite> incrementally; more than
+one guest specs are used to fill the fields. In other words, you can
+make some of the fields of a guest spec empty. On the other hand, you must
+specify all the fields of a guest spec for <a class="reference internal" href="#multi-line-pattern-match">Multi-line pattern match</a>.</p>
+<div class="section" id="the-parser-field-of-guest-regex-flag">
+<h3>The PARSER field of <cite>_guest</cite> regex flag<a class="headerlink" href="#the-parser-field-of-guest-regex-flag" title="Permalink to this headline">¶</a></h3>
+<p>For PARSER, you can specify one of the following items:</p>
+<p>a name of a parser</p>
+<blockquote>
+<div><p>If you know the guest parser you want to run before parsing
+the input file, specify the name to the <cite>PARSER</cite>.</p>
+<p>An example of running C parser as a guest parser:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">_guest</span><span class="o">=</span><span class="n">C</span><span class="p">,</span><span class="o">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>the group number of a regex pattern started from <code class="docutils literal notranslate"><span class="pre">\</span></code> (backslash)</p>
+<blockquote>
+<div><p>If a parser name appears in an input file, write a regex pattern
+to capture the name.  Specify the group number where the name is
+stored to the <cite>PARSER</cite>.  In such case, use <code class="docutils literal notranslate"><span class="pre">\</span></code> as the prefix for
+the number.</p>
+<p>Let’s see an example. Git Flavor Markdown (GFM) is a language for
+documentation. It provides a notation for quoting a snippet of
+program code; the language treats the area started from <code class="docutils literal notranslate"><span class="pre">~~~</span></code> to
+<code class="docutils literal notranslate"><span class="pre">~~~</span></code> as a snippet. You can specify a programming language of
+the snippet with starting the area with
+<code class="docutils literal notranslate"><span class="pre">~~~THE_NAME_OF_LANGUAGE</span></code> like <code class="docutils literal notranslate"><span class="pre">~~~C</span></code> or <code class="docutils literal notranslate"><span class="pre">~~~Java</span></code>.</p>
+<p>To run a guest parser on the area, you have to capture the
+<code class="docutils literal notranslate"><span class="pre">THE_NAME_OF_LANGUAGE</span></code> with a regex pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">_mtable</span><span class="o">-</span><span class="n">regex</span><span class="o">-</span><span class="n">Markdown</span><span class="o">=</span><span class="n">main</span><span class="o">/~~~</span><span class="p">([</span><span class="n">a</span><span class="o">-</span><span class="n">zA</span><span class="o">-</span><span class="n">Z0</span><span class="o">-</span><span class="mi">9</span><span class="p">][</span><span class="o">-</span><span class="c1">#+a-zA-Z0-9]*)[\n]//{_guest=\1,0end,}</span>
+</pre></div>
+</div>
+<p>The pattern captures the language name in the input file with the
+regex group 1, and specify it to <cite>PARSER</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">guest</span><span class="o">=</span>\<span class="mi">1</span><span class="p">,</span><span class="o">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>the group number of a regex pattern started from <code class="docutils literal notranslate"><span class="pre">*</span></code> (asterisk)</p>
+<blockquote>
+<div><p>If a file name implying a programming language appears in an input
+file, capture the file name with the regex pattern where the guest
+spec attaches to. <code class="docutils literal notranslate"><span class="pre">ctags</span></code> tries to find a proper parser for the
+file name by inquiring the langmap.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">*</span></code> as the prefix to the number for specifying the group of
+the regex pattern that captures the file name.</p>
+<p>Let’s see an example. Consider you have a shell script that emits
+a program code instantiated from one of the templates. HERE DOCUMENTs
+are used to represent the templates like:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">i</span><span class="o">=</span>...
+cat &gt; foo.c <span class="s">&lt;&lt;EOF</span>
+<span class="s">        int main (void) { return $i; }</span>
+<span class="s">EOF</span>
+
+cat &gt; foo.el <span class="s">&lt;&lt;EOF</span>
+<span class="s">        (defun foo () (1+ $i))</span>
+<span class="s">EOF</span>
+</pre></div>
+</div>
+<p>To run guest parsers for the here document areas, the shell
+script parser of ctags must choose the parsers from the file
+names (foo.c and foo.el):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">regex</span><span class="o">-</span><span class="n">sh</span><span class="o">=/</span><span class="n">cat</span> <span class="o">&gt;</span> <span class="p">([</span><span class="n">a</span><span class="o">-</span><span class="n">z</span><span class="o">.</span><span class="p">]</span><span class="o">+</span><span class="p">)</span> <span class="o">&lt;&lt;</span><span class="n">EOF</span><span class="o">//</span><span class="p">{</span><span class="n">_guest</span><span class="o">=*</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="n">end</span><span class="p">,}</span>
+</pre></div>
+</div>
+<p>The pattern captures the file name in the input file with the
+regex group 1, and specify it to <cite>PARSER</cite>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">_guest</span><span class="o">=*</span><span class="mi">1</span><span class="p">,</span><span class="o">...</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="the-start-and-end-fields-of-guest-regex-flag">
+<h3>The START and END fields of <cite>_guest</cite> regex flag<a class="headerlink" href="#the-start-and-end-fields-of-guest-regex-flag" title="Permalink to this headline">¶</a></h3>
+<p>The START and END fields specify the area the PARSER parses.  START
+specifies the start of the area. END specifies the end of the area.</p>
+<p>The forms of the two fields are the same: a regex group number
+followed by “start” or “end”. e.g. “3start”, “0end”.  The suffixes,
+“start” and “end”, represents one of two boundaries of the group.</p>
+<p>Let’s see an example:</p>
+<blockquote>
+<div><p>{_guest=C,2end,3start}</p>
+</div></blockquote>
+<p>This guest regex flag means running C parser on the area between
+“2end” and “3start”. “2end” means the area starts from the end of
+matching of the 2nd regex group associated with the flag. “3start”
+means the area ends at the beginning of matching of the 3rd regex
+group associated with the flag.</p>
+<p>Let’s more realistic example.
+Here is an optlib file for an imaginary language “single”.</p>
+<blockquote>
+<div><p>--langdef=single
+--map-single=.single
+--regex-single=/^(BEGIN_C&lt;).*(&gt;END_C)$//{_guest=C,1end,2start}</p>
+</div></blockquote>
+<p>This parser can run C parser and extract “main” function from the
+following input file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>BEGIN_C&lt;int main (int argc, char **argv) { return 0; }&gt;END_C
+        ^                                             ^
+                 `- &quot;1end&quot; points here.                       |
+                                       &quot;2start&quot; points here. -+
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="submitting-an-optlib-file-to-the-universal-ctags-project">
+<h2>Submitting an optlib file to the Universal-ctags project<a class="headerlink" href="#submitting-an-optlib-file-to-the-universal-ctags-project" title="Permalink to this headline">¶</a></h2>
+<p>You are encouraged to submit your <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> file to our repository on
+github through a pull request.</p>
+<p>Universal-ctags provides a facility for “Option library”.
+Read “Option library” about the concept and usage first.</p>
+<p>Here I will explain how to merge your .ctags into Universal-ctags as
+part of the option library. Here I assume you consider contributing
+an option library in which a regex-based language parser is defined.</p>
+<p>First you need your option library (which you have seen in this part of the
+guide).  See <a class="reference external" href="http://ctags.sourceforge.net/EXTENDING.html">How to Add Support for a New Language to Exuberant Ctags
+(EXTENDING)</a> to learn how to write a regex-based language parser in C.</p>
+<p>In this section I explain what to do after you have your parser.</p>
+<p>Like in the link, I use Swine as the name of programming language that
+the parser deals with. Assume source files written in Swine language have a
+suffix <em>.swn</em>. The file name of the option library is <em>swine.ctags</em>.</p>
+<div class="section" id="copyright-notice-contact-mail-address-and-license-term">
+<h3>Copyright notice, contact mail address and license term<a class="headerlink" href="#copyright-notice-contact-mail-address-and-license-term" title="Permalink to this headline">¶</a></h3>
+<p>Put these information at the header of <em>swine.ctags</em>.</p>
+<p>An example taken from <em>data/optlib/ctags.ctags</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#  Copyright (c) 2014, Red Hat, Inc.</span>
+<span class="c1">#  Copyright (c) 2014, Masatake YAMATO</span>
+<span class="c1">#</span>
+<span class="c1">#  Author: Masatake YAMATO &lt;yamato@redhat.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 2</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,</span>
+<span class="c1"># USA.</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>“GPL version 2 or later version” is needed here. The Option library is not
+linked to <code class="docutils literal notranslate"><span class="pre">ctags</span></code> command. However, I have written a translator which
+generates <em>.c</em> file from a given option file. Said translator is called
+<code class="docutils literal notranslate"><span class="pre">optlib2c</span></code> and can be found in <code class="docutils literal notranslate"><span class="pre">misc/optlib2c</span></code> from the source tree. As
+result the <em>.c</em> file is built into <code class="docutils literal notranslate"><span class="pre">ctags</span></code> command. In such a case “GPL
+version 2 or later version” is be required.</p>
+</div>
+<div class="section" id="units-test-cases">
+<h3><em>Units</em> test cases<a class="headerlink" href="#units-test-cases" title="Permalink to this headline">¶</a></h3>
+<p>We, universal-ctags developers don’t have enough time to learn all
+languages supported by <code class="docutils literal notranslate"><span class="pre">ctags</span></code>. In other word, we cannot review the
+code. Only test cases help us to know whether a contributed option
+library works well or not. We may reject any contribution without
+a test case.</p>
+<p>Read “Using <em>Units</em>” about how to write <em>Units</em> test cases.  Do not write one
+big test case: smaller cases are helpful to know about the intent of the
+contributor. For example:</p>
+<ul class="simple">
+<li><p><em>Units/sh-alias.d</em></p></li>
+<li><p><em>Units/sh-comments.d</em></p></li>
+<li><p><em>Units/sh-quotes.d</em></p></li>
+<li><p><em>Units/sh-statements.d</em></p></li>
+</ul>
+<p>are good example of small test cases.
+Big test cases are acceptable if smaller test cases exist.</p>
+<p>See also <em>parser-m4.r/m4-simple.d</em> especially <em>parser-m4.r/m4-simple.d/args.ctags</em>.
+Your test cases need <code class="docutils literal notranslate"><span class="pre">ctags</span></code> having already loaded your option
+library, swine.ctags. You must specify loading it in the
+test case own <em>args.ctags</em>.</p>
+<p>Assume your test name is <em>swine-simile.d</em>. Put <code class="docutils literal notranslate"><span class="pre">--option=swine</span></code> in
+<em>Units/swine-simile.d/args.ctags</em>.</p>
+</div>
+<div class="section" id="incorporating-your-parser-to-ctags-build-process">
+<h3>Incorporating your parser to ctags build process<a class="headerlink" href="#incorporating-your-parser-to-ctags-build-process" title="Permalink to this headline">¶</a></h3>
+<p>Add your optlib file, <em>swine.ctags</em> to <code class="docutils literal notranslate"><span class="pre">OPTLIB2C_INPUT</span></code> variable of
++*makefiles/optlib2c_input.mak* in Universal-ctags source tree.</p>
+</div>
+<div class="section" id="verification">
+<h3>Verification<a class="headerlink" href="#verification" title="Permalink to this headline">¶</a></h3>
+<p>Let’s verify all your work here.</p>
+<ol class="arabic">
+<li><p>Run the tests and check whether your test case is passed or failed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ make units
+</pre></div>
+</div>
+</li>
+<li><p>Verify your files are installed as expected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mkdir /tmp/tmp
+$ ./configure --prefix=/tmp/tmp
+$ make
+$ make install
+$ /tmp/tmp/ctags -o - --languages=Swine something_input.swn
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="pull-request">
+<h3>Pull-request<a class="headerlink" href="#pull-request" title="Permalink to this headline">¶</a></h3>
+<p>Please, consider submitting your well written optlib parser to
+Universal-ctags. Your <em>.ctags</em> is a treasure and can be shared as a
+first class software component in Universal-ctags.</p>
+<p>Pull-requests are welcome.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extending ctags with Regex parser (<em>optlib</em>)</a><ul>
+<li><a class="reference internal" href="#option-files">Option files</a><ul>
+<li><a class="reference internal" href="#preload-option-file">Preload option file</a><ul>
+<li><a class="reference internal" href="#directory-oriented-configuration-management">Directory oriented configuration management</a></li>
+<li><a class="reference internal" href="#avoiding-option-incompatibility-issues">Avoiding option incompatibility issues</a></li>
+<li><a class="reference internal" href="#no-system-wide-configuration">No system wide configuration</a></li>
+<li><a class="reference internal" href="#using-ctags-for-the-file-extension">Using <code class="file docutils literal notranslate"><span class="pre">.ctags</span></code> for the file extension</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optlib-option-file">Optlib option file</a><ul>
+<li><a class="reference internal" href="#specifying-a-directory">Specifying a directory</a></li>
+<li><a class="reference internal" href="#specifying-an-optlib-path-list">Specifying an optlib PATH list</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tips-for-writing-an-option-file">Tips for writing an option file</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#regular-expression-regex-engine">Regular expression (regex) engine</a></li>
+<li><a class="reference internal" href="#regex-option-argument-flags">Regex option argument flags</a><ul>
+<li><a class="reference internal" href="#regex-control-flags">Regex control flags</a></li>
+<li><a class="reference internal" href="#exclusive-flag-in-regex">Exclusive flag in regex</a></li>
+<li><a class="reference internal" href="#experimental-flags">Experimental flags</a></li>
+<li><a class="reference internal" href="#ghost-kind-in-regex-parser">Ghost kind in regex parser</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#scope-tracking-in-a-regex-parser">Scope tracking in a regex parser</a></li>
+<li><a class="reference internal" href="#overriding-the-letter-for-file-kind">Overriding the letter for file kind</a></li>
+<li><a class="reference internal" href="#generating-fully-qualified-tags-automatically-from-scope-information">Generating fully qualified tags automatically from scope information</a><ul>
+<li><a class="reference internal" href="#customizing-scope-separators">Customizing scope separators</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multi-line-pattern-match">Multi-line pattern match</a><ul>
+<li><a class="reference internal" href="#multiline-pattern-flags">Multiline pattern flags</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-pattern-matching-with-multiple-regex-tables">Advanced pattern matching with multiple regex tables</a><ul>
+<li><a class="reference internal" href="#declaring-a-new-regex-table">Declaring a new regex table</a></li>
+<li><a class="reference internal" href="#adding-a-regex-to-a-regex-table">Adding a regex to a regex table</a></li>
+<li><a class="reference internal" href="#skipping-block-comments">Skipping block comments</a></li>
+<li><a class="reference internal" href="#capturing-variables-in-a-sequence">Capturing variables in a sequence</a></li>
+<li><a class="reference internal" href="#running-our-example">Running our example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conditional-tagging-with-extras">Conditional tagging with extras</a></li>
+<li><a class="reference internal" href="#adding-custom-fields-to-the-tag-output">Adding custom fields to the tag output</a></li>
+<li><a class="reference internal" href="#capturing-reference-tags">Capturing reference tags</a></li>
+<li><a class="reference internal" href="#running-a-guest-parser-with-guest-regex-flag">Running a guest parser with <cite>_guest</cite> regex flag</a><ul>
+<li><a class="reference internal" href="#the-parser-field-of-guest-regex-flag">The PARSER field of <cite>_guest</cite> regex flag</a></li>
+<li><a class="reference internal" href="#the-start-and-end-fields-of-guest-regex-flag">The START and END fields of <cite>_guest</cite> regex flag</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#submitting-an-optlib-file-to-the-universal-ctags-project">Submitting an optlib file to the Universal-ctags project</a><ul>
+<li><a class="reference internal" href="#copyright-notice-contact-mail-address-and-license-term">Copyright notice, contact mail address and license term</a></li>
+<li><a class="reference internal" href="#units-test-cases"><em>Units</em> test cases</a></li>
+<li><a class="reference internal" href="#incorporating-your-parser-to-ctags-build-process">Incorporating your parser to ctags build process</a></li>
+<li><a class="reference internal" href="#verification">Verification</a></li>
+<li><a class="reference internal" href="#pull-request">Pull-request</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="extending.html"
+                        title="previous chapter">Extending ctags</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="internal.html"
+                        title="next chapter">ctags Internal API</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="internal.html" title="ctags Internal API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="extending.html" title="Extending ctags"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="extending.html" >Extending ctags</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

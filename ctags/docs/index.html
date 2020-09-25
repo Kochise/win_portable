@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Universal-ctags Hacking Guide &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduced changes" href="news.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="news.html" title="Introduced changes"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="universal-ctags-hacking-guide">
+<h1>Universal-ctags Hacking Guide<a class="headerlink" href="#universal-ctags-hacking-guide" title="Permalink to this headline">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Version</dt>
+<dd class="field-odd"><p>Draft</p>
+</dd>
+<dt class="field-even">Authors</dt>
+<dd class="field-even"><p>universal-ctags developers</p>
+</dd>
+<dt class="field-odd">Web Page</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://ctags.io/">https://ctags.io/</a></p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://github.com/universal-ctags">Universal-ctags</a> was created to continue the development of Darren
+Hiebert’s <a class="reference external" href="http://ctags.sourceforge.net/">Exuberant-ctags</a> after activity on that project
+unfortunately stalled.</p>
+<p>Reza Jelveh &lt;<a class="reference external" href="mailto:reza&#46;jelveh&#37;&#52;&#48;gmail&#46;com">reza<span>&#46;</span>jelveh<span>&#64;</span>gmail<span>&#46;</span>com</a>&gt; initially created a personal fork
+on GitHub and as interest and participation grew it was decided to
+move development to a dedicated GitHub organization.</p>
+<p>The goal of this project is to maintain a common/unified space where
+people interested in improving ctags can work together.</p>
+<p>This guide is primarily intended for developers. Users should first
+consult the ctags.1 man page.</p>
+<p>This is a draft document. Proofreading and pull-requests are welcome!</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="news.html">Introduced changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="news.html#importing-changes-from-exuberant-ctags">Importing changes from Exuberant-ctags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#parser-related-changes">Parser related changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#new-and-extended-options">New and extended options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#changes-to-the-tags-file-format">Changes to the tags file format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#reference-tags">Reference tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#automatic-parser-selection">Automatic parser selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#pseudo-tags">Pseudo-tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#parser-specific-fields">Parser specific fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#parser-specific-extras">Parser specific extras</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#parser-specific-parameter">Parser specific parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#customizing-xref-output">Customizing xref output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#incompatible-changes-in-command-line">Incompatible changes in command line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#skipping-utf-8-bom">Skipping utf-8 BOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#readtags">Readtags</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reporting.html">Request for extending a parser (or Reporting a bug of parser)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reporting.html#before-reporting">Before reporting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reporting.html#the-content-of-report">The content of report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reporting.html#an-example-of-good-report">An example of good report</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributions.html">Contributions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributions.html#general-topics">General topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributions.html#specific-to-add-new-parser-and-or-new-kind-role">Specific to add new parser and/or new kind/role</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser-asm.html">Asm parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-cmake.html">CMake parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-cxx.html">The new C/C++ parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-html.html">The new HTML parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-puppetManifest.html">puppetManifest parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-python.html">The new Python parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-tcl.html">The new Tcl parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-vim.html">The Vim parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-xslt.html">XSLT parser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output-format.html">Output formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="output-json.html">JSON output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output-xref.html">Xref output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interactive-mode.html"><code class="docutils literal notranslate"><span class="pre">--_interactive</span></code> Mode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interactive-mode.html#generate-tags">generate-tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interactive-mode.html#sandbox-submode">sandbox submode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guessing.html">Choosing a proper parser in ctags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running-multi-parsers.html">Running multiple parsers on an input file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="running-multi-parsers.html#applying-a-parser-to-specified-areas-of-input-file-guest-host">Applying a parser to specified areas of input file (guest/host)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running-multi-parsers.html#tagging-definitions-of-higher-upper-level-language-sub-base">Tagging definitions of higher(upper) level language (sub/base)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building.html">Building ctags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="autotools.html">Building with configure (*nix including GNU/Linux)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows.html">Building/hacking/using on MS-Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="osx.html">Building on Mac OS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing ctags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="units.html"><em>Units</em> test facility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="semifuzz.html">Semi-fuzz(<em>Fuzz</em>) testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html"><em>Noise</em> testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chop.html"><em>Chop</em> and <em>slap</em> testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tmain.html"><em>Tmain</em>: a facility for testing main part</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tinst.html"><em>Tinst</em> installation test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input-validation.html">Input validation for <em>Units</em></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending ctags</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optlib.html">Extending ctags with Regex parser (<em>optlib</em>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal.html">ctags Internal API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tips.html">Tips for hacking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tips.html#fussy-syntax-checking">Fussy syntax checking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html#finding-performance-bottleneck">Finding performance bottleneck</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html#checking-coverage">Checking coverage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html#reviewing-the-result-of-units-test">Reviewing the result of Units test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tips.html#running-cppcheck">Running cppcheck</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="other-projects.html">Relationship between other projects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="other-projects.html#geany">Geany</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-projects.html#tracking-other-projects">Tracking other projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other-projects.html#software-using-ctags">Software using ctags</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development-process.html">The development guideline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development-process.html#common-topics">Common topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-process.html#rules-for-reviewing-a-pull-request">Rules for reviewing a pull request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-process.html#rules-for-modifying-our-repository">Rules for modifying our repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-process.html#about-documentation">About documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="man-pages.html">Man pages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="man/ctags.1.html">ctags(1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/ctags-client-tools.7.html">ctags-client-tools(7)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/ctags-incompatibilities.7.html">ctags-incompatibilities(7)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/ctags-lang-python.7.html">ctags-lang-python(7)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/ctags-optlib.7.html">ctags-optlib(7)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/readtags.1.html">readtags(1)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="man/tags.5.html">tags(5)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Who we are</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Next topic</h4>
+  <p class="topless"><a href="news.html"
+                        title="next chapter">Introduced changes</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="news.html" title="Introduced changes"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>The development guideline &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Man pages" href="man-pages.html" />
+    <link rel="prev" title="Relationship between other projects" href="other-projects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="man-pages.html" title="Man pages"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="other-projects.html" title="Relationship between other projects"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-development-guideline">
+<h1>The development guideline<a class="headerlink" href="#the-development-guideline" title="Permalink to this headline">¶</a></h1>
+<p>Supporting many parsers with few developers is impossible.  We invite
+the person who contributes a parser to u-ctags team, especially if the
+target language is updated frequently. TypeScript is a typical
+frequently updated language.</p>
+<p>This page gathers random notes for newly joined members.</p>
+<div class="section" id="common-topics">
+<h2>Common topics<a class="headerlink" href="#common-topics" title="Permalink to this headline">¶</a></h2>
+<p>You are the maintainer of your parser, of course.</p>
+<p>You may update your parser as you want under the rules described
+later.</p>
+<p>You may review pull requests changing your parser.</p>
+<p>A parser exists and is maintained independently form other
+parsers. However, considering the consistency between parsers are not
+bad.</p>
+<p>You can put your name to docs/developers.rst.</p>
+<p>Read docs.ctags.io.</p>
+</div>
+<div class="section" id="rules-for-reviewing-a-pull-request">
+<h2>Rules for reviewing a pull request<a class="headerlink" href="#rules-for-reviewing-a-pull-request" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Put your rough schedule as a comment if you don’t have time, but you
+want to review.</p></li>
+</ul>
+</div>
+<div class="section" id="rules-for-modifying-our-repository">
+<h2>Rules for modifying our repository<a class="headerlink" href="#rules-for-modifying-our-repository" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Make a pull request even if the change is small enough.</p></li>
+<li><p>Wait for one day till merging even if the change is small enough.</p></li>
+<li><p>Wait for 3 days at least for non-small change to your parser.</p></li>
+<li><p>Wait for 7 days at least and get an LTGM comment from a member of the
+team if your commit changes the other parts than your parser.</p></li>
+<li><p>Add a test case to your pull request. To make git-bisect happy,
+don’t add a test case for a feature or a bugfix before adding the
+code for the feature or the bugfix.</p></li>
+<li><p>Even if a pull request includes multiple commits, each commit must
+be semantically well separated. Sometimes you may want to adjust
+whitespaces in the code. Adjusting whitespaces is o.k., but don’t
+mix the other change with it. Make a commit just for the whitespaces
+adjustment.</p></li>
+<li><p>“Misc Fixes” is allowed as far as each commit in a pull request is
+semantically well separated. Sometimes, you may fix various minor
+things randomly. Making pull requests for each of them is
+boring. You may want to make “mix fixes” pull request especially if
+your code is young.</p></li>
+<li><p>Use [WIP] prefix as the title of your pull request, if you don’t
+want people to take time for reviewing your code. Removing [WIP]
+implies “ready to be reviewed.”</p></li>
+<li><p>Use [FYI] prefix as the title to show your idea or sketch represented
+in C language.</p></li>
+<li><p>Use the name of your parser as the prefix of a pull request if your
+change is about a parser.</p></li>
+<li><p>Use the name of your parser as the prefix of a commit log.</p>
+<div class="highlight-git notranslate"><div class="highlight"><pre><span></span>     C++: record template type parameters to detect the end of template prefix
+
+
+     If we know Foo is a name of type, it becomes easier to detect whether
+     &quot;&gt;&gt;&quot; in &quot;Foo&gt;&gt;&quot; is a shift operator or the end marker of the template
+     prefix.
+
+
+In the above example, &quot;C++: &quot; is the prefix.
+</pre></div>
+</div>
+</li>
+<li><p>Use following prefixes for the changes other than parsers.</p>
+<p>main:</p>
+<blockquote>
+<div><p>Changes for files under main/ directory</p>
+</div></blockquote>
+<p>Units:</p>
+<blockquote>
+<div><p>Changes for the test cases under Units directory</p>
+</div></blockquote>
+<p>Tmain</p>
+<blockquote>
+<div><p>Changes for the test cases under Tmain directory</p>
+</div></blockquote>
+<p>docs(web)</p>
+<blockquote>
+<div><p>Changes for the docs/*.rst.</p>
+</div></blockquote>
+<p>docs(man)</p>
+<blockquote>
+<div><p>Changes for the man/*.rst.</p>
+</div></blockquote>
+<p>See also the output of git-log.</p>
+</li>
+<li><p>Combine prefixes with a comma if a change modifies multiple parts of our source tree</p>
+<p>Here is an example.</p>
+<div class="highlight-git notranslate"><div class="highlight"><pre><span></span>commit 64a05963c108af4b7832a2215006ff5cafcaaebb
+Author: Masatake YAMATO &lt;yamato@redhat.com&gt;
+Date:   Tue Mar 19 12:19:37 2019 +0900
+
+main,Flex,JavaScriupt,SQL,refactor: introduce a helper function to skip two character sequence
+
+...
+</pre></div>
+</div>
+</li>
+<li><p>Use following prefixes if the change as no run-time impact.</p>
+<p>cosmetic</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Remove whitespaces at the end of lines</p></li>
+<li><p>Adjust indentation</p></li>
+<li><p>Remove an empty line</p></li>
+<li><p>…</p></li>
+</ul>
+</div></blockquote>
+<p>style</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Rename symbol names</p></li>
+<li><p>…</p></li>
+</ul>
+</div></blockquote>
+<p>refactor</p>
+<blockquote>
+<div><p>Code transformation that doesn’t intent changing run-time behavior</p>
+</div></blockquote>
+<p>These prefixes reduce the load of reviewers.</p>
+</li>
+<li><p>Use “git rebase -i” and “git push --force” to refine your change in
+the meaning of “semantically well separated.”  “semantically well
+separated” is important than “recording the history of your try and
+error.”</p></li>
+<li><p>Use [INCOMPATIBLE] as a prefix for both pull request and commit log
+if the change breaks the compatibility with Exuberant-ctags. Write
+an explanation in man/ctags-incompatibilities.7.rst.in about the
+detail of breakage.</p></li>
+<li><p>Use [SELF-INCOMPATIBLE] as a prefix for both pull request and commit
+log if the change breaks the compatibility with Universal-ctags
+itself.</p></li>
+</ul>
+</div>
+<div class="section" id="about-documentation">
+<h2>About documentation<a class="headerlink" href="#about-documentation" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Update documents. man/*.rst files are the source files of our man pages.
+The man pages are for users. docs/*.rst files explain experimental
+new features. The files are for developers. The parts of contents
+of docs/*.rst should be moved to man/*.rst in the future.</p></li>
+<li><p>Write docs/parser-&lt;NAME-OF-YOUR-PARSER&gt;.rst as you want.
+A FAQ and the design or your parser are common topics.
+Consider the maintenance of your parser after you left the
+project for some reason.</p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The development guideline</a><ul>
+<li><a class="reference internal" href="#common-topics">Common topics</a></li>
+<li><a class="reference internal" href="#rules-for-reviewing-a-pull-request">Rules for reviewing a pull request</a></li>
+<li><a class="reference internal" href="#rules-for-modifying-our-repository">Rules for modifying our repository</a></li>
+<li><a class="reference internal" href="#about-documentation">About documentation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="other-projects.html"
+                        title="previous chapter">Relationship between other projects</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="man-pages.html"
+                        title="next chapter">Man pages</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="man-pages.html" title="Man pages"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="other-projects.html" title="Relationship between other projects"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2015, Universal Ctags Team.
+      Last updated on 21 Sep 2020.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+    </div>
+  </body>
+</html>
