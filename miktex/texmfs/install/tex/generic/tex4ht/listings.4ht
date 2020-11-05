@@ -1,6 +1,6 @@
-% listings.4ht (2019-12-19-14:27), generated from tex4ht-4ht.tex
+% listings.4ht (2020-02-13-13:43), generated from tex4ht-4ht.tex
 % Copyright 2001-2009 Eitan M. Gurari
-% Copyright 2009-2019 TeX Users Group
+% Copyright 2009-2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-12-19-14:27}
+\immediate\write-1{version 2020-02-13-13:43}
 
 \def\lst@makecaption#1#2{\cptA: #1\if :#1:\else\cptB:\fi \cptC: #2\cptD:}
 
@@ -54,6 +54,11 @@
 \append:defI\lst@MakeCaption{%
   \let\addcontentsline\lst:addcontentsline
 }
+\ConfigureToc{lol} {}{\empty}{}{\newline}
+\lst@UserCommand\lstlistoflistings{\bgroup%
+    \ifdefined\chapter\chapter*{\lstlistlistingname}\else\section*{\lstlistlistingname}\fi%
+    \TableOfContents[lol]%
+  \egroup}
 \def\lst@NewLine{%
    \ifx\lst@OutputBox\@gobble\else \the\everypar \fi
    \global\advance\lst@newlines\m@ne

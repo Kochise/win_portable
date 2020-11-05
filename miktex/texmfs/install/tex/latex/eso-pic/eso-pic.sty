@@ -23,9 +23,11 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesPackage{eso-pic}
-   [2018/04/12 v2.0h eso-pic (RN)]
+   [2020/09/27 v2.0i eso-pic (RN)]
 \RequirePackage{atbegshi}
 \providecommand*\LenToUnit[1]{\strip@pt\dimexpr#1*\p@/\unitlength}
+\newdimen\ESO@tempdima
+\newdimen\ESO@tempdimb
 \newcommand\ESO@isMEMOIR[2]{#2}
 \@ifclassloaded{memoir}{\renewcommand\ESO@isMEMOIR[2]{#1}}{}
 \newcommand\AtPageUpperLeft[1]{%
@@ -40,17 +42,17 @@
 \ESO@isMEMOIR{%
   \renewcommand\AtStockLowerLeft[1]{%
     \begingroup
-      \@tempdima=-\stockwidth
-      \advance\@tempdima\trimedge
-      \advance\@tempdima\paperwidth
+      \ESO@tempdima=-\stockwidth
+      \advance\ESO@tempdima\trimedge
+      \advance\ESO@tempdima\paperwidth
       \if@twoside\ifodd\c@page\else
-        \@tempdima=-\trimedge
+        \ESO@tempdima=-\trimedge
       \fi\fi
-      \@tempdimb=-\stockheight
-      \advance\@tempdimb\paperheight
-      \advance\@tempdimb\trimtop
+      \ESO@tempdimb=-\stockheight
+      \advance\ESO@tempdimb\paperheight
+      \advance\ESO@tempdimb\trimtop
       \AtPageLowerLeft{%
-        \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdimb}){#1}%
+        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
       }%
     \endgroup
   }
@@ -81,37 +83,37 @@
   \newcommand\AtTextUpperLeft[1]{%
     \begingroup
       \ifodd\c@page
-        \@tempdima=\spinemargin
+        \ESO@tempdima=\spinemargin
       \else
-        \@tempdima=\paperwidth
-        \advance\@tempdima-\textwidth
-        \advance\@tempdima-\spinemargin
+        \ESO@tempdima=\paperwidth
+        \advance\ESO@tempdima-\textwidth
+        \advance\ESO@tempdima-\spinemargin
       \fi
-      \@tempdimb=-\uppermargin
+      \ESO@tempdimb=-\uppermargin
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdimb}){#1}%
+        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
       }%
     \endgroup
   }
 }{%
   \newcommand\AtTextUpperLeft[1]{%
     \begingroup
-      \@tempdima=1in\relax
+      \ESO@tempdima=1in\relax
       \if@twoside
         \ifodd\c@page
-          \advance\@tempdima\oddsidemargin
+          \advance\ESO@tempdima\oddsidemargin
         \else
-          \advance\@tempdima\evensidemargin
+          \advance\ESO@tempdima\evensidemargin
         \fi
       \else
-        \advance\@tempdima\oddsidemargin
+        \advance\ESO@tempdima\oddsidemargin
       \fi
-      \@tempdimb=-1in\relax
-      \advance\@tempdimb-\topmargin
-      \advance\@tempdimb-\headheight
-      \advance\@tempdimb-\headsep
+      \ESO@tempdimb=-1in\relax
+      \advance\ESO@tempdimb-\topmargin
+      \advance\ESO@tempdimb-\headheight
+      \advance\ESO@tempdimb-\headsep
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdimb}){#1}%
+        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
       }%
     \endgroup
   }
@@ -144,25 +146,25 @@
 \newcommand{\ClearShipoutPictureFG}{\global\let\ESO@HookIFG\@empty}
 \ESO@isMEMOIR{%
   \AtBeginShipout{%
-    \@tempdima=-\trimedge
-    \advance\@tempdima-\paperwidth
-    \advance\@tempdima\stockwidth
+    \ESO@tempdima=-\trimedge
+    \advance\ESO@tempdima-\paperwidth
+    \advance\ESO@tempdima\stockwidth
     \if@twoside\ifodd\c@page\else
-      \advance\@tempdima2\trimedge
-      \advance\@tempdima\paperwidth
-      \advance\@tempdima-\stockwidth
+      \advance\ESO@tempdima2\trimedge
+      \advance\ESO@tempdima\paperwidth
+      \advance\ESO@tempdima-\stockwidth
     \fi\fi
-    \@tempdimb=\ESO@yoffsetI
-    \advance\@tempdimb-\trimtop
+    \ESO@tempdimb=\ESO@yoffsetI
+    \advance\ESO@tempdimb-\trimtop
     \nointerlineskip
     \AtBeginShipoutUpperLeft{%
-      \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdimb}){%
+      \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){%
         \ESO@HookIIIBG\ESO@HookIBG\ESO@HookIIBG
         \global\let\ESO@HookIIBG\@empty
       }%
     }%
     \AtBeginShipoutUpperLeftForeground{%
-      \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdimb}){%
+      \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){%
         \ESO@HookIFG\ESO@HookIIFG\ESO@HookIIIFG
         \global\let\ESO@HookIIFG\@empty
       }%
@@ -259,9 +261,9 @@
   \AtEndOfPackage{\let\@unprocessedoptions\relax}}%
 \ProcessOptionsWithKV{ESO}%
 \newcommand\ESO@div[2]{%
-  \@tempdima=#1\relax\@tempdimb=\ESO@gridunit\relax
-  \@tempdimb=#2\@tempdimb\divide\@tempdima by \@tempdimb
-  \@tempcnta\@tempdima\advance\@tempcnta\@ne}
+  \ESO@tempdima=#1\relax\ESO@tempdimb=\ESO@gridunit\relax
+  \ESO@tempdimb=#2\ESO@tempdimb\divide\ESO@tempdima by \ESO@tempdimb
+  \@tempcnta\ESO@tempdima\advance\@tempcnta\@ne}
 \@ifundefined{colorbox}{%
   \IfFileExists{xcolor.sty}{\RequirePackage{xcolor}}%
     {\RequirePackage{color}}%
@@ -335,8 +337,8 @@
       \@tempcntb=\@tempcnta\advance\@tempcntb-\@multicnt
       \ifnum\@tempcntb>1\relax
         \multiply\@tempcntb by \ESO@gridDelta\relax
-        \@tempdima=\@tempcntb sp\@tempdima=\ESO@labelfactor\@tempdima
-        \@tempcntb=\@tempdima%
+        \ESO@tempdima=\@tempcntb sp\ESO@tempdima=\ESO@labelfactor\ESO@tempdima
+        \@tempcntb=\ESO@tempdima%
         \makebox(0,0)[c]{\ESO@colorbox{white}{\the\@tempcntb}}%
       \fi}%
     \ifx\ESO@gridunitname\@empty\def\@tempa{0}\else\def\@tempa{1}\fi
@@ -345,8 +347,8 @@
       \@tempcntb=\@tempcnta\advance\@tempcntb-\@multicnt%
       \ifnum\@tempcntb>\@tempa\relax
         \multiply\@tempcntb by \ESO@gridDelta\relax%
-        \@tempdima=\@tempcntb sp\@tempdima=\ESO@labelfactor\@tempdima
-        \@tempcntb=\@tempdima
+        \ESO@tempdima=\@tempcntb sp\ESO@tempdima=\ESO@labelfactor\ESO@tempdima
+        \@tempcntb=\ESO@tempdima
         \makebox(0,0)[c]{\ESO@colorbox{white}{\the\@tempcntb}}%
       \fi
     }%

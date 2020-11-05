@@ -38,7 +38,7 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{bicaption}[2020/08/23 v1.2a Bilingual Captions (AR)]
+\ProvidesPackage{bicaption}[2020/10/25 v1.3 Bilingual Captions (AR)]
 \RequirePackage{caption}[2020/08/23] % needs v3.5 or newer
 \newcommand*\bicaption@Info[1]{%
   \PackageInfo{bicaption}{#1}}
@@ -82,6 +82,16 @@
   \caption@set@bool\bicaption@ifslc{#1}}
 \DeclareCaptionOption{bi-swap}[1]{%
   \caption@set@bool\bicaption@ifswap{#1}}
+\DeclareCaptionOption{bi-separator}[1]{%
+  \caption@set{biseparator}{#1}}
+\newcommand\DeclareBiCaptionSeparator[2]{%
+  \caption@decl{biseparator}{#1}{#2}}
+\@onlypreamble\DeclareBiCaptionSeparator
+\DeclareBiCaptionSeparator{none}{}
+\DeclareBiCaptionSeparator{smallskip}{\smallskip}
+\DeclareBiCaptionSeparator{medskip}{\medskip}
+\DeclareBiCaptionSeparator{bigskip}{\bigskip}
+\SetCaptionDefault{biseparator}{none}
 \DeclareCaptionOption{lang}{%
   \caption@ifundefined\bicaption@language
     \bicaption@language@setupkeys
@@ -118,7 +128,7 @@
   \bicaption@selectlanguage\@firstoftwo}
 \providecommand*\selectcaptionlanguage[1]{%
   #1\select@language\selectlanguage}
-\caption@ExecuteOptions{caption}{bi-lang=0,bi-slc=1,bi-swap=0}
+\caption@ExecuteOptions{caption}{bi-lang=0,bi-slc=1,bi-swap=0,bi-separator=default}
 \ifcsname captionmainlanguage\endcsname
   \bicaption@InfoNoLine{%
     main language is set to \captionmainlanguage}
@@ -184,27 +194,31 @@
   \caption@setoptions{bi}%
   \ifnum\bicaption@lang=0\relax
     \bicaption@ifslc
-      {\caption@slc{#2}{#3}{}{\KV@caption@singlelinecheck0}%
-       \caption@slc{#2}{#1}{}{\KV@caption@singlelinecheck0}}%
+      {\caption@slc{#2}{#3}{}{\caption@setsinglelinecheck0}%
+       \caption@slc{#2}{#1}{}{\caption@setsinglelinecheck0}}%
       {}%
   \fi
   \ifnum\bicaption@lang=2\relax
     \caption@thelabel
     \global\let\caption@thelabel\relax
+    \let\bicaption@tempa\relax
   \else
     \begingroup
       \caption@setoptions{bi-first}%
       \caption@@make@{#2}{#3}%
     \endgroup
+    \def\bicaption@tempa{\bicaption@separator\caption@biseparator}%
   \fi
   \ifnum\bicaption@lang=1\relax
   \else
+    \bicaption@tempa
     \begingroup
       \caption@setoptions{bi-second}%
       \caption@@make@{#2}{#1}%
     \endgroup
   \fi
 }
+\newcommand*\bicaption@separator{\par}
 \newcommand\bicaption{\@bicaption\caption}
 \newcommand\bicaptionbox{\@bicaption\captionbox}
 \newcommand\bisubcaption{\@bicaption\subcaption}

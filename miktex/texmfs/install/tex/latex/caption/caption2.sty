@@ -38,7 +38,7 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption2}[2020/01/02 v2.2e Customising captions (AR)]
+\ProvidesPackage{caption2}[2020/09/28 v2.2f Customising captions (AR)]
 \PackageWarning{caption2}{%
   ****************************************************\MessageBreak
   THIS PACKAGE IS OBSOLETE:\MessageBreak
@@ -48,16 +48,18 @@
   NOT be used for NEW documents! New documents should\MessageBreak
   use the regular `caption' package v3.x instead.\MessageBreak
   ****************************************************\@gobbletwo}%
-\RequirePackage{caption3}[2019/12/31] % should be used with v1.8f or newer
+\RequirePackage{caption3}[2020/09/28] % needs v2.2a or newer
 \let\captionsetup\@undefined
 \let\clearcaptionsetup\@undefined
 \let\showcaptionsetup\@undefined
 \let\DeclareCaptionType\@undefined
 \let\DeclareCaptionSubType\@undefined
+\newcommand*\captiontwo@Error[2][]{%
+  \PackageError{caption2}{#2}{#1\caption@@eh{caption2}}}
 \@ifpackageloaded{caption}{%
-  \PackageError{caption2}{%
+  \captiontwo@Error{%
     You can't use both, the (current) caption *and*\MessageBreak
-    the (obsolete) caption2 package}\caption@eh
+    the (obsolete) caption2 package}%
   \endinput
 }{}
 \newcommand*\captionlabeldelim{}
@@ -94,13 +96,13 @@
   \expandafter\ifx\csname caption@@#1\endcsname\relax
     \expandafter\defcaptionstyle
   \else
-    \PackageError{caption2}{Caption style `#1' already defined}{\caption@eh}%
+    \captiontwo@Error{Caption style `#1' already defined}%
     \expandafter\@gobbletwo
   \fi
   {#1}}
 \newcommand*\renewcaptionstyle[1]{%
   \expandafter\ifx\csname caption@@#1\endcsname\relax
-    \PackageError{caption2}{Caption style `#1' undefined}{\caption@eh}%
+    \captiontwo@Error{Caption style `#1' undefined}%
     \expandafter\@gobbletwo
   \else
     \expandafter\defcaptionstyle
@@ -110,17 +112,17 @@
   \defcaptionstyle{#1}{%
     \expandafter\ifx\csname caption@@\caption@style\expandafter\endcsname%
                     \csname caption@@#1\endcsname
-      \PackageError{caption2}{You can't use the caption style `#1' directy}{%
-        The caption style `#1' is only a dummy and does not really exists.%
-        \MessageBreak You have to redefine it (with \protect\renewcaptionstyle)
-        before you can select\MessageBreak it with \protect\captionstyle.
-        \space\caption@eh}%
+      \captiontwo@Error
+        [The caption style `#1' is only a dummy and does not really exists.%
+         \MessageBreak You have to redefine it (with \protect\renewcaptionstyle)
+         before you can select\MessageBreak it with \protect\captionstyle.\space]%
+        {You can't use the caption style `#1' directy}%
     \else
       #2\usecaptionstyle\caption@style
     \fi}}
 \newcommand*\captionstyle[1]{%
   \expandafter\ifx\csname caption@@#1\endcsname\relax
-    \PackageError{caption2}{Undefined caption style `#1'}{\caption@eh}%
+    \captiontwo@Error{Undefined caption style `#1'}%
   \else
     \def\caption@style{#1}%
   \fi}
@@ -255,14 +257,14 @@
   \fi\next}
 \newcommand*\usecaptionstyle[1]{%
   \caption@ifundefined\captiontext{%
-    \PackageError{caption2}{You can't use \protect#1
-      in normal text}{The usage of \protect#1 is only
-      allowed inside code declared with\MessageBreak \protect\defcaptionstyle,
-      \protect\newcaptionstyle \space or \protect\renewcaptionstyle.
-      \space\caption@eh}
+    \captiontwo@Error
+      [The usage of \protect#1 is only
+       allowed inside code declared with\MessageBreak \protect\defcaptionstyle,
+       \protect\newcaptionstyle \space or \protect\renewcaptionstyle.\space]%
+      {You can't use \protect#1 in normal text}%
   }{%
     \@ifundefined{caption@@#1}%
-      {\PackageError{caption2}{Caption style `#1' undefined}{\caption@eh}}%
+      {\captiontwo@Error{Caption style `#1' undefined}}%
       {\let\caption@make\caption@makecaption
        \@nameuse{caption@@#1}}%
   }}
@@ -440,7 +442,7 @@
     \newcommand*\subcaplabeldelim{}
     \newcommand*\subcapstyle[1]{%
       \expandafter\ifx\csname caption@@#1\endcsname\relax
-        \PackageError{caption2}{Undefined caption style `#1'}{\caption@eh}%
+        \captiontwo@Error{Undefined caption style `#1'}%
       \else
         \def\caption@substyle{#1}%
       \fi}

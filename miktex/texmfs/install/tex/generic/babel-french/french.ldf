@@ -24,7 +24,7 @@
 %% Please report errors to: <daniel (dot) flipo (at) free (dot) fr>
 %% 
 \ProvidesLanguage{french}
-         [2020/07/02 v3.5j French support from the babel system]
+         [2020/10/10 v3.5l French support from the babel system]
 %%
 %%  Babel package for LaTeX version 2e
 %%  Copyright © 1996-2020
@@ -418,12 +418,14 @@
    \addto\extrasfrench{\FB@xetex@punct@french}
 \fi
 \newif\ifFB@koma
-\@ifclassloaded{scrartcl}{\FB@komatrue}{}
-\@ifclassloaded{scrbook}{\FB@komatrue}{}
-\@ifclassloaded{scrreprt}{\FB@komatrue}{}
-\ifFB@koma\def\FB@std@capsep{:\ }\fi
-\@ifclassloaded{beamer}{\def\FB@std@capsep{:\ }}{}
-\@ifclassloaded{memoir}{\def\FB@std@capsep{: }}{}
+\ifLaTeXe
+  \@ifclassloaded{scrartcl}{\FB@komatrue}{}
+  \@ifclassloaded{scrbook}{\FB@komatrue}{}
+  \@ifclassloaded{scrreprt}{\FB@komatrue}{}
+  \ifFB@koma\def\FB@std@capsep{:\ }\fi
+  \@ifclassloaded{beamer}{\def\FB@std@capsep{:\ }}{}
+  \@ifclassloaded{memoir}{\def\FB@std@capsep{: }}{}
+\fi
 \ifFB@active@punct
   \initiate@active@char{:}%
   \initiate@active@char{;}%
@@ -532,30 +534,33 @@
   \fi
   \let\xspace\relax
 \fi
+\providecommand\texorpdfstring[2]{#1}
+\newcommand*{\FB@og}{\texorpdfstring{\@FB@og}{\guillemotleft\space}}
+\newcommand*{\FB@fg}{\texorpdfstring{\@FB@fg}{\space\guillemotright}}
 \newcommand*{\FB@guillspace}{\penalty\@M\FBguillspace}
 \newcommand*{\FBgspchar}{\char"A0\relax}
 \newif\ifFBucsNBSP
 \ifFB@luatex@punct
-  \DeclareRobustCommand*{\FB@og}{\leavevmode
+  \DeclareRobustCommand*{\@FB@og}{\leavevmode
           \bgroup\FB@spacing=0 \guillemotleft\egroup
           \ifFBucsNBSP\FBgspchar\else\FB@guillspace\fi}
-  \DeclareRobustCommand*{\FB@fg}{\ifdim\lastskip>\z@\unskip\fi
+  \DeclareRobustCommand*{\@FB@fg}{\ifdim\lastskip>\z@\unskip\fi
           \ifFBucsNBSP\FBgspchar\else\FB@guillspace\fi
           \bgroup\FB@spacing=0 \guillemotright\egroup}
 \fi
 \ifFB@xetex@punct
-  \DeclareRobustCommand*{\FB@og}{\leavevmode
+  \DeclareRobustCommand*{\@FB@og}{\leavevmode
         \bgroup\FB@spacingfalse\guillemotleft\egroup
         \FB@guillspace}
-  \DeclareRobustCommand*{\FB@fg}{\ifdim\lastskip>\z@\unskip\fi
+  \DeclareRobustCommand*{\@FB@fg}{\ifdim\lastskip>\z@\unskip\fi
         \FB@guillspace
         \bgroup\FB@spacingfalse\guillemotright\egroup}
 \fi
 \ifFB@active@punct
-  \DeclareRobustCommand*{\FB@og}{\leavevmode
+  \DeclareRobustCommand*{\@FB@og}{\leavevmode
         \guillemotleft
         \FB@guillspace}
-  \DeclareRobustCommand*{\FB@fg}{\ifdim\lastskip>\z@\unskip\fi
+  \DeclareRobustCommand*{\@FB@fg}{\ifdim\lastskip>\z@\unskip\fi
         \FB@guillspace
         \guillemotright}
 \fi
@@ -604,8 +609,12 @@
 \let\FBeveryline@quote\empty
 \ifLaTeXe
   \DeclareRobustCommand\frquote{%
-       \@ifstar{\FBcloseguillfalse\fr@quote}%
-               {\FBcloseguilltrue\fr@quote}}
+    \texorpdfstring{\@ifstar{\FBcloseguillfalse\fr@quote}%
+                            {\FBcloseguilltrue \fr@quote}}%
+                   {\bm@fr@quote}%
+  }
+  \newcommand{\bm@fr@quote}[1]{%
+    \guillemotleft\space #1\space\guillemotright}
 \else
   \newcommand\frquote[1]{\fr@quote{#1}}
 \fi
@@ -722,13 +731,15 @@
   \newcommand*{\FB@up@real}[1]{\bgroup
        \fontfamily{\FB@firstthree -sup}\selectfont \FB@lc{#1}\egroup}
   \DeclareRobustCommand*{\fup}[1]{%
-    \ifx\realsuperscript\@undefined
-      \FB@up{#1}%
-    \else
-      \bgroup\let\fakesuperscript\FB@up@fake
-             \realsuperscript{\FB@lc{#1}}\egroup
-    \fi}
-  \providecommand*{\up}{\relax}
+    \texorpdfstring{\ifx\realsuperscript\@undefined
+                      \FB@up{#1}%
+                    \else
+                      \bgroup\let\fakesuperscript\FB@up@fake
+                        \realsuperscript{\FB@lc{#1}}\egroup
+                    \fi
+                    }{#1}%
+  }
+  \providecommand*{\up}{\fup}
 \else
   \providecommand*{\up}[1]{\leavevmode\raise1ex\hbox{\sevenrm #1}}
 \fi
@@ -740,8 +751,10 @@
 \def\ieres{\up{res}\xspace}
 \newcommand*{\FBmedkern}{\kern+.2em}
 \newcommand*{\FBthickkern}{\kern+.3em}
-\newcommand*{\FrenchEnumerate}[1]{#1\up{o}\FBthickkern}
-\newcommand*{\FrenchPopularEnumerate}[1]{#1\up{o})\FBthickkern}
+\newcommand*{\FrenchEnumerate}[1]{%
+   #1\texorpdfstring{\up{o}\FBthickkern}{\textdegree\space}}
+\newcommand*{\FrenchPopularEnumerate}[1]{%
+   #1\texorpdfstring{\up{o})\FBthickkern}{\textdegree\space}}
 \def\primo{\FrenchEnumerate1}
 \def\secundo{\FrenchEnumerate2}
 \def\tertio{\FrenchEnumerate3}
@@ -750,66 +763,60 @@
 \def\fsecundo){\FrenchPopularEnumerate2}
 \def\ftertio){\FrenchPopularEnumerate3}
 \def\fquarto){\FrenchPopularEnumerate4}
-\DeclareRobustCommand*{\No}{N\up{o}\FBmedkern}
-\DeclareRobustCommand*{\no}{n\up{o}\FBmedkern}
-\DeclareRobustCommand*{\Nos}{N\up{os}\FBmedkern}
-\DeclareRobustCommand*{\nos}{n\up{os}\FBmedkern}
-\DeclareRobustCommand*{\bsc}[1]{\leavevmode\begingroup\kern0pt
-                                           \scshape #1\endgroup}
-\ifLaTeXe\else\let\scshape\relax\fi
+\DeclareRobustCommand*{\No}{%
+  \texorpdfstring{N\up{o}\FBmedkern}{N\textdegree\space}}
+\DeclareRobustCommand*{\no}{%
+    \texorpdfstring{n\up{o}\FBmedkern}{n\textdegree\space}}
+\DeclareRobustCommand*{\Nos}{%
+    \texorpdfstring{N\up{os}\FBmedkern}{N\textdegree\space}}
+\DeclareRobustCommand*{\nos}{%
+    \texorpdfstring{n\up{os}\FBmedkern}{n\textdegree\space}}
+\ifLaTeXe
+  \DeclareRobustCommand*{\bsc}[1]{%
+    \texorpdfstring{\leavevmode\begingroup\kern0pt \scshape #1\endgroup}%
+                   {\textsc{#1}}%
+  }
+\else
+  \newcommand*{\bsc}[1]{\leavevmode\begingroup\kern0pt #1\endgroup}
+\fi
 \ifFBunicode
-  \newcommand*{\at}{{\char"0040}}
-  \newcommand*{\circonflexe}{{\char"005E}}
-  \newcommand*{\tild}{{\char"007E}}
-  \newcommand*{\boi}{{\char"005C}}
-  \newcommand*{\degre}{{\char"00B0}}
+  \providecommand*{\textbackslash}{{\char"005C}}
+  \providecommand*{\textasciicircum}{{\char"005E}}
+  \providecommand*{\textasciitilde}{{\char"007E}}
+  \newcommand*{\FB@degre}{°}
 \else
   \ifLaTeXe
-    \DeclareTextSymbol{\at}{T1}{64}
-    \DeclareTextSymbol{\circonflexe}{T1}{94}
-    \DeclareTextSymbol{\tild}{T1}{126}
-    \DeclareTextSymbolDefault{\at}{T1}
-    \DeclareTextSymbolDefault{\circonflexe}{T1}
-    \DeclareTextSymbolDefault{\tild}{T1}
-    \DeclareRobustCommand*{\boi}{\textbackslash}
-    \DeclareRobustCommand*{\degre}{\r{}}
-  \else
-    \def\T@one{T1}
-    \ifx\f@encoding\T@one
-      \newcommand*{\degre}{{\char6}}
-    \else
-      \newcommand*{\degre}{{\char23}}
-    \fi
-    \newcommand*{\at}{{\char64}}
-    \newcommand*{\circonflexe}{{\char94}}
-    \newcommand*{\tild}{{\char126}}
-    \newcommand*{\boi}{$\backslash$}
+    \newcommand*{\FB@degre}{\r{}}
   \fi
 \fi
+\DeclareRobustCommand*{\boi}{\textbackslash}
+\DeclareRobustCommand*{\circonflexe}{\textasciicircum}
+\DeclareRobustCommand*{\tild}{\textasciitilde}
+\DeclareRobustCommand*{\degre}{%
+  \texorpdfstring{\FB@degre}{\textdegree}}
+\newcommand*{\at}{@}
+\DeclareRobustCommand*{\degres}{\degre}
 \ifLaTeXe
-  \newcommand*{\degres}{\degre}
-  \ifFBunicode
-    \DeclareRobustCommand*{\degres}{\degre}
-  \else
-    \def\Warning@degree@TSone{\FBWarning
+  \AtBeginDocument{%
+    \@ifpackageloaded{fontspec}{}{%
+      \ifdefined\DeclareEncodingSubset
+        \DeclareRobustCommand*{\degres}{%
+          \texorpdfstring{\hbox{\UseTextSymbol{TS1}{\textdegree}}}%
+                         {\textdegree}}%
+      \else
+        \def\Warning@degree@TSone{\FBWarning
              {Degrees would look better in TS1-encoding:%
               \MessageBreak add \protect
               \usepackage{textcomp} to the preamble.%
               \MessageBreak Degrees used}}
-    \AtBeginDocument{\ifx\DeclareEncodingSubset\@undefined
-                       \DeclareRobustCommand*{\degres}{%
-                          \leavevmode\hbox to 0.3em{\hss\degre\hss}%
-                       \Warning@degree@TSone
-                       \global\let\Warning@degree@TSone\relax}%
-                     \else
-                       \DeclareRobustCommand*{\degres}{%
-                          \hbox{\UseTextSymbol{TS1}{\textdegree}}}%
-                     \fi
-                     }
-  \fi
-\else
-  \newcommand*{\degres}{%
-    \leavevmode\hbox to 0.3em{\hss\degre\hss}}
+        \DeclareRobustCommand*{\degres}{%
+          \texorpdfstring{\hbox to 0.3em{\hss\degre\hss}%
+                          \Warning@degree@TSone
+                          \global\let\Warning@degree@TSone\relax}%
+                          {\textdegree}}%
+      \fi
+    }%
+  }
 \fi
 \newif\ifFB@icomma
 \newcount\mc@charclass
@@ -939,8 +946,8 @@
    \SetString{\listfigurename}{Table des figures}
    \SetString{\listtablename}{Liste des tableaux}
    \SetString{\indexname}{Index}
-   \SetString{\figurename}{{\FBfigtabshape Figure}}
-   \SetString{\tablename}{{\FBfigtabshape Table}}
+   \SetString{\figurename}{Figure}
+   \SetString{\tablename}{Table}
    \SetString{\pagename}{page}
    \SetString{\seename}{voir}
    \SetString{\alsoname}{voir aussi}
@@ -970,6 +977,21 @@
     }
    \SetString{\partname}{\FB@partname}
 \EndBabelCommands
+\AtBeginDocument{%
+  \ifx\FBfigtabshape\relax
+  \else
+    \ifdefined\fnum@figure
+      \let\fnum@figureORI\fnum@figure
+      \renewcommand{\fnum@figure}{{\ifFBfrench\FBfigtabshape\fi
+                                   \fnum@figureORI}}%
+    \fi
+    \ifdefined\fnum@table
+      \let\fnum@tableORI\fnum@table
+      \renewcommand{\fnum@table}{{\ifFBfrench\FBfigtabshape\fi
+                                  \fnum@tableORI}}%
+    \fi
+  \fi
+}
 \newcommand{\FBWarning}[1]{\PackageWarning{french.ldf}{#1}}
 \bgroup
   \catcode`:=12 \catcode`>=12 \relax
@@ -998,7 +1020,6 @@
     \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
   \fi
   \vskip\belowcaptionskip}
-\@ifclassloaded{acmart}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{amsart}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{amsbook}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{amsdtx}{\@FBwarning@capsepfalse}{}
@@ -1006,57 +1027,38 @@
 \@ifclassloaded{amproc}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{smfart}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{smfbook}{\@FBwarning@capsepfalse}{}
-\newif\ifFB@koma
+\@ifclassloaded{IEEEconf}{\@FBwarning@capsepfalse}{}
+\@ifclassloaded{IEEEtran}{\@FBwarning@capsepfalse}{}
+\@ifclassloaded{revtex4-2}{\@FBwarning@capsepfalse}{}
+\@ifclassloaded{svjour3}{\@FBwarning@capsepfalse}{}
 \@ifclassloaded{memoir}{\@FBwarning@capsepfalse}{}
-\@ifclassloaded{scrartcl}{\@FBwarning@capsepfalse\FB@komatrue}{}
-\@ifclassloaded{scrbook}{\@FBwarning@capsepfalse\FB@komatrue}{}
-\@ifclassloaded{scrreprt}{\@FBwarning@capsepfalse\FB@komatrue}{}
+\ifFB@koma \@FBwarning@capsepfalse \fi
 \@ifclassloaded{beamer}{\@FBwarning@capsepfalse}{}
 \ifdefined\@makecaption\else\@FBwarning@capsepfalse\fi
-\newcounter{FBcaption@count}
-\@ifpackageloaded{caption3}{\addtocounter{FBcaption@count}{4}}{}
-\@ifpackageloaded{subcaption}{\addtocounter{FBcaption@count}{2}}{}
-\@ifpackageloaded{floatrow}{\stepcounter{FBcaption@count}}{}
 \AtBeginDocument{%
   \ifx\@makecaption\STD@makecaption
     \global\let\@makecaption\FB@makecaption
     \ifFBOldFigTabCaptions
     \else
-      \def\FBCaption@Separator{\ifFBfrench\space\fi : }%
-    \fi
-    \ifFBCustomiseFigTabCaptions
-       \ifFB@mainlanguage@FR
-        \def\FBCaption@Separator{\CaptionSeparator}%
+      \def\FBCaption@Separator{{\autospace@beforeFDP : }}%
+      \ifFBCustomiseFigTabCaptions
+        \ifFB@mainlanguage@FR
+          \def\FBCaption@Separator{\CaptionSeparator}%
+        \fi
       \fi
     \fi
     \@FBwarning@capsepfalse
   \fi
-  \@ifpackageloaded{caption3}{%
-    \ifnum\value{FBcaption@count}=0 \@FBwarning@capsepfalse\fi
-    }{}%
+    \@ifpackageloaded{caption}{\@FBwarning@capsepfalse}{}%
+    \@ifpackageloaded{caption-light}{\@FBwarning@capsepfalse}{}%
   \if@FBwarning@capsep
-    \ifnum\value{FBcaption@count}>0
-      \FBWarning
+     \FBWarning
        {Figures' and tables' captions might look like\MessageBreak
         `Figure 1:' in French instead of `Figure 1 :'.\MessageBreak
-        If you have loaded any of the packages caption,\MessageBreak
-        subcaption or floatrow BEFORE babel/french,\MessageBreak
-        please move them AFTER babel/french.\MessageBreak
-        If one of them is loaded by your class,\MessageBreak
-        you can still add AFTER babel/french\MessageBreak
-        \protect\usepackage[labelsep=period]{caption} or\MessageBreak
-        \protect\usepackage[labelsep=endash]{caption} or\MessageBreak
-        ... live with it; reported}%
-    \else
-      \FBWarning
-       {Figures' and tables' captions might look like\MessageBreak
-        `Figure 1:' in French instead of `Figure 1 :'.\MessageBreak
-        If it happens, see your class documentation to\MessageBreak
-        fix this issue or add AFTER babel/french\MessageBreak
-        \protect\usepackage[labelsep=period]{caption} or\MessageBreak
-        \protect\usepackage[labelsep=endash]{caption} or\MessageBreak
-        or ... live with it; reported}%
-    \fi
+        If this happens, to fix this issue\MessageBreak
+        switch to LuaLaTeX or XeLaTeX or\MessageBreak
+        try to add \protect\usepackage{caption} or\MessageBreak
+        ... leave it as it is; reported}%
   \fi
   \let\FB@makecaption\relax
   \let\STD@makecaption\relax
@@ -1312,10 +1314,7 @@
   \define@key{FB}{SmallCapsFigTabCaptions}[true]%
           {\csname FBSmallCapsFigTabCaptions#1\endcsname
            \ifFBSmallCapsFigTabCaptions
-             \let\FBfigtabshape\scshape
-           \else
-             \let\FBfigtabshape\relax
-           \fi}%
+           \else \let\FBfigtabshape\relax \fi}%
   \define@key{FB}{SuppressWarning}[true]%
           {\csname FBSuppressWarning#1\endcsname
            \ifFBSuppressWarning
@@ -1536,10 +1535,13 @@
      \fi
     }{}%
   \ifFBFrenchSuperscripts
-    \DeclareRobustCommand*{\up}{\@ifstar{\FB@up@fake}{\fup}}%
+    \DeclareRobustCommand*{\up}{%
+      \texorpdfstring{\@ifstar{\FB@up@fake}{\fup}}{}%
+      }
   \else
-    \DeclareRobustCommand*{\up}{\@ifstar{\FB@up@fake}%
-                                        {\textsuperscript}}%
+    \DeclareRobustCommand*{\up}{%
+      \texorpdfstring{\@ifstar{\FB@up@fake}{\textsuperscript}}{}%
+      }
   \fi
   \ifFBLowercaseSuperscripts
   \else
@@ -1629,34 +1631,6 @@
 }
 \AtBeginDocument{%
    \providecommand*{\xspace}{\relax}%
-   \ifdefined\pdfstringdefDisableCommands
-     \pdfstringdefDisableCommands{%
-        \let\up\relax
-        \let\fup\relax
-        \let\degre\textdegree
-        \let\degres\textdegree
-        \def\ieme{e\xspace}%
-        \def\iemes{es\xspace}%
-        \def\ier{er\xspace}%
-        \def\iers{ers\xspace}%
-        \def\iere{re\xspace}%
-        \def\ieres{res\xspace}%
-        \def\FrenchEnumerate#1{#1\degre\space}%
-        \def\FrenchPopularEnumerate#1{#1\degre)\space}%
-        \def\No{N\degre\space}%
-        \def\no{n\degre\space}%
-        \def\Nos{N\degre\space}%
-        \def\nos{n\degre\space}%
-        \def\FB@og{\guillemotleft\space}%
-        \def\FB@fg{\space\guillemotright}%
-        \def\frquote#1{\FB@og #1\FB@fg}%
-        \def\at{@}%
-        \def\circonflexe{\string^}%
-        \def\tild{\string~}%
-        \def\boi{\textbackslash}%
-        \let\bsc\textsc
-      }%
-   \fi
    \FBprocess@options
    \ifFBucsNBSP
      \renewcommand*{\FBmedkern}{\char"202F\relax}%

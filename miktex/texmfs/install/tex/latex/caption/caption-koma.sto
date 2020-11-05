@@ -38,7 +38,7 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesFile{caption-koma.sto}[2020/08/22 v2.0 Adaption of the caption package to the KOMA-Script document classes (AR)]
+\ProvidesFile{caption-koma.sto}[2020/09/21 v2.0b Adaption of the caption package to the KOMA-Script document classes (AR)]
 \expandafter\let\expandafter\caption@koma@setcapwidth
                 \csname\string\setcapwidth\endcsname
 \@namedef{\string\setcapwidth}[#1]#2{%
@@ -133,7 +133,7 @@
     \fi\fi
     #3\par
   \fi}
-\SetCaptionDefault{labelformat}{autodot}
+\SetCaptionFallback{labelformat}{autodot}
 \DeclareCaptionLabelSeparator{default}{\captionformat}
 \DeclareCaptionFont{scr@font}{\scr@fnt@caption}
 \DeclareCaptionFont{scr@labelfont}{\scr@fnt@captionlabel}
@@ -146,7 +146,7 @@
 \else
   \@captionabovefalse
 \fi
-\AtBeginCaption{\caption@AtBeginLongtable{%
+\AfterCaptionPackage{\caption@AtBeginLongtable{%
   \def\@captionabovetrue{\LT@captionsetup{position=t}}%
   \def\@captionabovefalse{\LT@captionsetup{position=b}}}}
 \g@addto@macro\@tablecaptionabovetrue{\captionsetup*[table]{position=t}}%

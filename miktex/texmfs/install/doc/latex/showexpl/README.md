@@ -13,12 +13,9 @@ Recommended TDS locations:
    showexpl-test.tex, result-picture.pdf:    doc/latex/showexpl
 ```
 
-For general installation advice, see
-<http://www.tex.ac.uk/cgi-bin/texfaq2html?label=instpackages>
-
 The showexpl package is also on
 CTAN:[macros/latex/contrib/showexpl](http://www.ctan.org/tex-archive/macros/latex/contrib/showexpl)
 
 Rolf Niepraschk,
 email: Rolf.Niepraschk@gmx.de,
-2020-05-03
+2020-05-28

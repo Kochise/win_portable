@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% fancyvrb.4ht                          2019-11-13-14:16 %
+% fancyvrb.4ht                          2020-10-02-15:28 %
 % Copyright (C) 1997-2009       Eitan M. Gurari         %
-% Copyright 2009-2019 TeX Users Group
+% Copyright 2009-2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -62,6 +62,28 @@
       \FV@LeftListFrame \e:fancyvrb \FancyVerbFormatLine{#1}\f:fancyvrb%
       \FV@RightListFrame \csname FV@RightListNumber\endcsname %
           \d:fancyvrb}}
+\def\FV@ListProcessLine@iii#1{%
+  \box\@tempboxa
+  \setbox\@tempboxa=\FV@ListProcessLine{#1}%
+  \let\FV@ProcessLine\FV@ListProcessLine@iv}
+\def\FV@ListProcessLine@iv#1{%
+  \box\@tempboxa
+  \setbox\@tempboxa=\FV@ListProcessLine{#1}}%
+\def\FV@ListProcessLastLine{%
+  \ifx\FV@ProcessLine\FV@ListProcessLine@iv
+    \box\@tempboxa
+  \else
+    \ifx\FV@ProcessLine\FV@ListProcessLine@iii
+      \box\@tempboxa
+    \else
+      \ifx\FV@ProcessLine\FV@ListProcessLine@i
+        \FV@Error{Empty verbatim environment}{}%
+        \FV@ProcessLine{}%
+      \fi
+    \fi
+  \fi}
+
+
 \def\FV@EndList{\FV@ListProcessLastLine  \FV@EndListFrame%
   \IgnorePar\b:fancyvrb\par\@endparenv%
   \endgroup   \@endpetrue}

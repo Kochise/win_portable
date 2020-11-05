@@ -1,7 +1,7 @@
-% $Id: pstricks.pro 4 2020-06-09 08:32:19Z herbert $
+% $Id: pstricks.pro 23 2020-09-18 06:29:04Z herbert $
 %
 %% PostScript prologue for pstricks.tex.
-%% Version 1.30, 2018/12/17
+%% Version 1.32, 2020/09/18
 %%
 %% This program can be redistributed and/or modified under the terms
 %% of the LaTeX Project Public License Distributed from CTAN archives
@@ -10,9 +10,40 @@
 %
 % Define the follwing gs-functions if not known, eg when using distiller
 %
-systemdict /.setopacityalpha known not {/.setopacityalpha { pop } def } if
-systemdict /.setblendmode known not {/.setblendmode { pop } def } if
-systemdict /.setshapealpha known not {/.setshapealpha { pop } def } if
+
+revision 952 gt 
+{
+  systemdict /.setalphaisshape known not
+  {
+    (\n\n%%%% WARNING: Transparency operations ignored - need to use -dALLOWPSTRANSPARENCY\n\n) print flush
+    /.pushpdf14devicefilter {pop} bind def
+    /.begintransparencygroup {pop pop pop pop pop} bind def
+    /.endtransparencygroup {} bind def
+    /.poppdf14devicefilter {} bind def
+    /.setfillconstantalpha {pop} bind def
+    /.setstrokeconstantalpha {pop} bind def
+    /PageUsesTransparency false def
+  }
+  {
+    systemdict /.setopacityalpha known not 
+      { systemdict /.setfillconstantalpha known { /.setopacityalpha /.setfillconstantalpha load def } { /.setopacityalpha { pop } def } ifelse } if
+    systemdict /.setblendmode known not { /.setblendmode { pop } def } if
+    systemdict /.setshapealpha known not 
+      { systemdict /.setstrokeconstantalpha known { /.setshapealpha {dup .setfillconstantalpha .setstrokeconstantalpha true .setalphaisshape } def } { /.setshapealpha { pop } def } ifelse } if
+  } ifelse
+}
+{
+  systemdict /.setopacityalpha known not 
+  { 
+    (\n\n%%%% WARNING: Transparency operations ignored - need to use -dNOSAFER\n\n) print flush
+    /.setopacityalpha { pop } bind def 
+    /.setshapealpha { pop } bind def 
+  } if
+} ifelse
+
+%%<bool> .setalphaisshape -
+%%    If true, the values set by setstrokeconstantalpha and setfillconstantalpha are interpreted as shape values. The initial value of the AIS flag is false. 
+
 %
 /tx@Dict 200 dict def 				% the main PSTricks dictionary
 tx@Dict begin

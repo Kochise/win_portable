@@ -1,4 +1,4 @@
-%% The LaTeX package tcolorbox - version 4.31 (2020/07/31)
+%% The LaTeX package tcolorbox - version 4.42 (2020/10/09)
 %% tcbbreakable.code.tex: Code for breakable colorboxes
 %%
 %% -------------------------------------------------------------------------------------------
@@ -17,7 +17,12 @@
 %%
 %% This work consists of all files listed in README
 %%
-\tcb@set@library@version{4.31}
+\tcb@set@library@version{4.42}
+
+\RequirePackage{pdfcol}
+\pdfcolInitStack{tcb@breakable}
+
+\newif\iftcb@usecolorstack
 
 \let\tcb@parboxrestore@true=\tcb@parboxrestore
 \let\tcb@parboxrestore@false\tcb@parbox@false@settings
@@ -63,6 +68,7 @@
 
 \def\tcb@@break{\par\xleaders\vbox{\rule{0pt}{2\textheight}}\vskip 2\textheight\par}
 
+
 \def\tcb@vbox#1#2{%
   \edef\reserved@a{%
     \endgroup%
@@ -73,6 +79,10 @@
   \reserved@a%
   \@endpefalse%
   \let\tcbbreak\tcb@@break%
+  \iftcb@usecolorstack%
+    \pdfcolSwitchStack{tcb@breakable}%
+    \pdfcolSetCurrentColor%
+  \fi%
   \color@begingroup%
   \textwidth\hsize%
   \columnwidth\hsize%
@@ -270,14 +280,16 @@
       \tcb@multicolfalse%
     \fi}%
   \ifx\kvtcb@float\@empty\relax%
-    \iftcb@nobreak{%
+    \iftcb@nobreak%
       \let\tcb@nobreak@warning\tcb@do@nobreak@warning%
       \iftcb@ignorenobreak%
         \kvtcb@beforebox%
       \else%
         \tcb@handle@nobreak%
       \fi%
-    }{\kvtcb@beforebox}%
+    \else%
+      \kvtcb@beforebox%
+    \fi%
     \def\kvtcb@beforebox{\parskip\z@\nointerlineskip\noindent}%
     \noindent% applies parskip
     \vskip\lineskip{\parskip\z@\par\vskip\z@}\bgroup\@nobreakfalse\addpenalty\z@\egroup% force update vertical list
@@ -900,26 +912,32 @@
 }
 
 
+\def\tcb@init@breakability{%
+  \let\tcb@savebox=\tcb@vbox%
+  \let\endtcb@savebox=\endtcb@vbox%
+  \let\tcb@drawcolorbox=\tcb@drawcolorbox@breakable%
+  \iftcb@usecolorstack%
+    \def\tcb@upperdraw@begin@hook{\pdfcolSetCurrent{tcb@breakable}}%
+    \def\tcb@lowerdraw@begin@hook{\pdfcolSetCurrent{tcb@breakable}}%
+  \else%
+    \def\tcb@upperdraw@begin@hook{\color{tcbcolupper}}%
+    \def\tcb@lowerdraw@begin@hook{\color{tcbcollower}}%
+  \fi%
+}
 
 \tcbset{%
   breakable@true/.code={%
-    \let\tcb@savebox=\tcb@vbox%
-    \let\endtcb@savebox=\endtcb@vbox%
-    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightBreakable%
-    \let\tcb@drawcolorbox=\tcb@drawcolorbox@breakable},
+    \tcb@init@breakability%
+    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightBreakable},
   breakable@unlimited/.code={%
-    \let\tcb@savebox=\tcb@vbox%
-    \let\endtcb@savebox=\endtcb@vbox%
-    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightUnlimited%
-    \let\tcb@drawcolorbox=\tcb@drawcolorbox@breakable},
+    \tcb@init@breakability%
+    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightUnlimited},
   breakable/.style={breakable@#1},
   breakable/.default=true,%
   unbreakable/.style={breakable=false},%
   enforce breakable/.code={%
-    \let\tcb@savebox=\tcb@vbox%
-    \let\endtcb@savebox=\endtcb@vbox%
-    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightBreakable%
-    \let\tcb@drawcolorbox=\tcb@drawcolorbox@breakable},
+    \tcb@init@breakability%
+    \let\tcb@defToTotalHeight=\tcb@defToTotalHeightBreakable},
   title after break/.store in=\kvtcb@followingtitle,%
   notitle after break/.style={title after break=},%
   adjusted title after break/.style={title after break={#1\vphantom{\kvtcb@adjusttext}}},%
@@ -1009,12 +1027,19 @@
   segmentation at break/true/.code={\let\tcb@split@SL\tcb@split@SL@displayed},
   segmentation at break/false/.code={\let\tcb@split@SL\tcb@split@L},
   segmentation at break/.default=true,
+  use color stack/.is choice,%
+  use color stack/true/.code={%
+    \pdfcolIfStackExists{tcb@breakable}{\tcb@usecolorstacktrue}{\tcb@usecolorstackfalse}%
+  },%
+  use color stack/false/.code={\tcb@usecolorstackfalse},%
+  use color stack/.default=true,%
 }
 
 
 \tcbset{%
   reset@breakable/.style={%
     unbreakable,notitle after break,
+    use color stack=false,
     shrink break goal=0pt,
     lines before break=2,
     topsep at break=0pt,

@@ -99,12 +99,12 @@
     \@ifnextchar[%
       {\bbl@footnote@o{#1}{#2}{#3}}%
       {\bbl@footnote@x{#1}{#2}{#3}}}
-  \def\bbl@footnote@x#1#2#3#4{%
+  \long\def\bbl@footnote@x#1#2#3#4{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnote{#2#1{\ignorespaces#4}#3}%
     \egroup}
-  \def\bbl@footnote@o#1#2#3[#4]#5{%
+  \long\def\bbl@footnote@o#1#2#3[#4]#5{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnote[#4]{#2#1{\ignorespaces#5}#3}%
@@ -113,12 +113,12 @@
     \@ifnextchar[%
       {\bbl@footnotetext@o{#1}{#2}{#3}}%
       {\bbl@footnotetext@x{#1}{#2}{#3}}}
-  \def\bbl@footnotetext@x#1#2#3#4{%
+  \long\def\bbl@footnotetext@x#1#2#3#4{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnotetext{#2#1{\ignorespaces#4}#3}%
     \egroup}
-  \def\bbl@footnotetext@o#1#2#3[#4]#5{%
+  \long\def\bbl@footnotetext@o#1#2#3[#4]#5{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnotetext[#4]{#2#1{\ignorespaces#5}#3}%
@@ -150,7 +150,6 @@
    \def\@roman#1{\babelsublr{\ensureascii{\bbl@asciiroman#1}}}%
    \let\bbl@asciiRoman=\@Roman
    \def\@Roman#1{\babelsublr{\ensureascii{\bbl@asciiRoman#1}}}}{}
-
 \endinput
 %%
 %% End of file `txtbabel.def'.

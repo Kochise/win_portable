@@ -73,7 +73,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3510 2020-07-22 13:29:13Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -95,7 +95,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/07/22 v3.31 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -110,13 +110,13 @@
   letter%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2020/07/22 v3.31 KOMA-Script
+  2020/09/21 v3.32 KOMA-Script
   document class (\ClassName)%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3465 2020-03-07 10:23:56Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -195,10 +195,11 @@
 \@namedef{scr@v@3.29}{17}
 \@namedef{scr@v@3.30}{17}
 \@namedef{scr@v@3.31}{18}
+\@namedef{scr@v@3.32}{18}
 \@namedef{scr@v@last}{18}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: option)
 \KOMA@key{version}[last]{%
   \scr@ifundefinedorrelax{scr@v@#1}{%
@@ -248,7 +249,7 @@
 \newcommand*{\scr@v@is@ge}[1]{%
   \numexpr\scr@compatibility+\@ne\relax>\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: option)
 \KOMA@key{draft}[true]{%
   \KOMA@set@ifkey{draft}{@tempswa}{#1}%
@@ -1486,13 +1487,13 @@
 \newcommand*{\scr@symbol@www}{\undefined}
 %%% From File: $Id: scrkernel-circularletters.dtx 3262 2019-10-10 08:25:29Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{%
   parskip=false,%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: body)
 \expandafter\ifnum \@nameuse{scr@v@2.95}>\scr@compatibility\relax
   \newcommand*{\@setif}[2][]{%
@@ -1980,7 +1981,7 @@
   \@nomath\sfb}
 \DeclareRobustCommand*{\cal}{\@fontswitch\relax\mathcal}
 \DeclareRobustCommand*{\mit}{\@fontswitch\relax\mathnormal}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: body)
 \setlength{\skip\@mpfootins}{\skip\footins}
 \setlength\fboxsep{3\p@}
@@ -2029,7 +2030,7 @@
 \newcommand*{\is@thispageodd@setlabel}{}
 \newif\ifthispagewasodd
 \providecommand*{\ifthispageodd}{%
-  \ClassWarning{\KOMAClasSName}{%
+  \ClassWarning{\KOMAClassName}{%
     Usage of deprecated command
     `\string\ifthispageodd'.\MessageBreak
     The command has been renamed because of a\MessageBreak
@@ -5060,7 +5061,7 @@
   \expandafter\def\csname #9\endcsname{#2 #1\\#3}%
  \fi \fi}
 \newcommand*{\addrchar}[1]{}
-%%% From File: $Id: scrlogo.dtx 2640 2017-05-08 09:36:55Z kohm $
+%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
 \@ifundefined{KOMAScript}{%
   \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
       M\kern.05em A\kern.1em-\kern.1em Script}}}{}

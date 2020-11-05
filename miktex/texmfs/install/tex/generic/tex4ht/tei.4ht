@@ -1,4 +1,4 @@
-% tei.4ht (2019-03-18-15:26), generated from tex4ht-tei.tex
+% tei.4ht (2020-07-10-09:05), generated from tex4ht-tei.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 2000-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-03-18-15:26}
+\immediate\write-1{version 2020-07-10-09:05}
 
 \exit:ifnot{Preamble,% 
 amsart,% 
@@ -101,6 +101,7 @@ url}
    {\IgnorePar\EndP \PopStack\text:stack\:temp  \def\:tempa{front}%
     \HCode{</\:temp>\ifx\:temp\:tempa <body><p></p></body>\fi</text>}}
 
+\newif\ifHCond
 \Configure{HtmlPar}
    {\EndP\HCode{<!--l. \the\inputlineno-->%
       \ifnum\P:level=0 <div type="p">\fi
@@ -115,7 +116,7 @@ url}
 
 
 \Configure{VERSION}
-   {\HCode{<?xml version="1.0"?>\Hnewline}}
+   {\HCode{<?xml version="1.0" encoding="utf-8"?>\Hnewline}}
 \Configure{VERSION}
    {\HCode{<?xml version="1.0"?>\Hnewline}}
 \Configure{DOCTYPE}
@@ -184,6 +185,18 @@ url}
    \the\inputlineno\space--- needs --- #1 ---}
 \Configure{Needs-}{l.
    \the\inputlineno\space--- needs --- #1 ---}
+\Configure{htf}{0}{+}{<hi rendition="\#}{\%s}{-\%s}{x-x-\%d}{}{">}{</hi>}
+\Configure{htf}{4}{+}{<hi rend="small-caps">}{}{}{}{}{}{</hi>}
+\Configure{htf}{6}{+}{<hi rend="underline">}{}{}{}{}{}{</hi>}
+\Configure{htf}{8}{+}{<hi rend="superscript">}{}{}{}{}{}{</hi>}
+\Configure{htf}{10}{+}{<hi rend="bold">}{}{}{}{}{}{</hi>}
+\Configure{htf}{12}{+}{<hi rend="caligraphy">}{}{}{}{}{}{</hi>}
+\Configure{htf}{14}{+}{<hi rend="italic">}{}{}{}{}{}{</hi>}
+\Configure{htf}{16}{+}{<hi rend="bold">}{}{}{}{}{}{</hi>}
+\Configure{htf}{18}{+}{<hi rend="calligraphy-bold">}{}{}{}{}{}{</hi>}
+\Configure{htf}{20}{+}{<hi rend="htf-flip-hor">}{}{}{}{}{}{</hi>}
+\Configure{htf}{22}{+}{<hi rend="subscript>}{}{}{}{}{}{</hi>}
+\Configure{htf}{24}{+}{<hi rend="small-caps">}{}{}{}{}{}{</hi>}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -205,6 +218,18 @@ url}
    \fi
 }
 
+\ifx\InputIfFileExists\UnDef%
+\def\input:if:fileexists#1#2#3{%
+   \openin15 #1.4ht%
+   \ifeof15%
+   #3%
+   \else%
+   \input #1%
+   \fi\closein15%
+}%
+\else
+\let\input:if:fileexists\InputIfFileExists%
+\fi%
 \Hinclude{\input #1.4ht}{fontmath}
 \Hinclude{\@ifpackageloaded{colortbl}{%
       \no:dupl{array}{\input  array.4ht}%
@@ -218,16 +243,13 @@ url}
    \else
       \let\:temp\empty
       \no:dupl{#1}{%
-         \openin15 #1.4ht
-         \ifeof15
-            \:CheckOption{debug}\if:Option
-               \:warning{No configuration file for
-                   #1.\if .#2.tex\else #2\fi}%
-            \fi
-            \let\:temp\empty
-         \else
-            \def\:temp{\input #1.4ht }%
-         \fi   \closein15
+        \def\:warn:msg{}
+        \:CheckOption{debug}\if:Option
+          \def\:warn:msg{%
+            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+          }
+        \fi%
+        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -1047,6 +1069,7 @@ url}
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{graphics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1073,6 +1096,7 @@ url}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -1277,6 +1301,8 @@ url}
 
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{plain}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1469,7 +1495,6 @@ url}
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{url}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1485,6 +1510,14 @@ url}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
 
 
 
@@ -1816,6 +1849,9 @@ url}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 
 

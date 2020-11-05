@@ -1,23 +1,23 @@
 
 % file `eso-ex1.tex'; a framed background example
-% Rolf Niepraschk, 2015-07-14, Rolf.Niepraschk@gmx.de
+% Rolf Niepraschk, 2020-09-27, Rolf.Niepraschk@gmx.de
 
 \documentclass[a4paper]{article}
-\usepackage{eso-pic,calc}
+\usepackage{eso-pic}
 \listfiles
 
-\makeatletter
+\newdimen\myTempdima
+\newdimen\myTempdimb
+\newdimen\myTempdimc
+
 \AddToShipoutPicture{%
-  \begingroup
-    \setlength{\@tempdima}{15mm}%
-    \setlength{\@tempdimb}{\paperwidth-2\@tempdima}%
-    \setlength{\@tempdimc}{\paperheight-2\@tempdima}%
-    \thicklines%
-    \put(\LenToUnit{\@tempdima},\LenToUnit{\@tempdima}){%
-      \framebox(\LenToUnit{\@tempdimb},\LenToUnit{\@tempdimc}){}}%
-  \endgroup
+  \setlength{\myTempdima}{15mm}%
+  \setlength{\myTempdimb}{\dimexpr\paperwidth-2\myTempdima}%
+  \setlength{\myTempdimc}{\dimexpr\paperheight-2\myTempdima}%
+  \thicklines%
+  \put(\LenToUnit{\myTempdima},\LenToUnit{\myTempdima}){%
+    \framebox(\LenToUnit{\myTempdimb},\LenToUnit{\myTempdimc}){}}%
 }
-\makeatother
 
 \begin{document}
 

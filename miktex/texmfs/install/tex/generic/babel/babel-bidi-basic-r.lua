@@ -200,4 +200,3 @@ function Babel.bidi(head, ispar)
   end
   return node.prev(head) or head
 end
-

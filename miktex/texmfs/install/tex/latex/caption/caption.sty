@@ -38,8 +38,8 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption}[2020/09/02 v3.5a Customizing captions (AR)]
-\RequirePackage{caption3}[2020/08/30] % needs v2.0 or newer
+\ProvidesPackage{caption}[2020/10/26 v3.5g Customizing captions (AR)]
+\RequirePackage{caption3}[2020/10/06] % needs v2.2b or newer
 \caption@ifbool{documentclass}{}{%
   \caption@WarningNoLine{%
     Unknown document class (or package),\MessageBreak
@@ -76,16 +76,29 @@
   }}}
 \DeclareCaptionOption{list-entry}{\caption@selectlistentry{#1}}
 \captionsetup{list-entry=default}
-\newcommand*\caption@setparboxrestore[1]{%
-  \caption@ifinlist{#1}{full}{%
-    \caption@setfullparboxrestore
-  }{\caption@ifinlist{#1}{default,light,partial}{%
-    \let\caption@parboxrestore\@secondoftwo
-  }{%
-    \caption@Error{Undefined parboxrestore `#1'}%
-  }}}
-\newcommand*\caption@setfullparboxrestore{%
-  \let\caption@parboxrestore\@firstoftwo}
+\newcommand\caption@declparboxrestore{%
+  \caption@decl{parboxrestore}}
+\@onlypreamble\caption@declparboxrestore
+\newcommand*\caption@setparboxrestore{%
+  \caption@set{parboxrestore}}
+\caption@declparboxrestore{full}{%
+  \@parboxrestore}
+\caption@declparboxrestore{partial}{%
+  \let\if@nobreak\iffalse
+  \let\if@noskipsec\iffalse
+  \let\par\@@par
+  \parindent\z@ \parskip\z@skip
+  \everypar{}%
+  \leftskip\z@skip \rightskip\z@skip \@rightskip\z@skip
+  \parfillskip\@flushglue \lineskip\normallineskip
+  \baselineskip\normalbaselineskip
+  \sloppy
+  \let\\\@normalcr}
+\caption@declparboxrestore{mini}{%
+  \let\par\@@par
+  \parindent\z@ \parskip\z@skip
+  \sloppy}
+\SetCaptionDefault{parboxrestore}{full}
 \DeclareCaptionOption{parboxrestore}{\caption@setparboxrestore{#1}}
 \captionsetup{parboxrestore=default}
 \DeclareCaptionOption{@minipage}{%
@@ -208,7 +221,7 @@
   \par
   \caption@beginex{#1}{#2}{#3}%
     \caption@setfloatcapt{%
-      \caption@boxrestore
+      \caption@parboxrestore
       \if@minipage
         \@setminipage
       \fi
@@ -288,23 +301,23 @@
   \DeclareCaptionOptionNoValue{subtype*}{\setcaptionsubtype*}%
 }
 \def\setcaptiontype{%
-  \caption@boxrestore@mini
+  \caption@parboxrestore@mini
   \caption@settype}
 \newcommand\setcaptionsubtype{%
   \caption@iftype
     \caption@setsubtype
     {\caption@Error{\noexpand\setcaptionsubtype outside float}}}%
 \newcommand\caption@setsubtype{%
-  \@ifstar
-    {\caption@@settype{sub}*{sub\@captype}}%
-    {\caption@@settype{sub}{sub\@captype}}}%
+  \caption@teststar\caption@@setsubtype\@firstoftwo\@secondoftwo}
+\newcommand*\caption@@setsubtype[1]{%
+  \caption@@@settype{sub}{#1}{sub\@captype}}
 \newcommand*\caption@settype{%
   \caption@clrflags
   \caption@set@type}
 \newcommand*\caption@set@type{%
-  \caption@@settype{}}
-\newcommand*\caption@@settype[1]{%
-  \caption@teststar{\caption@@@settype{#1}}\@firstoftwo\@secondoftwo}
+  \caption@teststar\caption@@settype\@firstoftwo\@secondoftwo}
+\newcommand*\caption@@settype{%
+  \caption@@@settype{}}
 \newcommand*\caption@@@settype[3]{%
   \caption@Debug{#1type=#3}%
   \@nameuse{caption@check#1type}{#3}%
@@ -446,7 +459,6 @@
 \newcommand*\caption@continued@float[1]{%
   \edef\caption@tempa{#1}%
   \ifx\caption@tempa\caption@CFtype
-    \caption@restorecounters
     \caption@@continuedfloat{#1}%
   \else
     \caption@Error{Continued `#1' after `\caption@CFtype'}%
@@ -478,8 +490,6 @@
 \def\caption@ContinuedFloat{%
   \let\caption@reset@continuedfloat\@gobble
   \caption@@@continuedfloat}
-\caption@ifdefined\donemaincaptionfalse{%
-  \g@addto@macro\donemaincaptionfalse\caption@savesubcounters}{}
 \newcommand*\caption@refstepcounter[1]{%
   \@ifundefined{c@#1}%
     {\caption@Error{No float type '#1' defined}}%
@@ -496,6 +506,7 @@
     \let\caption@tempa\caption@@refstepcounter
     \caption@ifflag2{}{% caption
       \caption@ifflag4{% subcaption
+        % Counter was already incremented by content, so we suppress \stepcounter{#1} here
         \let\caption@tempa\caption@@refcounter
       }{}%
     }%
@@ -504,8 +515,8 @@
 \newcommand*\caption@@refcounter[1]{%
   \let\caption@stepcounter@ORI\stepcounter
   \def\stepcounter##1{%
-    \def\caption@tempa{#1}%
-    \def\caption@tempb{##1}%
+    \edef\caption@tempa{#1}%
+    \edef\caption@tempb{##1}%
     \ifx\caption@tempa\caption@tempb \else
       \caption@stepcounter@ORI{##1}%
     \fi}%
@@ -545,23 +556,6 @@
     {\expandafter\let\csname caption@fnum@#1\expandafter\endcsname\csname fnum@#1\endcsname
      \@namedef{fnum@#1}{\caption@fnum{#1}}}%
     {}}
-\newcommand*\caption@boxrestore{%
-  \caption@parboxrestore{\@parboxrestore}{%
-    \let\if@nobreak\iffalse
-    \let\if@noskipsec\iffalse
-    \let\par\@@par
-    \parindent\z@ \parskip\z@skip
-    \everypar{}%
-    \leftskip\z@skip \rightskip\z@skip \@rightskip\z@skip
-    \parfillskip\@flushglue \lineskip\normallineskip
-    \baselineskip\normalbaselineskip
-    \sloppy
-    \let\\\@normalcr
-  }}
-\newcommand\caption@boxrestore@mini{%
-  \let\par\@@par
-  \parindent\z@ \parskip\z@skip
-  \sloppy}
 \newcommand*\caption@normalsize{%
   \caption@font@normal\@unused}
 \let\caption@setfloatcapt\@firstofone
@@ -620,7 +614,8 @@
 \caption@AtBeginDocument{%
   \caption@ifundefined\@subfloatrowtrue
    {\newif\if@subfloatrow
-    \caption@ifundefined\subfloatrow{}%
+    \caption@ifundefined\subfloatrow
+    {}%
     {\caption@Debug{Patching subfloatrow environment}%
      \g@addto@macro\capsubrowsettings{\@subfloatrowtrue}%
      \g@addto@macro\killfloatstyle{%
@@ -888,7 +883,7 @@
   \newcommand*\caption@floatflt[1]{%
     \caption@settype{#1}%
     \caption@clearmargin
-    \caption@setfullparboxrestore
+    \caption@setparboxrestore{full}%
     \caption@setoptions{floating#1}}%
 }{}
 \caption@IfPackageLoaded{fltpage}[1998/10/29 v.0.3]{%
@@ -1166,7 +1161,7 @@
     \caption@setautoposition b%
     \caption@settype{#1}%
     \caption@clearmargin
-    \caption@setfullparboxrestore}%
+    \caption@setparboxrestore{full}}%
   \newcommand\caption@wincaption[1]{%
     \ifdim\picwd=\z@
       \let\caption@makecurrent\@gobbletwo
@@ -1203,7 +1198,7 @@
       \caption@freezeHref % will be defrosted in \ivparpic
       \caption@settype\@piccaptype
       \caption@clearmargin
-      \caption@setfullparboxrestore
+      \caption@setparboxrestore{full}%
       \caption@setoptions{parpic}%
       \caption@setautoposition b%
       \expandafter\expandafter\expandafter\caption@ORI
@@ -1300,7 +1295,7 @@
     \caption@setoptions{supertabular}%
     \caption@setposition{\if@topcaption t\else b\fi}%
     \caption@beginex{#1}{#2}{#3}%
-      \caption@boxrestore
+      \caption@parboxrestore
       \caption@normalsize
       \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
     \caption@end}%
@@ -1320,7 +1315,7 @@
     \caption@set{position}{\if@topcaption t\else b\fi}%
     \@initisotab
     \caption@beginex{#1}{#2}{#3}%
-      \caption@boxrestore
+      \caption@parboxrestore
       \caption@normalsize
       \@makecaption{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
     \caption@end
@@ -1382,6 +1377,9 @@
 %%%    \caption@setoptions{wrap}%
     \caption@setoptions{wrap#1}}%
 }{}
+\caption@endtitles@code
+\let\caption@endtitles@code\@undefined
+\let\AfterCaptionPackage\@firstofone
 \endinput
 %%
 %% End of file `caption.sty'.

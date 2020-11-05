@@ -33,7 +33,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2020/09/01 3.48 The Babel package]
+\ProvidesPackage{babel}[2020/10/27 3.51 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
    \let\bbl@debug\@firstofone}
@@ -106,6 +106,8 @@
 \def\bbl@ifblank#1{%
   \bbl@ifblank@i#1\@nil\@nil\@secondoftwo\@firstoftwo\@nil}
 \long\def\bbl@ifblank@i#1#2\@nil#3#4#5\@nil{#4}
+\def\bbl@ifset#1#2#3{%
+  \bbl@ifunset{#1}{#3}{\bbl@exp{\\\bbl@ifblank{#1}}{#3}{#2}}}
 \def\bbl@forkv#1#2{%
   \def\bbl@kvcmd##1##2##3{#2}%
   \bbl@kvnext#1,\@nil,}
@@ -193,6 +195,18 @@
     \def\bbl@esphack{\loop\ifdim\lastskip>\z@\unskip\repeat\unskip}%
   \else
     \let\bbl@esphack\@empty
+  \fi}
+\def\bbl@cased{%
+  \ifx\oe\OE
+    \expandafter\in@\expandafter
+      {\expandafter\OE\expandafter}\expandafter{\oe}%
+    \ifin@
+      \bbl@afterelse\expandafter\MakeUppercase
+    \else
+      \bbl@afterfi\expandafter\MakeLowercase
+    \fi
+  \else
+    \expandafter\@firstofone
   \fi}
   % Temporarily repeat here the code for errors
   \def\bbl@error#1#2{%
@@ -295,17 +309,24 @@
   \endinput}{}%
 \bbl@trace{key=value and another general options}
 \bbl@csarg\let{tempa\expandafter}\csname opt@babel.sty\endcsname
-\def\bbl@tempb#1.#2{%
+\def\bbl@tempb#1.#2{%  Remove trailing dot
    #1\ifx\@empty#2\else,\bbl@afterfi\bbl@tempb#2\fi}%
-\def\bbl@tempd#1.#2\@nnil{%
+\def\bbl@tempd#1.#2\@nnil{%  TODO. Refactor lists?
   \ifx\@empty#2%
     \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1}%
   \else
-    \in@{=}{#1}\ifin@
-      \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1.#2}%
+    \in@{,provide,}{,#1,}%
+    \ifin@
+      \edef\bbl@tempc{%
+        \ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1.\bbl@tempb#2}%
     \else
-      \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1}%
-      \bbl@csarg\edef{mod@#1}{\bbl@tempb#2}%
+      \in@{=}{#1}%
+      \ifin@
+        \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1.#2}%
+      \else
+        \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1}%
+        \bbl@csarg\edef{mod@#1}{\bbl@tempb#2}%
+      \fi
     \fi
   \fi}
 \let\bbl@tempc\@empty
@@ -320,6 +341,12 @@
 \DeclareOption{silent}{}
 \DeclareOption{mono}{}
 \DeclareOption{shorthands=off}{\bbl@tempa shorthands=\bbl@tempa}
+\chardef\bbl@iniflag\z@
+\DeclareOption{provide=*}{\chardef\bbl@iniflag\@ne}    % main -> +1
+\DeclareOption{provide+=*}{\chardef\bbl@iniflag\tw@}   % add = 2
+\DeclareOption{provide*=*}{\chardef\bbl@iniflag\thr@@} % add + main
+\let\bbl@autoload@options\@empty
+\DeclareOption{provide@=*}{\def\bbl@autoload@options{import}}
 \newif\ifbbl@single
 \DeclareOption{selectors=off}{\bbl@singletrue}
 \DeclareOption{safe=none}{\let\bbl@opt@safe\@empty}
@@ -755,7 +782,7 @@
       \AtEndOfPackage{%
         \EnableBabelHook{babel-bidi}%
         \ifx\fontspec\@undefined
-          \usepackage{fontspec}% bidi needs fontspec
+          \bbl@loadfontspec % bidi needs fontspec
         \fi
         \usepackage#1{bidi}}%
     \fi}
@@ -764,10 +791,8 @@
       \bbl@tentative{bidi=bidi}
       \bbl@loadxebidi{}
     \or
-      \bbl@tentative{bidi=bidi-r}
       \bbl@loadxebidi{[rldocument]}
     \or
-      \bbl@tentative{bidi=bidi-l}
       \bbl@loadxebidi{}
     \fi
   \fi
@@ -982,13 +1007,13 @@
     {\bbl@error{%
        Unknown option `\CurrentOption'. Either you misspelled it\\%
        or the language definition file \CurrentOption.ldf was not found}{%
-       Valid options are: shorthands=, KeepShorthandsActive,\\%
+       Valid options are, among others: shorthands=, KeepShorthandsActive,\\%
        activeacute, activegrave, noconfigs, safe=, main=, math=\\%
        headfoot=, strings=, config=, hyphenmap=, or a language name.}}}
 \def\bbl@try@load@lang#1#2#3{%
-    \IfFileExists{\CurrentOption.ldf}%
-      {\bbl@load@language{\CurrentOption}}%
-      {#1\bbl@load@language{#2}#3}}
+  \IfFileExists{\CurrentOption.ldf}%
+    {\bbl@load@language{\CurrentOption}}%
+    {#1\bbl@load@language{#2}#3}}
 \DeclareOption{afrikaans}{\bbl@try@load@lang{}{dutch}{}}
 \DeclareOption{hebrew}{%
   \input{rlbabel.def}%
@@ -1017,24 +1042,69 @@
        Local config file `\bbl@opt@config.cfg' not found}{%
        Perhaps you misspelled it.}}%
 \fi
-\bbl@for\bbl@tempa\bbl@language@opts{%
-  \bbl@ifunset{ds@\bbl@tempa}%
-    {\edef\bbl@tempb{%
-       \noexpand\DeclareOption
-         {\bbl@tempa}%
-         {\noexpand\bbl@load@language{\bbl@tempa}}}%
-     \bbl@tempb}%
-     \@empty}
+\let\bbl@tempc\relax
+\bbl@foreach\bbl@language@opts{%
+  \ifcase\bbl@iniflag
+    \bbl@ifunset{ds@#1}%
+      {\DeclareOption{#1}{\bbl@load@language{#1}}}%
+      {}%
+  \or
+    \@gobble % case 2 same as 1
+  \or
+    \bbl@ifunset{ds@#1}%
+      {\IfFileExists{#1.ldf}{}%
+        {\IfFileExists{babel-#1.tex}{}{\DeclareOption{#1}{}}}}%
+      {}%
+    \bbl@ifunset{ds@#1}%
+      {\def\bbl@tempc{#1}%
+       \DeclareOption{#1}{%
+         \ifnum\bbl@iniflag>\@ne
+           \bbl@ldfinit
+           \babelprovide[import]{#1}%
+           \bbl@afterldf{}%
+         \else
+           \bbl@load@language{#1}%
+         \fi}}%
+      {}%
+  \or
+    \def\bbl@tempc{#1}%
+    \bbl@ifunset{ds@#1}%
+      {\DeclareOption{#1}{%
+         \bbl@ldfinit
+         \babelprovide[import]{#1}%
+         \bbl@afterldf{}}}%
+      {}%
+  \fi}
+\let\bbl@tempb\@nnil
 \bbl@foreach\@classoptionslist{%
   \bbl@ifunset{ds@#1}%
-    {\IfFileExists{#1.ldf}%
-      {\DeclareOption{#1}{\bbl@load@language{#1}}}%
-      {}}%
+    {\IfFileExists{#1.ldf}{}%
+      {\IfFileExists{babel-#1.tex}{}{\DeclareOption{#1}{}}}}%
+    {}%
+  \bbl@ifunset{ds@#1}%
+    {\def\bbl@tempb{#1}%
+     \DeclareOption{#1}{%
+       \ifnum\bbl@iniflag>\@ne
+         \bbl@ldfinit
+         \babelprovide[import]{#1}%
+         \bbl@afterldf{}%
+       \else
+         \bbl@load@language{#1}%
+       \fi}}%
     {}}
+\ifnum\bbl@iniflag=\z@\else
+  \ifx\bbl@opt@main\@nnil
+    \ifx\bbl@tempc\relax
+      \let\bbl@opt@main\bbl@tempb
+    \else
+      \let\bbl@opt@main\bbl@tempc
+    \fi
+  \fi
+\fi
 \ifx\bbl@opt@main\@nnil\else
   \expandafter
   \let\expandafter\bbl@loadmain\csname ds@\bbl@opt@main\endcsname
-  \DeclareOption{\bbl@opt@main}{}
+  \expandafter\let\csname ds@\bbl@opt@main\endcsname\@empty
 \fi
 \def\AfterBabelLanguage#1{%
   \bbl@ifsamestring\CurrentOption{#1}{\global\bbl@add\bbl@afterlang}{}}
@@ -1058,10 +1128,18 @@
       option. Reported}%
   \fi
 \else
-  \DeclareOption{\bbl@opt@main}{\bbl@loadmain}
-  \ExecuteOptions{\bbl@opt@main}
-  \DeclareOption*{}
-  \ProcessOptions*
+  \ifodd\bbl@iniflag  % case 1,3
+    \bbl@ldfinit
+    \let\CurrentOption\bbl@opt@main
+    \bbl@exp{\\\babelprovide[import,main]{\bbl@opt@main}}
+    \bbl@afterldf{}%
+  \else % case 0,2
+    \chardef\bbl@iniflag\z@  % Force ldf
+    \expandafter\let\csname ds@\bbl@opt@main\endcsname\bbl@loadmain
+    \ExecuteOptions{\bbl@opt@main}
+    \DeclareOption*{}%
+    \ProcessOptions*
+  \fi
 \fi
 \def\AfterBabelLanguage{%
   \bbl@error
@@ -1073,7 +1151,6 @@
     as the main language. Reported}
     \bbl@load@language{nil}
 \fi
-
 \endinput
 %%
 %% End of file `babel.sty'.

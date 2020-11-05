@@ -1,96 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE xtpipes SYSTEM "xtpipes.dtd" >
-<xtpipes preamble="yes" signature="oo-text.4xt (2009-03-11-03:09)">
+<!-- oo-text.4xt (2020-02-25-10:47), generated from tex4ht-oo-xtpipes.tex
+     Copyright (C) 2009-2013 TeX Users Group
+     Copyright (C) 2006-2009 Eitan M. Gurari
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either
+% version 1.3c of this license or (at your option) any
+% later version. The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3c or later is part of all distributions
+% of LaTeX version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status "maintained".
+%
+% The Current Maintainer of this work
+% is the TeX4ht Project <http://tug.org/tex4ht>.
+%
+% If you modify this program, changing the
+% version identification would be appreciated. -->
+<xtpipes preamble="yes" signature="oo-text.4xt (2020-02-25-10:47)">
    <sax content-handler="xtpipes.util.ScriptsManager,tex4ht.OoFilter"
         lexical-handler="xtpipes.util.ScriptsManagerLH" >
-      <script element="t4htlink" >
-         <set name="t4ht-link" >
-   <![CDATA[
-   <xsl:stylesheet version="1.0"
-      xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-
-      xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
-      xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
-      xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
-      xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
-      xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
-      xmlns:fo="http://www.w3.org/1999/XSL/Format"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xmlns:dc="http://purl.org/dc/elements/1.1/"
-      xmlns:meta="urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
-      xmlns:number="urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
-      xmlns:svg="http://www.w3.org/2000/svg"
-      xmlns:chart="urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
-      xmlns:dr3d="urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
-      xmlns:math="http://www.w3.org/1998/Math/MathML"
-      xmlns:form="urn:oasis:names:tc:opendocument:xmlns:form:1.0"
-      xmlns:script="urn:oasis:names:tc:opendocument:xmlns:script:1.0"
-      xmlns:ooo="http://openoffice.org/2004/office"
-      xmlns:ooow="http://openoffice.org/2004/writer"
-      xmlns:oooc="http://openoffice.org/2004/calc"
-      xmlns:dom="http://www.w3.org/2001/xml-events"
-      xmlns:xforms="http://www.w3.org/2002/xforms"
-      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   >
-      <xsl:output omit-xml-declaration = "yes" />
-
-    <xsl:template match="t4htlink[ @href = concat('#',@name) ]" >
-  <xsl:apply-templates select="*|text()|comment()" />
-  <text:reference-mark>
-     <xsl:attribute name="text:name">
-        <xsl:value-of select="@name"/>
-     </xsl:attribute>
-     <xsl:text> </xsl:text>
-  </text:reference-mark>
-</xsl:template>
-<xsl:template match="t4htlink[ not(@name)
-                           and
-                               starts-with(@href, '#')
-]" >
-  <xsl:apply-templates select="*|text()|comment()" />
-   <text:span>
-        <xsl:attribute name="text:style-name">
-           <xsl:text>reference-ref</xsl:text>
-        </xsl:attribute>
-     <text:reference-ref>
-        <xsl:attribute name="text:ref-name">
-           <xsl:value-of select="substring( @href, 2 )"/>
-        </xsl:attribute>
-        <xsl:attribute name="text:reference-format">
-           <xsl:text>text</xsl:text>
-        </xsl:attribute>
-        <xsl:text> </xsl:text>
-     </text:reference-ref>
-   </text:span>
-</xsl:template>
-<xsl:template match="t4htlink[ not(@name)
-                           and
-                               not(starts-with(@href, '#'))
-]" >
-  <text:a>
-     <xsl:attribute name="xlink:type">
-        <xsl:text>simple</xsl:text>
-     </xsl:attribute>
-     <xsl:attribute name="xlink:href">
-        <xsl:value-of select="@href"/>
-     </xsl:attribute>
-     <xsl:apply-templates select="*|text()|comment()" />
-  </text:a>
-</xsl:template>
-
-         <xsl:template match="*|@*|text()|comment()" >
-        <xsl:copy>
-          <xsl:apply-templates select="*|@*|text()|comment()" />
-        </xsl:copy>
-      </xsl:template>
-   </xsl:stylesheet>
-]]>
-
-</set>
-<xslt name="." xml="." xsl="t4ht-link" />
-
-      </script>
       <script element="text:bibliography-mark" >
          <set name="bib-mark" >
    <![CDATA[
@@ -244,7 +175,8 @@
       <xsl:apply-templates select="*|text()|comment()" />
   </xsl:copy>
 </xsl:template>
-<xsl:template
+
+   <xsl:template
     match="text:p[
               parent::text:p/@text:style-name='printthebibliography-dd'
           ]"

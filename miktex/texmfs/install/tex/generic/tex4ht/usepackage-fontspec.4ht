@@ -1,4 +1,4 @@
-% usepackage-fontspec.4ht (2020-01-24-14:39), generated from tex4ht-4ht.tex
+% usepackage-fontspec.4ht (2020-09-02-14:24), generated from tex4ht-4ht.tex
 % Copyright 2017-2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
@@ -16,25 +16,25 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-01-24-14:39}
+\immediate\write-1{version 2020-09-02-14:24}
 
-\:dontusepackage{fontenc}
+% \RequirePackage{expl3}% we need to disable them before loading
+\ExplSyntaxOn
+\seq_new:N \fontspec_ht_scripts
+\gdef\texfourhtfontspecloaded{yes}% used to prevent subsequent loading of this file
+\ExplSyntaxOff
 \ifdefined\XeTeXversion%
 \xenunidelblock{Latin-expl3}% expl3 package makes some characters active
-\RequirePackage{expl3}% we need to disable them before loading
 \xeuniuseblock{Latin-expl3}% and define again
-\else%
-\RequirePackage{expl3}%
 \fi%
 \PassOptionsToPackage{no-math}{fontspec}
 \ExplSyntaxOn
-\AtEndOfPackage{%
+\:AtEndOfPackage{%
   \tl_gset:Nx \l__fontspec_nfss_enc_tl {T1}
   \tl_gset:Nx \g_fontspec_encoding_tl {T1}
   \tl_gset:Nx \l__fontspec_ttfamily_encoding_tl {T1}
   \tl_gset:Nx \l__fontspec_sffamily_encoding_tl {T1}
   \tl_gset:Nx \l__fontspec_rmfamily_encoding_tl {T1}
-  \seq_new:N \fontspec_ht_scripts
   \seq_new:N \fontspec_ht_fontfamilies
   \ifdefined\XeTeXversion
   \keys_define:nn {fontspec4ht}{

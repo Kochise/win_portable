@@ -1,4 +1,4 @@
-% ooffice.4ht (2019-09-12-14:02), generated from tex4ht-ooffice.tex
+% ooffice.4ht (2020-05-20-14:34), generated from tex4ht-ooffice.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 2001-2009 Maarten Wisse, James Naughton, Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-09-12-14:02}
+\immediate\write-1{version 2020-05-20-14:34}
 
   \exit:ifnot{Preamble,% 
 algorithmicx,% 
@@ -55,6 +55,9 @@ linguex,%
 listings,% 
 longtable,% 
 mdwlist,% 
+mwart,% 
+mwbk,% 
+mwrep,% 
 ngerman,% 
 paralist,% 
 plain,% 
@@ -751,6 +754,18 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
    \fi
 }
 
+\ifx\InputIfFileExists\UnDef%
+\def\input:if:fileexists#1#2#3{%
+   \openin15 #1.4ht%
+   \ifeof15%
+   #3%
+   \else%
+   \input #1%
+   \fi\closein15%
+}%
+\else
+\let\input:if:fileexists\InputIfFileExists%
+\fi%
 \Hinclude{\input #1.4ht}{fontmath}
 \Hinclude{\@ifpackageloaded{colortbl}{%
       \no:dupl{array}{\input  array.4ht}%
@@ -764,16 +779,13 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
    \else
       \let\:temp\empty
       \no:dupl{#1}{%
-         \openin15 #1.4ht
-         \ifeof15
-            \:CheckOption{debug}\if:Option
-               \:warning{No configuration file for
-                   #1.\if .#2.tex\else #2\fi}%
-            \fi
-            \let\:temp\empty
-         \else
-            \def\:temp{\input #1.4ht }%
-         \fi   \closein15
+        \def\:warn:msg{}
+        \:CheckOption{debug}\if:Option
+          \def\:warn:msg{%
+            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+          }
+        \fi%
+        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -6978,7 +6990,6 @@ style:display-name="Footnote anchor" style:family="text">
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{footnote-dw}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8252,7 +8263,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{url}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8388,9 +8398,4127 @@ Y{0178}\i{00EF}%
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{mwart}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{maketitle}
+   {\HCode{<!--begin maketitle-->}}
+   {\HCode{<!--end maketitle-->}\par}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Title\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+\Configure{thanks author date and}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Text-body\if@rl-rtl\fi
+"
+             >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="author\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="date\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {}
+   {}%   {\HCode{<text:line-break/>}}
+\NewConfigureOO{title}
+\ConfigureOO{title}{%
+<style:style style:name="Title"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Title-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
+\NewConfigureOO{author}
+\ConfigureOO{author}{%
+<style:style      style:name="author"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="date">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style      style:name="author-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="date-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\NewConfigureOO{date}
+\ConfigureOO{date}{%
+<style:style style:name="date"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style style:name="date-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP \bgroup
+      \Configure{HtmlPar}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\HCode{</text:p>}}
+         {\HCode{</text:p>}}%
+      \par \ShowPar
+   }
+   {\ifvmode \IgnorePar\fi \EndP \egroup \ShowPar\par \IgnoreIndent }
+   {\ifvmode \IgnorePar\fi\EndP
+    \HCode{<text:p text:style-name="abstract-title"  >}%
+   }
+   {\HCode{</text:p>}}
+\NewConfigureOO{abstract}
+\ConfigureOO{abstract}{\Hnewline
+<style:style style:name="abstract"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline <style:style style:name="abstract-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="Text-body-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  style:writing-mode="rl-tb" />\Hnewline
+</style:style>\Hnewline
+ }
+\NewConfigureOO{abstract-title}
+\ConfigureOO{abstract-title}{\Hnewline
+<style:style style:name="abstract-title"
+                  style:family="paragraph"
+                  style:parent-style-name="abstract"
+                  style:next-style-name="abstract">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.499cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-weight="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>\Hnewline
+</style:style>\Hnewline
+}
+
+\NewConfigureOO{Contents 1}
+\ConfigureOO{Contents 1}{\Hnewline
+   <style:style style:name="Contents-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:margin-top="0cm"
+                fo:margin-bottom="0.101cm"
+                fo:font-weight="bold"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="16.999cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>\Hnewline
+}
+%
+\NewConfigureOO{Contents 2}
+   \ConfigureOO{Contents 2}{\Hnewline
+   <style:style style:name="Contents-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+      <style:tab-stop style:position="16.499cm"
+                   style:type="right"
+                   style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 3}
+\ConfigureOO{Contents 3}{\Hnewline
+   <style:style style:name="Contents-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+         <style:tab-stop style:position="16cm"
+                      style:type="right"
+                      style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 4}
+\ConfigureOO{Contents 4}{\Hnewline
+   <style:style style:name="Contents-4"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.498cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>
+         <style:tab-stop style:position="15.501cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 5}
+\ConfigureOO{Contents 5}{\Hnewline
+   <style:style style:name="Contents-5"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.997cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="15.002cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 1}
+\ConfigureOO{Index 1}{\Hnewline
+   <style:style style:name="Index-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>
+   </style:style>
+   \Hnewline }
+%
+\NewConfigureOO{Index 2}
+\ConfigureOO{Index 2}{\Hnewline
+   <style:style style:name="Index-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 3}
+\ConfigureOO{Index 3}{\Hnewline
+   <style:style style:name="Index-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+   \Hnewline}
+%
+
+\ConfigureToc{part}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likepart}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{section}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesection}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsection}
+  {\HCode{<text:p text:style-name="P2"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsection}
+  {\HCode{<text:p text:style-name="P2"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsubsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsubsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+
+\def\ref:name{\refname}
+\HAssign\bib:N=0
+\:CheckOption{bib-}\if:Option
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \let\en:bib=\empty
+      }
+      {\en:bib}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\else
+   \Log:Note{for a degraded bibliography friendlier for conversion to .doc,
+         use the command line option `bib-'}
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \HCode{<text:bibliography text:name="bib-\bib:N" >
+          <text:bibliography-source>\Hnewline
+             <text:index-title-template>}\NoFonts\ref:name\EndNoFonts\HCode{%
+</text:index-title-template>\Hnewline
+%
+  <text:bibliography-entry-template\Hnewline
+      text:bibliography-type="custom1"
+      text:style-name="Bibliography11"  >\Hnewline
+%
+    <text:index-entry-bibliography
+      text:bibliography-data-field="identifier"  />\Hnewline
+%
+    <text:index-entry-span>: </text:index-entry-span>\Hnewline
+    <text:index-entry-bibliography
+                  text:bibliography-data-field="author" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="title" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="year" />\Hnewline
+    </text:bibliography-entry-template>\Hnewline
+\Hnewline
+          </text:bibliography-source>\Hnewline
+          <text:index-body>\Hnewline
+       }\let\en:bib=\empty
+      }
+      {\en:bib\HCode{</text:index-body></text:bibliography>}}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\fi
+\Configure{bibitem}{\Link}{\EndLink\space }
+\NewConfigureOO{p-bibitem}
+\ConfigureOO{p-bibitem}{%
+   <style:style style:name="p-bibitem"\Hnewline
+             style:family="paragraph" \Hnewline
+             style:parent-style-name="Standard">\Hnewline
+      <style:paragraph-properties  fo:margin-left="1cm"\Hnewline
+                     fo:text-indent="-1cm"\Hnewline
+                     fo:margin-right="0cm" \Hnewline
+                     style:auto-text-indent="false">\Hnewline
+              <style:tab-stops/>\Hnewline
+      </style:paragraph-properties >\Hnewline
+    </style:style>\Hnewline
+}
 
 
+\ConfigureEnv{quote}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar}
+   {\EndP \ifvmode \IgnorePar\fi
+    \bgroup \Configure{HtmlPar}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                         >}}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                          >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+%
+   }
+   {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
+\ConfigureEnv{quotation}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar \noindent}
+   {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+}
+   {\EndP\IgnorePar \egroup \ShowPar }
+\NewConfigureOO{quotation}
+\ConfigureOO{quotation}
+   {\Hnewline
+      <style:style style:name="quotation"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"/>\Hnewline
+      </style:style>\Hnewline       <style:style style:name="quotation-rtl"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"
+                   fo:text-align="end"
+                   style:writing-mode="rl-tb" />\Hnewline
+      </style:style>\Hnewline
+%
+   }
+\ConfigureEnv{flushright}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushright-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushright-->}\ShowPar
+}
+  {} {}
+\ConfigureList{flushright}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushright}
+\ConfigureOO{flushright}
+  {\Hnewline
+<style:style style:name="flushright"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body"
+             style:master-page-name="">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="end"
+             style:justify-single-word="false"
+             style:page-number="0"/>
+</style:style>\Hnewline
+  }
+\ConfigureEnv{flushleft}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushleft-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushleft-->}\par\ShowPar}
+  {} {}
+\ConfigureList{flushleft}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushleft}
+\ConfigureOO{flushleft}
+  {\Hnewline
+<style:style style:name="flushleft"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="start"
+             style:justify-single-word="false"/>
+</style:style>
+  \Hnewline}
+\ConfigureEnv{center}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin center-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end center-->}\par\ShowPar
+}
+  {} {}
+\ConfigureList{center}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{center}
+\ConfigureOO{center}
+  {\Hnewline
+   <style:style style:name="center"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="center"
+             style:justify-single-word="false">
+   <style:tab-stops/>
+</style:paragraph-properties >
+</style:style>\Hnewline
+   }
+\Configure{centerline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstCenterPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+\HAssign\tabbing:N=0
+\Configure{tabbing}[1.5]{\IgnorePar\leavevmode
+     \gHAdvance\tabbing:N by 1
+     \gHAssign\tabbing:Nrow=0
+     \ht:special{t4ht=<text:p
+         text:style-name="tabbing" \Hnewline   >}}
+   {\ht:special{t4ht=</text:p>\Hnewline}\ShowPar}
+   {\gHAdvance\tabbing:Nrow by 1
+    \ht:special{t4ht=<text:span\Hnewline
+       text:style-name="tabbing-\tabbing:N-\tabbing:Nrow"
+         >}%
+       \OOstyles{%
+    <style:style style:name="tabbing-\tabbing:N-\tabbing:Nrow"
+                 >\Hnewline
+         <style:text-properties
+               fo:wrap-option="no-wrap"
+               \ifx \TabWidth\empty \else
+                   fo:width="\TabWidth pt"
+               \fi
+               \ifx \`\TabType
+                   style:text-align="right"
+               \fi
+              />\Hnewline
+    </style:style>\Hnewline
+  }
+%
+   }
+   {\ht:special{t4ht=</text:span>}}
+\ConfigureEnv{tabbing}{\IgnorePar\EndP}{}{}{}
+\NewConfigureOO{tabbing}
+\ConfigureOO{tabbing}{<style:style style:name="tabbing"
+             style:family="paragraph"
+             style:parent-style-name="Standard" >\Hnewline
+  <style:paragraph-properties  fo:margin-left="0cm"
+             fo:margin-right="0cm"
+             fo:text-indent="0.5cm"
+             style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline
+}
+\ConfigureEnv{table}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:section text:name="table"  >}%
+    \bgroup  \Configure{float}{\ShowPar}{}{\ShowPar\IgnoreIndent\csname par\endcsname}%
+   }
+   {\egroup
+    \ifvmode \IgnorePar\fi\EndP \HCode{</text:section>}%
+    \csname par\endcsname\ShowPar}
+   {}{}
 
+\ifx \part\:UnDef\else
+  \Configure{part}
+     {\IgnorePar\EndP \HCode{<!--start part-->}}
+     {\IgnorePar\EndP \HCode{<!--end part-->}}
+     {\HCode{<text:p text:style-name="part"  >
+             <text:span text:style-name="part">}\TitleMark\space
+      \HCode{</text:span>}%
+      \HCode{<text:line-break/>}}
+     {\HCode{</text:p>\Hnewline}\par\ShowPar\IgnoreIndent}
+  \ConfigureMark{part}{\partname\space\thepart}
+  \NewConfigureOO{part}
+  \ConfigureOO{part}{\Hnewline
+  <style:style style:name="part"
+                    style:family="paragraph"
+                    style:parent-style-name="Heading\if@rl-rtl\fi
+"
+                    style:next-style-name="Text-body"
+                    style:list-style-name="part">\Hnewline
+  <style:paragraph-properties  fo:margin-top="0.52cm"
+                    fo:margin-bottom="0.21cm"
+                    fo:font-size="18pt"/>\Hnewline
+  </style:style>\Hnewline
+  }
+\fi
+\ConfigureMark{section}
+   {\ifnum \c:secnumdepth>\c@secnumdepth \expandafter\:gobble
+    \else  \@seccntformat{section}\fi }
+\Configure{section}
+   {\IgnorePar\EndP \HCode{<!--start of section-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section-->}}
+   {\HCode{<text:h
+            text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2" ><text:span
+                   text:style-name="section" >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsection}\fi }
+\Configure{subsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"   ><text:span
+                   text:style-name="subsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesection}
+   {\IgnorePar\EndP \HCode{<!--start of section*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{paragraph}
+   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
+   {\HCode{<!--end of paragraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="paragraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\Configure{subparagraph}
+   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
+   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="subparagraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\NewConfigureOO{paragraph-h}
+\ConfigureOO{paragraph-h}{
+   <style:style style:name="paragraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+\NewConfigureOO{subparagraph-h}
+\ConfigureOO{subparagraph-h}{
+   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+
+\NewConfigure{Heading-1}{1}
+\Configure{Heading-1}{Heading-1}
+\NewConfigureOO{Heading-1}
+\ConfigureOO{Heading-1}{\Hnewline
+<style:style style:name="Heading-1"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="40pt"
+                  fo:margin-bottom="25pt"
+                />
+</style:style>
+\Hnewline <style:style style:name="Heading-1-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-2}{1}
+\Configure{Heading-2}{Heading-2}
+\NewConfigureOO{Heading-2}
+\ConfigureOO{Heading-2}{\Hnewline
+<style:style style:name="Heading-2"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="12pt"
+                  fo:margin-bottom="9pt"
+               />
+</style:style>
+\Hnewline <style:style style:name="Heading-2-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-3}{1}
+\Configure{Heading-3}{Heading-3}
+\NewConfigureOO{Heading-3}
+\ConfigureOO{Heading-3}{\Hnewline
+<style:style style:name="Heading-3"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-3-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-4}{1}
+\Configure{Heading-4}{Heading-4}
+\NewConfigureOO{Heading-4}
+\ConfigureOO{Heading-4}{\Hnewline
+<style:style style:name="Heading-4"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+/>
+</style:style>
+\Hnewline  <style:style style:name="Heading-4-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb"
+/>
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-5}{1}
+\Configure{Heading-5}{Heading-5}
+\NewConfigureOO{Heading-5}
+\ConfigureOO{Heading-5}{\Hnewline
+<style:style style:name="Heading-5"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-5-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-6}{1}
+\Configure{Heading-6}{Heading-6}
+\NewConfigureOO{Heading-6}
+\ConfigureOO{Heading-6}{\Hnewline
+<style:style style:name="Heading-6"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-6-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-7}{1}
+\Configure{Heading-7}{Heading-7}
+\NewConfigureOO{Heading-7}
+\ConfigureOO{Heading-7}{\Hnewline
+<style:style style:name="Heading-7"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-7-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-8}{1}
+\Configure{Heading-8}{Heading-8}
+\NewConfigureOO{Heading-8}
+\ConfigureOO{Heading-8}{\Hnewline
+<style:style style:name="Heading-8"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-8-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-9}{1}
+\Configure{Heading-9}{Heading-9}
+\NewConfigureOO{Heading-9}
+\ConfigureOO{Heading-9}{\Hnewline
+<style:style style:name="Heading-9"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-9-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-10}{1}
+\Configure{Heading-10}{Heading-10}
+\NewConfigureOO{Heading-10}
+\ConfigureOO{Heading-10}{\Hnewline
+<style:style style:name="Heading-10"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-10-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline
+}
+
+\Configure{caption}
+   {\ht:everypar{\HtmlPar}%
+    \ifvmode \EndP \par\ShowPar\else \HCode{<text:line-break/>}\fi
+    \HCode{\Hnewline  <text:span text:style-name="caption" >%
+           <text:span text:style-name="caption-title" >}}
+   {: }
+   {\HCode{</text:span>}}
+   {\HCode{</text:span>}}
+\OOstyles{%
+  <style:style style:name="caption-title" style:family="text">\Hnewline
+     <style:text-properties fo:font-style="normal"
+                       fo:font-weight="bold"/>\Hnewline
+  </style:style>\Hnewline
+}
+
+\Configure{theindex}
+   {\ifvmode\IgnorePar\fi
+    \EndP\HCode{<text:alphabetical-index text:name="theindex"  >
+      <text:alphabetical-index-source
+       text:sort-algorithm="alphanumeric"  >\Hnewline
+   <text:index-title-template
+                text:style-name="Index-Heading"  >\indexname
+   </text:index-title-template>\Hnewline
+   <text:alphabetical-index-entry-template
+       text:outline-level="1"
+       text:style-name="Index-1"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+      />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="2"
+       text:style-name="Index-2"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="3"
+       text:style-name="Index-3"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+\Hnewline
+</text:alphabetical-index-source>\Hnewline
+%
+      <text:index-body>\Hnewline}%
+    \csname put:IndexTitle\endcsname
+   }
+   {\HCode{</text:index-body></text:alphabetical-index>}}
+   {\HCode{<text:p text:style-name="P6"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P7"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P8"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {}
+\Configure{LNK}{\oo:LNK}{\EndLink}{}
+\Odef\oo:LNK[#1]#2#3{\Link{#2}{#3}}
+
+\Configure{@begin}{theindex}{\ifx \indexname\empty \else
+    \def\put:IndexTitle{\HCode{<text:index-title
+   text:style-name="Sect1"
+   text:name="Alphabetical_Index1_Head"
+     ><text:p
+   text:style-name="Index-Heading"  >}\indexname
+\HCode{</text:p></text:index-title>\Hnewline}
+}\fi}
+
+\Configure{listoffigures}
+   {\let\contentsname\listfigurename \let\listfigurename\empty}
+   {}
+\Configure{listoftables}
+   {\let\contentsname\listtablename \let\listtablename\empty}
+   {}
+\ConfigureToc{lof}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+\ConfigureToc{lot}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+
+{\Configure{Needs}{Font\string_Size: #1}\ifcase  \@ptsize
+   \or \Needs{11}\or \Needs{12}\else \fi}
+
+\Configure{@begin}{theindex}{\section*{\indexname}}
+
+\ConfigureMark{chapter}
+   {\ifHeadingNumbered \mw@seccntformat\HeadingNumber\fi}
+\ConfigureMark{section}
+{\ifHeadingNumbered\@seccntformat{section}\fi}
+\ConfigureMark{subsection}
+{\ifHeadingNumbered\@seccntformat{subsection}\fi}
+\ConfigureMark{subsubsection}
+{\ifHeadingNumbered\@seccntformat{subsubsection}\fi}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{mwrep}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{maketitle}
+   {\HCode{<!--begin maketitle-->}}
+   {\HCode{<!--end maketitle-->}\par}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Title\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+\Configure{thanks author date and}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Text-body\if@rl-rtl\fi
+"
+             >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="author\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="date\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {}
+   {}%   {\HCode{<text:line-break/>}}
+\NewConfigureOO{title}
+\ConfigureOO{title}{%
+<style:style style:name="Title"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Title-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
+\NewConfigureOO{author}
+\ConfigureOO{author}{%
+<style:style      style:name="author"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="date">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style      style:name="author-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="date-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\NewConfigureOO{date}
+\ConfigureOO{date}{%
+<style:style style:name="date"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style style:name="date-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP \bgroup
+      \Configure{HtmlPar}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\HCode{</text:p>}}
+         {\HCode{</text:p>}}%
+      \par \ShowPar
+   }
+   {\ifvmode \IgnorePar\fi \EndP \egroup \ShowPar\par \IgnoreIndent }
+   {\ifvmode \IgnorePar\fi\EndP
+    \HCode{<text:p text:style-name="abstract-title"  >}%
+   }
+   {\HCode{</text:p>}}
+\NewConfigureOO{abstract}
+\ConfigureOO{abstract}{\Hnewline
+<style:style style:name="abstract"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline <style:style style:name="abstract-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="Text-body-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  style:writing-mode="rl-tb" />\Hnewline
+</style:style>\Hnewline
+ }
+\NewConfigureOO{abstract-title}
+\ConfigureOO{abstract-title}{\Hnewline
+<style:style style:name="abstract-title"
+                  style:family="paragraph"
+                  style:parent-style-name="abstract"
+                  style:next-style-name="abstract">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.499cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-weight="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>\Hnewline
+</style:style>\Hnewline
+}
+
+\NewConfigureOO{Contents 1}
+\ConfigureOO{Contents 1}{\Hnewline
+   <style:style style:name="Contents-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:margin-top="0cm"
+                fo:margin-bottom="0.101cm"
+                fo:font-weight="bold"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="16.999cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>\Hnewline
+}
+%
+\NewConfigureOO{Contents 2}
+   \ConfigureOO{Contents 2}{\Hnewline
+   <style:style style:name="Contents-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+      <style:tab-stop style:position="16.499cm"
+                   style:type="right"
+                   style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 3}
+\ConfigureOO{Contents 3}{\Hnewline
+   <style:style style:name="Contents-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+         <style:tab-stop style:position="16cm"
+                      style:type="right"
+                      style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 4}
+\ConfigureOO{Contents 4}{\Hnewline
+   <style:style style:name="Contents-4"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.498cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>
+         <style:tab-stop style:position="15.501cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 5}
+\ConfigureOO{Contents 5}{\Hnewline
+   <style:style style:name="Contents-5"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.997cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="15.002cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 1}
+\ConfigureOO{Index 1}{\Hnewline
+   <style:style style:name="Index-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>
+   </style:style>
+   \Hnewline }
+%
+\NewConfigureOO{Index 2}
+\ConfigureOO{Index 2}{\Hnewline
+   <style:style style:name="Index-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 3}
+\ConfigureOO{Index 3}{\Hnewline
+   <style:style style:name="Index-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+   \Hnewline}
+%
+
+\ConfigureToc{chapter}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}%
+   \ifx \chaptername\:UnDef\else \chaptername~\fi}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likechapter}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{appendix}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{part}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likepart}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{section}
+  {\HCode{<text:p text:style-name="P2"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesection}
+  {\HCode{<text:p text:style-name="P2"><text:span
+                                       text:style-name="toc-mark" >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsubsection}
+  {\HCode{<text:p text:style-name="P4"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsubsection}
+  {\HCode{<text:p text:style-name="P4"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+
+\def\ref:name{\bibname}
+\HAssign\bib:N=0
+\:CheckOption{bib-}\if:Option
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \let\en:bib=\empty
+      }
+      {\en:bib}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\else
+   \Log:Note{for a degraded bibliography friendlier for conversion to .doc,
+         use the command line option `bib-'}
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \HCode{<text:bibliography text:name="bib-\bib:N" >
+          <text:bibliography-source>\Hnewline
+             <text:index-title-template>}\NoFonts\ref:name\EndNoFonts\HCode{%
+</text:index-title-template>\Hnewline
+%
+  <text:bibliography-entry-template\Hnewline
+      text:bibliography-type="custom1"
+      text:style-name="Bibliography11"  >\Hnewline
+%
+    <text:index-entry-bibliography
+      text:bibliography-data-field="identifier"  />\Hnewline
+%
+    <text:index-entry-span>: </text:index-entry-span>\Hnewline
+    <text:index-entry-bibliography
+                  text:bibliography-data-field="author" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="title" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="year" />\Hnewline
+    </text:bibliography-entry-template>\Hnewline
+\Hnewline
+          </text:bibliography-source>\Hnewline
+          <text:index-body>\Hnewline
+       }\let\en:bib=\empty
+      }
+      {\en:bib\HCode{</text:index-body></text:bibliography>}}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\fi
+\Configure{bibitem}{\Link}{\EndLink\space }
+\NewConfigureOO{p-bibitem}
+\ConfigureOO{p-bibitem}{%
+   <style:style style:name="p-bibitem"\Hnewline
+             style:family="paragraph" \Hnewline
+             style:parent-style-name="Standard">\Hnewline
+      <style:paragraph-properties  fo:margin-left="1cm"\Hnewline
+                     fo:text-indent="-1cm"\Hnewline
+                     fo:margin-right="0cm" \Hnewline
+                     style:auto-text-indent="false">\Hnewline
+              <style:tab-stops/>\Hnewline
+      </style:paragraph-properties >\Hnewline
+    </style:style>\Hnewline
+}
+
+
+\ConfigureEnv{quote}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar}
+   {\EndP \ifvmode \IgnorePar\fi
+    \bgroup \Configure{HtmlPar}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                         >}}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                          >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+%
+   }
+   {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
+\ConfigureEnv{quotation}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar \noindent}
+   {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+}
+   {\EndP\IgnorePar \egroup \ShowPar }
+\NewConfigureOO{quotation}
+\ConfigureOO{quotation}
+   {\Hnewline
+      <style:style style:name="quotation"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"/>\Hnewline
+      </style:style>\Hnewline       <style:style style:name="quotation-rtl"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"
+                   fo:text-align="end"
+                   style:writing-mode="rl-tb" />\Hnewline
+      </style:style>\Hnewline
+%
+   }
+\ConfigureEnv{flushright}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushright-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushright-->}\ShowPar
+}
+  {} {}
+\ConfigureList{flushright}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushright}
+\ConfigureOO{flushright}
+  {\Hnewline
+<style:style style:name="flushright"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body"
+             style:master-page-name="">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="end"
+             style:justify-single-word="false"
+             style:page-number="0"/>
+</style:style>\Hnewline
+  }
+\ConfigureEnv{flushleft}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushleft-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushleft-->}\par\ShowPar}
+  {} {}
+\ConfigureList{flushleft}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushleft}
+\ConfigureOO{flushleft}
+  {\Hnewline
+<style:style style:name="flushleft"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="start"
+             style:justify-single-word="false"/>
+</style:style>
+  \Hnewline}
+\ConfigureEnv{center}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin center-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end center-->}\par\ShowPar
+}
+  {} {}
+\ConfigureList{center}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{center}
+\ConfigureOO{center}
+  {\Hnewline
+   <style:style style:name="center"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="center"
+             style:justify-single-word="false">
+   <style:tab-stops/>
+</style:paragraph-properties >
+</style:style>\Hnewline
+   }
+\Configure{centerline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstCenterPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+\HAssign\tabbing:N=0
+\Configure{tabbing}[1.5]{\IgnorePar\leavevmode
+     \gHAdvance\tabbing:N by 1
+     \gHAssign\tabbing:Nrow=0
+     \ht:special{t4ht=<text:p
+         text:style-name="tabbing" \Hnewline   >}}
+   {\ht:special{t4ht=</text:p>\Hnewline}\ShowPar}
+   {\gHAdvance\tabbing:Nrow by 1
+    \ht:special{t4ht=<text:span\Hnewline
+       text:style-name="tabbing-\tabbing:N-\tabbing:Nrow"
+         >}%
+       \OOstyles{%
+    <style:style style:name="tabbing-\tabbing:N-\tabbing:Nrow"
+                 >\Hnewline
+         <style:text-properties
+               fo:wrap-option="no-wrap"
+               \ifx \TabWidth\empty \else
+                   fo:width="\TabWidth pt"
+               \fi
+               \ifx \`\TabType
+                   style:text-align="right"
+               \fi
+              />\Hnewline
+    </style:style>\Hnewline
+  }
+%
+   }
+   {\ht:special{t4ht=</text:span>}}
+\ConfigureEnv{tabbing}{\IgnorePar\EndP}{}{}{}
+\NewConfigureOO{tabbing}
+\ConfigureOO{tabbing}{<style:style style:name="tabbing"
+             style:family="paragraph"
+             style:parent-style-name="Standard" >\Hnewline
+  <style:paragraph-properties  fo:margin-left="0cm"
+             fo:margin-right="0cm"
+             fo:text-indent="0.5cm"
+             style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline
+}
+\ConfigureEnv{table}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:section text:name="table"  >}%
+    \bgroup  \Configure{float}{\ShowPar}{}{\ShowPar\IgnoreIndent\csname par\endcsname}%
+   }
+   {\egroup
+    \ifvmode \IgnorePar\fi\EndP \HCode{</text:section>}%
+    \csname par\endcsname\ShowPar}
+   {}{}
+
+\ifx \part\:UnDef\else
+  \Configure{part}
+     {\IgnorePar\EndP \HCode{<!--start part-->}}
+     {\IgnorePar\EndP \HCode{<!--end part-->}}
+     {\HCode{<text:p text:style-name="part"  >
+             <text:span text:style-name="part">}\TitleMark\space
+      \HCode{</text:span>}%
+      \HCode{<text:line-break/>}}
+     {\HCode{</text:p>\Hnewline}\par\ShowPar\IgnoreIndent}
+  \ConfigureMark{part}{\partname\space\thepart}
+  \NewConfigureOO{part}
+  \ConfigureOO{part}{\Hnewline
+  <style:style style:name="part"
+                    style:family="paragraph"
+                    style:parent-style-name="Heading\if@rl-rtl\fi
+"
+                    style:next-style-name="Text-body"
+                    style:list-style-name="part">\Hnewline
+  <style:paragraph-properties  fo:margin-top="0.52cm"
+                    fo:margin-bottom="0.21cm"
+                    fo:font-size="18pt"/>\Hnewline
+  </style:style>\Hnewline
+  }
+\fi
+\ConfigureMark{section}
+   {\ifnum \c:secnumdepth>\c@secnumdepth \expandafter\:gobble
+    \else  \@seccntformat{section}\fi }
+\Configure{section}
+   {\IgnorePar\EndP \HCode{<!--start of section-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section-->}}
+   {\HCode{<text:h
+            text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2" ><text:span
+                   text:style-name="section" >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsection}\fi }
+\Configure{subsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"   ><text:span
+                   text:style-name="subsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesection}
+   {\IgnorePar\EndP \HCode{<!--start of section*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{paragraph}
+   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
+   {\HCode{<!--end of paragraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="paragraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\Configure{subparagraph}
+   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
+   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="subparagraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\NewConfigureOO{paragraph-h}
+\ConfigureOO{paragraph-h}{
+   <style:style style:name="paragraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+\NewConfigureOO{subparagraph-h}
+\ConfigureOO{subparagraph-h}{
+   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+
+\NewConfigure{Heading-1}{1}
+\Configure{Heading-1}{Heading-1}
+\NewConfigureOO{Heading-1}
+\ConfigureOO{Heading-1}{\Hnewline
+<style:style style:name="Heading-1"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="40pt"
+                  fo:margin-bottom="25pt"
+                />
+</style:style>
+\Hnewline <style:style style:name="Heading-1-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-2}{1}
+\Configure{Heading-2}{Heading-2}
+\NewConfigureOO{Heading-2}
+\ConfigureOO{Heading-2}{\Hnewline
+<style:style style:name="Heading-2"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="12pt"
+                  fo:margin-bottom="9pt"
+               />
+</style:style>
+\Hnewline <style:style style:name="Heading-2-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-3}{1}
+\Configure{Heading-3}{Heading-3}
+\NewConfigureOO{Heading-3}
+\ConfigureOO{Heading-3}{\Hnewline
+<style:style style:name="Heading-3"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-3-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-4}{1}
+\Configure{Heading-4}{Heading-4}
+\NewConfigureOO{Heading-4}
+\ConfigureOO{Heading-4}{\Hnewline
+<style:style style:name="Heading-4"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+/>
+</style:style>
+\Hnewline  <style:style style:name="Heading-4-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb"
+/>
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-5}{1}
+\Configure{Heading-5}{Heading-5}
+\NewConfigureOO{Heading-5}
+\ConfigureOO{Heading-5}{\Hnewline
+<style:style style:name="Heading-5"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-5-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-6}{1}
+\Configure{Heading-6}{Heading-6}
+\NewConfigureOO{Heading-6}
+\ConfigureOO{Heading-6}{\Hnewline
+<style:style style:name="Heading-6"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-6-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-7}{1}
+\Configure{Heading-7}{Heading-7}
+\NewConfigureOO{Heading-7}
+\ConfigureOO{Heading-7}{\Hnewline
+<style:style style:name="Heading-7"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-7-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-8}{1}
+\Configure{Heading-8}{Heading-8}
+\NewConfigureOO{Heading-8}
+\ConfigureOO{Heading-8}{\Hnewline
+<style:style style:name="Heading-8"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-8-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-9}{1}
+\Configure{Heading-9}{Heading-9}
+\NewConfigureOO{Heading-9}
+\ConfigureOO{Heading-9}{\Hnewline
+<style:style style:name="Heading-9"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-9-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-10}{1}
+\Configure{Heading-10}{Heading-10}
+\NewConfigureOO{Heading-10}
+\ConfigureOO{Heading-10}{\Hnewline
+<style:style style:name="Heading-10"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-10-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline
+}
+
+\Configure{caption}
+   {\ht:everypar{\HtmlPar}%
+    \ifvmode \EndP \par\ShowPar\else \HCode{<text:line-break/>}\fi
+    \HCode{\Hnewline  <text:span text:style-name="caption" >%
+           <text:span text:style-name="caption-title" >}}
+   {: }
+   {\HCode{</text:span>}}
+   {\HCode{</text:span>}}
+\OOstyles{%
+  <style:style style:name="caption-title" style:family="text">\Hnewline
+     <style:text-properties fo:font-style="normal"
+                       fo:font-weight="bold"/>\Hnewline
+  </style:style>\Hnewline
+}
+
+\Configure{theindex}
+   {\ifvmode\IgnorePar\fi
+    \EndP\HCode{<text:alphabetical-index text:name="theindex"  >
+      <text:alphabetical-index-source
+       text:sort-algorithm="alphanumeric"  >\Hnewline
+   <text:index-title-template
+                text:style-name="Index-Heading"  >\indexname
+   </text:index-title-template>\Hnewline
+   <text:alphabetical-index-entry-template
+       text:outline-level="1"
+       text:style-name="Index-1"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+      />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="2"
+       text:style-name="Index-2"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="3"
+       text:style-name="Index-3"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+\Hnewline
+</text:alphabetical-index-source>\Hnewline
+%
+      <text:index-body>\Hnewline}%
+    \csname put:IndexTitle\endcsname
+   }
+   {\HCode{</text:index-body></text:alphabetical-index>}}
+   {\HCode{<text:p text:style-name="P6"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P7"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P8"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {}
+\Configure{LNK}{\oo:LNK}{\EndLink}{}
+\Odef\oo:LNK[#1]#2#3{\Link{#2}{#3}}
+
+\Configure{@begin}{theindex}{\ifx \indexname\empty \else
+    \def\put:IndexTitle{\HCode{<text:index-title
+   text:style-name="Sect1"
+   text:name="Alphabetical_Index1_Head"
+     ><text:p
+   text:style-name="Index-Heading"  >}\indexname
+\HCode{</text:p></text:index-title>\Hnewline}
+}\fi}
+
+\Configure{listoffigures}
+   {\let\contentsname\listfigurename \let\listfigurename\empty}
+   {}
+\Configure{listoftables}
+   {\let\contentsname\listtablename \let\listtablename\empty}
+   {}
+\ConfigureToc{lof}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+\ConfigureToc{lot}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+
+{\Configure{Needs}{Font\string_Size: #1}\ifcase  \@ptsize
+   \or \Needs{11}\or \Needs{12}\else \fi}
+
+\Configure{@begin}{theindex}{\section*{\indexname}}
+
+\ConfigureMark{chapter}
+   {\ifHeadingNumbered \mw@seccntformat\HeadingNumber\fi}
+\ConfigureMark{section}
+{\ifHeadingNumbered\@seccntformat{section}\fi}
+\ConfigureMark{subsection}
+{\ifHeadingNumbered\@seccntformat{subsection}\fi}
+\ConfigureMark{subsubsection}
+{\ifHeadingNumbered\@seccntformat{subsubsection}\fi}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{mwbk}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{maketitle}
+   {\HCode{<!--begin maketitle-->}}
+   {\HCode{<!--end maketitle-->}\par}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Title\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+\Configure{thanks author date and}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="Text-body\if@rl-rtl\fi
+"
+             >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="author\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:p text:style-name="date\if@rl-rtl\fi
+"
+              >}}
+   {\HCode{</text:p>}}
+   {}
+   {}%   {\HCode{<text:line-break/>}}
+\NewConfigureOO{title}
+\ConfigureOO{title}{%
+<style:style style:name="Title"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Title-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
+\NewConfigureOO{author}
+\ConfigureOO{author}{%
+<style:style      style:name="author"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="date">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style      style:name="author-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="date-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\NewConfigureOO{date}
+\ConfigureOO{date}{%
+<style:style style:name="date"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style>\Hnewline <style:style style:name="date-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="14pt"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>\Hnewline
+}
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP \bgroup
+      \Configure{HtmlPar}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\HCode{</text:p>}}
+         {\HCode{</text:p>}}%
+      \par \ShowPar
+   }
+   {\ifvmode \IgnorePar\fi \EndP \egroup \ShowPar\par \IgnoreIndent }
+   {\ifvmode \IgnorePar\fi\EndP
+    \HCode{<text:p text:style-name="abstract-title"  >}%
+   }
+   {\HCode{</text:p>}}
+\NewConfigureOO{abstract}
+\ConfigureOO{abstract}{\Hnewline
+<style:style style:name="abstract"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:next-style-name="Text-body">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline <style:style style:name="abstract-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body-rtl"
+                  style:next-style-name="Text-body-rtl">\Hnewline
+<style:paragraph-properties  fo:margin-left="3cm"
+                  fo:margin-right="3cm"
+                  fo:margin-top="0cm"
+                  fo:margin-bottom="0.199cm"
+                  fo:font-size="10pt"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  style:writing-mode="rl-tb" />\Hnewline
+</style:style>\Hnewline
+ }
+\NewConfigureOO{abstract-title}
+\ConfigureOO{abstract-title}{\Hnewline
+<style:style style:name="abstract-title"
+                  style:family="paragraph"
+                  style:parent-style-name="abstract"
+                  style:next-style-name="abstract">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.499cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-weight="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>\Hnewline
+</style:style>\Hnewline
+}
+
+\NewConfigureOO{Contents 1}
+\ConfigureOO{Contents 1}{\Hnewline
+   <style:style style:name="Contents-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:margin-top="0cm"
+                fo:margin-bottom="0.101cm"
+                fo:font-weight="bold"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="16.999cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>\Hnewline
+}
+%
+\NewConfigureOO{Contents 2}
+   \ConfigureOO{Contents 2}{\Hnewline
+   <style:style style:name="Contents-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+      <style:tab-stop style:position="16.499cm"
+                   style:type="right"
+                   style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 3}
+\ConfigureOO{Contents 3}{\Hnewline
+   <style:style style:name="Contents-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">
+      <style:tab-stops>
+         <style:tab-stop style:position="16cm"
+                      style:type="right"
+                      style:leader-char="."/>
+      </style:tab-stops>
+   </style:paragraph-properties >
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 4}
+\ConfigureOO{Contents 4}{\Hnewline
+   <style:style style:name="Contents-4"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.498cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>
+         <style:tab-stop style:position="15.501cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+   \Hnewline}
+%
+\NewConfigureOO{Contents 5}
+\ConfigureOO{Contents 5}{\Hnewline
+   <style:style style:name="Contents-5"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="1.997cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false">\Hnewline
+      <style:tab-stops>\Hnewline
+         <style:tab-stop style:position="15.002cm"
+                      style:type="right"
+                      style:leader-char="."/>\Hnewline
+      </style:tab-stops>\Hnewline
+   </style:paragraph-properties >\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 1}
+\ConfigureOO{Index 1}{\Hnewline
+   <style:style style:name="Index-1"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">
+   <style:paragraph-properties  fo:margin-left="0cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>
+   </style:style>
+   \Hnewline }
+%
+\NewConfigureOO{Index 2}
+\ConfigureOO{Index 2}{\Hnewline
+   <style:style style:name="Index-2"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.499cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+\Hnewline}
+%
+\NewConfigureOO{Index 3}
+\ConfigureOO{Index 3}{\Hnewline
+   <style:style style:name="Index-3"
+                style:family="paragraph"
+                style:parent-style-name="Index"
+                style:class="index">\Hnewline
+   <style:paragraph-properties  fo:margin-left="0.998cm"
+                fo:margin-right="0cm"
+                fo:text-indent="0cm"
+                style:auto-text-indent="false"/>\Hnewline
+   </style:style>
+   \Hnewline}
+%
+
+\ConfigureToc{chapter}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}%
+   \ifx \chaptername\:UnDef\else \chaptername~\fi}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likechapter}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{appendix}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{part}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likepart}
+  {\HCode{<text:p text:style-name="P1"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{section}
+  {\HCode{<text:p text:style-name="P2"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesection}
+  {\HCode{<text:p text:style-name="P2"><text:span
+                                       text:style-name="toc-mark" >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsection}
+  {\HCode{<text:p text:style-name="P3"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{subsubsection}
+  {\HCode{<text:p text:style-name="P4"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+\ConfigureToc{likesubsubsection}
+  {\HCode{<text:p text:style-name="P4"  ><text:span
+                        text:style-name="toc-mark"  >}}
+  { \HCode{</text:span>}}
+  {}
+  {\HCode{</text:p>}}
+
+\def\ref:name{\bibname}
+\HAssign\bib:N=0
+\:CheckOption{bib-}\if:Option
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \let\en:bib=\empty
+      }
+      {\en:bib}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\else
+   \Log:Note{for a degraded bibliography friendlier for conversion to .doc,
+         use the command line option `bib-'}
+   \ConfigureList{thebibliography}%
+      {\IgnorePar\EndP \gHAdvance\bib:N by 1
+       \HCode{<text:bibliography text:name="bib-\bib:N" >
+          <text:bibliography-source>\Hnewline
+             <text:index-title-template>}\NoFonts\ref:name\EndNoFonts\HCode{%
+</text:index-title-template>\Hnewline
+%
+  <text:bibliography-entry-template\Hnewline
+      text:bibliography-type="custom1"
+      text:style-name="Bibliography11"  >\Hnewline
+%
+    <text:index-entry-bibliography
+      text:bibliography-data-field="identifier"  />\Hnewline
+%
+    <text:index-entry-span>: </text:index-entry-span>\Hnewline
+    <text:index-entry-bibliography
+                  text:bibliography-data-field="author" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="title" />\Hnewline
+    <text:index-entry-span>, </text:index-entry-span>\Hnewline
+%
+    <text:index-entry-bibliography
+       text:bibliography-data-field="year" />\Hnewline
+    </text:bibliography-entry-template>\Hnewline
+\Hnewline
+          </text:bibliography-source>\Hnewline
+          <text:index-body>\Hnewline
+       }\let\en:bib=\empty
+      }
+      {\en:bib\HCode{</text:index-body></text:bibliography>}}
+      {\en:bib\def\en:bib{\HCode{</text:p>}}\HCode
+                     {<text:p text:style-name="p-bibitem"  >}}
+      {}
+\fi
+\Configure{bibitem}{\Link}{\EndLink\space }
+\NewConfigureOO{p-bibitem}
+\ConfigureOO{p-bibitem}{%
+   <style:style style:name="p-bibitem"\Hnewline
+             style:family="paragraph" \Hnewline
+             style:parent-style-name="Standard">\Hnewline
+      <style:paragraph-properties  fo:margin-left="1cm"\Hnewline
+                     fo:text-indent="-1cm"\Hnewline
+                     fo:margin-right="0cm" \Hnewline
+                     style:auto-text-indent="false">\Hnewline
+              <style:tab-stops/>\Hnewline
+      </style:paragraph-properties >\Hnewline
+    </style:style>\Hnewline
+}
+
+
+\ConfigureEnv{quote}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar}
+   {\EndP \ifvmode \IgnorePar\fi
+    \bgroup \Configure{HtmlPar}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                         >}}
+   {\EndP \HCode{<!--l. \the\inputlineno-->%
+%
+                 <text:p text:style-name="quote\if@rl-rtl\fi
+"
+                          >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+%
+   }
+   {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
+\ConfigureEnv{quotation}
+   {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+}
+   {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+\par\ShowPar \noindent}
+   {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\EndP \HCode{<text:p text:style-name="quotation\if@rl-rtl\fi
+"
+                           >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+}
+   {\EndP\IgnorePar \egroup \ShowPar }
+\NewConfigureOO{quotation}
+\ConfigureOO{quotation}
+   {\Hnewline
+      <style:style style:name="quotation"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"/>\Hnewline
+      </style:style>\Hnewline       <style:style style:name="quotation-rtl"
+                   style:family="paragraph"
+                   style:parent-style-name="Standard">\Hnewline
+        <style:paragraph-properties
+                   fo:margin-left="1cm"
+                   fo:margin-right="1cm"
+                   fo:margin-top="0cm"
+                   fo:margin-bottom="0cm"
+                   fo:text-indent="0.499cm"
+                   style:auto-text-indent="true"
+                   fo:text-align="end"
+                   style:writing-mode="rl-tb" />\Hnewline
+      </style:style>\Hnewline
+%
+   }
+\ConfigureEnv{flushright}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushright-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushright-->}\ShowPar
+}
+  {} {}
+\ConfigureList{flushright}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushright"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushright}
+\ConfigureOO{flushright}
+  {\Hnewline
+<style:style style:name="flushright"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body"
+             style:master-page-name="">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="end"
+             style:justify-single-word="false"
+             style:page-number="0"/>
+</style:style>\Hnewline
+  }
+\ConfigureEnv{flushleft}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin flushleft-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end flushleft-->}\par\ShowPar}
+  {} {}
+\ConfigureList{flushleft}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\EndP \HCode{<text:p text:style-name="flushleft"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{flushleft}
+\ConfigureOO{flushleft}
+  {\Hnewline
+<style:style style:name="flushleft"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="start"
+             style:justify-single-word="false"/>
+</style:style>
+  \Hnewline}
+\ConfigureEnv{center}
+  {\ifvmode \IgnorePar\fi \EndP
+\ifnum \BegEnd:D=0
+   \gHAdvance\BegEnd:N by 1
+\HCode{<text:section
+        text:style-name="begin-end-env"
+        text:name="begin-end-env-\BegEnd:N"
+       >%
+       <text:p text:style-name="begin-env-p" ></text:p>}%
+%
+\else
+   \gHAdvance\BegEnd:N by 1
+\hbox{\HCode{<text:p><draw:frame
+                draw:name="begin-end-env-\BegEnd:N"
+                 draw:style-name="env-frame"
+                 text:anchor-type="as-char"
+%                 fo:min-width="0.14in"
+                 svg:width="90\%"
+                 draw:z-index="0"
+       >
+       <draw:text-box
+%           fo:min-height="0.14in"
+       >}}%
+%
+\fi
+\gHAdvance\BegEnd:D by 1
+\HCode{<!--begin center-->}}
+  {\gHAdvance\BegEnd:D by -1
+\ifvmode \IgnorePar\fi\EndP
+\ifnum \BegEnd:D=0
+   \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
+%
+\else
+   \hbox{\HCode{</draw:text-box>
+</draw:frame></text:p> }}%
+%
+\fi
+%
+   \HCode{<!--end center-->}\par\ShowPar
+}
+  {} {}
+\ConfigureList{center}
+ {}{}{\Configure{HtmlPar}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\EndP \HCode{<text:p text:style-name="center"  >}}
+   {\HCode{</text:p>}}
+   {\HCode{</text:p>}}%
+\par}{}
+\NewConfigureOO{center}
+\ConfigureOO{center}
+  {\Hnewline
+   <style:style style:name="center"
+             style:family="paragraph"
+             style:parent-style-name="Text-body"
+             style:next-style-name="Text-body">
+<style:paragraph-properties  fo:margin-top="0.199cm"
+             fo:margin-bottom="0.199cm"
+             fo:text-align="center"
+             style:justify-single-word="false">
+   <style:tab-stops/>
+</style:paragraph-properties >
+</style:style>\Hnewline
+   }
+\Configure{centerline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstCenterPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+\HAssign\tabbing:N=0
+\Configure{tabbing}[1.5]{\IgnorePar\leavevmode
+     \gHAdvance\tabbing:N by 1
+     \gHAssign\tabbing:Nrow=0
+     \ht:special{t4ht=<text:p
+         text:style-name="tabbing" \Hnewline   >}}
+   {\ht:special{t4ht=</text:p>\Hnewline}\ShowPar}
+   {\gHAdvance\tabbing:Nrow by 1
+    \ht:special{t4ht=<text:span\Hnewline
+       text:style-name="tabbing-\tabbing:N-\tabbing:Nrow"
+         >}%
+       \OOstyles{%
+    <style:style style:name="tabbing-\tabbing:N-\tabbing:Nrow"
+                 >\Hnewline
+         <style:text-properties
+               fo:wrap-option="no-wrap"
+               \ifx \TabWidth\empty \else
+                   fo:width="\TabWidth pt"
+               \fi
+               \ifx \`\TabType
+                   style:text-align="right"
+               \fi
+              />\Hnewline
+    </style:style>\Hnewline
+  }
+%
+   }
+   {\ht:special{t4ht=</text:span>}}
+\ConfigureEnv{tabbing}{\IgnorePar\EndP}{}{}{}
+\NewConfigureOO{tabbing}
+\ConfigureOO{tabbing}{<style:style style:name="tabbing"
+             style:family="paragraph"
+             style:parent-style-name="Standard" >\Hnewline
+  <style:paragraph-properties  fo:margin-left="0cm"
+             fo:margin-right="0cm"
+             fo:text-indent="0.5cm"
+             style:auto-text-indent="false"/>\Hnewline
+</style:style>\Hnewline
+}
+\ConfigureEnv{table}
+   {\ifvmode \IgnorePar\fi \EndP
+    \HCode{<text:section text:name="table"  >}%
+    \bgroup  \Configure{float}{\ShowPar}{}{\ShowPar\IgnoreIndent\csname par\endcsname}%
+   }
+   {\egroup
+    \ifvmode \IgnorePar\fi\EndP \HCode{</text:section>}%
+    \csname par\endcsname\ShowPar}
+   {}{}
+
+\ifx \part\:UnDef\else
+  \Configure{part}
+     {\IgnorePar\EndP \HCode{<!--start part-->}}
+     {\IgnorePar\EndP \HCode{<!--end part-->}}
+     {\HCode{<text:p text:style-name="part"  >
+             <text:span text:style-name="part">}\TitleMark\space
+      \HCode{</text:span>}%
+      \HCode{<text:line-break/>}}
+     {\HCode{</text:p>\Hnewline}\par\ShowPar\IgnoreIndent}
+  \ConfigureMark{part}{\partname\space\thepart}
+  \NewConfigureOO{part}
+  \ConfigureOO{part}{\Hnewline
+  <style:style style:name="part"
+                    style:family="paragraph"
+                    style:parent-style-name="Heading\if@rl-rtl\fi
+"
+                    style:next-style-name="Text-body"
+                    style:list-style-name="part">\Hnewline
+  <style:paragraph-properties  fo:margin-top="0.52cm"
+                    fo:margin-bottom="0.21cm"
+                    fo:font-size="18pt"/>\Hnewline
+  </style:style>\Hnewline
+  }
+\fi
+\ConfigureMark{section}
+   {\ifnum \c:secnumdepth>\c@secnumdepth \expandafter\:gobble
+    \else  \@seccntformat{section}\fi }
+\Configure{section}
+   {\IgnorePar\EndP \HCode{<!--start of section-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section-->}}
+   {\HCode{<text:h
+            text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2" ><text:span
+                   text:style-name="section" >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsection}\fi }
+\Configure{subsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"   ><text:span
+                   text:style-name="subsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesection}
+   {\IgnorePar\EndP \HCode{<!--start of section*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of section*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-2\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="2"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-3\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="3"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{paragraph}
+   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
+   {\HCode{<!--end of paragraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="paragraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\Configure{subparagraph}
+   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
+   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
+   {\HCode{<text:span text:style-name="subparagraph-h" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
+\NewConfigureOO{paragraph-h}
+\ConfigureOO{paragraph-h}{
+   <style:style style:name="paragraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+\NewConfigureOO{subparagraph-h}
+\ConfigureOO{subparagraph-h}{
+   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}
+
+\NewConfigure{Heading-1}{1}
+\Configure{Heading-1}{Heading-1}
+\NewConfigureOO{Heading-1}
+\ConfigureOO{Heading-1}{\Hnewline
+<style:style style:name="Heading-1"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="40pt"
+                  fo:margin-bottom="25pt"
+                />
+</style:style>
+\Hnewline <style:style style:name="Heading-1-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="17.2999992370605pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="115\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="115\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-2}{1}
+\Configure{Heading-2}{Heading-2}
+\NewConfigureOO{Heading-2}
+\ConfigureOO{Heading-2}{\Hnewline
+<style:style style:name="Heading-2"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="12pt"
+                  fo:margin-bottom="9pt"
+               />
+</style:style>
+\Hnewline <style:style style:name="Heading-2-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="14.3999996185303pt"
+                  style:font-size-complex="14pt"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+ }
+\NewConfigure{Heading-3}{1}
+\Configure{Heading-3}{Heading-3}
+\NewConfigureOO{Heading-3}
+\ConfigureOO{Heading-3}{\Hnewline
+<style:style style:name="Heading-3"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-3-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  style:font-size-asian="14pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="14pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-4}{1}
+\Configure{Heading-4}{Heading-4}
+\NewConfigureOO{Heading-4}
+\ConfigureOO{Heading-4}{\Hnewline
+<style:style style:name="Heading-4"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+/>
+</style:style>
+\Hnewline  <style:style style:name="Heading-4-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="12pt"
+                  fo:font-weight="bold"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  style:font-size-complex="85\%"
+                  style:font-style-complex="italic"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb"
+/>
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-5}{1}
+\Configure{Heading-5}{Heading-5}
+\NewConfigureOO{Heading-5}
+\ConfigureOO{Heading-5}{\Hnewline
+<style:style style:name="Heading-5"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-5-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-left="0cm"
+                  fo:margin-right="0cm"
+                  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0cm"
+                  fo:font-size="12pt"
+                  fo:font-style="italic"
+                  fo:font-weight="normal"
+                  style:font-size-complex="85\%"
+                  style:font-weight-complex="bold"
+                  fo:text-indent="0cm"
+                  style:auto-text-indent="false"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-6}{1}
+\Configure{Heading-6}{Heading-6}
+\NewConfigureOO{Heading-6}
+\ConfigureOO{Heading-6}{\Hnewline
+<style:style style:name="Heading-6"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-6-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-7}{1}
+\Configure{Heading-7}{Heading-7}
+\NewConfigureOO{Heading-7}
+\ConfigureOO{Heading-7}{\Hnewline
+<style:style style:name="Heading-7"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-7-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-8}{1}
+\Configure{Heading-8}{Heading-8}
+\NewConfigureOO{Heading-8}
+\ConfigureOO{Heading-8}{\Hnewline
+<style:style style:name="Heading-8"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-8-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-9}{1}
+\Configure{Heading-9}{Heading-9}
+\NewConfigureOO{Heading-9}
+\ConfigureOO{Heading-9}{\Hnewline
+<style:style style:name="Heading-9"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-9-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"
+                  fo:text-align="end"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style>
+\Hnewline
+}
+\NewConfigure{Heading-10}{1}
+\Configure{Heading-10}{Heading-10}
+\NewConfigureOO{Heading-10}
+\ConfigureOO{Heading-10}{\Hnewline
+<style:style style:name="Heading-10"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading"
+                  style:next-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline <style:style style:name="Heading-10-rtl"
+                  style:family="paragraph"
+                  style:parent-style-name="Heading-rtl"
+                  style:next-style-name="Text-body-rtl"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:font-size="75\%"
+                  fo:font-weight="bold"
+                  style:font-size-asian="75\%"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="75\%"
+                  style:font-weight-complex="bold"/>
+</style:style>
+\Hnewline
+}
+
+\Configure{caption}
+   {\ht:everypar{\HtmlPar}%
+    \ifvmode \EndP \par\ShowPar\else \HCode{<text:line-break/>}\fi
+    \HCode{\Hnewline  <text:span text:style-name="caption" >%
+           <text:span text:style-name="caption-title" >}}
+   {: }
+   {\HCode{</text:span>}}
+   {\HCode{</text:span>}}
+\OOstyles{%
+  <style:style style:name="caption-title" style:family="text">\Hnewline
+     <style:text-properties fo:font-style="normal"
+                       fo:font-weight="bold"/>\Hnewline
+  </style:style>\Hnewline
+}
+
+\Configure{theindex}
+   {\ifvmode\IgnorePar\fi
+    \EndP\HCode{<text:alphabetical-index text:name="theindex"  >
+      <text:alphabetical-index-source
+       text:sort-algorithm="alphanumeric"  >\Hnewline
+   <text:index-title-template
+                text:style-name="Index-Heading"  >\indexname
+   </text:index-title-template>\Hnewline
+   <text:alphabetical-index-entry-template
+       text:outline-level="1"
+       text:style-name="Index-1"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+      />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="2"
+       text:style-name="Index-2"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+<text:alphabetical-index-entry-template
+       text:outline-level="3"
+       text:style-name="Index-3"  >\Hnewline
+  <text:index-entry-text/>\Hnewline
+  <text:index-entry-tab-stop
+     style:type="left"
+     style:position="0in"
+     style:leader-char=" "
+       />\Hnewline
+  <text:index-entry-page-number/>\Hnewline
+</text:alphabetical-index-entry-template>\Hnewline
+\Hnewline
+</text:alphabetical-index-source>\Hnewline
+%
+      <text:index-body>\Hnewline}%
+    \csname put:IndexTitle\endcsname
+   }
+   {\HCode{</text:index-body></text:alphabetical-index>}}
+   {\HCode{<text:p text:style-name="P6"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P7"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {\HCode{<text:p text:style-name="P8"  >}}
+      {\HCode{<text:tab-stop/></text:p>}\hfill\break}
+   {}
+\Configure{LNK}{\oo:LNK}{\EndLink}{}
+\Odef\oo:LNK[#1]#2#3{\Link{#2}{#3}}
+
+\Configure{@begin}{theindex}{\ifx \indexname\empty \else
+    \def\put:IndexTitle{\HCode{<text:index-title
+   text:style-name="Sect1"
+   text:name="Alphabetical_Index1_Head"
+     ><text:p
+   text:style-name="Index-Heading"  >}\indexname
+\HCode{</text:p></text:index-title>\Hnewline}
+}\fi}
+
+\Configure{listoffigures}
+   {\let\contentsname\listfigurename \let\listfigurename\empty}
+   {}
+\Configure{listoftables}
+   {\let\contentsname\listtablename \let\listtablename\empty}
+   {}
+\ConfigureToc{lof}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+\ConfigureToc{lot}
+  {\HCode{<text:p><text:span text:style-name="toc-mark"
+                              >}}{\ }{}%
+                     {\HCode{</text:span></text:p>}}
+
+{\Configure{Needs}{Font\string_Size: #1}\ifcase  \@ptsize
+   \or \Needs{11}\or \Needs{12}\else \fi}
+
+\Configure{@begin}{theindex}{\section*{\indexname}}
+
+\ConfigureMark{chapter}
+   {\ifHeadingNumbered \mw@seccntformat\HeadingNumber\fi}
+\ConfigureMark{section}
+{\ifHeadingNumbered\@seccntformat{section}\fi}
+\ConfigureMark{subsection}
+{\ifHeadingNumbered\@seccntformat{subsection}\fi}
+\ConfigureMark{subsubsection}
+{\ifHeadingNumbered\@seccntformat{subsubsection}\fi}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -8639,6 +12767,9 @@ Y{0178}\i{00EF}%
 
 
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{verse}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8768,7 +12899,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -13431,6 +17561,10 @@ Y{0178}\i{00EF}%
 
 
 
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slides}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13716,7 +17850,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pstricks}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13740,6 +17873,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pst-all}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13752,6 +17886,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -14028,6 +18163,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14133,7 +18269,6 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{linguex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14216,6 +18351,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{covington}
@@ -14486,7 +18622,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ulem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14551,7 +18686,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14848,6 +18982,7 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{listings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14971,7 +19106,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{lineno}
@@ -15107,7 +19241,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{soul}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -15194,6 +19327,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 

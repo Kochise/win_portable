@@ -1,4 +1,4 @@
-% docbook.4ht (2019-07-06-14:23), generated from tex4ht-docbook.tex
+% docbook.4ht (2020-06-23-13:57), generated from tex4ht-docbook.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 2000-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-07-06-14:23}
+\immediate\write-1{version 2020-06-23-13:57}
 
 \exit:ifnot{Preamble,% 
 algorithmic,% 
@@ -29,6 +29,7 @@ amsthm,%
 array,% 
 article,% 
 beamer,% 
+biblatex,% 
 book,% 
 color,% 
 dcolumn,% 
@@ -108,8 +109,7 @@ texinfo}
 \Configure{BODY}{}{}
 \Configure{TITLE+} {}
 \ifx \a:TITLE\:UnDef
-   \Configure{TITLE}{\Protect\IgnorePar
-      \HCode{<title>}}{\HCode{</title>\Hnewline}}
+\Configure{TITLE}{}{}
 \fi
 
 \Configure{HtmlPar}
@@ -258,6 +258,18 @@ switches of tex4ht.c)
    \fi
 }
 
+\ifx\InputIfFileExists\UnDef%
+\def\input:if:fileexists#1#2#3{%
+   \openin15 #1.4ht%
+   \ifeof15%
+   #3%
+   \else%
+   \input #1%
+   \fi\closein15%
+}%
+\else
+\let\input:if:fileexists\InputIfFileExists%
+\fi%
 \Hinclude{\input #1.4ht}{fontmath}
 \Hinclude{\@ifpackageloaded{colortbl}{%
       \no:dupl{array}{\input  array.4ht}%
@@ -271,16 +283,13 @@ switches of tex4ht.c)
    \else
       \let\:temp\empty
       \no:dupl{#1}{%
-         \openin15 #1.4ht
-         \ifeof15
-            \:CheckOption{debug}\if:Option
-               \:warning{No configuration file for
-                   #1.\if .#2.tex\else #2\fi}%
-            \fi
-            \let\:temp\empty
-         \else
-            \def\:temp{\input #1.4ht }%
-         \fi   \closein15
+        \def\:warn:msg{}
+        \:CheckOption{debug}\if:Option
+          \def\:warn:msg{%
+            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+          }
+        \fi%
+        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -759,7 +768,7 @@ switches of tex4ht.c)
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -791,14 +800,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 
 \Configure{part}
@@ -1073,7 +1082,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -1104,14 +1113,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP\HCode{<abstract>}}
@@ -1392,7 +1401,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -1424,14 +1433,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP\HCode{<abstract>}}
@@ -1687,14 +1696,13 @@ version="5.0"                                                \Hnewline
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsart}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -1971,7 +1979,7 @@ version="5.0"                                                \Hnewline
     \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -2247,7 +2255,7 @@ version="5.0"                                                \Hnewline
     \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -2680,7 +2688,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -2723,7 +2731,46 @@ version="5.0"                                                \Hnewline
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{biblatex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        \def\bibConfigure{%
+  \ConfigureList{thebibliography}
+  {\ifvmode \IgnorePar \fi \EndP \EndP
+    \HCode {<bibliolist>}%
+%
+% This is for linking citations with biblist items which
+% are in a different file when output is split into different
+% chunks. [CVR 2012-09-27]
+%
+%
+% <biblatex-2.2>
+%
+  \immediate\write\@auxout{%
+      \string\BibFileName[\therefsection]{\FileName}}%
+%
+% </biblatex-2.2>
+%
+    \PushMacro \end:itm \global \let \end:itm =\empty}%
+  {\ifvmode \IgnorePar \fi \EndP
+    \PopMacro \end:itm \global \let \end:itm \end:itm \EndP
+    \HCode {</bibliomisc></bibliomixed></bibliolist>}\ShowPar}%
+  {\ifvmode \IgnorePar \fi \EndP \gHAdvance \bibN by 1
+    \end:itm \global \def \end:itm {\EndP \HCode{</bibliomisc></bibliomixed>}}%
+    \HCode {<bibliomixed xml:id="X\therefsection-\abx@field@entrykey"><bibliomisc>}\bgroup \bf}%
+  {\ifvmode \IgnorePar \fi \EndP
+    \egroup
+    \HCode {</bibliomisc><bibliomisc\Hnewline xml:id="bib-\bibN">}%
+    \par \ShowPar}%
+ }
 
+\def\hyper:natanchorstart#1{\Link{}{#1}\EndLink}%
+\def\hyper:natlinkstart#1{\Link{#1}{}}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -2947,6 +2994,7 @@ version="5.0"                                                \Hnewline
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{index}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3010,7 +3058,6 @@ version="5.0"                                                \Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{multind}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3073,6 +3120,8 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -3182,7 +3231,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -3214,14 +3263,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 
 \Configure{part}
@@ -3935,7 +3984,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -3967,14 +4016,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 
 \ConfigureEnv{titlepage}
@@ -4316,7 +4365,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -4348,14 +4397,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP\HCode{<abstract>}}
@@ -4620,7 +4669,7 @@ version="5.0"                                                \Hnewline
 \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -4651,14 +4700,14 @@ version="5.0"                                                \Hnewline
  >\Hnewline }}
 
 \Configure{maketitle}
-   {\HCode{<para role="maketitle">}}
-   {\HCode{</para>}}
-   {\HCode{<note role="title"><para>}}{\HCode{</para></note>}}
+   {\HCode{<info role="maketitle">}}
+   {\HCode{</info>}}
+   {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
-   {\HCode{<note role="author"><para><personname><othername>}}
-   {\HCode{</othername></personname></para></note>}}
-   {\HCode{<note role="date"><para>}}
-   {\HCode{</para></note>}}
+   {\HCode{<author><personname><othername>}}
+   {\HCode{</othername></personname></author>}}
+   {\HCode{<date>}}
+   {\HCode{</date>}}
    {}{}
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP\HCode{<abstract>}}
@@ -4937,6 +4986,8 @@ version="5.0"                                                \Hnewline
 
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{prosper}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4955,13 +5006,14 @@ version="5.0"                                                \Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{beamer}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \def\:gobbleM#1->{}
 \Configure{BODY}
    {\HCode{\Hnewline<!--translated from \jobname.tex
-     \Hnewline by TeX4ht  (http://tug.org/tex4ht/)
+     \Hnewline by TeX4ht  (https://tug.org/tex4ht/)
      \expandafter\:gobbleM\meaning\Preamble\space-->\Hnewline}
 \:CheckOption{-xtpipes} \if:Option
    \Log:Note{Use the `-xtpipes' command line option to
@@ -5209,6 +5261,7 @@ version="5.0"                                                \Hnewline
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pgf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5221,6 +5274,7 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -5278,6 +5332,8 @@ version="5.0"                                                \Hnewline
 
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{algorithmic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5302,8 +5358,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 

@@ -9,7 +9,7 @@
 %% This is a generated file.
 %% 
 %% Project: zref
-%% Version: 2020-05-28 v2.31
+%% Version: 2020-07-03 v2.32
 %% 
 %% Copyright (C)
 %%   2006-2012 Heiko Oberdiek
@@ -48,7 +48,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{zref-pagelayout}%
-  [2020-05-28 v2.31 Module pagelayout for zref (HO)]%
+  [2020-07-03 v2.32 Module pagelayout for zref (HO)]%
 \RequirePackage{zref-base}[2019/11/29]
 \ifx\ZREF@base@ok Y%
 \else
@@ -121,9 +121,17 @@
 \ZREF@temp\trimtop % memoir.cls
 \ZREF@temp\uppermargin % memoir.cls
 \ZREF@temp\headmargin % memoir.cls
-\zref@newprop*{outputboxwd}[0pt]{\AtBeginShipoutBoxWidth}
-\zref@newprop*{outputboxht}[0pt]{\AtBeginShipoutBoxHeight}
-\zref@newprop*{outputboxdp}[0pt]{\AtBeginShipoutBoxDepth}
+\IfFormatAtLeastTF{2020/10/01}
+ {
+   \zref@newprop*{outputboxwd}[0pt]{\ShipoutBoxWidth}
+   \zref@newprop*{outputboxht}[0pt]{\ShipoutBoxHeight}
+   \zref@newprop*{outputboxdp}[0pt]{\ShipoutBoxDepth}
+ }
+ {
+   \zref@newprop*{outputboxwd}[0pt]{\AtBeginShipoutBoxWidth}
+   \zref@newprop*{outputboxht}[0pt]{\AtBeginShipoutBoxHeight}
+   \zref@newprop*{outputboxdp}[0pt]{\AtBeginShipoutBoxDepth}
+ }
 \zref@addprops{thepage}{outputboxwd,outputboxht,outputboxdp}
 \ltx@newif\ifZREF@pl@list
 \ZREF@IfDefinable\zlistpagelayout\def{%

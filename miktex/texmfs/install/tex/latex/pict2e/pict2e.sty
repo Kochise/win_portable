@@ -24,7 +24,7 @@
 %% This work consists of all files listed in `manifest.txt'.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2020/08/16 v0.4a Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2020/09/30 v0.4b Improved picture commands (HjG,RN,JT)]
 \edef\Gin@codes{%
  \catcode`\noexpand\^^A\the\catcode`\^^A\relax
  \catcode`\noexpand\"\the\catcode`\"\relax
@@ -494,10 +494,10 @@
     \def\@circle#1{\begingroup \@tempswafalse\pIIe@circ{#1}}
     \def\@dot#1{\begingroup \@tempswatrue\pIIe@circ{#1}}
   \newcommand*\pIIe@circ[1]{%
-      \@defaultunitsset\@tempdima{#1}\unitlength
-      \ifdim\@tempdima<\z@ \pIIe@badcircarg \fi
-      \divide\@tempdima\tw@
-      \pIIe@circle\@tempdima
+      \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+      \ifdim\pIIe@tempdima<\z@ \pIIe@badcircarg \fi
+      \divide\pIIe@tempdima\tw@
+      \pIIe@circle\pIIe@tempdima
       \if@tempswa \pIIe@fillGraph \else \buttcap \pIIe@strokeGraph \fi
     \endgroup}
   \newcommand*\pIIe@circle[1]{%
@@ -527,8 +527,8 @@
       {The radius of a circle, dot, arc or oval corner must be greater than zero.}}%
   \newcommand*\maxovalrad{20pt}
   \newcommand*\pIIe@defaultUL[2]{%
-    \@defaultunitsset\dimen@{#2}\unitlength
-    \edef#1{\the\dimen@}}
+    \@defaultunitsset\pIIe@tempdima{#2}\unitlength
+    \edef#1{\the\pIIe@tempdima}}
   \newcommand*\pIIe@def@UL{}
   \def\pIIe@def@UL#1\relax#2#3{%
     \edef#2{\the\dimen@}}
@@ -540,23 +540,28 @@
       \ifdim\pIIe@maxovalrad<\z@ \pIIe@badcircarg \fi
       \pIIe@oval}
   \def\@oval(#1,#2)[#3]{%
-    \@defaultunitsset\@ovxx{#1}\unitlength \divide\@ovxx\tw@
-    \@defaultunitsset\@ovyy{#2}\unitlength \divide\@ovyy\tw@
-    \@tempdimc \ifdim\@ovyy>\@ovxx \@ovxx \else \@ovyy \fi
-    \ifdim\pIIe@maxovalrad<\@tempdimc \@tempdimc\pIIe@maxovalrad\relax \fi
-    \@xdim\@ovxx \advance\@xdim-\@tempdimc
-    \@ydim\@ovyy \advance\@ydim-\@tempdimc
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength \divide\pIIe@tempdima\tw@
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength \divide\pIIe@tempdimb\tw@
+    \pIIe@tempdimc \ifdim\pIIe@tempdimb>\pIIe@tempdima \pIIe@tempdima \else \pIIe@tempdimb \fi
+    \ifdim\pIIe@maxovalrad<\pIIe@tempdimc \pIIe@tempdimc\pIIe@maxovalrad\relax \fi
+    \pIIe@tempdimd\pIIe@tempdima \advance\pIIe@tempdimd-\pIIe@tempdimc
+    \pIIe@tempdime\pIIe@tempdimb \advance\pIIe@tempdime-\pIIe@tempdimc
     \pIIe@get@quadrants{#3}%
     \ifnum15=\@tempcnta \pIIe@buttcap \fi
     \@tempswatrue
     \ifnum9=\@tempcnta
-      \pIIe@qoval\z@{-\@ovyy}{\@xdim}{-\@ovyy}\thr@@\@tempdimc\@ovxx\z@
+      \pIIe@qoval\z@{-\pIIe@tempdimb}{\pIIe@tempdimd}{-\pIIe@tempdimb}%
+        \thr@@\pIIe@tempdimc\pIIe@tempdima\z@
       \@tempcnta\@ne
     \fi
-    \pIIe@qoval\@ovxx\z@\@ovxx\@ydim\z@\@tempdimc\z@\@ovyy
-    \pIIe@qoval\z@\@ovyy{-\@xdim}\@ovyy\@ne\@tempdimc{-\@ovxx}\z@
-    \pIIe@qoval{-\@ovxx}\z@{-\@ovxx}{-\@ydim}\tw@\@tempdimc\z@{-\@ovyy}%
-    \pIIe@qoval\z@{-\@ovyy}{\@xdim}{-\@ovyy}\thr@@\@tempdimc\@ovxx\z@
+    \pIIe@qoval\pIIe@tempdima\z@\pIIe@tempdima\pIIe@tempdime%
+      \z@\pIIe@tempdimc\z@\pIIe@tempdimb
+    \pIIe@qoval\z@\pIIe@tempdimb{-\pIIe@tempdimd}\pIIe@tempdimb%
+      \@ne\pIIe@tempdimc{-\pIIe@tempdima}\z@
+    \pIIe@qoval{-\pIIe@tempdima}\z@{-\pIIe@tempdima}{-\pIIe@tempdime}%
+      \tw@\pIIe@tempdimc\z@{-\pIIe@tempdimb}%
+    \pIIe@qoval\z@{-\pIIe@tempdimb}{\pIIe@tempdimd}{-\pIIe@tempdimb}%
+      \thr@@\pIIe@tempdimc\pIIe@tempdima\z@
     \pIIe@strokeGraph
     \endgroup}
   \newcommand*\pIIe@qoval[8]{%
@@ -577,18 +582,18 @@
     \ifnum #1=\z@
       \@killglue
       \begingroup
-      \@defaultunitsset\@ovxx{#2}\unitlength
-      \@defaultunitsset\@ovyy{#3}\unitlength
-      \@defaultunitsset\@ovdx{#4}\unitlength
-      \@defaultunitsset\@ovdy{#5}\unitlength
-      \@defaultunitsset\@xdim{#6}\unitlength
-      \@defaultunitsset\@ydim{#7}\unitlength
-      \pIIe@bezier@QtoC\@ovxx\@ovdx\@ovro
-      \pIIe@bezier@QtoC\@ovyy\@ovdy\@ovri
-      \pIIe@bezier@QtoC\@xdim\@ovdx\@clnwd
-      \pIIe@bezier@QtoC\@ydim\@ovdy\@clnht
-      \pIIe@moveto\@ovxx\@ovyy
-      \pIIe@curveto\@ovro\@ovri\@clnwd\@clnht\@xdim\@ydim
+      \@defaultunitsset\pIIe@tempdima{#2}\unitlength
+      \@defaultunitsset\pIIe@tempdimb{#3}\unitlength
+      \@defaultunitsset\pIIe@tempdimc{#4}\unitlength
+      \@defaultunitsset\pIIe@tempdimd{#5}\unitlength
+      \@defaultunitsset\pIIe@tempdime{#6}\unitlength
+      \@defaultunitsset\pIIe@tempdimf{#7}\unitlength
+      \pIIe@bezier@QtoC\pIIe@tempdima\pIIe@tempdimc\@ovro
+      \pIIe@bezier@QtoC\pIIe@tempdimb\pIIe@tempdimd\@ovri
+      \pIIe@bezier@QtoC\pIIe@tempdime\pIIe@tempdimc\@clnwd
+      \pIIe@bezier@QtoC\pIIe@tempdimf\pIIe@tempdimd\@clnht
+      \pIIe@moveto\pIIe@tempdima\pIIe@tempdimb
+      \pIIe@curveto\@ovro\@ovri\@clnwd\@clnht\pIIe@tempdime\pIIe@tempdimf
       \pIIe@strokeGraph
       \endgroup
       \ignorespaces
@@ -601,7 +606,12 @@
     #3\@tempdimc}
   \ifx\undefined\@arclen \newdimen\@arclen \fi
   \ifx\undefined\@arcrad \newdimen\@arcrad \fi
-  \ifx\undefined\@tempdimd \newdimen\@tempdimd \fi
+  \ifx\undefined\pIIe@tempdima \newdimen\pIIe@tempdima \fi
+  \ifx\undefined\pIIe@tempdimb \newdimen\pIIe@tempdimb \fi
+  \ifx\undefined\pIIe@tempdimc \newdimen\pIIe@tempdimc \fi
+  \ifx\undefined\pIIe@tempdimd \newdimen\pIIe@tempdimd \fi
+  \ifx\undefined\pIIe@tempdime \newdimen\pIIe@tempdime \fi
+  \ifx\undefined\pIIe@tempdimf \newdimen\pIIe@tempdimf \fi
   \newcommand*\pIIe@arc[6][0]{%
     \@arcrad #4\relax
     \ifdim \@arcrad<\z@ \pIIe@badcircarg \else
@@ -648,8 +658,8 @@
       \@tempdima \UseCos{#6}\@arcrad \advance\@tempdima #2\relax
       \@tempdimb \UseSin{#6}\@arcrad \advance\@tempdimb #3\relax
       \@tempdimc \UseSin{#6}\@linelen \advance\@tempdimc \@tempdima
-      \@tempdimd-\UseCos{#6}\@linelen \advance\@tempdimd \@tempdimb
-      \pIIe@add@nums\@tempdimc\@tempdimd
+      \pIIe@tempdimd-\UseCos{#6}\@linelen \advance\pIIe@tempdimd \@tempdimb
+      \pIIe@add@nums\@tempdimc\pIIe@tempdimd
       \pIIe@add@CP\@tempdima\@tempdimb
       \pIIe@addtoGraph\pIIe@curveto@op
     \fi
@@ -658,14 +668,13 @@
     {\@ifstar{\@tempswatrue\pIIe@arc@}{\@tempswafalse\pIIe@arc@}}
   \newcommand*\pIIe@arc@[2][0,360]{\pIIe@arc@@(#1){#2}}
   \def\pIIe@arc@@(#1,#2)#3{%
+    \@defaultunitsset\pIIe@tempdima{#3}\unitlength
     \if@tempswa
       \pIIe@moveto\z@\z@
-      \@defaultunitsset\@tempdimc{#3}\unitlength
-      \pIIe@arc{\z@}{\z@}{\@tempdimc}{#1}{#2}%
+      \pIIe@arc{\z@}{\z@}{\pIIe@tempdima}{#1}{#2}%
       \pIIe@closepath\pIIe@fillGraph
     \else
-      \@defaultunitsset\@tempdimc{#3}\unitlength
-      \pIIe@arc[1]{\z@}{\z@}{\@tempdimc}{#1}{#2}%
+      \pIIe@arc[1]{\z@}{\z@}{\pIIe@tempdima}{#1}{#2}%
       \pIIe@strokeGraph
     \fi}
   \ifx\undefined\arc
@@ -677,16 +686,16 @@
   \def\Line(#1,#2)(#3,#4){\polyline(#1,#2)(#3,#4)}
   \def\polyline(#1,#2){%
     \@killglue
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@moveto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \@ifnextchar\lp@r{\@polyline}{\PackageWarning{pict2e}%
       {Polygonal lines require at least two vertices!}%
     \ignorespaces}}
   \def\@polyline(#1,#2){%
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@lineto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \@ifnextchar\lp@r{\@polyline}{\pIIe@strokeGraph\ignorespaces}}
   \def\Vector(#1,#2)(#3,#4){\polyvector(#1,#2)(#3,#4)}
   \def\polyvector(#1,#2){%
@@ -695,20 +704,20 @@
       \PackageWarning{pict2e}%
       {Polygonal vectors require at least two vertices!}\ignorespaces}}
   \def\@polyvector(#1,#2)(#3,#4){%
-    \@defaultunitsset\@xdim{#1}\unitlength
-    \@defaultunitsset\@tempdima{#3}\unitlength
-    \@defaultunitsset\@ydim{#2}\unitlength
-    \@defaultunitsset\@tempdimb{#4}\unitlength
-    \advance\@tempdima-\@xdim \advance\@tempdimb-\@ydim
-    \ifdim\@tempdima=\z@ \@linelen\@tempdimb \else
-      \ifdim\@tempdimb=\z@ \@linelen\@tempdima \else
-        \pIIe@pyth\@tempdima\@tempdimb\@linelen
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \@defaultunitsset\pIIe@tempdimc{#3}\unitlength
+    \@defaultunitsset\pIIe@tempdimd{#4}\unitlength
+    \advance\pIIe@tempdimc-\pIIe@tempdima \advance\pIIe@tempdimd-\pIIe@tempdimb
+    \ifdim\pIIe@tempdimc=\z@ \@linelen\pIIe@tempdimd \else
+      \ifdim\pIIe@tempdimd=\z@ \@linelen\pIIe@tempdimc \else
+        \pIIe@pyth\pIIe@tempdimc\pIIe@tempdimd\@linelen
       \fi
     \fi
     \ifdim\@linelen<\z@ \@linelen-\@linelen\fi
-    \pIIe@divide{\@tempdima}\@linelen\@ovxx
-    \pIIe@divide{\@tempdimb}\@linelen\@ovyy
-    \pIIe@concat\@ovxx\@ovyy{-\@ovyy}\@ovxx\@xdim\@ydim
+    \pIIe@divide{\pIIe@tempdimc}\@linelen\pIIe@tempdime
+    \pIIe@divide{\pIIe@tempdimd}\@linelen\pIIe@tempdimf
+    \pIIe@concat\pIIe@tempdime\pIIe@tempdimf{-\pIIe@tempdimf}\pIIe@tempdime\pIIe@tempdima\pIIe@tempdimb
     \pIIe@vector \pIIe@fillGraph
     \@ifnextchar\lp@r{\@polyvector(#3,#4)}{\endgroup\ignorespaces}}
   \def\polygon{%
@@ -716,49 +725,49 @@
     \@ifstar{\begingroup\@tempswatrue\@polygon}%
       {\begingroup\@tempswafalse\@polygon}}
   \def\@polygon(#1,#2){%
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@moveto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \@ifnextchar\lp@r{\@@polygon}{\PackageWarning{pict2e}%
       {Polygons require at least two vertices!}%
     \ignorespaces}}
   \def\@@polygon(#1,#2){%
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@lineto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \@ifnextchar\lp@r{\@@polygon}{\pIIe@closepath
       \if@tempswa\pIIe@fillGraph\else\pIIe@strokeGraph\fi
       \endgroup
       \ignorespaces}}
   \def\moveto(#1,#2){%
     \@killglue
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@moveto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \ignorespaces}
   \def\lineto(#1,#2){%
     \@killglue
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \pIIe@lineto{\pIIe@tempdima}{\pIIe@tempdimb}%
     \ignorespaces}
   \def\curveto(#1,#2)(#3,#4)(#5,#6){%
     \@killglue
-    \@defaultunitsset\@tempdimc{#1}\unitlength
-    \@defaultunitsset\@tempdimb{#2}\unitlength
-    \@defaultunitsset\@tempdima{#3}\unitlength
-    \@defaultunitsset\dimen@{#4}\unitlength
-    \@defaultunitsset\@ovxx{#5}\unitlength
-    \@defaultunitsset\@ovyy{#6}\unitlength
-    \pIIe@curveto{\@tempdimc}{\@tempdimb}{\@tempdima}{\dimen@}%
-      {\@ovxx}{\@ovyy}%
+    \@defaultunitsset\pIIe@tempdima{#1}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#2}\unitlength
+    \@defaultunitsset\pIIe@tempdimc{#3}\unitlength
+    \@defaultunitsset\pIIe@tempdimd{#4}\unitlength
+    \@defaultunitsset\pIIe@tempdime{#5}\unitlength
+    \@defaultunitsset\pIIe@tempdimf{#6}\unitlength
+    \pIIe@curveto{\pIIe@tempdima}{\pIIe@tempdimb}{\pIIe@tempdimc}%
+      {\pIIe@tempdimd}{\pIIe@tempdime}{\pIIe@tempdimf}%
     \ignorespaces}
   \newcommand*\circlearc[6][0]{%
     \@killglue
-    \@defaultunitsset\@tempdimc{#2}\unitlength
-    \@defaultunitsset\@tempdimb{#3}\unitlength
-    \@defaultunitsset\@tempdima{#4}\unitlength
-    \pIIe@arc[#1]{\@tempdimc}{\@tempdimb}{\@tempdima}{#5}{#6}%
+    \@defaultunitsset\pIIe@tempdima{#2}\unitlength
+    \@defaultunitsset\pIIe@tempdimb{#3}\unitlength
+    \@defaultunitsset\pIIe@tempdimc{#4}\unitlength
+    \pIIe@arc[#1]{\pIIe@tempdima}{\pIIe@tempdimb}{\pIIe@tempdimc}{#5}{#6}%
     \ignorespaces}
   \def\closepath{\pIIe@closepath}
   \def\strokepath{\pIIe@strokeGraph}
@@ -785,17 +794,17 @@
     \def\pIIe@@cbezier#1)#2(#3)#4(#5)#6({\@cbezier#1)(#3)(#5)(}%
     \def\@cbezier[#1](#2,#3)(#4,#5)(#6,#7)(#8,#9){%
       \@killglue
-      \@defaultunitsset\@tempdimc{#2}\unitlength
-      \@defaultunitsset\@tempdimb{#3}\unitlength
-      \pIIe@moveto{\@tempdimc}{\@tempdimb}%
-      \@defaultunitsset\@tempdimc{#4}\unitlength
-      \@defaultunitsset\@tempdimb{#5}\unitlength
-      \@defaultunitsset\@tempdima{#6}\unitlength
-      \@defaultunitsset\dimen@{#7}\unitlength
-      \@defaultunitsset\@ovxx{#8}\unitlength
-      \@defaultunitsset\@ovyy{#9}\unitlength
-      \pIIe@curveto{\@tempdimc}{\@tempdimb}%
-        {\@tempdima}{\dimen@}{\@ovxx}{\@ovyy}%
+      \@defaultunitsset\pIIe@tempdima{#2}\unitlength
+      \@defaultunitsset\pIIe@tempdimb{#3}\unitlength
+      \pIIe@moveto{\pIIe@tempdima}{\pIIe@tempdimb}%
+      \@defaultunitsset\pIIe@tempdima{#4}\unitlength
+      \@defaultunitsset\pIIe@tempdimb{#5}\unitlength
+      \@defaultunitsset\pIIe@tempdimc{#6}\unitlength
+      \@defaultunitsset\pIIe@tempdimd{#7}\unitlength
+      \@defaultunitsset\pIIe@tempdime{#8}\unitlength
+      \@defaultunitsset\pIIe@tempdimf{#9}\unitlength
+      \pIIe@curveto{\pIIe@tempdima}{\pIIe@tempdimb}{\pIIe@tempdimc}%
+        {\pIIe@tempdimd}{\pIIe@tempdime}{\pIIe@tempdimf}%
       \pIIe@strokeGraph
       \ignorespaces}%
   }

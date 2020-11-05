@@ -38,50 +38,42 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{subcaption}[2020/08/23 v1.3g Sub-captions (AR)]
-\RequirePackage{caption}[2020/08/23] % needs v3.5 or newer
+\ProvidesPackage{subcaption}[2020/10/07 v1.3j Sub-captions (AR)]
+\RequirePackage{caption}[2020/09/28] % needs v3.5c or newer
+\newcommand*\subcaption@Error[1]{%
+  \PackageError{subcaption}{#1}{\caption@@eh{subcaption}}}
 \newcommand*\subcaption@CheckCompatibility{%
   \caption@ifcompatibility{%
-    \PackageError{subcaption}%
+    \subcaption@Error
       {This package does not work with\MessageBreak
        caption option `compatibility=v1'}%
-      {\subcaption@eh}%
     \endinput}{}%
   \@ifpackageloaded{subfigure}{%
-    \PackageError{subcaption}%
+    \subcaption@Error
       {This package can't be used in cooperation\MessageBreak
        with the subfigure package}%
-      {\subcaption@eh}%
     \endinput}{}%
   \@ifpackageloaded{subfig}{%
-    \PackageError{subcaption}%
+    \subcaption@Error
       {This package can't be used in cooperation\MessageBreak
        with the subfig package}%
-      {\subcaption@eh}%
     \endinput}{}%
 }
-\newcommand*\subcaption@eh{%
-  If you do not understand this error, please take a closer look\MessageBreak
-  at the documentation of the `subcaption' package, especially the\MessageBreak
-  section about errors.\MessageBreak\@ehc}
 \subcaption@CheckCompatibility
 \caption@AtBeginDocument{%
   \subcaption@CheckCompatibility
   \let\subcaption@CheckCompatibility\@undefined}
-\ForEachCaptionType{\DeclareCaptionSubType{#1}}
-\caption@ifundefined\newsubfloat{}{%
-  \renewcommand*\newsubfloat{\DeclareCaptionSubType}}
 \def\subcaption{%
   \caption@iftype
     {\setcaptionsubtype*\caption}%
-    {\caption@Error{\noexpand\subcaption outside float}%
+    {\subcaption@Error{\noexpand\subcaption outside float}%
      \caption@gobble}}%
 \g@addto@macro\caption@subtypehook{%
   \let\subcaption\caption}
 \newcommand*\phantomsubcaption{%
   \caption@iftype
     {\setcaptionsubtype*\phantomcaption}%
-    {\caption@Error{\noexpand\phantomsubcaption outside float}}}%
+    {\subcaption@Error{\noexpand\phantomsubcaption outside float}}}%
 \g@addto@macro\caption@subtypehook{%
   \let\phantomsubcaption\phantomcaption}
 \ForEachCaptionSubType{%
@@ -140,25 +132,32 @@
 \DeclareCaptionOption{subrefformat}{\subcaption@setrefformat{#1}}
 \newcommand*\subcaption@setrefformat[1]{%
   \@ifundefined{caption@labelformat@#1}%
-    {\caption@Error{Undefined label format `#1'}}%
+    {\subcaption@Error{Undefined label format `#1'}}%
     {\expandafter\let\expandafter\subcaption@reffmt\csname caption@labelformat@#1\endcsname}}
 \subcaption@setrefformat{simple}
+\DeclareCaptionLabelFormat{subsimple}{#2}
+\DeclareCaptionLabelFormat{subparens}{(#2)}
 \caption@SetupOptions{subcaption}{\captionsetup[sub]{#2}}%
 \caption@ExecuteOptions{subcaption}{%
   font+=smaller,labelformat=parens,labelsep=space,skip=6pt,list=0,hypcap=0}
 \caption@ProcessOptions*{subcaption}
-\def\subfloat{%
-  \@ifnextchar[\@subfloat\subfloat@}
-\long\def\@subfloat[#1]{%
-  \@ifnextchar[{\@@subfloat{#1}}{\@@@subfloat\subcaptionbox{#1}}}
-\long\def\@@subfloat#1[#2]{%
-  \@@@subfloat{\subcaptionbox[{#1}]}{#2}}
-\long\def\@@@subfloat#1#2#3{%
+\ForEachCaptionType{\DeclareCaptionSubType{#1}}
+\caption@AtBeginDocument{\providecommand*\subfloat{%
+  \@ifnextchar[%]
+    \subcaption@subfloat
+    \subcaption@subfloat@}}
+\long\def\subcaption@subfloat[#1]{%
+  \@ifnextchar[%]
+    {\subcaption@@subfloat{#1}}%
+    {\subcaption@@@subfloat\subcaptionbox{#1}}}
+\long\def\subcaption@@subfloat#1[#2]{%
+  \subcaption@@@subfloat{\subcaptionbox[{#1}]}{#2}}
+\long\def\subcaption@@@subfloat#1#2#3{%
   \caption@getlabel{#3}%
   #1{#2\caption@thelabel}{\let\label\caption@gobble#3}%
   \global\let\caption@thelabel\relax
   \ignorespaces}
-\def\subfloat@#1{%
+\def\subcaption@subfloat@#1{%
   \setbox\@tempboxa\hbox{#1}%
   \caption@iiiibox
     \setcaptionsubtype

@@ -1,4 +1,4 @@
-% mathjax-latex-4ht.sty (2019-05-14-15:32), generated from tex4ht-mathjax.tex
+% mathjax-latex-4ht.sty (2020-09-13-14:20), generated from tex4ht-mathjax.tex
 % Copyright 2018-2019 TeX Users Group
 %
 % This work may be distributed and/or modified under the
@@ -16,7 +16,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-05-14-15:32}
+\immediate\write-1{version 2020-09-13-14:20}
 
 \RequirePackage{etoolbox,expl3,environ}
 
@@ -24,9 +24,7 @@
 \cs_new_protected:Npn \alteqtoks #1
 {
   \tl_set:Nx \l_tmpa_tl {\detokenize{#1}}
-  % delete spaces before left brackets
-  \regex_replace_all:nnN { \x{20} \x{7B} } { \x{7B} } \l_tmpa_tl
-  % replace < > and & with xml entities
+  % % replace < > and & with xml entities
   \regex_replace_all:nnN { \x{26} } { &amp; } \l_tmpa_tl
   \regex_replace_all:nnN { \x{3C} } { &lt; } \l_tmpa_tl
   \regex_replace_all:nnN { \x{3E} } { &gt; } \l_tmpa_tl
@@ -34,6 +32,8 @@
   \HCode{\l_tmpb_tl}
 }
 \ExplSyntaxOff
+
+\NewConfigure{MathJaxConfig}{1}
 
 \long\def\AltlMath#1\){\expandafter\alteqtoks{\(#1\)}\)}
 \long\def\AltlDisplay#1\]{\alteqtoks{\[#1\]}\]}
@@ -55,6 +55,7 @@
 }{}%
 }
 \def\fixmathjaxtoc#1{\Configure{writetoc}{\def#1{\detokenize{#1}}}}
+\def\fixmathjaxsec#1{\def#1{\detokenize{#1}}}
 
 \AtBeginDocument{%
 \VerbMath{subarray}
@@ -92,8 +93,8 @@
 \VerbMath{eqnarray*}
 \ConfigureEnv{multline}{}{}{}{}
 \ConfigureEnv{multline*}{}{}{}{}
-\fixmathjaxtoc\left
-\fixmathjaxtoc\right
+\fixmathjaxsec\left
+\fixmathjaxsec\right
 \fixmathjaxtoc\int
 \fixmathjaxtoc\,
 \fixmathjaxtoc\sin
@@ -110,9 +111,24 @@
 \fixmathjaxtoc\tanh
 \fixmathjaxtoc\coth
 \fixmathjaxtoc\log
+\fixmathjaxtoc\ln
+\fixmathjaxtoc\sum
 
 }
 \endinput
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

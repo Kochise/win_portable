@@ -298,7 +298,7 @@ local callbacktypes = callbacktypes or {
   pre_mlist_to_hlist_filter = list,
   mlist_to_hlist         = exclusive,
   post_mlist_to_hlist_filter = reverselist,
-  new_graf               = simple,
+  new_graf               = exclusive,
   pre_dump             = simple,
   start_run            = simple,
   stop_run             = simple,
@@ -357,7 +357,7 @@ local function list_handler(name)
           "Function `" .. i.description .. "' returned false\n"
             .. "in callback `" .. name .."'"
          )
-         break
+        return false
       end
       if ret ~= true then
         alltrue = false
@@ -383,7 +383,7 @@ local function reverselist_handler(name)
           "Function `" .. cb.description .. "' returned false\n"
             .. "in callback `" .. name .."'"
          )
-         break
+        return false
       end
       if ret ~= true then
         alltrue = false
@@ -545,7 +545,9 @@ local function remove_from_callback(name, description)
   )
   if #l == 0 then
     callbacklist[name] = nil
-    callback_register(name, nil)
+    if user_callbacks_defaults[name] == nil then
+      callback_register(name, nil)
+    end
   end
   return cb.func,cb.description
 end

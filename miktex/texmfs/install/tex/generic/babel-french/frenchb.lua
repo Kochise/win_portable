@@ -1,6 +1,6 @@
 --[[
    File `frenchb.lua’ generated from frenchb.dtx
-         [2020/07/02 v3.5j French support from the babel system]
+         [2020/10/10 v3.5l French support from the babel system]
    Copyright © 2014-2020 Daniel Flipo
    <daniel (dot) flipo (at) free (dot) fr>
    License LPPL: see french.ldf.

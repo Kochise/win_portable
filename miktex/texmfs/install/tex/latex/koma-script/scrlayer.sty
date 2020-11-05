@@ -43,14 +43,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer}[%
-  2020/07/22 v3.31 KOMA-Script
+  2020/09/21 v3.32 KOMA-Script
   package
   (defining layers and page styles)]
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: init)
 \RequirePackage{scrkbase}[2013/03/05]
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
@@ -115,7 +115,17 @@
     \setlength{\footheight}{\baselineskip}
   \fi
 }
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+\newcommand*{\scrlayer@report@deprecated}[2]{%
+  \@ifundefined{scrlayer@deprecated@reported@for@#1}{%
+    \PackageWarning{scrlayer}{%
+      Deprecated interface detected for `#1'.\MessageBreak
+      There isn't any support for using, e.g.,\MessageBreak
+      `\string #2'%
+    }%
+    \@namedef{scrlayer@deprecated@reported@for@#1}{\string #2}%
+  }{}%
+}
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
   \begingroup
@@ -281,7 +291,7 @@
 \KOMA@ifkey{draft}{scrlayer@draft}
 \KOMA@ifkey{forceoverwrite}{scrlayer@forceoverwrite}
 \KOMA@ifkey{autoremoveinterfaces}{scrlayer@autoremoveinterfaces}
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \newcommand*{\rightfirstmark}{\expandafter\@rightmark\firstmark\@empty\@empty}
@@ -2158,6 +2168,7 @@
 }
 \newcommand*{\scrlayer@exec@after@pagestyle@hook}[1]{}
 \newcommand*{\scrlayerAddToInterface}[2][\@currname.\@currext]{%
+  \scrlayer@report@deprecated{#1}{\scrlayerAddToInterface}%
   \begingroup
     \edef\reserve@a{%
       \noexpand\scrlayerAddCsToInterface[#1]{\expandafter\@gobble\string #2}%
@@ -2165,6 +2176,7 @@
   \expandafter\endgroup\reserve@a
 }
 \newcommand{\scrlayerAddCsToInterface}[3][\@currname.\@currext]{%
+  \scrlayer@report@deprecated{#1}{\scrlayerAddCsToInterface}%
   \@ifundefined{scrlayer@#1@commandlist}{%
     \PackageError{scrlayer}{unkown interface `#1'}{%
       I've been told to add a command sequence to an interface, that hasn't
@@ -2251,6 +2263,7 @@
   }%
 }%
 \newcommand*\scrlayer@AddCsToInterface[2][\@currname.\@currext]{%
+  \scrlayer@report@deprecated{#1}{\scrlayer@AddCsToInterface}%
   \expandafter\expandafter\expandafter\def\expandafter
   \csname scrlayer@#1@commandlist\expandafter\expandafter\expandafter\endcsname
   \expandafter\expandafter\expandafter{%
@@ -2260,6 +2273,7 @@
   \@namedef{scrlayer@command@#2}{#1}%
 }
 \newcommand*{\scrlayerInitInterface}[1][\@currname.\@currext]{%
+  \scrlayer@report@deprecated{#1}{\scrlayerInitInterface}%
   \@ifundefined{scrlayer@#1@commandlist}{%
     \@namedef{scrlayer@#1@commandlist}{}%
   }{%
@@ -2278,14 +2292,15 @@
   }%
 }
 \newcommand*{\scrlayerOnAutoRemoveInterface}[2][\@currname.\@currext]{%
+  \scrlayer@report@deprecated{#1}{\scrlayerOnAutoRemoveInterface}%
   \@ifundefined{scrlayer@#1@onremove}{\@namedef{scrlayer@#1@onremove}{}}{}%
   \expandafter\l@addto@macro\csname scrlayer@#1@onremove\endcsname{#2}%
 }
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: final)
 \DeclareNewPageStyleByLayers{@everystyle@}{}
 \RedeclarePageStyleByLayers{empty}{}
-%%% From File: $Id: scrlogo.dtx 2640 2017-05-08 09:36:55Z kohm $
+%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
 \@ifundefined{KOMAScript}{%
   \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
       M\kern.05em A\kern.1em-\kern.1em Script}}}{}

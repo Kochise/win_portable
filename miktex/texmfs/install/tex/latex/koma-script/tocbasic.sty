@@ -53,24 +53,24 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: tocbasic.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{tocbasic}[%
-  2020/07/22 v3.31 KOMA-Script
+  2020/09/21 v3.32 KOMA-Script
   package
   (handling toc-files)%
 ]
-%%% From File: $Id: tocbasic.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
 %%%            (run: prepare)
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: tocbasic.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
 %%%            (run: option)
 \ProcessOptions\relax
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: option)
-%%% From File: $Id: tocbasic.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
 %%%            (run: body)
 \RequirePackage{scrbase}
 \AfterPackage*{multitoc}{%
@@ -350,6 +350,16 @@
 }
 \newcommand*{\tocbasic@starttoc}[1]{%
   \begingroup
+    \tocbasic@reentrant@warning
+    \def\tocbasic@reentrant@warning{%
+      \PackageWarning{tocbasic}{%
+        Loading one auxiliary file inside the setup context\MessageBreak
+        of another auxiliary file is not recommended.\MessageBreak
+        In this case settings for `\@currext' could also influence\MessageBreak
+        settings of `#1' and local states of `#1' can also\MessageBreak
+        influence local states of `\@currext'%
+      }%
+    }%
     \edef\@currext{#1}%
     \Iftocfeature{\@currext}{noparskipfake}{}{%
       \ifvmode
@@ -364,15 +374,20 @@
     \setlength{\parfillskip}{\z@\@plus 1fil}%
     \csname tocbasic@@before@hook\endcsname
     \csname tb@#1@before@hook\endcsname
-    \let\tocbasic@saved@input\@input
-    \def\@input##1{%
-      \let\@input\tocbasic@saved@input\@input{##1}\par
-    }%
     \@starttoc{#1}%
+    \BeforeClosingMainAux{%
+      \addtocontents{#1}{%
+        \string\providecommand\string\tocbasic@end@toc@file{}%
+        \string\tocbasic@end@toc@file
+      }%
+    }%
+    \edef\@currext{#1}%
     \csname tb@#1@after@hook\endcsname
     \csname tocbasic@@after@hook\endcsname
   \endgroup
 }
+\newcommand*{\tocbasic@end@toc@file}{\par}
+\newcommand*{\tocbasic@reentrant@warning}{}
 \newcommand*{\tocbasic@@before@hook}{}
 \newcommand*{\tocbasic@@after@hook}{}
 \newcommand{\BeforeStartingTOC}[2][]{%
@@ -2895,7 +2910,7 @@
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: style,dottedtocline)
 \CloneTOCEntryStyle{dottedtocline}{default}
-%%% From File: $Id: tocbasic.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
 %%%            (run: exit)
 \AtBeginDocument{%
   \@ifundefined{MakeMarkcase}{%
@@ -2906,7 +2921,7 @@
     }%
   }{}%
 }
-%%% From File: $Id: scrlogo.dtx 2640 2017-05-08 09:36:55Z kohm $
+%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
 \@ifundefined{KOMAScript}{%
   \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
       M\kern.05em A\kern.1em-\kern.1em Script}}}{}

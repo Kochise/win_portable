@@ -20,7 +20,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{luatex.def}
-  [2020/08/26 v1.2 Graphics/color driver for luatex]
+  [2020/10/05 v1.2a Graphics/color driver for luatex]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -139,6 +139,7 @@
     \def\set@page@color{%
      \global\GPT@pagecolortrue
      \global\let\current@page@color\current@color
+     \IfHookEmptyTF{shipout/background}{\AddToHook{shipout/background}{\relax}}{}%
     }%
     \g@addto@macro\@kernel@before@shipout@background
      {%
@@ -151,7 +152,7 @@
           }%
       \fi
      }%
-  }%
+  }{}%
  }
 \AtBeginDocument{%
   \def\KV@Gin@bbllx{%

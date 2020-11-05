@@ -21,7 +21,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{lscape}
-          [2000/10/22 v3.01 Landscape Pages (DPC)]
+          [2020/05/28 v3.02 Landscape Pages (DPC)]
 \newif\ifGin@pdftex
 \Gin@pdftexfalse
 \DeclareOption{pdftex}{%
@@ -31,11 +31,11 @@
 \DeclareOption*{\PassOptionsToPackage\CurrentOption{graphics}}
 \ProcessOptions
 \RequirePackage{graphics}
-\let\LS@makecol=\@makecol
-\let\LS@makefcolumn=\@makefcolumn
 \def\LS@rot{%
   \setbox\@outputbox\vbox{\hbox{\rotatebox{90}{\box\@outputbox}}}}
 \def\landscape{%
+  \let\LS@makecol=\@makecol
+  \let\LS@makefcolumn=\@makefcolumn
   \clearpage
   \begingroup
   \vsize=\textwidth

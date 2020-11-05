@@ -1,5 +1,5 @@
-% mathml.4ht (2019-12-30-14:10), generated from tex4ht-mathml.tex
-% Copyright 2009-2019 TeX Users Group
+% mathml.4ht (2020-09-08-14:03), generated from tex4ht-mathml.tex
+% Copyright 2009-2020 TeX Users Group
 % Copyright 1999-2009 Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-12-30-14:10}
+\immediate\write-1{version 2020-09-08-14:03}
 
 \exit:ifnot{Preamble,% 
 accents,% 
@@ -619,7 +619,6 @@ vanilla}
 
 \def\providemtextclass#1{%
   \Configure{@mtext}{#1}%
-  \HCode{</mtext>}\ht:special{t4ht@,}\HCode{<mtext \a:@mtext>}\ht:special{t4ht@,&\#x00A0;}%
 }
 
 \Configure{texttt}
@@ -876,18 +875,18 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \def\:temp#1{\a:right{#1}\o:right:.\b:right{#1}}\HLet\right\:temp
 \Configure{left}
    {}
-   {\HCode{<\a:mathml mfenced \a:mathml separators=""\Hnewline
-       \a:mathml open="\expandafter
+   {\HCode{<\a:mathml mrow><\a:mathml mo \a:mathml fence="true" \a:mathml form="prefix">
+       \expandafter
 \ifx \csname \string#1:lr del\endcsname\relax #1\else
      \csname \string#1:lr del\endcsname\fi
-"\space }\bgroup
-                              \HCode{><\a:mathml mrow>}\bgroup}
+</\a:mathml mo>}\bgroup
+                              \HCode{<\a:mathml mrow>}\bgroup}
 \Configure{right}
-   {\egroup\Send{GROUP}{0}{ \a:mathml close="\expandafter
+{\egroup\egroup}%{\egroup\Send{GROUP}{0}{ \a:mathml close=""\space}\egroup}
+   {\HCode{</\a:mathml mrow><\a:mathml mo \a:mathml fence="true" \a:mathml form="postfix">\expandafter
 \ifx \csname \string#1:lr del\endcsname\relax #1\else
      \csname \string#1:lr del\endcsname\fi
-"\space}\egroup}
-   {\HCode{</\a:mathml mrow></\a:mathml mfenced>}}
+</\a:mathml mo></\a:mathml mrow>}}
 \def\def:DEL#1{\def\:DEL{#1}}
 \def\check:DEL#1#2{\def\:tempa{#1}\ifx \:tempa\:DEL \def\:DEL{#2}\fi}
 \NewConfigure{mfenced}[2]{\append:defI\def:DEL{\check:DEL{#1}{#2}}}
@@ -949,7 +948,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{Bigg}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="2.45em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -961,7 +960,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="2.45em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -969,7 +968,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{Big}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="1.61em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -981,7 +980,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="1.61em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -989,7 +988,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{bigg}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="2.03em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -1001,7 +1000,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="2.03em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -1009,7 +1008,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{big}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="1.19em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -1021,7 +1020,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="1.19em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -1299,6 +1298,10 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \def\:nbsp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
 \else\ifmathml
     \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+\fi\fi}
+\def\:ensp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+\else\ifmathml
+    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
 \fi\fi}
 \Configure{cases}
     {}{} {\Tg<\a:mathml mtable>}{\Tg</\a:mathml mtable>}
@@ -1597,24 +1600,12 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
              \mml:class="MathClass-bin">}{</\a:mathml mo>}{}
 \Configure{MathClass}{3}{*}{<\a:mathml mo\Hnewline
              \mml:class="MathClass-rel">}{</\a:mathml mo>}{}
-\:CheckOption{mathml-}     \if:Option
-   \Configure{MathClass}{4}{*}{<\a:mathml mo\Hnewline
-             \mml:class="MathClass-open">}
-                           {</\a:mathml mo>}{}
-   \Configure{MathClass}{5}{*}{<\a:mathml mo\Hnewline
-             \mml:class="MathClass-close">}
-                           {</\a:mathml mo>}{}
-\else
-   \Log:Note{for sources failing to produce
-       clean mathml code, try the command line option `mathml-'}%
-   \Configure{MathClass}{4}{*}{<\a:mathml mrow
-                                     ><\a:mathml mo\Hnewline
-             \mml:class="MathClass-open">}
-                           {</\a:mathml mo><\a:mathml mrow>}{}
-   \Configure{MathClass}{5}{*}{</\a:mathml mrow><\a:mathml mo\Hnewline
-             \mml:class="MathClass-close">}
-                           {</\a:mathml mo></\a:mathml mrow>}{}
-\fi
+\Configure{MathClass}{4}{*}{<\a:mathml mo\Hnewline
+          \mml:class="MathClass-open">}
+                        {</\a:mathml mo>}{}
+\Configure{MathClass}{5}{*}{<\a:mathml mo\Hnewline
+          \mml:class="MathClass-close">}
+                        {</\a:mathml mo>}{}
 \Configure{MathClass}{6}{*}{<\a:mathml mo\Hnewline
              \mml:class="MathClass-punc">}{</\a:mathml mo>}{}
 \Configure{MathClass}{7}{*}{<\a:mathml mn>}{</\a:mathml mn>}
@@ -2605,24 +2596,12 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
              \mml:class="MathClass-bin">}{</\a:mathml mo>}{}
 \Configure{MathClass}{3}{*}{<\a:mathml mo\Hnewline
              \mml:class="MathClass-rel">}{</\a:mathml mo>}{}
-\:CheckOption{mathml-}     \if:Option
-   \Configure{MathClass}{4}{*}{<\a:mathml mo\Hnewline
-             \mml:class="MathClass-open">}
-                           {</\a:mathml mo>}{}
-   \Configure{MathClass}{5}{*}{<\a:mathml mo\Hnewline
-             \mml:class="MathClass-close">}
-                           {</\a:mathml mo>}{}
-\else
-   \Log:Note{for sources failing to produce
-       clean mathml code, try the command line option `mathml-'}%
-   \Configure{MathClass}{4}{*}{<\a:mathml mrow
-                                     ><\a:mathml mo\Hnewline
-             \mml:class="MathClass-open">}
-                           {</\a:mathml mo><\a:mathml mrow>}{}
-   \Configure{MathClass}{5}{*}{</\a:mathml mrow><\a:mathml mo\Hnewline
-             \mml:class="MathClass-close">}
-                           {</\a:mathml mo></\a:mathml mrow>}{}
-\fi
+\Configure{MathClass}{4}{*}{<\a:mathml mo\Hnewline
+          \mml:class="MathClass-open">}
+                        {</\a:mathml mo>}{}
+\Configure{MathClass}{5}{*}{<\a:mathml mo\Hnewline
+          \mml:class="MathClass-close">}
+                        {</\a:mathml mo>}{}
 \Configure{MathClass}{6}{*}{<\a:mathml mo\Hnewline
              \mml:class="MathClass-punc">}{</\a:mathml mo>}{}
 \Configure{MathClass}{7}{*}{<\a:mathml mn>}{</\a:mathml mn>}
@@ -2716,18 +2695,18 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \def\:temp#1{\a:right{#1}\o:right:.\b:right{#1}}\HLet\right\:temp
 \Configure{left}
    {}
-   {\HCode{<\a:mathml mfenced \a:mathml separators=""\Hnewline
-       \a:mathml open="\expandafter
+   {\HCode{<\a:mathml mrow><\a:mathml mo \a:mathml fence="true" \a:mathml form="prefix">
+       \expandafter
 \ifx \csname \string#1:lr del\endcsname\relax #1\else
      \csname \string#1:lr del\endcsname\fi
-"\space }\bgroup
-                              \HCode{><\a:mathml mrow>}\bgroup}
+</\a:mathml mo>}\bgroup
+                              \HCode{<\a:mathml mrow>}\bgroup}
 \Configure{right}
-   {\egroup\Send{GROUP}{0}{ \a:mathml close="\expandafter
+{\egroup\egroup}%{\egroup\Send{GROUP}{0}{ \a:mathml close=""\space}\egroup}
+   {\HCode{</\a:mathml mrow><\a:mathml mo \a:mathml fence="true" \a:mathml form="postfix">\expandafter
 \ifx \csname \string#1:lr del\endcsname\relax #1\else
      \csname \string#1:lr del\endcsname\fi
-"\space}\egroup}
-   {\HCode{</\a:mathml mrow></\a:mathml mfenced>}}
+</\a:mathml mo></\a:mathml mrow>}}
 \def\def:DEL#1{\def\:DEL{#1}}
 \def\check:DEL#1#2{\def\:tempa{#1}\ifx \:tempa\:DEL \def\:DEL{#2}\fi}
 \NewConfigure{mfenced}[2]{\append:defI\def:DEL{\check:DEL{#1}{#2}}}
@@ -2789,7 +2768,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{Bigg}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="2.45em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -2801,7 +2780,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="2.45em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -2809,7 +2788,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{Big}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="1.61em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -2821,7 +2800,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="1.61em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -2829,7 +2808,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{bigg}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="2.03em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -2841,7 +2820,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="2.03em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -2849,7 +2828,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
    {\bgroup
        \Configure{big}{}{}{}{}%
        \Configure{mathopen}{*}
-          {<mo \mml:class="MathClass-open"
+          {<mrow><mo \mml:class="MathClass-open"
                      fence="true" mathsize="1.19em" >}
           {</mo>}
           {\Configure{mathopen}{}{}{}{}}%
@@ -2861,7 +2840,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
        \Configure{mathclose}{*}
           {<mo \mml:class="MathClass-close"
                      fence="true" mathsize="1.19em" >}
-          {</mo>}
+          {</mo></mrow>}
           {\Configure{mathclose}{}{}{}{}}%
    }
    {\egroup}
@@ -3140,6 +3119,10 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \else\ifmathml
     \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
 \fi\fi}
+\def\:ensp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+\else\ifmathml
+    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+\fi\fi}
 \Configure{cases}
     {}{} {\Tg<\a:mathml mtable>}{\Tg</\a:mathml mtable>}
     {\Tg<\a:mathml mtr>}{\Tg</\a:mathml mtr>}
@@ -3377,6 +3360,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{vanilla}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3391,8 +3375,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -3719,6 +3701,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -4083,6 +4066,8 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 

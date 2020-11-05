@@ -84,7 +84,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3510 2020-07-22 13:29:13Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -106,7 +106,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/07/22 v3.31 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -121,16 +121,16 @@
   article%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2020/07/22 v3.31 KOMA-Script
+  2020/09/21 v3.32 KOMA-Script
   document class (\ClassName)%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3465 2020-03-07 10:23:56Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
 %%% From File: $Id: scrkernel-listsof.dtx 3477 2020-04-11 07:26:26Z kohm $
 %%%            (run: prepare)
 \RequirePackage{tocbasic}[%
-  2020/07/22 v3.31 KOMA-Script
+  2020/09/21 v3.32 KOMA-Script
 ]
 \addtotoclist[ToC]{toc}
 \Ifstr{\ext@toc}{toc}{}{%
@@ -140,7 +140,7 @@
 }
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: scrkernel-sections.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3543 2020-09-14 16:21:00Z kohm $
 %%%            (run: prepare)
 \newcommand*{\scr@dotchangeatdocument}[1]{%
   \ClassError{\KOMAClassName}{%
@@ -192,7 +192,7 @@
 \newcommand*{\size@paragraph}{}
 \newcommand*{\size@subparagraph}{}
 \newcommand*{\sectfont}{\normalcolor\@gr@gsffamily\bfseries}
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -271,10 +271,11 @@
 \@namedef{scr@v@3.29}{17}
 \@namedef{scr@v@3.30}{17}
 \@namedef{scr@v@3.31}{18}
+\@namedef{scr@v@3.32}{18}
 \@namedef{scr@v@last}{18}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: option)
 \newif\if@scr@emulatestandardclasses
 \let\scr@emulatestandardclassestrue\relax
@@ -349,7 +350,7 @@
 \newcommand*{\scr@v@is@ge}[1]{%
   \numexpr\scr@compatibility+\@ne\relax>\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: option)
 \KOMA@key{draft}[true]{%
   \KOMA@set@ifkey{draft}{@tempswa}{#1}%
@@ -823,7 +824,7 @@
 \KOMA@DeclareDeprecatedOption{abstractoff}{abstract=false}
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3543 2020-09-14 16:21:00Z kohm $
 %%%            (run: option)
 \KOMA@key{numbers}{%
   \KOMA@set@ncmdkey{numbers}{@tempa}{%
@@ -1817,17 +1818,17 @@
 \KOMA@DeclareDeprecatedOption{idxtotoc}{index=totoc}
 %%% From File: $Id: scrkernel-listsandtabulars.dtx 3394 2019-11-19 11:56:28Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3543 2020-09-14 16:21:00Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{numbers=autoendperiod}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{%
   parskip=false,%
   headings=big%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3492 2020-06-02 09:02:18Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
 %%%            (run: body)
 %%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
 %%%            (run: body)
@@ -2962,7 +2963,7 @@
 %%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
 %%%            (run: class,style,default)
 \CloneTOCEntryStyle{subsection}{default}
-%%% From File: $Id: scrkernel-sections.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3543 2020-09-14 16:21:00Z kohm $
 %%%            (run: body)
 \setcounter{secnumdepth}{3}
 \providecommand*{\ifnumbered}{%
@@ -4648,7 +4649,7 @@
     }%
   \fi
 }
-\AfterPackage!{hyperref}{\scr@chapter@after@hyperref@patch}
+\AfterAtEndOfPackage{hyperref}{\scr@chapter@after@hyperref@patch}
 \newcommand*{\addparttocentry}[2]{%
   \addtocentrydefault{part}{#1}{#2}%
 }
@@ -4848,7 +4849,7 @@
 \fi
 \newcommand*{\scr@fnt@disposition}{\sectfont}
 \aliaskomafont{sectioning}{disposition}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3487 2020-04-27 07:19:23Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
 %%%            (run: body)
 \newif\if@restonecol
 \newcommand{\dictum}[2][]{\par%
@@ -4923,7 +4924,7 @@
 \newcommand*{\is@thispageodd@setlabel}{}
 \newif\ifthispagewasodd
 \providecommand*{\ifthispageodd}{%
-  \ClassWarning{\KOMAClasSName}{%
+  \ClassWarning{\KOMAClassName}{%
     Usage of deprecated command
     `\string\ifthispageodd'.\MessageBreak
     The command has been renamed because of a\MessageBreak
@@ -5276,7 +5277,7 @@
 \newcommand*{\indexpagestyle}{plain}
 \pagestyle{plain}
 \pagenumbering{arabic}
-%%% From File: $Id: scrlayer.dtx 3411 2019-11-28 09:11:27Z kohm $
+%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
 %%%            (run: body)
 \providecommand*{\@mkleft}{%
   \IfActiveMkBoth{\markleft}{\@gobble}%
@@ -6675,7 +6676,7 @@
 \newcommand*{\scr@fnt@descriptionlabel}{\descfont}
 \newkomafont{labelinglabel}{}
 \newkomafont{labelingseparator}{}
-%%% From File: $Id: scrlogo.dtx 2640 2017-05-08 09:36:55Z kohm $
+%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
 \@ifundefined{KOMAScript}{%
   \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
       M\kern.05em A\kern.1em-\kern.1em Script}}}{}

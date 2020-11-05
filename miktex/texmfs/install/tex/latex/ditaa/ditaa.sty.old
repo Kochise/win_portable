@@ -13,7 +13,6 @@
 \RequirePackage{fancyvrb}
 \RequirePackage{graphicx}
 \RequirePackage{kvoptions}
-\RequirePackage{svg}
 
 \DeclareStringOption[]{imagepath}
 \ProcessKeyvalOptions*
@@ -28,33 +27,11 @@
         \def\ditaafigwidth{#1}
         \VerbatimOut{\ditaafile}}
     {\endVerbatimOut
-        \immediate\write18{ditaa.jar -E "\ditaafile" "\ditaadir/\ditaastem.png"}
-        \begin{figure}[H]
+        \immediate\write18{ditaa -E "\ditaafile" "\ditaadir/\ditaastem.png"}
+        \begin{figure}[ht]
             \begin{center}
                 \vspace{-1em}
                 \includegraphics[width=\ditaafigwidth]{\ditaadir/\ditaastem.png}
-                \vspace{-2em}
-                \caption{\ditaacaption}
-                \label{fig:\ditaastem}
-                \vspace{-1.5em}
-            \end{center}
-        \end{figure}
-    }
-\newenvironment{ditaasvg}[3][\columnwidth]
-    {
-        \def\ditaacaption{#2}
-        \def\ditaastem{#3}
-        \def\ditaadir{\ditaa@imagepath/ditaa}
-        \def\ditaafile{\ditaadir/\ditaastem.ditaa}
-        \def\ditaafigwidth{#1}
-        \VerbatimOut{\ditaafile}}
-    {\endVerbatimOut
-        \immediate\write18{ditaa.jar -E "\ditaafile" --svg "\ditaadir/\ditaastem.svg"}
-%        \immediate\write18{ditaa.jar -E "\ditaafile" --svg "\ditaadir/\ditaastem.svg" --svg-font-url "carlito-regular-webfont.svg"}
-        \begin{figure}[H]
-            \begin{center}
-                \vspace{-1em}
-				\includesvg[inkscapelatex=false, width=\ditaafigwidth]{\ditaadir/\ditaastem.svg}
                 \vspace{-2em}
                 \caption{\ditaacaption}
                 \label{fig:\ditaastem}

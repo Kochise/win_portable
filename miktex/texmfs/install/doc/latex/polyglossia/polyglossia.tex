@@ -67,6 +67,12 @@
      \xpgvalue{=} \meta{code} (default value: \texttt{#3})\par%
 }
 
+% arguments: #1 version number, #2 key name, #3 value type, #4 default value
+\NewDocumentCommand\xpgoptkey{ommo}{%
+	\xpgoption{#2}\IfValueT{#1}{\new{#1}}
+	\xpgvalue{=} \meta{#3} (default value: \texttt{#4})\par%
+}
+
 %% Sidenotes  << copied from fontspec.dtx
 \newcommand\new[1]{%
   \edef\thisversion{v#1}%
@@ -141,7 +147,7 @@
 \section{Introduction}
 
 \pkg{Polyglossia} is a package for facilitating multilingual typesetting with
-\XeLaTeX\ and (with some exceptions) \LuaLaTeX. Basically, it
+\XeLaTeX\ and \LuaLaTeX. Basically, it
 can be used as an alternative to \pkg{babel} for performing the following
 tasks automatically:
 
@@ -540,11 +546,19 @@ Table~\ref{tab:BCP47-polyglossia} lists the currently supported tags.
 		option \xpgoption{nolocalmarks} which used to switch off the previous default, and
 		now equals the default, is still available.
 
-	\item \xpgoption{quiet} turns off most info messages and some of the warnings issued
-		by \LaTeX, \pkg{fontspec} and \pkg{polyglossia}.
+    \item \xpgoptkey[1.50]{luatexrenderer}{renderer}[Harfbuzz] determines which font renderer is used
+        with \LuaTeX\ output. The correct font renderer is essential particularly for non-Latin scripts.
+        By default, \pkg{polyglossia} uses the \xpgvalue{Harfbuzz} renderer that has been introduced to
+        \LuaTeX\ in 2019 (\TeX Live 2020), as this gives the best results generally. If you want to use
+        a different renderer, you can specify this here (or individually for specific fonts via the optional
+        argument of the font selection commands). Please refer to the \pkg{fontspec} manual for supported
+        values and for details on how to change the renderer for individual fonts.\\
+        \xpgoption{luatexrenderer=none} disables \pkg{polyglossia}'s automatic renderer setting.
+
+	\item \xpgboolkeytrue{verbose} determines whether info messages and (some of the) warnings issued
+		by \LaTeX, \pkg{fontspec} and \pkg{polyglossia} are output.
 \end{itemize}
 
-\pagebreak
 \section{Language-switching commands}\label{languageswitching}
 
 \subsection{Recommended commands}\label{sec:langcmds}
@@ -609,17 +623,22 @@ similar behaviour.
 \item \DescribeMacro{\foreignlanguage}\cmd{\foreignlanguage\oarg{options}\marg{lang}\marg{…}}
 \item \DescribeEnv{otherlanguage}\cmd{\begin\{otherlanguage\}\oarg{options}\marg{lang}} \dots{} \cmd{\end\{otherlanguage\}}
 \item \DescribeEnv{otherlanguage*}\cmd{\begin\{otherlanguage*\}\oarg{options}\marg{lang}} \dots{} \cmd{\end\{otherlanguage*\}}
+\item \DescribeEnv{hyphenrules}\cmd{\begin\{hyphenrules\}\oarg{options}\marg{lang}} \dots{} \cmd{\end\{hyphenrules\}}\new{1.50}
 \end{itemize}
 %
 \cmd\selectlanguage\marg{lang} and the ¦otherlanguage¦ environment are identical to the
-the \meta{lang} environment, except that \cmd\selectlanguage\marg{lang}
+\meta{lang} environment, except that \cmd\selectlanguage\marg{lang}
 does not need to be explicitly closed. The command \cmd\foreinlanguage\marg{lang}\marg{…} and the ¦otherlanguage*¦
 environment are identical with the use of the \cmd\text\meta{lang} or \cmd\textlang\ command, with the one
 notable exception that they do not translate the date with \cmd\today.
 
+The \meta{hyphenrules} environment only switches the hyphenation patterns to the one associated with the language \meta{lang}
+(or the language variety as specified via \meta{options}). It does no further language-specific change.
+
 Since the \XeLaTeX\ and \LuaLaTeX\ format incorporate \pkg{babel}’s \file{hyphen.cfg},
-the low-level commands for hyphenation and language switching
-defined there are also accessible.
+the low-level commands for hyphenation and language switching defined there are in principal also accessible.
+Note, however, that the availability of such low-level commands is not guaranteed, as \file{hyphen.cfg}, which is
+out of \pkg{polyglossia}'s control, is (or at least has been) subject to regular change.
 
 \subsection{Other commands}
 The following commands are probably of lesser interest to the end user, but
@@ -707,25 +726,49 @@ displayed.
 which override the hyphenation patterns for specified words. The command takes as argument a space-separated
 list of words where hyphenation points are marked by a dash (if no dash is used, the respective word is not
 hyphenated at all):
-\begin{Verbatim}
+\begin{quote}
+\begin{minipage}{\textwidth}
+\begin{verbatim}
 \hyphenation{%
   po-ly-glos-sia
   LaTeX
 }
-\end{Verbatim}
+\end{verbatim}
+\end{minipage}
+\end{quote}
 %
 These exceptions, however, apply to all languages. In addition to this, \pkg{polyglossia} provides
 the command\new{1.45}
-\displaycmd{\xpghyphenation\oarg{options}\marg{lang}\marg{exceptions}}{\xpghyphenation}
+\displaycmd{\pghyphenation\oarg{options}\marg{lang}\marg{exceptions}}{\pghyphenation}
 which can be used to define exceptions that only apply to a specific language or language variant,
 respectively.
 
+\subsection{Hyphenation thresholds}
+
+\pkg{Polyglossia} sets reasonable defaults for the hyphenation thresholds of each language,
+\ie the number of characters that must  at least be there at the beginning or end of a
+word before it is hyphenated (\cmd\lefthyphenmin\ and \cmd\righthyphenmin\ in \TeX).
+For instance, with English, this threshold is 2 at the beginning (`left') and 3 at the end (`right'),
+so a word will not be hyphenated within the first two characters at the beginning and the last three
+characters at the end.
+
+To change this value, \pkg{polyglossia} provides the command\new{1.50}
+\displaycmd{\setlanghyphenmins\oarg{options}\marg{lang}\marg{l}\marg{r}}{\setlanghyphenmins}
+%
+where \meta{lang} is to be replaced with the respective language name or alias, \meta{options}
+can be used to delimit the modification to a particular variety (\eg via \texttt{variant} or \texttt{spelling}),
+\meta{l} with the left threshold value (\eg \texttt{3}), and \meta{r} with the right
+threshold value (\eg \verb|\setlanghyphenmins[spelling=old]{german}{4}{4}|).
+This setting can be changed repeatedly in the preamble and the document body.
+It applies to all subsequent text in the respective language (variety), but only after the
+next language switch.
+
 \subsection{Hyphenation disabling}
 
-In some very specific contexts (such as music score creation), \TeX{} hyphenation
-is something to avoid as it may cause troubles. \pkg{polyglossia} provides two
-functions: \Cmd\disablehyphenation\ and \Cmd\enablehyphenation. Note that if
-you select a new language while hyphenation is disabled, it will remain disabled.
+In some very specific contexts (such as music score creation), \TeX\ hyphenation
+is something to avoid completely as it may cause troubles.
+\pkg{Polyglossia} provides two functions: \Cmd\disablehyphenation\ and \Cmd\enablehyphenation.
+Note that if you select a new language while hyphenation is disabled, it will remain disabled.
 If you re-enable it, the hyphenation patterns of the currently selected language
 will be activated.
 
@@ -775,15 +818,23 @@ and that passing \xpgvalue{babelshorthands} (without value) is equivalent to pas
 		as well as the form of the numerals (unless overriden by the following option).
 	\item \xpgchoicekey{numerals}{\xpgpresetvalue{mashriq} or \xpgvalue{maghrib}}
 		The latter is the default when \xpgvalue{locale=algeria}, \xpgvalue{tunisia}, or \xpgvalue{morocco}.
+	\item \xpgboolkeyfalse[1.50]{abjadalph}
+	     Set this to true if you want the alphabetic counters to be output using \cmd\abjadalph\ rather than \cmd\abjad.
+	     Note that this limits the counter scope to 28 (see \cmd\abjadalph\ below).
 	\item \xpgboolkeyfalse[1.0.3]{abjadjimnotail}
     Set this to true if you want the \textit{abjad} form of the number three to be \textarabic{ج‍} – as in the manuscript tradition – instead of the modern usage \textarabic{ج}.
 	\end{itemize}
 \paragraph*{Commands:}
 	\begin{itemize}
-	\item \Cmd\abjad and \Cmd\abjadmaghribi (see section \ref{abjad})
-  \item \Cmd\aemph to emphasize text with \cmd\overline.\new{1.2.0}
-    ¦\textarabic{\aemph{اب}}¦ yields \textarabic{\aemph{اب}}.
-    This command is also available for Farsi, Urdu, etc.
+	\item \Cmd\abjad outputs Arabic \textit{abjad} numbers according to the Mashriq varieties.
+	      Example: ¦\abjad{1863}¦ yields \textarabic{\abjad{1863}}.	
+	\item \Cmd\abjadmaghribi outputs Arabic \textit{abjad} numbers according to the Maghrib varieties.
+	       Example: ¦\abjadmaghribi{1863}¦ yields \textarabic{\abjadmaghribi{1863}}.
+	\item \Cmd\abjadalph\new{1.50} steps through the Arabic alphabet, thus it can only be used up to 28.
+	       Example: ¦\textarabic{\abjadalph{18}}¦ yields \textarabic{\abjadalph{18}}.
+    \item \Cmd\aemph to emphasize text with \cmd\overline.\new{1.2.0}
+          ¦\textarabic{\aemph{اب}}¦ yields \textarabic{\aemph{اب}}.
+           This command is also available for Farsi, Urdu, etc.
 	\end{itemize}
 
 \subsection{armenian}\label{armenian}
@@ -801,19 +852,31 @@ and that passing \xpgvalue{babelshorthands} (without value) is equivalent to pas
 	If this is turned on, the following shorthands are activated:
 	\begin{shorthands}
 		\item[¦"-¦] adds a hyphenation point that does still allow for hyphenation at the points preset
-		in the hyphenation patterns (as opposed to \cmd\-).
+		    in the hyphenation patterns (as opposed to \cmd\-).
+		\item[¦"=¦] adds an explicit hyphen with a breakpoint, allowing for hyphenation at the
+		    other points preset in the hyphenation patterns (as opposed to plain ¦-¦).
 		\item[\texttt{"\textasciitilde}] for a hyphen sign without a breakpoint. Useful for
-		cases where the hyphen should stick at the following syllable.
+		    cases where the hyphen should stick at the following syllable.
 		\item[¦"|¦] disables a ligature at this position.
 		\item[¦""¦] allows for a line break at this position (without hyphenation sign).
-		\item[¦"---¦] Cyrillic emdash in plain text.
-		\item[¦"--~¦] Cyrillic emdash in compound names (surnames).
-		\item[¦"--*¦] Cyrillic emdash for denoting direct speech.
 		\item[¦",¦] thinspace for initials with a breakpoint in following surname.
 		\item[¦"‘¦] for German left double quotes (looks like ,,).
 		\item[¦"’¦] for German right double quotes (looks like “).
 		\item[¦"<¦] for French left double quotes (looks like <<).
 		\item[¦">¦] for French right double quotes (looks like >>).
+	\end{shorthands}
+
+	There are also three shorthands for the Cyrillic dash (\textrussian{тире}), which is shorter than the
+	emdash but longer than the endash (namely 0.8\,em).
+	Note that, since it is not covered by unicode, this character is faked by telescoping two endashes:
+	\begin{shorthands}
+		\item[¦"---¦] Cyrillic dash for the use in normal text. This requires preceding space
+		       in input (trailing space is optional) and prints with a non-breakable thin space before
+	           and after the dash.
+		\item[¦"--\textasciitilde¦] Cyrillic dash for the use in compound names (surnames).
+		       As opposed to ¦"---¦ this removes any space before and after the dash. 
+		\item[¦"--*¦] Cyrillic dash for denoting direct speech. This adds a larger space after
+		       the dash. Space before the dash is output as is.
 	\end{shorthands}
     \item \xpgchoicekey{numerals}{\xpgpresetvalue{arabic}, \xpgvalue{cyrillic-alph} or \xpgvalue{cyrillic-trad}}
          Uses either Arabic numerals or Cyrillic alphanumerical numbering. The two Cyrillic variants differ as follows:
@@ -827,7 +890,8 @@ and that passing \xpgvalue{babelshorthands} (without value) is equivalent to pas
 	With ¦spelling=classic¦, captions and dates adhere to the Taraškievica (or
 	Belarusian classical) orthography rather than the standard orthography.
 \end{itemize}
-%
+
+\condbreak{\baselineskip}
 \paragraph*{Commands:}
 \begin{itemize}
      \item \Cmd\Asbuk: produces uppercased Cyrillic alphanumerals, for environments such as ¦enumerate¦.
@@ -1069,20 +1133,31 @@ and that passing \xpgvalue{babelshorthands} (without value) is equivalent to pas
 		If this is turned on, the following shorthands are activated:
 		\begin{shorthands}
 			\item[¦"-¦] adds a hyphenation point that does still allow for
-			hyphenation at the points preset in the hyphenation patterns (as opposed
-			to \cmd\-).
+			    hyphenation at the points preset in the hyphenation patterns (as opposed to \cmd\-).
+		    \item[¦"=¦] adds an explicit hyphen with a breakpoint, allowing for hyphenation at the
+			    other points preset in the hyphenation patterns (as opposed to plain ¦-¦).
 			\item[\texttt{"\textasciitilde}] for a hyphen sign without a breakpoint. Useful for
 			cases where the hyphen should stick at the following syllable.
 			\item[¦"|¦] disables a ligature at this position.
 			\item[¦""¦] allows for a line break at this position (without hyphenation sign).
-			\item[¦"---¦] Cyrillic emdash in plain text.
-			\item[¦"--~¦] Cyrillic emdash in compound names (surnames).
-			\item[¦"--*¦] Cyrillic emdash for denoting direct speech.
 			\item[¦",¦] thinspace for initials with a breakpoint in following surname.
-			\item[¦"‘¦] for German left double quotes (looks like ,,).
-			\item[¦"’¦] for German right double quotes (looks like “).
-			\item[¦"<¦] for French left double quotes (looks like <<).
-			\item[¦">¦] for French right double quotes (looks like >>).
+			\item[¦"‘¦] for German-style left double quotes (looks like ,,).
+			\item[¦"’¦] for German-style right double quotes (looks like “).
+			\item[¦"<¦] for French-style left double quotes (looks like <<).
+			\item[¦">¦] for French-style right double quotes (looks like >>).
+	    \end{shorthands}
+    
+		There are also three shorthands for the Cyrillic dash (\textrussian{тире}), which is shorter than the
+		emdash but longer than the endash (namely 0.8\,em).
+		Note that, since it is not covered by unicode, this character is faked by telescoping two endashes:
+		\begin{shorthands}
+			\item[¦"---¦] Cyrillic dash for the use in normal text. This requires preceding space
+			in input (trailing space is optional) and prints with a non-breakable thin space before
+			and after the dash.
+			\item[¦"--\textasciitilde¦] Cyrillic dash for the use in compound names (surnames).
+			As opposed to ¦"---¦ this removes any space before and after the dash. 
+			\item[¦"--*¦] Cyrillic dash for denoting direct speech. This adds a larger space after
+			the dash. Space before the dash is output as is.
 		\end{shorthands}
 	\item \xpgchoicekey{numerals}{\xpgpresetvalue{arabic} or \xpgvalue{georgian}}
 		Uses either Arabic numerals or Georgian alphanumerical numbering.
@@ -1122,10 +1197,10 @@ and that passing \xpgvalue{babelshorthands} (without value) is equivalent to pas
 
 		There are also four shorthands for quotation signs:
 		\begin{shorthands}
-		\item[¦"`¦] for German left double quotes („)
-		\item[¦"'¦] for German right double quotes (“)
-		\item[¦"<¦] for French left double quotes («)
-		\item[¦">¦] for French right double quotes (»).
+		\item[¦"`¦] for German-style left double quotes („)
+		\item[¦"'¦] for German-style right double quotes (“)
+		\item[¦"<¦] for French-style left double quotes («)
+		\item[¦">¦] for French-style right double quotes (»).
 		\end{shorthands}
 	\item \xpgchoicekey[1.2.0]{script}{\xpgpresetvalue{latin} or \xpgvalue{blackletter}\new{1.46} (= \xpgvalue{fraktur})}
 		Setting ¦script=blackletter¦ adapts the captions for typesetting German in blackletter type (using the long s (ſ)
@@ -1441,18 +1516,30 @@ Currently, only the Khalkha variety in Cyrillic script is supported.
 	\begin{shorthands}
         \item[¦"-¦] adds a hyphenation point that does still allow for hyphenation at the points preset
 		           in the hyphenation patterns (as opposed to \cmd\-).
+		\item[¦"=¦] adds an explicit hyphen with a breakpoint, allowing for hyphenation at the
+		           other points preset in the hyphenation patterns (as opposed to plain ¦-¦).
 		\item[\texttt{"\textasciitilde}] for a hyphen sign without a breakpoint. Useful for
 		           cases where the hyphen should stick at the following syllable.
 		\item[¦"|¦] disables a ligature at this position.
 		\item[¦""¦] allows for a line break at this position (without hyphenation sign).
-		\item[¦"---¦] Cyrillic emdash in plain text.
-		\item[¦"--~¦] Cyrillic emdash in compound names (surnames).
-		\item[¦"--*¦] Cyrillic emdash for denoting direct speech.
 		\item[¦",¦] thinspace for initials with a breakpoint in following surname.
-		\item[¦"‘¦] for German left double quotes (looks like ,,).
-		\item[¦"’¦] for German right double quotes (looks like “).
-		\item[¦"<¦] for French left double quotes (looks like <<).
-		\item[¦">¦] for French right double quotes (looks like >>).
+		\item[¦"‘¦] for German-style left double quotes (looks like ,,).
+		\item[¦"’¦] for German-style right double quotes (looks like “).
+		\item[¦"<¦] for French-style left double quotes (looks like <<).
+		\item[¦">¦] for French-style right double quotes (looks like >>).
+    \end{shorthands}
+
+	There are also three shorthands for the Cyrillic dash (\textrussian{тире}), which is shorter than the
+	emdash but longer than the endash (namely 0.8\,em).
+	Note that, since it is not covered by unicode, this character is faked by telescoping two endashes:
+	\begin{shorthands}
+		\item[¦"---¦] Cyrillic dash for the use in normal text. This requires preceding space
+		in input (trailing space is optional) and prints with a non-breakable thin space before
+		and after the dash.
+		\item[¦"--\textasciitilde¦] Cyrillic dash for the use in compound names (surnames).
+		As opposed to ¦"---¦ this removes any space before and after the dash. 
+		\item[¦"--*¦] Cyrillic dash for denoting direct speech. This adds a larger space after
+		the dash. Space before the dash is output as is.
 	\end{shorthands}
 	\item \xpgchoicekey{numerals}{\xpgpresetvalue{arabic}, \xpgvalue{cyrillic-alph} or \xpgvalue{cyrillic-trad}}
           Uses either Arabic numerals or Cyrillic alphanumerical numbering. The two Cyrillic variants differ as follows:
@@ -1513,13 +1600,25 @@ Currently, only the Khalkha variety in Cyrillic script is supported.
 	\begin{shorthands}
 		\item[¦"-¦] adds a hyphenation point that does still allow for hyphenation at the points preset
 		           in the hyphenation patterns (as opposed to \cmd\-).
-		\item[\texttt{"\textasciitilde}] for a hyphen sign without a breakpoint. Useful for
+		\item[¦"=¦] adds an explicit hyphen with a breakpoint, allowing for hyphenation at the
+		           other points preset in the hyphenation patterns (as opposed to plain ¦-¦).
+		\item[\texttt{"\textasciitilde}] adds an explicit hyphen without a breakpoint. Useful for
 		           cases where the hyphen should stick at the following syllable.
 		\item[¦"|¦] disables a ligature at this position.
 		\item[¦""¦] allows for a line break at this position (without hyphenation sign).
-		\item[¦"---¦] Cyrillic emdash in plain text.
-		\item[¦"--~¦] Cyrillic emdash in compound names (surnames).
-		\item[¦"--*¦] Cyrillic emdash for denoting direct speech.
+	 \end{shorthands}
+
+	There are also three shorthands for the Cyrillic dash (\textrussian{тире}), which is shorter than the
+	emdash but longer than the endash (namely 0.8\,em).
+	Note that, since it is not covered by unicode, this character is faked by telescoping two endashes:
+	\begin{shorthands}
+		\item[¦"---¦] Cyrillic dash for the use in normal text. This requires preceding space
+		in input (trailing space is optional) and prints with a non-breakable thin space before
+		and after the dash.
+		\item[¦"--\textasciitilde¦] Cyrillic dash for the use in compound names (surnames).
+		As opposed to ¦"---¦ this removes any space before and after the dash. 
+		\item[¦"--*¦] Cyrillic dash for denoting direct speech. This adds a larger space after
+		the dash. Space before the dash is output as is.
 % These are commented out in gloss-russian
 %		\item[¦",¦] thinspace for initials with a breakpoint in following surname.
 %		\item[¦"‘¦] for German left double quotes (looks like ,,).
@@ -1527,6 +1626,10 @@ Currently, only the Khalkha variety in Cyrillic script is supported.
 %		\item[¦"<¦] for French left double quotes (looks like <<).
 %		\item[¦">¦] for French right double quotes (looks like >>).
 	\end{shorthands}
+    \item \xpgboolkeytrue[1.50]{forceheadingpunctuation}
+        By default, chapter and section numbers always have a trailing punctuation in Russian
+        (as in \emph{1.1.} as opposed to \emph{1.1}). If this option is set to false, \textsf{polyglossia}
+        will not touch heading punctuation, so this will be whatever the class or a package determines.
 	\item \xpgboolkeytrue[1.46]{indentfirst}
 		By default, all paragraphs are indented in Russian, also those after a
 		chapter or section heading. If this option is false, the latter paragraphs
@@ -1723,20 +1826,32 @@ that comes with this package.
 	If this is turned on, the following shorthands are activated:
 	\begin{shorthands}
 		\item[¦"-¦] adds a hyphenation point that does still allow for hyphenation at the points preset
-		in the hyphenation patterns (as opposed to \cmd\-).
+		     in the hyphenation patterns (as opposed to \cmd\-).
+		\item[¦"=¦] adds an explicit hyphen with a breakpoint, allowing for hyphenation at the
+		     other points preset in the hyphenation patterns (as opposed to plain ¦-¦).
 		\item[\texttt{"\textasciitilde}] for a hyphen sign without a breakpoint. Useful for
-		cases where the hyphen should stick at the following syllable.
+		     cases where the hyphen should stick at the following syllable.
 		\item[¦"|¦] disables a ligature at this position.
 		\item[¦""¦] allows for a line break at this position (without hyphenation sign).
-		\item[¦"---¦] Cyrillic emdash in plain text.
-		\item[¦"--~¦] Cyrillic emdash in compound names (surnames).
-		\item[¦"--*¦] Cyrillic emdash for denoting direct speech.
 		% These are commented out in gloss-ukrainian
 		%		\item[¦",¦] thinspace for initials with a breakpoint in following surname.
 		%		\item[¦"‘¦] for German left double quotes (looks like ,,).
 		%		\item[¦"’¦] for German right double quotes (looks like “).
 		%		\item[¦"<¦] for French left double quotes (looks like <<).
 		%		\item[¦">¦] for French right double quotes (looks like >>).
+	\end{shorthands}
+
+	There are also three shorthands for the Cyrillic dash (\textrussian{тире}), which is shorter than the
+	emdash but longer than the endash (namely 0.8\,em).
+	Note that, since it is not covered by unicode, this character is faked by telescoping two endashes:
+	\begin{shorthands}
+		\item[¦"---¦] Cyrillic dash for the use in normal text. This requires preceding space
+		in input (trailing space is optional) and prints with a non-breakable thin space before
+		and after the dash.
+		\item[¦"--\textasciitilde¦] Cyrillic dash for the use in compound names (surnames).
+		As opposed to ¦"---¦ this removes any space before and after the dash. 
+		\item[¦"--*¦] Cyrillic dash for denoting direct speech. This adds a larger space after
+		the dash. Space before the dash is output as is.
 	\end{shorthands}
 	\item \xpgchoicekey{numerals}{\xpgpresetvalue{arabic}, \xpgvalue{cyrillic-alph} or \xpgvalue{cyrillic-trad}}
 	      Uses either Arabic numerals or Cyrillic alphanumerical numbering. The two Cyrillic variants differ as follows:
@@ -2023,7 +2138,7 @@ footnotes at page boundaries that differ in directionality from the first footno
 Note also that the rule switches might interfere in bad ways with packages or classes that redefine footnotes themselves. This is also the reason
 why \cmd\autofootnoterule\ is not used by default.
 
-\condbreak{5\baselineskip}
+
 \section{Calendars}
 
 \subsection{Hebrew calendar (hebrewcal.sty)}
@@ -2161,9 +2276,9 @@ since we took over.
 In alphabetical order: \TA{Ignas Anikevicius}, \TA{Sina Ahmadi}, \TA{Wouter Bolsterlee}, \TA{Christian Buhtz},
 \TA{Zgarbul Andrey}, \TA{Oleg Domanov}, \TA{Philipp Gesang}, \TA{Kevin Godby}, \TA{Enrico Gregorio},
 \TA{Khaled Hosny}, \TA{Najib Idrissi}, user \TA{julroy67}, \TA{Dohyun Kim}, \TA{Phil Kime}, \TA{Mike Kroutikov},
-\TA{Ivan Kokan}, \TA{Caleb Maclennan}, \TA{José Mancera}, \TA{Yevgen Pogribnyi}, \TA{Will Robertson}, \TA{Maïeul Rouquette},
-\TA{Elie Roux}, \TA{Hugo Roy},  \TA{Guy Rutenberg}, \TA{Philipp Stephani}, \TA{Niranjan Tambe}, \TA{Keno Wehr},
-\TA{Dominik Wujastyk}, \TA{Sertaç Ö. Yıldız}, \TA{Maksim Zholudev}, \TA{Yan Zhou}, and \TA{Stefan Zlatinov}.
+\TA{Ivan Kokan}, \TA{Caleb Maclennan}, \TA{José Mancera}, \TA{Miquel Ortega}, \TA{Yevgen Pogribnyi}, \TA{Will Robertson},
+\TA{Maïeul Rouquette}, \TA{Elie Roux}, \TA{Hugo Roy},  \TA{Guy Rutenberg}, \TA{Philipp Stephani}, \TA{Niranjan Tambe},
+\TA{Keno Wehr}, \TA{Dominik Wujastyk}, \TA{Sertaç Ö. Yıldız}, \TA{Maksim Zholudev}, \TA{Yan Zhou}, and \TA{Stefan Zlatinov}.
 Their respective contributions can be identified from the contributor statistics on
 \href{https://github.com/reutenauer/polyglossia/graphs/contributors}{GitHub}.
 

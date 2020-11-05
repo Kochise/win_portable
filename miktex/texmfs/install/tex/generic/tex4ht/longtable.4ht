@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% longtable.4ht                         2019-12-19-14:27 %
+% longtable.4ht                         2020-06-16-13:36 %
 % Copyright (C) 1997-2009       Eitan M. Gurari         %
-% Copyright 2009-2019 TeX Users Group
+% Copyright 2009-2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -225,9 +225,27 @@
 \HLet\LT@caption\:tempc
 \def\:tempc#1#2#3{%
   \LT@mcol\LT@cols c{\hbox{\parbox[t]\LTcapwidth{%
-      \cptA: #1{\cap:ref{#2}}\if :#1:\else\cptB:\fi\cptC:#3\cptD:
+    \cptA: #1{\cap:ref{#2}}\if\relax\detokenize{#1}\relax\else\cptB:\fi\cptC:#3\cptD:
     \endgraf\vskip\baselineskip}}}}
 \HLet\LT@makecaption\:tempc
+\def\:tempc#1[#2]#3{%
+  \LT@makecaption#1\fnum@table{#3}%
+  \cur:lbl{}%
+  \def\@tempa{#2}%
+  \ifx\@tempa\@empty\else%
+  {\let\\\space%
+  \protect:wrtoc%
+  \edef\:temp{#2}%
+  \edef\:temp{\the\:tokwrite{\string\doTocEntry%
+  \string\toclot%
+  {\thetable}{\string\csname\space a:TocLink\string\endcsname%
+    {\FileNumber}{\cur:th \:currentlabel}{}{\ifx\:temp\empty\else \ignorespaces #2\fi}}%
+      {}\relax}}\:temp%
+  }%
+  \fi%
+}
+
+\HLet\LT@c@ption\:tempc
 
 \Hinput{longtable}
 \endinput

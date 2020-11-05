@@ -1,8 +1,8 @@
-%% The LaTeX package tcolorbox - version 4.31 (2020/07/31)
+%% The LaTeX package tcolorbox - version 4.42 (2020/10/09)
 %% tcolorbox.sty: Text color boxes
 %%
 %% -------------------------------------------------------------------------------------------
-%% Copyright (c) 2006-2019 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
+%% Copyright (c) 2006-2020 by Prof. Dr. Dr. Thomas F. Sturm <thomas dot sturm at unibw dot de>
 %% -------------------------------------------------------------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -18,8 +18,8 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{tcolorbox}[2020/07/31 version 4.31 text color boxes]
-\def\tcb@version{4.31}
+\ProvidesPackage{tcolorbox}[2020/10/09 version 4.42 text color boxes]
+\def\tcb@version{4.42}
 
 \RequirePackage{pgf}[2008/01/15]
 \RequirePackage{verbatim}[2003/08/22]
@@ -286,6 +286,46 @@
   parfillskip restore/false/.code={\let\tcb@parfillskip@check=\@empty},%
   before/.code={\def\kvtcb@beforebox{#1}\let\tcb@undo@before=\@empty\let\tcb@use@autoparskip=\relax},
   after/.code={\def\kvtcb@afterbox{#1}\let\tcb@use@autoparskip=\relax},
+  before skip balanced/.style={before={%
+    \ifnum\lastnodetype=-1\relax%
+    \else%
+      \par%
+      \ifvmode%
+        \iftcb@minipage%
+          \ifdim\parskip>\z@\relax%
+            \addvspace{-\parskip}%
+          \fi%
+        \else%
+          \ifdim\prevdepth<\z@\relax%
+            \tcbdimto\tcb@prevdepth{\prevdepth}%
+            \addvspace{\glueexpr#1-\parskip}%
+            \def\tcb@undo@before{\addvspace{-\glueexpr#1+\tcb@prevdepth}}%
+          \else%
+            \ifdim\prevdepth>.3\baselineskip\relax%
+              \tcbdimto\tcb@prevdepth{\prevdepth}%
+              \addvspace{\glueexpr#1-\parskip}%
+            \else%
+              \tcbdimto\tcb@prevdepth{.3\baselineskip}%
+              \addvspace{\glueexpr#1+.3\baselineskip-\prevdepth-\parskip}%
+            \fi%
+            \def\tcb@undo@before{\addvspace{-\glueexpr#1+\tcb@prevdepth}}%
+          \fi%
+        \fi%
+        \nointerlineskip%
+      \fi%
+    \fi%
+    \lineskip\z@skip%
+    \noindent%
+  }},
+  after skip balanced/.style={after={%
+    \tcb@parfillskip@check%
+    \par%
+    \ifvmode%
+      \prevdepth=.3\baselineskip%
+      \addvspace{\glueexpr#1-\parskip}%
+    \fi%
+  }},
+  beforeafter skip balanced/.style={before skip balanced={#1},after skip balanced={#1}},
   autoparskip/.code={\let\tcb@use@autoparskip=\tcb@use@auto@parskip},
   parskip/.style={before={\ifnum\lastnodetype=-1\relax\else\par%
       \ifvmode\edef\tcb@prevdepth{\the\glueexpr\prevdepth+\lineskip+\parskip}%
@@ -303,16 +343,29 @@
     \ifnum\lastnodetype=-1\relax%
     \else%
       \par%
-      \ifvmode\tcbdimto\tcb@prevdepth{\prevdepth}\nointerlineskip%
-        \addvspace{\glueexpr#1-\parskip}%
-        \def\tcb@undo@before{\addvspace{-\glueexpr#1+\tcb@prevdepth}}%
+      \ifvmode%
+        \iftcb@minipage%
+          \ifdim\parskip>\z@\relax%
+            \addvspace{-\parskip}%
+          \fi%
+        \else%
+          \tcbdimto\tcb@prevdepth{\prevdepth}%
+          \addvspace{\glueexpr#1-\parskip}%
+          \def\tcb@undo@before{\addvspace{-\glueexpr#1+\tcb@prevdepth}}%
+        \fi%
+        \nointerlineskip%
       \fi%
     \fi%
-    \lineskip\z@skip\noindent%
+    \lineskip\z@skip%
+    \noindent%
     }},
   after skip/.style={after={%
-    \tcb@parfillskip@check\par\ifvmode\nointerlineskip%
-    \addvspace{\glueexpr#1-\parskip}\fi%
+    \tcb@parfillskip@check%
+    \par%
+    \ifvmode%
+      \nointerlineskip%
+      \addvspace{\glueexpr#1-\parskip}%
+    \fi%
     }},
   beforeafter skip/.style={before skip={#1},after skip={#1}},
   before nobreak/.store in=\kvtcb@beforebox@nobreak,
@@ -400,7 +453,7 @@
   halign title/center/.code={\let\kvtcb@haligntitle=\tcb@raggedcenter@plain},
   halign title/justify/.code={\let\kvtcb@haligntitle=\@empty},
   %
-  valign scale limit/.store in=\kvtcbv@valignscalelimit,
+  valign scale limit/.store in=\kvtcb@valignscalelimit,
   valign scale limit=1.1,
   valign/.is choice,
   valign/top/.code={\def\kvtcb@valignupper{top}},
@@ -658,7 +711,10 @@
     \let\tcb@savebox=\tcb@lrbox%
     \let\endtcb@savebox=\endtcb@lrbox%
     \let\tcb@defToTotalHeight=\tcb@defToTotalHeightStandard%
-    \let\tcb@drawcolorbox=\tcb@drawcolorbox@standalone},
+    \let\tcb@drawcolorbox=\tcb@drawcolorbox@standalone%
+    \def\tcb@upperdraw@begin@hook{\color{tcbcolupper}}%
+    \def\tcb@lowerdraw@begin@hook{\color{tcbcollower}}%
+  },
   code/.code={#1},
   capture/.store in=\kvtcb@capture,%
   hbox/.style={capture=hbox},%
@@ -815,10 +871,10 @@
 \let\endtcb@savebox=\endtcb@lrbox
 
 \def\tcb@saveupperbox{%
-\begin{tcb@savebox}{\tcb@upperbox}{\tcb@w@upper}\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper}
+\begin{tcb@savebox}{\tcb@upperbox}{\tcb@w@upper}\tcb@lua@color{tcbcolupper}\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper}
 
 \def\tcb@savelowerbox{%
-\begin{tcb@savebox}{\tcb@lowerbox}{\tcb@w@lower}\kvtcb@fontlower\kvtcb@halignlower\tcb@insert@before@lower}
+\begin{tcb@savebox}{\tcb@lowerbox}{\tcb@w@lower}\tcb@lua@color{tcbcollower}\kvtcb@fontlower\kvtcb@halignlower\tcb@insert@before@lower}
 
 
 % counter for float
@@ -834,6 +890,11 @@
   \tcbset{autoparskip/.style=noparskip}%
 \fi%
 \tcb@use@autoparskip%
+\ifx\luacolorProcessBox\@undefined%
+  \def\tcb@lua@color#1{}%
+\else%
+  \def\tcb@lua@color#1{\color{#1}}%
+\fi%
 }
 
 \long\def\tcb@colorbox{%
@@ -1111,11 +1172,8 @@
   \let\tcbtextheight\tcb@zpt%
   \let\tcbtextwidth\tcb@zpt%
   \tcbset{#1}\tcb@lateoptions@hook\tcb@afteroptions@hook%
-  \if@nobreak%
-    \let\iftcb@nobreak\@firstoftwo%
-  \else%
-    \let\iftcb@nobreak\@secondoftwo%
-  \fi%
+  \let\iftcb@minipage\if@minipage%
+  \let\iftcb@nobreak\if@nobreak%
 }
 
 \long\def\tcb@@icolorbox[#1]{%
@@ -1136,7 +1194,7 @@
 }
 
 \def\tcb@finalize@environment{%
-  %\color{.}% hack for some special cases
+  %\color{.}% hack for xelatex
   \tcb@layer@dec%
 }
 
@@ -1271,11 +1329,11 @@
   \iftcb@lowerspace\tcb@ch@fixed@both\else\tcb@ch@fixed@upper\fi%
 }
 
-\def\tcb@dbox@top#1#2#3#4#5{\pgftext[x=#1,y=#2+#3,left,top]{\color{#5}\box#4}}%
+\def\tcb@dbox@top#1#2#3#4#5{\pgftext[x=#1,y=#2+#3,left,top]{#5}}
 
-\def\tcb@dbox@bottom#1#2#3#4#5{\pgftext[x=#1,y=#2,left,bottom]{\color{#5}\box#4}}%
+\def\tcb@dbox@bottom#1#2#3#4#5{\pgftext[x=#1,y=#2,left,bottom]{#5}}
 
-\def\tcb@dbox@center#1#2#3#4#5{\pgftext[x=#1,y=#2+#3/2,left]{\color{#5}\box#4}}%
+\def\tcb@dbox@center#1#2#3#4#5{\pgftext[x=#1,y=#2+#3/2,left]{#5}}
 
 \def\tcb@resize@box#1#2#3{%
   \setbox#1\hbox{\resizebox*{#2}{#3}{\box#1}}%
@@ -1289,18 +1347,18 @@
     \tcbdimto\tcb@box@h@target{#3}%
     \tcb@resize@box{#4}{\tcb@box@w@target}{\tcb@box@h@target}%
   \fi%
-  \pgftext[x=#1,y=#2+#3,left,top]{\color{#5}\box#4}}%
+  \pgftext[x=#1,y=#2+#3,left,top]{#5}}%
 
 \def\tcb@dbox@resizelimited#1#2#3#4#5{%
   \iftcb@fixedheight%
     \tcbdimto\tcb@box@w@target{\wd#4}%
-    \tcbdimto\tcb@box@h@target{\kvtcbv@valignresizelimit\dimexpr(\ht#4+\dp#4)}%
+    \tcbdimto\tcb@box@h@target{\kvtcb@valignscalelimit\dimexpr(\ht#4+\dp#4)}%
     \ifdim\dimexpr\tcb@box@h@target>#3\relax%
       \tcbdimto\tcb@box@h@target{#3}%
     \fi%
     \tcb@resize@box{#4}{\tcb@box@w@target}{\tcb@box@h@target}%
   \fi%
-  \pgftext[x=#1,y=#2+#3,left,top]{\color{#5}\box#4}}%
+  \pgftext[x=#1,y=#2+#3,left,top]{#5}}%
 
 \let\tcb@pgfprocess@@specialround@orig=\pgfprocess@@specialround
 
@@ -1566,7 +1624,7 @@
     \pgfsetfillopacity{\kvtcb@opacitytitle}%
     \pgftext[x=\the\dimexpr\kvtcb@left@rule+\kvtcb@boxsep+\kvtcb@lefttitle\relax,
              y=\the\dimexpr\tcb@height-\kvtcb@top@rule-\kvtcb@boxsep-\kvtcb@toptitle\relax,
-             left,top]{\color{tcbcoltitle}\box\tcb@titlebox}%
+             left,top]{\color@begingroup\color{tcbcoltitle}\box\tcb@titlebox\color@endgroup}%
     \end{pgfscope}%
   \fi\fi%
 }
@@ -1578,7 +1636,9 @@
     \pgfsetfillopacity{\kvtcb@opacityupper}%
     \csname tcb@dbox@\kvtcb@valignupper\endcsname{\the\dimexpr\kvtcb@left@rule+\kvtcb@boxsep+\kvtcb@leftupper\relax}%
             {\the\dimexpr\tcb@innerheight+\kvtcb@bottom@rule-\kvtcb@boxsep-\tcb@break@topsep-\kvtcb@top-\tcb@height@upper\relax}%
-            {\tcb@height@upper}{\tcb@upperbox}{tcbcolupper}%
+            {\tcb@height@upper}{\tcb@upperbox}{%
+              \color@begingroup\tcb@upperdraw@begin@hook\box\tcb@upperbox\tcb@upperdraw@end@hook\color@endgroup%
+            }%
     \end{pgfscope}%
   \fi%
 }
@@ -1590,7 +1650,9 @@
     \pgfsetfillopacity{\kvtcb@opacitylower}%
     \csname tcb@dbox@\kvtcb@valignlower\endcsname{\the\dimexpr\kvtcb@left@rule+\kvtcb@boxsep+\kvtcb@leftlower\relax}%
             {\the\dimexpr\kvtcb@bottom@rule+\kvtcb@boxsep+\tcb@break@bottomsep+\kvtcb@bottom\relax}%
-            {\tcb@height@lower}{\tcb@lowerbox}{tcbcollower}%
+            {\tcb@height@lower}{\tcb@lowerbox}{%
+              \color@begingroup\tcb@lowerdraw@begin@hook\box\tcb@lowerbox\tcb@lowerdraw@end@hook\color@endgroup%
+            }%
     \end{pgfscope}%
   \fi%
 }
@@ -1695,11 +1757,11 @@
 
 \def\tcb@set@normal@unbroken@beforeafter{%
   \let\tcb@before@unbroken=\kvtcb@beforebox%
-  \iftcb@nobreak{%
+  \iftcb@nobreak%
     \iftcb@ignorenobreak\else%
       \let\tcb@before@unbroken=\kvtcb@beforebox@nobreak%
     \fi%
-  }{}%
+  \fi%
   \let\tcb@after@unbroken=\kvtcb@afterbox%
 }
 
@@ -1765,7 +1827,10 @@
   \tcb@set@@phantom%
   \colorlet{tcbcol@origin}{.}%
   \tcb@set@color{tcbcolupper}%
-  \sbox\tcb@upperbox{\tcb@embed@tcbox{\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper#1\tcb@insert@after@upper}}%
+  \sbox\tcb@upperbox{\tcb@embed@tcbox{%
+    \csname tcb@parbox@use@\kvtcb@parbox\endcsname%
+    \@parboxrestore%
+    \tcb@lua@color{tcbcolupper}\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper#1\tcb@insert@after@upper}}%
   \tcb@reset@color%
   \tcbdimto\tcb@val@raisebase{\the\dimexpr\dp\tcb@upperbox+\kvtcb@bottom+\kvtcb@boxsep+\kvtcb@bottom@rule@stand+\kvtcb@bbbottom@stand\relax}%
   \tcbdimto\kvtcb@width{\wd\tcb@upperbox+\kvtcb@left@rule+\kvtcb@leftupper+\kvtcb@boxsep*2+\kvtcb@rightupper+\kvtcb@right@rule}%
@@ -1783,7 +1848,7 @@
   \tcb@set@@dimensions%
   \colorlet{tcbcol@origin}{.}%
   \tcb@set@color{tcbcolupper}%
-  \begin{tcb@savebox}{\tcb@upperbox}{\tcb@w@upper}\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper#1\tcb@insert@after@upper\end{tcb@savebox}%
+  \begin{tcb@savebox}{\tcb@upperbox}{\tcb@w@upper}\tcb@lua@color{tcbcolupper}\kvtcb@fontupper\kvtcb@halignupper\tcb@insert@before@upper#1\tcb@insert@after@upper\end{tcb@savebox}%
   \tcb@reset@color%
   \tcb@hasLowerfalse%
   \tcb@draw@color@box%
@@ -2162,9 +2227,18 @@
 \tcbset{%
   initialize@reset/.code={\tcbset{#1}\appto\tcb@reset{\tcbset{#1}}},%
   reset/.code={\tcb@reset},%
-  reset@core/.style={code={\let\tcbtitletext\@empty\tcb@attach@title@code@%
-    \let\tcb@lateoptions@hook\@empty},
-    width=\linewidth,autoparskip,arc is curved,
+  reset@core/.style={%
+    code={%
+      \let\tcbtitletext\@empty%
+      \tcb@attach@title@code@%
+      \let\tcb@lateoptions@hook\@empty%
+      \let\tcb@upperdraw@begin@hook\@empty%
+      \let\tcb@upperdraw@end@hook\@empty%
+      \let\tcb@lowerdraw@begin@hook\@empty%
+      \let\tcb@lowerdraw@end@hook\@empty%
+    },
+    breakable@false,
+    width=\linewidth,beforeafter skip balanced=0.5\baselineskip plus 2pt,arc is curved,
     natural height,height plus=0pt,space to lower,valign=top,valign lower=top,
     size=normal,rounded corners,parfillskip restore,
     enlarge top by=0mm,enlarge bottom by=0mm,enlarge left by=0mm,enlarge right by=0mm,

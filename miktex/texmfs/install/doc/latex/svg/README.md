@@ -5,7 +5,9 @@
  Copyright (C) Philip Ilten <philten@cern.ch>, 2012-2016<br>
  Copyright (C) Falk Hanisch <hanisch.latex@outlook.com>, 2017-2020
 
- **svg 2020/06/23 v2.02h**
+ **svg 2020/10/23 v2.02j**
+ 
+ The current release is shiped via CTAN: https://www.ctan.org/pkg/svg
 
 ----------------------------------------------------------------------------
 
@@ -39,16 +41,22 @@ can be invoked.
 Versions
 --------
 
+**v2.02j** (2020/10/23)
++ bug fix for automatic version detection of ***Inkscape*** with ***MiKTeX***
+
+**v2.02i** (2020/09/29)
++ update for package **scrlfile** v3.32 and kernel (2020/10/01)
+
 **v2.02h** (2020/06/23)
 + hot fix for package **transparent**, 
   see https://github.com/mrpiggi/svg/issues/28
-  
+
 **v2.02g** (2020/06/12)
-+ hot fix for including files with mutliple dots in it's names, 
++ hot fix for including files with multiple dots in its names, 
   see https://github.com/mrpiggi/svg/issues/27
 
 **v2.02f** (2020/05/07)
-+ support for ***Inkscape*** 1.0
++ support for ***Inkscape&nbsp;1.0*** CLI
 
 **v2.02e** (2020/01/13)
 + fixes for new version of package **scrbase**
@@ -72,7 +80,7 @@ Versions
 + distortion of included and extracted graphics supported with options `distort`
   (or `keepaspectratio`) and `extractdistort` as well as rotation for
   extractions (`extractangle`)
-+ fixed errors with active double qoutes from **babel** in path arguments
++ fixed errors with active double quotes from **babel** in path arguments
 + multiple dots within file names possible
 + package **trimspaces** required
 

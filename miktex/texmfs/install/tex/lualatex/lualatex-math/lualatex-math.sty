@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright 2011-2017 Philipp Stephani
+%% Copyright 2011-2020 Philipp Stephani
 %% 
 %% This file may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either
@@ -20,14 +20,13 @@
 %% and version 1.3c or later is part of all distributions of
 %% LaTeX version 2009/09/24 or later.
 %% 
-\NeedsTeXFormat{LaTeX2e}[2009/09/24]
+\NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \RequirePackage{expl3}[2018/06/18]
-\ProvidesExplPackage{lualatex-math}{2019/01/21}{1.8}%
+\ProvidesExplPackage{lualatex-math}{2020/09/25}{1.9}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
   { \RequirePackage { luatexbase } [ 2010/05/27 ] }
-\RequirePackage { filehook } [ 2011/03/09 ]
 \directlua{require("lualatex-math")}
 \cs_new_nopar:Npn \__lltxmath_restore_catcode:N #1 {
   \char_set_catcode:nn { \int_eval:n { `#1 } }
@@ -88,9 +87,28 @@
   }
   \scan_stop:
 }
+\@ifl@t@r \fmtversion { 2020/10/01 } {
+  \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
+    \AddToHook { package/before/#1 } { #2 }
+  }
+  \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
+    \AddToHook { package/after/#1 } { #2 }
+  }
+} {
+  \RequirePackage { filehook } [ 2011/03/09 ]
+  \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
+    \AtBeginOfPackageFile { #1 } { #2 }
+  }
+  \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
+    \AtEndOfPackageFile { #1 } { #2 }
+  }
+}
+\cs_new_protected_nopar:Npn \__lltxmath_after_package_or_now:nn #1 #2 {
+  \@ifpackageloaded { #1 } { #2 } { \__lltxmath_after_package:nn { #1 } { #2 } }
+}
 \AtEndPreamble {
   \@ifpackageloaded { amsmath } { } {
-    \__lltxmath_patch:NNnnn \frac \cs_set_nopar:Npn { #1 #2 } {
+    \__lltxmath_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
       {
         \begingroup #1 \endgroup \over #2
       }
@@ -105,103 +123,113 @@
 \int_const:Nn \c__lltxmath_std_equal_mathcode_int { "303D }
 \tl_new:N \l__lltxmath_minus_mathchar
 \tl_new:N \l__lltxmath_equal_mathchar
-\AtBeginOfPackageFile { amsmath } {
-  \__lltxmath_set_mathchar:NN \l__lltxmath_minus_mathchar \-
-  \__lltxmath_set_mathchar:NN \l__lltxmath_equal_mathchar \=
-  \char_set_mathcode:nn { `\- } { \c__lltxmath_std_minus_mathcode_int }
-  \char_set_mathcode:nn { `\= } { \c__lltxmath_std_equal_mathcode_int }
-  \AtEndOfPackageFile { amsmath } {
-    \cs_set_eq:NN \std@minus \l__lltxmath_minus_mathchar
-    \cs_set_eq:NN \std@equal \l__lltxmath_equal_mathchar
-    \Umathcodenum `\- \l__lltxmath_minus_mathchar
-    \Umathcodenum `\= \l__lltxmath_equal_mathchar
+\__lltxmath_before_package:nn { amsmath } {
+  \@ifpackagelater { amsmath } { 2020/08/24 } { } {
+    \__lltxmath_set_mathchar:NN \l__lltxmath_minus_mathchar \-
+    \__lltxmath_set_mathchar:NN \l__lltxmath_equal_mathchar \=
+    \char_set_mathcode:nn { `\- } { \c__lltxmath_std_minus_mathcode_int }
+    \char_set_mathcode:nn { `\= } { \c__lltxmath_std_equal_mathcode_int }
+    \__lltxmath_after_package:nn { amsmath } {
+      \cs_set_eq:NN \std@minus \l__lltxmath_minus_mathchar
+      \cs_set_eq:NN \std@equal \l__lltxmath_equal_mathchar
+      \Umathcodenum `\- \l__lltxmath_minus_mathchar
+      \Umathcodenum `\= \l__lltxmath_equal_mathchar
+    }
   }
 }
-\AtEndOfPackageFile * { amsmath } {
-  \tl_replace_once:Nnn \@begindocumenthook {
-    \mathchardef \std@minus \mathcode `\- \relax
-    \mathchardef \std@equal \mathcode `\= \relax
-  } {
-    \__lltxmath_set_mathchar:NN \std@minus \-
-    \__lltxmath_set_mathchar:NN \std@equal \=
-  }
-  \__lltxmath_patch:NNnnn \subarray \cs_set:Npn { #1 } {
-    \vcenter
-    \bgroup
-    \Let@
-    \restore@math@cr
-    \default@tag
-    \baselineskip \fontdimen 10~ \scriptfont \tw@
-    \advance \baselineskip \fontdimen 12~ \scriptfont \tw@
-    \lineskip \thr@@ \fontdimen 8~ \scriptfont \thr@@
-    \lineskiplimit \lineskip
-    \ialign
-    \bgroup
-    \ifx c #1 \hfil \fi
-    $ \m@th \scriptstyle ## $
-    \hfil
-    \crcr
-  } {
-    \vcenter
-    \c_group_begin_token
-    \Let@
-    \restore@math@cr
-    \default@tag
-    \skip_set:Nn \baselineskip {
-      \Umathstacknumup \scriptstyle
-      + \Umathstackdenomdown \scriptstyle
-    }
-    \lineskip \Umathstackvgap \scriptstyle
-    \lineskiplimit \lineskip
-    \ialign
-    \c_group_begin_token
-    \token_if_eq_meaning:NNT c #1 { \hfil }
-    \Ustartmath
-    \m@th
-    \scriptstyle
-    \tex_alignmark:D \tex_alignmark:D
-    \Ustopmath
-    \hfil
-    \crcr
-  }
-  \__lltxmath_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
-    {
-      \begingroup #1 \endgroup \@@over #2
-    }
-  } {
-    {
-      \Ustack { \group_begin: #1 \group_end: \@@over #2 }
+\__lltxmath_after_package_or_now:nn { amsmath } {
+  \@ifpackagelater { amsmath } { 2020/08/24 } { } {
+    \tl_replace_once:Nnn \@begindocumenthook {
+      \mathchardef \std@minus \mathcode `\- \relax
+      \mathchardef \std@equal \mathcode `\= \relax
+    } {
+      \__lltxmath_set_mathchar:NN \std@minus \-
+      \__lltxmath_set_mathchar:NN \std@equal \=
     }
   }
-  \__lltxmath_patch:cNnnn { genfrac~ } \cs_set:Npn {
-    #1 #2 #3 #4 #5 #6
-  } {
-    {
-      \@mathstyle { #4 }
-      \genfrac@choice o { #1 }
-      {
-        \begingroup #5 \endgroup
-        \ifx @ #3 @ \@@over \else \@@above \fi #3 \relax
-        #6
+  \@ifpackagelater { amsmath } { 2020/09/23 } { } {
+    \__lltxmath_patch:NNnnn \subarray \cs_set:Npn { #1 } {
+      \vcenter
+      \bgroup
+      \Let@
+      \restore@math@cr
+      \default@tag
+      \baselineskip \fontdimen 10~ \scriptfont \tw@
+      \advance \baselineskip \fontdimen 12~ \scriptfont \tw@
+      \lineskip \thr@@ \fontdimen 8~ \scriptfont \thr@@
+      \lineskiplimit \lineskip
+      \ialign
+      \bgroup
+      \ifx c #1 \hfil \fi
+      $ \m@th \scriptstyle ## $
+      \hfil
+      \crcr
+    } {
+      \vcenter
+      \c_group_begin_token
+      \Let@
+      \restore@math@cr
+      \default@tag
+      \skip_set:Nn \baselineskip {
+        \Umathstacknumup \scriptstyle
+        + \Umathstackdenomdown \scriptstyle
       }
-      \genfrac@choice c { #2 }
+      \lineskip \Umathstackvgap \scriptstyle
+      \lineskiplimit \lineskip
+      \ialign
+      \c_group_begin_token
+      \token_if_eq_meaning:NNT c #1 { \hfil }
+      \Ustartmath
+      \m@th
+      \scriptstyle
+      \alignmark \alignmark
+      \Ustopmath
+      \hfil
+      \crcr
     }
-  } {
-    {
-      \@mathstyle { #4 }
-      \genfrac@choice o { #1 }
+    \__lltxmath_patch:cNnnn { frac~ } \cs_set:Npn { #1 #2 } {
       {
-        \Ustack {
-          \group_begin: #5 \group_end:
-          \tl_if_empty:nTF { #3 } { \@@over } { \@@above #3 \scan_stop: }
+        \begingroup #1 \endgroup \@@over #2
+      }
+    } {
+      {
+        \Ustack { \group_begin: #1 \group_end: \@@over #2 }
+      }
+    }
+    \__lltxmath_patch:cNnnn { genfrac~ } \cs_set:Npn {
+      #1 #2 #3 #4 #5 #6
+    } {
+      {
+        \@mathstyle { #4 }
+        \genfrac@choice o { #1 }
+        {
+          \begingroup #5 \endgroup
+          \ifx @ #3 @ \@@over \else \@@above \fi #3 \relax
           #6
         }
+        \genfrac@choice c { #2 }
       }
-      \genfrac@choice c { #2 }
+    } {
+      {
+        \@mathstyle { #4 }
+        \genfrac@choice o { #1 }
+        {
+          \Ustack {
+            \group_begin: #5 \group_end:
+            \tl_if_empty:nTF { #3 } {
+              \@@over
+            } {
+              \@@above #3 \scan_stop:
+            }
+            #6
+          }
+        }
+        \genfrac@choice c { #2 }
+      }
     }
   }
 }
-\AtEndOfPackageFile * { mathtools } {
+\__lltxmath_after_package_or_now:nn { mathtools } {
   \__lltxmath_patch:NNnnn \MT_cramped_internal:Nn
     \cs_set_nopar:Npn { #1 #2 } {
     \sbox \z@ {
@@ -234,12 +262,12 @@
   } {
     {
       \ensuremath {
-        \use:c { luatex_cramped \cs_to_str:N #1 :D } #2
+        \use:c { cramped \cs_to_str:N #1 } #2
       }
     }
   }
 }
-\AtEndOfPackageFile * { icomma } {
+\__lltxmath_after_package_or_now:nn { icomma } {
   \tl_replace_once:Nnn \@begindocumenthook {
     \mathchardef \mathcomma \mathcode `\,
   } {

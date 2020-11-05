@@ -1,4 +1,4 @@
-% {\tt\catcode`\$=12 $Id: modes.mf,v 1.27 2020/01/30 16:58:51 karl Exp $ }
+% {\tt\catcode`\$=12 $Id: modes.mf,v 1.29 2020/09/08 22:12:43 karl Exp $ }
 %%\font\tenlogosl=logosl10
 %%\def\logofont{\ifdim\fontdimen1\font>0pt \tenlogosl\else\tenlogo\fi}
 %%\def\MF{{\logofont META}\-{\logofont FONT}}
@@ -48,11 +48,11 @@
 %%\begingroup \tt \catcode`\{=12 \catcode`\}=12 \obeyspaces
 % @mffile{
 %   author = "The Metafont community",
-%   version = "4.1",
-%   date = "Thu Jan 30 08:59:07 PST 2020"
+%   version = "4.2",
+%   date = "Tue Sep  8 15:13:58 PDT 2020"
 %   filename = "modes.mf",
 %   email = "tex-fonts@math.utah.edu"
-%   checksum = "2627 13058 95921",
+%   checksum = "2662 13333 97582",
 %   codetable = "ISO/ASCII",
 %   supported = "yes",
 %   docstring = "
@@ -73,10 +73,9 @@
 % and/or |mode_setup|, even better; right now, the amount of memory
 % used is approximately four times the length of the |mode_def| names.
 %
-% The primary names are intentionally all eight characters or less, and
-% strictly lowercase. This makes it feasible to use them for portable
-% directory names, and the \TeX\ Directory Structure standard recommends
-% doing so. The synonyms are historical equivalents.
+% The primary names are strictly lowercase. This makes it feasible to use
+% them for portable directory names, and the \TeX\ Directory Structure
+% standard recommends doing so. The synonyms are historical equivalents.
 %
 % It also makes definitions to put specials identifying the mode in
 % the \MF\ GF output, and to put the coding scheme and
@@ -432,10 +431,10 @@
 
 % Don't let ourselves be processed twice.
 if known modes_mf: endinput; fi;
-modes_mf := 4.1;
+modes_mf := 4.2;
 
 % Identify ourselves in the format file.
-base_version := base_version & "/modes 4.1";
+base_version := base_version & "/modes 4.2";
 
 % Here are useful macros (also called definitions) we use throughout.
 
@@ -1295,6 +1294,42 @@ mode_def highfax =                  %\[ G3fax (200dpi)
   mode_common_setup_;
 enddef;
 hifax := highfax;
+
+% Martin Ruckert, 7 September 2020.
+% 600dpi is much higher resolution than currently available on laptops
+% or mobile devices, but they do do antialiasing. Here are some words
+% from Martin about it:
+%
+% PK fonts are strictly black and white. On real paper, the ink dots will
+% be fuzzy at the edges smoothing the outline. On electronic devices, a
+% black and white font does look jagged (unless the device resolution is
+% very high). So it is better to produce a black and white font at a
+% higher resolution and let the graphics card scale it down to the device
+% resolution. At the edges then one device pixel will correspond to
+% several font pixels and the graphics card will average over these pixels
+% and produce a gray value. The fonts then look much smoother. 600dpi is a
+% good compromise. The font is not too big, and it will still look nice.
+% If the device resolution is e.g. only 300dpi, 4 pixel in the font will
+% map to one pixel on the screen. So around the edges you get 5 different
+% gray-levels from all black (0) to all white (4). If the device
+% resolution is even lower, the shading at the edges uses even more gray
+% values. |blacker| is the only parameter with much effect here.
+mode_def hitexlaptop =              %\[ Hi\TeX\ (HINT) laptop (600dpi)
+  mode_param (pixels_per_inch, 600);
+  mode_param (blacker, 0.6);
+  mode_param (fillin, 0.2);
+  mode_param (o_correction, .4);
+  mode_common_setup_;
+enddef;
+
+% Martin Ruckert, 7 September 2020. See above.
+mode_def hitexmobile =              %\[ Hi\TeX\ (HINT) mobile (600dpi)
+  mode_param (pixels_per_inch, 600);
+  mode_param (blacker, 1.6);
+  mode_param (fillin, 0.2);
+  mode_param (o_correction, .4);
+  mode_common_setup_;
+enddef;
 
 % {\tt brumski+@osu.edu}, 27 August 1993.
 mode_def hprugged =                 %\[ HP RuggedWriter 480 (180dpi)

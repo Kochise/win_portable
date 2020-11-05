@@ -1,6 +1,6 @@
-% latex.4ht (2019-08-26-14:22), generated from tex4ht-4ht.tex
+% latex.4ht (2020-10-03-14:24), generated from tex4ht-4ht.tex
 % Copyright 1997-2009 Eitan M. Gurari
-% Copyright 2009-2019 TeX Users Group
+% Copyright 2009-2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-08-26-14:22}
+\immediate\write-1{version 2020-10-03-14:24}
 
 \ifx\SaveMkHalignConf:g\:UnDef \else \expandafter\endinput\fi
 
@@ -35,10 +35,15 @@
 \let\end\o:end
 \let\o:end\:UnDef
 \let\o:enddocumenthook\@enddocumenthook
-\def\@enddocumenthook{\HtmlEnv
+\def\:enddocumenthook{\HtmlEnv
    \Configure{newpage}{}%
    \o:enddocumenthook
    \at:docend  \csname export:hook\endcsname  }
+\ifdefined\AddToHook%
+ \AddToHook{enddocument} {\HtmlEnv\Configure{newpage}{}\at:docend  \csname export:hook\endcsname}
+\else%
+  \let\@enddocumenthook\:enddocumenthook
+\fi
 
 \expandafter\ifx \csname pageno\endcsname\relax
                  \let\pageno\c@page   \fi
@@ -770,22 +775,29 @@
 \HLet\overline\:temp
 \NewConfigure{overline}{2}
 
-\def\:tempc{\csname a:>\endcsname} \HLet\>\:tempc
-\def\:tempc{\csname a:;\endcsname} \HLet\;\:tempc
-\def\:tempc{\csname a:!\endcsname} \HLet\!\:tempc
-\def\:tempc{\csname a::\endcsname} \HLet\:\:tempc
-\NewConfigure{>}{1} \Configure{>}{\csname o:>\endcsname}
-\NewConfigure{;}{1} \Configure{;}{\csname o:;\endcsname}
-\NewConfigure{!}{1} \Configure{!}{\csname o:!\endcsname}
-\NewConfigure{:}{1} \Configure{:}{\csname o::\endcsname}
-\def\:tempc{\relax\ifmmode\csname a:,\endcsname\else\thinspace\fi}
-\expandafter\HLet\csname , \endcsname=\:tempc
-\def\:tempc{\relax
-  \ifmmode\csname a:,\endcsname\expandafter\:gobble\fi
-  \o:thinspace: }
-\HLet\thinspace=\:tempc
+\NewConfigure{;}{1}
+\NewConfigure{!}{1}
+\NewConfigure{:}{1}
 \NewConfigure{,}{1}
+\NewConfigure{>}{1}
+\DeclareRobustCommand\:tmspace[2]{%
+  \ifmmode\expandafter\csname a:#1\endcsname%
+  \else\leavevmode@ifvmode\kern#2\fi\relax%
+}
+\DeclareRobustCommand\,{\:tmspace{,}{.16667em}}
+\DeclareRobustCommand\;{\:tmspace;{.2777em}}
+\DeclareRobustCommand\!{\:tmspace!{-.16667em}}
+\DeclareRobustCommand\:{\:tmspace{:}{.2222em}}
+\DeclareRobustCommand\>{\:tmspace;{.2222em}}
+\let\thinspace\,
+\let\medspace\:
+\let\negthinspace\!
+\let\thickspace\;
 \Configure{,}{\mskip\thinmuskip}
+\Configure{;}{\mskip\thickmuskip}
+\Configure{!}{\mskip-\thinmuskip}
+\Configure{:}{\mskip\medmuskip}
+\Configure{>}{\mskip\medmuskip}
 \def\:temp{\csname a:'\endcsname
    \bgroup \aftergroup\:pr@m@s
 \prim@s}
@@ -1054,7 +1066,7 @@ $\vcenter
 \HLet\@stopline\:tempc
 \let\:tempc\kill
 \pend:def\:tempc{%
-  \@stopfield
+  \bgroup\@stopfield%
   \tmp:dim  \if@rjfield \the\wd\@curfield\else \z@\fi
 \tmp:dim\m:tab\tmp:dim
 \xdef\locs:tab{\locs:tab\space 0 }%
@@ -1513,7 +1525,6 @@ $\vcenter
 \HLet\@xfootnotenext\:tempc
 \def\:temp#1{%
   {\m@th\ensuremath{^{\mbox{\fontsize\sf@size\z@#1}}}}}
-\ifx \@textsuperscript\:temp
   \def\:tempc#1{{\m@th
      \ifmmode {\HCode{}}\sp {\mbox{\fontsize\sf@size\z@#1}}%
      \else
@@ -1521,14 +1532,12 @@ $\vcenter
            {\mbox{#1}}\b:textsuperscript
      \fi }}
   \HLet\@textsuperscript\:tempc
-\fi
 \NewConfigure{textsuperscript}{2}
 \Configure{textsuperscript}
    {$\relax{\HCode{}}\sp}
    {$}
 \def\:temp#1{%
    {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
-\ifx \@textsubscript\:temp
   \def\:tempc#1{{\m@th%
      \ifmmode {\HCode{}}\sb {\mbox{\fontsize\sf@size\z@#1}}%
      \else%
@@ -1536,7 +1545,6 @@ $\vcenter
            {\mbox{#1}}\b:textsubscript%
      \fi }}
   \HLet\@textsubscript\:tempc
-\fi
 \NewConfigure{textsubscript}{2}
 \Configure{textsubscript}
    {$\relax{\HCode{}}\sb}
@@ -1983,8 +1991,10 @@ $\vcenter
 \NewConfigure{ }[1]{\def\:temp{#1}%
    \ifx \:temp\empty \let\a:sp\sp:c\else\def\a:sp{#1}\fi}
 \def\:nbsp{\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}
+\def\:ensp{\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}
 \Configure{ }{\:nbsp}
 
+\let\nobreakspace\:nbsp
 
 
    

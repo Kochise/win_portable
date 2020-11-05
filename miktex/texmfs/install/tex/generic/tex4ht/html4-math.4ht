@@ -1,4 +1,4 @@
-% html4-math.4ht (2019-12-16-15:21), generated from tex4ht-html4.tex
+% html4-math.4ht (2020-07-27-14:08), generated from tex4ht-html4.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 1999-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-12-16-15:21}
+\immediate\write-1{version 2020-07-27-14:08}
 
 \exit:ifnot{accents,% 
 amsfonts,% 
@@ -316,27 +316,27 @@ ushort}
 
 \:CheckOption{mathjax}\if:Option
 \input{mathjax-latex-4ht.4ht}
-\Configure{@HEAD}{\HCode{
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    'fast-preview': {disabled: true},
-    TeX: {
-      extensions: ["color.js","AMSmath.js"],
-      equationNumbers: { autoNumber: "AMS" }
-    },
-    extensions: ["tex2jax.js"],
-    tex2jax: {
-      \unexpanded{
-        inlineMath: [ ["\\\(","\\\)"] ],
+\ifx\a:MathJaxConfig\relax
+\Configure{MathJaxConfig}{{
+    tex: {
+      tags: "ams",
+      \detokenize{%
+      inlineMath: [ ["\\\(","\\\)"] ],
       displayMath: [ ['$$','$$'], ["\\[","\\]"] ],}
       processEscapes: true,
-      processEnvironments: true
-    }
-});
-</script>\Hnewline
-}}
-\Configure{MathjaxSource}{https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML}
-\Configure{@HEAD}{\HCode{ <script type="text/javascript" src="\a:MathjaxSource"></script> \Hnewline}}
+      processEnvironments: true,
+      packages: ['base', 'color', 'ams']
+  },
+  loader: {
+    load: ['[tex]/color', '[tex]/ams']
+  }
+};
+}
+\fi
+\Configure{@HEAD}{\HCode{<script>window.MathJax = \a:MathJaxConfig</script>\Hnewline}}
+\Configure{MathjaxSource}{https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js}
+\Configure{@HEAD}{\HCode{ <script type="text/javascript" async="async" id="MathJax-script" src="\a:MathjaxSource"></script> \Hnewline}}
+\edef\:RestoreMathjaxCatcodes{\catcode`\noexpand \&=\the\catcode`\&}
 \def\:HandleMathjaxCatcodes{\edef\:RestoreMathjaxCatcodes{\catcode`\noexpand \&=\the\catcode`\&}\catcode`\&=11}
 \Configure{$}{\:HandleMathjaxCatcodes}{\:RestoreMathjaxCatcodes}{\expandafter\AltMathOne}
 % for some reason, it is necessary to specify the catcode change directly in the configuration
@@ -491,7 +491,7 @@ MathJax.Hub.Config({
 \Configure{idotsint}              {\pic:sym{tsint}}
 \Configure{doteq}                 {\pic:sym{tsint}}
 \ifOption{mathjax}{}{%
-\Configure{[]}{\begin{equation*}}{\end{equation*}}
+\Configure{[]}{\begin{equation*}\protect\nested:math}{\end{equation*}}
 }%
 \Configure{equation}
   {\ifmmode\else\par \IgnorePar\fi \EndP
@@ -1106,7 +1106,6 @@ MathJax.Hub.Config({
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{fleqn}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1176,6 +1175,7 @@ MathJax.Hub.Config({
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -1440,6 +1440,7 @@ MathJax.Hub.Config({
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{th4}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1455,6 +1456,7 @@ MathJax.Hub.Config({
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 

@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 
-\def\fileversion{1.628}
-\def\filedate{2020/07/22}
+\def\fileversion{1.630}
+\def\filedate{2020/09/19}
 \ProvidesPackage{newtxtext}[\filedate\space v\fileversion]
 
 \message{`newtxtext' v\fileversion, \filedate\space Text macros taking advantage of TeX-Gyre Termes fonts (msharpe)}
@@ -10,7 +10,7 @@
 \let\orig@footnote=\thefootnote
 \let\orig@makefnmark=\@makefnmark
 \newdimen\ntx@fs
-\RequirePackage{xkeyval,etoolbox}
+\RequirePackage{xkeyval,etoolbox,xstring,ifthen,scalefnt}
 \RequirePackage{mweights}
 \renewcommand*{\rmdefault}{ntxtlf} % always TLF for math
 \renewcommand*{\familydefault}{\rmdefault}
@@ -47,6 +47,8 @@
 \setkeys{ntx}{helvratio} % set this first, at least to default 0.9
 \setkeys{ntx}{scaled} % get at least default
 
+\def\ntx@foresolidus{0em}
+\def\ntx@aftsolidus{0em}
 \def\ntx@spc{.25em}
 \def\ntx@stretch{.2em}
 \def\ntx@shrink{.1em}
@@ -65,6 +67,8 @@
 \DeclareOption{proportional}{\useproportional}
 %\DeclareOption{sups}{\ntx@defaultsupsfalse}
 \DeclareOption{scosf}{\ntx@scosftrue}
+\DeclareOptionX{foresolidus}{\gdef\ntx@foresolidus{#1}}
+\DeclareOptionX{aftsolidus}{\gdef\ntx@aftsolidus{#1}}
 \DeclareOption{tighter}{%
 \gdef\ntx@spc{.25em}\gdef\ntx@stretch{.15em}\gdef\ntx@shrink{.06em}}
 \DeclareOption{looser}{%
@@ -97,31 +101,7 @@
   \not@math@alphabet\infigures\relax
   \fontfamily{ntxdenoms}\selectfont}
 \DeclareTextFontCommand{\textin}{\infigures}
-\providecommand*{\textfrac}[2]{%
-    {\ntxt@printfalse\edef\ntxt@denom{#1\char"F5}\ntxt@textinf #2\@nil%
-    \ifntxt@print\textsu{\ntxt@denom}\fi}}
 
-\newcount\ntxt@cntz
-\newif\ifntxt@print
-%\newcount\ntxt@Isdigit
-\def\ntxt@isdigit#1{% #1 should be a single character
-\ntxt@cntz=\number`#1\relax% 
-\ifnum\ntxt@cntz>47\relax% 
-  \ifnum\ntxt@cntz<58\relax% 
-    \advance\ntxt@cntz by 198 % 246 (0.inf) -48
-    \edef\ntxt@denom{\ntxt@denom\char\the\ntxt@cntz}%
-  \else
-  	\edef\ntxt@denom{\ntxt@denom X}%
-  \fi% 
-\else 
-  \edef\ntxt@denom{\ntxt@denom X}%
-\fi%
-%\show\ntxt@denom
-}
-\def\ntxt@textinf#1#2\@nil{%
-\ntxt@isdigit{#1}%
-\ifblank{#2}{\ntxt@printtrue}{\ntxt@textinf #2\@nil}%
-}    
 \ifntx@scosf %
 \DeclareRobustCommand{\textsc}[1]{%
 {\fontfamily{ntx\ntx@figurealign osf}\scshape\selectfont #1}%
@@ -159,6 +139,72 @@
   {\sustyle #1}%
 }% to get sup style
 
+\newcommand{\textfrac}[3][]{% e.g., \textfrac[1]{7}{8}
+  \mbox{%
+    \ifthenelse{\not\equal{#1}{}}%Test for integer portion [optional #1]
+      {\textlf{#1}\kern.05em}{}%         
+    \textsu{#2}% numerator
+    \StrRight{#2}{1}[\@digit@]%
+    % look for  1, 2, 6, 7
+    \ifcase\@digit@% 0
+    \or%\kern.03em% 1
+    \or%\kern.02em% 2
+    \or\kern-.02em% 3
+    \or%\kern-.01em% 4
+    \or\kern-.01em% 5
+    \or%\kern-.01em% 6
+    \or\kern-.08em% 7
+    \or%\kern-.08em% 8
+    \or\kern-.04em% 9
+    \fi%
+    \kern\ntx@foresolidus{\fontencoding{TS1}\selectfont\char"2F}%
+    \kern\ntx@aftsolidus%
+    \StrLeft{#3}{1}[\@digit@]%
+    % look for 1, 4, 7
+    \ifcase\@digit@% 0
+    \or%\kern -.02em% 1
+    \or\kern .01em% 2
+    \or% 3
+    \or\kern -.08em% 4
+    \or\kern -.03em% 5
+    \or\kern -.05em% 6
+    \or%\kern .02em% 7
+    \fi%
+    \textin{#3}%       denominator [#3]
+  }%
+}
+%\newcommand{\textfrac}[3][]{\mbox{%
+% %\ifthenelse{\not\equal{#1}{}}%Test for integer portion [optional #1]
+% %   {\textlf{#1}\kern.05em}{}%         
+% {\ntxt@printfalse\edef\ntxt@denom{#2\char"F5}%
+% \ntxt@textinf #3\@nil%
+% \ifntxt@print\textsu{\ntxt@denom}\fi}}}
+%\newcommand*{\textfrac}[2]{%
+%    {\ntxt@printfalse\edef\ntxt@denom{#1\char"F5}\ntxt@textinf #2\@nil%
+%    \ifntxt@print\textsu{\ntxt@denom}\fi}}
+
+\newcount\ntxt@cntz
+\newif\ifntxt@print
+%\newcount\ntxt@Isdigit
+\def\ntxt@isdigit#1{% #1 should be a single character
+\ntxt@cntz=\number`#1\relax% 
+\ifnum\ntxt@cntz>47\relax% 
+  \ifnum\ntxt@cntz<58\relax% 
+    \advance\ntxt@cntz by 198 % 246 (0.inf) -48
+    \edef\ntxt@denom{\ntxt@denom\char\the\ntxt@cntz}%
+  \else
+  	\edef\ntxt@denom{\ntxt@denom X}%
+  \fi% 
+\else 
+  \edef\ntxt@denom{\ntxt@denom X}%
+\fi%
+%\show\ntxt@denom
+}
+\def\ntxt@textinf#1#2\@nil{%
+\ntxt@isdigit{#1}%
+\ifblank{#2}{\ntxt@printtrue}{\ntxt@textinf #2\@nil}%
+}    
+
 \ifntx@thrm
 	%\RequirePackage{amsmath,amsthm} % in case of theoremfont
 	\ifdefined\newtheoremstyle %amsthm and ntheorem, not theorem.sty
@@ -177,6 +223,13 @@
 \fi
 %\DeclareTextFontCommand{\textsu}{\sustyle}
 %\def\@makefnmark{\ifx \thefootnote\orig@footnote \hbox{\sustyle\hspace*{.04em}\@thefnmark}\else\orig@makefnmark\fi}
+
+\DeclareTextCommand{\textcircled}{TS1}[1]{\hmode@bgroup
+   \ooalign{%
+      \hfil \raise -.256ex\hbox {\fontencoding{T1}\fontfamily{ntxsups}\fontseries{m}\fontshape{n}\selectfont\scalefont{.966}\uppercase{#1}}\hfil \crcr
+     \char 79 %\textbigcircle 
+   }%
+ \egroup}
 
 \ifntx@defaultsups %
 \else

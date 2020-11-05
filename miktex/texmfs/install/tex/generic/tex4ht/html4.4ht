@@ -1,5 +1,5 @@
-% html4.4ht (2020-01-24-14:39), generated from tex4ht-html4.tex
-% Copyright 2009-2019 TeX Users Group
+% html4.4ht (2020-09-28-13:52), generated from tex4ht-html4.tex
+% Copyright 2009-2020 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-01-24-14:39}
+\immediate\write-1{version 2020-09-28-13:52}
 
 \exit:ifnot{8859-6,% 
 CJK,% 
@@ -51,6 +51,7 @@ arabicore,%
 array,% 
 article,% 
 austrian,% 
+awesomebox,% 
 babel,% 
 beamer,% 
 biblatex,% 
@@ -851,10 +852,10 @@ switches of tex4ht.c)
 \def\:gobbleM#1->{}
 \Configure{@HEAD}{\HCode{<meta
     name="generator" content="TeX4ht
-      (http://www.tug.org/tex4ht/)"\xml:empty>\Hnewline}}
+      (https://tug.org/tex4ht/)"\xml:empty>\Hnewline}}
 \Configure{@HEAD}{\HCode{<meta
     name="originator" content="TeX4ht
-      (http://www.tug.org/tex4ht/)"\xml:empty>\Hnewline
+      (https://tug.org/tex4ht/)"\xml:empty>\Hnewline
        <!--\space\expandafter\:gobbleM\meaning
                \Preamble\space-->\Hnewline}}
 
@@ -904,6 +905,7 @@ switches of tex4ht.c)
 
    \:CheckOption{uni-html4} \if:Option
    \def\A:charset{charset=utf-8}
+   \def\a:charset{charset=utf-8}
 \else
    \def\A:charset{charset=iso-8859-1}
 \fi
@@ -1133,6 +1135,12 @@ switches of tex4ht.c)
 \Css{p + div, p + pre {margin-top:1em;}}
 \Css{div + p, pre + p {margin-top:1em;}}
 }
+\Css{a {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}}
 \NewConfigure{!BODY}[1]{\expandafter\concat:config
   \csname a:!BODY\endcsname{#1}}
 \expandafter\let\csname a:!BODY\endcsname\relax
@@ -1611,13 +1619,12 @@ switches of tex4ht.c)
 \def\env:verb#1{\ifinner\else \vfill\break\fi
   \IgnorePar\EndP  \HAssign\Verb:N=0
   \gHAdvance\verbatimN by 1
-  \HCode{<div class="#1" id="verbatim-\verbatimN"\a:LRdir>}\EndNoFonts}
+  \HCode{<pre class="#1" id="verbatim-\verbatimN"\a:LRdir>}\EndNoFonts}
 \def\endenv:verb{\NoFonts
-  \EndP \ht:special{t4ht=</div>}\ShowPar \par{\HCondtrue\noindent}%
+  \EndP \ht:special{t4ht=</pre>}\ShowPar \par{\HCondtrue\noindent}%
 }
 \HAssign\Verb:N=0
-\Css{div.verbatim {font-family: monospace,monospace;
-                   white-space: nowrap;
+\Css{pre.verbatim {font-family: monospace,monospace;
                    text-align:left;
                    clear:both;
  }}
@@ -1935,34 +1942,34 @@ switches of tex4ht.c)
   {}{}
 \:CheckOption{new-accents}     \if:Option
    \:CheckOption{accent-}     \if:Option
-  \Configure{HAccent}\acute{AEIOUYaeiouy{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\acute{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\bar{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\breve{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\check{}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\ddot{AEIOUYaeiouy{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\ddot{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\dot{}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\grave{AEIOUaeiou{}}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\hat{AEIOUaeiou{}}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\tilde{AOaoNn{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\grave{}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\hat{}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\tilde{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\vec{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\widehat{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\widetilde{}{\Picture+{}}{\EndPicture}
 \fi
 \:CheckOption{mathaccent-}     \if:Option
-  \Configure{HAccent}\"{AEIOUYaeiouy{}}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\'{AEIOUYaeiouy{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\"{}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\'{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\.{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\={}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\H{}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\^{AEIOUaeiou{}}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\`{AEIOUaeiou{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\^{}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\`{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\b{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\c{Cc{}}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\d{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\t{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\u{}{\Picture+{}}{\EndPicture}
   \Configure{HAccent}\v{}{\Picture+{}}{\EndPicture}
-  \Configure{HAccent}\~{AOaoNn{}}{\Picture+{}}{\EndPicture}
+  \Configure{HAccent}\~{}{\Picture+{}}{\EndPicture}
 \fi
 \Configure{accent}{*}
    {<!--tex4ht:accent\Hnewline font="}{" char="}{" type="}{"-->}
@@ -2877,7 +2884,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %          use the command line option `javahelp'}
 % \fi
 \Configure{verbatim}
-   {\HAdvance\Verb:N by 1 \ifnum \Verb:N>1 \:nbsp \HCode{<br />}\fi}
+   {\HCode{}}
    {\a:sp}
 \Configure{verb}
    {\HCode{<span class="verb"\a:LRdir>}}
@@ -3089,7 +3096,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \:CheckOption{fancylogo}\if:Option
 \def\TeX{\HCode{<span class="TEX">}T\HCode{<span\Hnewline
      class="E">}E\HCode{</span>}X\HCode{</span>}}
-\Css{span.TEX {letter-spacing: -0.125em; }}
+\Css{span.TEX {letter-spacing: -0.125em; margin-right:0.125em;}}
 \Css{span.TEX span.E{ position:relative;top:0.5ex;left:-0.0417em;}}
 \Css{a span.TEX span.E {text-decoration: none; }}
 \else
@@ -3106,7 +3113,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \expandafter\HLet\csname LaTeXe\endcsname\:temp
 \Css{span.LATEX span.A{ position:relative; top:-0.5ex;
    left:-0.4em; font-size:85\%;}}
-\Css{span.LATEX span.TEX{ position:relative; left: -0.4em; }}
+\Css{span.LATEX span.TEX{ position:relative; margin-left: -0.4em; margin-right:0.125em; }}
 \else
 \def\LaTeX{LaTeX}
 \def\LaTeXe{LaTeX2e}
@@ -11341,7 +11348,6 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
          \Hnewline -->}%
       \egroup}
 \fi
-\Css{.figure img.graphics {margin-left:10\%;}}
 \Configure{graphics*}
    {gif}
    {{\Configure{Needs}{File: \Gin@base.gif}\Needs{}}%
@@ -19476,9 +19482,10 @@ Y{0178}\i{00EF}%
 \def\a:temp#1#2#3{%
    \ifOption{charset=#2}{\def\a:charset{charset=#2}}{}%
    \def\:tempa{#1}\ifx \languagename\:tempa
-      \def\A:charset{#2}\ifx \A:charset\empty\else
-         \def\A:charset{charset=#2}%
-      \fi
+      \ifx\A:charset\empty%
+      \def\A:charset{#2}\ifx \A:charset\empty\else%
+         \def\A:charset{charset=#2}%%
+      \fi\fi%
       \if !#3!\else
          \Configure{@HTML}{%
             \iflanguage{#1}{xml:lang="#3" }{}%
@@ -20056,7 +20063,7 @@ Y{0178}\i{00EF}%
 \:CheckOption{fancylogo}\if:Option
 \def\TeX{\HCode{<span class="TEX">}T\HCode{<span\Hnewline
      class="E">}E\HCode{</span>}X\HCode{</span>}}
-\Css{span.TEX {letter-spacing: -0.125em; }}
+\Css{span.TEX {letter-spacing: -0.125em; margin-right:0.125em;}}
 \Css{span.TEX span.E{ position:relative;top:0.5ex;left:-0.0417em;}}
 \Css{a span.TEX span.E {text-decoration: none; }}
 \else
@@ -20486,7 +20493,9 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{latin2}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -28578,24 +28587,24 @@ Y{0178}\i{00EF}%
 \Configure{fancyvrb}
    {\IgnorePar \EndP \gHAdvance\fancyvrbNo by 1
     \gHAssign\fancyvrb:cnt0
-    \HCode{<div class="fancyvrb" id="fancyvrb\fancyvrbNo">}}
-   {\EndP\HCode{</div>}}
+    \HCode{<pre class="fancyvrb" id="fancyvrb\fancyvrbNo">}}
+   {\EndP\HCode{</pre>}}
    {\gHAdvance\fancyvrb:cnt by 1
     \ifnum \fancyvrb:cnt>1
-    \HCode{<br class="fancyvrb" />}\fi} {}
+    \HCode{\Hnewline}\fi} {}
    {}{}
-\Css{P.fancyvrb {white-space: nowrap; margin:0em;}}
+\Css{pre.fancyvrb {white-space: pre-wrap; margin:0em;font-family:monospace,monospace;}}
 \Configure{fancyvrbcolor}
-  {\Css{div\#fancyvrb\fancyvrbNo { color: \HColor; }}}
-  {\Css{div\#fancyvrb\fancyvrbNo { background-color: \HColor;}}}
-  {\Css{div\#fancyvrb\fancyvrbNo { border-color: \HColor;}}}
+  {\Css{pre\#fancyvrb\fancyvrbNo { color: \HColor; }}}
+  {\Css{pre\#fancyvrb\fancyvrbNo { background-color: \HColor;}}}
+  {\Css{pre\#fancyvrb\fancyvrbNo { border-color: \HColor;}}}
 \Configure{fancyvrbframe}
-   {\Css{div\#fancyvrb\fancyvrbNo { border-top: solid \HSize; }}}
-   {\Css{div\#fancyvrb\fancyvrbNo { border-left: solid \HSize; }}}
-   {\Css{div\#fancyvrb\fancyvrbNo { border-bottom: solid \HSize; }}}
-   {\Css{div\#fancyvrb\fancyvrbNo { border-right: solid \HSize; }}}
-   {\Css{div\#fancyvrb\fancyvrbNo {border-width:\HSize;}}}
-   {\Css{div\#fancyvrb\fancyvrbNo {padding:\HSize;}}}
+   {\Css{pre\#fancyvrb\fancyvrbNo { border-top: solid \HSize; }}}
+   {\Css{pre\#fancyvrb\fancyvrbNo { border-left: solid \HSize; }}}
+   {\Css{pre\#fancyvrb\fancyvrbNo { border-bottom: solid \HSize; }}}
+   {\Css{pre\#fancyvrb\fancyvrbNo { border-right: solid \HSize; }}}
+   {\Css{pre\#fancyvrb\fancyvrbNo {border-width:\HSize;}}}
+   {\Css{pre\#fancyvrb\fancyvrbNo {padding:\HSize;}}}
 \Configure{BVerbatimInput}
    {\ifvmode \IgnorePar \fi \EndP
     \gHAssign\HRow=0
@@ -28811,7 +28820,7 @@ Y{0178}\i{00EF}%
 \Configure{rowcolor}{\row:clr}
 \def\row:clr#1{{%
   \HAdvance\HRow by 1
-  \add:color{background-color}{#1}{\HRow-}}}
+  \add:color{background-color}{#1}{\HRow- td}}}
 \Configure{text-colortbl}
   {\add:color{color}{\current@color}{\HRow-\HCol}}
 \Configure{cell-colortbl}
@@ -29056,19 +29065,44 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                \ConfigureHinput{alltt}
+                \ConfigureHinput{awesomebox}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \ConfigureEnv{alltt}
-   {\IgnorePar\EndP\HCode{<div class="alltt">}}
-   {\IgnorePar\EndP\HCode{</div>}} {}{}
-\Css{.alltt P { margin-bottom : 0em; margin-top : 0em; }}
-\Css{.alltt { margin-bottom : 1em; margin-top : 1em; }}
+    \Configure{awesomebox}{%
+  \Css{\#\awesomebox@id\space .icon{border-right:4px solid \#\awesomebox@rule@color;}}
+  \ifvmode\IgnorePar\fi\EndP%
+  \HCode{<div class="awesomebox" id="\awesomebox@id"><div class="icon">}%
+  \Picture+{}%
+}{\EndPicture%
+  \HCode{</div><div class="boxcontent">}%
+  \par%
+}{%
+  \ifvmode\IgnorePar\fi\EndP%
+  \HCode{</div></div>}%
+}
+
+\Css{.awesomebox{display:grid; grid-template-columns: 90px auto;margin-top:1rem;margin-bottom:1rem;}}
+\Css{.awesomebox .icon{padding-right:0.5rem;margin-right:0.5rem;text-align:center;}}
+\Css{.awesomebox .boxcontent{vertical-align:top;}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{alltt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \ConfigureEnv{alltt}
+   {\IgnorePar\EndP\HCode{<div class="alltt">}}
+   {\IgnorePar\EndP\HCode{</div>}} {}{}
+\Css{.alltt P { margin-bottom : 0em; margin-top : 0em; }}
+\Css{.alltt { margin-bottom : 1em; margin-top : 1em; font-family:monospace,monospace; }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{latin1}
@@ -29205,7 +29239,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{eplain}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29297,7 +29330,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{context}
@@ -30311,7 +30343,9 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{frenchb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 \Configure{@TITLE}{\Configure{frenchb-thinspace}{}{}}
 \Configure{system-nbsp}
    {\ht:special{t4ht@[unhskip}}
@@ -30502,6 +30536,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32700,10 +32735,10 @@ description">}%
 
 \Configure{paragraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
-  {\endgroup\HCode{</span>}\IgnorePar}
+  {\endgroup\HCode{</span>}}
 \Configure{likeparagraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="likeparagraphHead"\a:LRdir>}}
-  {\HCode{</span>}\IgnorePar}
+  {\HCode{</span>}}
 \Css{.paragraphHead, .likeparagraphHead
    { margin-top:2em; font-weight: bold;}}
 
@@ -33655,10 +33690,10 @@ description">}%
 
 \Configure{paragraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
-  {\endgroup\HCode{</span>}\IgnorePar}
+  {\endgroup\HCode{</span>}}
 \Configure{likeparagraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="likeparagraphHead"\a:LRdir>}}
-  {\HCode{</span>}\IgnorePar}
+  {\HCode{</span>}}
 \Css{.paragraphHead, .likeparagraphHead
    { margin-top:2em; font-weight: bold;}}
 
@@ -34585,7 +34620,9 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{germanb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -34595,7 +34632,9 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ngermanb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -34632,6 +34671,9 @@ description">}%
                 \ConfigureHinput{minted}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \Configure{InlineCode}{\HCode{<code>}}{\HCode{</code>}}
+\Configure{MintedColorbg}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{<div class="minted-color-box" style="background-color:\#\minted:bgcolor">}}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -37649,6 +37691,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{endnotes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37661,7 +37704,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37787,6 +37829,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{nicefrac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37799,7 +37842,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{multicol}
@@ -37831,6 +37873,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38081,6 +38124,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{writer}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38124,7 +38168,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mdwlist}
@@ -38221,6 +38264,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{soul}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38272,7 +38316,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{manmac}
@@ -38377,6 +38420,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp852}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38386,7 +38430,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp862}
@@ -38418,6 +38461,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp437}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38427,7 +38471,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp437de}
@@ -38452,28 +38495,34 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{norsk}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{polish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{polski}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -38483,7 +38532,9 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{portuges}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -38688,6 +38739,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{russianb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38711,11 +38763,12 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scottish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -38725,7 +38778,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slovak}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 \:CheckOption{new-accents}     \if:Option \else
    \expand:after{\Configure{accent}}\csname T1\string\`\expandafter\endcsname
    \csname T1\string\`\endcsname{A{00C0}E{00C8}I{00CC}N{01F8}O{00D2}U{00D9}W{1E80}%
@@ -38923,7 +38978,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slovene}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 \:CheckOption{new-accents}     \if:Option \else
    \expand:after{\Configure{accent}}\csname T1\string\`\expandafter\endcsname
    \csname T1\string\`\endcsname{A{00C0}E{00C8}I{00CC}N{01F8}O{00D2}U{00D9}W{1E80}%
@@ -39118,10 +39175,13 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{spanish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 \Configure{es@accents}{\es:accents}{}
 \def\es:accents#1\b:es@accents{\HCode{&\#x#1;}}
 \Configure{guillemotleft}{\HCode{&\#x00AB;}}
@@ -39160,11 +39220,12 @@ Y{1EF8}y{1EF9}\i{0129}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{swedish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39174,7 +39235,9 @@ Y{1EF8}y{1EF9}\i{0129}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{turkish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-9}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-9}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39184,28 +39247,34 @@ Y{1EF8}y{1EF9}\i{0129}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ukraineb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-5}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-5}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{usorbian}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{welsh}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39215,7 +39284,9 @@ Y{1EF8}y{1EF9}\i{0129}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{hebrew}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-8}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-8}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39225,28 +39296,34 @@ Y{1EF8}y{1EF9}\i{0129}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{austrian}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{catalan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{croatian}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 \:CheckOption{new-accents}     \if:Option \else
    \expand:after{\Configure{accent}}\csname T1\string\`\expandafter\endcsname
    \csname T1\string\`\endcsname{A{00C0}E{00C8}I{00CC}N{01F8}O{00D2}U{00D9}W{1E80}%
@@ -39444,7 +39521,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{czech}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-2}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-2}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39454,28 +39533,34 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{danish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{dutch}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{english}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39485,7 +39570,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{esperant}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-3}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-3}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39495,28 +39582,34 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{estonian}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-5}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-5}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{finnish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{francais}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39526,7 +39619,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{galician}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-1}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -39536,7 +39631,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{greek}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \def\A:charset{charset=iso-8859-7}
+    \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-7}
+\fi
 \ifOption{charset=iso-8859-7}
    {\expand:after{\Configure{accent}}\csname OT1\string\'\endcsname
    \acute{A{\ht:special{t4ht@+\string&{35}x00C1{59}}A}%
@@ -39566,7 +39663,9 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
           use the command line option `charset=iso-8859-7'}}
 \ifOption{sgreek}
   {\:CheckOption{new-accents}     \if:Option \else
-       \def\A:charset{charset=iso-8859-1}
+       \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 \Configure{htf}{254}{+}{<font \Hnewline
    face="}{}{}{}{}{Sgreek">}{</font>}
 \Configure{htf}{252}{+}{<font \Hnewline
@@ -39600,7 +39699,9 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
           use the command line option `sgreek'}}
 \ifOption{oldgreek}
   {\:CheckOption{new-accents}     \if:Option \else
-       \def\A:charset{charset=iso-8859-1}
+       \ifx\A:charset\empty
+\def\A:charset{charset=iso-8859-1}
+\fi
 \Configure{htf}{254}{+}{<font \Hnewline
    face="}{}{}{}{}{Greek Old Face">}{</font>}
 \Configure{htf}{252}{+}{<font \Hnewline
@@ -39753,6 +39854,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{polyglossia}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39762,6 +39864,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{fontspec}
@@ -39775,7 +39878,6 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -39823,6 +39925,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{skak}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39845,7 +39948,6 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{sectionbreak}

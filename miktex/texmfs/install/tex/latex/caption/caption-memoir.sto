@@ -38,9 +38,29 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesFile{caption-memoir.sto}[2020/07/31 v2.0 Adaption of the caption package to the memoir document class (AR)]
+\ProvidesFile{caption-memoir.sto}[2020/10/10 v2.1 Adaption of the caption package to the memoir document class (AR)]
 \g@addto@macro\caption@prepareslc{%
   \let\pagenote\caption@gobble}
+\DeclareCaptionLabelSeparator{@contdelim}{\@contdelim}
+\SetCaptionDefault{labelseparator}{@contdelim}
+\let\caption@memoir@delim\captiondelim
+\renewcommand\captiondelim{%
+  \captionsetup{labelsep=@contdelim}%
+  \caption@memoir@delim}
+\DeclareCaptionLabelSeparator{gobble}{}
+\DeclareCaptionFont{@contnfont}{\@contnfont}
+\SetCaptionDefault{labelfont}{@contnfont}
+\DeclareCaptionFont{@conttfont}{\@conttfont}
+\SetCaptionDefault{textfont}{@conttfont}
+\let\caption@memoir@namefont\captionnamefont
+\renewcommand\captionnamefont{%
+  \captionsetup{labelfont=@contnfont}%
+  \caption@memoir@namefont}
+\let\caption@memoir@titlefont\captiontitlefont
+\renewcommand\captiontitlefont{%
+  \captionsetup{textfont=@conttfont}%
+  \caption@memoir@titlefont}
+\AtCaptionPackage{\setlength\belowcaptionskip{0pt}}
 \endinput
 %%
 %% End of file `caption-memoir.sto'.

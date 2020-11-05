@@ -27,7 +27,7 @@
 \providecommand\DeclareCurrentRelease[2]{}
 \DeclareRelease{}{2018-12-01}{amsmath-2018-12-01.sty}
 \DeclareCurrentRelease{}{2019-04-01}
-\ProvidesPackage{amsmath}[2020/01/20 v2.17e AMS math features]
+\ProvidesPackage{amsmath}[2020/09/23 v2.17i AMS math features]
 \edef\@temp{\catcode 96=\number\catcode 96 }
 \catcode\string `\`=12
 \def\do#1{\catcode\number`#1=\number\catcode`#1}
@@ -153,23 +153,29 @@ For additional information on amsmath, use the \lq ?\rq\space option.%
 \@ifundefined{inf@bad}{%
   \newcount\inf@bad \inf@bad=1000000 \relax
 }{}
+\let\tmspace\@undefined
+\let\,\@undefined
+\let\!\@undefined
+\let\:\@undefined
+\let\negmedspace\@undefined
+\let\negthickspace\@undefined
 \ifx\leavevmode@ifvmode\@undefined
-\DeclareRobustCommand{\tmspace}[3]{%
+\DeclareRobustCommand\tmspace[3]{%
   \ifmmode\mskip#1#2\else\kern#1#3\fi\relax}
 \else
-\DeclareRobustCommand{\tmspace}[3]{%
+\DeclareRobustCommand\tmspace[3]{%
   \ifmmode\mskip#1#2\else\leavevmode@ifvmode\kern#1#3\fi\relax}
 \fi
-\renewcommand{\,}{\tmspace+\thinmuskip{.1667em}}
+\DeclareRobustCommand\,{\tmspace+\thinmuskip{.1667em}}
 \let\thinspace\,
-\renewcommand{\!}{\tmspace-\thinmuskip{.1667em}}
+\DeclareRobustCommand\!{\tmspace-\thinmuskip{.1667em}}
 \let\negthinspace\!
-\renewcommand{\:}{\tmspace+\medmuskip{.2222em}}
+\DeclareRobustCommand\:{\tmspace+\medmuskip{.2222em}}
 \let\medspace\:
-\newcommand{\negmedspace}{\tmspace-\medmuskip{.2222em}}
-\renewcommand{\;}{\tmspace+\thickmuskip{.2777em}}
+\DeclareRobustCommand\negmedspace{\tmspace-\medmuskip{.2222em}}
+\renewcommand\;{\tmspace+\thickmuskip{.2777em}}
 \let\thickspace\;
-\newcommand{\negthickspace}{\tmspace-\thickmuskip{.2777em}}
+\DeclareRobustCommand\negthickspace{\tmspace-\thickmuskip{.2777em}}
 \newcommand{\mspace}[1]{\mskip#1\relax}
 \def\@tempa#1#2\@nil{%
   \ifx\delimiter#1\@tempcnta#2\relax\else\@tempcnta\z@\fi
@@ -224,7 +230,11 @@ Foreign command \@backslashchar#1;\MessageBreak
 \renewcommand{\overwithdelims}{\primfrac{overwithdelims}}
 \renewcommand{\atopwithdelims}{\primfrac{atopwithdelims}}
 \renewcommand{\abovewithdelims}{\primfrac{abovewithdelims}}
+\ifx\directlua\@undefined
 \DeclareRobustCommand{\frac}[2]{{\begingroup#1\endgroup\@@over#2}}
+\else
+\DeclareRobustCommand{\frac}[2]{{\Ustack{\begingroup#1\endgroup\@@over#2}}}
+\fi
 \newcommand{\dfrac}{\genfrac{}{}{}0}
 \newcommand{\tfrac}{\genfrac{}{}{}1}
 \DeclareRobustCommand{\binom}{\genfrac()\z@{}}
@@ -296,7 +306,7 @@ Foreign command \@backslashchar#1;\MessageBreak
 \DeclareRobustCommand{\genfrac}[6]{{%
 \@mathstyle{#4}%
 \genfrac@choice o{#1}%
-{\begingroup#5\endgroup\ifx @#3@\@@over\else\@@above\fi#3\relax#6}%
+{\Ustack {\begingroup#5\endgroup\ifx @#3@\@@over\else\@@above\fi#3\relax#6}}%
 \genfrac@choice c{#2}%
 }}
 \fi
@@ -733,11 +743,11 @@ Foreign command \@backslashchar#1;\MessageBreak
 \DeclareFontEncoding{OML}{}{\noaccents@}
 \DeclareFontEncoding{OMS}{}{\noaccents@}
 \ams@newcommand{\dddot}[1]{%
-  {\mathop{#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
-   \hbox{\normalfont ...}\vss}}}}
+  {\mathop{\kern\z@#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
+   \hbox{\,\normalfont...}\vss}}}}
 \ams@newcommand{\ddddot}[1]{%
-  {\mathop{#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
-   \hbox{\normalfont....}\vss}}}}
+  {\mathop{\kern\z@#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
+   \hbox{\,\normalfont....}\vss}}}}
 \def\set@mathaccent#1#2#3#4{%
   \xdef#2{%
     \@nx\mathaccentV
@@ -931,12 +941,28 @@ Foreign command \@backslashchar#1;\MessageBreak
   \fi
 }
 \fi
-\mathchardef\std@minus\mathcode`\-\relax
-\mathchardef\std@equal\mathcode`\=\relax
-\AtBeginDocument{%
-  \mathchardef\std@minus\mathcode`\-\relax
-  \mathchardef\std@equal\mathcode`\=\relax
-}
+\@ifundefined{Umathcode}
+  {%
+    \mathchardef\std@minus\mathcode`\-\relax
+    \mathchardef\std@equal\mathcode`\=\relax
+  }
+  {%
+   \Umathcharnumdef\std@minus\Umathcodenum`\-\relax
+   \Umathcharnumdef\std@equal\Umathcodenum`\=\relax
+  }
+\@ifundefined{Umathcode}
+  {%
+    \AtBeginDocument{%
+      \mathchardef\std@minus\mathcode`\-\relax
+      \mathchardef\std@equal\mathcode`\=\relax
+      }%
+  }
+  {%
+    \AtBeginDocument{%
+      \Umathcharnumdef\std@minus\Umathcodenum`\-\relax
+      \Umathcharnumdef\std@equal\Umathcodenum`\=\relax
+    }%
+  }
 \ams@def\relbar{\mathrel{\mathpalette\mathsm@sh\std@minus}}
 \ams@def\Relbar{\mathrel\std@equal}
 \def\arrowfill@#1#2#3#4{%
@@ -985,6 +1011,7 @@ Foreign command \@backslashchar#1;\MessageBreak
 }
 \newcommand{\xrightarrow}[2][]{\ext@arrow 0359\rightarrowfill@{#1}{#2}}
 \newcommand{\xleftarrow}[2][]{\ext@arrow 3095\leftarrowfill@{#1}{#2}}
+\ifx\directlua\@undefined
 \newenvironment{subarray}[1]{%
   \vcenter\bgroup
   \Let@ \restore@math@cr \default@tag
@@ -997,6 +1024,23 @@ Foreign command \@backslashchar#1;\MessageBreak
 }{%
   \crcr\egroup\egroup
 }
+\else
+\newenvironment{subarray}[1]{%
+  \vcenter\bgroup
+  \Let@ \restore@math@cr \default@tag
+  \baselineskip \Umathstacknumup \scriptstyle
+  \advance\baselineskip \Umathstackdenomdown \scriptstyle
+  \lineskip \Umathstackvgap \scriptstyle
+  \lineskiplimit \lineskip
+  \ialign\bgroup\ifx c#1\hfil\fi
+  \Ustartmath
+    \m@th\scriptstyle##
+  \Ustopmath
+  \hfil\crcr
+}{%
+  \crcr\egroup\egroup
+}
+\fi
 \newcommand{\substack}[1]{\subarray{c}#1\endsubarray}
 \newenvironment{smallmatrix}{\null\,\vcenter\bgroup
   \Let@\restore@math@cr\default@tag
@@ -1379,13 +1423,31 @@ and fix things up.}
   \fi
   \next@ \cr
 }
+\def\ams@start@box#1{%
+  \edef\reserved@a{\csname ams@pos@\expandafter\detokenize
+    \expandafter{\romannumeral-`\0#1}\endcsname}%
+  \expandafter\ifx\reserved@a\relax
+     \PackageWarning{amsmath}{%
+       Bracket group \detokenize{[#1]} at formula start!\MessageBreak
+       It could be a misspelled positional argument.\MessageBreak
+       If it belongs to the formula add a \relax in\MessageBreak
+        front to hide it}%
+     \def\ams@return@opt@arg{[#1]}\vcenter
+  \else
+     \let\ams@return@opt@arg\@empty\reserved@a
+  \fi
+}
+\def\ams@pos@t{\vtop}
+\def\ams@pos@b{\vbox}
+\def\ams@pos@c{\vcenter}
+\let\ams@pos@\ams@pos@c
 \newcommand{\start@aligned}[2]{%
     \RIfM@\else
         \nonmatherr@{\begin{\@currenvir}}%
     \fi
     \savecolumn@ % Assumption: called inside a group
     \alignedspace@left
-    \if #1t\vtop \else \if#1b \vbox \else \vcenter \fi \fi \bgroup
+      \ams@start@box{#1}\bgroup
         \maxfields@#2\relax
         \ifnum\maxfields@>\m@ne
             \multiply\maxfields@\tw@
@@ -1410,6 +1472,7 @@ and fix things up.}
             \hfil
             \tabskip\alignsep@
             \crcr
+          \ams@return@opt@arg
 }
 \def\math@cr@@@alignedat{%
     \ifnum\column@>\maxfields@
@@ -1449,12 +1512,13 @@ and fix things up.}
         \nonmatherr@{\begin{gathered}}%
     \fi
     \alignedspace@left
-    \if #1t\vtop \else \if#1b\vbox \else \vcenter \fi\fi \bgroup
+    \ams@start@box{#1}\bgroup
         \Let@ \chardef\dspbrk@context\@ne \restore@math@cr
         \spread@equation
         \ialign\bgroup
             \hfil\strut@$\m@th\displaystyle##$\hfil
             \crcr
+    \ams@return@opt@arg
 }{%
   \endaligned
 }

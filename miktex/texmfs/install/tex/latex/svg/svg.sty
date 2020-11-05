@@ -61,10 +61,10 @@
   }%
   \svg@Provides%
   {svg}{include SVG pictures}%
-  [2020/06/23 v2.02h]%
+  [2020/10/23 v2.02j]%
 \@tempb
 \RequirePackage{iftex}[2020/03/06]
-\RequirePackage{scrbase}[2020/04/19]
+\RequirePackage{scrbase}[2020/09/21]
 \RequirePackage{pdftexcmds}[2019/11/24]
 \RequirePackage{trimspaces}[2009/09/17]
 \RequirePackage{graphicx}[2019/11/30]
@@ -102,7 +102,7 @@
   \endgroup%
 }
 \newcommand*\svg@deactivate@dq{}
-\AfterPackage+{babel}{%
+\AfterAtEndOfPackage*{babel}{%
   \renewcommand*\svg@deactivate@dq{\bbl@deactivate{"}}%
   \providecommand*\bbl@deactivate[1]{}%
 }
@@ -536,10 +536,10 @@
   \ifx\svg@ink@dpi\relax\else--export-dpi=\svg@ink@dpi\space\fi%
   \if@svg@ink@latex--export-latex\space\fi%
   \ifx\svg@ink@opt\@empty\else\svg@ink@opt\space\fi%
-  \ifnum\svg@ink@ver=\z@%
+  \ifcase\svg@ink@ver\relax% 0.x detected
     --without-gui\space%
     --export-\svg@ink@format="#2.\svg@ink@format"%
-  \else%
+  \else% 1.x or nothing detected
     --export-filename="#2.\svg@ink@format"%
   \fi%
 }
@@ -980,31 +980,9 @@
           \svg@quotes@remove[\svg@file@base]{\svg@tempa}%
           \svg@quotes@remove[\svg@out@name]{\svg@tempb}%
           \ifnum\svg@ink@ver=\m@ne\relax%
-            \begingroup%
-              \@svg@tempswafalse%
-              \@tfor\svg@ink@ver:={1}{0}\do{%
-                \ShellEscape{\svg@ink@cmd{\svg@tempa}{\svg@tempb}}%
-                \IfFileExists{\svg@out@name.\svg@ink@format}{%
-                  \@svg@tempswatrue%
-                }{}%
-                \if@svg@tempswa%
-                  \@break@tfor%
-                \fi%
-              }%
-              \if@svg@tempswa%
-                \xdef\svg@ink@ver{\svg@ink@ver}%
-              \else%
-                \PackageError{svg}{Inkscape version not detected}{%
-                  It was tried to invoke `\svg@ink@exe'\MessageBreak%
-                  for file "\svg@tempa.\svg@file@ext"\MessageBreak%
-                  but no result was produced. Check the log file\MessageBreak%
-                  and set `inkscapeversion=<version>' manually.%
-                }%
-              \fi%
-            \endgroup%
-          \else%
-            \ShellEscape{\svg@ink@cmd{\svg@tempa}{\svg@tempb}}%
+            \svg@ink@ver@explore{\svg@tempa}{\svg@tempb}{\svg@out@name}%
           \fi%
+          \ShellEscape{\svg@ink@cmd{\svg@tempa}{\svg@tempb}}%
           \IfFileExists{\svg@out@name.\svg@ink@format}{%
             \edef\svg@tempb{\svg@tempb.\svg@ink@format}%
             \svg@quotes@remove{\svg@out@base}%
@@ -1228,27 +1206,40 @@
 \newcommand*\svg@@ink@ver@detect{%
   \begingroup%
     \@makeother\|%
-    \endlinechar=\m@ne%
+    \@makeother\&%
     \everyeof{\noexpand}%
     \svg@quotes@remove{\svg@ink@exe}%
     \edef\svg@tempa{%
-      \edef\noexpand\svg@tempa{\noexpand\@@input|"'\svg@ink@exe'\space-V" }%
+      \edef\noexpand\svg@tempa{\noexpand\@@input|"'\svg@ink@exe' -V 2>&1" }%
     }%
     \svg@tempa%
-    \ifx\svg@tempa\@empty%
-      \svg@ifwindowsdetected{%
-        \def\svg@tempb{\jobname.svg.ink.ver.aux}%
-        \IfFileExists{\svg@tempb}{}{%
-          \ShellEscape{call "\svg@ink@exe" -V > \svg@tempb}%
-          \openin\@inputcheck=\svg@tempb%
-          \read\@inputcheck to\svg@tempa%
-          \closein\@inputcheck%
-          \ShellEscape{del \svg@tempb}%
-        }%
-      }{}%
+    \trim@spaces@in\svg@tempa%
+    \def\svg@tempb{\par}%
+    \ifx\svg@tempa\svg@tempb
+      \let\svg@tempa\relax%
     \fi%
-    \def\svg@tempb Inkscape ##1.##2\@nil{%
-      \gdef\svg@ink@ver{##1}%
+    \def\svg@tempb ##1Inkscape ##2.##3\@nil{%
+      \gdef\svg@ink@ver{##2}%
+      \IfArgIsEmpty{##1}{}{%
+        \def\svg@tempc ####1Pango version:####2\@nil{%
+          \@svg@tempswafalse%
+          \IfArgIsEmpty{####2}{}{\IfArgIsEmpty{####1}{\@svg@tempswatrue}{}}%
+        }%
+        \svg@tempc ##1 Pango version:\@nil%
+        \if@svg@tempswa%
+          \gdef\svg@ink@ver{1}%
+        \else%
+          \ifx\svg@tempa\relax%
+            \def\svg@tempa{MiKTeX/XeLaTeX did not return an error message}%
+          \else%
+            \def\svg@tempa{##1}%
+          \fi%
+          \PackageWarning{svg}{%
+            `\svg@ink@exe\space-V' failed with:\MessageBreak%
+            \detokenize\expandafter{\svg@tempa}%
+          }%
+        \fi%
+      }%
     }%
     \expandafter\svg@tempb\svg@tempa Inkscape \m@ne.\@nil%
   \endgroup%
@@ -1260,6 +1251,28 @@
       \string\gdef\string\svg@ink@ver@settings{\svg@ink@ver@settings}%
     }%
   \fi%
+}
+\newcommand*\svg@ink@ver@explore[3]{%
+  \begingroup%
+    \@svg@tempswafalse%
+    \@tfor\svg@ink@ver:={1}{0}\do{%
+      \ShellEscape{\svg@ink@cmd{#1}{#2}}%
+      \IfFileExists{#3.\svg@ink@format}{\@svg@tempswatrue}{}%
+      \if@svg@tempswa%
+        \@break@tfor%
+      \fi%
+    }%
+    \if@svg@tempswa%
+      \xdef\svg@ink@ver{\svg@ink@ver}%
+    \else%
+      \PackageError{svg}{Inkscape version not detected}{%
+        It was tried to invoke `\svg@ink@exe'\MessageBreak%
+        for file "#1.\svg@file@ext"\MessageBreak%
+        but no result was produced. Check the log file\MessageBreak%
+        and set `inkscapeversion=<version>' manually.%
+      }%
+    \fi%
+  \endgroup%
 }
 \newcommand*\svg@set@input@path[1][]{%
   \begingroup%

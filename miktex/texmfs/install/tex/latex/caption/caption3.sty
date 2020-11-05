@@ -38,21 +38,24 @@
 %%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption3}[2020/08/30 v2.0 caption3 kernel (AR)]
+\ProvidesPackage{caption3}[2020/10/21 v2.2e caption3 kernel (AR)]
 \providecommand*\@nameundef[1]{%
   \expandafter\let\csname #1\endcsname\@undefined}
 \providecommand\l@addto@macro[2]{%
   \edef#1{\unexpanded\expandafter{#1#2}}}
-\def\bothIfFirst#1#2{%
-  \protected@edef\caption@tempa{#1}%
+\def\bothIfFirst#1#2{\caption@bothif{#1}{#1#2}}
+\def\bothIfSecond#1#2{\caption@bothif{#2}{#1#2}}
+\newcommand*\caption@bothif[2]{%
+  \begingroup
+    \caption@prepare@bothif
+    \protected@xdef\caption@tempa{#1}%
+  \endgroup
   \ifx\caption@tempa\@empty \else
-    #1#2%
+    #2%
   \fi}
-\def\bothIfSecond#1#2{%
-  \protected@edef\caption@tempa{#2}%
-  \ifx\caption@tempa\@empty \else
-    #1#2%
-  \fi}
+\providecommand*\caption@prepare@bothif{}
+\g@addto@macro\caption@prepare@bothif{%
+  \let\inputencoding\@gobble}
 \newcommand*\caption@ifundefined[1]{%
   \ifdefined#1%
     \ifx#1\relax
@@ -183,10 +186,10 @@
 \newcommand*\caption@wh{%
   See the caption package documentation for explanation.}
 \newcommand*\caption@Error[1]{%
-  \PackageError{caption}{#1}\caption@eh}
-\newcommand*\caption@eh{%
+  \PackageError{caption}{#1}{\caption@@eh{caption}}}
+\newcommand*\caption@@eh[1]{%
   If you do not understand this error, please take a closer look\MessageBreak
-  at the documentation of the `caption' package, especially the\MessageBreak
+  at the documentation of the `#1' package, especially the\MessageBreak
   section about errors.\MessageBreak\@ehc}
 \let\caption@KV@err\caption@Error
 \RequirePackage{keyval}[1997/11/10]
@@ -435,9 +438,10 @@
   \caption@ifdefault{#3}%
     {\caption@Error{Invalid argument for \string\SetCaptionDefault: `#3'}}% would cause an infinite loop otherwise
     {\caption@@set{#1}{#2@default}{#3}}}
-\newcommand*\caption@ifdefault[1]{%
+\newcommand*\caption@ifdefault{\caption@ifequal{default}}
+\newcommand*\caption@ifequal[2]{%
   \edef\caption@tempa{#1}%
-  \def\caption@tempb{default}%
+  \edef\caption@tempb{#2}%
   \ifx\caption@tempa\caption@tempb
     \expandafter\@firstoftwo
   \else
@@ -460,6 +464,14 @@
     \caption@ifdefined#2{%
       \expandafter\let\csname caption@#1@default\endcsname#2%
       \let#2\@undefined}{}}}
+\newcommand*\SetCaptionFallback{%
+  \caption@maparg\caption@@setfallback}
+\@onlypreamble\SetCaptionFallback
+\newcommand*\caption@@setfallback[3]{%
+  \caption@ifequal{fallback}{#3}%
+    {\caption@Error{Invalid argument for \string\SetCaptionFallback: `#3'}}% would cause an infinite loop otherwise
+    {\caption@@set{#1}{#2@fallback}{#3}}}
+\@onlypreamble\caption@@setfallback
 \newcommand*\caption@decl@package[2]{%
   \@ifnextchar[%]
     {\caption@declare@package{#1}{#2}}%
@@ -543,7 +555,7 @@
 \newcommand*\caption@thecounter{0}
 \newcommand*\caption@stepthecounter{%
   \@tempcnta\caption@thecounter
-  \advance\@tempcnta\@ne
+  \advance\@tempcnta\@ne\relax
   \xdef\caption@thecounter{\the\@tempcnta}}
 \newcommand*\caption@newlabel{\@newl@bel{caption@r}}
 \newcommand*\caption@thepage{\the\c@page}
@@ -651,11 +663,11 @@
 \DeclareCaptionBox{none}{#2}
 \DeclareCaptionBox{parbox}{\parbox[b]{#1}{#2}}
 \DeclareCaptionBox{colorbox}{%
-  \colorbox\caption@boxcolor{%
+  \colorbox{\caption@boxcolor}{%
     \setlength\caption@tempdima{#1}%
     \addtolength\caption@tempdima{-2\fboxsep}%
-    \linewidth\caption@tempdima
-    \hsize\caption@tempdima
+    \linewidth\caption@tempdima\relax
+    \hsize\caption@tempdima\relax
     #2}}
 \DeclareCaptionOption{boxcolor}{\def\caption@boxcolor{#1}}
 \DeclareCaptionOption{boxsep}{\setlength\fboxsep{#1}}
@@ -685,8 +697,8 @@
        The option `labelsep=\caption@labelsep@name' does not work\MessageBreak
        with `format=hang'}}%
     {\@hangfrom{#1#2}%
-     \advance\caption@parindent\hangindent
-     \advance\caption@hangindent\hangindent
+     \advance\caption@parindent\hangindent\relax
+     \advance\caption@hangindent\hangindent\relax
      \caption@@par#3\par}}
 \SetCaptionDefault{format}{plain}
 \newcommand*\DeclareCaptionLabelFormat[2]{%
@@ -702,8 +714,9 @@
 \DeclareCaptionLabelFormat{original}{%
   \caption@ifdefined\caption@original@fnum
     {\caption@original@fnum}%
-    {\caption@labelformat@simple{#1}{#2}}}
+    {\caption@labelformat@fallback{#1}{#2}}}
 \SetCaptionDefault{labelformat}{original}
+\SetCaptionFallback{labelformat}{simple}
 \newcommand\DeclareCaptionLabelSeparator{%
   \@ifstar
     \DeclareCaptionLabelSeparator@
@@ -742,6 +755,8 @@
 \DeclareCaptionLabelSeparator*{newline}{\captionnewline}
 \caption@LabelSeparatorWithNewline{newline} % does not work with "format=hang"
 \DeclareCaptionLabelSeparator*{endash}{\space\textendash\space}
+\DeclareCaptionLabelSeparator{gobble}{ }
+\DeclareCaptionLabelSeparator{gobbletwo}{}
 \newcommand*\captionnewline{\\\relax}
 \SetCaptionDefault{labelseparator}{colon}
 \newcommand*\DeclareCaptionTextFormat[2]{%
@@ -854,6 +869,10 @@
 \SetCaptionDefault{font}{none}
 \SetCaptionDefault{labelfont}{none}
 \SetCaptionDefault{textfont}{none}
+\caption@setmapping{footfont}{font}
+\SetCaptionDefault{footfont}{none}
+\caption@setmapping{@tempa}{font}
+\SetCaptionDefault{@tempa}{none}
 \newcommand\caption@smaller{%
   \ifx\@currsize\tiny
     \relax
@@ -1123,6 +1142,11 @@
 \@onlypreamble\AtCaptionPackage
 \providecommand*\caption@documentclass@code{}
 \@onlypreamble\caption@documentclass@code
+\newcommand*\AfterCaptionPackage{%
+  \g@addto@macro\caption@endtitles@code}
+\@onlypreamble\AfterCaptionPackage
+\providecommand*\caption@endtitles@code{}
+\@onlypreamble\caption@endtitles@code
 \newcommand*\caption@IfBabelPackageLoaded[4]{%
   \caption@ifdefined#2\@firstofone\caption@AtBeginDocument{%
     \caption@if@bool{\@nameuse{caption@ifbabel@#1}}%
@@ -1148,36 +1172,39 @@
 }{%
   \let\caption@rl\@firstofone
 }
-\caption@ifdecl{labelseparator}{french}
-  {\let\caption@french@labelseparator\@undefined}%
-  {\caption@@set{labelseparator}{labelseparator@french}{default}%
-   \let\caption@french@labelseparator\caption@labelseparator@french}
+\DeclareCaptionLabelSeparator{french}{\caption@french@labelseparator}
 \newcommand*\caption@IfBabelFrench{%
   \caption@IfBabelPackageLoaded{french}{\FB@makecaption}}
 \@onlypreamble\caption@IfBabelFrench
 \providecommand*\caption@ifbabel@french{true}
 \caption@IfBabelFrench{%
-  \ifx\caption@french@labelseparator\caption@labelseparator@french % still set to dummy label separator?
-    \DeclareCaptionLabelSeparator{french}{%
-      \ifFBCustomiseFigTabCaptions
-        \CaptionSeparator
-      \else
-        \space : %
-      \fi}%
+  \providecommand\caption@french@labelseparator{\CaptionSeparator}%
+  \ifFB@active@punct
+    \DeclareCaptionLabelSeparator{colon}{%
+      \ifFBfrench\penalty\@M\FBcolonspace\fi : }%
   \fi
-  \caption@ifdefined\extrasfrench{%
-    \addto\extrasfrench{%
-      \caption@switchdefault{labelseparator}{\babel@save #1}{french}}}{}%
-  \caption@AtBeginDocument{\@nameuse{@FBwarning@capsepfalse}}%
+  \ifFBOldFigTabCaptions
+    \caption@ifdefined\extrasfrench{%
+      \addto\extrasfrench{%
+        \caption@switchdefault{labelseparator}{\babel@save #1}{french}}}{}%
+    \caption@ifdefined\extrasacadian{%
+      \addto\extrasacadian{%
+        \caption@switchdefault{labelseparator}{\babel@save #1}{french}}}{}%
+  \else
+    \ifFBCustomiseFigTabCaptions
+      \caption@AtBeginDocument{%
+        \ifFB@mainlanguage@FR
+          \SetCaptionDefault{labelseparator}{french}%
+        \fi}%
+    \fi
+  \fi
 }{}
 \newcommand*\caption@IfFrenchLe{%
   \caption@IfBabelPackageLoaded{frenchle}{\frenchTeXmods}}
 \@onlypreamble\caption@IfBabelFrenchLe
 \providecommand*\caption@ifbabel@frenchle{true}
 \caption@IfFrenchLe{%
-  \ifx\caption@french@labelseparator\caption@labelseparator@french % still set to dummy label separator?
-    \DeclareCaptionLabelSeparator{french}{\captionseparator\space}%
-  \fi
+  \providecommand\caption@french@labelseparator{\captionseparator\space}%
   \g@addto@macro\extrasfrench{%
     \caption@switchdefault{labelseparator}{\let\caption@original@labelseparator#1}{french}%
     \caption@switchdefault{font}{\let\caption@original@font#1}{it}%
@@ -1252,18 +1279,6 @@
   \RequirePackage{#1}\relax}
 \caption@AtBeginDocument{%
   \let\caption@@loadpackage\caption@@requirepackage}
-\caption@AtBeginDocument{%
-  \def\@tempa{2008/08/02 v0.3b floatrow: float package extension}%
-  \expandafter\ifx\csname ver@floatrow.sty\endcsname\@tempa
-    \caption@InfoNoLine{floatrow package v0.3b is loaded}%
-    \renewcommand\captionlabel[1]{{% l.559
-      \def\FR@tmp{\@captype}%
-      \ifnum\floatbox@depth>\@ne
-        \def\FR@tmp{sub\@captype}\caption@setsubtype*{\FR@tmp}\stepcounter{\FR@tmp}%
-      \fi
-      \caption@format % <= This line added
-      \caption@@@make{\caption@fnum\FR@tmp}{#1}}}
-  \fi}
 \newcommand*\caption@newfloat[2]{%
   \IfCaptionOptionCheck
     {\caption@requirepackage{newfloat}{#1}}%
@@ -1313,9 +1328,11 @@
   \def\@tempa{2005/06/28 ver: 1.3 subfig package}%
   \expandafter\ifx\csname ver@subfig.sty\endcsname\@tempa
     \caption@InfoNoLine{subfig package v1.3 is loaded}%
+    \def\caption@eh{\caption@@eh{subfig}}%
     \let\caption@setfloattype\@gobble
     \let\@dottedxxxline\sf@NEW@dottedxxxline
     \let\sf@subfloat\sf@NEW@subfloat
+    \let\sf@ifpositiontop\caption@iftop
   \fi
   \let\sf@NEW@dottedxxxline\@undefined
   \let\sf@NEW@subfloat\@undefined}
@@ -1342,7 +1359,7 @@
     \let\sf@oldlabel=\label
     \let\label=\subfloat@label
     \ifmaincaptiontop\else
-      \advance\@nameuse{c@\@captype}\@ne
+      \advance\@nameuse{c@\@captype}\@ne\relax
     \fi
     \refstepcounter{sub\@captype}%
     \setcounter{sub\@captype @save}{\value{sub\@captype}}%
@@ -1416,12 +1433,12 @@
     \caption@calcmargin
     \caption@tempdima\captionmargin
     \ifdim\captionmargin@=\z@ \else
-      \caption@ifoddpage{}{\advance\caption@tempdima\captionmargin@}%
+      \caption@ifoddpage{}{\advance\caption@tempdima\captionmargin@\relax}%
     \fi
-    \caption@ifhmode{\advance\caption@tempdima\caption@indent}%
+    \caption@ifhmode{\advance\caption@tempdima\caption@indent\relax}%
     \hspace\caption@tempdima
     \caption@tempdima\captionwidth
-    \caption@ifhmode{\advance\caption@tempdima-\caption@indent}%
+    \caption@ifhmode{\advance\caption@tempdima-\caption@indent\relax}%
     \caption@parbox\caption@tempdima{%
       \caption@ifhmode{%
         \ifdim\caption@indent=\z@
@@ -1432,7 +1449,7 @@
       \caption@@@make{#1}{#2}}%
     \caption@tempdima\captionmargin
     \ifdim\captionmargin@=\z@ \else
-      \caption@ifoddpage{\advance\caption@tempdima\captionmargin@}{}%
+      \caption@ifoddpage{\advance\caption@tempdima\captionmargin@\relax}{}%
     \fi
     \hspace\caption@tempdima
   }%
@@ -1452,14 +1469,14 @@
     \fi
   \fi
   \ifdim\captionwidth=\z@
-    \captionwidth\hsize
-    \advance\captionwidth by -2\captionmargin
-    \advance\captionwidth by -\captionmargin@
+    \captionwidth\hsize\relax
+    \advance\captionwidth by -2\captionmargin\relax
+    \advance\captionwidth by -\captionmargin@\relax
   \else
-    \captionmargin\hsize
-    \advance\captionmargin by -\captionwidth
-    \divide\captionmargin by 2
-    \captionmargin@\z@
+    \captionmargin\hsize\relax
+    \advance\captionmargin by -\captionwidth\relax
+    \divide\captionmargin by 2\relax
+    \captionmargin@\z@\relax
   \fi
   \caption@Debug{%
     \string\hsize=\the\hsize,
@@ -1531,9 +1548,23 @@
 \newcommand*\caption@applyfont{%
   \caption@justification\captionfont\captionsize}
 \newcommand\caption@@@make[2]{%
-  \sbox\@tempboxa{#1}%
+  \ifx\caption@fmt\@undefined\caption@format\fi
+  \let\caption@lfmt\caption@labelformat
+  \global\def\caption@tempa{gobbletwo}%
+  \global\def\caption@tempb{}%
+  \sbox\@tempboxa{%
+    \let\caption@ignorespaces\ignorespaces
+    \def\ignorespaces{%
+      \global\def\caption@tempb{two}% "gobble" -> "gobbletwo" if \ignorespaces is used addtionally
+      \caption@ignorespaces}%
+    #1%
+      {\global\let\caption@tempa\@undefined\aftergroup\@gobble}%
+      {\global\def\caption@tempa{gobble\caption@tempb}}}%
   \ifdim\wd\@tempboxa=\z@
-    \caption@set{labelseparator}{none}%
+    \gdef\caption@tempa{none}%
+  \fi
+  \ifx\caption@tempa\@undefined \else
+    \@expandtwoargs\caption@set{labelseparator}{\caption@tempa}%
   \fi
   \caption@ifempty{#2}{%
     \caption@set{labelseparator}{none}%
@@ -1546,7 +1577,7 @@
     {\ifcaption@star\else
        \begingroup
          \captionlabelfont
-         #1%
+         #1\relax\relax
        \endgroup
      \fi}%
     {\ifcaption@star\else
@@ -1641,7 +1672,7 @@
     {\caption@@@declaresubtype{#1}{#2}{#3}{sub#3}}}
 \@onlypreamble\caption@@declaresubtype
 \newcommand*\caption@@@declaresubtype[4]{%
-  \caption@ifin@list\caption@subtypelist{#4}%
+  \caption@ifsubtype{#4}%
     {\caption@Debug{Modify subtype `#4'}}%
     {\caption@Debug{New subtype `#4'}%
      \newcounter{#4}[{#3}]%
@@ -1717,17 +1748,11 @@
   \edef\@tempa{\def\noexpand\caption@subtype@hook####1{\the\toks@}}%
   \@tempa}
 \providecommand*\caption@subtype@hook[1]{}
-\newcommand*\caption@savesubcounters{%
-  \caption@for@list\caption@subtypelist{\caption@savecounter{##1}}}
-\newcommand*\caption@savecounter[1]{%
-  \edef\caption@tempa{%
-    \noexpand\l@addto@macro\noexpand\caption@restore@counters
-      {\noexpand\setcounter{#1}{\number\value{#1}}}}%
-  \caption@tempa}
-\newcommand*\caption@restorecounters{%
-  \caption@restore@counters
-  \global\let\caption@restore@counters\@empty}
-\newcommand*\caption@restore@counters{}
+\caption@ifdefined\@memresetsubcounter
+  {\let\caption@memresetsubcounter\@memresetsubcounter
+   \renewcommand*\@memresetsubcounter[1]{%
+     \caption@ifsubtype{sub#1}\@gobble\caption@memresetsubcounter{#1}}}%
+  {}
 \ifx\caption@documentclass\@empty\else
   \@pushfilename
   \edef\@currname{caption-\caption@documentclass}

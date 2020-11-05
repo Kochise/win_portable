@@ -1,5 +1,5 @@
-% minted.4ht (2019-11-07-14:08), generated from tex4ht-4ht.tex
-% Copyright 2019 TeX Users Group
+% minted.4ht (2020-09-28-13:52), generated from tex4ht-4ht.tex
+% Copyright 2020 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -16,7 +16,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-11-07-14:08}
+\immediate\write-1{version 2020-09-28-13:52}
 
 \NewConfigure{InlineCode}{2}
 
@@ -31,6 +31,17 @@
 }
 
 \HLet\minted@inline@iii\:tempa
+
+% support for background color in Minted listings
+\NewConfigure{MintedColorbg}{2}
+\renewenvironment{minted@colorbg}[1]{%
+  \colorlet{shadecolor}{#1}%
+  \extractcolorspec{shadecolor}{\:tempa}%
+  \expandafter\convertcolorspec\:tempa{HTML}\minted:bgcolor%
+  \a:MintedColorbg%
+  }
+  {\b:MintedColorbg\medskip\noindent}
+
 
 \Hinput{minted}
 \endinput

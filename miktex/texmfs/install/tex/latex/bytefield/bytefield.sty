@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 2017 by Scott Pakin <scott+bf@pakin.org>
+%% Copyright (C) 2000-2020 by Scott Pakin <scott+bf@pakin.org>
 %% 
 %% This file may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License, either version 1.3a of this license
@@ -22,7 +22,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesPackage{bytefield}
-    [2017/09/15 v2.4 Network protocol diagrams]
+    [2020/10/31 v2.6 Network protocol diagrams]
 \RequirePackage{calc}[1998/07/07]
 \RequirePackage{keyval}
 \def\bf@newdimen#1{\advance\count11 by 1
@@ -46,7 +46,8 @@
 \newlength{\bytefield@height@increment}
 \DeclareRobustCommand{\inc@bytefield@height}[1]{%
   \setlength{\bytefield@height@increment}{#1}%
-  \global\advance\bytefield@height by \bytefield@height@increment}
+  \global\advance\bytefield@height by \bytefield@height@increment
+}
 \newsavebox{\entire@bytefield@picture}
 \newenvironment{bytefield}[2][]{%
   \bf@bytefieldsetup{#1}%
@@ -68,9 +69,11 @@
     \ignorespaces\global\counting@wordstrue\make@lspace\amp}%
   \vbox\bgroup\ialign\bgroup##\amp##\amp##\cr\amp
 }{%
+  \unskip
   \amp\show@wordlabelr\cr\egroup\egroup
   \end{lrbox}%
-  \usebox{\entire@bytefield@picture}}
+  \usebox{\entire@bytefield@picture}%
+}
 \newcommand*{\bf@bitformatting}{\tiny}
 \newcommand*{\bf@boxformatting}{\centering}
 \newlength{\bf@bitwidth}
@@ -79,28 +82,68 @@
 \setlength{\bf@bitheight}{4ex}
 \newlength{\units@wide}
 \newlength{\units@tall}
-\DeclareRobustCommand{\bitbox}[3][lrtb]{%
-  \setlength{\units@wide}{\bf@bitwidth * #2}%
-  \bf@parse@bitbox@arg{#1}%
-  \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\bf@bitheight}{#3}}
-\DeclareRobustCommand{\wordbox}[3][lrtb]{%
-  \setlength{\units@wide}{\bf@bitwidth * \bits@wide}%
-  \setlength{\units@tall}{\bf@bitheight * #2}%
-  \bf@parse@bitbox@arg{#1}%
-  \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\units@tall}{#3}}
+\newcommand*{\bf@call@box@cmd}[1]{%
+  \def\bf@call@box@func{#1}%
+  \bf@call@box@cmd@i
+}
+\newcommand*{\bf@call@box@cmd@i}[2][lrtb]{%
+  \def\bf@call@box@arg@i{#1}%
+  \def\bf@call@box@arg@ii{#2}%
+  \bf@call@box@cmd@ii
+}
+\newcommand*{\bf@call@box@cmd@ii}[2][]{%
+  \def\bf@call@box@arg@iii{#1}%
+  \def\bf@call@box@arg@iv{#2}%
+  \bf@call@box@func
+}
+\DeclareRobustCommand{\bitbox}{\bf@call@box@cmd{\bf@bitbox}}
+\def\bf@bitbox{%
+  \bgroup
+    \expandafter\bf@parse@bitbox@arg\expandafter{\bf@call@box@arg@i}%
+    \setlength{\units@wide}{\bf@bitwidth * \bf@call@box@arg@ii}%
+    \expandafter\bf@bytefieldsetup\expandafter{\bf@call@box@arg@iii}%
+    \@ifundefined{bf@bgcolor}{%
+    }{%
+      \rlap{%
+        \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\bf@bitheight}{%
+          \color{\bf@bgcolor}%
+          \rule{\width}{\height}%
+        }%
+      }%
+    }%
+    \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\bf@bitheight}{%
+      \bf@call@box@arg@iv
+    }%
+  \egroup
+  \ignorespaces
+}
+\DeclareRobustCommand{\wordbox}{\bf@call@box@cmd{\bf@wordbox}}
+\def\bf@wordbox{%
+  \bgroup
+    \expandafter\bf@parse@bitbox@arg\expandafter{\bf@call@box@arg@i}%
+    \setlength{\units@wide}{\bf@bitwidth * \bits@wide}%
+    \setlength{\units@tall}{\bf@bitheight * \bf@call@box@arg@ii}%
+    \expandafter\bf@bytefieldsetup\expandafter{\bf@call@box@arg@iii}%
+    \@ifundefined{bf@bgcolor}{%
+    }{%
+      \rlap{%
+        \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\units@tall}{%
+          \color{\bf@bgcolor}%
+          \rule{\width}{\height}%
+        }%
+      }%
+    }%
+    \draw@bit@picture{\strip@pt\units@wide}{\strip@pt\units@tall}{%
+      \bf@call@box@arg@iv
+    }%
+    \@ifundefined{bf@per@word}{}{\bf@invoke@per@word{\bf@call@box@arg@ii}}%
+  \egroup
+  \ignorespaces
+}
 \DeclareRobustCommand{\draw@bit@picture}[3]{%
   \begin{picture}(#1,#2)%
     \put(0,0){\makebox(#1,#2){\parbox{#1\unitlength}{%
-      \bf@newdimen\height
-      \bf@newdimen\depth
-      \bf@newdimen\totalheight
-      \bf@newdimen\width
-      \height=#2\unitlength
-      \depth=0pt%
-      \totalheight=#2\unitlength
-      \width=#1\unitlength
-      \def\widthunits{#1}%
-      \def\heightunits{#2}%
+      \bf@set@user@dimens{#1}{#2}%
       \bf@boxformatting{#3\par}}}}%
     \ifbitbox@top
       \put(0,#2){\line(1,0){#1}}%
@@ -119,55 +162,89 @@
     \inc@bytefield@height{\unitlength * \real{#2}}%
     \global\counting@wordsfalse
   \fi
-  \ignorespaces}
+}
+\newcommand{\bf@invoke@per@word}[1]{%
+  \begin{picture}(0,0)%
+    \@tempcnta=0
+    \@tempdima=#1\bf@bitheight
+    \bf@set@user@dimens{\strip@pt\units@wide}{\strip@pt\units@tall}%
+    \loop
+      \advance\@tempdima by -\bf@bitheight
+      \bgroup
+        \put(-\strip@pt\units@wide, \strip@pt\@tempdima){%
+          \expandafter\bf@per@word\expandafter{\the\@tempcnta}{#1}%
+        }%
+      \egroup
+      \advance\@tempcnta by 1\relax
+      \ifnum#1>\@tempcnta
+    \repeat
+  \end{picture}%
+}
+\newcommand{\bf@set@user@dimens}[2]{%
+  \bf@newdimen\width
+  \bf@newdimen\height
+  \bf@newdimen\depth
+  \bf@newdimen\totalheight
+  \width=#1\unitlength
+  \height=#2\unitlength
+  \depth=0pt%
+  \totalheight=#2\unitlength
+  \def\widthunits{#1}%
+  \def\heightunits{#2}%
+}
 \DeclareRobustCommand{\bitboxes}{%
-  \@ifstar\bf@bitboxes@star\bf@bitboxes@no@star
+  \@ifstar
+      {\bf@call@box@cmd{\bf@bitboxes@star}}%
+      {\bf@call@box@cmd{\bf@bitboxes@no@star}}%
 }
 \def\bf@relax{\relax}
-\newcommand{\bf@bitboxes@no@star}[3][lrtb]{%
-  \def\bf@bitboxes@no@star@i##1{%
-    \def\bf@bitboxes@arg{##1}%
-    \ifx\bf@bitboxes@arg\bf@relax
-      \let\next=\relax
-    \else
-      \bitbox[#1]{#2}{##1}%
-      \let\next=\bf@bitboxes@no@star@i
-    \fi
-    \next
-  }%
-  \bf@bitboxes@no@star@i#3\relax
+\def\bf@bitboxes@no@star{%
+  \expandafter\bf@bitboxes@no@star@i\bf@call@box@arg@iv\relax
   \ignorespaces
 }
-\newcommand{\bf@bitboxes@star}[3][lrtb]{%
-  \def\bf@bitboxes@star@i##1##2{%
-    \def\bf@bitboxes@arg{##2}%
-    \ifx\bf@bitboxes@arg\bf@relax
-      \bitbox[#1]{#2}{##1}%
-      \let\next=\relax
-    \else
-      \bitbox[#1R]{#2}{##1}%
-      \def\next{\bf@bitboxes@star@ii{##2}}%
-    \fi
-    \next
-  }%
-  \def\bf@bitboxes@star@ii##1##2{%
-    \def\bf@bitboxes@arg@i{##1}%
-    \def\bf@bitboxes@arg@ii{##2}%
-    \ifx\bf@bitboxes@arg@ii\bf@relax
-      \def\bf@bitboxes@sides{#1L}%
-    \else
-      \def\bf@bitboxes@sides{#1LR}%
-    \fi
-    \ifx\bf@bitboxes@arg@i\bf@relax
-      \let\next=\relax
-    \else
-      \expandafter\bitbox\expandafter[\bf@bitboxes@sides]{#2}{##1}%
-      \def\next{\bf@bitboxes@star@ii{##2}}%
-    \fi
-    \next
-  }%
-  \bf@bitboxes@star@i#3\relax\relax
+\def\bf@bitboxes@no@star@i#1{%
+  \def\bf@call@box@arg@iv{#1}%
+  \ifx\bf@call@box@arg@iv\bf@relax
+    \let\next=\relax
+  \else
+    \bf@bitbox
+    \let\next=\bf@bitboxes@no@star@i
+  \fi
+  \next
+}
+\def\bf@bitboxes@star{%
+  \edef\bf@bitboxes@sides{\bf@call@box@arg@i}%
+  \expandafter\bf@bitboxes@star@i\bf@call@box@arg@iv\relax\relax
   \ignorespaces
+}
+\def\bf@bitboxes@star@i#1#2{%
+  \def\bf@call@box@arg@iv{#1}%
+  \def\bf@bitboxes@arg@ii{#2}%
+  \ifx\bf@bitboxes@arg@ii\bf@relax
+    \bf@bitbox
+    \let\next=\relax
+  \else
+    \edef\bf@call@box@arg@i{\bf@bitboxes@sides R}%
+    \bf@bitbox
+    \def\next{\bf@bitboxes@star@ii{#2}}%
+  \fi
+  \next
+}
+\def\bf@bitboxes@star@ii#1#2{%
+  \def\bf@call@box@arg@iv{#1}%
+  \def\bf@bitboxes@arg@ii{#2}%
+  \ifx\bf@bitboxes@arg@ii\bf@relax
+    \edef\bf@call@box@arg@i{\bf@bitboxes@sides L}%
+  \else
+    \edef\bf@call@box@arg@i{\bf@bitboxes@sides LR}%
+  \fi
+  \ifx\bf@call@box@arg@iv\bf@relax
+    \let\next=\relax
+  \else
+    \bf@bitbox
+    \def\next{\bf@bitboxes@star@ii{#2}}%
+  \fi
+  \next
 }
 \newif\ifbitbox@top
 \newif\ifbitbox@bottom
@@ -178,7 +255,8 @@
   \bitbox@bottomfalse
   \bitbox@leftfalse
   \bitbox@rightfalse
-  \bf@parse@bitbox@sides#1X}
+  \bf@parse@bitbox@sides#1X%
+}
 \def\bf@parse@bitbox@sides#1{%
   \ifx#1X%
   \else
@@ -216,7 +294,8 @@
       \fi
     \fi
     \expandafter\bf@parse@bitbox@sides
-  \fi}
+  \fi
+}
 \newlength{\units@high}
 \DeclareRobustCommand{\skippedwords}[1][2ex]{%
   \setlength{\units@wide}{\bf@bitwidth * \bits@wide}%
@@ -234,7 +313,8 @@
   \ifcounting@words
     \inc@bytefield@height{\unitlength * \real{\num@tall}}%
     \global\counting@wordsfalse
-  \fi}
+  \fi
+}
 \newcommand*{\bf@bit@endianness}{l}
 \newcommand*{\bf@first@bit}{0}
 \DeclareRobustCommand{\bitheader}[2][]{%
@@ -251,13 +331,15 @@
     \inc@bytefield@height{\unitlength * \real{\strip@pt\units@tall}}%
     \global\counting@wordsfalse
   \fi
-  \ignorespaces}
+  \ignorespaces
+}
 \def\bf@parse@range@list#1,{%
   \ifx X#1
   \else
     \bf@parse@range#1-#1-#1\relax
     \expandafter\bf@parse@range@list
-  \fi}
+  \fi
+}
 \newlength{\header@xpos}
 \newcounter{header@val}
 \newcounter{max@header@val}
@@ -276,7 +358,8 @@
         \makebox(\strip@pt\bf@bitwidth,\strip@pt\units@tall){%
           \bf@bitformatting{\theheader@val}}}
       \addtocounter{header@val}{1}
-  \repeat}
+  \repeat
+}
 \newcommand*{\bf@process@bitheader@opts}{%
   \let\KV@bytefield@l=\KV@bitheader@l
   \let\KV@bytefield@b=\KV@bitheader@b
@@ -312,6 +395,8 @@
 \def\bf@rightlabelspace{0.5ex}
 \let\bf@leftcurly=\{
 \let\bf@rightcurly=\}
+\let\bf@leftcurlystyle=\relax
+\let\bf@rightcurlystyle=\relax
 \newbox{\curly@box}
 \def\store@rcurly#1#2{%
   \begingroup
@@ -324,11 +409,13 @@
     \setlength{\curly@shift}{\half@curly@height + 0.5\curly@shift}%
     \global\sbox{#1}{\raisebox{\curly@shift}{%
       $\xdef\old@axis{\the\fontdimen22\textfont2}$%
-      $\fontdimen22\textfont2=0pt%
-       \left.
-       \vrule height\half@curly@height
-              width 0pt
-              depth\half@curly@height\right\bf@rightcurly$%
+      \bf@rightcurlystyle{%
+        $\fontdimen22\textfont2=0pt%
+         \left.
+         \vrule height\half@curly@height
+                width 0pt
+                depth\half@curly@height\right\bf@rightcurly$%
+      }%
       $\fontdimen22\textfont2=\old@axis$}}%
   \endgroup
 }
@@ -343,57 +430,66 @@
     \setlength{\curly@shift}{\half@curly@height + 0.5\curly@shift}%
     \global\sbox{#1}{\raisebox{\curly@shift}{%
       $\xdef\old@axis{\the\fontdimen22\textfont2}$%
-      $\fontdimen22\textfont2=0pt%
-       \left\bf@leftcurly
-       \vrule height\half@curly@height
-              width 0pt
-              depth\half@curly@height\right.$%
+      \bf@leftcurlystyle{%
+        $\fontdimen22\textfont2=0pt%
+         \left\bf@leftcurly
+         \vrule height\half@curly@height
+                width 0pt
+                depth\half@curly@height\right.$%
+      }%
       $\fontdimen22\textfont2=\old@axis$}}%
   \endgroup
 }
 \def\show@wordlabelr{}
 \newlength{\wordlabelr@start}
 \newlength{\wordlabelr@end}
-\newenvironment{rightwordgroup}[1]{%
+\newenvironment{rightwordgroup}[2][]{%
   \endgroup
   \global\wordlabelr@start=\bytefield@height
-  \gdef\wordlabelr@text{#1}%
+  \gdef\wordlabelr@params{#1}%
+  \gdef\wordlabelr@text{#2}%
   \ignorespaces
 }{%
   \begingroup
   \global\wordlabelr@end=\bytefield@height
   \gdef\show@wordlabelr{%
     \sbox{\word@label@box}{%
-      \begin{tabular}[b]{@{}l@{}}\wordlabelr@text\end{tabular}}%
+      \begin{tabular}[b]{@{}l@{}}\wordlabelr@text\end{tabular}%
+    }%
     \settowidth{\label@box@width}{\usebox{\word@label@box}}%
     \setlength{\label@box@height}{\wordlabelr@end-\wordlabelr@start}%
+    \expandafter\bf@bytefieldsetup\expandafter{\wordlabelr@params}%
     \store@rcurly{\curly@box}{\label@box@height}%
     \bf@newdimen\total@box@width
     \setlength{\total@box@width}{%
       \bf@rightcurlyspace +
       \widthof{\usebox{\curly@box}} +
       \bf@rightlabelspace +
-      \label@box@width}%
+      \label@box@width
+    }%
     \begin{picture}(\strip@pt\total@box@width,0)
       \put(0,0){%
         \hspace*{\bf@rightcurlyspace}%
         \usebox{\curly@box}%
         \hspace*{\bf@rightlabelspace}%
         \makebox(\strip@pt\label@box@width,\strip@pt\label@box@height){%
-          \usebox{\word@label@box}}}
+          \usebox{\word@label@box}%
+        }%
+      }%
     \end{picture}%
     \gdef\show@wordlabelr{}}%
   \def\@currenvir{rightwordgroup}%
-  \ignorespaces
+  \ignorespacesafterend
 }
 \newlength{\wordlabell@start}
 \newlength{\wordlabell@end}
 \newlength{\total@lbox@width}
 \gdef\make@lspace{}
-\newenvironment{leftwordgroup}[1]{%
-  \endgroup
+\newenvironment{leftwordgroup}[2][]{%
   \global\wordlabell@start=\bytefield@height
-  \gdef\wordlabell@text{#1}%
+  \gdef\wordlabell@params{#1}%
+  \gdef\wordlabell@text{#2}%
+  \bf@bytefieldsetup{#1}%
   \sbox{\word@label@box}{%
     \begin{tabular}[b]{@{}l@{}}\wordlabell@text\end{tabular}}%
   \settowidth{\label@box@width}{\usebox{\word@label@box}}%
@@ -406,7 +502,9 @@
   \global\total@lbox@width=\total@lbox@width
   \gdef\make@lspace{%
     \hspace*{\total@lbox@width}%
-    \gdef\make@lspace{}}%
+    \gdef\make@lspace{}%
+  }%
+  \endgroup
   \ignorespaces
 }{%
   \begingroup
@@ -418,6 +516,7 @@
     \begin{tabular}[b]{@{}l@{}}\wordlabell@text\end{tabular}}%
   \settowidth{\label@box@width}{\usebox{\word@label@box}}%
   \setlength{\label@box@height}{\wordlabell@end-\wordlabell@start}%
+  \expandafter\bf@bytefieldsetup\expandafter{\wordlabell@params}%
   \store@lcurly{\curly@box}{\label@box@height}%
   \begin{picture}(0,0)
     \put(\strip@pt\starting@point,0){%
@@ -428,7 +527,8 @@
       \hspace*{\bf@leftcurlyspace}}
   \end{picture}%
   \def\@currenvir{leftwordgroup}%
-  \ignorespaces}
+  \ignorespacesafterend
+}
 \newlength{\label@box@width}
 \newlength{\label@box@height}
 \newsavebox{\word@label@box}
@@ -523,6 +623,12 @@
   \def\bf@leftcurlyshrinkage{#1}%
   \def\bf@rightcurlyshrinkage{#1}%
 }
+\define@key{bytefield}{leftcurlystyle}{\def\bf@leftcurlystyle{#1}}
+\define@key{bytefield}{rightcurlystyle}{\def\bf@rightcurlystyle{#1}}
+\define@key{bytefield}{curlystyle}{%
+  \def\bf@leftcurlystyle{#1}%
+  \def\bf@rightcurlystyle{#1}%
+}
 \define@key{bytefield}{endianness}{\bf@parse@endianness{#1}}
 \newcommand{\bf@parse@endianness}[1]{%
   \def\bf@little{little}%
@@ -545,6 +651,8 @@
   \fi
 }
 \define@key{bytefield}{lsb}{\def\bf@first@bit{#1}}
+\define@key{bytefield}{bgcolor}{\def\bf@bgcolor{#1}}
+\define@key{bytefield}{perword}{\def\bf@per@word{#1}}
 \newcommand{\bf@bytefieldsetup}{\setkeys{bytefield}}
 \let\bytefieldsetup=\bf@bytefieldsetup
 \DeclareOption{compat1}{\bf@enter@compatibility@mode@i}

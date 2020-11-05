@@ -1,4 +1,4 @@
-% $Id: pstricks-pdf.sty 6 2020-06-10 18:50:14Z herbert $
+% $Id: pstricks-pdf.sty 23 2020-09-18 06:29:04Z herbert $
 %%
 %% This is file `pstricks-pdf.sty'.
 %%
@@ -16,7 +16,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{pstricks-pdf}[2020/06/11 v0.01 creating pdf output (hv)]
+\ProvidesPackage{pstricks-pdf}[2020/06/11 v0.02 creating pdf output (hv)]
 \RequirePackage{ifpdf,xkeyval,ifplatform}
 
 \newif\if@app@off@
@@ -70,7 +70,8 @@
     dvips={-Ppdf},
     pdfcrop={},
     cleanup={log,aux,dvi,ps,pdf},
-    runs=1
+    runs=1,
+    pspdf={-dALLOWPSTRANSPARENCY},
 }
 \ifwindows
   \ExecuteOptionsX{pspdf={}}

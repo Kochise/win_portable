@@ -29,7 +29,7 @@
 \DeclareCurrentRelease{}{2019-10-01}
 
 \ProvidesPackage{graphics}
-          [2019/11/30 v1.4a  Standard LaTeX Graphics (DPC,SPQR)]
+          [2020/08/30 v1.4c  Standard LaTeX Graphics (DPC,SPQR)]
 \edef\Gin@codes{%
  \catcode`\noexpand\^^A\the\catcode`\^^A\relax
  \catcode`\noexpand\"\the\catcode`\"\relax
@@ -212,20 +212,24 @@
       \fi}%
   \else
     \Gin@getbase{\Gin@sepdefault\filename@ext}%
-\ifx\Gin@ext\relax
-\let\Gin@savedbase\filename@base
-\let\Gin@savedext\filename@ext
-  \edef\filename@base{\filename@base\Gin@sepdefault\filename@ext}%
-  \let\filename@ext\relax
-   \@for\Gin@temp:=\Gin@extensions\do{%
+    \ifnum0%
+        \ifx\Gin@ext\relax 1%
+        \else \@ifundefined{Gin@rule@\Gin@ext}{1}{0}%
+        \fi >0
+      \let\Gin@ext\relax
+      \let\Gin@savedbase\filename@base
+      \let\Gin@savedext\filename@ext
+      \edef\filename@base{\filename@base\Gin@sepdefault\filename@ext}%
+      \let\filename@ext\relax
+      \@for\Gin@temp:=\Gin@extensions\do{%
+          \ifx\Gin@ext\relax
+            \Gin@getbase\Gin@temp
+          \fi}%
       \ifx\Gin@ext\relax
-        \Gin@getbase\Gin@temp
-      \fi}%
-  \ifx\Gin@ext\relax
-    \let\filename@base\Gin@savedbase
-    \let\filename@ext\Gin@savedext
-  \fi
-\fi
+        \let\filename@base\Gin@savedbase
+        \let\filename@ext\Gin@savedext
+      \fi
+    \fi
     \ifx\Gin@ext\relax
        \@warning{File `#1' not found}%
        \def\Gin@base{\filename@area\filename@base}%
@@ -343,6 +347,7 @@
   \dospecials
   \catcode`\ 10 %
   \catcode`\^^I10 %
+  \endlinechar13 %
   \catcode\endlinechar5 %
   \@makeother\:%
   \@makeother\-%
@@ -400,6 +405,34 @@
   \Gin@defaultbp\Gin@urx{#3}%
   \Gin@defaultbp\Gin@ury{#4}}%
 \def\Gread@atend{atend}
+\def\Gin@viewport{%
+  \let\Gin@ollx\Gin@llx
+  \let\Gin@olly\Gin@lly
+  \let\Gin@ourx\Gin@urx
+  \let\Gin@oury\Gin@ury
+  \dimen@\Gin@llx\p@\advance\dimen@ \Gin@vurx\p@
+                      \edef\Gin@urx{\strip@pt\dimen@}%
+  \dimen@\Gin@lly\p@\advance\dimen@ \Gin@vury\p@
+                      \edef\Gin@ury{\strip@pt\dimen@}%
+  \dimen@\Gin@llx\p@\advance\dimen@ \Gin@vllx\p@
+                      \edef\Gin@llx{\strip@pt\dimen@}%
+  \dimen@\Gin@lly\p@\advance\dimen@ \Gin@vlly\p@
+                      \edef\Gin@lly{\strip@pt\dimen@}}
+\def\Gin@trim{%
+  \let\Gin@ollx\Gin@llx
+  \let\Gin@olly\Gin@lly
+  \let\Gin@ourx\Gin@urx
+  \let\Gin@oury\Gin@ury
+  \dimen@\Gin@llx\p@\advance\dimen@ \Gin@vllx\p@
+                      \edef\Gin@llx{\strip@pt\dimen@}%
+  \dimen@\Gin@lly\p@\advance\dimen@ \Gin@vlly\p@
+                      \edef\Gin@lly{\strip@pt\dimen@}%
+  \dimen@\Gin@urx\p@\advance\dimen@ -\Gin@vurx\p@
+                      \edef\Gin@urx{\strip@pt\dimen@}%
+  \dimen@\Gin@ury\p@\advance\dimen@ -\Gin@vury\p@
+                      \edef\Gin@ury{\strip@pt\dimen@}}
+\let\Gin@vllx\Gin@llx\let\Gin@vlly\Gin@llx
+\let\Gin@vurx\Gin@llx\let\Gin@vury\Gin@llx
 \let\Grot@height\@ovxx
 \let\Grot@left\@ovyy
 \let\Grot@right\@ovdx

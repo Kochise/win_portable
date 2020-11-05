@@ -1,6 +1,15 @@
 <!--- CircuiTikz - Changelog --->
 The major changes among the different circuitikz versions are listed here. See <https://github.com/circuitikz/circuitikz/commits> for a full list of changes.
 
+* Version 1.2.4 (2020-10-04)
+
+    - several documentation enhancment
+    - added a couple of block elements: allpass filter, generic two-sides block (suggested by user `@myzinsky`)
+    - added transmission gate (only IEEE style version) suggested by several users (`@SJulianS` on github, Philipp Birkl on `TeX.SX`)
+    - added a resistive splitter block symbol by `@matthuszagh`
+    - added depletion-type `nmosd` and `pmosd` MOSFET simplified symbols
+    - added depletion-type `nfetd` and `pfetd` for plain full-symbol MOSFET
+
 * Version 1.2.3 (2020-08-07)
 
     Several fixes and small enhancement all over the map, changes in the documentation to better explain the reasons and effect of the path-building changes of 1.2.0 and 1.2.1.

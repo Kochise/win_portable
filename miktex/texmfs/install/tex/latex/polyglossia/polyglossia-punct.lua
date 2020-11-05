@@ -93,21 +93,21 @@ local left_bracket_chars = {
 
 -- all right bracket characters, referenced by their Unicode slot
 local right_bracket_chars = {
-    [0x29] = true, -- right parenthesis
-    [0x5D] = true, -- right square bracket
-    [0x7D] = true, -- right curly bracket
+    [0x29] = true,  -- right parenthesis
+    [0x5D] = true,  -- right square bracket
+    [0x7D] = true,  -- right curly bracket
     [0x27E9] = true -- mathematical right angle bracket
 }
 
 -- question and exclamation marks, referenced by their Unicode slot
 local question_exclamation_chars = {
-    [0x21] = true, -- exclamation mark !
-    [0x3F] = true, -- question mark ?
+    [0x21] = true,   -- exclamation mark !
+    [0x3F] = true,   -- question mark ?
     [0x203C] = true, -- double exclamation mark ‼
     [0x203D] = true, -- interrobang ‽
     [0x2047] = true, -- double question mark ⁇
     [0x2048] = true, -- question exclamation mark ⁈
-    [0x2049] = true, -- exclamation question mark ⁉
+    [0x2049] = true  -- exclamation question mark ⁉
 }
 
 -- from nodes-tst.lua, adapted
@@ -233,9 +233,12 @@ local function process(head)
         if id == glyph_code then
             local attr = has_attribute(current, punct_attr)
             if attr then
-                local char = utf8.char(current.char) -- requires Lua 5.3
-                local leftspace  = left_space[attr][char]
-                local rightspace = right_space[attr][char]
+                local char, leftspace, rightspace
+                if current.char <= 0x10FFFF then -- greater values may cause problems with utf8.char
+                    char = utf8.char(current.char)
+                    leftspace  = left_space[attr][char]
+                    rightspace = right_space[attr][char]
+                end
                 if leftspace or rightspace then
                     local fontparameters = fonts.hashes.parameters[current.font]
                     local unit, stretch, shrink, spacing_node
@@ -243,14 +246,14 @@ local function process(head)
                         local prev = getprev(current)
                         local space_exception = false
                         if prev then
-                            local prevprev = getprev(prev)
                             -- do not add space after left (opening) bracket and between question/exclamation marks
                             space_exception = someleftbracket(prev) or question_exclamation_sequence(prev, current)
-                            if somespace(prev) then
                             -- TODO: there is a question here: do we override a preceding space or not?...
-                                if somepenalty(prevprev, 10000) then
-                                    head = remove_node(head, prevprev)
-                                end
+                            while somespace(prev) do
+                                head = remove_node(head, prev)
+                                prev = getprev(current)
+                            end
+                            if somepenalty(prev, 10000) then
                                 head = remove_node(head, prev)
                             end
                         end
@@ -280,10 +283,10 @@ local function process(head)
                             space_exception = somerightbracket(next)
                             local nextnext = getnext(next)
                             if somepenalty(next, 10000) and somespace(nextnext) then
-                                head = remove_node(head, next)
-                                head = remove_node(head, nextnext)
-                            elseif somespace(next) then
-                                head = remove_node(head, next)
+                                head, next = remove_node(head, next)
+                            end
+                            while somespace(next) do
+                                head, next = remove_node(head, next)
                             end
                         end
                         if rightspace.unit == "quad" then

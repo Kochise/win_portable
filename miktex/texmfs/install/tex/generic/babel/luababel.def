@@ -462,7 +462,9 @@
             node.insert_before(head, item, n)
           end
 
-          quad = font.getfont(item.font).size
+          if font.getfont(item.font) then
+            quad = font.getfont(item.font).size
+          end
           last_class = class
           last_lang = lang
         else % if penalty, glue or anything else
@@ -536,18 +538,38 @@
 \AddBabelHook{babel-fontspec}{beforestart}{\bbl@ckeckstdfonts}
 \DisableBabelHook{babel-fontspec}
 \bbl@trace{Font handling with fontspec}
+\ifx\ExplSyntaxOn\@undefined\else
+  \ExplSyntaxOn
+  \catcode`\ =10
+  \def\bbl@loadfontspec{%
+    \usepackage{fontspec}%
+    \expandafter
+    \def\csname msg~text~>~fontspec/language-not-exist\endcsname##1##2##3##4{%
+      Font '\l_fontspec_fontname_tl' is using the\\%
+      default features for language '##1'.\\%
+      That's usually fine, because many languages\\%
+      require no specific features, but if the output is\\%
+      not as expected, consider selecting another font.}
+    \expandafter
+    \def\csname msg~text~>~fontspec/no-script\endcsname##1##2##3##4{%
+      Font '\l_fontspec_fontname_tl' is using the\\%
+      default features for script '##2'.\\%
+      That's not always wrong, but if the output is\\%
+      not as expected, consider selecting another font.}}
+  \ExplSyntaxOff
+\fi
 \@onlypreamble\babelfont
 \newcommand\babelfont[2][]{%  1=langs/scripts 2=fam
   \bbl@foreach{#1}{%
     \expandafter\ifx\csname date##1\endcsname\relax
-    \IfFileExists{babel-##1.tex}%
-      {\babelprovide{##1}}%
-      {}%
+      \IfFileExists{babel-##1.tex}%
+        {\babelprovide{##1}}%
+        {}%
     \fi}%
   \edef\bbl@tempa{#1}%
   \def\bbl@tempb{#2}%  Used by \bbl@bblfont
   \ifx\fontspec\@undefined
-    \usepackage{fontspec}%
+    \bbl@loadfontspec
   \fi
   \EnableBabelHook{babel-fontspec}% Just calls \bbl@switchfont
   \bbl@bblfont}
@@ -610,7 +632,7 @@
     \bbl@ifunset{bbl@##1dflt@\languagename}%
       {\bbl@cs{famrst@##1}%
        \global\bbl@csarg\let{famrst@##1}\relax}%
-      {\bbl@exp{% order is relevant
+      {\bbl@exp{% order is relevant. TODO: but sometimes wrong!
          \\\bbl@add\\\originalTeX{%
            \\\bbl@font@rst{\bbl@cl{##1dflt}}%
                           \<##1default>\<##1family>{##1}}%
@@ -652,9 +674,13 @@
   \ifin@
     \bbl@exp{\\\bbl@fontspec@set\\#1\expandafter\@gobbletwo#1\\#3}%
   \fi
-  \bbl@exp{%
+  \bbl@exp{%              'Unprotected' macros return prev values
     \def\\#2{#1}%         eg, \rmdefault{\bbl@rmdflt@lang}
-    \\\bbl@ifsamestring{#2}{\f@family}{\\#3\let\\\bbl@tempa\relax}{}}}
+    \\\bbl@ifsamestring{#2}{\f@family}%
+      {\\#3%
+       \\\bbl@ifsamestring{\f@series}{\bfdefault}{\\\bfseries}{}%
+       \let\\\bbl@tempa\relax}%
+      {}}}
 \def\bbl@fontspec@set#1#2#3#4{% eg \bbl@rmdflt@lang fnt-opt fnt-nme \xxfamily
   \let\bbl@tempe\bbl@mapselect
   \let\bbl@mapselect\relax
@@ -1250,6 +1276,9 @@ end
       if not u.find(patt, '()', nil, true) then
         patt = '()' .. patt .. '()'
       end
+      patt = string.gsub(patt, '%(%)%^', '^()')
+      patt = string.gsub(patt, '%$%(%)', '()$')
+      texio.write('***************' .. patt)
       patt = u.gsub(patt, '{(.)}',
                 function (n)
                   return '%' .. (tonumber(n) and (tonumber(n)+1) or n)
@@ -1375,7 +1404,8 @@ end
    \AtBeginDocument
      {\ifx\tikz@atbegin@node\@undefined\else
         \let\bbl@OL@pgfpicture\pgfpicture
-        \bbl@sreplace\pgfpicture{\pgfpicturetrue}{\bbl@pictsetdir\pgfpicturetrue}%
+        \bbl@sreplace\pgfpicture{\pgfpicturetrue}%
+          {\bbl@pictsetdir\pgfpicturetrue}%
         \bbl@add\pgfsys@beginpicture{\bbl@pictsetdir}%
         \bbl@add\tikz@atbegin@node{\bbl@pictresetdir}%
       \fi}}
@@ -1403,12 +1433,12 @@ end
     \@ifnextchar[%
       {\bbl@footnote@o{#1}{#2}{#3}}%
       {\bbl@footnote@x{#1}{#2}{#3}}}
-  \def\bbl@footnote@x#1#2#3#4{%
+  \long\def\bbl@footnote@x#1#2#3#4{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnote{#2#1{\ignorespaces#4}#3}%
     \egroup}
-  \def\bbl@footnote@o#1#2#3[#4]#5{%
+  \long\def\bbl@footnote@o#1#2#3[#4]#5{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnote[#4]{#2#1{\ignorespaces#5}#3}%
@@ -1417,12 +1447,12 @@ end
     \@ifnextchar[%
       {\bbl@footnotetext@o{#1}{#2}{#3}}%
       {\bbl@footnotetext@x{#1}{#2}{#3}}}
-  \def\bbl@footnotetext@x#1#2#3#4{%
+  \long\def\bbl@footnotetext@x#1#2#3#4{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnotetext{#2#1{\ignorespaces#4}#3}%
     \egroup}
-  \def\bbl@footnotetext@o#1#2#3[#4]#5{%
+  \long\def\bbl@footnotetext@o#1#2#3[#4]#5{%
     \bgroup
       \select@language@x{\bbl@main@language}%
       \bbl@fn@footnotetext[#4]{#2#1{\ignorespaces#5}#3}%
@@ -1457,7 +1487,6 @@ end
      \babelsublr{%
        \LaTeX\kern.15em2\bbl@nextfake$_{\textstyle\varepsilon}$}}}}
   {}
-
 \endinput
 %%
 %% End of file `luababel.def'.

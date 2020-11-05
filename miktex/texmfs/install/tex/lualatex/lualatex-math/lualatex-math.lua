@@ -8,7 +8,7 @@
 -- 
 -- This is a generated file.
 -- 
--- Copyright 2011-2017 Philipp Stephani
+-- Copyright 2011-2020 Philipp Stephani
 -- 
 -- This file may be distributed and/or modified under the
 -- conditions of the LaTeX Project Public License, either

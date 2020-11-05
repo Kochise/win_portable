@@ -1,8 +1,8 @@
 \ifnum\the\catcode`\%=14\else\expandafter\edef\csname
   \string:RestoreCatcodes\endcsname{\catcode`\%\the
   \catcode`\%}\catcode`\%14\fi
-% tex4ht.sty (2019-03-18-15:24), generated from tex4ht-sty.tex
-% Copyright 2009-2019 TeX Users Group
+% tex4ht.sty (2020-07-28-14:30), generated from tex4ht-sty.tex
+% Copyright 2009-2020 TeX Users Group
 % Copyright 1996-2009 Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -20,7 +20,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-03-18-15:24}
+\immediate\write-1{version 2020-07-28-14:30}
 
 
 \ifx  \Preamble\UnDef  \else
@@ -171,13 +171,18 @@
      \global\let\ht:empty\empty \gdef\empty{}%
 \fi\fi
 %
-   \expandafter\let\csname enddocument\endcsname\empty
-   \end{document}%
+   %\expandafter\let\csname enddocument\endcsname\empty
+   %\end{document}%
    \let\:begindocumenthook\@begindocumenthook
 \def\@begindocumenthook{\csname a:AtBeginDocument\endcsname
 \:begindocumenthook \csname b:AtBeginDocument\endcsname }%
 %
-   \let\document\o:document
+   %\let\document\o:document
+   \ifdefined\AddToHook%
+      \def\document{\endgroup\o:document}%
+   \else%
+      \let\document\o:document%
+   \fi%
    \let\:latex@error\@latex@error
    \def\@latex@error##1{\:latex@error{##1 in `\config:file'}}%
    \csname recall:sub\endcsname
@@ -347,6 +352,22 @@
   \expandafter\expandafter\expandafter\expandafter
        \expandafter\expandafter\expandafter\:tempa
    \expandafter\expandafter\expandafter}
+\long\def\append:defI#1#2{%
+   \long\def\:temp{\long\def#1####1}%
+   \expandafter\expandafter\expandafter\:temp\expandafter{#1{##1}#2}}
+\long\def\pend:defII#1#2{%
+   \long\def\:tempa{\long\def#1####1####2}%
+   \ex:pend{#2}{\expandafter\:temp #1{##1}{##2}}}
+\long\def\append:defII#1#2{%
+   \long\def\:temp{\long\def#1####1####2}%
+   \expandafter\expandafter\expandafter\:temp\expandafter{#1{##1}{##2}#2}}
+\long\def\pend:defIII#1#2{%
+   \long\def\:tempa{\long\def#1####1####2####3}%
+   \ex:pend{#2}{\expandafter\:temp #1{##1}{##2}{##3}}}
+\long\def\append:defIII#1#2{%
+   \long\def\:temp{\long\def#1####1####2####3}%
+   \expandafter\expandafter\expandafter
+      \:temp\expandafter{#1{##1}{##2}{##3}#2}}
 
     \NewConfigure{ProTex}[1]{\def\a:ProTex{#1}}
 \ifx \Log:Needs\:UnDef \else
@@ -646,8 +667,12 @@
 \input tuenc-xetex-input.4ht
 \fi\fi
 
+\def\:AtEndOfPackage{\expandafter\g@addto@macro\csname pkg:end:hook:\@currname.sty\endcsname}
+\def\init:package:hooks#1{\expandafter\def\csname pkg:end:hook:#1\endcsname{}}
+\def\package:hooks#1{\csname pkg:end:hook:#1\endcsname}
 \let\:onefilewithoptions\@onefilewithoptions
-\def\@onefilewithoptions#1[#2]{%
+\def\@onefilewithoptions#1[#2][#3]#4{%
+\init:package:hooks{#1.#4}%
    \let\:temp\@reset@ptions
    \def\@reset@ptions{%
       \let\@reset@ptions\:temp
@@ -659,7 +684,7 @@
       \TivhTcats
 }%
       \def\:currentoptions{#2}
- \:onefilewithoptions#1[#2]}
+\:onefilewithoptions#1[#2][#3]{#4}\package:hooks{#1.#4}}
 \def\a:usepackage{\input usepackage.4ht }
 
 
@@ -1372,22 +1397,6 @@
              \csname \csname#1New:Conf\endcsname\cf:name\endcsname
       \fi
    \fi }
-\long\def\append:defI#1#2{%
-   \long\def\:temp{\long\def#1####1}%
-   \expandafter\expandafter\expandafter\:temp\expandafter{#1{##1}#2}}
-\long\def\pend:defII#1#2{%
-   \long\def\:tempa{\long\def#1####1####2}%
-   \ex:pend{#2}{\expandafter\:temp #1{##1}{##2}}}
-\long\def\append:defII#1#2{%
-   \long\def\:temp{\long\def#1####1####2}%
-   \expandafter\expandafter\expandafter\:temp\expandafter{#1{##1}{##2}#2}}
-\long\def\pend:defIII#1#2{%
-   \long\def\:tempa{\long\def#1####1####2####3}%
-   \ex:pend{#2}{\expandafter\:temp #1{##1}{##2}{##3}}}
-\long\def\append:defIII#1#2{%
-   \long\def\:temp{\long\def#1####1####2####3}%
-   \expandafter\expandafter\expandafter
-      \:temp\expandafter{#1{##1}{##2}{##3}#2}}
 
 \def\Ref#1{\expandafter\ifx
                  \csname  cw:#1\endcsname \relax \:NoTag{#1}%
@@ -4609,8 +4618,8 @@ $$\TeXhalign:cr \to:dim{~1}$$}%
 \ifHtml \else \let\EndPreamble\empty \fi
 
 \ifHtml \:startdoc
-\let\:shipout\shipout
-\def\shipout{\vfil\break\let\shipout\:shipout \shipout}
+%\let\:shipout\shipout
+%\def\shipout{\vfil\break\let\shipout\:shipout \shipout}
  \fi   
 
 \ifx \Hinput\:UnDef \else
