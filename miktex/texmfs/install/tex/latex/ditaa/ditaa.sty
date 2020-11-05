@@ -1,0 +1,150 @@
+% 'ditaa' package
+%
+% (c) Hiroshi Ukai
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ditaa}
+[2020/11/04 v0.11.0 LaTeX package for embedding ditaa style ascii art]
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\ditaasetup}[1]{\setkeys{ditaa}{#1}}
+\newcommand*{\ditaasetup}{\kvsetkeys{ditaa}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=ditaa, prefix=ditaa@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{ditaa} location, *not* at \begin[options]{ditaa}
+% These options can be changed at "runtime" using the \ditaasetup{options} macro, though
+\DeclareStringOption{imagepath}				% Path of the image
+\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+
+% Support for https://github.com/stathissideris/ditaa
+\DeclareBoolOption{A}						% Turns anti-aliasing off
+\DeclareBoolOption{noantialias}
+\DeclareStringOption{b}[FFFFFF]				% The background colour of the image
+\DeclareStringOption{background}[FFFFFF]
+\DeclareBoolOption{d}						% Renders the debug grid
+\DeclareBoolOption{debug}
+\DeclareBoolOption[true]{E}					% Prevents the separation of common edges
+\DeclareBoolOption{noseparation}
+\DeclareStringOption{e}[utf-8]				% The encoding of the input file
+\DeclareStringOption{encoding}[utf-8]
+\DeclareBoolOption{h}						% The input is an HTML file
+\DeclareBoolOption{html}
+\DeclareBoolOption{help}					% Prints usage help
+\DeclareBoolOption{o}						% Image file is overwriten
+\DeclareBoolOption{overwrite}
+\DeclareBoolOption{r}						% All corners to be rendered as round corners
+\DeclareBoolOption{roundcorners}
+\DeclareBoolOption{S}						% Turns off the drop-shadow effect
+\DeclareBoolOption{noshadows}
+\DeclareStringOption{s}[1.0]				% Size of the rendered image
+\DeclareStringOption{scale}[1.0]
+\DeclareBoolOption{svg}						% SVG image as destination file
+\DeclareStringOption{svgfonturl}[]			% SVG font URL
+\DeclareBoolOption{T}						% Diagram rendered on a transparent background
+\DeclareBoolOption{transparent}
+\DeclareStringOption{t}[4]					% Tabs interpreted as x spaces
+\DeclareStringOption{tabs}[4]
+\DeclareBoolOption{v}						% Makes ditaa more verbose
+\DeclareBoolOption{verbose}
+\DeclareBoolOption{W}						% Sides of parallelograms as fixed slope
+\DeclareBoolOption{fixedslop}
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{ditaa}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{ditaa}[3][\ditaa@width]
+    {
+        \def\ditaacaption{#2}
+        \def\ditaastem{#3}
+        \def\ditaadir{\ditaa@imagepath/ditaa}
+        \def\ditaafile{\ditaadir/\ditaastem.ditaa}
+        \def\ditaafigwidth{#1}
+		% usepackage->program options ('-\/-' is de-ligaturing '--')
+
+%		\def\ditaaoptA{\ifthenelse{\boolean{ditaa@A}}{-A}{\ifthenelse{\boolean{ditaa@noantialias}}{-\/-no-antialias}{}}}
+%		\def\ditaaoptb{\ifdefstring{\ditaa@b}{}{\ifdefstring{\ditaa@background}{}{}{-\/-background \ditaa@background}}{-b \ditaa@b}}
+%		\def\ditaaoptd{\ifthenelse{\boolean{ditaa@d}}{-d}{\ifthenelse{\boolean{ditaa@debug}}{-\/-debug}{}}}
+%		\def\ditaaoptE{\ifthenelse{\boolean{ditaa@E}}{-E}{\ifthenelse{\boolean{ditaa@noseparation}}{-\/-no-separation}{}}}
+%		\def\ditaaopte{\ifdefstring{\ditaa@e}{}{\ifdefstring{\ditaa@encoding}{}{}{-\/-encoding \ditaa@encoding}}{-b \ditaa@e}}
+%		\def\ditaaopth{\ifthenelse{\boolean{ditaa@h}}{-h}{\ifthenelse{\boolean{ditaa@html}}{-\/-html}{}}}
+%		\def\ditaaopthelp{\ifthenelse{\boolean{ditaa@help}}{-\/-help}{}}
+%		\def\ditaaopto{\ifthenelse{\boolean{ditaa@o}}{-o}{\ifthenelse{\boolean{ditaa@overwrite}}{-\/-overwrite}{}}}
+%		\def\ditaaoptr{\ifthenelse{\boolean{ditaa@r}}{-r}{\ifthenelse{\boolean{ditaa@roundcorners}}{-\/-round-corners}{}}}
+%		\def\ditaaoptS{\ifthenelse{\boolean{ditaa@S}}{-S}{\ifthenelse{\boolean{ditaa@noshadows}}{-\/-no-shadows}{}}}
+%		\def\ditaaopts{\ifdefstring{\ditaa@s}{}{\ifdefstring{\ditaa@scale}{}{}{-\/-scale \ditaa@scale}}{-s \ditaa@s}}
+%		\def\ditaaoptsvg{\ifthenelse{\boolean{ditaa@svg}}{-\/-svg}{}}
+%		\def\ditaaoptsvgext{\ifthenelse{\boolean{ditaa@svg}}{svg}{png}}
+%		\def\ditaaoptsvgfonturl{\ifdefstring{\ditaa@svg-font-url}{}{}{-\/-svg-font-url \ditaa@svg-font-url}}
+%		\def\ditaaoptT{\ifthenelse{\boolean{ditaa@T}}{-T}{\ifthenelse{\boolean{ditaa@transparent}}{-\/-transparent}{}}}
+%		\def\ditaaoptt{\ifdefstring{\ditaa@t}{}{\ifdefstring{\ditaa@tabs}{}{}{-\/-tabs \ditaa@tabs}}{-t \ditaa@t}}
+%		\def\ditaaoptv{\ifthenelse{\boolean{ditaa@v}}{-v}{\ifthenelse{\boolean{ditaa@verbose}}{-\/-verbose}{}}}
+%		\def\ditaaoptW{\ifthenelse{\boolean{ditaa@W}}{-W}{\ifthenelse{\boolean{ditaa@fixedslop}}{-\/-fixed-slop}{}}}
+
+		% \\def\\(ditaaopt[-\w]+)\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{([-\w]+)\}\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{-\\/-([-\w]+)\}\{\}\}\}
+		% \\ifthenelse\{\\boolean\{\2\}\}\{\\def\\\1\{\3 \}\}\{\\ifthenelse\{\\boolean\{\4\}\}\{\\def\\\1\{-\\/-\5 \}\}\{\\\1\{\}\}\}
+
+		% \\def\\(ditaaopt[-\w]+)\{\\ifdefstring\{\\(ditaa\@[-\w]+)\}\{\}\{\\ifdefstring\{\\(ditaa\@[-\w]+)\}\{\}\{\}\{-\\/-([-\w]+) \\\3\}\}\{-([-\w]+) \\\2\}\}
+		% \\ifdefstring\{\\\2\}\{\}\{\\ifdefstring\{\\\3\}\{\}\{\\\1\{\}\}\{\\def\\\1\{-\\/-\4 \\\3 \}\}\}\{\\def\\\1\{-\5 \\\2 \}\}
+		
+		% \\def\\(ditaaopt[-\w]+)\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{-\\/-([-\w]+)\}\{\}\}
+		% \\ifthenelse\{\\boolean\{\2\}\}\{\\def\\\1\{-\\/-\3 \}\}\{\\\1\{\}\}
+		
+		\ifthenelse{\boolean{ditaa@A}}{\def\ditaaoptA{-A }}{\ifthenelse{\boolean{ditaa@noantialias}}{\def\ditaaoptA{--no-antialias }}{\def\ditaaoptA{}}}
+		\ifdefstring{\ditaa@b}{}{\ifdefstring{\ditaa@background}{}{\def\ditaaoptb{}}{\def\ditaaoptb{--background \ditaa@background }}}{\def\ditaaoptb{-b \ditaa@b }}
+		\ifthenelse{\boolean{ditaa@d}}{\def\ditaaoptd{-d }}{\ifthenelse{\boolean{ditaa@debug}}{\def\ditaaoptd{--debug }}{\def\ditaaoptd{}}}
+		\ifthenelse{\boolean{ditaa@E}}{\def\ditaaoptE{-E }}{\ifthenelse{\boolean{ditaa@noseparation}}{\def\ditaaoptE{--no-separation }}{\def\ditaaoptE{}}}
+		\ifdefstring{\ditaa@e}{}{\ifdefstring{\ditaa@encoding}{}{\def\ditaaopte{}}{\def\ditaaopte{--encoding \ditaa@encoding }}}{\def\ditaaopte{-e \ditaa@e }}
+		\ifthenelse{\boolean{ditaa@h}}{\def\ditaaopth{-h }}{\ifthenelse{\boolean{ditaa@html}}{\def\ditaaopth{--html }}{\def\ditaaopth{}}}
+		\ifthenelse{\boolean{ditaa@help}}{\def\ditaaopthelp{--help }}{\def\ditaaopthelp{}}
+		\ifthenelse{\boolean{ditaa@o}}{\def\ditaaopto{-o }}{\ifthenelse{\boolean{ditaa@overwrite}}{\def\ditaaopto{--overwrite }}{\def\ditaaopto{}}}
+		\ifthenelse{\boolean{ditaa@r}}{\def\ditaaoptr{-r }}{\ifthenelse{\boolean{ditaa@roundcorners}}{\def\ditaaoptr{--round-corners }}{\def\ditaaoptr{}}}
+		\ifthenelse{\boolean{ditaa@S}}{\def\ditaaoptS{-S }}{\ifthenelse{\boolean{ditaa@noshadows}}{\def\ditaaoptS{--no-shadows }}{\def\ditaaoptS{}}}
+		\ifdefstring{\ditaa@s}{}{\ifdefstring{\ditaa@scale}{}{\def\ditaaopts{}}{\def\ditaaopts{--scale \ditaa@scale }}}{\def\ditaaopts{-s \ditaa@s }}
+		\ifthenelse{\boolean{ditaa@svg}}{\def\ditaaoptsvg{--svg }}{\def\ditaaoptsvg{}}
+		\ifthenelse{\boolean{ditaa@svg}}{\def\ditaaoptsvgext{svg}}{\def\ditaaoptsvgext{png}}
+		\ifdefstring{\ditaa@svgfonturl}{}{\def\ditaaoptsvgfonturl{}}{\def\ditaaoptsvgfonturl{--svg-font-url "\ditaa@svgfonturl" }}
+		\ifthenelse{\boolean{ditaa@T}}{\def\ditaaoptT{-T }}{\ifthenelse{\boolean{ditaa@transparent}}{\def\ditaaoptT{--transparent }}{\def\ditaaoptT{}}}
+		\ifdefstring{\ditaa@t}{}{\ifdefstring{\ditaa@tabs}{}{\def\ditaaoptt{}}{\def\ditaaoptt{--tabs \ditaa@tabs }}}{\def\ditaaoptt{-t \ditaa@t }}
+		\ifthenelse{\boolean{ditaa@v}}{\def\ditaaoptv{-v }}{\ifthenelse{\boolean{ditaa@verbose}}{\def\ditaaoptv{--verbose }}{\def\ditaaoptv{}}}
+		\ifthenelse{\boolean{ditaa@W}}{\def\ditaaoptW{-W }}{\ifthenelse{\boolean{ditaa@fixedslop}}{\def\ditaaoptW{--fixed-slop }}{\def\ditaaoptW{}}}
+
+        \VerbatimOut{\ditaafile}}
+    {\endVerbatimOut
+		\immediate\write18{ditaa.jar \ditaaoptA \ditaaoptb \ditaaoptd \ditaaoptE \ditaaopte \ditaaopth \ditaaopthelp \ditaaopto \ditaaoptr \ditaaoptS \ditaaopts \ditaaoptsvg \ditaaoptsvgfonturl \ditaaoptT \ditaaoptt \ditaaoptv \ditaaoptW "\ditaafile" "\ditaadir/\ditaastem.\ditaaoptsvgext"}
+        \begin{figure}[H]
+            \begin{center}
+                \vspace{-1em}
+				\ifditaa@svg
+					\includesvg[inkscapelatex=false, width=\ditaafigwidth]{\ditaadir/\ditaastem.svg}
+				\else
+					\includegraphics[width=\ditaafigwidth]{\ditaadir/\ditaastem.png}
+				\fi
+                \vspace{-2em}
+                \caption{\ditaacaption}
+                \label{fig:\ditaastem}
+                \vspace{-1.5em}
+            \end{center}
+        \end{figure}
+    }
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `ditaa.sty'.

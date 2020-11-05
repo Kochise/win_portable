@@ -1,0 +1,70 @@
+% 'ditaa' package
+%
+% (c) Hiroshi Ukai
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ditaa}
+[2018/09/27 v0.01 LaTeX package for embedding ditaa style ascii art]
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{kvoptions}
+\RequirePackage{svg}
+
+\DeclareStringOption[]{imagepath}
+\ProcessKeyvalOptions*
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{ditaa}[3][\columnwidth]
+    {
+        \def\ditaacaption{#2}
+        \def\ditaastem{#3}
+        \def\ditaadir{\ditaa@imagepath/ditaa}
+        \def\ditaafile{\ditaadir/\ditaastem.ditaa}
+        \def\ditaafigwidth{#1}
+        \VerbatimOut{\ditaafile}}
+    {\endVerbatimOut
+        \immediate\write18{ditaa.jar -E "\ditaafile" "\ditaadir/\ditaastem.png"}
+        \begin{figure}[H]
+            \begin{center}
+                \vspace{-1em}
+                \includegraphics[width=\ditaafigwidth]{\ditaadir/\ditaastem.png}
+                \vspace{-2em}
+                \caption{\ditaacaption}
+                \label{fig:\ditaastem}
+                \vspace{-1.5em}
+            \end{center}
+        \end{figure}
+    }
+\newenvironment{ditaasvg}[3][\columnwidth]
+    {
+        \def\ditaacaption{#2}
+        \def\ditaastem{#3}
+        \def\ditaadir{\ditaa@imagepath/ditaa}
+        \def\ditaafile{\ditaadir/\ditaastem.ditaa}
+        \def\ditaafigwidth{#1}
+        \VerbatimOut{\ditaafile}}
+    {\endVerbatimOut
+        \immediate\write18{ditaa.jar -E "\ditaafile" --svg "\ditaadir/\ditaastem.svg"}
+%        \immediate\write18{ditaa.jar -E "\ditaafile" --svg "\ditaadir/\ditaastem.svg" --svg-font-url "carlito-regular-webfont.svg"}
+        \begin{figure}[H]
+            \begin{center}
+                \vspace{-1em}
+				\includesvg[inkscapelatex=false, width=\ditaafigwidth]{\ditaadir/\ditaastem.svg}
+                \vspace{-2em}
+                \caption{\ditaacaption}
+                \label{fig:\ditaastem}
+                \vspace{-1.5em}
+            \end{center}
+        \end{figure}
+    }
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `ditaa.sty'.
