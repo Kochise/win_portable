@@ -52,7 +52,7 @@
 \DeclareBoolOption{noshadows}
 \DeclareStringOption{s}[1.0]				% Size of the rendered image
 \DeclareStringOption{scale}[1.0]
-\DeclareBoolOption{svg}						% SVG image as destination file
+\DeclareBoolOption[true]{svg}				% SVG image as destination file
 \DeclareStringOption{svgfonturl}[]			% SVG font URL
 \DeclareBoolOption{T}						% Diagram rendered on a transparent background
 \DeclareBoolOption{transparent}
@@ -69,12 +69,12 @@
 
 %@formatter:off (This line indicates IntelliJ that formatter should be off before this)
 \newenvironment{ditaa}[3][\ditaa@width]
-    {
-        \def\ditaacaption{#2}
-        \def\ditaastem{#3}
-        \def\ditaadir{\ditaa@imagepath/ditaa}
-        \def\ditaafile{\ditaadir/\ditaastem.ditaa}
-        \def\ditaafigwidth{#1}
+	{
+		\def\ditaacaption{#2}
+		\def\ditaastem{#3}
+		\def\ditaadir{\ditaa@imagepath/ditaa}
+		\def\ditaafile{\ditaadir/\ditaastem.ditaa}
+		\def\ditaafigwidth{#1}
 		% usepackage->program options ('-\/-' is de-ligaturing '--')
 
 %		\def\ditaaoptA{\ifthenelse{\boolean{ditaa@A}}{-A}{\ifthenelse{\boolean{ditaa@noantialias}}{-\/-no-antialias}{}}}
@@ -105,6 +105,9 @@
 		% \\def\\(ditaaopt[-\w]+)\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{-\\/-([-\w]+)\}\{\}\}
 		% \\ifthenelse\{\\boolean\{\2\}\}\{\\def\\\1\{-\\/-\3 \}\}\{\\\1\{\}\}
 		
+		% ^(\t*) {4}
+		% \1\t
+
 		\ifthenelse{\boolean{ditaa@A}}{\def\ditaaoptA{-A }}{\ifthenelse{\boolean{ditaa@noantialias}}{\def\ditaaoptA{--no-antialias }}{\def\ditaaoptA{}}}
 		\ifdefstring{\ditaa@b}{}{\ifdefstring{\ditaa@background}{}{\def\ditaaoptb{}}{\def\ditaaoptb{--background \ditaa@background }}}{\def\ditaaoptb{-b \ditaa@b }}
 		\ifthenelse{\boolean{ditaa@d}}{\def\ditaaoptd{-d }}{\ifthenelse{\boolean{ditaa@debug}}{\def\ditaaoptd{--debug }}{\def\ditaaoptd{}}}
@@ -124,24 +127,23 @@
 		\ifthenelse{\boolean{ditaa@v}}{\def\ditaaoptv{-v }}{\ifthenelse{\boolean{ditaa@verbose}}{\def\ditaaoptv{--verbose }}{\def\ditaaoptv{}}}
 		\ifthenelse{\boolean{ditaa@W}}{\def\ditaaoptW{-W }}{\ifthenelse{\boolean{ditaa@fixedslop}}{\def\ditaaoptW{--fixed-slop }}{\def\ditaaoptW{}}}
 
-        \VerbatimOut{\ditaafile}}
-    {\endVerbatimOut
+		\VerbatimOut{\ditaafile}}
+	{\endVerbatimOut
 		\immediate\write18{ditaa.jar \ditaaoptA \ditaaoptb \ditaaoptd \ditaaoptE \ditaaopte \ditaaopth \ditaaopthelp \ditaaopto \ditaaoptr \ditaaoptS \ditaaopts \ditaaoptsvg \ditaaoptsvgfonturl \ditaaoptT \ditaaoptt \ditaaoptv \ditaaoptW "\ditaafile" "\ditaadir/\ditaastem.\ditaaoptsvgext"}
-        \begin{figure}[H]
-            \begin{center}
-                \vspace{-1em}
-				\ifditaa@svg
-					\includesvg[inkscapelatex=false, width=\ditaafigwidth]{\ditaadir/\ditaastem.svg}
-				\else
-					\includegraphics[width=\ditaafigwidth]{\ditaadir/\ditaastem.png}
-				\fi
-                \vspace{-2em}
-                \caption{\ditaacaption}
-                \label{fig:\ditaastem}
-                \vspace{-1.5em}
-            \end{center}
-        \end{figure}
-    }
+		\begin{figure}[H]
+			\centering
+			\vspace{-1em}
+			\ifditaa@svg
+				\includesvg[inkscapelatex=false, width=\ditaafigwidth]{\ditaadir/\ditaastem.svg}
+			\else
+				\includegraphics[width=\ditaafigwidth]{\ditaadir/\ditaastem.png}
+			\fi
+			\vspace{-2em}
+			\caption{\ditaacaption}
+			\label{fig:\ditaastem}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
 %@formatter:on (This line indicates IntelliJ that formatter should be off before this)
 %--------------------------------------------------
 

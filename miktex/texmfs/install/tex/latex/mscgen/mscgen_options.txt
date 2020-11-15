@@ -1,0 +1,162 @@
+		% --tei-mode										% Puts msc-generator into text editor integration mode
+\DeclareBoolOption{teimode}									% Puts msc-generator into text editor integration mode
+		% -T [png/eps/pdf/svg/ismap/lmap/csh/emf]			% Output file type (default is 'png')
+\DeclareStringOption{T}[png]								% Output file type (default is 'png')
+		% -e												% Embed the chart text into 'png' file as an iTXt chunk (uncompressed)
+\DeclareBoolOption{e}										% Embed the chart text into 'png' file as an iTXt chunk (uncompressed)
+		% -o outfile										% Output file (png, eps, pdf, svg, emf)
+\DeclareStringOption{o}[]									% Output file (png, eps, pdf, svg, emf)
+		% -i infile											% Input file
+\DeclareStringOption{i}[input]								% Input file
+		% -S <signalling/graph>								% Forces the input file to be interpreted as as a specific type of chart
+		% --utf16											% Forces the input file to be interpreted as UTF-16, even if it looks like UTF-8 or ASCII
+\DeclareBoolOption{utf16}									% Forces the input file to be interpreted as UTF-16, even if it looks like UTF-8 or ASCII
+		% --utf8											% Forces the input file to be interpreted as UTF-8, even if it does not look like it
+\DeclareBoolOption{utf8}									% Forces the input file to be interpreted as UTF-8, even if it does not look like it
+		% -p=[A0-A6/letter/legal/ledger/tabloid][l/p]		% Full-page output ('p' or an 'l' for portrait and landscape)
+\DeclareStringOption{p}[A4p]								% Full-page output ('p' or an 'l' for portrait and landscape)
+		% -m{lrud}=‘margin'									% Specifies the margin in full-page output (in inches -number only- or in centimeters -appended with 'cm')
+		% -va=[center/up/down]								% Set the vertical alignment within a page for full-page output
+\DeclareStringOption{va}[]									% Set the vertical alignment within a page for full-page output
+		% -ha=[center/left/right]							% Set the horizontal alignment within a page for full-page output
+\DeclareStringOption{ha}[]									% Set the horizontal alignment within a page for full-page output
+		% -a[h]												% Automatic pagination
+		% -x=width											% Width (in pixels)
+\DeclareStringOption{x}[800]								% Width (in pixels)
+		% -y=height											% Height (in pixels)
+\DeclareStringOption{y}[800]								% Height (in pixels)
+		% -s=scale											% Scale chart size up or down
+\DeclareStringOption{s}[1.0]								% Scale chart size up or down
+		% -F font											% Use specified font (must be available in the local system)
+\DeclareStringOption{F}[]									% Use specified font (must be available in the local system)
+		% -D design_file									% Load additional chart design definitions
+\DeclareStringOption{D}[]									% Load additional chart design definitions
+		% --nodesigns										% Don't load design files
+\DeclareBoolOption{nodesigns}								% Don't load design files
+		% --chart_option=value								% Chart option
+\DeclareStringOption{chartoption}[]							% Chart option
+		% --chart_design									% Chart's design pattern
+\DeclareBoolOption{chartdesign}								% Chart's design pattern
+		% -Wno												% No warnings displayed
+\DeclareBoolOption{Wno}										% No warnings displayed
+		% -TI												% Additional Technical Info is printed about compilation
+\DeclareBoolOption{TI}										% Additional Technical Info is printed about compilation
+		% -Pno												% No progress indicator displayed
+\DeclareBoolOption{Pno}										% No progress indicator displayed
+		% -l												% Display program licence and exit
+\DeclareBoolOption{l}										% Display program licence and exit
+		% -h , --help										% Display program help and exit
+\DeclareBoolOption{h}										% Display program help and exit
+\DeclareBoolOption{help}									%
+		% --version											% Display version information and exit
+\DeclareBoolOption{version}									% Display version information and exit
+
+Options specific to Signalling Charts:
+
+		% --force-mscgen									% Forces the chart to be interpreted in mscgen mode
+\DeclareBoolOption{forcemscgen}								% Forces the chart to be interpreted in mscgen mode
+		% --prevent-mscgen									% Prevents the chart to be interpreted in mscgen mode
+\DeclareBoolOption{preventmscgen}							% Prevents the chart to be interpreted in mscgen mode
+		% -Wno-mscgen										% Disables warnings for deprecated constructs for backwards compatibility
+\DeclareBoolOption{Wnomscgen}								% Disables warnings for deprecated constructs for backwards compatibility
+		% --pedantic										% Enforces stricter language interpretation
+\DeclareBoolOption{pedantic}								% Enforces stricter language interpretation
+
+
+Label Maps
+When you specify lmap as output file format, Msc-generator creates a text file with one line for each text label in the chart[25] (and no graphics output). The default extension will be .map. The lines in the output file contains the followin information separated by space
+<type> <page> <x1> <y1> <x2> <y2> <first line>
+The type character tells, what chart element contained this label. The following characters are possible
+		% A		% Arrow, including block arrows (including boxes collapsed to arrows)
+		% E		% Entity heading. Each appeareance of the entities will result in one line
+		% B		% Box that has content (unless collapsed)
+		% b		% Box that contains just a label (or collapsed)
+		% P		% Pipes
+		% V		% Verticals (all forms, including boxes, block arrows, ranges, braces and brackets)
+		% D		% Divides, titles, subtitles, discontinuity lines and plain text (like [label="aaa"];)
+		% N		% Floating notes
+		% C		% Comments (on the side or at the end)
+The second item page gives which page the label is on. One label is mentioned only once even if it spans multiple pages
+The following four numbers give the upper left and lower right corner of the bounding box of the label (and not the corresponding element). It is given in pixels for bitmap output and in logical coordinates matching the logical size of the output image for vector graphics output. The coordinates are relative to the top left corner of the page origin and are rounded to integers for ease of use. So if you run Msc-generator twice, once with a graphics output format and once with label map output (leaving all scaling and other swicthes the same), the coordinates of the label map shall match the graphics output perfectly
+Finally the line ends with the first line of the label (which may contain spaces), potentially with the number prepended (if any) in the number format used in the chart (e.g., roman numbers). Note that the coordinates specify the bounding box of the entire label, not just the first line given here
+In this release of Msc-generator, label maps are not emitted for graphs
+Coloring Input Files
+Using -T csh produces a colorized version of the input file text. Specifically, the output is a text file according to the signalling chart language (irrespective what the input language was). The output contains a single colon-label divider using the formatting escapes described in Text Formatting. Running msc-gen on the resulting text output again (interpreting it as a signalling chart), will produce a colorized version of the original input text as graphical output. This is how the color text version of the examples in this document were produced
+Text Editor Integration
+The options here are inteded for integration with text editors. They may change in the future. Please contact the author if you want to integrate with a text editor
+Using --tei-mode will put msc-gen into Text Editor Integration mode, where it expects a series of input files on its standard input and produces color syntax highlighting, quick error, text indentation or hints/autocomplete information on the standard output. These are produced via a quick parsing of the input text and are intended to be fast enough to be ran for every keystroke pressed. (At least for input files of reasonable sizes, say 64K.) Parsing in this mode is limited, thus not all errors are caught, but most are. Msc-gen reads and parses all the design libraries at startup and remains running for several input files - again to save time. (Reading design files can be avoided via option --nodesigns, as usual.)
+On the standard input msc-gen expects a text line with a series of space separated letters, each optionally followed by a number, then a new line character. After this shall come the text of an input chart, terminated by a zero byte. The letter in the first line determines what kind of output is expected on the standard output (see below). The output is also terminated by a zero byte. All the above can then be repeated until the standard input is closed. In that case, msc-gen closes the standard output and exits with success
+Msc-gen uses the standard error to produce critical error messages (ones that do not pertrain to the correctness of input text, such as bad combination of options, etc.)
+The type of the chart has to be specified via option -S and cannot be changed later. (Similar, if the design libraries change, msc-gen need to be restarted.) The text of the input can only be ASCII or UTF-8, but not UTF-16. Input or output filenames are invalid, so are the options -i and -o. A host of other options to manipulate graphics output (sizing, pagination, etc.) are simply ignored
+The following table summarizes, what letters can be used in the first line of the input and what effect they have. If you specify more than one letters in the first line separated by spaces, all output for them will be returned separated by an empty line. Thus if you want to get both the coloring information and the quick errors in one pass, use C E in the first line. The order of the letters in the first line do not matter, output is ordered as below in the table. You can specify one letter several times, but it has no effect. In case the letter requires parameters, that of the last mention will take effect
+C
+In response to C, msc-gen emits a description of how to color the input. Each line describes a particular contigius area of the input file colored the same way in the format below
+<firts_pos>-<last_pos>: <color_id> <red> <green> <blue> <bold> <italics> <underline>
+The first two numbers mark the first and the last position of the color range starting from 1. If the color range consists of a single character, the two values are equal. In case of UTF-8 encoding, multi-byte characters are counted as one thus the position is not a byte index. The different line endings (CR, LF or CRLF) are preserved and each is understood, with CRLF counted as two characters
+The color_id is a number between 0 and 36 denoting what kind of color do we talk about. The table further below summarizes the values. The rest of the numbers on the line give actual colors and font flags (associated with the default color scheme)
+D<pos>,<insert>
+Similar to C, this emits coloring information, but only a delta compared to a previous run. This may be beneficial to reduce the amount of coloring results generated by msc-gen. Also, if the text editor supports incremental updates in coloring, this may also reduce the work of updating coloring after simple changes
+The delta can only be compared if a single (but perhaps multi-character) insertion or deletion were made to the input file. <pos> represents the caret position after which the characters were inserted or deleted, while <insert> tells us how many were inserted (negative number for deletes). If you have specified the N letter, you can omit the chart text entirely from after the first line for deletions. For insertions, you just need to specify the characters inserted (which have to be as many) as the <insert> you specified. By default (no N added), msc-gen still expects the full chart text on its input. If the chart text given to msc-gen was modified in a different way compared to the original than the parameters of the D command indicate the resulting delta will likely be wrong. The returned coloring info will contain color_id of 0 for texts that were colored before, but now coloring has to be removed
+Note that the delta computation algorithm assumes that the text editor maintains coloring before <pos> and shifts coloring information after the insertion. That is, if a single character was deleted at position 5, a blue colored character at position 3 will remain blue (and hence this can be omitted from the delta) and a red character originally at position 7 (now at position 6) will remain red at its new position. This is how any sane text editor having text formatting shall work
+You can only specify one of C or D at the line, the latter takes effect
+E
+Msc-gen will emit quick errors, for highlighting during editing. (Not all errors are caputred, such as attributes not applying, etc. This is to speed up the process.) The output contains a character range <first_pos>-<last-pos> followed by a textual description. The text editor may underline these locations and assign ballon tooltips for them
+H<pos>
+If the letter in the first line is H a nonnegative number shall be appended (with no space). In this case msc-gen will return the possible list of auto-completions, when the cursor is at the number specified. This position is a caret position, value zero is before the first character in the file, value 1 is after it. In case of UTF-8 input each character counts as 1, even if multi-byte. Thus if the first character takes two bytes, then the position 1 will start at byte #2. The list returned consists of one line per hint and the hints are neither grouped nor filtered (see Typing Hints and Autocompletion). There are seven fields separated by the \x01 character
+The hint text. This is to be shown to the user
+The string to insert. If empty then use the hint text above
+1 if the hint is selectable (can actually be inserted to the chart) and 0, if it is only explanatory
+The RGB color of the hint: three, comma separated integers between [0..255]
+1 if the hint text shall be bold, 0 otherwise
+1 if the hint text shall be italics, 0 otherwise
+The description of the hint in english to be used as a tooltip. Newline characters are replaced to character \x02 in order to avoid confusion with newlines separating the hints
+If the cursor is at a location where the user can type a new identifier (and not just one of the values among the hints), the first hint will have its hint text equal to the asterisk ('*'). This shall be honoured by not expanding to one of the hints when the user presses the space or a non alphanumeric character
+I<pos>
+In this case the position is also a character position as for H, but smart indentation information is returned. Text editors can use it when the user presses TAB or RETURN keys, or when the user has typed a brace or square bracket to the beginning of a line. Msc-gen will return four numbers separated by a space and terminated by a newline
+The character index of the beginning of the line containing <pos>
+The byte index of the first character of the line containing <pos>. In case of a pure ASCII input this equals the first number
+The current number of whitespace (tabs count as a single whitespace) at the beginning of this line. If the line contains only whitespace this number is the total number of characters in that line
+The suggested number of whitespace at the beginning of the line (which is the complete line if there is only whitespace). Note that for empty lines the correct indentation may change after the first character is typed
+Note that if you would like to indent several lines at once, you need to actually indent the first one (by adding/removing spaces) and then re-parse the resulting file and do it for the second line, etc. This is because the calculated indent depends on lines above
+N
+If this letter is added to the line, the chart text following the first line can be missing. (It is ignored if present all the way to the terminating zero character.) The text of the previous run is re-used, but parsed again. It is useful, when the text has not been changed, but we want hints at a different location
+Note that C, D, E and H will result in a re-parse of the chart text, so it is a good strategy to send them all in once to be done with a single re-parsing as opposed to send them one-by-one with N, which results in a fresh re-parse again. I, on the other hand can work from a previous parse
+And the code for the color_id is as follows
+
+		% 0			% Regular text (if a character is not listed, its color defaults to this)
+		% 1			% A keyword, like commands or parallel
+		% 2			% A partially typed keyword
+		% 3			% An msc-gen only keyword
+		% 4			% The equal sign
+		% 5			% The semicolon sign
+		% 6			% The colon character
+		% 7			% The comma character
+		% 8			% A symbol, e.g., arrows, box symbols, etc
+		% 9			% An mscgen symbol, e.g., arrows, box symbols, etc
+		% 10		% An opening or closing brace {}
+		% 11		% An opening or closing bracket []
+		% 12		% An opening or closing parenthesis ()
+		% 13		% The name of a design
+		% 14		% The name of a style
+		% 15		% The name of an entity
+		% 16		% The name of an entity when first occures in the file
+		% 17		% The name of a color
+		% 18		% The description of a color other than a name
+		% 19		% The name of a marker
+		% 20		% The name of a marker partially written
+		% 21		% The name of a procedure
+		% 22		% The name of a file to include
+		% 23		% The name of a procedure parameter ($xxx)
+		% 24		% The name of a chart option
+		% 25		% The name of a chart option partially written
+		% 26		% The name of an mscgen-only chart option
+		% 27		% The name of an attribute
+		% 28		% The name of a attribute partially written
+		% 29		% The name of an mscgen-only attribute
+		% 30		% The value of an attribute
+		% 31		% Emphasized part of the attribute value (usually variables)
+		% 32		% The text of a label, either after a colon or between quotation marks
+		% 33		% The text of a label escape, such as '\n'
+		% 34		% A place where an error was detected
+		% 35		% The inverse of error formatting (used only internally)
+		% 36		% A comment

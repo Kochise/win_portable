@@ -1,0 +1,187 @@
+% 'mscgen' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mscgen}
+[2020/11/12 v8.8.2-beta.8 LaTeX package for drawing various charts from text description]
+% Support for http://www.mcternan.me.uk/mscgen/
+% http://msc-generator.sourceforge.net/help/5.4/Text-Formatting.html
+% Based on https://github.com/dakusui/latex-ditaa
+% Based also upon https://github.com/unjello/msctexen
+% Help from the community https://tex.stackexchange.com/questions/570758/verbatimout-newenvironment-and-removing-characters/
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+\RequirePackage{adjustbox}
+
+%\newcommand*{\mscgensetup}[1]{\setkeys{mscgen}{#1}}
+\newcommand*{\mscgensetup}{\kvsetkeys{mscgen}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=mscgen, prefix=mscgen@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{mscgen} location, *not* at \begin[options]{mscgen}
+% These options can be changed at "runtime" using the \mscgensetup{options} macro, though
+\DeclareStringOption{imagepath}								% Path of the image
+\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+
+\DeclareBoolOption{teimode}									% Puts msc-generator into text editor integration mode
+\DeclareStringOption[eps]{T}[png]							% Output file type (default is 'png', currently 'eps' as a fix, because 'svg' output cannot be trimmed and 'pdf' is non conformant)
+\DeclareBoolOption{e}										% Embed the chart text into 'png' file as an iTXt chunk (uncompressed)
+\DeclareStringOption{o}[]									% Output file (png, eps, pdf, svg, emf)
+\DeclareStringOption{i}[]									% Input file
+\DeclareStringOption{S}[signalling]							% Forces the input file to be interpreted as as a specific type of chart
+\DeclareStringOption{utf}[8]								% Forces the input file to be interpreted as UTF
+%\DeclareBoolOption{utf16}									% Forces the input file to be interpreted as UTF-16, even if it looks like UTF-8 or ASCII
+%\DeclareBoolOption{utf8}									% Forces the input file to be interpreted as UTF-8, even if it does not look like it
+\DeclareStringOption{p}[A4p]								% Full-page output ('p' or an 'l' for portrait and landscape)
+\DeclareStringOption{va}[]									% Set the vertical alignment within a page for full-page output
+\DeclareStringOption{ha}[]									% Set the horizontal alignment within a page for full-page output
+\DeclareStringOption{x}[800]								% Width (in pixels)
+\DeclareStringOption{y}[800]								% Height (in pixels)
+\DeclareStringOption{s}[1.0]								% Scale chart size up or down
+\DeclareStringOption{F}[]									% Use specified font (must be available in the local syrefname)
+\DeclareStringOption{D}[]									% Load additional chart design definitions
+\DeclareBoolOption{nodesigns}								% Don't load design files
+\DeclareStringOption{chartoption}[]							% Chart option
+\DeclareBoolOption{chartdesign}								% Chart's design pattern
+\DeclareBoolOption{Wno}										% No warnings displayed
+\DeclareBoolOption{TI}										% Additional Technical Info is printed about compilation
+\DeclareBoolOption[true]{Pno}								% No progress indicator displayed
+\DeclareBoolOption{l}										% Display program licence and exit
+\DeclareBoolOption{h}										% Display program help and exit
+\DeclareBoolOption{help}									%
+\DeclareBoolOption{version}									% Display version information and exit
+\DeclareBoolOption{forcemscgen}								% Forces the chart to be interpreted in mscgen mode
+\DeclareBoolOption{preventmscgen}							% Prevents the chart to be interpreted in mscgen mode
+\DeclareBoolOption{Wnomscgen}								% Disables warnings for deprecated constructs for backwards compatibility
+\DeclareBoolOption{pedantic}								% Enforces stricter language interpretation
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{mscgen}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{mscgen}[3][\mscgen@width]
+	{ %	\begin{mscgen}[width]{caption}{refname}
+		\def\mscgenfigwidth{#1}
+		\def\mscgencaption{#2}
+		\def\mscgenrefname{#3}
+
+		% Default input is 'signalling'
+		\ifdefstring{\mscgen@S}{}{\def\mscgenoptext{signalling} \setkeys{mscgen}{S=signalling}}{\def\mscgenoptext{\mscgen@S}}
+
+		\def\mscgendir{\mscgen@imagepath/mscgen}
+		\def\mscgendpf{\mscgendir/\mscgenrefname}
+		\def\mscgensrc{\mscgendpf.\mscgenoptext}			% Cannot use '.msc' extension, it gets blocked by AV !
+		\def\mscgendst{\mscgendpf.\mscgen@T}
+		\def\mscgenout{\mscgendpf.out}
+		\def\mscgenerr{\mscgendpf.err}
+
+		% --tei-mode										% Puts msc-generator into text editor integration mode
+		\ifthenelse{\boolean{mscgen@teimode}}{\def\mscgenoptteimode{--tei-mode }}{\def\mscgenoptteimode{}}
+		% -T [png/eps/pdf/svg/ismap/lmap/csh/emf]			% Output file type (default is 'png')
+		\ifdefstring{\mscgen@T}{}{\def\mscgenoptT{}}{\def\mscgenoptT{-T "\mscgen@T" }}
+		% -e												% Embed the chart text into 'png' file as an iTXt chunk (uncompressed)
+		\ifthenelse{\boolean{mscgen@e}}{\def\mscgenopte{-e }}{\def\mscgenopte{}}
+		% -o outfile										% Output file (png, eps, pdf, svg, emf)
+		\ifdefstring{\mscgen@o}{}{\def\mscgenopto{-o "\mscgendst" }}{\def\mscgenopto{-o "\mscgen@o" }}
+		% -i infile											% Input file
+		\ifdefstring{\mscgen@i}{}{\def\mscgenopti{-i "\mscgensrc" }}{\def\mscgenopti{-i "\mscgen@i" }}
+		% -S <signalling/graph>								% Forces the input file to be interpreted as as a specific type of chart
+		\ifdefstring{\mscgen@S}{}{\def\mscgenoptS{}}{\def\mscgenoptS{-S "\mscgen@S" }}
+		% -utf [8/16]										% Forces the input file to be interpreted as UTF
+		\ifdefstring{\mscgen@utf}{}{\def\mscgenoptutf{}}{\def\mscgenoptutf{--utf\mscgen@utf }}
+		% --utf16											% Forces the input file to be interpreted as UTF-16, even if it looks like UTF-8 or ASCII
+%		\ifthenelse{\boolean{mscgen@utf16}}{\def\mscgenoptutf16{--utf16 }}{\def\mscgenoptutf16{}}
+		% --utf8											% Forces the input file to be interpreted as UTF-8, even if it does not look like it
+%		\ifthenelse{\boolean{mscgen@utf8}}{\def\mscgenoptutf8{--utf8 }}{\def\mscgenoptutf8{}}
+		% -p=[A0-A6/letter/legal/ledger/tabloid][l/p]		% Full-page output ('p' or an 'l' for portrait and landscape)
+		\ifdefstring{\mscgen@p}{}{\def\mscgenoptp{}}{\def\mscgenoptp{-p=\mscgen@p }}
+		% -m{lrud}=‘margin'									% Specifies the margin in full-page output (in inches -number only- or in centimeters -appended with 'cm')
+		% -va=[center/up/down]								% Set the vertical alignment within a page for full-page output
+		\ifdefstring{\mscgen@va}{}{\def\mscgenoptva{}}{\def\mscgenoptva{-va=\mscgen@va }}
+		% -ha=[center/left/right]							% Set the horizontal alignment within a page for full-page output
+		\ifdefstring{\mscgen@ha}{}{\def\mscgenoptha{}}{\def\mscgenoptha{-ha=\mscgen@ha }}
+		% -a[h]												% Automatic pagination
+		% -x=width											% Width (in pixels)
+		\ifdefstring{\mscgen@x}{}{\def\mscgenoptx{}}{\def\mscgenoptx{-x=\mscgen@x }}
+		% -y=height											% Height (in pixels)
+		\ifdefstring{\mscgen@y}{}{\def\mscgenopty{}}{\def\mscgenopty{-y=\mscgen@y }}
+		% -s=scale											% Scale chart size up or down
+		\ifdefstring{\mscgen@s}{}{\def\mscgenopts{}}{\def\mscgenopts{-s=\mscgen@s }}
+		% -F font											% Use specified font (must be available in the local syrefname)
+		\ifdefstring{\mscgen@F}{}{\def\mscgenoptF{}}{\def\mscgenoptF{-F "\mscgen@F" }}
+		% -D design_file									% Load additional chart design definitions
+		\ifdefstring{\mscgen@D}{}{\def\mscgenoptD{}}{\def\mscgenoptD{-D "\mscgen@D" }}
+		% --nodesigns										% Don't load design files
+		\ifthenelse{\boolean{mscgen@nodesigns}}{\def\mscgenoptnodesigns{--nodesigns }}{\def\mscgenoptnodesigns{}}
+		% --chart_option=value								% Chart option
+		\ifdefstring{\mscgen@chartoption}{}{\def\mscgenoptchartoption{}}{\def\mscgenoptchartoption{--chartoption=\mscgen@chartoption }}
+		% --chart_design									% Chart's design pattern
+		\ifthenelse{\boolean{mscgen@chartdesign}}{\def\mscgenoptchartdesign{--chartdesign }}{\def\mscgenoptchartdesign{}}
+		% -Wno												% No warnings displayed
+		\ifthenelse{\boolean{mscgen@Wno}}{\def\mscgenoptWno{-Wno }}{\def\mscgenoptWno{}}
+		% -TI												% Additional Technical Info is printed about compilation
+		\ifthenelse{\boolean{mscgen@TI}}{\def\mscgenoptTI{-TI }}{\def\mscgenoptTI{}}
+		% -Pno												% No progress indicator displayed
+		\ifthenelse{\boolean{mscgen@Pno}}{\def\mscgenoptPno{-Pno }}{\def\mscgenoptPno{}}
+		% -l												% Display program licence and exit
+		\ifthenelse{\boolean{mscgen@l}}{\def\mscgenoptl{-l }}{\def\mscgenoptl{}}
+		% -h , --help										% Display program help and exit
+		\ifthenelse{\boolean{mscgen@h}}{\def\mscgenopth{-h }}{\ifthenelse{\boolean{mscgen@help}}{\def\mscgenopth{--help }}{\def\mscgenopth{}}}
+		% --version											% Display version information and exit
+		\ifthenelse{\boolean{mscgen@version}}{\def\mscgenoptversion{--version }}{\def\mscgenoptversion{}}
+		% --force-mscgen									% Forces the chart to be interpreted in mscgen mode
+		\ifthenelse{\boolean{mscgen@forcemscgen}}{\def\mscgenoptforcemscgen{--force-mscgen }}{\def\mscgenoptforcemscgen{}}
+		% --prevent-mscgen									% Prevents the chart to be interpreted in mscgen mode
+		\ifthenelse{\boolean{mscgen@preventmscgen}}{\def\mscgenoptpreventmscgen{--prevent-mscgen }}{\def\mscgenoptpreventmscgen{}}
+		% -Wno-mscgen										% Disables warnings for deprecated constructs for backwards compatibility
+		\ifthenelse{\boolean{mscgen@Wnomscgen}}{\def\mscgenoptWnomscgen{--Wno-mscgen }}{\def\mscgenoptWnomscgen{}}
+		% --pedantic										% Enforces stricter language interpretation
+		\ifthenelse{\boolean{mscgen@pedantic}}{\def\mscgenoptpedantic{--pedantic }}{\def\mscgenoptpedantic{}}
+
+		\immediate\write18{mkdir "\mscgendir" 2>nul}
+		\VerbatimOut[codes={\catcode`\^^I=10}]{\mscgensrc}}	% Thanks @egreg for the catcode 'trick'
+	{\endVerbatimOut
+		\immediate\write18{mscgen \mscgenoptteimode \mscgenoptT \mscgenopte \mscgenopto \mscgenopti \mscgenoptS \mscgenoptutf \mscgenoptp \mscgenoptva \mscgenoptha \mscgenoptx \mscgenopty \mscgenopts \mscgenoptF \mscgenoptD \mscgenoptnodesigns \mscgenoptchartoption \mscgenoptchartdesign \mscgenoptWno \mscgenoptTI \mscgenoptPno \mscgenoptl \mscgenopth \mscgenoptversion \mscgenoptforcemscgen \mscgenoptpreventmscgen \mscgenoptWnomscgen \mscgenoptpedantic >"\mscgenout" 2>"\mscgenerr"}
+
+		% \ifdefequal can only compare macros against macros, not direct values
+		\def\mscgenopteps{eps}
+		\def\mscgenoptsvg{svg}
+
+		% Crop the eps version only
+		\ifdefequal{\mscgen@T}{\mscgenopteps}{
+			\immediate\write18{epstopdf --gsopt=-dEPSCrop "\mscgendst"}
+		}{}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\ifdefequal{\mscgen@T}{\mscgenoptsvg}{
+				\includesvg[inkscapelatex=false, width=\mscgenfigwidth]{\mscgendst}
+			}{
+				\includegraphics[trim=0 15 0 0, clip, width=\mscgenfigwidth]{\mscgendst}
+			}
+			\vspace{-1em}
+			\caption{\mscgencaption}
+			\label{fig:\mscgenrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `mscgen.sty'.

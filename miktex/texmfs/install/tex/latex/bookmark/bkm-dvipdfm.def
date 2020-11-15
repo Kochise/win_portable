@@ -9,11 +9,11 @@
 %% This is a generated file.
 %% 
 %% Project: bookmark
-%% Version: 2019/12/03 v1.28
+%% Version: 2020-11-06 v1.29
 %% 
 %% Copyright (C)
 %%    2007-2011 Heiko Oberdiek
-%%    2016-2019 Oberdiek Package Support Group
+%%    2016-2020 Oberdiek Package Support Group
 %% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either
@@ -32,16 +32,17 @@
 %% https://github.com/ho-tex/bookmark/issues
 %% 
 %% 
-%% This work consists of the main source file bookmark.dtx
+%% This work consists of the main source file bookmark.dtx and bookmark-frozen.dtx
 %% and the derived files
 %%    bookmark.sty, bookmark.pdf, bookmark.ins, bookmark.drv,
-%%    bkm-dvipdfm.def, bkm-dvips.def, bkm-dvipsone.def,
-%%    bkm-textures.def, bkm-pdftex.def, bkm-vtex.def,
+%%    bkm-dvipdfm.def, bkm-dvips.def, bkm-pdftex.def, bkm-vtex.def,
+%%    bkm-dvipdfm-2019-12-03.def, bkm-dvips-2019-12-03.def,
+%%    bkm-pdftex-2019-12-03.def, bkm-vtex-2019-12-03.def,
 %%    bookmark-example.tex.
 %% 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesFile{bkm-dvipdfm.def}%
-  [2019/12/03 v1.28 bookmark driver for dvipdfm (HO)]%
+  [2020-11-06 v1.29 bookmark driver for dvipdfm (HO)]%
 \newcount\BKM@id
 \BKM@id=\z@
 \@namedef{BKM@0}{000}
@@ -146,7 +147,7 @@
         }%
       \fi
       \special{pdf:%
-        out \ifBKM@DvipdfmxOutlineOpen
+        out
               [%
               \ifBKM@open
                 \ifnum\BKM@level<%
@@ -159,7 +160,6 @@
                 -%
               \fi
               ] %
-            \fi
             \BKM@abslevel
         <<%
           /Title(\BKM@title)%
@@ -182,8 +182,7 @@
   \def\BKM@x@abslevel{#3}%
 }
 \ifBKM@atend
-  \RequirePackage{atenddvi}%
-  \AtEndDvi{\BKM@EndHook}%
+  \AddToHook{shipout/lastpage}{\BKM@EndHook}%
 \fi
 
 \endinput

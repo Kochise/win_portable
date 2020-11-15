@@ -1,0 +1,138 @@
+% 'mermaid' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mermaid}
+[2020/11/04 v8.8.2-beta.8 LaTeX package for Javascript based diagramming and charting tool]
+% Support for https://github.com/mermaid-js/mermaid-cli
+% Beware : DO NOT USE v0.5.1, use v8.+
+% Based on https://github.com/dakusui/latex-ditaa
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\mermaidsetup}[1]{\setkeys{mermaid}{#1}}
+\newcommand*{\mermaidsetup}{\kvsetkeys{mermaid}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=mermaid, prefix=mermaid@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{mermaid} location, *not* at \begin[options]{mermaid}
+% These options can be changed at "runtime" using the \mermaidsetup{options} macro, though
+\DeclareStringOption{imagepath}								% Path of the image
+%\DeclareStringOption{width}[\columnwidth]
+\DeclareBoolOption[true]{pdf}								% Output is pdf format (currently by default as a fix, because 'svg' output is non conformant)
+\DeclareBoolOption{png}										% Output is png format
+\DeclareBoolOption{svg}										% Output is svg format (default, when fixed)
+
+\DeclareBoolOption{V}										% Output the version number
+\DeclareBoolOption{version}									%
+\DeclareStringOption{t}[default]							% Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default (default: default)
+\DeclareStringOption{theme}[default]						%
+\DeclareStringOption{w}[800]								% Width of the page. Optional. Default: 800 (default: 800)
+\DeclareStringOption{width}[800]							% (/!\ already defined as figure layout width on page, not output image width)
+\DeclareStringOption{H}[800]								% Height of the page. Optional. Default: 600 (default: 600)
+\DeclareStringOption{height}[800]							%
+\DeclareStringOption{i}[]									% Input mermaid file. Required.
+\DeclareStringOption{input}[]								%
+\DeclareStringOption{o}[]									% Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
+\DeclareStringOption{output}[]								%
+\DeclareStringOption{b}[transparent]						% Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
+\DeclareStringOption{backgroundColor}[transparent]			%
+\DeclareStringOption{c}[]									% JSON configuration file for mermaid. Optional
+\DeclareStringOption{configFile}[]							%
+\DeclareStringOption{C}[]									% CSS file for the page. Optional
+\DeclareStringOption{cssFile}[]								%
+\DeclareStringOption{p}[]									% JSON configuration file for puppeteer. Optional
+\DeclareStringOption{puppeteerConfigFile}[]					%
+\DeclareBoolOption{h}										% Output usage information
+\DeclareBoolOption{help}									%
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{mermaid}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{mermaid}[3][\columnwidth]	% Special case because there's already a 'width' 
+	{ %	\begin{mermaid}[width]{caption}{refname}
+		\def\mermaidfigwidth{#1}
+		\def\mermaidcaption{#2}
+		\def\mermaidrefname{#3}
+
+		% Default output is svg, but not forced to [true] in \DeclareBoolOption{svg} above to avoid precedence of one format over another
+		\ifthenelse{\boolean{mermaid@pdf}}{\def\mermaidoptext{pdf}}{\ifthenelse{\boolean{mermaid@png}}{\def\mermaidoptext{png}}{\ifthenelse{\boolean{mermaid@svg}}{\def\mermaidoptext{svg}}{\def\mermaidoptext{svg} \setkeys{mermaid}{svg=true}}}}
+
+		\def\mermaiddir{\mermaid@imagepath/mermaid}
+		\def\mermaiddpf{\mermaiddir/\mermaidrefname}
+		\def\mermaidsrc{\mermaiddpf.mmd}
+		\def\mermaiddst{\mermaiddpf.\mermaidoptext}			% The extension shall be set at this point (hopefully so)
+		\def\mermaidout{\mermaiddpf.out}
+		\def\mermaiderr{\mermaiddpf.err}
+
+		% -V, --version										% Output the version number
+		\ifthenelse{\boolean{mermaid@V}}{\def\mermaidoptV{-V }}{\ifthenelse{\boolean{mermaid@version}}{\def\mermaidoptV{--version }}{\def\mermaidoptV{}}}
+		% -t, --theme [theme]								% Theme of the chart, could be default, forest, dark or neutral. Optional. Default: default (default: default)
+		\ifdefstring{\mermaid@t}{}{\ifdefstring{\mermaid@theme}{}{\def\mermaidoptt{}}{\def\mermaidoptt{--theme "\mermaid@theme" }}}{\def\mermaidoptt{-t "\mermaid@t" }}
+		% -w, --width [width]								% Width of the page. Optional. Default: 800 (default: 800)
+		\ifdefstring{\mermaid@w}{}{\ifdefstring{\mermaid@width}{}{\def\mermaidoptw{}}{\def\mermaidoptw{--width "\mermaid@width" }}}{\def\mermaidoptw{-w "\mermaid@w" }}
+%		\ifdefstring{\mermaid@w}{}{\def\mermaidoptw{}}{\def\mermaidoptw{-w "\mermaid@w" }}
+		% -H, --height [height]								% Height of the page. Optional. Default: 600 (default: 600)
+		\ifdefstring{\mermaid@H}{}{\ifdefstring{\mermaid@height}{}{\def\mermaidoptH{}}{\def\mermaidoptH{--height "\mermaid@height" }}}{\def\mermaidoptH{-H "\mermaid@H" }}
+		% -i, --input <input>								% Input mermaid file. Required.
+		\ifdefstring{\mermaid@i}{}{\ifdefstring{\mermaid@input}{}{\def\mermaidopti{-i "\mermaidsrc" }}{\def\mermaidopti{--input "\mermaid@input" }}}{\def\mermaidopti{-i "\mermaid@i" }}
+		% -o, --output [output]								% Output file. It should be either svg, png or pdf. Optional. Default: input + ".svg"
+		\ifdefstring{\mermaid@o}{}{\ifdefstring{\mermaid@output}{}{\def\mermaidopto{-o "\mermaiddst"}}{\def\mermaidopto{--output "\mermaid@output" }}}{\def\mermaidopto{-o "\mermaid@o" }}
+		% -b, --backgroundColor [backgroundColor]			% Background color. Example: transparent, red, '#F0F0F0'. Optional. Default: white
+		\ifdefstring{\mermaid@b}{}{\ifdefstring{\mermaid@backgroundColor}{}{\def\mermaidoptb{}}{\def\mermaidoptb{--backgroundColor "\mermaid@backgroundColor" }}}{\def\mermaidoptb{-b "\mermaid@b" }}
+		% -c, --configFile [configFile]						% JSON configuration file for mermaid. Optional
+		\ifdefstring{\mermaid@c}{}{\ifdefstring{\mermaid@configFile}{}{\def\mermaidoptc{}}{\def\mermaidoptc{--configFile "\mermaid@configFile" }}}{\def\mermaidoptc{-c "\mermaid@c" }}
+		% -C, --cssFile [cssFile]							% CSS file for the page. Optional
+		\ifdefstring{\mermaid@C}{}{\ifdefstring{\mermaid@cssFile}{}{\def\mermaidoptC{}}{\def\mermaidoptC{--cssFile "\mermaid@cssFile" }}}{\def\mermaidoptC{-C "\mermaid@C" }}
+		% -p, --puppeteerConfigFile [puppeteerConfigFile]	% JSON configuration file for puppeteer. Optional
+		\ifdefstring{\mermaid@p}{}{\ifdefstring{\mermaid@puppeteerConfigFile}{}{\def\mermaidoptp{}}{\def\mermaidoptp{--puppeteerConfigFile "\mermaid@puppeteerConfigFile" }}}{\def\mermaidoptp{-p "\mermaid@p" }}
+		% -h, --help										% Output usage information
+		\ifthenelse{\boolean{mermaid@h}}{\def\mermaidopth{-h }}{\ifthenelse{\boolean{mermaid@help}}{\def\mermaidopth{--help }}{\def\mermaidopth{}}}
+
+		\immediate\write18{mkdir "\mermaiddir" 2>nul}
+		\VerbatimOut{\mermaidsrc}}
+	{\endVerbatimOut
+		\immediate\write18{npx mmdc \mermaidoptV \mermaidoptt \mermaidoptw \mermaidoptH \mermaidopti \mermaidopto \mermaidoptb \mermaidoptc \mermaidoptC \mermaidoptp \mermaidopth >"\mermaidout" 2>"\mermaiderr"}
+
+		% \ifdefequal can only compare macros against macros, not direct values
+		\def\mermaidoptpdf{pdf}
+
+		% Crop the pdf version only (perl should be present)
+		\ifdefequal{\mermaidoptext}{\mermaidoptpdf}{
+			\immediate\write18{pdfcrop "\mermaiddst" "\mermaiddst" >>"\mermaidout" 2>>"\mermaiderr"}
+		}{}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\ifmermaid@svg
+				\includesvg[inkscapelatex=false, width=\mermaidfigwidth]{\mermaiddst}
+			\else
+				\includegraphics[width=\mermaidfigwidth]{\mermaiddst}
+			\fi
+%			\vspace{-2em}
+			\caption{\mermaidcaption}
+			\label{fig:\mermaidrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `mermaid.sty'.

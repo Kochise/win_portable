@@ -1,0 +1,73 @@
+% 'diagrams' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{diagrams}
+[2020/11/06 v0.11.0 LaTeX package for generating flowcharts, network sequence diagrams, graphviz dot diagrams, and railroad diagrams]
+% Support for https://github.com/francoislaberge/diagrams (see also https://github.com/adrai/flowchart.js)
+% Based on https://github.com/dakusui/latex-ditaa
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\diagramssetup}[1]{\setkeys{diagrams}{#1}}
+\newcommand*{\diagramssetup}{\kvsetkeys{diagrams}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=diagrams, prefix=diagrams@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{diagrams} location, *not* at \begin[options]{diagrams}
+% These options can be changed at "runtime" using the \diagramssetup{options} macro, though
+\DeclareStringOption{imagepath}				% Path of the image
+\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{diagrams}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off after this)
+\newenvironment{diagrams}[4][\diagrams@width]
+	{ %	\begin{diagrams}[width]{type}{caption}{refname} with type=flowchart/sequence/dot/railroad
+		\def\diagramsfigwidth{#1}
+		\def\diagramstype{#2 }	% the space is important
+		\def\diagramscaption{#3}
+		\def\diagramsrefname{#4}
+
+		\def\diagramsdir{\diagrams@imagepath/diagrams}
+		\def\diagramsdpf{\diagramsdir/\diagramsrefname}
+		\def\diagramssrc{\diagramsdpf.\diagramstype}
+		\def\diagramsdst{\diagramsdpf.svg}
+		\def\diagramsout{\diagramsdpf.out}
+		\def\diagramserr{\diagramsdpf.err}
+		
+		\immediate\write18{mkdir "\diagramsdir" 2>nul}
+		\VerbatimOut{\diagramssrc}}
+	{\endVerbatimOut
+		\immediate\write18{npx diagrams \diagramstype "\diagramssrc" "\diagramsdst" >"\diagramsout" 2>"\diagramserr"}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\includesvg[inkscapelatex=false, width=\diagramsfigwidth]{\diagramsdst}
+%			\vspace{-2em}
+			\caption{\diagramscaption}
+			\label{fig:\diagramsrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `diagrams.sty'.
