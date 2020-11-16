@@ -38,3 +38,30 @@ if exist "cv2.cp38-win_amd64.pyd.001" (
 )
 
 cd "..\..\..\..\.."
+
+rem Recompose 'Firefox' dependencies
+cd "Firefox\App\firefox64"
+
+if exist "xul.dll.001" (
+	if not exist "xul.dll" (
+		copy /b "xul.dll.001"+"xul.dll.002"+"xul.dll.003" "xul.dll" 1>nul 2>nul
+	)
+
+	del "xul.dll.001" /q 1>nul 2>nul
+	del "xul.dll.002" /q 1>nul 2>nul
+	del "xul.dll.003" /q 1>nul 2>nul
+)
+
+cd "..\..\.."
+cd "Firefox\Data\profile"
+
+if exist "webappsstore.sqlite.001" (
+	if not exist "webappsstore.sqlite" (
+		copy /b "webappsstore.sqlite.001"+"webappsstore.sqlite.002" "webappsstore.sqlite" 1>nul 2>nul
+	)
+
+	del "webappsstore.sqlite.001" /q 1>nul 2>nul
+	del "webappsstore.sqlite.002" /q 1>nul 2>nul
+)
+
+cd "..\..\.."
