@@ -7,13 +7,15 @@ Some useful Windows programs in one portable package (some with source code incl
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
 **CapsUnlock** : prevent Capslock from locking (press also Shift for that)<br>
 **CrossHair** : Ctrl+& to des/activate static crosshair (Ctrl+² for dynamic, not on Windows 10)<br>
+**ctags** : source file parser and ast database generator (used by NppTags in **Notepad++**)<br>
 **Dia** : Visio-like diagram editor, Gimp-like interface with many windows around<br>
 **DirectShutdown** : Windows+r restart, Windows+s shutdown (not on Windows 10)<br>
+**ditaa** : diagram tool to convert ascii-art into svg (for **miktex**)<br>
 **DragLock** : Windows+mouse movement locked verticaly or horizontaly<br>
 **Elm** : web based functional language (inspired from Haskel) <ins>EXTERNAL INSTALLER</ins><br>
 **Erlang** : distributed functional language (inspired from Prolog) <ins>EXTERNAL INSTALLER</ins><br>
 **FileZilla** : ftp client (better use Total Commander in passive mode)<br>
-**Firefox** : ready to use Firefox browser with some privacy extensions installed <ins>EXTERNAL INSTALLER</ins><br>
+**Firefox** : ready to use Firefox browser with some privacy extensions installed<br>
 **flux** : screen toning utility to change color scheme at night time <ins>INSTALLER</ins><br>
 **ImageMagick** : image manipulator, converter, whatever (cli only, strange syntax)<br>
 **inkscape** : vectorial image tools, default svg editor and converter for **miktex**<br>
@@ -23,7 +25,8 @@ Some useful Windows programs in one portable package (some with source code incl
 **K-Lite Codec Pack** : the codecs everyone should install, don't mess with vlc <ins>EXTERNAL INSTALLER</ins><br>
 **LastActivityView** : we know what you did last summer<br>
 **LICEcap** : record a part of your screen directly into animated gif<br>
-**lite** : lightweight source code editor coded in lua<br>
+**lite** : lightweight source code editor coded in **lua**<br>
+**lua** : simple scripting language used almost everywhere now<br>
 **miktex** : LaTeX tools needed by **texmaker** (includes its own package updater)<br>
 **MMCE** : Marble Marcher Community Edition, mind blowing utility<br>
 **mscgen-0.20** : command line based Message Sequence Charts generator<br>
@@ -32,12 +35,15 @@ Some useful Windows programs in one portable package (some with source code incl
 **Notepad++** : the best code editor with some extensions installed (regex works there)<br>
 **Notepad2-mod** : the best code editor 2 (Alt+z or Alt+o are best there)<br>
 **NumLocker** : like Capsunlock but for Numlock (doesn't work on Windows 10)<br>
+**nvm** : node.js (for wavedrom-cli and mermaid-cli, diagram tools)<br>
 **paint.net** : the better Paint or Gimp, with layers and stuff<br>
 **PDFtk** : pdf file manipulator but not generator or converter<br>
+**perl** : perl interpreter (for **miktex**, pdfcrop)<br>
 **Picat** : sat based functional language (inspired from B-Prolog)<br>
 **PrivaZer** : remove trails and stuff, CCleaner upgraded<br>
 **PureText** : Windows+v paste raw text without formatting<br>
-**RogueKiller** : detect and remove rootkits, won't reboot at the end <ins>EXTERNAL INSTALLER</ins><br>
+**python** : several versions of Python interpreters (because you'll need them)<br>
+**RogueKiller** : detect and remove rootkits, won't reboot at the end<br>
 **ShutUp10** : set predefined Windows 10 settings (like no telemetry)<br>
 **Sourcetrail** : explore source code hierarchy (steep learning curve)<br>
 **Subtitle Edit** : best subtitle editor, can shift time for several lines<br>
@@ -51,6 +57,8 @@ Some useful Windows programs in one portable package (some with source code incl
 **WinMerge** : the file comparator and merger, as good as kdiff3<br>
 **XpdfReader** : pdf file viewer, manipulation and conversion tools<br>
 
+Github sorting is Capital letter (grouped) first, then lower case second, hence you might not find immediatly what you're looking for.
+
 In each folder a url file links the original source (might be obsolete, use web.archive.org to get there).
 
-Cannot add **Firefox** binaries right now because one dll file is larger than 100MB (wtf seriously).
+When cloning/updating, run 'recompose.bat' to recreate some files.
