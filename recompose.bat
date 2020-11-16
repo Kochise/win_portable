@@ -24,3 +24,17 @@ if exist "interactive_ui_tests.exe.001" (
 )
 
 cd "..\..\..\..\..\..\..\..\..\.."
+
+rem Recompose 'python' dependencies
+cd "python\3.8\Lib\site-packages\cv2"
+
+if exist "cv2.cp38-win_amd64.pyd.001" (
+	if not exist "cv2.cp38-win_amd64.pyd" (
+		copy /b "cv2.cp38-win_amd64.pyd.001"+"cv2.cp38-win_amd64.pyd.002" "cv2.cp38-win_amd64.pyd" 1>nul 2>nul
+	)
+
+	del "cv2.cp38-win_amd64.pyd.001" /q 1>nul 2>nul
+	del "cv2.cp38-win_amd64.pyd.002" /q 1>nul 2>nul
+)
+
+cd "..\..\..\..\.."
