@@ -36,6 +36,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **Notepad2-mod** : the best code editor 2 (Alt+z or Alt+o are best there)<br>
 **NumLocker** : like Capsunlock but for Numlock (doesn't work on Windows 10)<br>
 **nvm** : node.js (for wavedrom-cli and mermaid-cli, diagram tools)<br>
+**OBS-Studio** : screen caster for streaming, can also record<br>
 **paint.net** : the better Paint or Gimp, with layers and stuff<br>
 **PDFtk** : pdf file manipulator but not generator or converter<br>
 **perl** : perl interpreter (for **miktex**, pdfcrop)<br>
@@ -54,10 +55,11 @@ Some useful Windows programs in one portable package (some with source code incl
 **Total Commander** : the stuff that should replace Windows (at least the explorer)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>
+**WinaeroTweaker** : Windows' parameters tweaker, like the good ol' Tweak UI<br>
 **WinMerge** : the file comparator and merger, as good as kdiff3<br>
 **XpdfReader** : pdf file viewer, manipulation and conversion tools<br>
 
-Github sorting is Capital letter (grouped) first, then lower case second, hence you might not find immediatly what you're looking for.
+Github folder sorting is Capital letter (grouped) first, then lower case second.
 
 In each folder a url file links the original source (might be obsolete, use web.archive.org to get there).
 
