@@ -1,5 +1,8 @@
 @echo off
 
+rem Recompose 'miktex' caches
+start "" /d "%~dp0\miktex" "miktex-cleanup-fndb.bat"
+
 rem Recompose 'nvm' dependencies
 cd "nvm\v12.17.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-809590\chrome-win"
 
