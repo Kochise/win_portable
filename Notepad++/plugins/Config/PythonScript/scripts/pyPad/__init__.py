@@ -69,9 +69,9 @@ class pyPadPlusPlus:
 
         self.externalPython = bool(externalPython)
         if self.externalPython:
-            import pyPadHost
+            from . import pyPadHost
             self.interp = pyPadHost.interpreter(externalPython, outBuffer=self.outBuffer)
-            #import pyPadRemoteHost
+            #from . import pyPadRemoteHost
             #self.interp = pyPadRemoteHost.interpreter(host="127.0.0.5", port=8888, outBuffer=self.outBuffer)
         else:
             from . import pyPadClient
@@ -632,8 +632,8 @@ class pyPadPlusPlus:
         iEnd = editor.getSelectionEnd()
         if pos is None:
             pos = editor.getCurrentPos()
-            CT_unselected = True
-            CT_expression = True
+            CT_unselected = False
+            CT_expression = False
         else:
             CT_unselected = self.popupForUnselectedVariable
             CT_expression = self.popupForSelectedExpression

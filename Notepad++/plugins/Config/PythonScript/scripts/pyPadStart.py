@@ -10,7 +10,6 @@
 # loaded Python installation.
 #
 pythonPath = None
-#pythonPath = "..\\python\\3.9"
 
 # In case of problems with certain libraries (e.g. numpy, matplotlib, Qt) set
 # the required environment variables of your Python distribution manually by:
