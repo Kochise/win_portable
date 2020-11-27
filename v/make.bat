@@ -5,6 +5,7 @@ echo Building V
 REM default tcc
 set tcc_url=https://github.com/vlang/tccbin_win
 set tcc_dir="%~dp0thirdparty\tcc"
+rem set tcc_dir="%~dp0..\tinycc"
 
 REM let a particular environment specify their own tcc
 if "%TCC_GIT%" =="" goto :init
