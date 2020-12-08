@@ -8,6 +8,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **CapsUnlock** : prevent Capslock from locking (press also Shift for that)<br>
 **CrossHair** : Ctrl+& to des/activate static crosshair (Ctrl+² for dynamic, not on Windows 10)<br>
 **ctags** : source file parser and ast database generator (used by NppTags in **Notepad++**)<br>
+**curl** : file and protocol downloader (because everyone loves it, I guess)<br>
 **Dia** : Visio-like diagram editor, Gimp-like interface with many windows around<br>
 **DirectShutdown** : Windows+r restart, Windows+s shutdown (not on Windows 10)<br>
 **ditaa** : diagram tool to convert ascii-art into svg (for **miktex**)<br>
