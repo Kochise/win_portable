@@ -57,6 +57,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **TreeSheets** : strange hierarchical notepad (inspired by Inception)<br>
 **TTYEmulator** : the best tty emulator, do ssh as well (Linux session)<br>
 **v** : aka vlang, is a lightweight c-ish self compiling language<br>
+**wget** : file and protocol downloader (the other one everyone loves)<br>
 **WinaeroTweaker** : Windows' parameters tweaker, like the good ol' Tweak UI<br>
 **WinMerge** : the file comparator and merger, as good as kdiff3<br>
 **XpdfReader** : pdf file viewer, manipulation and conversion tools<br>
