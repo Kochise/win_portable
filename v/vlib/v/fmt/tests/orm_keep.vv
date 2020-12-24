@@ -42,4 +42,12 @@ fn main() {
 	sql db {
 		insert new_customer into Customer
 	}
+	// delete a row
+	sql db {
+		delete from Customer where nr_orders == 10 && name == 'Bob'
+	}
+	sql db {
+		update Customer set name = 'Queen Elizabeth II', age = 150, nr_orders = 42, country = 'Great Britain'
+		where id == 5
+	}
 }

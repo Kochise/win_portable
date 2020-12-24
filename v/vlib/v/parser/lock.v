@@ -13,13 +13,12 @@ fn (mut p Parser) lock_expr() ast.LockExpr {
 	for p.tok.kind == .name {
 		lockeds << ast.Ident{
 			language: table.Language.v
-			// kind is set in checker once ident is processed
-			// kind: .variable
 			pos: p.tok.position()
 			mod: p.mod
 			name: p.tok.lit
 			is_mut: true
 			info: ast.IdentVar{}
+			scope: p.scope
 		}
 		p.next()
 		if p.tok.kind == .lcbr {

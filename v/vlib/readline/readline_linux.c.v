@@ -11,7 +11,6 @@ import os
 
 #include <termios.h>
 #include <sys/ioctl.h>
-
 // Defines actions to execute
 enum Action {
 	eof
@@ -38,8 +37,6 @@ fn C.tcgetattr() int
 fn C.tcsetattr() int
 
 fn C.raise()
-
-fn C.kill(int, int) int
 
 fn C.getppid() int
 
@@ -134,7 +131,7 @@ pub fn (mut r Readline) read_line_utf8(prompt string) ?ustring {
 
 // Returns the string from the utf8 ustring
 pub fn (mut r Readline) read_line(prompt string) ?string {
-	s := r.read_line_utf8(prompt)?
+	s := r.read_line_utf8(prompt) ?
 	return s.s
 }
 
@@ -142,7 +139,7 @@ pub fn (mut r Readline) read_line(prompt string) ?string {
 // Returns utf8 based ustring
 pub fn read_line_utf8(prompt string) ?ustring {
 	mut r := Readline{}
-	s := r.read_line_utf8(prompt)?
+	s := r.read_line_utf8(prompt) ?
 	return s
 }
 
@@ -150,7 +147,7 @@ pub fn read_line_utf8(prompt string) ?ustring {
 // Return string from utf8 ustring
 pub fn read_line(prompt string) ?string {
 	mut r := Readline{}
-	s := r.read_line(prompt)?
+	s := r.read_line(prompt) ?
 	return s
 }
 
@@ -169,15 +166,10 @@ fn get_prompt_offset(prompt string) int {
 
 fn (r Readline) analyse(c int) Action {
 	match byte(c) {
-		`\0` { return .eof }
-		0x3 { return .eof } // End of Text
-		0x4 { return .eof } // End of Transmission
-		255 { return .eof }
-		`\n` { return .commit_line }
-		`\r` { return .commit_line }
+		`\0`, 0x3, 0x4, 255 { return .eof } // NUL, End of Text, End of Transmission
+		`\n`, `\r` { return .commit_line }
 		`\f` { return .clear_screen } // CTRL + L
-		`\b` { return .delete_left } // Backspace
-		127 { return .delete_left } // DEL
+		`\b`, 127 { return .delete_left } // BS, DEL
 		27 { return r.analyse_control() } // ESC
 		1 { return .move_cursor_begining } // ^A
 		5 { return .move_cursor_end } // ^E
@@ -201,8 +193,7 @@ fn (r Readline) analyse_control() Action {
 				`B` { return .history_next }
 				`A` { return .history_previous }
 				`1` { return r.analyse_extended_control() }
-				`2` { return r.analyse_extended_control_no_eat(byte(sequence)) }
-				`3` { return r.analyse_extended_control_no_eat(byte(sequence)) }
+				`2`, `3` { return r.analyse_extended_control_no_eat(byte(sequence)) }
 				else {}
 			}
 		}
@@ -291,7 +282,7 @@ fn get_screen_columns() int {
 	return cols
 }
 
-fn shift_cursor(xpos, yoffset int) {
+fn shift_cursor(xpos int, yoffset int) {
 	if yoffset != 0 {
 		if yoffset > 0 {
 			term.cursor_down(yoffset)
@@ -300,11 +291,11 @@ fn shift_cursor(xpos, yoffset int) {
 		}
 	}
 	// Absolute X position
-	print('\x1b[${xpos+1}G')
+	print('\x1b[${xpos + 1}G')
 }
 
-fn calculate_screen_position(x_in, y_in, screen_columns, char_count int, inp []int) []int {
-	mut out := inp
+fn calculate_screen_position(x_in int, y_in int, screen_columns int, char_count int, inp []int) []int {
+	mut out := inp.clone()
 	mut x := x_in
 	mut y := y_in
 	out[0] = x
@@ -456,7 +447,7 @@ fn (mut r Readline) switch_overwrite() {
 }
 
 fn (mut r Readline) clear_screen() {
-	term.set_cursor_position(x:1, y:1)
+	term.set_cursor_position(x: 1, y: 1)
 	term.erase_clear()
 	r.refresh_line()
 }
@@ -486,7 +477,6 @@ fn (mut r Readline) history_next() {
 
 fn (mut r Readline) suspend() {
 	is_standalone := os.getenv('VCHILD') != 'true'
-
 	r.disable_raw_mode()
 	if !is_standalone {
 		// We have to SIGSTOP the parent v process

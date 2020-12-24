@@ -26,18 +26,14 @@ fn test_fmt() {
 	os.chdir(vroot)
 	basepath := os.join_path(vroot, '')
 	tmpfolder := os.temp_dir()
-	diff_cmd := util.find_working_diff_command() or {
-		''
-	}
+	diff_cmd := util.find_working_diff_command() or { '' }
 	mut fmt_bench := benchmark.new_benchmark()
 	keep_input_files := os.walk_ext('vlib/v/fmt/tests', '_keep.vv')
 	expected_input_files := os.walk_ext('vlib/v/fmt/tests', '_expected.vv')
 	mut input_files := []string{}
 	input_files << keep_input_files
 	input_files << expected_input_files
-	input_files = vtest.filter_vtest_only(input_files, {
-		basepath: vroot
-	})
+	input_files = vtest.filter_vtest_only(input_files, basepath: vroot)
 	fmt_bench.set_total_expected_steps(input_files.len)
 	for istep, ipath in input_files {
 		fmt_bench.cstep = istep
@@ -47,31 +43,31 @@ fn test_fmt() {
 		opath := ipath
 		expected_ocontent := os.read_file(opath) or {
 			fmt_bench.fail()
-			eprintln(fmt_bench.step_message_fail('cannot read from ${vrelpath}'))
+			eprintln(fmt_bench.step_message_fail('cannot read from $vrelpath'))
 			continue
 		}
 		table := table.new_table()
 		file_ast := parser.parse_file(ipath, table, .parse_comments, &pref.Preferences{
-				is_fmt: true,
-				ccompiler: 'gcc'
-			}, &ast.Scope{
-				parent: 0
+			is_fmt: true
+			ccompiler: 'gcc'
+		}, &ast.Scope{
+			parent: 0
 		})
 		result_ocontent := fmt.fmt(file_ast, table, false)
 		if expected_ocontent != result_ocontent {
 			fmt_bench.fail()
-			eprintln(fmt_bench.step_message_fail('file ${vrelpath} after formatting, does not look as expected.'))
+			eprintln(fmt_bench.step_message_fail('file $vrelpath after formatting, does not look as expected.'))
 			if diff_cmd == '' {
 				eprintln('>> sorry, but no working "diff" CLI command can be found')
 				continue
 			}
-			vfmt_result_file := os.join_path(tmpfolder, 'vfmt_run_over_${ifilename}')
+			vfmt_result_file := os.join_path(tmpfolder, 'vfmt_run_over_$ifilename')
 			os.write_file(vfmt_result_file, result_ocontent)
 			eprintln(util.color_compare_files(diff_cmd, opath, vfmt_result_file))
 			continue
 		}
 		fmt_bench.ok()
-		eprintln(fmt_bench.step_message_ok('${vrelpath}'))
+		eprintln(fmt_bench.step_message_ok('$vrelpath'))
 	}
 	fmt_bench.stop()
 	eprintln(term.h_divider('-'))

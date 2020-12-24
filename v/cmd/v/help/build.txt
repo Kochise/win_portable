@@ -54,7 +54,8 @@ The build flags are shared by the build and run commands:
       separated by pipes (`|`). In addition to absolute paths, you can
       also use these special strings too:
            @vmodules - replaced with the location of the global ~/.vmodules/ folder
-           (modules installed with `v install` are there).
+                       (modules installed with `v install` are there). You can change 
+                       its location by setting the environment variable VMODULES.
            @vlib - replaced with the location of the v's vlib folder.
       Using these, you can arrange for very flexible search orders for you project, for example:
            -path "/v/my_project_private_modules|@vlib|@vmodules"
@@ -117,7 +118,29 @@ The build flags are shared by the build and run commands:
          CHECK: 62ms
          C GEN: 103ms
          C tcc: 95ms
+         
+      Related to -show-timings, is the ability to compile a special instrumented 
+      v compiler with this command: 
+      `v -d time_parsing -d time_checking -d time_cgening -d time_v self`
+      The instrumented version will print detailed timing stats while processing
+      each .v file.
 
+   -w
+      Hide all warnings.
+
+   -W
+      Treat all warnings as errors, even in development builds.
+   
+   -Wfatal-errors
+      Unconditionally exit with exit(1) after the first error. 
+      Useful for scripts/tooling that calls V.
+
+   -Wimpure-v
+      Warn about using C. or JS. symbols in plain .v files. 
+      These should be moved in .c.v and .js.v .
+      NB: in the future, this will be turned on by default,
+      and will become an error, after vlib is cleaned up.
+      
 For C-specific build flags, use `v help build-c`.
 
 See also:

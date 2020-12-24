@@ -44,7 +44,7 @@ import time
 import os
 import live
 
-fn append_to_file(fname, s string) {
+fn append_to_file(fname string, s string) {
 	mut f := os.open_append(fname) or {
 		println('>>>> could not open file \$fname for appending, err: \$err ')
 		return
@@ -120,7 +120,7 @@ fn atomic_write_source(source string) {
 
 //
 fn testsuite_begin() {
-	if os.user_os() !in ['linux', 'solaris', 'macos'] && os.getenv('FORCE_LIVE_TEST').len == 0 {
+	if os.user_os() !in ['linux', 'solaris'] && os.getenv('FORCE_LIVE_TEST').len == 0 {
 		eprintln('Testing the runtime behaviour of -live mode,')
 		eprintln('is reliable only on Linux/macOS for now.')
 		eprintln('You can still do it by setting FORCE_LIVE_TEST=1 .')

@@ -87,15 +87,15 @@ fn (r &Repl) current_source_code(should_add_temp_lines bool) string {
 fn repl_help() {
 	println(util.full_v_version(false))
 	println('
-  help                   Displays this information.
-  list                   Show the program so far.
-  reset                  Clears the accumulated program, so you can start a fresh.
-  Ctrl-C, Ctrl-D, exit   Exits the REPL.
-  clear                  Clears the screen.
-')
+	|help                   Displays this information.
+	|list                   Show the program so far.
+	|reset                  Clears the accumulated program, so you can start a fresh.
+	|Ctrl-C, Ctrl-D, exit   Exits the REPL.
+	|clear                  Clears the screen.
+'.strip_margin())
 }
 
-fn run_repl(workdir, vrepl_prefix string) {
+fn run_repl(workdir string, vrepl_prefix string) {
 	if !is_stdin_a_pipe {
 		println(util.full_v_version(false))
 		println('Use Ctrl-C or `exit` to exit, or `help` to see other available commands')
@@ -301,7 +301,7 @@ fn run_repl(workdir, vrepl_prefix string) {
 }
 
 fn print_output(s os.Result) {
-	lines := s.output.trim_right('\n\r').split('\n')
+	lines := s.output.trim_right('\n\r').split_into_lines()
 	for line in lines {
 		if line.contains('.vrepl_temp.v:') {
 			// Hide the temporary file name

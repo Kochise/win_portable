@@ -205,7 +205,8 @@ type NATOAlphabet = Alfa | Bravo | Charlie
 
 fn test_match_sumtype_multiple_types() {
 	a := Alfa{}
-	match NATOAlphabet(a) as l {
+	l := NATOAlphabet(a)
+	match l {
 		Alfa, Bravo {
 			assert l.char == `a`
 			// TODO make methods work
@@ -216,9 +217,16 @@ fn test_match_sumtype_multiple_types() {
 		}
 	}
 	// test one branch
-	match NATOAlphabet(a) as l {
+	match l {
 		Alfa, Bravo, Charlie {
 			assert l.char == `a`
 		}
 	}
+}
+
+fn test_sub_expression() {
+	b := false && match 1 {0 {true} else {true}}
+	assert !b
+	c := true || match 1 {0 {false} else {false}}
+	assert c
 }

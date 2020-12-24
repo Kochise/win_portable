@@ -106,9 +106,7 @@ fn test_if_multiple_flags_get_set() {
 }
 
 fn flag_is_set_in_subcommand(cmd cli.Command) ? {
-	flag := cmd.flags.get_string('flag') or {
-		panic(err)
-	}
+	flag := cmd.flags.get_string('flag') or { panic(err) }
 	assert flag == 'value'
 }
 
@@ -160,7 +158,7 @@ fn has_command(cmd cli.Command, name string) bool {
 	return false
 }
 
-fn compare_arrays(array0, array1 []string) bool {
+fn compare_arrays(array0 []string, array1 []string) bool {
 	if array0.len != array1.len {
 		return false
 	}

@@ -182,7 +182,7 @@ fn test_struct_with_struct_pointer() {
 }
 
 fn test_struct_with_nil() {
-	w := Wrapper4{}
+	w := Wrapper4{0}
 	assert '$w' == 'Wrapper4{\n    foo: &nil\n}'
 	assert w.str() == 'Wrapper4{\n    foo: &nil\n}'
 }
@@ -218,3 +218,143 @@ fn test_map_with_struct() {
 	assert a.str() == 'MapWithStruct{\n    foo: {\'test\': TestStruct{\n        x: 0\n    }}\n}'
 	assert '$a' == 'MapWithStruct{\n    foo: {\'test\': TestStruct{\n        x: 0\n    }}\n}'
 }
+
+struct ForGeneric {}
+fn generic_fn_interpolation<T>(p T) string {
+	return '$p'
+}
+
+fn generic_fn_str<T>(p T) string {
+	return p.str()
+}
+
+fn test_generic_auto_str() {
+	s := ForGeneric{}
+	assert generic_fn_interpolation(s) == 'ForGeneric{}'
+	assert generic_fn_str(s) == 'ForGeneric{}'
+}
+
+type Alias1 = int
+fn test_alias_in_array() {
+	t := [Alias1(1)]
+	assert t.str() == '[1]'
+	assert '$t' == '[1]'
+}
+
+type Alias2 = int
+fn test_alias_in_fixed_array() {
+	t := [Alias1(1)]!!
+	assert t.str() == '[1]'
+	assert '$t' == '[1]'
+}
+
+fn test_alias_int() {
+	a := Alias1(1)
+	assert a.str() == '1'
+	assert '$a' == '1'
+}
+
+type Alias3 = string
+fn test_alias_string() {
+	s := 'test'
+	a := Alias3(s)
+	assert a.str() == s
+	assert '$a' == s
+}
+
+type TestAlias = TestStruct
+fn test_alias_struct() {
+	ts := TestStruct{}
+	t := TestAlias(ts)
+	assert t.str() == 'TestAlias($ts)'
+	assert '$t' == 'TestAlias(TestStruct{\n    x: 0\n})'
+}
+
+struct GenericStruct<T> {
+	x T
+}
+
+fn test_generic_struct() {
+	x := GenericStruct<TestStruct>{}
+	assert '$x' == 'GenericStruct<TestStruct>{\n    x: TestStruct{\n        x: 0\n    }\n}'
+	assert x.str() == 'GenericStruct<TestStruct>{\n    x: TestStruct{\n        x: 0\n    }\n}'
+}
+
+struct MultiGenericStruct<T, X> {
+	t T
+	x X
+}
+
+fn test_multi_generic_struct() {
+	x := MultiGenericStruct<TestStruct, TestStruct>{}
+	assert '$x' == 'MultiGenericStruct<TestStruct, TestStruct>{\n    t: TestStruct{\n        x: 0\n    }\n    x: TestStruct{\n        x: 0\n    }\n}'
+	assert x.str() == 'MultiGenericStruct<TestStruct, TestStruct>{\n    t: TestStruct{\n        x: 0\n    }\n    x: TestStruct{\n        x: 0\n    }\n}'
+}
+
+fn create_option_err() ?string {
+	return error('this is an error')
+}
+
+fn test_option_err() {
+	assert '$create_option_err()' == 'Option(error: \'this is an error\')'
+}
+
+fn create_option_none() ?string {
+	return none
+}
+
+fn test_option_none() {
+	assert '$create_option_none()' == 'Option(none)'
+}
+
+fn create_option_string() ?string {
+	return 'this is a string'
+}
+
+fn test_option_string() {
+	assert '$create_option_string()' == 'Option(\'this is a string\')'
+}
+
+fn create_option_int() ?int {
+	return 5
+}
+
+fn test_option_int() {
+	assert '$create_option_int()' == 'Option(5)'
+}
+
+fn create_option_array() ?[]int {
+	return [1, 2, 3]
+}
+
+fn test_option_array() {
+	assert '$create_option_array()' == 'Option([1, 2, 3])'
+}
+
+fn create_option_struct() ?TestStruct {
+	return TestStruct{}
+}
+
+fn test_option_struct() {
+	assert '$create_option_struct()' == 'Option(TestStruct{\n    x: 0\n})'
+}
+
+struct OptionWrapper {
+	x ?TestStruct
+}
+
+fn test_struct_with_option() {
+	w := OptionWrapper{}
+	assert '$w' == 'OptionWrapper{\n    x: Option(error: \'\')\n}'
+}
+
+/* TODO: doesn't work yet
+struct OptionWrapperInt {
+	x ?int
+}
+
+fn test_struct_with_option() {
+	w := OptionWrapperInt{}
+	assert '$w' == 'OptionWrapperInt{\n    x: Option(error: \'\')\n}'
+}
+*/

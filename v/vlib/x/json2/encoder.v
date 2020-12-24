@@ -7,12 +7,18 @@ import strings
 
 fn write_value(v Any, i int, len int, mut wr strings.Builder) {
 	str := v.str()
-	wr.write(if v is string { '"$str"' } else { str })
-	if i >= len-1 { return }
+	if v is string {
+		wr.write('"$str"')
+	} else {
+		wr.write(str)
+	}
+	if i >= len - 1 {
+		return
+	}
 	wr.write_b(`,`)
 }
 
-// String representation of the `map[string]Any`.
+// str returns the string representation of the `map[string]Any`.
 pub fn (flds map[string]Any) str() string {
 	mut wr := strings.new_builder(200)
 	wr.write_b(`{`)
@@ -30,7 +36,7 @@ pub fn (flds map[string]Any) str() string {
 	return res
 }
 
-// String representation of the `[]Any`.
+// str returns the string representation of the `[]Any`.
 pub fn (flds []Any) str() string {
 	mut wr := strings.new_builder(200)
 	wr.write_b(`[`)
@@ -45,23 +51,52 @@ pub fn (flds []Any) str() string {
 	return res
 }
 
-// String representation of the `Any` type.
+// str returns the string representation of the `Any` type.
 pub fn (f Any) str() string {
 	match f {
-		string { return *f }
-		int { return (*f).str() }
-		i64 { return (*f).str() }
-		f32 { return (*f).str() }
-		f64 { return (*f).str() }
-		any_int {	return (*f).str() }
-		any_float {	return (*f).str() }
-		bool { return (*f).str() }
-		map[string]Any { return (*f).str() }
-		Null { return 'null' }
+		string {
+			return f
+		}
+		int {
+			return f.str()
+		}
+		i64 {
+			return f.str()
+		}
+		f32 {
+			str_f32 := f.str()
+			return if str_f32.ends_with('.') {
+				str_f32 + '0'
+			} else {
+				str_f32
+			}
+		}
+		f64 {
+			str_f64 := f.str()
+			return if str_f64.ends_with('.') {
+				str_f64 + '0'
+			} else {
+				str_f64
+			}
+		}
+		any_int {
+			return f.str()
+		}
+		any_float {
+			return f.str()
+		}
+		bool {
+			return f.str()
+		}
+		map[string]Any {
+			return f.str()
+		}
+		Null {
+			return 'null'
+		}
 		else {
 			if f is []Any {
-				arr := f
-				return (*arr).str()
+				return f.str()
 			}
 			return ''
 		}

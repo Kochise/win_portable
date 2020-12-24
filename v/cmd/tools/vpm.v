@@ -12,7 +12,8 @@ import v.vmod
 
 const (
 	default_vpm_server_urls      = ['https://vpm.vlang.io']
-	valid_vpm_commands           = ['help', 'search', 'install', 'update', 'upgrade', 'outdated', 'list', 'remove']
+	valid_vpm_commands           = ['help', 'search', 'install', 'update', 'upgrade', 'outdated',
+		'list', 'remove']
 	excluded_dirs                = ['cache', 'vlib']
 	supported_vcs_systems        = ['git', 'hg']
 	supported_vcs_folders        = ['.git', '.hg']
@@ -49,8 +50,8 @@ fn main() {
 	init_settings()
 	// This tool is intended to be launched by the v frontend,
 	// which provides the path to V inside os.getenv('VEXE')
-	args := os.args // args are: vpm [options] SUBCOMMAND module names
-	params := cmdline.only_non_options(args[1..])
+	// args are: vpm [options] SUBCOMMAND module names
+	params := cmdline.only_non_options(os.args[1..])
 	verbose_println('cli params: $params')
 	if params.len < 1 {
 		vpm_help()
@@ -114,6 +115,7 @@ fn vpm_search(keywords []string) {
 		exit(2)
 	}
 	modules := get_all_modules()
+	installed_modules := get_installed_modules()
 	joined := search_keys.join(', ')
 	mut index := 0
 	for mod in modules {
@@ -130,16 +132,29 @@ fn vpm_search(keywords []string) {
 			// in case the author isn't present
 			if parts.len == 1 {
 				parts << parts[0]
-				parts[0] = ''
+				parts[0] = ' '
+			} else {
+				parts[0] = ' by ${parts[0]} '
 			}
-			println('${index}. ${parts[1]} by ${parts[0]} [$mod]')
+			installed := if mod in installed_modules { ' (installed)' } else { '' }
+			println('${index}. ${parts[1]}${parts[0]}[$mod]$installed')
 			break
 		}
 	}
 	if index == 0 {
-		println('No module(s) found for "$joined"')
+		vexe := os.getenv('VEXE')
+		vroot := os.real_path(os.dir(vexe))
+		mut messages := ['No module(s) found for `$joined` .']
+		for vlibmod in search_keys {
+			if os.is_dir(os.join_path(vroot, 'vlib', vlibmod)) {
+				messages << 'There is already an existing "$vlibmod" module in vlib, so you can just `import $vlibmod` .'
+			}
+		}
+		for m in messages {
+			println(m)
+		}
 	} else {
-		println('\nUse "v install author_name.module_name" to install the module')
+		println('\nUse "v install author_name.module_name" to install the module.')
 	}
 }
 
@@ -202,7 +217,7 @@ fn vpm_install(module_names []string) {
 }
 
 fn vpm_update(m []string) {
-	mut module_names := m
+	mut module_names := m.clone()
 	if settings.is_help {
 		vhelp.show_topic('update')
 		exit(0)
@@ -281,7 +296,9 @@ fn get_outdated() ?[]string {
 }
 
 fn vpm_upgrade() {
-	outdated := get_outdated() or { exit(1) }
+	outdated := get_outdated() or {
+		exit(1)
+	}
 	if outdated.len > 0 {
 		vpm_update(outdated)
 	} else {
@@ -290,7 +307,9 @@ fn vpm_upgrade() {
 }
 
 fn vpm_outdated() {
-	outdated := get_outdated() or { exit(1) }
+	outdated := get_outdated() or {
+		exit(1)
+	}
 	if outdated.len > 0 {
 		println('Outdated modules:')
 		for m in outdated {
@@ -452,7 +471,7 @@ fn get_all_modules() []string {
 	return modules
 }
 
-fn resolve_dependencies(name, module_path string, module_names []string) {
+fn resolve_dependencies(name string, module_path string, module_names []string) {
 	vmod_path := os.join_path(module_path, 'v.mod')
 	if !os.exists(vmod_path) {
 		return
@@ -533,7 +552,7 @@ fn init_settings() {
 	s.is_help = '-h' in os.args || '--help' in os.args || 'help' in os.args
 	s.is_verbose = '-v' in os.args
 	s.server_urls = cmdline.options(os.args, '-server-url')
-	s.vmodules_path = os.join_path(os.home_dir(), '.vmodules')
+	s.vmodules_path = os.vmodules_dir()
 }
 
 fn verbose_println(s string) {

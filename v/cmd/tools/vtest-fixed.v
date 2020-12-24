@@ -42,7 +42,7 @@ fn main() {
 	vexe := pref.vexe_path()
 	vroot := os.dir(vexe)
 	os.chdir(vroot)
-	args := os.args
+	args := os.args.clone()
 	args_string := args[1..].join(' ')
 	cmd_prefix := args_string.all_before('test-fixed')
 	title := 'testing all fixed tests'
@@ -79,6 +79,7 @@ fn main() {
 	tsession.test()
 	eprintln(tsession.benchmark.total_message(title))
 	if tsession.benchmark.nfail > 0 {
-		panic('\nWARNING: failed $tsession.benchmark.nfail times.\n')
+		eprintln('\nWARNING: failed $tsession.benchmark.nfail times.\n')
+		exit(1)
 	}
 }

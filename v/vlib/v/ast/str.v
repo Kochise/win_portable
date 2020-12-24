@@ -43,13 +43,18 @@ pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
 		receiver = '($node.receiver.name $m$name) '
 		*/
 	}
-	mut name := if node.is_anon { '' } else { node.name.after('.') }
-	if node.language == .c {
-		name = 'C.$name'
-	} else if node.language == .js {
-		name = 'JS.$name'
+	mut name := if node.is_anon { '' } else { node.name.after_char(`.`) }
+	if !node.is_method {
+		if node.language == .c {
+			name = 'C.$name'
+		} else if node.language == .js {
+			name = 'JS.$name'
+		}
 	}
 	f.write('fn $receiver$name')
+	if name in ['+', '-', '*', '/', '%'] {
+		f.write(' ')
+	}
 	if node.is_generic {
 		f.write('<T>')
 	}
@@ -65,8 +70,8 @@ pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
 		}
 		is_last_arg := i == node.params.len - 1
 		is_type_only := arg.name == ''
-		should_add_type := is_last_arg || is_type_only || node.params[i + 1].typ != arg.typ ||
-			(node.is_variadic && i == node.params.len - 2)
+		should_add_type := true // is_last_arg || is_type_only || node.params[i + 1].typ != arg.typ ||
+		// (node.is_variadic && i == node.params.len - 2)
 		if arg.is_mut {
 			f.write(arg.typ.share().str() + ' ')
 		}
@@ -116,7 +121,7 @@ pub fn (x &InfixExpr) str() string {
 pub fn (lit &StringInterLiteral) get_fspec_braces(i int) (string, bool) {
 	mut res := []string{}
 	needs_fspec := lit.need_fmts[i] || lit.pluss[i] ||
-		(lit.fills[i] && lit.fwidths[i] >= 0) || lit.fwidths[i] != 0 || lit.precisions[i] != 0
+		(lit.fills[i] && lit.fwidths[i] >= 0) || lit.fwidths[i] != 0 || lit.precisions[i] != 987698
 	mut needs_braces := needs_fspec
 	if !needs_braces {
 		if i + 1 < lit.vals.len && lit.vals[i + 1].len > 0 {
@@ -129,21 +134,21 @@ pub fn (lit &StringInterLiteral) get_fspec_braces(i int) (string, bool) {
 	if !needs_braces {
 		mut sub_expr := lit.exprs[i]
 		for {
-			match sub_expr as sx {
+			match mut sub_expr {
 				Ident {
-					if sx.name[0] == `@` {
+					if sub_expr.name[0] == `@` {
 						needs_braces = true
 					}
 					break
 				}
 				CallExpr {
-					if sx.args.len != 0 {
+					if sub_expr.args.len != 0 {
 						needs_braces = true
 					}
 					break
 				}
 				SelectorExpr {
-					sub_expr = sx.expr
+					sub_expr = sub_expr.expr
 					continue
 				}
 				else {
@@ -164,7 +169,7 @@ pub fn (lit &StringInterLiteral) get_fspec_braces(i int) (string, bool) {
 		if lit.fwidths[i] != 0 {
 			res << '${lit.fwidths[i]}'
 		}
-		if lit.precisions[i] != 0 {
+		if lit.precisions[i] != 987698 {
 			res << '.${lit.precisions[i]}'
 		}
 		if lit.need_fmts[i] {
@@ -177,16 +182,25 @@ pub fn (lit &StringInterLiteral) get_fspec_braces(i int) (string, bool) {
 // string representation of expr
 pub fn (x Expr) str() string {
 	match x {
+		CTempVar {
+			return x.orig.str()
+		}
 		BoolLiteral {
 			return x.val.str()
 		}
 		CastExpr {
 			return '${x.typname}($x.expr.str())'
 		}
+		AtExpr {
+			return '$x.val'
+		}
 		CallExpr {
 			sargs := args2str(x.args)
 			if x.is_method {
 				return '${x.left.str()}.${x.name}($sargs)'
+			}
+			if x.name.starts_with('${x.mod}.') {
+				return util.strip_main_name('${x.name}($sargs)')
 			}
 			return '${x.mod}.${x.name}($sargs)'
 		}
@@ -196,7 +210,7 @@ pub fn (x Expr) str() string {
 		EnumVal {
 			return '.$x.val'
 		}
-		FloatLiteral {
+		FloatLiteral, IntegerLiteral {
 			return x.val
 		}
 		Ident {
@@ -204,9 +218,6 @@ pub fn (x Expr) str() string {
 		}
 		IndexExpr {
 			return '$x.left.str()[$x.index.str()]'
-		}
-		IntegerLiteral {
-			return x.val
 		}
 		InfixExpr {
 			return '$x.left.str() $x.op.str() $x.right.str()'
@@ -287,6 +298,14 @@ pub fn args2str(args []CallArg) string {
 	return res.join(', ')
 }
 
+pub fn (node &BranchStmt) str() string {
+	mut s := '$node.kind'
+	if node.label.len > 0 {
+		s += ' $node.label'
+	}
+	return s
+}
+
 pub fn (node Stmt) str() string {
 	match node {
 		AssignStmt {
@@ -311,6 +330,9 @@ pub fn (node Stmt) str() string {
 				}
 			}
 			return out
+		}
+		BranchStmt {
+			return node.str()
 		}
 		ExprStmt {
 			return node.expr.str()

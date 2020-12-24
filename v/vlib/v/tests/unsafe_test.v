@@ -14,6 +14,24 @@ fn test_ptr_assign() {
 	assert v[3] == 31
 }
 
+fn test_double_ptr() {
+	i := 5
+	j := 7
+	unsafe {
+		mut x := &i
+		mut p := &x
+		(*p) = &j
+		assert x == &j
+	}
+	// ///////
+	mut x := &int(0)
+	unsafe {
+		mut p := &x
+		(*p) = &int(1)
+	}
+	assert ptr_str(x) == ptr_str(&int(1))
+}
+
 fn test_ptr_infix() {
 	v := 4
 	mut q := unsafe {&v - 1}
@@ -40,7 +58,7 @@ fn test_if_expr_unsafe() {
 	assert *p == 4
 }
 
-fn test_unsafe_if_stmt() int {
+fn unsafe_if_stmt() int {
 	i := 4
 	unsafe {
 		if true {
@@ -50,11 +68,7 @@ fn test_unsafe_if_stmt() int {
 	return i
 }
 
-fn test_map_address_index() {
-	mut m := {
-		'one': 1
-	}
-	mut one := unsafe {&m['one']}
-	(*one)++
-	println(*one)
+fn test_unsafe_if_stmt() {
+	x := unsafe_if_stmt()
+	assert x == 4
 }

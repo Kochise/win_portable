@@ -42,10 +42,6 @@ fn test_all() {
 		eprintln('This test is disabled for musl.')
 		exit(0)
 	}
-	if true {
-		println('skipping valgrind test for now')
-		return
-	}
 	bench_message := 'memory leak checking with valgrind'
 	mut bench := benchmark.new_benchmark()
 	eprintln(term.header(bench_message, '-'))
@@ -78,7 +74,7 @@ fn test_all() {
 		//
 		exe_filename := '$wrkdir/x'
 		full_path_to_source_file := os.join_path(vroot, test)
-		compile_cmd := '$vexe -o $exe_filename -cg -cflags "-w" -experimental -autofree "$full_path_to_source_file"'
+		compile_cmd := '$vexe -o $exe_filename -cg -cflags "-w" -autofree "$full_path_to_source_file"'
 		vprintln('compile cmd: ${util.bold(compile_cmd)}')
 		res := os.exec(compile_cmd) or {
 			bench.fail()

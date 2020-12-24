@@ -3,24 +3,37 @@ module szip
 #flag -I @VROOT/thirdparty/zip
 #include "zip.c"
 #include "zip.h"
-
-struct C.zip_t {}
+struct C.zip_t {
+}
 
 type Zip = C.zip_t
 
 fn C.zip_open(byteptr, int, byte) &Zip
+
 fn C.zip_close(&Zip)
+
 fn C.zip_entry_open(&Zip, byteptr) int
+
 fn C.zip_entry_close(&Zip) int
+
 fn C.zip_entry_name(&Zip) byteptr
+
 fn C.zip_entry_index(&Zip) int
+
 fn C.zip_entry_isdir(&Zip) int
+
 fn C.zip_entry_size(&Zip) u64
+
 fn C.zip_entry_crc32(&Zip) u32
+
 fn C.zip_entry_write(&Zip, voidptr, int) int
+
 fn C.zip_entry_fwrite(&Zip, byteptr) int
+
 fn C.zip_entry_read(&Zip, byteptr, int) int
+
 fn C.zip_entry_fread(&Zip, byteptr) int
+
 fn C.zip_total_entries(&Zip) int
 
 // Ref - miniz.h
@@ -196,8 +209,7 @@ pub fn (mut zentry Zip) write_entry(data []byte) ? {
 	if (data[0] & 0xff) == -1 {
 		return error('szip: cannot write entry')
 	}
-	buf := data // alias of data
-	res := C.zip_entry_write(zentry, buf.data, buf.len)
+	res := C.zip_entry_write(zentry, data.data, data.len)
 	if res != 0 {
 		return error('szip: failed to write entry')
 	}

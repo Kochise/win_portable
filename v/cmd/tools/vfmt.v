@@ -5,6 +5,7 @@ module main
 
 import os
 import os.cmdline
+import rand
 import v.ast
 import v.pref
 import v.fmt
@@ -112,7 +113,7 @@ fn main() {
 	for file in files {
 		fpath := os.real_path(file)
 		mut worker_command_array := cli_args_no_files.clone()
-		worker_command_array << ['-worker', util.quote_path_with_spaces(fpath)]
+		worker_command_array << ['-worker', util.quote_path(fpath)]
 		worker_cmd := worker_command_array.join(' ')
 		if foptions.is_verbose {
 			eprintln('vfmt worker_cmd: $worker_cmd')
@@ -166,7 +167,8 @@ fn (foptions &FormatOptions) format_file(file string) {
 	// checker.check(file_ast)
 	formatted_content := fmt.fmt(file_ast, table, foptions.is_debug)
 	file_name := os.file_name(file)
-	vfmt_output_path := os.join_path(os.temp_dir(), 'vfmt_' + file_name)
+	ulid := rand.ulid()
+	vfmt_output_path := os.join_path(os.temp_dir(), 'vfmt_${ulid}_$file_name')
 	os.write_file(vfmt_output_path, formatted_content)
 	if foptions.is_verbose {
 		eprintln('fmt.fmt worked and $formatted_content.len bytes were written to $vfmt_output_path .')
@@ -187,7 +189,7 @@ fn print_compiler_options(compiler_params &pref.Preferences) {
 	eprintln('  is_script: $compiler_params.is_script ')
 }
 
-fn (foptions &FormatOptions) post_process_file(file, formatted_file_path string) {
+fn (foptions &FormatOptions) post_process_file(file string, formatted_file_path string) {
 	if formatted_file_path.len == 0 {
 		return
 	}

@@ -13,63 +13,74 @@ import math
 // import time
 pub type FNCb = fn (x voidptr)
 
-pub type FNEvent = fn (e, x voidptr)
+pub type FNEvent = fn (e voidptr, x voidptr)
 
 pub type FNFail = fn (msg string, x voidptr)
 
 pub type FNKeyDown = fn (c sapp.KeyCode, m sapp.Modifier, x voidptr)
 
-pub type FNMove = fn (x, y f32, z voidptr)
+pub type FNMove = fn (x f32, y f32, z voidptr)
 
 pub type FNChar = fn (c u32, x voidptr)
 
 pub struct Config {
 pub:
-	width             int
-	height            int
-	use_ortho         bool
-	retina            bool
-	resizable         bool
-	user_data         voidptr
-	font_size         int
-	create_window     bool
+	width                 int
+	height                int
+	use_ortho             bool
+	retina                bool
+	resizable             bool
+	user_data             voidptr
+	font_size             int
+	create_window         bool
 	// window_user_ptr voidptr
-	window_title      string
-	borderless_window bool
-	always_on_top     bool
-	bg_color          gx.Color
-	init_fn           FNCb = voidptr(0)
-	frame_fn          FNCb = voidptr(0)
-	cleanup_fn        FNCb = voidptr(0)
-	fail_fn           FNFail = voidptr(0)
-	event_fn          FNEvent = voidptr(0)
-	keydown_fn        FNKeyDown = voidptr(0) // special case of event_fn
-	char_fn           FNChar = voidptr(0) // special case of event_fn
-	move_fn           FNMove = voidptr(0) // special case of event_fn
-	click_fn          FNMove = voidptr(0) // special case of event_fn
-	wait_events       bool // set this to true for UIs, to save power
-	fullscreen        bool
-	scale             f32 = 1.0 // vid needs this
+	window_title          string
+	borderless_window     bool
+	always_on_top         bool
+	bg_color              gx.Color
+	init_fn               FNCb = voidptr(0)
+	frame_fn              FNCb = voidptr(0)
+	cleanup_fn            FNCb = voidptr(0)
+	fail_fn               FNFail = voidptr(0)
+	event_fn              FNEvent = voidptr(0)
+	keydown_fn            FNKeyDown = voidptr(0)
+	// special case of event_fn
+	char_fn               FNChar = voidptr(0)
+	// special case of event_fn
+	move_fn               FNMove = voidptr(0)
+	// special case of event_fn
+	click_fn              FNMove = voidptr(0)
+	// special case of event_fn
+	// wait_events       bool // set this to true for UIs, to save power
+	fullscreen            bool
+	scale                 f32 = 1.0
+	// vid needs this
 	// init_text bool
-	font_path         string
+	font_path             string
+	custom_bold_font_path string
+	ui_mode               bool // refreshes only on events to save CPU usage
 }
 
 pub struct Context {
-	render_text bool
+	render_text   bool
 mut:
 	// a cache with all images created by the user. used for sokol image init and to save space
 	// (so that the user can store image ids, not entire Image objects)
-	image_cache []Image
+	image_cache   []Image
+	needs_refresh bool = true
+	ticks         int
 pub mut:
-	scale       f32 = 1.0 // will get set to 2.0 for retina, will remain 1.0 for normal
-	width       int
-	height      int
-	clear_pass  C.sg_pass_action
-	window      C.sapp_desc
-	timage_pip  C.sgl_pipeline
-	config      Config
-	ft          &FT
-	font_inited bool
+	scale         f32 = 1.0
+	// will get set to 2.0 for retina, will remain 1.0 for normal
+	width         int
+	height        int
+	clear_pass    C.sg_pass_action
+	window        C.sapp_desc
+	timage_pip    C.sgl_pipeline
+	config        Config
+	ft            &FT
+	font_inited   bool
+	ui_mode       bool // do not redraw everything 60 times/second, but only when the user requests
 }
 
 pub struct Size {
@@ -110,14 +121,24 @@ fn gg_init_sokol_window(user_data voidptr) {
 	exists := $if !android { os.is_file(g.config.font_path) } $else { true }
 	if g.config.font_path != '' && exists {
 		// t := time.ticks()
-		g.ft = new_ft({
+		g.ft = new_ft(
 			font_path: g.config.font_path
+			custom_bold_font_path: g.config.custom_bold_font_path
 			scale: sapp.dpi_scale()
-		}) or {
-			panic(err)
-		}
+		) or { panic(err) }
 		// println('FT took ${time.ticks()-t} ms')
 		g.font_inited = true
+	} else {
+		if !exists {
+			sfont := system_font_path()
+			eprintln('font file "$g.config.font_path" does not exist, the system font was used instead.')
+			g.ft = new_ft(
+				font_path: sfont
+				custom_bold_font_path: g.config.custom_bold_font_path
+				scale: sapp.dpi_scale()
+			) or { panic(err) }
+			g.font_inited = true
+		}
 	}
 	//
 	mut pipdesc := C.sg_pipeline_desc{}
@@ -137,10 +158,24 @@ fn gg_init_sokol_window(user_data voidptr) {
 }
 
 fn gg_frame_fn(user_data voidptr) {
-	mut g := &Context(user_data)
-	if g.config.frame_fn != voidptr(0) {
-		g.config.frame_fn(g.config.user_data)
+	mut ctx := &Context(user_data)
+	if ctx.config.frame_fn == voidptr(0) {
+		return
 	}
+	if ctx.ui_mode && !ctx.needs_refresh {
+		// Draw 3 more frames after the "stop refresh" command
+		ctx.ticks++
+		if ctx.ticks > 3 {
+			return
+		}
+	}
+	ctx.config.frame_fn(ctx.config.user_data)
+	ctx.needs_refresh = false
+}
+
+pub fn (mut ctx Context) refresh_ui() {
+	ctx.needs_refresh = true
+	ctx.ticks = 0
 }
 
 fn gg_event_fn(ce &C.sapp_event, user_data voidptr) {
@@ -203,6 +238,7 @@ pub fn new_context(cfg Config) &Context {
 		config: cfg
 		render_text: cfg.font_path != ''
 		ft: 0
+		ui_mode: cfg.ui_mode
 	}
 	g.set_bg_color(cfg.bg_color)
 	// C.printf('new_context() %p\n', cfg.user_data)
@@ -237,7 +273,7 @@ pub fn (mut ctx Context) set_bg_color(c gx.Color) {
 }
 
 // TODO: Fix alpha
-pub fn (ctx &Context) draw_rect(x, y, w, h f32, c gx.Color) {
+pub fn (ctx &Context) draw_rect(x f32, y f32, w f32, h f32, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -250,7 +286,7 @@ pub fn (ctx &Context) draw_rect(x, y, w, h f32, c gx.Color) {
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_triangle(x, y, x2, y2, x3, y3 f32, c gx.Color) {
+pub fn (ctx &Context) draw_triangle(x f32, y f32, x2 f32, y2 f32, x3 f32, y3 f32, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -262,7 +298,7 @@ pub fn (ctx &Context) draw_triangle(x, y, x2, y2, x3, y3 f32, c gx.Color) {
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_empty_rect(x, y, w, h f32, c gx.Color) {
+pub fn (ctx &Context) draw_empty_rect(x f32, y f32, w f32, h f32, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -284,7 +320,7 @@ pub fn (ctx &Context) draw_empty_rect(x, y, w, h f32, c gx.Color) {
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_circle_line(x, y f32, r, segments int, c gx.Color) {
+pub fn (ctx &Context) draw_circle_line(x f32, y f32, r int, segments int, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -302,8 +338,16 @@ pub fn (ctx &Context) draw_circle_line(x, y f32, r, segments int, c gx.Color) {
 	sgl.end()
 }
 
+pub fn (ctx &Context) draw_circle(x f32, y f32, r f32, c gx.Color) {
+	if ctx.scale == 1 {
+		ctx.draw_circle_with_segments(x, y, r, 10, c)
+	} else {
+		ctx.draw_circle_with_segments(x * f32(ctx.scale), y * f32(ctx.scale), r * ctx.scale,
+			10, c)
+	}
+}
 
-pub fn (ctx &Context) draw_circle(x, y f32, r, segments int, c gx.Color) {
+pub fn (ctx &Context) draw_circle_with_segments(x f32, y f32, r f32, segments int, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -322,7 +366,7 @@ pub fn (ctx &Context) draw_circle(x, y f32, r, segments int, c gx.Color) {
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_arc_line(x, y f32, r int, start_angle, arc_angle f32, segments int, c gx.Color) {
+pub fn (ctx &Context) draw_arc_line(x f32, y f32, r int, start_angle f32, arc_angle f32, segments int, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -345,7 +389,7 @@ pub fn (ctx &Context) draw_arc_line(x, y f32, r int, start_angle, arc_angle f32,
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_arc(x, y f32, r int, start_angle, arc_angle f32, segments int, c gx.Color) {
+pub fn (ctx &Context) draw_arc(x f32, y f32, r int, start_angle f32, arc_angle f32, segments int, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -383,10 +427,12 @@ pub fn (gg &Context) end() {
 	sgl.draw()
 	gfx.end_pass()
 	gfx.commit()
+	/*
 	if gg.config.wait_events {
 		// println('gg: waiting')
 		wait_events()
 	}
+	*/
 }
 
 fn abs(a f32) f32 {
@@ -396,7 +442,7 @@ fn abs(a f32) f32 {
 	return -a
 }
 
-pub fn (ctx &Context) draw_line(x, y, x2, y2 f32, c gx.Color) {
+pub fn (ctx &Context) draw_line(x f32, y f32, x2 f32, y2 f32, c gx.Color) {
 	if c.a != 255 {
 		sgl.load_pipeline(ctx.timage_pip)
 	}
@@ -419,14 +465,142 @@ pub fn (ctx &Context) draw_line(x, y, x2, y2 f32, c gx.Color) {
 	sgl.end()
 }
 
-pub fn (ctx &Context) draw_rounded_rect(x, y, width, height, radius f32, color gx.Color) {
+pub fn (ctx &Context) draw_rounded_rect(x f32, y f32, w f32, h f32, radius f32, color gx.Color) {
+	sgl.c4b(color.r, color.g, color.b, color.a)
+	sgl.begin_triangle_strip()
+	mut theta := f32(0)
+	mut xx := f32(0)
+	mut yy := f32(0)
+	r := radius * f32(ctx.scale)
+	nx := x * f32(ctx.scale)
+	ny := y * f32(ctx.scale)
+	width := w * f32(ctx.scale)
+	height := h * f32(ctx.scale)
+	segments := 2 * math.pi * r
+	segdiv := segments / 4
+	rb := 0
+	lb := int(rb + segdiv)
+	lt := int(lb + segdiv)
+	rt := int(lt + segdiv)
+	// left top
+	lx := nx + r
+	ly := ny + r
+	for i in lt .. rt {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + lx, yy + ly)
+		sgl.v2f(lx, ly)
+	}
+	// right top
+	mut rx := nx + 2 * width - r
+	mut ry := ny + r
+	for i in rt .. int(segments) {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + rx, yy + ry)
+		sgl.v2f(rx, ry)
+	}
+	// right bottom
+	mut rbx := rx
+	mut rby := ny + 2 * height - r
+	for i in rb .. lb {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + rbx, yy + rby)
+		sgl.v2f(rbx, rby)
+	}
+	// left bottom
+	mut lbx := lx
+	mut lby := ny + 2 * height - r
+	for i in lb .. lt {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + lbx, yy + lby)
+		sgl.v2f(lbx, lby)
+	}
+	sgl.v2f(lx + xx, ly)
+	sgl.v2f(lx, ly)
+	sgl.end()
+	sgl.begin_quads()
+	sgl.v2f(lx, ly)
+	sgl.v2f(rx, ry)
+	sgl.v2f(rbx, rby)
+	sgl.v2f(lbx, lby)
+	sgl.end()
 }
 
-pub fn (ctx &Context) draw_empty_rounded_rect(x, y, width, height, radius f32, border_color gx.Color) {
+pub fn (ctx &Context) draw_empty_rounded_rect(x f32, y f32, w f32, h f32, radius f32, border_color gx.Color) {
+	mut theta := f32(0)
+	mut xx := f32(0)
+	mut yy := f32(0)
+	r := radius * f32(ctx.scale)
+	nx := x * f32(ctx.scale)
+	ny := y * f32(ctx.scale)
+	width := w * f32(ctx.scale)
+	height := h * f32(ctx.scale)
+	segments := 2 * math.pi * r
+	segdiv := segments / 4
+	rb := 0
+	lb := int(rb + segdiv)
+	lt := int(lb + segdiv)
+	rt := int(lt + segdiv)
+	sgl.c4b(border_color.r, border_color.g, border_color.b, border_color.a)
+	sgl.begin_line_strip()
+	// left top
+	lx := nx + r
+	ly := ny + r
+	for i in lt .. rt {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + lx, yy + ly)
+	}
+	// right top
+	mut rx := nx + 2 * width - r
+	mut ry := ny + r
+	for i in rt .. int(segments) {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + rx, yy + ry)
+	}
+	// right bottom
+	mut rbx := rx
+	mut rby := ny + 2 * height - r
+	for i in rb .. lb {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + rbx, yy + rby)
+	}
+	// left bottom
+	mut lbx := lx
+	mut lby := ny + 2 * height - r
+	for i in lb .. lt {
+		theta = 2 * f32(math.pi) * f32(i) / segments
+		xx = r * math.cosf(theta)
+		yy = r * math.sinf(theta)
+		sgl.v2f(xx + lbx, yy + lby)
+	}
+	sgl.v2f(lx + xx, ly)
+	sgl.end()
+}
+
+pub fn screen_size() Size {
+	$if macos {
+		return C.gg_get_screen_size()
+	}
+	// TODO windows, linux, etc
+	return Size{}
 }
 
 fn C.WaitMessage()
 
+/*
 pub fn wait_events() {
 	unsafe {
 		$if macos {
@@ -441,3 +615,4 @@ pub fn wait_events() {
 		}
 	}
 }
+*/
