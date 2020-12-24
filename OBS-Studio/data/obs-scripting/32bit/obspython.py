@@ -2228,7 +2228,6 @@ PYTHON_LIB = _obspython.PYTHON_LIB
 COMPILE_LUA = _obspython.COMPILE_LUA
 COMPILE_PYTHON = _obspython.COMPILE_PYTHON
 UI_ENABLED = _obspython.UI_ENABLED
-BUILD_CAPTIONS = _obspython.BUILD_CAPTIONS
 OBS_DATA_NULL = _obspython.OBS_DATA_NULL
 OBS_DATA_STRING = _obspython.OBS_DATA_STRING
 OBS_DATA_NUMBER = _obspython.OBS_DATA_NUMBER
@@ -2874,6 +2873,7 @@ OBS_SOURCE_CAP_OBSOLETE = _obspython.OBS_SOURCE_CAP_OBSOLETE
 OBS_SOURCE_MONITOR_BY_DEFAULT = _obspython.OBS_SOURCE_MONITOR_BY_DEFAULT
 OBS_SOURCE_SUBMIX = _obspython.OBS_SOURCE_SUBMIX
 OBS_SOURCE_CONTROLLABLE_MEDIA = _obspython.OBS_SOURCE_CONTROLLABLE_MEDIA
+OBS_SOURCE_CEA_708 = _obspython.OBS_SOURCE_CEA_708
 class obs_source_audio_mix(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_audio_mix, name, value)
@@ -3848,6 +3848,36 @@ class obs_source_audio(_object):
 obs_source_audio_swigregister = _obspython.obs_source_audio_swigregister
 obs_source_audio_swigregister(obs_source_audio)
 
+class obs_source_cea_708(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_cea_708, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, obs_source_cea_708, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["data"] = _obspython.obs_source_cea_708_data_set
+    __swig_getmethods__["data"] = _obspython.obs_source_cea_708_data_get
+    if _newclass:
+        data = _swig_property(_obspython.obs_source_cea_708_data_get, _obspython.obs_source_cea_708_data_set)
+    __swig_setmethods__["packets"] = _obspython.obs_source_cea_708_packets_set
+    __swig_getmethods__["packets"] = _obspython.obs_source_cea_708_packets_get
+    if _newclass:
+        packets = _swig_property(_obspython.obs_source_cea_708_packets_get, _obspython.obs_source_cea_708_packets_set)
+    __swig_setmethods__["timestamp"] = _obspython.obs_source_cea_708_timestamp_set
+    __swig_getmethods__["timestamp"] = _obspython.obs_source_cea_708_timestamp_get
+    if _newclass:
+        timestamp = _swig_property(_obspython.obs_source_cea_708_timestamp_get, _obspython.obs_source_cea_708_timestamp_set)
+
+    def __init__(self):
+        this = _obspython.new_obs_source_cea_708()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _obspython.delete_obs_source_cea_708
+    __del__ = lambda self: None
+obs_source_cea_708_swigregister = _obspython.obs_source_cea_708_swigregister
+obs_source_cea_708_swigregister(obs_source_cea_708)
+
 class obs_source_frame(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_frame, name, value)
@@ -4710,6 +4740,10 @@ def obs_source_copy_filters(dst: 'obs_source_t *', src: 'obs_source_t *') -> "vo
     return _obspython.obs_source_copy_filters(dst, src)
 obs_source_copy_filters = _obspython.obs_source_copy_filters
 
+def obs_source_copy_single_filter(dst: 'obs_source_t *', filter: 'obs_source_t *') -> "void":
+    return _obspython.obs_source_copy_single_filter(dst, filter)
+obs_source_copy_single_filter = _obspython.obs_source_copy_single_filter
+
 def obs_source_enabled(source: 'obs_source_t const *') -> "bool":
     return _obspython.obs_source_enabled(source)
 obs_source_enabled = _obspython.obs_source_enabled
@@ -4765,6 +4799,14 @@ obs_source_add_audio_capture_callback = _obspython.obs_source_add_audio_capture_
 def obs_source_remove_audio_capture_callback(source: 'obs_source_t *', callback: 'obs_source_audio_capture_t', param: 'void *') -> "void":
     return _obspython.obs_source_remove_audio_capture_callback(source, callback, param)
 obs_source_remove_audio_capture_callback = _obspython.obs_source_remove_audio_capture_callback
+
+def obs_source_add_caption_callback(source: 'obs_source_t *', callback: 'obs_source_caption_t', param: 'void *') -> "void":
+    return _obspython.obs_source_add_caption_callback(source, callback, param)
+obs_source_add_caption_callback = _obspython.obs_source_add_caption_callback
+
+def obs_source_remove_caption_callback(source: 'obs_source_t *', callback: 'obs_source_caption_t', param: 'void *') -> "void":
+    return _obspython.obs_source_remove_caption_callback(source, callback, param)
+obs_source_remove_caption_callback = _obspython.obs_source_remove_caption_callback
 OBS_DEINTERLACE_MODE_DISABLE = _obspython.OBS_DEINTERLACE_MODE_DISABLE
 OBS_DEINTERLACE_MODE_DISCARD = _obspython.OBS_DEINTERLACE_MODE_DISCARD
 OBS_DEINTERLACE_MODE_RETRO = _obspython.OBS_DEINTERLACE_MODE_RETRO
@@ -4831,6 +4873,10 @@ obs_source_output_video2 = _obspython.obs_source_output_video2
 def obs_source_set_async_rotation(source: 'obs_source_t *', rotation: 'long') -> "void":
     return _obspython.obs_source_set_async_rotation(source, rotation)
 obs_source_set_async_rotation = _obspython.obs_source_set_async_rotation
+
+def obs_source_output_cea708(source: 'obs_source_t *', captions: 'obs_source_cea_708') -> "void":
+    return _obspython.obs_source_output_cea708(source, captions)
+obs_source_output_cea708 = _obspython.obs_source_output_cea708
 
 def obs_source_preload_video(source: 'obs_source_t *', frame: 'obs_source_frame') -> "void":
     return _obspython.obs_source_preload_video(source, frame)
@@ -5664,6 +5710,10 @@ def obs_output_get_id(output: 'obs_output_t const *') -> "char const *":
     return _obspython.obs_output_get_id(output)
 obs_output_get_id = _obspython.obs_output_get_id
 
+def obs_output_caption(output: 'obs_output_t *', captions: 'obs_source_cea_708') -> "void":
+    return _obspython.obs_output_caption(output, captions)
+obs_output_caption = _obspython.obs_output_caption
+
 def obs_output_output_caption_text1(output: 'obs_output_t *', text: 'char const *') -> "void":
     return _obspython.obs_output_output_caption_text1(output, text)
 obs_output_output_caption_text1 = _obspython.obs_output_output_caption_text1
@@ -6019,6 +6069,18 @@ obs_service_get_type_data = _obspython.obs_service_get_type_data
 def obs_service_get_id(service: 'obs_service_t const *') -> "char const *":
     return _obspython.obs_service_get_id(service)
 obs_service_get_id = _obspython.obs_service_get_id
+
+def obs_service_get_supported_resolutions(service: 'obs_service_t const *', resolutions: 'struct obs_service_resolution **', count: 'size_t *') -> "void":
+    return _obspython.obs_service_get_supported_resolutions(service, resolutions, count)
+obs_service_get_supported_resolutions = _obspython.obs_service_get_supported_resolutions
+
+def obs_service_get_max_fps(service: 'obs_service_t const *', fps: 'int *') -> "void":
+    return _obspython.obs_service_get_max_fps(service, fps)
+obs_service_get_max_fps = _obspython.obs_service_get_max_fps
+
+def obs_service_get_max_bitrate(service: 'obs_service_t const *', video_bitrate: 'int *', audio_bitrate: 'int *') -> "void":
+    return _obspython.obs_service_get_max_bitrate(service, video_bitrate, audio_bitrate)
+obs_service_get_max_bitrate = _obspython.obs_service_get_max_bitrate
 
 def obs_service_get_output_type(service: 'obs_service_t const *') -> "char const *":
     return _obspython.obs_service_get_output_type(service)
@@ -6744,6 +6806,7 @@ OBS_FRONTEND_EVENT_FINISHED_LOADING = _obspython.OBS_FRONTEND_EVENT_FINISHED_LOA
 OBS_FRONTEND_EVENT_RECORDING_PAUSED = _obspython.OBS_FRONTEND_EVENT_RECORDING_PAUSED
 OBS_FRONTEND_EVENT_RECORDING_UNPAUSED = _obspython.OBS_FRONTEND_EVENT_RECORDING_UNPAUSED
 OBS_FRONTEND_EVENT_TRANSITION_DURATION_CHANGED = _obspython.OBS_FRONTEND_EVENT_TRANSITION_DURATION_CHANGED
+OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED = _obspython.OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED
 
 def obs_frontend_streaming_start() -> "void":
     return _obspython.obs_frontend_streaming_start()
