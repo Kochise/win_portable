@@ -33,12 +33,20 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2020/10/27 3.51 The Babel package]
+\ProvidesPackage{babel}[2020/12/16 3.52 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
-   \let\bbl@debug\@firstofone}
+   \let\bbl@debug\@firstofone
+   \ifx\directlua\@undefined\else
+     \directlua{ Babel = Babel or {}
+       Babel.debug = true }%
+   \fi}
   {\providecommand\bbl@trace[1]{}%
-   \let\bbl@debug\@gobble}
+   \let\bbl@debug\@gobble
+   \ifx\directlua\@undefined\else
+     \directlua{ Babel = Babel or {}
+       Babel.debug = false }%
+   \fi}
 \bbl@trace{Basic macros}
 \def\bbl@stripslash{\expandafter\@gobble\string}
 \def\bbl@add#1#2{%
@@ -1014,7 +1022,6 @@
   \IfFileExists{\CurrentOption.ldf}%
     {\bbl@load@language{\CurrentOption}}%
     {#1\bbl@load@language{#2}#3}}
-\DeclareOption{afrikaans}{\bbl@try@load@lang{}{dutch}{}}
 \DeclareOption{hebrew}{%
   \input{rlbabel.def}%
   \bbl@load@language{hebrew}}
@@ -1044,16 +1051,16 @@
 \fi
 \let\bbl@tempc\relax
 \bbl@foreach\bbl@language@opts{%
-  \ifcase\bbl@iniflag
+  \ifcase\bbl@iniflag  % Default
     \bbl@ifunset{ds@#1}%
       {\DeclareOption{#1}{\bbl@load@language{#1}}}%
       {}%
-  \or
+  \or    % provide=*
     \@gobble % case 2 same as 1
-  \or
+  \or    % provide+=*
     \bbl@ifunset{ds@#1}%
       {\IfFileExists{#1.ldf}{}%
-        {\IfFileExists{babel-#1.tex}{}{\DeclareOption{#1}{}}}}%
+        {\IfFileExists{babel-#1.tex}{}{\@namedef{ds@#1}{}}}}%
       {}%
     \bbl@ifunset{ds@#1}%
       {\def\bbl@tempc{#1}%
@@ -1066,7 +1073,7 @@
            \bbl@load@language{#1}%
          \fi}}%
       {}%
-  \or
+  \or    % provide*=*
     \def\bbl@tempc{#1}%
     \bbl@ifunset{ds@#1}%
       {\DeclareOption{#1}{%
@@ -1079,7 +1086,7 @@
 \bbl@foreach\@classoptionslist{%
   \bbl@ifunset{ds@#1}%
     {\IfFileExists{#1.ldf}{}%
-      {\IfFileExists{babel-#1.tex}{}{\DeclareOption{#1}{}}}}%
+      {\IfFileExists{babel-#1.tex}{}{\@namedef{ds@#1}{}}}}%
     {}%
   \bbl@ifunset{ds@#1}%
     {\def\bbl@tempb{#1}%

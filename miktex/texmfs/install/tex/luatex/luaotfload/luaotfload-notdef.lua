@@ -3,18 +3,14 @@
 --  DESCRIPTION:  part of luaotfload / notdef
 -----------------------------------------------------------------------
 
-local ProvidesLuaModule = { 
+assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-notdef",
-    version       = "3.15",       --TAGVERSION
-    date          = "2020-09-02", --TAGDATE
+    version       = "3.16",       --TAGVERSION
+    date          = "2020-12-31", --TAGDATE
     description   = "luaotfload submodule / notdef",
     license       = "GPL v2.0",
     author        = "Marcel Krüger"
 }
-
-if luatexbase and luatexbase.provides_module then
-  luatexbase.provides_module (ProvidesLuaModule)
-end  
 
 local harfbuzz           = luaotfload.harfbuzz
 local flush_node         = node.direct.flush_node

@@ -10,7 +10,7 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2019 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
@@ -33,7 +33,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {letterspace}
-  [2019/11/18 v2.7d
+  [2020/12/07 v2.8
    Robust letterspacing
    (RS)]
 \def\MT@MT
@@ -42,10 +42,11 @@
 \def\MT@fix@catcode#1#2{%
   \edef\MT@restore@catcodes{%
     \MT@restore@catcodes
-    \catcode#1 \the\catcode#1\relax
+    \catcode#1=\the\catcode#1\relax
   }%
-  \catcode#1 #2\relax
+  \catcode#1=#2\relax
 }
+\MT@fix@catcode{17}{14}% ^^Q (comment)
 \MT@fix@catcode{24} {9}% ^^X (ignore)
 \MT@fix@catcode{36} {3}% $ (math shift)
 \MT@fix@catcode{39}{12}% '
@@ -96,6 +97,8 @@
 \else
   \catcode`\^^Q=9 \catcode`\^^X=14
 \fi
+^^Q\MT@warning@nl{This package requires the etex extensions.
+^^Q               \MessageBreak Exiting}\MT@restore@catcodes\endinput
 \def\MT@clear@options{%
   \MT@requires@latex1{%
   \AtEndOfPackage{\let\@unprocessedoptions\relax\MT@restore@catcodes}%
@@ -123,9 +126,11 @@
     \ifnum\luatexversion < 62 \def\MT@engine@tooold{0}
     \else
       \def\MT@engine@tooold{1}
+      \let\MT@lua\directlua
       \ifnum\luatexversion > 84
         \let\pdfoutput\outputmode
         \let\pdfprotrudechars\protrudechars
+        \let\pdfadjustspacing\adjustspacing
       \fi
     \fi
   \fi
@@ -222,27 +227,23 @@
     \advance\@tempcnta \@ne
     \ifnum\@tempcnta < #2\MT@repeat
 }
+\MT@pdf@or@lua{\let\MT@if@luaotf@font\@secondoftwo}{
+\def\MT@if@luaotf@font{\csname\MT@lua{%
+  local thefont = font.getfont(font.current())
+  if thefont and ( thefont.format == "opentype" or thefont.format == "truetype" )
+    then tex.write("@firstoftwo")
+    else tex.write("@secondoftwo")
+  end
+ }\endcsname
+}
+}
 \def\MT@do@font{\MT@while@num\z@\@cclvi}
 \MT@requires@latex1{
 \let\MT@setup@\@empty
 \def\MT@addto@setup{\g@addto@macro\MT@setup@}
 }{\let\MT@addto@setup\@firstofone}
 \def\MT@with@package@T#1{\@ifpackageloaded{#1}\@firstofone\@gobble}
-\newif\ifMT@fontspec
-\MT@requires@latex2{
-\MT@with@package@T{fontspec}\MT@fontspectrue
-}{\MT@fontspecfalse}
-\let\MT@if@fontspec@font\@secondoftwo
-\def\MT@fontspec@setup{%
-  \@ifpackagelater{fontspec}{2013/05/23}{
-    \MT@let@cn\MT@if@fontspec@font{fontspec_if_fontspec_font:TF}%
-  }\relax
-}
-\ifMT@fontspec\MT@fontspec@setup\fi
 \MT@addto@setup{%
-  \MT@requires@latex2{
-  \MT@with@package@T{fontspec}{\MT@fontspectrue\MT@fontspec@setup}%
-  }\relax
   \MT@requires@latex2{
   \MT@with@package@T{hyperref}{%
     \pdfstringdefDisableCommands{%
@@ -251,15 +252,14 @@
     }%
   }%
   }\relax
-  \MT@requires@latex2{
-  \MT@with@package@T{soul}{%
+  \ifx\SOUL@\@undefined\else
     \soulregister\lsstyle 0%
     \soulregister\textls  1%
-  }%
-  }{\ifx\SOUL@\@undefined\else
-      \soulregister\lsstyle 0%
-      \soulregister\textls  1%
-    \fi}%
+    \ifx\XeTeXrevision\@undefined
+      \let\MT@SOUL@doword\SOUL@doword
+      \def\SOUL@doword{\pdfadjustspacing=\z@ \MT@SOUL@doword}%
+    \fi
+  \fi
 }
 \let\MT@tracking
   \relax
@@ -273,7 +273,7 @@
                            /\number\MT@letterspace@ ls\endcsname}%
     \expandafter\ifx\MT@lsfont\relax
       \MT@get@ls@basefont
-      \MT@if@fontspec@font{%
+      \MT@if@luaotf@font{%
         \ifnum\MT@letterspace@<\z@\def\MT@minus{-}\else\let\MT@minus\@empty\fi
         \global\expandafter\font\MT@lsfont=%
           \expandafter\MT@exp@two@c\expandafter\MT@ls@fontspec@font
@@ -286,7 +286,7 @@
                                             * \fontdimen2\MT@lsfont/1000\relax
       % no ligatures = {f}
       \tagcode\MT@lsfont`f=\m@ne
-      \MT@if@fontspec@font\relax{%
+      \MT@if@luaotf@font\relax{%
       \MT@do@font{\lpcode\MT@lsfont\@tempcnta=\numexpr\MT@letterspace@/2\relax
                   \rpcode\MT@lsfont\@tempcnta=\numexpr\MT@letterspace@/2\relax}%
       \let\MT@the@pr@code\MT@the@pr@code@tr
@@ -328,6 +328,7 @@
 \def\MT@set@lsfont{\MT@exp@two@c\let\font@name\MT@lsfont}
 \DeclareRobustCommand\lsstyle{%
   \not@math@alphabet\lsstyle\textls
+  \let\glb@currsize\@empty
   \let\MT@tracking\MT@set@tr@codes
   \selectfont
 }

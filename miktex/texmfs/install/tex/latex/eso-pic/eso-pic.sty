@@ -21,22 +21,21 @@
 %% 
 %% This work has the LPPL maintenance status "author-maintained".
 %% 
-\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\NeedsTeXFormat{LaTeX2e}[2020-10-01]
 \ProvidesPackage{eso-pic}
-   [2020/09/27 v2.0i eso-pic (RN)]
-\RequirePackage{atbegshi}
-\providecommand*\LenToUnit[1]{\strip@pt\dimexpr#1*\p@/\unitlength}
+   [2020/10/14 v3.0a eso-pic (RN)]
+\providecommand*\LenToUnit[1]{#1}
 \newdimen\ESO@tempdima
 \newdimen\ESO@tempdimb
 \newcommand\ESO@isMEMOIR[2]{#2}
 \@ifclassloaded{memoir}{\renewcommand\ESO@isMEMOIR[2]{#1}}{}
 \newcommand\AtPageUpperLeft[1]{%
-  \put(0,\LenToUnit{-\ESO@yoffsetI}){#1}%
+  \put(0,-\ESO@yoffsetI){#1}%
 }
 \newcommand\AtPageLowerLeft[1]{\AtPageUpperLeft{%
-  \put(0,\LenToUnit{-\paperheight}){#1}}}
+  \put(0,-\paperheight){#1}}}
 \newcommand\AtPageCenter[1]{\AtPageUpperLeft{%
-  \put(\LenToUnit{.5\paperwidth},\LenToUnit{-.5\paperheight}){#1}}%
+  \put(.5\paperwidth,-.5\paperheight){#1}}%
 }
 \newcommand\AtStockLowerLeft{}
 \ESO@isMEMOIR{%
@@ -52,7 +51,7 @@
       \advance\ESO@tempdimb\paperheight
       \advance\ESO@tempdimb\trimtop
       \AtPageLowerLeft{%
-        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
+        \put(\ESO@tempdima,\ESO@tempdimb){#1}%
       }%
     \endgroup
   }
@@ -63,7 +62,7 @@
 \ESO@isMEMOIR{%
   \renewcommand\AtStockUpperLeft[1]{%
     \AtStockLowerLeft{%
-      \put(0,\LenToUnit{\stockheight}){#1}%
+      \put(0,\stockheight){#1}%
     }%
   }%
 }{%
@@ -73,7 +72,7 @@
 \ESO@isMEMOIR{%
   \renewcommand\AtStockCenter[1]{%
     \AtStockLowerLeft{%
-      \put(\LenToUnit{.5\stockwidth},\LenToUnit{.5\stockheight}){#1}%
+      \put(.5\stockwidth,.5\stockheight){#1}%
     }%
   }%
 }{%
@@ -91,7 +90,7 @@
       \fi
       \ESO@tempdimb=-\uppermargin
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
+        \put(\ESO@tempdima,\ESO@tempdimb){#1}%
       }%
     \endgroup
   }
@@ -113,15 +112,15 @@
       \advance\ESO@tempdimb-\headheight
       \advance\ESO@tempdimb-\headsep
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){#1}%
+        \put(\ESO@tempdima,\ESO@tempdimb){#1}%
       }%
     \endgroup
   }
 }
 \newcommand\AtTextLowerLeft[1]{\AtTextUpperLeft{%
-  \put(0,\LenToUnit{-\textheight}){#1}}}
+  \put(0,-\textheight){#1}}}
 \newcommand\AtTextCenter[1]{\AtTextUpperLeft{%
-  \put(\LenToUnit{.5\textwidth},\LenToUnit{-.5\textheight}){#1}}}
+  \put(.5\textwidth,-.5\textheight){#1}}}
 \newcommand{\ESO@HookIBG}{}
 \newcommand{\ESO@HookIIBG}{}
 \newcommand{\ESO@HookIIIBG}{}
@@ -145,7 +144,7 @@
 \let\ClearShipoutPicture=\ClearShipoutPictureBG
 \newcommand{\ClearShipoutPictureFG}{\global\let\ESO@HookIFG\@empty}
 \ESO@isMEMOIR{%
-  \AtBeginShipout{%
+  \newcommand*\ESO@MEMOIR@corr{%
     \ESO@tempdima=-\trimedge
     \advance\ESO@tempdima-\paperwidth
     \advance\ESO@tempdima\stockwidth
@@ -156,36 +155,36 @@
     \fi\fi
     \ESO@tempdimb=\ESO@yoffsetI
     \advance\ESO@tempdimb-\trimtop
-    \nointerlineskip
-    \AtBeginShipoutUpperLeft{%
-      \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){%
-        \ESO@HookIIIBG\ESO@HookIBG\ESO@HookIIBG
-        \global\let\ESO@HookIIBG\@empty
-      }%
-    }%
-    \AtBeginShipoutUpperLeftForeground{%
-      \put(\LenToUnit{\ESO@tempdima},\LenToUnit{\ESO@tempdimb}){%
-        \ESO@HookIFG\ESO@HookIIFG\ESO@HookIIIFG
-        \global\let\ESO@HookIIFG\@empty
-      }%
-    }%
   }
+  \nointerlineskip
+  \AddToHook{shipout/background}{%
+    \ESO@MEMOIR@corr
+    \put(\ESO@tempdima,\ESO@tempdimb){%
+      \ESO@HookIIIBG\ESO@HookIBG\ESO@HookIIBG
+      \global\let\ESO@HookIIBG\@empty
+    }%
+  }%
+  \AddToHook{shipout/foreground}{%
+    \ESO@MEMOIR@corr
+    \put(\ESO@tempdima,\ESO@tempdimb){%
+      \ESO@HookIFG\ESO@HookIIFG\ESO@HookIIIFG
+      \global\let\ESO@HookIIFG\@empty
+    }%
+  }%
 }{%
-  \AtBeginShipout{%
-    \nointerlineskip
-    \AtBeginShipoutUpperLeft{%
-      \put(0,\LenToUnit{\ESO@yoffsetI}){%
-        \ESO@HookIIIBG\ESO@HookIBG\ESO@HookIIBG
-        \global\let\ESO@HookIIBG\@empty
-      }%
+  \nointerlineskip
+  \AddToHook{shipout/background}{%
+    \put(0,\ESO@yoffsetI){%
+      \ESO@HookIIIBG\ESO@HookIBG\ESO@HookIIBG
+      \global\let\ESO@HookIIBG\@empty
     }%
-    \AtBeginShipoutUpperLeftForeground{%
-      \put(0,\LenToUnit{\ESO@yoffsetI}){%
-        \ESO@HookIFG\ESO@HookIIFG\ESO@HookIIIFG
-        \global\let\ESO@HookIIFG\@empty
-      }%
+  }%
+  \AddToHook{shipout/foreground}{%
+    \put(0,\ESO@yoffsetI){%
+      \ESO@HookIFG\ESO@HookIIFG\ESO@HookIIIFG
+      \global\let\ESO@HookIIFG\@empty
     }%
-  }
+  }%
 }
 \RequirePackage{keyval}
 \newif\ifESO@dvips\ESO@dvipsfalse \newif\ifESO@grid\ESO@gridfalse
@@ -291,7 +290,7 @@
     \fi
   }%
   \ifESO@dvips\def\@tempb{eepic}\else\def\@tempb{epic}\fi
-  \def\@tempa{dotted}%\def\ESO@gap{\LenToUnit{6\@wholewidth}}%
+  \def\@tempa{dotted}%\def\ESO@gap{6\@wholewidth}%
   \ifx\@tempa\ESO@subgridstyle
     \IfFileExists{\@tempb.sty}%
     {%
@@ -320,17 +319,17 @@
     \ESO@color{\ESO@subgridcolor}%
     \ESO@div{\paperheight}{\ESO@griddelta}%
     \multiput(0,0)(0,\ESO@griddeltaY){\@tempcnta}%
-      {\ESO@hline{\LenToUnit{\paperwidth}}}%
+      {\ESO@hline{\paperwidth}}%
     \ESO@div{\paperwidth}{\ESO@griddelta}%
-    \multiput(0,\LenToUnit{\ESO@yoffsetII})(\ESO@griddelta,0){\@tempcnta}%
-      {\ESO@vline{\LenToUnit{\paperheight}}}%
+    \multiput(0,\ESO@yoffsetII)(\ESO@griddelta,0){\@tempcnta}%
+      {\ESO@vline{\paperheight}}%
     \ESO@color{\ESO@gridcolor}%
     \ESO@div{\paperheight}{\ESO@gridDelta}%
     \multiput(0,0)(0,\ESO@gridDeltaY){\@tempcnta}%
-      {\ESO@Hline{\LenToUnit{\paperwidth}}}%
+      {\ESO@Hline{\paperwidth}}%
     \ESO@div{\paperwidth}{\ESO@gridDelta}%
-    \multiput(0,\LenToUnit{\ESO@yoffsetII})(\ESO@gridDelta,0){\@tempcnta}%
-      {\ESO@Vline{\LenToUnit{\paperheight}}}%
+    \multiput(0,\ESO@yoffsetII)(\ESO@gridDelta,0){\@tempcnta}%
+      {\ESO@Vline{\paperheight}}%
     \fontsize{10}{12}\normalfont%
     \ESO@div{\paperwidth}{\ESO@gridDelta}%
     \multiput(0,\ESO@gridDeltaY)(\ESO@gridDelta,0){\@tempcnta}{%

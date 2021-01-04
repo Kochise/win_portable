@@ -185,6 +185,11 @@ partial key or a full key: If it starts with a slash, then it is a full key and
 it is not modified; if it does not start with a slash, then the default path is
 automatically prefixed.
 
+\emph{Remark:} The above rule is actually a definition, hence the corresponding
+sufficiency conditions hold. That is, if it is a full key, then it starts with
+a slash; if it is a partial key, then it does not start with a slash. Moreover,
+a path always starts with a slash.
+
 Note that the default path is not the same as a search path. In particular, the
 default path is just a single path. When a partial key is given, only this
 single default path is prefixed; |pgfkeys| does not try to look up the key in
@@ -402,7 +407,7 @@ In order to setup a special syntax handling for \meta{strings} that begin with
 a certain character, two things need to be done:
 %
 \begin{enumerate}
-    \item First, the whole first char syntax detection must be ``switched on'',
+    \item First, the whole |first char syntax| detection must be ``switched on'',
         since, by default, it is turned off for efficiency reasons (the
         overhead is rather small, however). This is done by setting the
         following key:
@@ -1248,6 +1253,25 @@ directly stored in a key.
     and, thus, |\pgfkeysnovalue| will be stored in |/my key|.
 
     To retrieve the value stored in a key, the handler |/.get| is used.
+    
+    \medskip
+    \emph{Remark:} A key can both store a value and execute commands%
+    \footnote{This behavior was partially changed in \pgfname{} 3.1.6 and then
+    restored in 3.1.7.  For compatibility reasons, this behavior will not be
+    changed in future releases anymore.}.
+    If so, using \meta{key} will \emph{always} execute commands with the passed
+    value, or the default value |\pgfkeysnovalue| if no value is provided.
+    Note that the stored value is never used. To update the stored value, the
+    handler |/.initial| or command |\pgfkeyssetvalue| is used.
+    %
+\begin{codeexample}[]
+\pgfkeys{/my key/.initial=red}
+\pgfkeys{/my key/.code=#1}
+% "/my key" now both stores the value "red" and executes commands
+\pgfkeys{/my key=blue}
+% "/my key" now still stores the value "red"
+\end{codeexample}
+    %
 \end{handler}
 
 \begin{handler}{{.get}|=|\meta{macro}}
@@ -1264,7 +1288,7 @@ directly stored in a key.
 \end{handler}
 
 \begin{handler}{{.add}|=|\marg{prefix value}\marg{append value}}
-    Adds the \meta{prefix value} and the beginning and the \meta{append value}
+    Adds the \meta{prefix value} at the beginning and the \meta{append value}
     at the end of the value stored in \meta{key}.
 \end{handler}
 

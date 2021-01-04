@@ -40,7 +40,7 @@
 %% extension .ins) which are part of the distribution.
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{artikel2}%
-              [2020/02/22 v2.1d
+              [2020-11-17 v2.1e
        NTG LaTeX document class]
 \newcommand*\@ptsize{}
 
@@ -790,7 +790,7 @@
     \advance\leftskip\@tempdima
     \hskip -\leftskip
     #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2%
-                                 \kern-\p@\kern\p@}}\par
+                                 \kern-\p@\kern\p@}\par
    \endgroup}
 \else
    \newcommand*\l@section{\@regtocline{1}}

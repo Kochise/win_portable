@@ -10,7 +10,7 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2019 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
@@ -29,7 +29,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {microtype}
-  [2019/11/18 v2.7d
+  [2020/12/07 v2.8
    Micro-typographical refinements
    (RS)]
 \def\MT@MT
@@ -38,9 +38,9 @@
 \def\MT@fix@catcode#1#2{%
   \edef\MT@restore@catcodes{%
     \MT@restore@catcodes
-    \catcode#1 \the\catcode#1\relax
+    \catcode#1=\the\catcode#1\relax
   }%
-  \catcode#1 #2\relax
+  \catcode#1=#2\relax
 }
 \MT@fix@catcode{17}{14}% ^^Q (comment)
 \MT@fix@catcode{24} {9}% ^^X (ignore)
@@ -430,13 +430,6 @@
 \MT@with@package@T{xunicode}\MT@xunicodetrue
 \newif\ifMT@fontspec
 \MT@with@package@T{fontspec}\MT@fontspectrue
-\let\MT@if@fontspec@font\@secondoftwo
-\def\MT@fontspec@setup{%
-  \@ifpackagelater{fontspec}{2013/05/23}{
-    \MT@let@cn\MT@if@fontspec@font{fontspec_if_fontspec_font:TF}%
-  }\relax
-}
-\ifMT@fontspec\MT@fontspec@setup\fi
 \let\MT@maybe@gobble@with@tikz\@firstofone
 \def\MT@tikz@setup{%
   \def\MT@maybe@gobble@with@tikz{%
@@ -472,7 +465,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \MT@with@package@T {eledmac}\MT@ledmac@setup
   \MT@with@package@T{reledmac}\MT@ledmac@setup
   \MT@with@package@T{xunicode}\MT@xunicodetrue
-  \MT@with@package@T{fontspec}{\MT@fontspectrue\MT@fontspec@setup}%
+  \MT@with@package@T{fontspec}\MT@fontspectrue
   \MT@glet\MT@setupfont@hook\@empty
   \MT@if@false
   \MT@with@babel@and@T{spanish} \MT@if@true
@@ -507,20 +500,24 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \ifMT@if@\g@addto@macro\MT@setupfont@hook\MT@restore@p@h\fi
   \MT@with@package@T{listings}{%
     \g@addto@macro\MT@cfg@catcodes{%
-      \MT@while@num{"30}{"3A}{\catcode\@tempcnta 12\relax}%
-      \MT@while@num{"41}{"5B}{\catcode\@tempcnta 11\relax}%
-      \MT@while@num{"61}{"7B}{\catcode\@tempcnta 11\relax}%
+      \MT@while@num{"30}{"3A}{\catcode\@tempcnta=12\relax}%
+      \MT@while@num{"41}{"5B}{\catcode\@tempcnta=11\relax}%
+      \MT@while@num{"61}{"7B}{\catcode\@tempcnta=11\relax}%
     }%
     \g@addto@macro\MT@setupfont@hook{%
-      \catcode`\\\z@
-    \def\space{ }%
+      \catcode`\\=\z@
+      \def\space{ }%
       \let\lst@ProcessLetter\@empty
     }%
   }%
-  \MT@with@package@T{soul}{%
+  \ifx\SOUL@\@undefined\else
     \soulregister\lsstyle 0%
     \soulregister\textls  1%
-  }%
+    \ifx\XeTeXrevision\@undefined
+      \let\MT@SOUL@doword\SOUL@doword
+      \def\SOUL@doword{\pdfadjustspacing=\z@ \MT@SOUL@doword}%
+    \fi
+  \fi
   \MT@with@package@T{tikz}\MT@tikz@setup
   \MT@with@package@T{pinyin}{%
     \let\MT@orig@py@macron\py@macron
@@ -548,6 +545,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \def\MT@series  {#3}%
   \def\MT@shape   {#4}%
   \def\MT@size    {#5}%
+  \MT@fix@fontdimen@six
   \MT@ifdefined@n@TF{MT@\MT@family @alias}%
     {\MT@let@cn\MT@familyalias{MT@\MT@family @alias}}%
     {\let\MT@familyalias\@empty}%
@@ -1340,9 +1338,15 @@ time will almost certainly lead to undesired results. Have your choice!}%
        \MT@font \csname MT@\@tempa @#1font@list\endcsname
   }%
 }
-\def\microtypecontext#1{\MT@addto@setup{\microtypecontext{#1}}}
+\def\microtypecontext{\MT@begin@catcodes\MT@microtypecontext}
+\def\MT@microtypecontext#1{\MT@end@catcodes\MT@addto@setup{\microtypecontext{#1}}}
 \MT@addto@setup{%
-  \DeclareRobustCommand\microtypecontext[1]{%
+  \DeclareRobustCommand\microtypecontext{%
+    \MT@begin@catcodes
+    \MT@microtypecontext
+  }%
+  \def\MT@microtypecontext#1{%
+    \MT@end@catcodes
     \MT@setup@contexts
     \let\MT@reset@context\relax
     \MT@glet\glb@currsize\@empty
@@ -1351,7 +1355,9 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \MT@reset@context
   }%
 }
-\DeclareRobustCommand\textmicrotypecontext[2]{{\microtypecontext{#1}#2}}
+\DeclareRobustCommand\textmicrotypecontext{\MT@begin@catcodes\MT@textmicrotypecontext}
+\def\MT@textmicrotypecontext#1{\MT@end@catcodes\MT@text@microtypecontext{#1}}
+\def\MT@text@microtypecontext#1#2{{\microtypecontext{#1}#2}}
 \def\MT@reset@context@{%
   \MT@vinfo{<<< Resetting contexts\on@line
   }%
@@ -1388,8 +1394,8 @@ time will almost certainly lead to undesired results. Have your choice!}%
   }%
 }
 \define@key{MTC}{activate}[]{%
-  \setkeys{MT}{protrusion={#1}}%
-  \setkeys{MT}{expansion={#1}}%
+  \setkeys{MTC}{protrusion={#1}}%
+  \setkeys{MTC}{expansion={#1}}%
 }
 \MT@exp@one@n\MT@map@clist@n{\MT@features,nl}{%
   \MT@def@n{MT@#1@context}{@}%

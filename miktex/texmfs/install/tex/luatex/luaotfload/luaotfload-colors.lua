@@ -3,20 +3,15 @@
 --  DESCRIPTION:  part of luaotfload / font colors
 -----------------------------------------------------------------------
 
-local ProvidesLuaModule = { 
+assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-colors",
-    version       = "3.15",       --TAGVERSION
-    date          = "2020-09-02", --TAGDATE
+    version       = "3.16",       --TAGVERSION
+    date          = "2020-12-31", --TAGDATE
     description   = "luaotfload submodule / color",
     license       = "GPL v2.0",
     author        = "Khaled Hosny, Elie Roux, Philipp Gesang, Dohyun Kim, David Carlisle",
     copyright     = "Luaotfload Development Team"
     }
-
-if luatexbase and luatexbase.provides_module then
-  luatexbase.provides_module (ProvidesLuaModule)
-end  
-
 
 --[[doc--
 

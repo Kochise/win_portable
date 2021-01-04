@@ -40,7 +40,7 @@
 %% extension .ins) which are part of the distribution.
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{boek}%
-              [2020/02/22 v2.1d
+              [2020-11-17 v2.1e
        NTG LaTeX document class]
 \newcommand*\@ptsize{}
 

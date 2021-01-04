@@ -280,6 +280,7 @@ The \texttt{use fpu reciprocal} key seems to have no side effects, but given tha
 Here, we will provide a list of incompabilitys between different version of circuitikz. We will try to hold this list short, but sometimes it is easier to break with old syntax than including a lot of switches and compatibility layers.
 You can check the used version at your local installation using the macro \verb!\pgfcircversion{}!.
 \begin{itemize}
+    \item Due to a bug fix in \TikZ{} that revealed a problem in \Circuitikz, you \textbf{must} upgrade to v1.2.7 or newer if you use a \TikZ{} 3.1.8 or 3.1.8a (the change in \TikZ{} has been reverted later).
     \item After v1.2.1: \textbf{Important:} the routine that implement the \texttt{to[...]} component positioning has been rewritten. That should enhance the line joins in path, and it's safer, but it can potentially change behavior.
 
         One of the changes is that the previous routine did the wrong thing if you used \texttt{(node) to[...]} (you should use an anchor or a coordinate, not a node there --- like \texttt{(node.anchor) to[...]}).
@@ -1118,6 +1119,38 @@ The above diagram has been obtained with the code:
 \showbordersfornode{capacitivesens}
 \end{lstlisting}
 
+\subsubsection{Relative coordinates}\label{sec:path-relative-coordinates}
+
+As \href{https://github.com/circuitikz/circuitikz/issues/460}{noticed by user \texttt{septatrix}}, although relative coordinates after a component work as expected when using \texttt{++(x,y)}-style coordinates,
+that is not true for the \texttt{+(x,y)}-style coordinates (which are supposed to set a temporary relative coordinate and then going back to the starting point).
+
+This behavior, although not optimal, was standard in \texttt{to} operation in plain \TikZ{} before version 3.1.18; it was changed by Henri Menke in later versions. Notice that the change revealed a problem in \Circuitikz{} that should hopefully fixed in \texttt{v1.2.7}.
+
+You can see from the example below (notice the blue curve using a spline line). If all the vertical lines are at the left, the manual has been compiled with a new \Circuitikz{} and \TikZ. Otherwise, the red and/or blue curve will have the vertical line at the right (which in principle is wrong).
+
+In the last (green) example, you can see a workaround using local path and the key \texttt{current point is local} that will work for older (and do not create problem in newer) versions.
+
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily, pos=t]
+Plotted using Ti\emph{k}Z version \pgfversion{} and CircuitTi\emph{k}Z version \pgfcircversion{}.
+
+\begin{tikzpicture}
+    \draw[color=red] (0,0) to[R] +(2,0) +(0,0) -- ++(0,-1);
+\end{tikzpicture}
+\qquad
+\begin{tikzpicture}
+    \draw[color=blue] (0,0) to[out=30, in=120] +(2,0) +(0,0) -- ++(0,-1);
+\end{tikzpicture}
+\qquad
+\begin{tikzpicture}
+    \draw[color=purple] (0,0) to[] +(2,0) +(0,0) -- ++(0,-1);
+\end{tikzpicture}
+\qquad
+\begin{tikzpicture}
+    \draw[color=green!50!black] (0,0)
+        {[current point is local] to[R] +(2,0)} +(0,0) -- ++(0,-1);
+\end{tikzpicture}
+\end{LTXexample}
 
 \endgroup
 
@@ -2878,6 +2911,23 @@ If the option \texttt{arrowmos} is used (or after the command \verb!\ctikzset{tr
 You can go back to the no-arrows mos with \texttt{noarrowmos} locally or with
 \texttt{\textbackslash ctikzset\{tripoles/mos style/no arrows\}}.
 
+
+\paragraph{Circles.} Since \texttt{1.2.6}, you can add a circle\footnote{Suggested by Matthias Jung \href{https://github.com/circuitikz/circuitikz/issues/442}{on GitHub}} to most of the transistor shapes --- with the exception of multi-terminal ones (\texttt{bjtnpn} and \texttt{bjtpnp}, where it would be awkward anyway). The circle is intended in some case as the component's housing, and used to distinguish discrete components from integrated ones.
+
+To add the circle to a single transistor, you use the \texttt{tr circle} keys in the node; if you want all of your transistors with a circle, you can set the property \texttt{tr circle} with a \verb|\ctikzset| command (it will respect normal grouping, of course); in that case, you can use \texttt{tr circle=false} to locally disable them.
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[]
+    \draw (0,2) node[npn]{} (2,2) node[npn, tr circle](Q){};
+    % collector connected to housing
+    \node [circ] at (Q.circle C){};
+    \ctikzset{tr circle=true} % or \ctikzset{tr circle} alone
+    \draw (0,0) node[nigfete]{}
+        (2,0) node[nigfete, tr circle=false]{};
+\end{circuitikz}
+\end{LTXexample}
+
+
 \paragraph{Body diodes and similar things.}\label{sec:bodydiodes-anchor} For all transistors (minus \texttt{bjtnpn} and \texttt{bjtpnp})  a body diode (or freewheeling or flyback diode) can automatically be drawn. Just use the global option \texttt{bodydiode}, or for single transistors, the tikz-option \texttt{bodydiode}.
 As you can see in the next example, the text for the diode is moved if a bodydiode is present (but beware, if you change a lot the relative dimension of components, it may become misplaced):
 
@@ -2915,7 +2965,7 @@ You can use the \texttt{body ...} anchors to add more or different things to the
 
 \paragraph{Schottky transistors.}
 The Schottky transistors are generated by adding the \texttt{schottky base} key (there is also a \texttt{no schottky base} key that can be used if you use the other one as a default).
-You can change the size of the Schottky ``hook'' changing the parameter \texttt{tripoles/schottky base size} with \verb|\ctikzset{}| (default \texttt{0.07}; the unit is the standard resistor length, scaled if needed.)
+You can change the size of the Schottky ``hook'' changing the parameter \texttt{tripoles/schottky base size} with \verb|\ctikzset{}| (default \texttt{\ctikzvalof{tripoles/schottky base size}}; the unit is the standard resistor length, scaled if needed.)
 
 \begin{LTXexample}[varwidth=true]
     \begin{circuitikz}
@@ -2930,8 +2980,7 @@ You can change the size of the Schottky ``hook'' changing the parameter \texttt{
     \end{circuitikz}
 \end{LTXexample}
 
-\paragraph{IGBT outer base}
-
+\paragraph{IGBT outer base.}
 Normally, in bipolar IGBTs the outer base is the same size (height) of the inner one, and of the same thickness (which will depend on the class thickness value). You can change this by setting (via \verb|\ctikzset`|) the keys \texttt{tripoles/igbt/outer base height} (default \texttt{0.4}, the same as \texttt{base height}), and \texttt{tripoles/igbt/outer base thickness} (default \texttt{1.0}), which will be relative to the class thickness.
 
 \begin{LTXexample}[varwidth=true, pos=t, basicstyle=\small\ttfamily]
@@ -3046,6 +3095,67 @@ You can create completely ``bare'' transistors (without the connection leads to 
 \begin{groupdesc}
     \circuitdesc{bjtnpn, collectors=2, emitters=2, bjt pins width=0, bjt multi height=0.8}{bjt npn with parameters}{Q}(B/180/0.2, C/45/0.2, E/-45/0.2, C1/0/0.4, C2/0/0.4, E1/0/0.4, E2/0/0.4, nobase/-135/0.4, cbase/135/0.4)
 \end{groupdesc}
+
+
+\subsubsection{Transistor circle customization}
+
+\paragraph{Position and size.} You can see in the following diagram where the circle is positioned --- when there is no bodydiode, it will pass through the anchors for the body diode and near the base connection. The dimension of the circle is bigger when the bodydiode is in, to encompass it.
+The anchors are present even there is no circle, so you can use them to draw different kind of circles (say, encompassing two transistors) in a coherent way.
+
+\circuitdesc{npn, tr circle}{npn with a circle}{}(circle base/90/0.5, circle C/30/0.2, circle E/-30/0.2, circle center/0/0.5)
+\circuitdesc{npn, tr circle, bodydiode}{npn with a circle}{}(circle base/90/0.6, circle C/30/0.2, circle E/-30/0.2, circle center/0/0.5 )
+
+The position of the circle on collector and emitter by default is the one shown above; the position along the base can be adjusted in most transistors using the \verb|\ctikzset| parameter \texttt{transistor circle/default base in} (by default \texttt{\ctikzvalof{transistor circle/default base in}}); \texttt{njfet} and \texttt{pjfet} use \texttt{transistor circle/njfet base in} (default \texttt{\ctikzvalof{transistor circle/njfet base in}}; the same for \texttt{pjfet}) and, finally, \texttt{isfet} uses \texttt{transistor circle/isfet base in} (default \texttt{\ctikzvalof{transistor circle/isfet base in}}). You can change the resulting size of the circle by setting to something different to \texttt{1.0} the parameter \texttt{transistor circle/scale circle radius} --- that will move the anchors too; for example:
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[scale=1.5, transform shape]
+    \draw (0,0) node[npn, tr circle](Q1){};
+    \node [circ] at (Q1.circle C){};
+    \ctikzset{transistor circle/scale circle radius=1.2}
+    \draw[color=red] (0,0) node[npn, tr circle](Q2){};
+    \node [circ, color=red] at (Q2.circle C){};
+\end{circuitikz}
+\end{LTXexample}
+
+\paragraph{Line and color.} Normally the circle follows the style of the component --- the line thickness is fixed by the class element \texttt{transistors/thickness} and the color is the same as the component color. You can change, if you need, all of these things using the parameters of the following table (the parameters are under the \verb|\ctikzset| category root \texttt{transistor circle/}.
+
+\begin{center}
+    \begin{tabular}{>{\ttfamily}l>{\ttfamily}ll}
+        \toprule
+     parameter &  default & description  \\
+     \midrule
+     relative thickness & 1.0 & multiply the class thickness \\
+     color & default & stroke color: \texttt{default} is the same as the component \\
+     dash & none & dash pattern: none means unbroken line\footnotemark \\
+        \bottomrule
+    \end{tabular}
+    \footnotetext{Follows the syntax of the pattern sequence \texttt{\textbackslash pgfsetdash} --- see \TikZ{} manual for details; phase is always zero. Basically you pass pairs of dash-length -- blank-length dimensions, see the examples.}
+\end{center}
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[]
+    \draw (0,2) node[npn, tr circle](Q1){};
+    \ctikzset{transistor circle/relative thickness=2}
+    \draw (2,2) node[npn, tr circle](Q1){};
+    \ctikzset{transistor circle/color=red}
+    \draw (0,0) node[npn, tr circle](Q1){};
+    \ctikzset{transistor circle/color=default}
+    \ctikzset{transistor circle/dash={{4pt}{4pt}{1pt}{4pt}}}
+    \draw[color=blue] (2,0) node[npn, tr circle](Q1){};
+\end{circuitikz}
+\end{LTXexample}
+
+Finally, using the class style you can do quite interesting things.
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[]
+    \ctikzset{transistors/thickness=4, transistors/fill=cyan!30,
+        transistor circle/relative thickness=0.25,}
+    \draw (0,0) node[npn, tr circle](Q1){};
+    \ctikzset{transistor circle/dash={{2pt}{2pt}}}
+    \draw (1.5,0) node[npn, tr circle, xscale=-1](Q2){};
+\end{circuitikz}
+\end{LTXexample}
 
 
 \subsubsection{Transistors anchors}
@@ -3338,11 +3448,15 @@ Example triode amplifier:
 \draw (Tri.east) node[right] {12AX7};
 \end{circuitikz}
 
-The \texttt{magnetron} shape will also scale with \texttt{tubes/scale}.
+\subsubsection{Other tubes-like components}
+
+The \texttt{magnetron} and \texttt{dynode} shapes will also scale with \texttt{tubes/scale}.
 
 \begin{groupdesc}
     \circuitdesc*{magnetron}{Magnetron}{}( anode/-90/0.2, cathode1/135/0.2,
     cathode2/45/0.2, left/180/0.2, right/0/0.2, top/90/0.4 )
+    \circuitdesc{dynode}{Dynode\footnotemark}{D}( top/90/0.1, bottom/180/0.3, left/180/0.3, right/0/0.3, center/0/0.3, arc/-30/0.4, top right/30/0.2, top left/150/0.2 )
+    \footnotetext{Suggested by the user \texttt{ferdymercury} on \href{https://github.com/circuitikz/circuitikz/issues/469}{GitHub}.}
 \end{groupdesc}
 
 \begin{LTXexample}[varwidth=true]
@@ -3357,6 +3471,50 @@ The \texttt{magnetron} shape will also scale with \texttt{tubes/scale}.
 \draw[->](magn.east) --++(1,0)node[right]{$RF_{out}$};
 \end{circuitikz}
 \end{LTXexample}
+
+
+\paragraph{Dynode customization.}
+The dynode element can be heavily customized. The parameters are the following (all of them under the \verb|\ctikzset| family \texttt{monopoles/dynode}):
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}l>{\ttfamily}rp{0.75\linewidth}}
+    \toprule
+    parameter & default & description \\
+    \midrule
+    width & \ctikzvalof{monopoles/dynode/width} &  Total width (relative to the base length) measured at the arc width.\\
+    height & \ctikzvalof{monopoles/dynode/height} &  Total height (same units as width).\\
+    arc angle & \ctikzvalof{monopoles/dynode/arc angle} &  Angle (from the horizontal, going down) where the arc starts. A value of \texttt{90} don't plot any arc, \texttt{0} plots a semicircle. To avoid artifacts, use a value between \texttt{-60} and \texttt{90}; the arc horizontal size is always equal to the \texttt{width}.\\
+    arc pos & \ctikzvalof{monopoles/dynode/arc pos} &  Vertical position (relative to the height) of the arc center. \\
+    top width & \ctikzvalof{monopoles/dynode/top width} &  Relative width of the top bar; a value of \texttt{1} means full width, \texttt{0} means no bar.\\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[american] \ctikzset{tubes/thickness=4}
+    \draw (0,0) to[R] (2,0) node[dynode]{} to[R,-*] (4,0);
+    \ctikzset{monopoles/dynode/.cd,
+        arc angle=0, arc pos=0.7, top width=0.5}
+    \draw (4,0) node[dynode]{};
+\end{circuitikz}
+\end{LTXexample}
+
+You can use styles and the parameters to create different types of electrodes:
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[american] \ctikzset{tubes/thickness=4}
+    \tikzset{anode/.style={dynode,
+            circuitikz/monopoles/dynode/arc angle=90},
+        photocatode/.style={dynode,
+            circuitikz/monopoles/dynode/arc pos=1,
+            circuitikz/monopoles/dynode/top width=0},
+    }
+    \draw (0,0) node[dynode]{} (1,0) node[anode]{}
+           (2,0) node[photocatode]{};
+\end{circuitikz}
+\end{LTXexample}
+
 
 \subsection{RF components}\label{sec:RF}
 
@@ -4026,8 +4184,10 @@ These are all of the to-style type:
     \circuitdescbip[ospst]{opening switch}{Opening switch}{ospst}
     \circuitdescbip[nos]{normal open switch}{Normally open switch}{nos}
     \circuitdescbip[ncs]{normal closed switch}{Normally closed switch}{ncs}
-    \circuitdescbip[pushbutton]{push button}{Normally open push button}{normally open push button, nopb}
-    \circuitdescbip[ncpushbutton]{normally closed push button}{Normally closed push button}{ncpb}
+    \circuitdescbip[pushbutton]{push button}{Normally open push button}{normally open push button, nopb}(tip/0/0.2)
+    \circuitdescbip[ncpushbutton]{normally closed push button}{Normally closed push button}{ncpb}(tip/0/0.2)
+    \circuitdescbip[pushbuttonc]{normally open push button closed}{Normally open push button}{nopbc}(tip/0/0.2)
+    \circuitdescbip[ncpushbuttono]{normally closed push button open}{Normally closed push button}{ncpbo}(tip/0/0.2)
     \circuitdescbip[toggleswitch]{toggle switch}{Toggle switch}{}
     \circuitdescbip*{reed}{Reed switch}{}
 \end{groupdesc}
@@ -4924,6 +5084,17 @@ European logic port are the same class as american and IEEE-style ones, and they
     \ctikzset{tripoles/european not symbol=ieee circle}
     \draw (0,0) node[european nand port](A){}
         (A.out) to[short, *-o] ++(0.5,0);
+\end{circuitikz}
+\end{LTXexample}
+
+In some standard, the \texttt{xnor} port is different --- without the negation at the end and with just an $=$ sign.\footnote{Suggested by user \texttt{Schlepptop} on GitHub.}
+You can switch to this if you like, with the key \texttt{european xnor style} that can be \texttt{default} or \texttt{direct}.
+
+\begin{LTXexample}[varwidth=true, basicstyle=\small\ttfamily]
+\begin{circuitikz}[european]
+    \draw (0,0) node[xnor port]{};
+    \ctikzset{european xnor style=direct}
+    \draw (3,0) node[xnor port]{};
 \end{circuitikz}
 \end{LTXexample}
 
@@ -6412,6 +6583,33 @@ Since 0.9.5, you can access all the labels nodes\footnote{The access to \texttt{
 \end{circuitikz}
 \end{LTXexample}
 
+
+If you want to have more access to the label positioning algorithm, since \texttt{1.2.5} you can access the label  rotation using the command \texttt{\textbackslash ctikzgetdirection\{\emph{nodename}\}} (where node name is for example \texttt{L1label} or \texttt{L2annotation}), and the anchor used for positioning the node as \texttt{\textbackslash ctikzgetanchor\{\emph{component label}\}\{\emph{type}\}}, where \emph{component label} is, for example, \texttt{L1} and type is either \texttt{label} or \texttt{annotation} (notice that the syntax is slightly different, for implementation reasons).
+Those values are available only if the dipole declares a \texttt{l} or \texttt{a} keys; if you want them without any label you need to declare a blank one (like for example \texttt{l=\textasciitilde}).
+The following example gives an idea of the values of those macro for the three types of label positioning strategies.
+
+\begin{LTXexample}[varwidth=true, pos=t, basicstyle=\small\ttfamily]
+\newcommand{\marklabann}[3][45]{% [angle] {node label} {type: label or annotation}
+\node[circle, draw, blue, inner sep=1pt,
+pin={[draw, blue, font=\tiny, align=left]#1:{#2 \\ dir: \ctikzgetdirection{#2#3} \\
+        anchor: \ctikzgetanchor{#2}{#3}}}] at (#2#3.\ctikzgetanchor{#2}{#3}) {};}
+\begin{tikzpicture}[scale=0.95, transform shape]
+\foreach \style/\xdelta in {straight/0, smart/5, rotate/10} {
+\begin{scope}[xshift=\xdelta cm]
+        \ctikzset{label/align = \style}
+        \draw (0,0) node[above right, rotate=45]{\style}
+            to[L, o-, l=$L_{ab}$, v, name=L1, a=a] ++(3,3)
+            to[ceV, -*, v, name=V1, l2_=L1 and L2, a^=A] ++(0,-3);
+        \marklabann[135]{L1}{label}
+        \marklabann[-90]{L1}{annotation}
+        \marklabann[90]{V1}{label}
+        \marklabann[-90]{V1}{annotation}
+\end{scope}}
+\end{tikzpicture}
+\end{LTXexample}
+
+
+
 \subsection{Advanced voltages, currents and flows}\label{sec:vif-anchors}
 
 Since version \texttt{1.2.1}, it is possible to access the anchors of the ``ornaments'' --- voltage, current and flows, together with some additional information that makes it possible to personalize them.
@@ -6616,9 +6814,105 @@ You can then define a kind of ``power flow'' style:
 \end{circuitikz}
 \end{LTXexample}
 
+
+\subsubsection{Fixed voltage arrows: an example of advanced voltage usage}
+
+\begingroup % to contain example definitions
+An interesting application of the advanced voltage is to have fixed length straight voltage arrows.\footnote{This was suggested by users  \texttt{Franklin} and \texttt{Zarko} in \href{https://tex.stackexchange.com/questions/574576/circuitikz-straight-voltage-arrows-with-fixed-length}{a question on \texttt{tex.stackexchange.com}}}
+The normal voltage arrows length depends not on the component length but on the node distance (this is the behavior since when the voltages were first introduced, so it can't be changed).
+
+\begin{LTXexample}[varwidth=true, basicstyle=\scriptsize\ttfamily, pos=t]
+\begin{circuitikz}[european,]
+    \ctikzset{voltage=straight}
+    \draw (0,0) to[R,v=$v_1$,*-*] ++(2,0) to[R, v<=$v_2$] ++(4,0) to[C, *-*, v=$v_3$] ++(1,0);
+\end{circuitikz}
+\end{LTXexample}
+
+Using the advanced voltage interface mechanism, you can for example design voltages that are of fixed lengths; in the example below the new \texttt{xparse} method for defining commands is used, so that we can have a couple of different optional arguments:
+
+
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
+\NewDocumentCommand{\fixedvlen}{O{0.5cm} m m O{}}{% [semilength]{node}{label}[extra options]
+    % get the center of the standard arrow
+    \coordinate (#2-Vcenter) at ($(#2-Vfrom)!0.5!(#2-Vto)$);
+    % draw an arrow of a fixed size around that center and on the same line
+    \draw[-Triangle, #4] ($(#2-Vcenter)!#1!(#2-Vfrom)$) -- ($(#2-Vcenter)!#1!(#2-Vto)$);
+    % position the label as in the normal voltages
+    \node[anchor=\ctikzgetanchor{#2}{Vlab}, #4] at (#2-Vlab) {#3};
+}
+\end{lstlisting}
+\NewDocumentCommand{\fixedvlen}{O{0.5cm} m m O{}}{% [semilength]{node}{label}[extra options]
+    % get the center of the standard arrow
+    \coordinate (#2-Vcenter) at ($(#2-Vfrom)!0.5!(#2-Vto)$);
+    % draw an arrow of a fixed size around that center and on the same line
+    \draw[-Triangle, #4] ($(#2-Vcenter)!#1!(#2-Vfrom)$) -- ($(#2-Vcenter)!#1!(#2-Vto)$);
+    % position the label as in the normal voltages
+    \node[anchor=\ctikzgetanchor{#2}{Vlab}, #4] at (#2-Vlab) {#3};
+}
+
+\begin{LTXexample}[varwidth=true, basicstyle=\scriptsize\ttfamily, pos=t]
+\begin{circuitikz}[european,]
+    \ctikzset{voltage=straight}
+    \draw (0,2) to[R,v=$v_1$,*-*] ++(2,0) to[R, v<=$v_2$] ++(4,0) to[C, *-*, v=$v_3$] ++(1,0);
+    \draw (0,0) to[R,v=,name=v1,*-*] ++(2,0) to[R, v<=, name=v2] ++(4,0) to[C, *-*, v, name=v3] ++(1,0);
+    \fixedvlen{v1}{$V_1$}
+    \fixedvlen{v2}{$V_2$}
+    \fixedvlen{v3}{$V_3$}[red]
+\end{circuitikz}
+\end{LTXexample}
+
+Notice that with a coherent naming you can use a \verb|\foreach| loop for the last three lines.
+
+You can also notice that the arrow is not exactly the same as other arrows in the circuit; if you want them to be exactly the same, you can use a trick to get the default \Circuitikz{} arrow size --- please look at \href{https://tex.stackexchange.com/questions/549347/circuitikz-arrowhead/549354#549354}{this answer by Romano on \texttt{tex.stackexchange.com}}.
+
+Another possibility is to have the arrow length based on the length of the component; for example you can use this code:
+
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
+\NewDocumentCommand{\compvlen}{O{1.5} m m O{}}{% [relative length]{node}{label}[extra options]
+    % get the center of the standard arrow
+    \coordinate (#2-Vcenter) at ($(#2-Vfrom)!0.5!(#2-Vto)$);
+    % draw an arrow of a size proportional to the component length
+    % around that center and on the same line
+    % the component length is calculated using the let...in with the left and right anchors
+    % and multiplied by the relative length
+    \draw[-Triangle, #4] let \p1=(#2.left), \p2=(#2.right), \n1={0.5*#1*veclen(\x2-\x1,\y2-\y1)}
+        in ($(#2-Vcenter)!\n1!(#2-Vfrom)$) -- ($(#2-Vcenter)!\n1!(#2-Vto)$);
+    % position the label as in the normal voltages
+    \node[anchor=\ctikzgetanchor{#2}{Vlab}, #4] at (#2-Vlab) {#3};
+}
+\end{lstlisting}
+\NewDocumentCommand{\compvlen}{O{1.5} m m O{}}{% [relative length]{node}{label}[extra options]
+    % get the center of the standard arrow
+    \coordinate (#2-Vcenter) at ($(#2-Vfrom)!0.5!(#2-Vto)$);
+    % draw an arrow of a size proportional to the component length
+    % around that center and on the same line
+    % the component length is calculated using the let...in with the left and right anchors
+    % and multiplied by the relative length
+    \draw[-Triangle, #4] let \p1=(#2.left), \p2=(#2.right), \n1={0.5*#1*veclen(\x2-\x1,\y2-\y1)}
+        in ($(#2-Vcenter)!\n1!(#2-Vfrom)$) -- ($(#2-Vcenter)!\n1!(#2-Vto)$);
+    % position the label as in the normal voltages
+    \node[anchor=\ctikzgetanchor{#2}{Vlab}, #4] at (#2-Vlab) {#3};
+}
+
+
+\begin{LTXexample}[varwidth=true, basicstyle=\scriptsize\ttfamily, pos=t]
+\begin{circuitikz}[european,]
+    \ctikzset{voltage=straight}
+    \draw (0,2) to[R,v=$v_1$,*-*] ++(2,0) to[R, v<=$v_2$] ++(4,0) to[C, *-*, v=$v_3$] ++(1,0);
+    \draw (0,0) to[R,v=,name=v1,*-*] ++(2,0) to[R, v<=, name=v2] ++(4,0) to[C, *-*, v, name=v3] ++(1,0);
+    \compvlen{v1}{$V_1$}
+    \compvlen{v2}{$V_2$}
+    \compvlen{v3}{$V_3$}[red]
+\end{circuitikz}
+\end{LTXexample}
+
+
+\endgroup
+
+
 \subsection{Integration with {\ttfamily siunitx}}
 
-If the option {\ttfamily siunitx} is active (and \emph{not} in \ConTeXt), then the following are equivalent:
+If the option {\ttfamily siunitx} is active\footnote{This option is still experimental --- personally (Romano) I would advise using the normal \texttt{\textbackslash SI\{\}\{\}} syntax.}  (and \emph{not} in \ConTeXt), then the following are equivalent:
 
 \begin{LTXexample}[varwidth=true]
 \begin{circuitikz}

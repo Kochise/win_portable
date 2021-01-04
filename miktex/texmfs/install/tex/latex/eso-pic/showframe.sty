@@ -22,7 +22,7 @@
 % \ShowFrameColor and \ShowFrameLinethickness can be used to change
 % the frames.
 
-\ProvidesPackage{showframe}[2011/02/24 v0.1i showframe (new impl., RN)]
+\ProvidesPackage{showframe}[2020/10/14 v0.1j showframe (new impl., RN)]
 
 \newif\ifSF@frame\SF@frametrue
  
@@ -34,31 +34,32 @@
 
 \newcommand*\ShowFrameColor{\normalcolor}
 \newcommand*\ShowFrameLinethickness{.8pt}
+\newdimen\SF@tempdima
 
 \newcommand\ShowFramePicture{%
   \begingroup
     \ShowFrameColor\linethickness{\ShowFrameLinethickness}%
     \AtPageLowerLeft{%
-      \framebox(\LenToUnit{\paperwidth},\LenToUnit{\paperheight}){}}%
+      \framebox(\paperwidth,\paperheight){}}%
     \AtTextLowerLeft{%
-      \framebox(\LenToUnit{\textwidth},\LenToUnit{\textheight}){}}%
+      \framebox(\textwidth,\textheight){}}%
     \AtTextUpperLeft{%
-      \put(0,\LenToUnit{\headsep}){%
-        \framebox(\LenToUnit{\textwidth},\LenToUnit{\headheight}){}}}%
+      \put(0,\headsep){%
+        \framebox(\textwidth,\headheight){}}}%
     \AtTextLowerLeft{%
-      \put(0,\LenToUnit{-\footskip}){%
-        \line(1,0){\LenToUnit{\textwidth}}}}%
+      \put(0,-\footskip){%
+        \line(1,0){\textwidth}}}%
     \AtTextLowerLeft{%
-      \@tempdima=\textwidth\advance\@tempdima\marginparsep%
+      \SF@tempdima=\textwidth\advance\SF@tempdima\marginparsep%
       \if@twoside
         \ifodd\c@page\else
           \if@mparswitch
-            \@tempdima=-\marginparsep\advance\@tempdima-\marginparwidth
+            \SF@tempdima=-\marginparsep\advance\SF@tempdima-\marginparwidth
           \fi
         \fi
       \fi
-      \put(\LenToUnit{\@tempdima},0)%
-        {\framebox(\LenToUnit{\marginparwidth},\LenToUnit{\textheight}){}}%
+      \put(\SF@tempdima,0)%
+        {\framebox(\marginparwidth,\textheight){}}%
     }%
   \endgroup
 }

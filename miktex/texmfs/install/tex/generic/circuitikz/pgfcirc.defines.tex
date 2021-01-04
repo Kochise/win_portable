@@ -897,7 +897,7 @@
 \ctikzset{bipoles/bulb/height/.initial=.8}
 \ctikzset{bipoles/bulb/width/.initial=.8}
 \ctikzset{bipoles/tline/height/.initial=.3}
-\ctikzset{bipoles/tline/width/.initial=.8}
+\ctikzset{bipoles/tline/width/.initial=.6}
 \ctikzset{bipoles/squid/height/.initial=.60}
 \ctikzset{bipoles/squid/width/.initial=.60}
 \ctikzset{bipoles/barrier/height/.initial=.60}
@@ -1067,7 +1067,7 @@
 \ctikzset{schottky base/.add code={}{\pgf@circuit@bpt@schottkytrue}}
 \pgfkeys{/tikz/no schottky base/.add code={}{\pgf@circuit@bpt@schottkyfalse}}
 \ctikzset{no schottky base/.add code={}{\pgf@circuit@bpt@schottkyfalse}}
-\ctikzset{tripoles/schottky base size/.initial=0.07}
+\ctikzset{tripoles/schottky base size/.initial=0.05}
 
 % Option draw bpt without base connection
 \newif\ifpgf@circuit@bpt@drawbase
@@ -1591,6 +1591,17 @@
 \ctikzset{logic ports draw leads/false/.code={\pgfcirc@draw@output@leadsfalse\pgfcirc@draw@input@leadsfalse}}
 \tikzset{all leads/.code={\pgfcirc@draw@output@leadstrue\pgfcirc@draw@input@leadstrue}}
 \tikzset{no leads/.code={\pgfcirc@draw@output@leadsfalse\pgfcirc@draw@input@leadsfalse}}
+
+% adding a different style of xnor port
+% see https://github.com/circuitikz/circuitikz/issues/467
+\ctikzset{european xnor style/.is choice}
+\ctikzset{european xnor style/default/.code={%
+    \pgfcircdeclareeurologicport{xnor}{$=1$}{\pgf@circ@res@count}{not}}%
+}
+\ctikzset{european xnor style/direct/.code={%
+    \pgfcircdeclareeurologicport{xnor}{$=$}{\pgf@circ@res@count}{}}%
+}
+
 
 % old, legacy keys that should be killed over
 \ctikzset{bipoles/buffer/height/.initial=1}

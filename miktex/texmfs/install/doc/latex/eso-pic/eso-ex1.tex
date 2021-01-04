@@ -1,22 +1,22 @@
 
 % file `eso-ex1.tex'; a framed background example
-% Rolf Niepraschk, 2020-09-27, Rolf.Niepraschk@gmx.de
 
 \documentclass[a4paper]{article}
 \usepackage{eso-pic}
 \listfiles
 
-\newdimen\myTempdima
-\newdimen\myTempdimb
-\newdimen\myTempdimc
+\newdimen\myLenA
+\newdimen\myLenB
+\newdimen\myLenC
 
-\AddToShipoutPicture{%
-  \setlength{\myTempdima}{15mm}%
-  \setlength{\myTempdimb}{\dimexpr\paperwidth-2\myTempdima}%
-  \setlength{\myTempdimc}{\dimexpr\paperheight-2\myTempdima}%
-  \thicklines%
-  \put(\LenToUnit{\myTempdima},\LenToUnit{\myTempdima}){%
-    \framebox(\LenToUnit{\myTempdimb},\LenToUnit{\myTempdimc}){}}%
+\AddToShipoutPictureBG{%
+  \begingroup
+    \setlength\myLenA{15mm}%
+    \setlength\myLenB{\dimexpr\paperwidth-2\myLenA}%
+    \setlength\myLenC{\dimexpr\paperheight-2\myLenA}%
+    \thicklines%
+    \put(\myLenA,\myLenA){\framebox(\myLenB,\myLenC){}}%
+  \endgroup
 }
 
 \begin{document}
@@ -24,11 +24,13 @@
   \section*{First page}
 
   This page and all the following have a frame with 15~mm
-  distance from the paper edges.\newpage
+  distance from the paper edges.
+  
+  \newpage
 
   \section*{Second page}
 
-  \AddToShipoutPicture*{\put(100,100){\circle{40}}}
+  \AddToShipoutPictureBG*{\put(100,100){\circle{40}}}
 
   Only this page has a circle on the lower left side.
 

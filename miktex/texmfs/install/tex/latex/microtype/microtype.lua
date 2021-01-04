@@ -10,7 +10,7 @@
 -- 
 --                       The `microtype' package
 --         Subliminal refinements towards typographical perfection
---           Copyright (c) 2004--2019 R Schlicht <w.m.l@gmx.net>
+--           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
 -- 
 -- This work may be distributed and/or modified under the conditions of the
 -- LaTeX Project Public License, either version 1.3c of this license or (at
@@ -34,8 +34,8 @@ microtype        = microtype or {}
 local microtype  = microtype
 microtype.module = {
     name         = "microtype",
-    version      = "2.7d",
-    date         = "2019/11/18",
+    version      = "2.8",
+    date         = "2020/12/07",
     description  = "microtype module.",
     author       = "E. Roux, R. Schlicht and P. Gesang",
     copyright    = "E. Roux, R. Schlicht and P. Gesang",
@@ -54,7 +54,7 @@ local catpackage
 if luatexbase.registernumber then
   catpackage = luatexbase.registernumber("catcodetable@atletter") -- LaTeX
 else
-  catpackage = luatexbase.catcodetables.CatcodeTableAtletter   -- luatexbase
+  catpackage = luatexbase.catcodetables.CatcodeTableLaTeXAtLetter -- luatexbase
 end
 function microtype.sprint (...)
   tex.sprint(catpackage, ...)
@@ -88,19 +88,21 @@ local function if_str_eq(s1, s2)
 end
 microtype.if_str_eq = if_str_eq
 
+local function if_luaotf_font()
+  local thefont = font.getfont(font.current())
+  if thefont and ( thefont.format == "opentype" or thefont.format == "truetype" )
+    then tex.write("@firstoftwo")
+    else tex.write("@secondoftwo")
+  end
+end
+microtype.if_luaotf_font = if_luaotf_font
+
 local function do_font()
-  if fonts then
-    local thefont
-    if fonts.ids then       --- legacy luaotfload
-      thefont = fonts.ids[font.current()]
-    else                    --- new location
-      thefont = fonts.hashes.identifiers[font.current()]
-    end
-    if thefont then
-      for i,v in next,thefont.characters do
-        if v.index == nil or v.index > 0 then
-          microtype.sprint([[\@tempcnta=]]..i..[[\relax\MT@dofont@function]])
-        end
+  local thefont = font.getfont(font.current())
+  if thefont then
+    for i,v in next,thefont.characters do
+      if v.index == nil or v.index > 0 then
+        microtype.sprint([[\@tempcnta=]]..i..[[\relax\MT@dofont@function]])
       end
     end
   end
@@ -158,17 +160,17 @@ else
   local function name_to_slot(name, unsafe)
     if fonts then
       local unicodes
-      if fonts.ids then       --- legacy luaotfload
+      if fonts.ids then       -- legacy luaotfload
         local tfmdata = fonts.ids[font.current()]
         if not tfmdata then return end
         unicodes = tfmdata.shared.otfdata.luatex.unicodes
-      else --- new location
+      else                    -- new location
         local tfmdata = fonts.hashes.identifiers[font.current()]
         if not tfmdata then return end
         unicodes = tfmdata.resources.unicodes
       end
       local unicode = unicodes[name]
-      if unicode then --- does the 'or' branch actually exist?
+      if unicode then -- does the 'or' branch actually exist?
         return type(unicode) == "number" and unicode or unicode[1]
       end
     end

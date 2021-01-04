@@ -3,19 +3,15 @@
 --  DESCRIPTION:  part of luaotfload / luaotfload-tool / font database
 -----------------------------------------------------------------------
 do -- block to avoid to many local variables error
- local ProvidesLuaModule = { 
+ assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
      name          = "luaotfload-database",
-     version       = "3.15",       --TAGVERSION
-     date          = "2020-09-02", --TAGDATE
+     version       = "3.16",       --TAGVERSION
+     date          = "2020-12-31", --TAGDATE
      description   = "luaotfload submodule / database",
      license       = "GPL v2.0",
      author        = "Khaled Hosny, Elie Roux, Philipp Gesang, Marcel Krüger",
      copyright     = "Luaotfload Development Team",     
  }
-
- if luatexbase and luatexbase.provides_module then
-  luatexbase.provides_module (ProvidesLuaModule)
- end  
 end
 
 --[[doc--
@@ -2335,8 +2331,7 @@ local path_separator = os.type == "windows" and ";" or ":"
 --[[doc--
 
     collect_font_filenames_texmf -- Scan texmf tree for font files
-    relying on the kpathsea variables $OPENTYPEFONTS and $TTFONTS of
-    texmf.cnf.
+    relying on kpathsea search paths for the respective file types.
     The current working directory comes as “.” (texlive) or absolute
     path (miktex) and will always be filtered out.
 
@@ -2362,16 +2357,20 @@ local function collect_font_filenames_texmf ()
         end
     end
 
-    fontdirs = kpseexpand_path "$OPENTYPEFONTS"
-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$TTFONTS"
-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$T1FONTS"
-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$AFMFONTS"
+    local show_path = kpse.show_path
 
-    if stringis_empty (fontdirs) then
-        return { }
+    local function expanded_path (file_type)
+        return kpseexpand_path (show_path (file_type))
     end
 
-    local tasks = filter_out_pwd (filesplitpath (fontdirs))
+    local fontdirs = expanded_path "opentype fonts"
+    fontdirs = fontdirs .. path_separator .. expanded_path "truetype fonts"
+    fontdirs = fontdirs .. path_separator .. expanded_path "type1 fonts"
+    fontdirs = fontdirs .. path_separator .. expanded_path "afm"
+
+    fontdirs = filesplitpath (fontdirs) or { }
+
+    local tasks = filter_out_pwd (fontdirs)
     logreport ("both", 3, "db",
                "Initiating scan of %d directories.", #tasks)
 

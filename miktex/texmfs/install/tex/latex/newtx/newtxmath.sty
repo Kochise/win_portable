@@ -11,8 +11,8 @@
 % of glyph collisions.
 % These modifications are by Michael Sharpe, msharpe at ucsd dot edu
 
-\def\fileversion{1.630}
-\def\filedate{2020/09/19}
+\def\fileversion{1.640}
+\def\filedate{2020/12/20}
 \ProvidesPackage{newtxmath}[\filedate\space v\fileversion ]
 \@ifundefined{newtxmathLoaded}{}{\endinput}
 
@@ -491,8 +491,6 @@ amssymbols,uprightGreek,nosubscriptcorrection}
   \fi
 \fi
 
-%\show\tx@subs
-
 \iftx@isenh
 \iftx@digits
     \DeclareMathSymbol{0}{\mathord}{letters}{132}
@@ -507,15 +505,24 @@ amssymbols,uprightGreek,nosubscriptcorrection}
     \DeclareMathSymbol{9}{\mathord}{letters}{141}
 \fi
 \iftx@upscr
- \DeclareRobustCommand{\mathscr}[1]{\ntx@alfa{#1}{196}{222}{248}{249}{}{letters}}
+ \let\mathscr=\mathuscr
   \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
   \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
 \else
- \DeclareRobustCommand{\mathscr}[1]{\ntx@alfa{#1}{142}{168}{194}{195}{}{letters}}
+ \let\mathscr=\mathslscr
   \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
   \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
 \fi
 \fi
+%\iftx@upscr
+% \DeclareRobustCommand{\mathscr}[1]{\ntx@alfa{#1}{196}{222}{248}{249}{}{letters}}
+%  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
+%  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
+%\else
+% \DeclareRobustCommand{\mathscr}[1]{\ntx@alfa{#1}{142}{168}{194}{195}{}{letters}}
+%  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
+%  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
+%\fi
 \iftx@coch
   \DeclareMathSymbol{\fAlt}{\mathord}{letters}{250}
   \DeclareMathSymbol{\rhoAlt}{\mathord}{letters}{251}
@@ -2345,141 +2352,402 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \DeclareMathSymbol{\m@thbbch@rX}{\mathord}{lettersA}{155}
 \DeclareMathSymbol{\m@thbbch@rY}{\mathord}{lettersA}{156}
 \DeclareMathSymbol{\m@thbbch@rZ}{\mathord}{lettersA}{157}
-
 \DeclareMathSymbol{\m@thbbch@rk}{\mathord}{lettersA}{168}
-% Original \varmathbb macro, slightly polished
-\def\DoFutureLet{% 
-   \def\@FutureLetDecide{%
-     \ifx\@nil\@FutureLetToken
-        \def\@FutureLetNext{\@EachCharacterDone}
-     \else
-        \def\@FutureLetNext{\@PickUpTheCharacter}
-     \fi
-     \@FutureLetNext
-   }%
-\futurelet\@FutureLetToken\@FutureLetDecide}% end DoFutureLet
+\DeclareMathSymbol{\m@thbbch@rzero}{\mathord}{lettersA}{43}
+\DeclareMathSymbol{\m@thbbch@rone}{\mathord}{lettersA}{44}
+\DeclareMathSymbol{\m@thbbch@rtwo}{\mathord}{lettersA}{45}
+\DeclareMathSymbol{\m@thbbch@rthree}{\mathord}{lettersA}{46}
+\DeclareMathSymbol{\m@thbbch@rfour}{\mathord}{lettersA}{47}
+\DeclareMathSymbol{\m@thbbch@rfive}{\mathord}{lettersA}{48}
+\DeclareMathSymbol{\m@thbbch@rsix}{\mathord}{lettersA}{49}
+\DeclareMathSymbol{\m@thbbch@rseven}{\mathord}{lettersA}{50}
+\DeclareMathSymbol{\m@thbbch@reight}{\mathord}{lettersA}{51}
+\DeclareMathSymbol{\m@thbbch@rnine}{\mathord}{lettersA}{52}
+\DeclareMathSymbol{\m@thbbch@rimath}{\mathord}{lettersA}{125}
+\DeclareMathSymbol{\m@thbbch@rjmath}{\mathord}{lettersA}{126}
+\DeclareMathSymbol{\m@thbbch@rGamma}{\mathord}{lettersA}{219}
+\DeclareMathSymbol{\m@thbbch@rPi}{\mathord}{lettersA}{220}
+\DeclareMathSymbol{\m@thbbch@rgamma}{\mathord}{lettersA}{221}
+\DeclareMathSymbol{\m@thbbch@rpi}{\mathord}{lettersA}{222}
+%\@nameuse{m@thbbch@r 0}
+\@xp\let\csname m@thbbch@r0\endcsname=\m@thbbch@rzero
+\@xp\let\csname m@thbbch@r1\endcsname=\m@thbbch@rone
+\@xp\let\csname m@thbbch@r2\endcsname=\m@thbbch@rtwo
+\@xp\let\csname m@thbbch@r3\endcsname=\m@thbbch@rthree
+\@xp\let\csname m@thbbch@r4\endcsname=\m@thbbch@rfour
+\@xp\let\csname m@thbbch@r5\endcsname=\m@thbbch@rfive
+\@xp\let\csname m@thbbch@r6\endcsname=\m@thbbch@rsix
+\@xp\let\csname m@thbbch@r7\endcsname=\m@thbbch@rseven
+\@xp\let\csname m@thbbch@r8\endcsname=\m@thbbch@reight
+\@xp\let\csname m@thbbch@r9\endcsname=\m@thbbch@rnine
 
-\def\F@ntPrefix{m@thbbch@r}
-%\def\m@keCharacter#1{%
-%  \@tempcnta=`#1\relax \advance\@tempcnta "40\relax
-%  \edef\ntx@char{\ntx@lettersA\nhex{2}{\the\@tempcnta}}
-%  \expandafter\mathchar\ntx@char}
+\def\ntx@@vbb#1#2\@nil{%
+	\ifiscseq{#1}{\ifcsdef{m@thbbch@r\@xp\@gobble\string#1}{\csname m@thbbch@r\@xp\@gobble\string#1\endcsname}{#1}}{%not a cs
+	\csname m@thbbch@r#1\endcsname}	
+	\ifblank{#2}{\relax}{\ntx@@vbb #2\@nil}}
+
+\DeclareRobustCommand*{\varmathbb}[1]{\ntx@@vbb#1\@nil}
+\let\vmathbb=\varmathbb % was once different, but no longer so
+%% Original \varmathbb macro, slightly polished
+%\def\DoFutureLet{% 
+%   \def\@FutureLetDecide{%
+%     \ifx\@nil\@FutureLetToken
+%        \def\@FutureLetNext{\@EachCharacterDone}
+%     \else
+%        \def\@FutureLetNext{\@PickUpTheCharacter}
+%     \fi
+%     \@FutureLetNext
+%   }%
+%\futurelet\@FutureLetToken\@FutureLetDecide}% end DoFutureLet
+%
+%\def\F@ntPrefix{m@thbbch@r}
+%%\def\m@keCharacter#1{%
+%%  \@tempcnta=`#1\relax \advance\@tempcnta "40\relax
+%%  \edef\ntx@char{\ntx@lettersA\nhex{2}{\the\@tempcnta}}
+%%  \expandafter\mathchar\ntx@char}
+%%\def\@PickUpTheCharacter#1{\m@keCharacter{#1}\DoFutureLet}
+%%\def\@EachCharacterDone \@nil{}% cleanup---get rid of \@nil
+%%\newif\ifntx@notnil
+%%\def\@EachCharacter{%
+%%   \DoFutureLet{\@EachCharacterDone}{\@PickUpTheCharacter}}
+%%
+%\def\m@keCharacter#1{\csname\F@ntPrefix#1\endcsname}
 %\def\@PickUpTheCharacter#1{\m@keCharacter{#1}\DoFutureLet}
-\def\@EachCharacterDone \@nil{}% cleanup---get rid of \@nil
-%\newif\ifntx@notnil
-%\def\@EachCharacter{%
-%   \DoFutureLet{\@EachCharacterDone}{\@PickUpTheCharacter}}
+%\def\@EachCharacterDone \@nil{}
 %
-\def\m@keCharacter#1{\csname\F@ntPrefix#1\endcsname}
-\def\@PickUpTheCharacter#1{\m@keCharacter{#1}\DoFutureLet}
-\def\@EachCharacterDone \@nil{}
-%
-%\DeclareRobustCommand*{\varmathbb}[1]{\gdef\F@ntPrefix{m@thbbch@r}%
-%  \@EachCharacter #1\@nil}
-\DeclareRobustCommand*{\varmathbb}[1]{%\gdef\F@ntPrefix{m@thbbch@r}%
-  \DoFutureLet #1\@nil}
+%%\DeclareRobustCommand*{\varmathbb}[1]{\gdef\F@ntPrefix{m@thbbch@r}%
+%%  \@EachCharacter #1\@nil}
+%\DeclareRobustCommand*{\varmathbb}[1]{%\gdef\F@ntPrefix{m@thbbch@r}%
+%  \DoFutureLet #1\@nil}
+
+\DeclareMathSymbol{\tx@BbbA}{\mathord}{lettersA}{193}
+\DeclareMathSymbol{\tx@BbbB}{\mathord}{lettersA}{194}
+\DeclareMathSymbol{\tx@BbbC}{\mathord}{lettersA}{195}
+\DeclareMathSymbol{\tx@BbbD}{\mathord}{lettersA}{196}
+\DeclareMathSymbol{\tx@BbbE}{\mathord}{lettersA}{197}
+\DeclareMathSymbol{\tx@BbbF}{\mathord}{lettersA}{198}
+\DeclareMathSymbol{\tx@BbbG}{\mathord}{lettersA}{199}
+\DeclareMathSymbol{\tx@BbbH}{\mathord}{lettersA}{200}
+\DeclareMathSymbol{\tx@BbbI}{\mathord}{lettersA}{201}
+\DeclareMathSymbol{\tx@BbbJ}{\mathord}{lettersA}{202}
+\DeclareMathSymbol{\tx@BbbK}{\mathord}{lettersA}{203}
+\DeclareMathSymbol{\tx@BbbL}{\mathord}{lettersA}{204}
+\DeclareMathSymbol{\tx@BbbM}{\mathord}{lettersA}{205}
+\DeclareMathSymbol{\tx@BbbN}{\mathord}{lettersA}{206}
+\DeclareMathSymbol{\tx@BbbO}{\mathord}{lettersA}{207}
+\DeclareMathSymbol{\tx@BbbP}{\mathord}{lettersA}{208}
+\DeclareMathSymbol{\tx@BbbQ}{\mathord}{lettersA}{209}
+\DeclareMathSymbol{\tx@BbbR}{\mathord}{lettersA}{210}
+\DeclareMathSymbol{\tx@BbbS}{\mathord}{lettersA}{211}
+\DeclareMathSymbol{\tx@BbbT}{\mathord}{lettersA}{212}
+\DeclareMathSymbol{\tx@BbbU}{\mathord}{lettersA}{213}
+\DeclareMathSymbol{\tx@BbbV}{\mathord}{lettersA}{214}
+\DeclareMathSymbol{\tx@BbbW}{\mathord}{lettersA}{215}
+\DeclareMathSymbol{\tx@BbbX}{\mathord}{lettersA}{216}
+\DeclareMathSymbol{\tx@BbbY}{\mathord}{lettersA}{217}
+\DeclareMathSymbol{\tx@BbbZ}{\mathord}{lettersA}{218}
+
+\DeclareMathSymbol{\tx@Bbba}{\mathord}{lettersA}{225}
+\DeclareMathSymbol{\tx@Bbbb}{\mathord}{lettersA}{226}
+\DeclareMathSymbol{\tx@Bbbc}{\mathord}{lettersA}{227}
+\DeclareMathSymbol{\tx@Bbbd}{\mathord}{lettersA}{228}
+\DeclareMathSymbol{\tx@Bbbe}{\mathord}{lettersA}{229}
+\DeclareMathSymbol{\tx@Bbbf}{\mathord}{lettersA}{230}
+\DeclareMathSymbol{\tx@Bbbg}{\mathord}{lettersA}{231}
+\DeclareMathSymbol{\tx@Bbbh}{\mathord}{lettersA}{232}
+\DeclareMathSymbol{\tx@Bbbi}{\mathord}{lettersA}{233}
+\DeclareMathSymbol{\tx@Bbbj}{\mathord}{lettersA}{234}
+\DeclareMathSymbol{\tx@Bbbk}{\mathord}{lettersA}{235}
+\DeclareMathSymbol{\tx@Bbbl}{\mathord}{lettersA}{236}
+\DeclareMathSymbol{\tx@Bbbm}{\mathord}{lettersA}{237}
+\DeclareMathSymbol{\tx@Bbbn}{\mathord}{lettersA}{238}
+\DeclareMathSymbol{\tx@Bbbo}{\mathord}{lettersA}{239}
+\DeclareMathSymbol{\tx@Bbbp}{\mathord}{lettersA}{240}
+\DeclareMathSymbol{\tx@Bbbq}{\mathord}{lettersA}{241}
+\DeclareMathSymbol{\tx@Bbbr}{\mathord}{lettersA}{242}
+\DeclareMathSymbol{\tx@Bbbs}{\mathord}{lettersA}{243}
+\DeclareMathSymbol{\tx@Bbbt}{\mathord}{lettersA}{244}
+\DeclareMathSymbol{\tx@Bbbu}{\mathord}{lettersA}{245}
+\DeclareMathSymbol{\tx@Bbbv}{\mathord}{lettersA}{246}
+\DeclareMathSymbol{\tx@Bbbw}{\mathord}{lettersA}{247}
+\DeclareMathSymbol{\tx@Bbbx}{\mathord}{lettersA}{248}
+\DeclareMathSymbol{\tx@Bbby}{\mathord}{lettersA}{249}
+\DeclareMathSymbol{\tx@Bbbz}{\mathord}{lettersA}{250}
+
+\@xp\let\csname tx@Bbb0\endcsname=\m@thbbch@rzero
+\@xp\let\csname tx@Bbb1\endcsname=\m@thbbch@rone
+\@xp\let\csname tx@Bbb2\endcsname=\m@thbbch@rtwo
+\@xp\let\csname tx@Bbb3\endcsname=\m@thbbch@rthree
+\@xp\let\csname tx@Bbb4\endcsname=\m@thbbch@rfour
+\@xp\let\csname tx@Bbb5\endcsname=\m@thbbch@rfive
+\@xp\let\csname tx@Bbb6\endcsname=\m@thbbch@rsix
+\@xp\let\csname tx@Bbb7\endcsname=\m@thbbch@rseven
+\@xp\let\csname tx@Bbb8\endcsname=\m@thbbch@reight
+\@xp\let\csname tx@Bbb9\endcsname=\m@thbbch@rnine
+\@xp\let\csname tx@BbbGamma\endcsname=\m@thbbch@rGamma
+\@xp\let\csname tx@BbbPi\endcsname=\m@thbbch@rPi
+\@xp\let\csname tx@Bbbgamma\endcsname=\m@thbbch@rgamma
+\@xp\let\csname tx@Bbbpi\endcsname=\m@thbbch@rpi
+\@xp\let\csname tx@Bbbimath\endcsname=\m@thbbch@rimath
+\@xp\let\csname tx@Bbbjmath\endcsname=\m@thbbch@rjmath
 
 % Changed macros which are not limited to a single character, and can include digits, \imath, \jmath
-%%%%%%
-% Experimental code May 8, 2018
-\newcount\ntx@numstart 
-\newcount\ntx@UCstart 
-\newcount\ntx@lcstart
-\newcount\ntx@tmpc
-\newcount\ntx@imath
-\newcount\ntx@jmath
-\newif\ifntx@notempty
-\def\ntx@fam{}
-\def\ntx@char{}
-\def\ntx@alfa#1#2#3#4#5#6#7{%#1=string, #2=UC,#3=lc,#4=imath,#5=jmath,#6=numstart,#7=fam
-	\ntx@UCstart=#2 
-	%\gdef\xx{x#3x}
-	\@xp\ifblank\@xp{#3}{\ntx@lcstart=512 }{\ntx@lcstart=#3}
-	\@xp\ifblank\@xp{#4}{\ntx@imath=512 }{\ntx@imath=#4}
-	\@xp\ifblank\@xp{#5}{\ntx@jmath=512 }{\ntx@jmath=#5}
-	\@xp\ifblank\@xp{#6}{\ntx@numstart=512 }{\ntx@numstart=#6}
-	\def\ntx@fam{#7}
-	\@xp\ifblank\@xp{#1}{\relax}{\@xp\ntx@@alfa #1\@nil}}
-	
-\def\ntx@@alfa#1#2\@nil{%
-	\ntx@out{#1}
-	\ifblank{#2}{\relax}{\ntx@@alfa #2\@nil}}
-	
-\def\ntx@out#1{% #1 is always a single token---use values from \ntx@alfa
-	%\showthe\ntx@numstart
-	\ntx@tmpc=\z@
-	\ifx#1\imath\ntx@tmpc=128\relax
-		\ifnum\ntx@imath>255\relax #1\ntx@tmpc=256 \message{^^JNo imath in this alphabet^^J}\fi
-	\else % not \imath
-		\ifx#1\jmath\ntx@tmpc=129\relax
-			\ifnum\ntx@jmath>255\relax #1\ntx@tmpc=256 \message{^^JNo jmath in this alphabet^^J}\fi
-		\else % neither \imath nor \jmath
-			\ifiscseq{#1}{#1\ntx@tmpc=256 }{% not a cs
-			\ntx@tmpc=\number\@xp`#1}			
-		\fi
-	\fi
-	%\message{^^JCharacter index = \the\ntx@tmpc^^J}
-  \ifnum\ntx@tmpc<128\relax % neither \imath nor \jmath nor cs
-	\tx@isAlNum{#1}
-	%\message{^^JIsAlNum = \the\tx@IsAlNum^^J}
-	\ifnum\tx@IsAlNum=\@ne % it's a digit
-		\ifnum\ntx@numstart>255\relax #1\ntx@tmpc=256 \message{^^JNo digits in this alphabet^^J}
-		\else
-			\advance\ntx@tmpc -48 % 0..9
-			\advance\ntx@tmpc \ntx@numstart 
-		\fi
-	\else
-		\ifnum\tx@IsAlNum=\tw@ % it's UC
-			\advance\ntx@tmpc -65 % 0..25
-			\advance\ntx@tmpc\ntx@UCstart
-		\else
-			\ifnum\tx@IsAlNum>\tw@ % it's lc
-				\ifnum\ntx@lcstart>255 #1\ntx@tmpc=256 \message{^^JNo lowercase in this alphabet^^J}
-				\else
-					%\message{^^JCharacter index = \the\ntx@tmpc^^J
-					%lcstart = \the\ntx@lcstart^^J}
-					\advance\ntx@tmpc -97 % 0..25
-					\advance\ntx@tmpc\ntx@lcstart
-					%\message{^^JCharacter index = \the\ntx@tmpc^^J}
-				\fi
-			\else % it must be a character outside alphanumerics
-				#1
-			\fi
-		\fi			
-	\fi
-   \else % ntx@tmpc>127
-		\ifnum\ntx@tmpc=128\relax % imath
-			\ntx@tmpc=\ntx@imath
-		\else
-			\ifnum\ntx@tmpc=129\relax % jmath
-				\ntx@tmpc=\ntx@jmath
-			\fi
-		\fi
-	\fi
-	\ifnum\tx@IsAlNum>\z@
-	  \ifnum\ntx@tmpc<256\relax
-		\edef\ntx@char{"\@xp\hexnumber@\csname sym\ntx@fam\endcsname\nhex{2}{\the\ntx@tmpc}}
-		%\message{^^Joutput char = \ntx@char^^J}
-  		\@xp\mathchar\ntx@char%\traceoff
-  	  \fi %end of ifnum <256
-	\fi %end of ifnum >0
-}
-% This really needs to be reorganized
-\iftx@stxtwo
-	\DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{132}{158}{125}{126}{43}{lettersA}}
-	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{193}{225}{184}{185}{43}{lettersA}}
-\else
-  \iftx@isenh
-	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{132}{158}{125}{126}{43}{lettersA}}
-	\DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{193}{225}{125}{126}{43}{lettersA}}
-  \else % the old mia layout
-	   	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{129}{159}{}{}{176}{lettersA}}
-	    \DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{193}{225}{}{}{176}{lettersA}}
-  \fi
+\def\ntx@@vvbb#1#2\@nil{%
+	\ifiscseq{#1}{\ifcsdef{tx@Bbb\@xp\@gobble\string#1}{\csname tx@Bbb\@xp\@gobble\string#1\endcsname}{#1}}{%not a cs
+	\csname tx@Bbb#1\endcsname}	
+	\ifblank{#2}{\relax}{\ntx@@vvbb #2\@nil}}
+
+\DeclareRobustCommand*{\vvmathbb}[1]{\ntx@@vvbb#1\@nil}
+
+\iftx@isenh
+% script and upright script
+\DeclareMathSymbol{\tx@ScrA}{\mathord}{letters}{142}
+\DeclareMathSymbol{\tx@ScrB}{\mathord}{letters}{143}
+\DeclareMathSymbol{\tx@ScrC}{\mathord}{letters}{144}
+\DeclareMathSymbol{\tx@ScrD}{\mathord}{letters}{145}
+\DeclareMathSymbol{\tx@ScrE}{\mathord}{letters}{146}
+\DeclareMathSymbol{\tx@ScrF}{\mathord}{letters}{147}
+\DeclareMathSymbol{\tx@ScrG}{\mathord}{letters}{148}
+\DeclareMathSymbol{\tx@ScrH}{\mathord}{letters}{149}
+\DeclareMathSymbol{\tx@ScrI}{\mathord}{letters}{150}
+\DeclareMathSymbol{\tx@ScrJ}{\mathord}{letters}{151}
+\DeclareMathSymbol{\tx@ScrK}{\mathord}{letters}{152}
+\DeclareMathSymbol{\tx@ScrL}{\mathord}{letters}{153}
+\DeclareMathSymbol{\tx@ScrM}{\mathord}{letters}{154}
+\DeclareMathSymbol{\tx@ScrN}{\mathord}{letters}{155}
+\DeclareMathSymbol{\tx@ScrO}{\mathord}{letters}{156}
+\DeclareMathSymbol{\tx@ScrP}{\mathord}{letters}{157}
+\DeclareMathSymbol{\tx@ScrQ}{\mathord}{letters}{158}
+\DeclareMathSymbol{\tx@ScrR}{\mathord}{letters}{159}
+\DeclareMathSymbol{\tx@ScrS}{\mathord}{letters}{160}
+\DeclareMathSymbol{\tx@ScrT}{\mathord}{letters}{161}
+\DeclareMathSymbol{\tx@ScrU}{\mathord}{letters}{162}
+\DeclareMathSymbol{\tx@ScrV}{\mathord}{letters}{163}
+\DeclareMathSymbol{\tx@ScrW}{\mathord}{letters}{164}
+\DeclareMathSymbol{\tx@ScrX}{\mathord}{letters}{165}
+\DeclareMathSymbol{\tx@ScrY}{\mathord}{letters}{166}
+\DeclareMathSymbol{\tx@ScrZ}{\mathord}{letters}{167}
+
+\DeclareMathSymbol{\tx@Scra}{\mathord}{letters}{168}
+\DeclareMathSymbol{\tx@Scrb}{\mathord}{letters}{169}
+\DeclareMathSymbol{\tx@Scrc}{\mathord}{letters}{170}
+\DeclareMathSymbol{\tx@Scrd}{\mathord}{letters}{171}
+\DeclareMathSymbol{\tx@Scre}{\mathord}{letters}{172}
+\DeclareMathSymbol{\tx@Scrf}{\mathord}{letters}{173}
+\DeclareMathSymbol{\tx@Scrg}{\mathord}{letters}{174}
+\DeclareMathSymbol{\tx@Scrh}{\mathord}{letters}{175}
+\DeclareMathSymbol{\tx@Scri}{\mathord}{letters}{176}
+\DeclareMathSymbol{\tx@Scrj}{\mathord}{letters}{177}
+\DeclareMathSymbol{\tx@Scrk}{\mathord}{letters}{178}
+\DeclareMathSymbol{\tx@Scrl}{\mathord}{letters}{179}
+\DeclareMathSymbol{\tx@Scrm}{\mathord}{letters}{180}
+\DeclareMathSymbol{\tx@Scrn}{\mathord}{letters}{181}
+\DeclareMathSymbol{\tx@Scro}{\mathord}{letters}{182}
+\DeclareMathSymbol{\tx@Scrp}{\mathord}{letters}{183}
+\DeclareMathSymbol{\tx@Scrq}{\mathord}{letters}{184}
+\DeclareMathSymbol{\tx@Scrr}{\mathord}{letters}{185}
+\DeclareMathSymbol{\tx@Scrs}{\mathord}{letters}{186}
+\DeclareMathSymbol{\tx@Scrt}{\mathord}{letters}{187}
+\DeclareMathSymbol{\tx@Scru}{\mathord}{letters}{188}
+\DeclareMathSymbol{\tx@Scrv}{\mathord}{letters}{189}
+\DeclareMathSymbol{\tx@Scrw}{\mathord}{letters}{190}
+\DeclareMathSymbol{\tx@Scrx}{\mathord}{letters}{191}
+\DeclareMathSymbol{\tx@Scry}{\mathord}{letters}{192}
+\DeclareMathSymbol{\tx@Scrz}{\mathord}{letters}{193}
+\DeclareMathSymbol{\tx@Scrimath}{\mathord}{letters}{194}
+\DeclareMathSymbol{\tx@Scrjmath}{\mathord}{letters}{195}
+
+\DeclareMathSymbol{\tx@UScrA}{\mathord}{letters}{196}
+\DeclareMathSymbol{\tx@UScrB}{\mathord}{letters}{197}
+\DeclareMathSymbol{\tx@UScrC}{\mathord}{letters}{198}
+\DeclareMathSymbol{\tx@UScrD}{\mathord}{letters}{199}
+\DeclareMathSymbol{\tx@UScrE}{\mathord}{letters}{200}
+\DeclareMathSymbol{\tx@UScrF}{\mathord}{letters}{201}
+\DeclareMathSymbol{\tx@UScrG}{\mathord}{letters}{202}
+\DeclareMathSymbol{\tx@UScrH}{\mathord}{letters}{203}
+\DeclareMathSymbol{\tx@UScrI}{\mathord}{letters}{204}
+\DeclareMathSymbol{\tx@UScrJ}{\mathord}{letters}{205}
+\DeclareMathSymbol{\tx@UScrK}{\mathord}{letters}{206}
+\DeclareMathSymbol{\tx@UScrL}{\mathord}{letters}{207}
+\DeclareMathSymbol{\tx@UScrM}{\mathord}{letters}{208}
+\DeclareMathSymbol{\tx@UScrN}{\mathord}{letters}{209}
+\DeclareMathSymbol{\tx@UScrO}{\mathord}{letters}{210}
+\DeclareMathSymbol{\tx@UScrP}{\mathord}{letters}{211}
+\DeclareMathSymbol{\tx@UScrQ}{\mathord}{letters}{212}
+\DeclareMathSymbol{\tx@UScrR}{\mathord}{letters}{213}
+\DeclareMathSymbol{\tx@UScrS}{\mathord}{letters}{214}
+\DeclareMathSymbol{\tx@UScrT}{\mathord}{letters}{215}
+\DeclareMathSymbol{\tx@UScrU}{\mathord}{letters}{216}
+\DeclareMathSymbol{\tx@UScrV}{\mathord}{letters}{217}
+\DeclareMathSymbol{\tx@UScrW}{\mathord}{letters}{218}
+\DeclareMathSymbol{\tx@UScrX}{\mathord}{letters}{219}
+\DeclareMathSymbol{\tx@UScrY}{\mathord}{letters}{220}
+\DeclareMathSymbol{\tx@UScrZ}{\mathord}{letters}{221}
+
+\DeclareMathSymbol{\tx@UScra}{\mathord}{letters}{222}
+\DeclareMathSymbol{\tx@UScrb}{\mathord}{letters}{223}
+\DeclareMathSymbol{\tx@UScrc}{\mathord}{letters}{224}
+\DeclareMathSymbol{\tx@UScrd}{\mathord}{letters}{225}
+\DeclareMathSymbol{\tx@UScre}{\mathord}{letters}{226}
+\DeclareMathSymbol{\tx@UScrf}{\mathord}{letters}{227}
+\DeclareMathSymbol{\tx@UScrg}{\mathord}{letters}{228}
+\DeclareMathSymbol{\tx@UScrh}{\mathord}{letters}{229}
+\DeclareMathSymbol{\tx@UScri}{\mathord}{letters}{230}
+\DeclareMathSymbol{\tx@UScrj}{\mathord}{letters}{231}
+\DeclareMathSymbol{\tx@UScrk}{\mathord}{letters}{232}
+\DeclareMathSymbol{\tx@UScrl}{\mathord}{letters}{233}
+\DeclareMathSymbol{\tx@UScrm}{\mathord}{letters}{234}
+\DeclareMathSymbol{\tx@UScrn}{\mathord}{letters}{235}
+\DeclareMathSymbol{\tx@UScro}{\mathord}{letters}{236}
+\DeclareMathSymbol{\tx@UScrp}{\mathord}{letters}{237}
+\DeclareMathSymbol{\tx@UScrq}{\mathord}{letters}{238}
+\DeclareMathSymbol{\tx@UScrr}{\mathord}{letters}{239}
+\DeclareMathSymbol{\tx@UScrs}{\mathord}{letters}{240}
+\DeclareMathSymbol{\tx@UScrt}{\mathord}{letters}{241}
+\DeclareMathSymbol{\tx@UScru}{\mathord}{letters}{242}
+\DeclareMathSymbol{\tx@UScrv}{\mathord}{letters}{243}
+\DeclareMathSymbol{\tx@UScrw}{\mathord}{letters}{244}
+\DeclareMathSymbol{\tx@UScrx}{\mathord}{letters}{245}
+\DeclareMathSymbol{\tx@UScry}{\mathord}{letters}{246}
+\DeclareMathSymbol{\tx@UScrz}{\mathord}{letters}{247}
+\DeclareMathSymbol{\tx@UScrimath}{\mathord}{letters}{248}
+\DeclareMathSymbol{\tx@UScrjmath}{\mathord}{letters}{249}
+
+\def\ntx@@scr#1#2\@nil{%
+	\ifiscseq{#1}{\ifcsdef{tx@Scr\@xp\@gobble\string#1}{\csname tx@Scr\@xp\@gobble\string#1\endcsname}{#1}}{%not a cs
+	\csname tx@Scr#1\endcsname}	
+	\ifblank{#2}{\relax}{\ntx@@scr #2\@nil}}
+\DeclareRobustCommand*{\mathslscr}[1]{\ntx@@scr #1\@nil}
+
+\def\ntx@@uscr#1#2\@nil{%
+	\ifiscseq{#1}{\ifcsdef{tx@UScr\@xp\@gobble\string#1}{\csname tx@UScr\@xp\@gobble\string#1\endcsname}{#1}}{%not a cs
+	\csname tx@UScr#1\endcsname}	
+	\ifblank{#2}{\relax}{\ntx@@uscr #2\@nil}}
+\DeclareRobustCommand*{\mathuscr}[1]{\ntx@@uscr #1\@nil}
+
+\iftx@digits
+    \DeclareMathSymbol{0}{\mathord}{letters}{132}
+    \DeclareMathSymbol{1}{\mathord}{letters}{133}
+    \DeclareMathSymbol{2}{\mathord}{letters}{134}
+    \DeclareMathSymbol{3}{\mathord}{letters}{135}
+    \DeclareMathSymbol{4}{\mathord}{letters}{136}
+    \DeclareMathSymbol{5}{\mathord}{letters}{137}
+    \DeclareMathSymbol{6}{\mathord}{letters}{138}
+    \DeclareMathSymbol{7}{\mathord}{letters}{139}
+    \DeclareMathSymbol{8}{\mathord}{letters}{140}
+    \DeclareMathSymbol{9}{\mathord}{letters}{141}
 \fi
-%%%%%%%%%%%
-%End experimental code
-%%%%%%%%%%%
+\iftx@upscr
+ \let\mathscr=\mathuscr
+  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
+  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
+\else
+ \let\mathscr=\mathslscr
+  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
+  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
+\fi % upscr
+\fi % isenh
+
+%%%%%%
+%% Experimental code May 8, 2018
+%\newcount\ntx@numstart 
+%\newcount\ntx@UCstart 
+%\newcount\ntx@lcstart
+%\newcount\ntx@tmpc
+%\newcount\ntx@imath
+%\newcount\ntx@jmath
+%\newif\ifntx@notempty
+%\def\ntx@fam{}
+%\def\ntx@char{}
+%\def\ntx@alfa#1#2#3#4#5#6#7{%#1=string, #2=UC,#3=lc,#4=imath,#5=jmath,#6=numstart,#7=fam
+%	\ntx@UCstart=#2 
+%	%\gdef\xx{x#3x}
+%	\@xp\ifblank\@xp{#3}{\ntx@lcstart=512 }{\ntx@lcstart=#3}
+%	\@xp\ifblank\@xp{#4}{\ntx@imath=512 }{\ntx@imath=#4}
+%	\@xp\ifblank\@xp{#5}{\ntx@jmath=512 }{\ntx@jmath=#5}
+%	\@xp\ifblank\@xp{#6}{\ntx@numstart=512 }{\ntx@numstart=#6}
+%	\def\ntx@fam{#7}
+%	\@xp\ifblank\@xp{#1}{\relax}{\@xp\ntx@@alfa #1\@nil}}
+%	
+%\def\ntx@@alfa#1#2\@nil{%
+%	\ntx@out{#1}
+%	\ifblank{#2}{\relax}{\ntx@@alfa #2\@nil}}
+%	
+%\def\ntx@out#1{% #1 is always a single token---use values from \ntx@alfa
+%	%\showthe\ntx@numstart
+%	\ntx@tmpc=\z@
+%	\ifx#1\imath\ntx@tmpc=128\relax
+%		\ifnum\ntx@imath>255\relax #1\ntx@tmpc=256 \message{^^JNo imath in this alphabet^^J}\fi
+%	\else % not \imath
+%		\ifx#1\jmath\ntx@tmpc=129\relax
+%			\ifnum\ntx@jmath>255\relax #1\ntx@tmpc=256 \message{^^JNo jmath in this alphabet^^J}\fi
+%		\else % neither \imath nor \jmath
+%			\ifiscseq{#1}{#1\ntx@tmpc=256 }{% not a cs
+%			\ntx@tmpc=\number\@xp`#1}			
+%		\fi
+%	\fi
+%	%\message{^^JCharacter index = \the\ntx@tmpc^^J}
+%  \ifnum\ntx@tmpc<128\relax % neither \imath nor \jmath nor cs
+%	\tx@isAlNum{#1}
+%	%\message{^^JIsAlNum = \the\tx@IsAlNum^^J}
+%	\ifnum\tx@IsAlNum=\@ne % it's a digit
+%		\ifnum\ntx@numstart>255\relax #1\ntx@tmpc=256 \message{^^JNo digits in this alphabet^^J}
+%		\else
+%			\advance\ntx@tmpc -48 % 0..9
+%			\advance\ntx@tmpc \ntx@numstart 
+%		\fi
+%	\else
+%		\ifnum\tx@IsAlNum=\tw@ % it's UC
+%			\advance\ntx@tmpc -65 % 0..25
+%			\advance\ntx@tmpc\ntx@UCstart
+%		\else
+%			\ifnum\tx@IsAlNum>\tw@ % it's lc
+%				\ifnum\ntx@lcstart>255 #1\ntx@tmpc=256 \message{^^JNo lowercase in this alphabet^^J}
+%				\else
+%					%\message{^^JCharacter index = \the\ntx@tmpc^^J
+%					%lcstart = \the\ntx@lcstart^^J}
+%					\advance\ntx@tmpc -97 % 0..25
+%					\advance\ntx@tmpc\ntx@lcstart
+%					%\message{^^JCharacter index = \the\ntx@tmpc^^J}
+%				\fi
+%			\else % it must be a character outside alphanumerics
+%				#1
+%			\fi
+%		\fi			
+%	\fi
+%   \else % ntx@tmpc>127
+%		\ifnum\ntx@tmpc=128\relax % imath
+%			\ntx@tmpc=\ntx@imath
+%		\else
+%			\ifnum\ntx@tmpc=129\relax % jmath
+%				\ntx@tmpc=\ntx@jmath
+%			\fi
+%		\fi
+%	\fi
+%	\ifnum\tx@IsAlNum>\z@
+%	  \ifnum\ntx@tmpc<256\relax
+%		\edef\ntx@char{"\@xp\hexnumber@\csname sym\ntx@fam\endcsname\nhex{2}{\the\ntx@tmpc}}
+%		%\message{^^Joutput char = \ntx@char^^J}
+%  		\@xp\mathchar\ntx@char%\traceoff
+%  	  \fi %end of ifnum <256
+%	\fi %end of ifnum >0
+%}
+%% This really needs to be reorganized
+%\iftx@stxtwo
+%	\DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{132}{158}{125}{126}{43}{lettersA}}
+%	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{193}{225}{184}{185}{43}{lettersA}}
+%\else
+%  \iftx@isenh
+%	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{132}{158}{125}{126}{43}{lettersA}}
+%	\DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{193}{225}{125}{126}{43}{lettersA}}
+%  \else % the old mia layout
+%	   	\DeclareRobustCommand{\vmathbb}[1]{\ntx@alfa{#1}{129}{159}{}{}{176}{lettersA}}
+%	    \DeclareRobustCommand{\vvmathbb}[1]{\ntx@alfa{#1}{193}{225}{}{}{176}{lettersA}}
+%  \fi
+%\fi
+%%%%%%%%%%%%
+%%End experimental code
+%%%%%%%%%%%%
 % Additional macros to access process a single character only, work with \bm
 %\def\ntx@char{}
 %\DeclareRobustCommand*{\vmathbb}[1]{% for original variant bb
@@ -2497,6 +2765,8 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 %  \edef\ntx@char{"\hexnumber@\symboldlettersA\nhex{2}{\the\@tempcnta}}
 %  \expandafter\mathchar\ntx@char
 %}
+
+%\let\varmathbb\vmathbb
 
 \iftx@vvarbb
   \let\mathbb\vvmathbb %\DeclareRobustCommand*{\mathbb}{\vvmathbb}
@@ -2752,7 +3022,7 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \DeclareRobustCommand{\BIz}{\BI@{z}}
 \fi% end \iftx@BI
 
-% Special constructions for Minion, where we cannot make real compund symbols
+% Special constructions for Minion, where we cannot make real compound symbols
   \iftx@minion % minion does not have hslash, lambdabar, lambdaslash,Zbar
     \let\hslash\@empty \let\lambdaslash\@empty 
     \let\lambdabar\@empty \let\Zbar\@empty

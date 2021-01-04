@@ -39,7 +39,7 @@
     \wlog{File: #1 #4 #3 <#2>}%
     \let\ProvidesFile\@undefined}
 \fi
-\ProvidesFile{babel.def}[2020/10/27 3.51 Babel common definitions]
+\ProvidesFile{babel.def}[2020/12/16 3.52 Babel common definitions]
 \ifx\AtBeginDocument\@undefined  % TODO. change test.
     % == Code for plain ==
 \def\@empty{}
@@ -397,8 +397,8 @@
 \fi
 \countdef\last@language=19  % TODO. why? remove?
 \def\addlanguage{\csname newlanguage\endcsname}
-\def\bbl@version{3.51}
-\def\bbl@date{2020/10/27}
+\def\bbl@version{3.52}
+\def\bbl@date{2020/12/16}
 \def\adddialect#1#2{%
   \global\chardef#1#2\relax
   \bbl@usehooks{adddialect}{{#1}{#2}}%
@@ -671,7 +671,7 @@
       \csname\languagename @bbl@hyphenmap\endcsname
     \fi
   \fi
-  \global\let\bbl@hymapsel\@cclv
+  \let\bbl@hymapsel\@cclv
   % hyphenation - select patterns
   \bbl@patterns{#1}%
   % hyphenation - allow stretching with babelnohyphens
@@ -1121,17 +1121,17 @@
   \def\bbl@tempa##1,#3=##2,##3\@empty{\def\bbl@tempb{##2}}%
   \expandafter\bbl@tempa\bbl@evargs,#3=,\@empty
   \bbl@ifunset{bbl@ev@#2@#3@#1}%
-    {\bbl@csarg\bbl@add{ev@#3@#1}{\bbl@elt{#2}}}%
+    {\bbl@csarg\bbl@add{ev@#3@#1}{\bbl@elth{#2}}}%
     {\bbl@csarg\let{ev@#2@#3@#1}\relax}%
   \bbl@csarg\newcommand{ev@#2@#3@#1}[\bbl@tempb]}
 \newcommand\EnableBabelHook[1]{\bbl@csarg\let{hk@#1}\@firstofone}
 \newcommand\DisableBabelHook[1]{\bbl@csarg\let{hk@#1}\@gobble}
 \def\bbl@usehooks#1#2{%
-  \def\bbl@elt##1{%
+  \def\bbl@elth##1{%
     \bbl@cs{hk@##1}{\bbl@cs{ev@##1@#1@}#2}}%
   \bbl@cs{ev@#1@}%
   \ifx\languagename\@undefined\else % Test required for Plain (?)
-    \def\bbl@elt##1{%
+    \def\bbl@elth##1{%
       \bbl@cs{hk@##1}{\bbl@cl{ev@##1@#1}#2}}%
     \bbl@cl{ev@#1}%
   \fi}
@@ -2780,7 +2780,7 @@
       {Fix the name or reinstall babel.}%
   \else
     \catcode`\[=12 \catcode`\]=12 \catcode`\==12 \catcode`\&=12
-    \catcode`\;=12 \catcode`\|=12 \catcode`\%=14
+    \catcode`\;=12 \catcode`\|=12 \catcode`\%=14 \catcode`\-=12
     \bbl@info{Importing
                 \ifcase#2 \or font and identification \or basic \fi
                 data for \languagename\\%

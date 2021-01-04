@@ -61,7 +61,7 @@
   }%
   \svg@Provides%
   {svg}{include SVG pictures}%
-  [2020/10/23 v2.02j]%
+  [2020/11/26 v2.02k]%
 \@tempb
 \RequirePackage{iftex}[2020/03/06]
 \RequirePackage{scrbase}[2020/09/21]
@@ -1210,36 +1210,22 @@
     \everyeof{\noexpand}%
     \svg@quotes@remove{\svg@ink@exe}%
     \edef\svg@tempa{%
-      \edef\noexpand\svg@tempa{\noexpand\@@input|"'\svg@ink@exe' -V 2>&1" }%
+      \edef\noexpand\svg@tempa{\noexpand\@@input|"'\svg@ink@exe' -V " }%
     }%
     \svg@tempa%
     \trim@spaces@in\svg@tempa%
-    \def\svg@tempb{\par}%
-    \ifx\svg@tempa\svg@tempb
-      \let\svg@tempa\relax%
-    \fi%
-    \def\svg@tempb ##1Inkscape ##2.##3\@nil{%
+    \long\def\svg@tempb ##1Inkscape ##2.##3\@nil{%
       \gdef\svg@ink@ver{##2}%
-      \IfArgIsEmpty{##1}{}{%
-        \def\svg@tempc ####1Pango version:####2\@nil{%
-          \@svg@tempswafalse%
-          \IfArgIsEmpty{####2}{}{\IfArgIsEmpty{####1}{\@svg@tempswatrue}{}}%
+      \ifnum\svg@ink@ver=\m@ne\relax%
+        \PackageWarning{svg}{%
+          No version of Inkscape was detected by invoking\MessageBreak%
+          `\svg@ink@exe\space-V'\MessageBreak%
+          so the Inkscape export will fail quite sure as the\MessageBreak%
+          command is probably unknown to your OS. You could set\MessageBreak%
+          `inkscapeversion=<version>' manually but this is very\MessageBreak%
+          unlikely to work%
         }%
-        \svg@tempc ##1 Pango version:\@nil%
-        \if@svg@tempswa%
-          \gdef\svg@ink@ver{1}%
-        \else%
-          \ifx\svg@tempa\relax%
-            \def\svg@tempa{MiKTeX/XeLaTeX did not return an error message}%
-          \else%
-            \def\svg@tempa{##1}%
-          \fi%
-          \PackageWarning{svg}{%
-            `\svg@ink@exe\space-V' failed with:\MessageBreak%
-            \detokenize\expandafter{\svg@tempa}%
-          }%
-        \fi%
-      }%
+      \fi%
     }%
     \expandafter\svg@tempb\svg@tempa Inkscape \m@ne.\@nil%
   \endgroup%

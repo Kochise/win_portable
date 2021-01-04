@@ -710,7 +710,7 @@
 \def\fmtname{LaTeX2e}
 \edef\fmtversion
    {2020-10-01}
-\def\patch@level{2}
+\def\patch@level{3}
 \edef\development@branch@name{}
 \iffalse
 \def\reserved@a#1/#2/#3\@nil{%
@@ -988,6 +988,8 @@
   }
 \fi
 %%% From File: ltexpl.dtx
+\let\@kernel@after@enddocument\@empty
+\let\@kernel@after@enddocument@afterlastpage\@empty
 \def\@expl@sys@load@backend@@{}
 \def\@expl@push@filename@@{}
 \def\@expl@push@filename@aux@@{}
@@ -1628,8 +1630,8 @@
 %% File: lthooks.dtx (C) Copyright 2020 Frank Mittelbach,
 %%                                      Phelype Oleinik & LaTeX Team
 %%% From File: lthooks.dtx
-\def\lthooksversion{v1.0e}
-\def\lthooksdate{2020/10/23}
+\def\lthooksversion{v1.0g}
+\def\lthooksdate{2020/12/18}
 \ExplSyntaxOn
 \bool_new:N \g__hook_debug_bool
 \cs_new_eq:NN \__hook_debug:n \use_none:n
@@ -1666,6 +1668,18 @@
 \cs_generate_variant:Nn \tl_show:n { x }
 \cs_generate_variant:Nn \tl_log:n { x }
 \scan_new:N \s__hook_mark
+\cs_new_eq:NN \__hook_tl_set:Nn \tl_set:Nn
+\cs_generate_variant:Nn \__hook_tl_set:Nn { cn, cx }
+\cs_new_eq:NN \__hook_tl_gset:Nn \tl_gset:Nn
+\cs_generate_variant:Nn \__hook_tl_gset:Nn { cn, co, cx }
+\cs_new_eq:NN \__hook_tl_gput_right:Nn \tl_gput_right:Nn
+\cs_generate_variant:Nn \__hook_tl_gput_right:Nn { No, cn }
+\cs_new_eq:NN \__hook_tl_gput_left:Nn \tl_gput_left:Nn
+\cs_generate_variant:Nn \__hook_tl_gput_left:Nn { No }
+\cs_new_protected:Npn \__hook_tl_gclear:N #1
+  { \__hook_tl_gset_eq:NN #1 \c_empty_tl }
+\cs_generate_variant:Nn \__hook_tl_gclear:N { c }
+\cs_new_eq:NN \__hook_tl_gset_eq:NN \tl_gset_eq:NN
 \cs_new_protected:Npn \hook_new:n #1
   { \__hook_normalize_hook_args:Nn \__hook_new:n {#1} }
 \cs_new_protected:Npn \__hook_new:n #1
@@ -1686,6 +1700,7 @@
     \__hook_if_exist:nF {#1}
       {
         \prop_new:c { g__hook_#1_code_prop }
+        \tl_new:c { __hook_toplevel~#1 }
         \tl_new:c { __hook_next~#1 }
       }
   }
@@ -1700,59 +1715,58 @@
   { \hook_new:n {#1} \hook_new_reversed:n {#2} }
 \cs_new_protected:Npn \__hook_include_legacy_code_chunk:n #1
   {
-    \debug_suspend:
     \tl_if_exist:cT { @#1hook }
       {
         \tl_if_empty:cF { @#1hook }
           {
             \exp_args:Nnnv \__hook_hook_gput_code_do:nnn {#1}
                                   { legacy } { @#1hook }
-            \tl_gclear:c { @#1hook }
+            \__hook_tl_gclear:c { @#1hook }
           }
       }
-    \debug_resume:
   }
 \cs_new:Npn \__hook_parse_label_default:n #1
   {
     \tl_if_novalue:nTF {#1}
-      { \__hook_currname_or_default:n { top-level } }
-      {
-        \tl_trim_spaces_apply:nN {#1}
-          \__hook_parse_dot_label:nn { top-level }
-      }
+      { \__hook_currname_or_default: }
+      { \tl_trim_spaces_apply:nN {#1} \__hook_parse_dot_label:n }
   }
-\cs_new:Npn \__hook_parse_dot_label:nn #1 #2
+\cs_new:Npn \__hook_parse_dot_label:n #1
   {
     \tl_if_empty:nTF {#1}
       {
-        \msg_expandable_error:nnn { hooks } { empty-label } {#2}
-        #2
+        \msg_expandable_error:nn { hooks } { empty-label }
+        \__hook_currname_or_default:
       }
       {
         \str_if_eq:nnTF {#1} { . }
-          { \__hook_currname_or_default:n {#2} }
-          { \__hook_parse_dot_label:nw {#2} #1 ./ \s__hook_mark }
+          { \__hook_currname_or_default: }
+          { \__hook_parse_dot_label:w #1 ./ \s__hook_mark }
       }
   }
-\cs_new:Npn \__hook_parse_dot_label:nw #1 #2 ./ #3 \s__hook_mark
+\cs_new:Npn \__hook_parse_dot_label:w #1 ./ #2 \s__hook_mark
   {
-    \tl_if_empty:nTF {#2}
-      { \__hook_parse_dot_label_aux:nw {#1} #3 \s__hook_mark }
+    \tl_if_empty:nTF {#1}
+      { \__hook_parse_dot_label_aux:w #2 \s__hook_mark }
       {
-        \tl_if_empty:nTF {#3}
-          { \__hook_make_name:n {#2} }
-          { \__hook_parse_dot_label_cleanup:w #2 ./ #3 \s__hook_mark }
+        \tl_if_empty:nTF {#2}
+          { \__hook_make_name:n {#1} }
+          { \__hook_parse_dot_label_cleanup:w #1 ./ #2 \s__hook_mark }
       }
   }
 \cs_new:Npn \__hook_parse_dot_label_cleanup:w #1 ./ \s__hook_mark {#1}
-\cs_new:Npn \__hook_parse_dot_label_aux:nw #1 #2 ./ \s__hook_mark
-  { \__hook_currname_or_default:n {#1} / \__hook_make_name:n {#2} }
-\cs_new:Npn \__hook_currname_or_default:n #1
+\cs_new:Npn \__hook_parse_dot_label_aux:w #1 ./ \s__hook_mark
+  { \__hook_currname_or_default: / \__hook_make_name:n {#1} }
+\cs_new:Npn \__hook_currname_or_default:
   {
     \tl_if_empty:NTF \g__hook_hook_curr_name_tl
       {
         \tl_if_empty:NTF \@currname
-          { \__hook_make_name:n {#1} }
+          {
+            \msg_expandable_error:nnn { hooks } { should-not-happen }
+              { Empty~default~label. }
+            \__hook_make_name:n { label-missing }
+          }
           { \@currname }
       }
       { \g__hook_hook_curr_name_tl }
@@ -1822,12 +1836,23 @@
                       \hook_if_exist:nF {#1} { undeclared~ }
                       hook~ #1~ (#2)
                       \on@line\space <-~ \tl_to_str:n{#3}} }
-    \prop_get:cnNTF { g__hook_#1_code_prop } {#2} \l__hook_return_tl
+    \str_if_eq:nnTF {#2} { top-level }
       {
-        \prop_gput:cno { g__hook_#1_code_prop } {#2}
-          { \l__hook_return_tl #3 }
+        \str_if_eq:eeTF { top-level } { \__hook_currname_or_default: }
+          {
+            \__hook_declare:n {#1}
+            \__hook_tl_gput_right:cn { __hook_toplevel~#1 } {#3}
+          }
+          { \msg_error:nnn { hooks } { misused-top-level } {#1} }
       }
-      { \prop_gput:cnn { g__hook_#1_code_prop } {#2} {#3} }
+      {
+        \prop_get:cnNTF { g__hook_#1_code_prop } {#2} \l__hook_return_tl
+          {
+            \prop_gput:cno { g__hook_#1_code_prop } {#2}
+              { \l__hook_return_tl #3 }
+          }
+          { \prop_gput:cnn { g__hook_#1_code_prop } {#2} {#3} }
+      }
   }
 \cs_new_protected:Npn \__hook_gput_undeclared_hook:nnn #1 #2 #3
   {
@@ -1918,12 +1943,20 @@
     \__hook_if_exist:nTF {#1}
       {
         \str_if_eq:nnTF {#2} {*}
-          { \prop_gclear:c { g__hook_#1_code_prop } }
           {
-            \prop_get:cnNTF { g__hook_#1_code_prop } {#2} \l__hook_return_tl
-              { \__hook_gremove_code_do:nn }
-              { \__hook_mark_removal:nn }
-                  {#1} {#2}
+            \prop_gclear:c { g__hook_#1_code_prop }
+            \__hook_tl_gclear:c { __hook_toplevel~#1 }
+            \__hook_tl_gclear:c { __hook_next~#1 }
+          }
+          {
+            \str_if_eq:nnTF {#2} { top-level }
+              { \__hook_tl_gclear:c { __hook_toplevel~#1 } }
+              {
+                \prop_get:cnNTF { g__hook_#1_code_prop } {#2} \l__hook_return_tl
+                  { \__hook_gremove_code_do:nn }
+                  { \__hook_mark_removal:nn }
+                      {#1} {#2}
+              }
           }
         \hook_if_exist:nT {#1}
           { \__hook_update_hook_code:n {#1} }
@@ -1962,7 +1995,6 @@
   {
     \__hook_declare:n {#1}
     \__hook_rule_gclear:nnn {#1} {#2} {#4}
-    \debug_suspend:
     \cs_if_exist_use:cTF { __hook_rule_#3_gset:nnn }
       {
           {#1} {#2} {#4}
@@ -1970,29 +2002,28 @@
       }
       { \msg_error:nnnnnn { hooks } { unknown-rule }
                           {#1} {#2} {#3} {#4}        }
-    \debug_resume:
   }
 \cs_new_protected:Npn \__hook_rule_before_gset:nnn #1#2#3
   {
-    \tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl }
+    \__hook_tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl }
       { \__hook_label_ordered:nnTF {#2} {#3} { < } { > } }
   }
 \cs_new_eq:cN { __hook_rule_<_gset:nnn } \__hook_rule_before_gset:nnn
 \cs_new_protected:Npn \__hook_rule_after_gset:nnn #1#2#3
   {
-    \tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#3} {#2} _tl }
+    \__hook_tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#3} {#2} _tl }
       { \__hook_label_ordered:nnTF {#3} {#2} { < } { > } }
   }
 \cs_new_eq:cN { __hook_rule_>_gset:nnn } \__hook_rule_after_gset:nnn
 \cs_new_protected:Npn \__hook_rule_voids_gset:nnn #1#2#3
   {
-    \tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl }
+    \__hook_tl_gset:cx { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl }
       { \__hook_label_ordered:nnTF {#2} {#3} { -> } { <- } }
   }
 \cs_new_protected:cpn { __hook_rule_incompatible-error_gset:nnn } #1#2#3
-  { \tl_gset:cn { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl } { xE } }
+  { \__hook_tl_gset:cn { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl } { xE } }
 \cs_new_protected:cpn { __hook_rule_incompatible-warning_gset:nnn } #1#2#3
-  { \tl_gset:cn { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl } { xW } }
+  { \__hook_tl_gset:cn { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl } { xW } }
 \cs_new_protected:Npn \__hook_rule_unrelated_gset:nnn #1#2#3 { }
 \cs_new_protected:Npn \__hook_rule_gclear:nnn #1#2#3
   { \cs_undefine:c { g__hook_#1_rule_ \__hook_label_pair:nn {#2} {#3} _tl } }
@@ -2039,30 +2070,32 @@
 }
 \cs_new_protected:Npn \__hook_initialize_hook_code:n #1
   {
-    \debug_suspend:
     \__hook_debug:n{ \iow_term:x{^^JUpdate~ code~ for~ hook~
                                     '#1' \on@line :^^J} }
     \__hook_include_legacy_code_chunk:n {#1}
     \hook_if_exist:nT {#1}
       {
         \prop_if_empty:cTF {g__hook_#1_code_prop}
-          { \tl_gset:co { __hook~#1 }
-                        { \cs:w __hook_next~#1 \cs_end: } }
+          {
+            \__hook_tl_gset:co { __hook~#1 }
+              {
+                \cs:w __hook_toplevel~#1 \exp_after:wN \cs_end:
+                \cs:w __hook_next~#1 \cs_end:
+              }
+          }
           {
             \__hook_if_reversed:nTF {#1}
-              { \cs_set_eq:NN \__hook_tl_gput:NV    \tl_gput_left:NV
+              { \cs_set_eq:NN \__hook_tl_gput:Nn    \__hook_tl_gput_left:Nn
                 \cs_set_eq:NN \__hook_clist_gput:NV \clist_gput_left:NV  }
-              { \cs_set_eq:NN \__hook_tl_gput:NV    \tl_gput_right:NV
+              { \cs_set_eq:NN \__hook_tl_gput:Nn    \__hook_tl_gput_right:Nn
                 \cs_set_eq:NN \__hook_clist_gput:NV \clist_gput_right:NV }
             \prop_set_eq:Nc \l__hook_work_prop { g__hook_#1_code_prop }
-            \__hook_initialize_single:cccn
-              { __hook~#1 } { __hook_next~#1 }
-              { g__hook_#1_labels_clist } {#1}
+            \__hook_initialize_single:ccn
+              { __hook~#1 } { g__hook_#1_labels_clist } {#1}
             \__hook_debug:n{ \exp_args:NNx \prop_gput:Nnn
                                        \g__hook_used_prop {#1}{} }
           }
       }
-    \debug_resume:
   }
 \cs_new:Npn \__hook_tl_csname:n #1 { l__hook_label_#1_tl }
 \cs_new:Npn \__hook_seq_csname:n #1 { l__hook_label_#1_seq }
@@ -2071,16 +2104,16 @@
 \tl_new:N \l__hook_front_tl
 \tl_new:N \l__hook_rear_tl
 \tl_new:c { \__hook_tl_csname:n { 0 } }
-\cs_new_protected:Npn \__hook_initialize_single:NNNn #1#2#3#4
+\cs_new_protected:Npn \__hook_initialize_single:NNn #1#2#3
   {
     \seq_clear:N \l__hook_labels_seq
     \int_zero:N  \l__hook_labels_int
-    \tl_set:Nn \l__hook_cur_hook_tl {#4}
+    \tl_set:Nn \l__hook_cur_hook_tl {#3}
     \prop_map_inline:Nn \l__hook_work_prop
        {
          \int_incr:N \l__hook_labels_int
          \seq_put_right:Nn \l__hook_labels_seq {##1}
-         \tl_set:cn { \__hook_tl_csname:n {##1} }{0}
+         \__hook_tl_set:cn { \__hook_tl_csname:n {##1} } { 0 }
          \seq_clear_new:c { \__hook_seq_csname:n {##1} }
        }
     \prop_map_inline:Nn \l__hook_work_prop
@@ -2091,7 +2124,7 @@
               { \prop_map_break: }
               { \__hook_apply_label_pair:nnn {##1} {####1} }
               { \__hook_apply_label_pair:nnn {####1} {##1} }
-                  {#4}
+                  {#3}
           }
       }
     \__hook_debug:n { \__hook_debug_label_data:N \l__hook_work_prop }
@@ -2106,14 +2139,14 @@
             }
       }
     \tl_set_eq:Nc \l__hook_front_tl { \__hook_tl_csname:n { 0 } }
-    \tl_gclear:N #1
-    \clist_gclear:N #3
+    \__hook_tl_gclear:N #1
+    \clist_gclear:N #2
     \bool_while_do:nn { ! \str_if_eq_p:Vn \l__hook_front_tl { 0 } }
       {
         \int_decr:N \l__hook_labels_int
         \prop_get:NVN \l__hook_work_prop \l__hook_front_tl \l__hook_return_tl
-        \__hook_tl_gput:NV #1 \l__hook_return_tl
-        \__hook_clist_gput:NV #3 \l__hook_front_tl
+        \exp_args:NNV \__hook_tl_gput:Nn #1 \l__hook_return_tl
+        \__hook_clist_gput:NV #2 \l__hook_front_tl
         \__hook_debug:n{ \iow_term:x{Handled~ code~ for~ \l__hook_front_tl} }
         \seq_map_inline:cn { \__hook_seq_csname:n { \l__hook_front_tl } }
           {
@@ -2138,11 +2171,12 @@
         \__hook_debug_label_data:N \l__hook_work_prop
         \iow_term:x{====================}
       }
-    \tl_gput_right:Nn #1 {#2}
+    \exp_args:NNo \__hook_tl_gput:Nn #1 { \cs:w __hook_toplevel~#3 \cs_end: }
+    \__hook_tl_gput_right:No #1 { \cs:w __hook_next~#3 \cs_end: }
   }
-\cs_generate_variant:Nn \__hook_initialize_single:NNNn {ccc}
-\cs_new:Npn \__hook_tl_gput:NV     {\ERROR}
-\cs_new:Npn \__hook_clist_gput:NV  {\ERROR}
+\cs_generate_variant:Nn \__hook_initialize_single:NNn { cc }
+\cs_new:Npn \__hook_tl_gput:Nn    { \ERROR }
+\cs_new:Npn \__hook_clist_gput:NV { \ERROR }
 \cs_new_protected:Npn \__hook_apply_label_pair:nnn #1#2#3
   {
     \__hook_label_if_exist_apply:nnnF {#1} {#2} {#3}
@@ -2261,7 +2295,8 @@
     \__hook_log_cmd:x { ^^J ->~The~hook~'#1': }
     \hook_if_exist:nF {#1}
       { \__hook_log_line:x { is~not~declared! } }
-    \__hook_if_exist:nTF {#1}
+    \hook_if_empty:nTF {#1}
+      { #2 { The~hook~is~empty } }
       {
         \__hook_log_line:x { Code~chunks: }
         \prop_if_empty:cTF { g__hook_#1_code_prop }
@@ -2270,7 +2305,19 @@
             \prop_map_inline:cn { g__hook_#1_code_prop }
               { \__hook_log_line_indent:x { ##1~->~\tl_to_str:n {##2} } }
           }
-        \__hook_log_line:x { Extra~code~for~next~invocation:}
+        \__hook_log_line:x
+          {
+            Document-level~(top-level)~code
+            \hook_if_exist:nT {#1}
+              { ~(executed~\__hook_if_reversed:nTF {#1} {first} {last} ) } :
+          }
+        \__hook_log_line_indent:x
+          {
+            \tl_if_empty:cTF { __hook_toplevel~#1 }
+              { --- }
+              { -> ~ \exp_args:Nv \tl_to_str:n { __hook_toplevel~#1 } }
+          }
+        \__hook_log_line:x { Extra~code~for~next~invocation: }
         \__hook_log_line_indent:x
           {
             \tl_if_empty:cTF { __hook_next~#1 }
@@ -2321,7 +2368,6 @@
               }
           }
       }
-      { #2 { The~hook~is~empty. } }
   }
 \cs_new:Npn \__hook_log_next_code:n #1
   { \exp_args:No \tl_to_str:n { \use_none:nn #1 } }
@@ -2342,7 +2388,7 @@
   }
 \cs_new_protected:Npn \__hook_list_one_rule:nnn #1#2#3
   {
-    \__hook_list_if_rule_exists:nnnF {#1} {#2} {#3} { }
+    \__hook_list_if_rule_exists:nnnF {#1} {#2} {#3}
       { \__hook_list_if_rule_exists:nnnF {#1} {#2} { ?? } { } }
   }
 \cs_new_protected:Npn \__hook_list_if_rule_exists:nnnF #1#2#3
@@ -2350,7 +2396,9 @@
     \if_cs_exist:w g__hook_ #3 _rule_ #1 | #2 _tl \cs_end:
       \exp_args:Nv \__hook_tmp:w
         { g__hook_ #3 _rule_ #1 | #2 _tl } { #1 | #2 } {#3}
+      \exp_after:wN \use_none:nn
     \fi:
+    \use:n
   }
 \cs_new_protected:Npn \__hook_debug_print_rules:n #1
   {
@@ -2372,12 +2420,10 @@
   { \__hook_normalize_hook_args:Nn \__hook_gput_next_code:nn {#1} }
 \cs_new_protected:Npn \__hook_gput_next_code:nn #1 #2
   {
-    \debug_suspend:
     \__hook_declare:n {#1}
     \hook_if_exist:nTF {#1}
       { \__hook_gput_next_do:nn {#1} {#2} }
       { \__hook_try_declaring_generic_next_hook:nn {#1} {#2} }
-    \debug_resume:
   }
 \cs_new_protected:Npn \__hook_gput_next_do:nn #1
   {
@@ -2389,8 +2435,8 @@
     \tl_if_empty:cT { __hook~#2 }
       { \__hook_update_hook_code:n {#2} }
     \tl_if_empty:NT #1
-      { \tl_gset:Nn #1 { \__hook_clear_next:n {#2} } }
-    \tl_gput_right:Nn #1
+      { \__hook_tl_gset:Nn #1 { \__hook_clear_next:n {#2} } }
+    \__hook_tl_gput_right:Nn #1
   }
 \cs_new_protected:Npn \__hook_clear_next:n #1
   { \cs_gset_eq:cN { __hook_next~#1 } \c_empty_tl }
@@ -2460,7 +2506,11 @@
       {
         \bool_lazy_and:nnTF
             { \prop_if_empty_p:c { g__hook_#1_code_prop } }
-            { \tl_if_empty_p:c { __hook_next~#1 } }
+            {
+              \bool_lazy_and_p:nn
+                { \tl_if_empty_p:c { __hook_toplevel~#1 } }
+                { \tl_if_empty_p:c { __hook_next~#1 } }
+            }
           { \prg_return_true: }
           { \prg_return_false: }
       }
@@ -2502,7 +2552,15 @@
       name.\\
       Please~ use~ a~ different~ name~ for~ your~ hook.}
 \msg_new:nnn { hooks } { empty-label }
-  { Empty~code~label~\msg_line_context:.~Using~`#1'~instead. }
+  {
+    Empty~code~label~\msg_line_context:.~
+    Using~`\__hook_currname_or_default:'~instead.
+  }
+\msg_new:nnn { hooks } { no-default-label }
+  {
+    Missing~(empty)~default~label~\msg_line_context:. \\
+    This~command~was~ignored.
+  }
 \msg_new:nnnn { hooks } { unknown-rule }
   { Unknown~ relationship~ `#3'~
     between~ labels~ `#2'~ and~ `#4'~
@@ -2518,6 +2576,39 @@
     `voids'~ or~
     `unrelated'.
   }
+\msg_new:nnnn { hooks } { misused-top-level }
+  {
+    Illegal~\iow_char:N \\AddToHook{#1}[top-level]{...}.\\
+    'top-level'~is~reserved~for~the~user's~document.
+  }
+  {
+    The~'top-level'~label~is~meant~for~user~code~only,~and~should~only~
+    be~used~(sparingly)~in~the~main~document.~Use~the~default~label~
+    '\__hook_currname_or_default:'~for~this~\@cls@pkg,~or~another~
+    suitable~label.
+  }
+\msg_new:nnn { hooks } { set-top-level }
+  {
+    You~cannot~change~the~default~label~#1~`top-level'.~Illegal \\
+    \use:nn { ~ } { ~ } \iow_char:N \\#2{#3} \\
+    \msg_line_context:.
+  }
+\msg_new:nnn { hooks } { ddhl-deprecated }
+  {
+    \iow_char:N \\DeclareDefaultHookLabel~is~deprecated.\\
+    Use~\iow_char:N \\SetDefaultHookLabel~instead.\\ \\
+    The~deprecated~name~will~be~removed~in~the~next~release.
+  }
+\msg_new:nnn { hooks } { extra-pop-label }
+  {
+    Extra~\iow_char:N \\PopDefaultHookLabel. \\
+    This~command~will~be~ignored.
+  }
+\msg_new:nnn { hooks } { missing-pop-label }
+  {
+    Missing~\iow_char:N \\PopDefaultHookLabel. \\
+    The~label~`#1'~was~pushed~but~never~popped.~Something~is~wrong.
+  }
 \msg_new:nnn { hooks } { should-not-happen }
   {
     ERROR!~This~should~not~happen.~#1 \\
@@ -2532,26 +2623,75 @@
   { \hook_gput_next_code:nn {#1} {#2} }
 \NewDocumentCommand \RemoveFromHook { m o }
   { \hook_gremove_code:nn {#1} {#2} }
-\seq_gpush:Nn \g__hook_name_stack_seq { }
+\tl_gset:Nn \g__hook_hook_curr_name_tl { top-level }
 \cs_new_protected:Npn \__hook_curr_name_push:n #1
+  { \exp_args:Nx \__hook_curr_name_push_aux:n { \__hook_make_name:n {#1} } }
+\cs_new_protected:Npn \__hook_curr_name_push_aux:n #1
   {
-    \seq_gpush:Nn \g__hook_name_stack_seq {#1}
-    \tl_gset:Nn \g__hook_hook_curr_name_tl {#1}
+    \tl_if_blank:nTF {#1}
+      { \msg_error:nn { hooks } { no-default-label } }
+      {
+        \str_if_eq:nnTF {#1} { top-level }
+          {
+            \msg_error:nnnnn { hooks } { set-top-level }
+              { to } { PushDefaultHookLabel } {#1}
+          }
+          {
+            \seq_gpush:NV \g__hook_name_stack_seq \g__hook_hook_curr_name_tl
+            \tl_gset:Nn \g__hook_hook_curr_name_tl {#1}
+          }
+      }
   }
 \cs_new_protected:Npn \__hook_curr_name_pop:
   {
-    \seq_gpop:NN \g__hook_name_stack_seq \l__hook_return_tl
-    \seq_get:NNTF \g__hook_name_stack_seq \l__hook_return_tl
+    \seq_gpop:NNTF \g__hook_name_stack_seq \l__hook_return_tl
       { \tl_gset_eq:NN \g__hook_hook_curr_name_tl \l__hook_return_tl }
+      { \msg_error:nn { hooks } { extra-pop-label } }
+  }
+\tl_gput_right:Nn \@kernel@after@enddocument@afterlastpage
+  { \__hook_end_document_label_check: }
+\cs_new_protected:Npn \__hook_end_document_label_check:
+  {
+    \seq_gpop:NNT \g__hook_name_stack_seq \l__hook_return_tl
       {
-        \msg_error:nnn { hooks } { should-not-happen }
-          { Tried~to~pop~from~an~empty~default~label~stack. }
+        \msg_error:nnx { hooks } { missing-pop-label }
+          { \g__hook_hook_curr_name_tl }
+        \tl_gset_eq:NN \g__hook_hook_curr_name_tl \l__hook_return_tl
+        \__hook_end_document_label_check:
       }
+  }
+\NewDocumentCommand \SetDefaultHookLabel { m }
+  {
+    \seq_if_empty:NTF \g__hook_name_stack_seq
+      {
+        \msg_error:nnnnn { hooks } { set-top-level }
+          { for } { SetDefaultHookLabel } {#1}
+      }
+      { \exp_args:Nx \__hook_set_default_label:n { \__hook_make_name:n {#1} } }
+  }
+\cs_new_protected:Npn \__hook_set_default_label:n #1
+  {
+    \str_if_eq:nnTF {#1} { top-level }
+      {
+        \msg_error:nnnnn { hooks } { set-top-level }
+          { to } { SetDefaultHookLabel } {#1}
+      }
+      { \tl_gset:Nn \g__hook_hook_curr_name_tl {#1} }
   }
 \NewDocumentCommand \DeclareDefaultHookLabel { m }
   {
-    \seq_gpop:NN \g__hook_name_stack_seq \l__hook_return_tl
-    \__hook_curr_name_push:n {#1}
+    \msg_error:nn { hooks } { ddhl-deprecated }
+    \SetDefaultHookLabel {#1}
+  }
+\NewDocumentCommand \PushDefaultHookLabel { m }
+  { \__hook_curr_name_push:n {#1} }
+\NewDocumentCommand \PopDefaultHookLabel { }
+  { \__hook_curr_name_pop: }
+\cs_gset_protected:Npn \@expl@push@filename@aux@@ #1#2#3
+  {
+    \__hook_curr_name_push:n {#3}
+    \str_gset:Nx \g_file_curr_name_str {#3}
+    #1 #2 {#3}
   }
 \cs_new:Npn \UseHook        { \hook_use:n }
 \cs_new:Npn \UseOneTimeHook { \hook_use_once:n }
@@ -2571,8 +2711,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 \cs_new_eq:NN \@expl@@@initialize@all@@
               \__hook_initialize_all:
-\cs_new_eq:NN \@expl@@@hook@curr@name@push@@n
-              \__hook_curr_name_push:n
 \cs_new_eq:NN \@expl@@@hook@curr@name@pop@@
               \__hook_curr_name_pop:
 \ExplSyntaxOff
@@ -4048,7 +4186,7 @@ Type  H <return>  for immediate help.}%
 \DeclareRobustCommand\fontfamily[1]{\edef\f@family{#1}}
 \DeclareRobustCommand\usefont[4]{\fontencoding{#1}%
    \edef\f@family{#2}%
-   \edef\f@series{#3}%
+   \set@target@series{#3}%
    \edef\f@shape{#4}\selectfont
    \ignorespaces}
 \DeclareRobustCommand\linespread[1]
@@ -4757,7 +4895,6 @@ Type  H <return>  for immediate help.}%
    \fi
 }
 \def\maybe@load@fontshape{\begingroup\try@load@fontshape\endgroup}
-\DeclareFontSeriesChangeRule {m}{sc}{msc}{mc}
 \def\set@target@series#1{%
     \edef\f@series{#1}%
     \series@maybe@drop@one@m\f@series\f@series
@@ -7153,8 +7290,6 @@ Type  H <return>  for immediate help.}%
 \AddToHook{enddocument/info}[kernel/filelist]{\@dofilelist}
 \AddToHook{enddocument/info}[kernel/warnings]{\@enddocument@kernel@warnings}
 \DeclareHookRule{enddocument/info}{kernel/filelist}{before}{kernel/warnings}
-\let\@kernel@after@enddocument\@empty
-\let\@kernel@after@enddocument@afterlastpage\@empty
 \def\@enddocument@kernel@warnings{%
    \ifdim \font@submax >\fontsubfuzz\relax
      \@font@warning{Size substitutions with differences\MessageBreak
@@ -9635,6 +9770,7 @@ Type  H <return>  for immediate help.}%
 \let\@unusedoptionlist\@empty
 \@onlypreamble\@unusedoptionlist
 \let\CurrentOption\@empty
+\let\@currpath\@empty
 \let\@currname\@empty
 \global\let\@currext=\@empty
 \def\@clsextension{cls}
@@ -9642,17 +9778,20 @@ Type  H <return>  for immediate help.}%
 \@onlypreamble\@clsextension
 \@onlypreamble\@pkgextension
 \def\@pushfilename{%
-  \@expl@@@hook@curr@name@push@@n{}%
   \@expl@push@filename@@
   \xdef\@currnamestack{%
     {\@currname}%
     {\@currext}%
     {\the\catcode`\@}%
     \@currnamestack}%
+  \xdef\@kernel@currpathstack{%
+    {\@currpath}%
+    \@kernel@currpathstack}%
   \@expl@push@filename@aux@@}
 \@onlypreamble\@pushfilename
 \def\@popfilename{\@expl@@@hook@curr@name@pop@@
   \expandafter\@p@pfilename\@currnamestack\@nil
+  \expandafter\@p@pfilepath\@kernel@currpathstack\@nil
   \@expl@pop@filename@@}
 \@onlypreamble\@popfilename
 \def\@p@pfilename#1#2#3#4\@nil{%
@@ -9663,6 +9802,11 @@ Type  H <return>  for immediate help.}%
 \@onlypreamble\@p@pfilename
 \gdef\@currnamestack{}
 \@onlypreamble\@currnamestack
+\gdef\@kernel@currpathstack{}
+\def\@p@pfilepath#1{%
+  \gdef\@currpath{#1}\@p@pfilepath@aux\@empty}
+\def\@p@pfilepath@aux#1\@nil{%
+  \xdef\@kernel@currpathstack{#1}}
 \def\@ptionlist#1{%
   \@ifundefined{opt@#1}\@empty{\csname opt@#1\endcsname}}
 \@onlypreamble\@ptionlist
@@ -9729,11 +9873,12 @@ Type  H <return>  for immediate help.}%
 \@onlypreamble\@if@pti@ns
 \def\ProvidesPackage#1{%
   \xdef\@gtempa{#1}%
-  \ifx\@gtempa\@currname\else
+  \@expandtwoargs\@expl@str@if@eq@@nnTF
+      {\@gtempa}{\@currpath\@currname}{}{%
     \@latex@warning@no@line{You have requested
-      \@cls@pkg\space`\@currname',\MessageBreak
+      \@cls@pkg\space`\@currpath\@currname',\MessageBreak
        but the \@cls@pkg\space provides `#1'}%
-  \fi
+    }%
   \@ifnextchar[\@pr@videpackage{\@pr@videpackage[]}}%]
 \@onlypreamble\ProvidesPackage
 \def\@pr@videpackage[#1]{%
@@ -9768,10 +9913,14 @@ Type  H <return>  for immediate help.}%
   \@expl@@@filehook@set@curr@file@@nNN
     {\@expl@@@filehook@resolve@file@subst@@w #3.#1\@nil}%
       \reserved@a\reserved@b
+  \@expl@@@filehook@clear@replacement@flag@@
   \expandafter\xdef\csname opt@\reserved@a\endcsname{%
     \@ifundefined{opt@\reserved@a}\@empty
       {\csname opt@\reserved@a\endcsname,}%
-    \zap@space#2 \@empty}}
+    \zap@space#2 \@empty}%
+  \expandafter\let
+    \csname opt@#3.#1\expandafter\endcsname
+    \csname opt@\reserved@a\endcsname}
 \@onlypreamble\@pass@ptions
 \def\PassOptionsToPackage{\@pass@ptions\@pkgextension}
 \def\PassOptionsToClass{\@pass@ptions\@clsextension}
@@ -9965,8 +10114,14 @@ Type  H <return>  for immediate help.}%
   \reserved@a}
 \@onlypreamble\@fileswith@pti@ns
 \def\@onefilewithoptions#1[#2][#3]#4{%
+  \@expl@@@filehook@set@curr@file@@nNN{#1.#4}\reserved@a\reserved@b
+  \edef\reserved@c{\def\noexpand\reserved@c####1%
+    \detokenize\expandafter{\expanded{.#4}}%
+    \noexpand\@nil{\def\noexpand\reserved@a{####1}}}\reserved@c
+  \expandafter\reserved@c\reserved@a\@nil
   \@pushfilename
-  \xdef\@currname{#1}%
+  \xdef\@currname{\string@makeletter\reserved@a}%
+  \xdef\@currpath{\ifx\reserved@b\@empty\else\reserved@b/\fi}%
   \global\let\@currext#4%
   \@ifl@aded\@currext\@currname
     {\@if@ptions\@currext{\@currname}{#2}{}%
@@ -9987,14 +10142,14 @@ Type  H <return>  for immediate help.}%
      \@firstofone}%
     {\makeatletter
      \@reset@ptions
-     \IfFileExists{\@currname.\@currext}{}%
+     \IfFileExists{\@currpath\@currname.\@currext}{}%
        {\@missing@onefilewithoptions{#2}}%
      \ifx\@currname\@empty
        \expandafter\@gobble
      \else
        \@disable@packageload@do{\@currname.\@currext}%
          {\@expl@@@filehook@file@push@@
-          \set@curr@file{\@currname.\@currext}%
+          \set@curr@file{\@currpath\@currname.\@currext}%
           \@filehook@set@CurrentFile
           \expandafter\@swaptwoargs\expandafter
             {\expandafter{\@currpkg@reqd}}%
@@ -10003,6 +10158,7 @@ Type  H <return>  for immediate help.}%
           \ifx\CurrentFile\CurrentFileUsed
           \else
             \filename@parse\@curr@file
+            \edef\@currpath{\string@makeletter\filename@area}%
             \edef\@currname{\string@makeletter\filename@base}%
             \edef\@currext{\string@makeletter\filename@ext}%
           \fi
@@ -10027,14 +10183,18 @@ Type  H <return>  for immediate help.}%
 \@onlypreamble\@onefilewithoptions
 \let\@unprocessedoptions\@undefined
 \def\@missing@onefilewithoptions#1{%
-  \@missingfileerror\@currname\@currext
-  \xdef\@currname{\@missingfile@area\@missingfile@base}%
+  \@missingfileerror{\@currpath\@currname}\@currext
+  \global\let\@currpath\@missingfile@area
+  \global\let\@currname\@missingfile@base
   \global\let\@currext\@missingfile@ext}
 \def\load@onefile@withoptions#1{%
   \let\CurrentOption\@empty
   \@reset@ptions
   \def\reserved@a{%
     \@pass@ptions\@currext{#1}{\@currname}%
+    \expandafter\let
+      \csname opt@\@currpkg@reqd\expandafter\endcsname
+      \csname opt@\@currname.\@currext\endcsname
     \global\expandafter
     \let\csname ver@\@currname.\@currext\endcsname\@empty
     \expandafter\let\csname\@currname.\@currext-h@@k\endcsname\@empty
@@ -10047,9 +10207,9 @@ Type  H <return>  for immediate help.}%
         \UseHook{class/before/\@currname}%
       \fi
     \fi
-    \InputIfFileExists{\@currpkg@reqd}{}%
+    \InputIfFileExists{\@currpath\@currpkg@reqd}{}%
       {\@latex@error
-        {The \@cls@pkg\space\@currpkg@reqd\space failed to load.}\@ehd}%
+        {The \@cls@pkg\space\@currpkg@reqd\space failed to load}\@ehd}%
     \expandafter\let\csname unprocessedoptions-\@currname.\@currext\endcsname
                     \@@unprocessedoptions
     \csname\@currname.\@currext-h@@k\endcsname
@@ -10427,10 +10587,10 @@ Type  H <return>  for immediate help.}%
 }
 \def\pkgcls@rollbackdate@error#1{%
   \@latex@error{Suspicious rollback date given}%
-     {The \@cls@pkg\space'\@currname'  claims that it
-      came into existence on #1 which\MessageBreak
+     {The \@cls@pkg\space'\@currname'  has no rollback data
+      before #1 which\MessageBreak
       is after your requested rollback date --- so
-      something is wrong here.\MessageBreak
+      something may be wrong here.\MessageBreak
       Continue and we use the earliest known release.}}
 \def\DeclareCurrentRelease#1#2{%
   \ifnum\pkgcls@targetdate>\z@  % some sort of rollback request
@@ -10474,8 +10634,8 @@ Type  H <return>  for immediate help.}%
 %% File: ltfilehook.dtx (C) Copyright 2020 Frank Mittelbach,
 %%                                         Phelype Oleinik & LaTeX Team
 %%% From File: ltfilehook.dtx
-\providecommand\ltfilehookversion{v1.0c}
-\providecommand\ltfilehookdate{2020/10/18}
+\providecommand\ltfilehookversion{v1.0d}
+\providecommand\ltfilehookdate{2020/11/24}
 \ExplSyntaxOn
 \tl_new:N \CurrentFile
 \tl_new:N \CurrentFilePath
@@ -10545,34 +10705,40 @@ Type  H <return>  for immediate help.}%
     {%
      \@expl@@@filehook@file@push@@
      \@filehook@set@CurrentFile
-      \edef\reserved@a{\@filef@und
+      \edef\reserved@a{%
         \@expl@@@filehook@file@pop@assign@@nnnn
           {\CurrentFilePathUsed}%
           {\CurrentFileUsed}%
           {\CurrentFilePath}%
-          {\CurrentFile}}%
+          {\CurrentFile}%
+        \noexpand\@input@file@exists@with@hooks{\@filef@und}}%
       \expandafter\@swaptwoargs\expandafter
         {\reserved@a}%
-        {%
-          #2%
-          \@addtofilelist{#1}%
-          \UseHook{file/before}%
-          \UseHook{file/before/\CurrentFile}%
-          \@@input
-        }%
-      \UseHook{file/after/\CurrentFile}%
-      \UseHook{file/after}%
+        {#2}%
       \@expl@@@filehook@file@pop@@
     }%
 }
+\def\@input@file@exists@with@hooks#1{%
+  \edef\reserved@a{\unqu@tefilef@und#1\@nil}%
+  \@addtofilelist{\string@makeletter\reserved@a}%
+  \UseHook{file/before}%
+  \UseHook{file/before/\CurrentFile}%
+  \@@input #1% <- trailing space comes from \@filef@und
+  \UseHook{file/after/\CurrentFile}%
+  \UseHook{file/after}}
+\def\unqu@tefilef@und"#1" \@nil{#1}
 \ExplSyntaxOn
 \cs_new_protected:Npn \__filehook_subst_add:nn #1 #2
   {
     \group_begin:
       \cs_set:cpx { } { \exp_not:o { \cs:w\cs_end: } }
       \int_set:Nn \tex_escapechar:D { -1 }
-      \cs_gset:cpx { @file-subst@ \__filehook_subst_file_normalize:n {#1} }
-        { \__filehook_subst_file_normalize:n {#2} }
+      \cs_gset:cpx
+        {
+          @file-subst@
+          \__filehook_subst_file_normalize:Nn \use_ii_iii:nnn {#1}
+        }
+        { \__filehook_subst_file_normalize:Nn \__filehook_file_name_compose:nnn {#2} }
     \group_end:
   }
 \cs_new_protected:Npn \__filehook_subst_remove:n #1
@@ -10580,14 +10746,18 @@ Type  H <return>  for immediate help.}%
     \group_begin:
       \cs_set:cpx { } { \exp_not:o { \cs:w\cs_end: } }
       \int_set:Nn \tex_escapechar:D { -1 }
-      \cs_undefine:c { @file-subst@ \__filehook_subst_file_normalize:n {#1} }
+      \cs_undefine:c
+        {
+          @file-subst@
+          \__filehook_subst_file_normalize:Nn \use_ii_iii:nnn {#1}
+        }
     \group_end:
   }
-\cs_new:Npn \__filehook_subst_file_normalize:n #1
+\cs_new:Npn \__filehook_subst_file_normalize:Nn #1 #2
   {
     \exp_after:wN \__filehook_subst_empty_name_chk:NN
       \cs:w \exp_after:wN \cs_end:
-        \cs:w \__filehook_file_parse_full_name:nN {#1} \use_ii_iii:nnn \cs_end:
+        \cs:w \__filehook_file_parse_full_name:nN {#2} #1 \cs_end:
   }
 \cs_new:Npn \__filehook_subst_empty_name_chk:NN #1 #2
   { \if_meaning:w #1 #2 .tex \else: \token_to_str:N #2 \fi: }
@@ -10613,6 +10783,7 @@ Type  H <return>  for immediate help.}%
        \if@tempswa \@expl@@@filehook@drop@extension@@N\@curr@file@reqd \fi}%
       {\if@tempswa \@expl@@@filehook@drop@extension@@N\@curr@file \fi
        \global\let\@curr@file@reqd\@curr@file}%
+    \@expl@@@filehook@clear@replacement@flag@@
   \endgroup}
 \def\@kernel@make@file@csname#1#2#3{%
   \xdef#1{\expandafter\@set@curr@file@aux
@@ -10651,7 +10822,9 @@ Type  H <return>  for immediate help.}%
   { \tl_if_empty:nF {#1} { #1 / } #2#3 }
 \flag_new:n { __filehook_file_replaced }
 \cs_new:Npn \__filehook_if_file_replaced:TF #1 #2
-   { \flag_if_raised:nTF { __filehook_file_replaced } {#1} {#2} }
+  { \flag_if_raised:nTF { __filehook_file_replaced } {#1} {#2} }
+\cs_new_protected:Npn \__filehook_clear_replacement_flag:
+  { \flag_clear:n { __filehook_file_replaced } }
 \cs_new:Npn \__filehook_file_subst_begin:nnn #1 #2 #3
   {
     \__filehook_file_subst_tortoise_hare:nn { #2#3 } { #2#3 }
@@ -10715,6 +10888,8 @@ Type  H <return>  for immediate help.}%
               \__filehook_normalize_file_name:w
 \cs_new_eq:NN \@expl@@@filehook@if@file@replaced@@TF
               \__filehook_if_file_replaced:TF
+\cs_new_eq:NN \@expl@@@filehook@clear@replacement@flag@@
+              \__filehook_clear_replacement_flag:
 \cs_new_eq:NN \@expl@@@filehook@drop@extension@@N
               \__filehook_drop_extension:N
 \cs_new_eq:NN \@expl@@@filehook@file@push@@
@@ -10730,8 +10905,8 @@ Type  H <return>  for immediate help.}%
 %% File: ltshipout.dtx (C) Copyright 2020 Frank Mittelbach, LaTeX Team
 %%
 %%% From File: ltshipout.dtx
-\providecommand\ltshipoutversion{v1.0c}
-\providecommand\ltshipoutdate{2020/09/27}
+\providecommand\ltshipoutversion{v1.0d}
+\providecommand\ltshipoutdate{2020/11/24}
 \ExplSyntaxOn
 \bool_new:N \g__shipout_debug_bool
 \cs_new_eq:NN \__shipout_debug:n  \use_none:n
@@ -11050,7 +11225,7 @@ Type  H <return>  for immediate help.}%
   {\ifnum\@abspage@last<\maxdimen
      \xdef\PreviousTotalPages{\@abspage@last}\fi}
 \cs_new_eq:NN \DiscardShipoutBox \shipout_discard:
-\cs_new_protected:Npn \AtBeginDvi {\__shipout_add_firstpage_material:Nn \AtBeginDvi}
+\cs_set_protected:Npn \AtBeginDvi {\__shipout_add_firstpage_material:Nn \AtBeginDvi}
 \cs_new_eq:NN \DebugShipoutsOn  \shipout_debug_on:
 \cs_new_eq:NN \DebugShipoutsOff \shipout_debug_off:
 \cs_set_eq:NN \@expl@@@shipout@add@firstpage@material@@Nn

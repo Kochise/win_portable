@@ -10,7 +10,7 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2019 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
@@ -30,7 +30,7 @@
 %%
 \ProvidesFile
   {microtype-pdftex.def}
-  [2019/11/18 v2.7d
+  [2020/12/07 v2.8
    Definitions specific to
    pdftex
    (RS)]
@@ -118,7 +118,7 @@
 }
 \MT@requires@pdftex5{
 \def\MT@ifstreq#1#2{%
-  \ifcase\pdfstrcmp{#1}{#2}\relax
+  \ifnum\pdfstrcmp{#1}{#2}=\z@
     \expandafter\@firstoftwo
   \else
     \expandafter\@secondoftwo
@@ -230,6 +230,16 @@
   \fi
 }
 }\relax
+\def\MT@fix@fontdimen@six{%
+  \ifnum\fontdimen6\MT@font=\z@
+    \fontdimen6\MT@font=%
+      \pdffontsize\MT@font
+    \MT@info{Fixing zero \string\fontdimen 6 for font `\MT@@font'\MessageBreak
+             (new value: \the\fontdimen6\MT@font)}%
+    \MT@glet@nc{\MT@@font-fake6}\@empty
+  \fi
+  \edef\MT@dimen@six{\number\fontdimen6\MT@font}%
+}
 \def\MT@protrusion{\MT@maybe@do{pr}}
 \def\MT@set@pr@codes{%
   \MT@nofamilyfalse
@@ -243,28 +253,15 @@
         \MT@glet@nc{\MT@encoding-\MT@family-settings}\@empty
       }%
     \fi
-    \MT@get@font@dimen@six{%
-      \MT@get@opt
-      \MT@reset@pr@codes
-      \MT@get@inh@list
-      \MT@set@inputenc{c}%
-      \MT@load@list\MT@pr@c@name
-      \MT@set@listname
-      \MT@let@cn\@tempc{MT@pr@c@\MT@pr@c@name}%
-      \expandafter\MT@set@codes\@tempc,\relax,}%
+    \MT@get@opt
+    \MT@reset@pr@codes
+    \MT@get@inh@list
+    \MT@set@inputenc{c}%
+    \MT@load@list\MT@pr@c@name
+    \MT@set@listname
+    \MT@let@cn\@tempc{MT@pr@c@\MT@pr@c@name}%
+    \expandafter\MT@set@codes\@tempc,\relax,%
   }\MT@reset@pr@codes
-}
-\def\MT@get@font@dimen@six{%
-  \ifnum\fontdimen6\MT@font=\z@
-    \MT@warning@nl{%
-      Font `\MT@@font' does not specify its\MessageBreak
-      \@backslashchar fontdimen 6 (width of an `em')! Therefore,\MessageBreak
-      \@nameuse{MT@abbr@\MT@feat} will not work with this font}%
-    \expandafter\@gobble
-  \else
-    \edef\MT@dimen@six{\number\fontdimen6\MT@font}%
-    \expandafter\@firstofone
-  \fi
 }
 \def\MT@set@all@pr#1#2{%
   \let\MT@temp\@empty
@@ -345,8 +342,8 @@
 \def\MT@get@charwd{\MT@count=\MT@dimen@six}
 }
 \def\MT@set@pr@heirs#1{%
-  \lpcode\MT@font #1 =\lpcode\MT@font\MT@char\relax
-  \rpcode\MT@font #1 =\rpcode\MT@font\MT@char\relax
+  \lpcode\MT@font #1=\lpcode\MT@font\MT@char\relax
+  \rpcode\MT@font #1=\rpcode\MT@font\MT@char\relax
 }
 \def\MT@preset@pr{%
   \expandafter\expandafter\expandafter\MT@preset@pr@
@@ -464,8 +461,7 @@
   \MT@get@ex@opt@{stretch}{Setting stretch limit to \number\MT@stretch@}%
   \MT@get@ex@opt@{shrink} {Setting shrink limit to \number\MT@shrink@}%
   \MT@get@ex@opt@{step}   {Setting expansion step to \number\MT@step@}%
-  \def\@tempa{autoexpand}%
-  \MT@get@ex@opt@{auto}{\ifx\@tempa\MT@auto@ En\else Dis\fi abling automatic expansion}%
+  \MT@get@ex@opt@{auto}{\MT@ifstreq{\MT@auto@}{autoexpand}{En}{Dis}abling automatic expansion}%
   \MT@ifdefined@n@T{MT@ex@c@\MT@ex@c@name @preset}{%
     \MT@preset@ex
     \let\MT@reset@ef@codes\relax
@@ -491,15 +487,14 @@
 \def\MT@spacing{\MT@maybe@do{sp}}
 \def\MT@set@sp@codes{%
   \MT@if@list@exists{%
-    \MT@get@font@dimen@six{%
-      \MT@get@opt
-      \MT@reset@sp@codes
-      \MT@get@inh@list
-      \MT@set@inputenc{c}%
-      \MT@load@list\MT@sp@c@name
-      \MT@set@listname
-      \MT@let@cn\@tempc{MT@sp@c@\MT@sp@c@name}%
-      \expandafter\MT@set@codes\@tempc,\relax,}%
+    \MT@get@opt
+    \MT@reset@sp@codes
+    \MT@get@inh@list
+    \MT@set@inputenc{c}%
+    \MT@load@list\MT@sp@c@name
+    \MT@set@listname
+    \MT@let@cn\@tempc{MT@sp@c@\MT@sp@c@name}%
+    \expandafter\MT@set@codes\@tempc,\relax,%
   }\MT@reset@sp@codes
 }
 \def\MT@sp@split@val#1,#2,#3\relax{%
@@ -563,15 +558,14 @@
 \def\MT@kerning{\MT@maybe@do{kn}}
 \def\MT@set@kn@codes{%
   \MT@if@list@exists{%
-    \MT@get@font@dimen@six{%
-      \MT@get@opt
-      \MT@reset@kn@codes
-      \MT@get@inh@list
-      \MT@set@inputenc{c}%
-      \MT@load@list\MT@kn@c@name
-      \MT@set@listname
-      \MT@let@cn\@tempc{MT@kn@c@\MT@kn@c@name}%
-      \expandafter\MT@set@codes\@tempc,\relax,}%
+    \MT@get@opt
+    \MT@reset@kn@codes
+    \MT@get@inh@list
+    \MT@set@inputenc{c}%
+    \MT@load@list\MT@kn@c@name
+    \MT@set@listname
+    \MT@let@cn\@tempc{MT@kn@c@\MT@kn@c@name}%
+    \expandafter\MT@set@codes\@tempc,\relax,%
   }\MT@reset@kn@codes
 }
 \def\MT@kn@split@val#1,#2\relax{%
@@ -637,7 +631,15 @@
   \MT@tracking@
 \def\MT@set@tr@codes{%
   \MT@vinfo{Tracking font `\MT@@font'\on@line}%
-  \MT@get@font@dimen@six{%
+  \MT@ifdefined@n@TF{\MT@@font-fake6}{%
+    \expandafter\ifx\csname\MT@@font-fake6\endcsname\@empty
+      \MT@warning@nl{%
+        Font `\MT@@font' does not specify its\MessageBreak
+        \@backslashchar fontdimen 6 (width of an `em')! Therefore,\MessageBreak
+        \@nameuse{MT@abbr@\MT@feat} will not work with this font}%
+      \MT@glet@nc{\MT@@font-fake6}\relax
+    \fi
+  }{%
   \MT@if@list@exists
     \MT@get@tr@opt
     \relax
@@ -704,19 +706,21 @@
 }
 \def\MT@get@tr@opt{%
   \MT@set@listname
+  \let\MT@tr@factor@\@m
+  \MT@ifdefined@n@T{MT@tr@c@\MT@tr@c@name @unit}{%
+    \MT@let@cn\MT@tr@unit@{MT@tr@c@\MT@tr@c@name @unit}%
+    \ifdim\MT@tr@unit@=1em
+      \let\MT@tr@unit@\@undefined
+    \else
+      \MT@get@unit\MT@tr@unit@
+    \fi
+  }%
   \MT@ifdefined@n@T{MT@tr@c@\MT@tr@c@name}{%
     \MT@let@cn\MT@letterspace{MT@tr@c@\MT@tr@c@name}%
-    \MT@ifdefined@n@T{MT@tr@c@\MT@tr@c@name @unit}{%
-      \MT@let@cn\MT@tr@unit@{MT@tr@c@\MT@tr@c@name @unit}%
-      \ifdim\MT@tr@unit@=1em
-        \let\MT@tr@unit@\@undefined
-      \else
-        \MT@let@cn\@tempb{MT@tr@c@\MT@tr@c@name}%
-        \MT@get@unit\MT@tr@unit@
-        \let\MT@tr@factor@\@m
-        \MT@scale@to@em
-        \edef\MT@letterspace{\number\@tempcntb}%
-      \fi
+    \MT@ifdefined@c@T\MT@tr@unit@{%
+      \let\@tempb\MT@letterspace
+      \MT@scale@to@em
+      \edef\MT@letterspace{\number\@tempcntb}%
     }%
   }%
   \MT@get@tr@opt@{spacing}     {ispace}%
@@ -731,6 +735,7 @@
 \def\MT@set@lsfont{\MT@exp@two@c\let\font@name\MT@lsfont}
 \DeclareRobustCommand\lsstyle{%
   \not@math@alphabet\lsstyle\textls
+  \let\glb@currsize\@empty
   \MT@maybe@gobble@with@tikz{\aftergroup\glb@settings}%
   \def\MT@feat{tr}%
   \let\MT@tracking\MT@set@tr@codes
@@ -787,13 +792,11 @@
 }
 \def\MT@tr@set@space@#1#2#3#4{%
   \MT@ifempty{#2}{%
-    \MT@ifempty{#1}{%
-      \edef\MT@temp{\MT@temp#4\the\fontdimen#3\MT@lsfont}%
-    }{%
+    \MT@ifempty{#1}\relax{%
       \MT@tr@set@space@@{#1}{#3}{1000}%
-      \edef\MT@temp{\MT@temp#4\the\@tempdima}%
       \fontdimen#3\MT@lsfont=\@tempdima
     }%
+    \edef\MT@temp{\MT@temp#4\the\fontdimen#3\MT@lsfont}%
   }{%
     \MT@tr@set@space@@{#2}{#3}{2000}%
     \edef\MT@temp{\MT@temp#4\the\@tempdima}%
@@ -808,12 +811,10 @@
     \MT@ifdefined@c@TF\MT@tr@unit@
       {\edef\@tempb{#1}\MT@scale@to@em}
       {\@tempcntb=#1\relax}%
-    \@tempdima=\dimexpr \dimexpr\@tempcntb sp*\MT@dimen@six/1000\relax
-                       -\fontdimen#2\MT@lsfont\relax
+    \@tempdima=\dimexpr\@tempcntb sp*\MT@dimen@six/1000\relax
     \ifnum#2=\tw@
       \advance\@tempdima -\dimexpr\MT@letterspace@ sp*\MT@dimen@six/#3\relax
     \fi
-    \@tempdima=\dimexpr \fontdimen#2\MT@lsfont+\@tempdima\relax
   }{%
     \MT@ifempty\@tempa{\let\@tempa\MT@letterspace@}\relax
     \@tempdima=\dimexpr \numexpr1000+\@tempa sp *\fontdimen#2\MT@lsfont/1000\relax
@@ -1193,15 +1194,13 @@
 \define@key{MT@ex@c}{auto}[true]{%
   \def\@tempa{#1}%
   \csname if\@tempa\endcsname
-    \MT@requires@pdftex4{%
-      \MT@gdef@n{MT@ex@c@\MT@curr@set@name @auto}{autoexpand}%
-    }{%
-      \MT@warning{pdftex too old for automatic font expansion}%
-    }
+    \MT@requires@pdftex4%
+      {\MT@gdef@n{MT@ex@c@\MT@curr@set@name @auto}{autoexpand}}%
+      {\MT@warning{pdftex too old for automatic font expansion}}%
   \else
-    \MT@requires@pdftex4{%
-      \MT@glet@nc{MT@ex@c@\MT@curr@set@name @auto}\@empty
-    }\relax
+    \MT@requires@pdftex4%
+      {\MT@glet@nc{MT@ex@c@\MT@curr@set@name @auto}\@empty}%
+      \relax
   \fi
 }
 \MT@define@opt@key{tr}{spacing}
@@ -1384,7 +1383,8 @@
 }
 \def\MT@setup@expansion{%
   \ifnum\pdfoutput<\@ne
-    \ifMT@opt@expansion \else
+    \ifMT@opt@expansion
+    \else
       \MT@expansionfalse
     \fi
   \fi

@@ -3,20 +3,15 @@
 --  DESCRIPTION:  part of luaotfload / font features
 -----------------------------------------------------------------------
 
-local ProvidesLuaModule = { 
+assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-features",
-    version       = "3.15",       --TAGVERSION
-    date          = "2020-09-02", --TAGDATE
+    version       = "3.16",       --TAGVERSION
+    date          = "2020-12-31", --TAGDATE
     description   = "luaotfload submodule / features",
     license       = "GPL v2.0",
     author        = "Hans Hagen, Khaled Hosny, Elie Roux, Philipp Gesang, Marcel Krüger",
     copyright     = "PRAGMA ADE / ConTeXt Development Team",
 }
-
-if luatexbase and luatexbase.provides_module then
-  luatexbase.provides_module (ProvidesLuaModule)
-end  
-
 
 local type              = type
 local next              = next
@@ -45,12 +40,18 @@ local otf               = handlers.otf
 
 local config            = config or { luaotfload = { run = { } } }
 
-local as_script         = true
-local normalize         = function () end
+local as_script         = config.luaotfload.run.live
+local normalize
 
-if config.luaotfload.run.live ~= false then
+if as_script then
+    function normalize(features)
+        return {
+            axis = features and features.axis,
+            instance = features and features.instance,
+        }
+    end
+else
     normalize = otf.features.normalize
-    as_script = false
 end
 
 --[[HH (font-xtx) --
@@ -663,7 +664,7 @@ end
 
 do
     local function mathfontdimen(tfmdata, _, value)
-        if not next(tfmdata.mathparameters) then return end
+        if not (tfmdata.mathparameters and next(tfmdata.mathparameters)) then return end
         local parameters = tfmdata.parameters
         local mathparameters = tfmdata.mathparameters
         if value == 'xetex' then

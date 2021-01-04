@@ -1,6 +1,33 @@
 <!--- CircuiTikz - Changelog --->
 The major changes among the different circuitikz versions are listed here. See <https://github.com/circuitikz/circuitikz/commits> for a full list of changes.
 
+* Version 1.2.7 (2020-12-27)
+
+    Bugfix release.
+
+    - The recent temporary changes to TikZ to v3.1.8a revealed a problem in corner cases with `circuitikz` that should be fixed (thanks to Henri Menke)
+
+* Version 1.2.6 (2020-12-16)
+
+    The highlight of this release is the option to draw circles around transistors; moreover, a handful of new component and several bug fixes.
+
+    - added option to have transistors with circles, suggested by user `@myzinsky`
+    - added closed position for normally open button and the other way around (suggested by user `@septatrix`)
+    - added a `tip` anchor for push buttons
+    - added text anchor for legacy `linestub` component
+    - added an option for a different style of european logic xnor port (suggested by user `@Schlepptop`)
+    - added dynode tubes electrodes (suggested by user `@ferdymercury`)
+    - fixed a bug in style-files (thanks to user `@Alex` on `tex.stackexchange.com`)
+    - added a comment about relative coords (thanks to user `@septatrix`)
+    - several fixes to the manual
+
+* Version 1.2.5 (2020-10-14)
+
+    Mainly a bugfix release for `raised` voltage style.
+
+    - added macro to access labels and annotations anchors and direction
+    - fixed a bug in "raised" voltages' positions with `invert` and/or `mirror`
+
 * Version 1.2.4 (2020-10-04)
 
     - several documentation enhancment

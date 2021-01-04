@@ -1,0 +1,138 @@
+% 'smcat' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{smcat}
+[2021/01/04 v7.1.0 LaTeX package for Javascript based diagramming and charting tool]
+% Support for https://github.com/sverweij/state-machine-cat
+% Based on https://github.com/dakusui/latex-ditaa
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\smcatsetup}[1]{\setkeys{smcat}{#1}}
+\newcommand*{\smcatsetup}{\kvsetkeys{smcat}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=smcat, prefix=smcat@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{smcat} location, *not* at \begin[options]{smcat}
+% These options can be changed at "runtime" using the \smcatsetup{options} macro, though
+\DeclareStringOption{imagepath}								% Path of the image
+\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+\DeclareBoolOption{svg}										% Output is svg format (default, when fixed)
+
+\DeclareBoolOption{V}										% Output the version number
+\DeclareBoolOption{version}									%
+\DeclareStringOption{T}[]									% Output type (svg|dot|smcat|json|ast|scxml|scjson, default: "svg")
+\DeclareStringOption[svg]{outputtype}[svg]					%
+\DeclareStringOption{I}[]									% Input type (smcat|scxml|json, default: "smcat")
+\DeclareStringOption[smcat]{inputtype}[smcat]				%
+\DeclareStringOption{E}[]									% Rendering engine (dot|circo|fdp|neato|osage|twopi, default: "dot")
+\DeclareStringOption{engine}[]								%
+\DeclareStringOption{d}[]									% Rendering direction (top-down|bottom-top|left-right|right-left, default: "top-down")
+\DeclareStringOption{direction}[]							%
+\DeclareStringOption{o}[]									% File to write to. use - for stdout
+\DeclareStringOption{outputto}[]							%
+\DeclareStringOption{dotgraphattrs}[]						% Graph attributes to pass to the dot render engine
+\DeclareStringOption{dotnodeattrs}[]						% Node attributes to pass to the dot render engine
+\DeclareStringOption{dotedgeattrs}[]						% Edge attributes to pass to the dot render engine
+\DeclareBoolOption{desugar}									% Transform forks and joins into transitions (!experimental!)								%
+\DeclareBoolOption{l}										% Display license and exit
+\DeclareBoolOption{license}									%
+\DeclareBoolOption{h}										% Output usage information
+\DeclareBoolOption{help}									%
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{smcat}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{smcat}[3][\smcat@width]
+	{ %	\begin{smcat}[width]{caption}{refname}
+		\def\smcatfigwidth{#1}
+		\def\smcatcaption{#2}
+		\def\smcatrefname{#3}
+		
+		% Conceptual inception (in case the 'svg' flag is forced)
+		\ifsmcat@svg
+			\setkeys{smcat}{T=svg}
+		\fi
+
+		% -T, --output-type [type]							% Output type (svg|dot|smcat|json|ast|scxml|scjson, default: "svg")
+		\ifdefstring{\smcat@T}{}{\ifdefstring{\smcat@outputtype}{}{\def\smcatoptT{\def\smcatoptexto{svg}}}{\def\smcatoptT{--output-type "\smcat@outputtype" } \def\smcatoptexto{\smcat@outputtype}}}{\def\smcatoptT{-T "\smcat@T" } \def\smcatoptexto{\smcat@T}}
+		% -I, --input-type [type]							% Input type (smcat|scxml|json, default: "smcat")
+		\ifdefstring{\smcat@I}{}{\ifdefstring{\smcat@inputtype}{}{\def\smcatoptI{\def\smcatoptexti{smcat}}}{\def\smcatoptI{--input-type "\smcat@inputtype" } \def\smcatoptexti{\smcat@inputtype}}}{\def\smcatoptI{-I "\smcat@I" } \def\smcatoptexti{\smcat@I}}
+
+		\def\smcatdir{\smcat@imagepath/smcat}
+		\def\smcatdpf{\smcatdir/\smcatrefname}
+		\def\smcatsrc{\smcatdpf.\smcatoptexti}				% Input file
+		\def\smcatdst{\smcatdpf.\smcatoptexto}				% The extension shall be set at this point (hopefully so)
+		\def\smcatout{\smcatdpf.out}
+		\def\smcaterr{\smcatdpf.err}
+
+		% -V, --version										% Output the version number
+		\ifthenelse{\boolean{smcat@V}}{\def\smcatoptV{-V }}{\ifthenelse{\boolean{smcat@version}}{\def\smcatoptV{--version }}{\def\smcatoptV{}}}
+		% -T, --output-type [type]							% See above
+		% -I, --input-type [type]							% See above
+		% -E, --engine [type]								% Rendering engine (dot|circo|fdp|neato|osage|twopi, default: "dot")
+		\ifdefstring{\smcat@E}{}{\ifdefstring{\smcat@engine}{}{\def\smcatoptE{}}{\def\smcatoptE{--engine "\smcat@engine" }}}{\def\smcatoptE{-E "\smcat@E" }}
+		% -d, --direction [dir]								% Rendering direction (top-down|bottom-top|left-right|right-left, default: "top-down")
+		\ifdefstring{\smcat@d}{}{\ifdefstring{\smcat@direction}{}{\def\smcatoptd{}}{\def\smcatoptd{--direction "\smcat@direction" }}}{\def\smcatoptd{-d "\smcat@d" }}
+		% -o, --output-to [file]							% File to write to. use - for stdout
+		\ifdefstring{\smcat@o}{}{\ifdefstring{\smcat@outputto}{}{\def\smcatopto{-o "\smcatdst" }}{\def\smcatopto{--output-to "\smcat@outputto" }}}{\def\smcatopto{-o "\smcat@o" }}
+		% --dot-graph-attrs [string]						% Graph attributes to pass to the dot render engine
+		\ifdefstring{\smcat@dotgraphattrs}{}{\def\smcatoptdotgraphattrs{}}{\def\smcatoptdotgraphattrs{--dot-graph-attrs "\smcat@dotgraphattrs" }}
+		% --dot-node-attrs [string]							% Node attributes to pass to the dot render engine
+		\ifdefstring{\smcat@dotnodeattrs}{}{\def\smcatoptdotnodeattrs{}}{\def\smcatoptdotnodeattrs{--dot-node-attrs "\smcat@dotnodeattrs" }}
+		% --dot-edge-attrs [string]							% Edge attributes to pass to the dot render engine
+		\ifdefstring{\smcat@dotedgeattrs}{}{\def\smcatoptdotedgeattrs{}}{\def\smcatoptdotedgeattrs{--dot-edge-attrs "\smcat@dotedgeattrs" }}
+		% --desugar											% Transform forks and joins into transitions (!experimental!)
+		\ifthenelse{\boolean{smcat@desugar}}{\def\smcatoptdesugar{--desugar }}{\def\smcatoptdesugar{}}
+		% -l, --license										% Display license and exit
+		\ifthenelse{\boolean{smcat@l}}{\def\smcatoptl{-l }}{\ifthenelse{\boolean{smcat@license}}{\def\smcatoptl{--license }}{\def\smcatoptl{}}}
+		% -h, --help										% Output usage information
+		\ifthenelse{\boolean{smcat@h}}{\def\smcatopth{-h }}{\ifthenelse{\boolean{smcat@help}}{\def\smcatopth{--help }}{\def\smcatopth{}}}
+
+		\immediate\write18{mkdir "\smcatdir" 2>nul}
+		\VerbatimOut{\smcatsrc}}
+	{\endVerbatimOut
+		\immediate\write18{npx smcat \smcatoptV \smcatoptT \smcatoptI \smcatoptE \smcatoptd \smcatopto \smcatoptdotgraphattrs \smcatoptdotnodeattrs \smcatoptdotedgeattrs \smcatoptdesugar \smcatoptl \smcatopth "\smcatsrc" >"\smcatout" 2>"\smcaterr"}
+
+		% \ifdefequal can only compare macros against macros, not direct values
+		\def\smcatoptsvg{svg}
+		\expandafter\ifdefequal\expandafter{\smcatoptexto}{\smcatoptsvg}{
+%			\immediate\write18{npx svgo -i "\smcatdst" 2>nul}
+			\setkeys{smcat}{svg=true}
+		}{}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\ifsmcat@svg
+				\includesvg[inkscapelatex=false, width=\smcatfigwidth]{\smcatdst}
+			\else
+				\includegraphics[width=\smcatfigwidth]{\smcatdst}
+			\fi
+%			\vspace{-2em}
+			\caption{\smcatcaption}
+			\label{fig:\smcatrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `smcat.sty'.

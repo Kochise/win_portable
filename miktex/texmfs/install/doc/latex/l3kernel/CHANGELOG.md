@@ -7,10 +7,32 @@ this project uses date-based 'snapshot' version identifiers.
 
 ## [Unreleased]
 
+## [2020-12-07]
+
+### Fixed
+- `\peek_analysis_map_inline:n` with spaces and braces
+
+## [2020-12-05]
+
+### Fixed
+- Setting of line width in vertical coffins in LaTeX
+
+## [2020-12-03]
+
+### Added
+- `\peek_analysis_map_inline:n`
+- `\peek_regex:nTF`, `\peek_regex_remove_once:nTF`, and
+  `\peek_regex_replace_once:nnTF`
+- `\token_case_catcode:NnTF`, `\token_case_charcode:NnTF`, and
+  `\token_case_meaning:NnTF`
+
+### Changed
+- Extend `\text_expand:n` to cover `\@protected@testopt`
+- Extend `\text_purify:n` to cover `\@protected@testopt`
+
 ## [2020-10-27]
 
 ### Added
-
 -  `\token_if_font_selection:N(TF)` (see #806)
 
 ### Fixed
@@ -793,7 +815,10 @@ this project uses date-based 'snapshot' version identifiers.
 - Step func­tions have been added for dim vari­ables,
   e.g. `\dim_step_in­line:nnnn`
 
-[Unreleased]: https://github.com/latex3/latex3/compare/2020-10-27...HEAD
+[Unreleased]: https://github.com/latex3/latex3/compare/2020-12-07...HEAD
+[2020-12-07]: https://github.com/latex3/latex3/compare/2020-12-05...2020-12-07
+[2020-12-05]: https://github.com/latex3/latex3/compare/2020-12-03...2020-12-05
+[2020-12-03]: https://github.com/latex3/latex3/compare/2020-10-27...2020-12-03
 [2020-10-27]: https://github.com/latex3/latex3/compare/2020-10-05...2020-10-27
 [2020-10-05]: https://github.com/latex3/latex3/compare/2020-09-24...2020-10-05
 [2020-09-24]: https://github.com/latex3/latex3/compare/2020-09-06...2020-09-24

@@ -12,8 +12,8 @@
 % particular purpose.
 
 % Set up the version strings here
-\def\abx@date{2020/08/23}
-\def\abx@version{3.15a}
+\def\abx@date{2020/12/31}
+\def\abx@version{3.16}
 \def\abx@bbxid{\abx@date\space v\abx@version\space biblatex bibliography style (PK/MW)}
 \def\abx@cbxid{\abx@date\space v\abx@version\space biblatex citation style (PK/MW)}
 \def\abx@lbxid{\abx@date\space v\abx@version\space biblatex localization (PK/MW)}
@@ -52,6 +52,20 @@
       This is a fatal error. I'm aborting now}%
    \endinput}
 
+% The new hook management system in LaTeX 2020-10-01 and above
+% no longer guarantees that \AtBeginDocument/AfterPreamble
+% are executed in order of use.
+% Instead each use of those commands gets a 'label'
+% and code for the same label is chunked together.
+% We give our \AfterPreamble invocations a new label and set up a rule to
+% have it executed after all normal biblatex \AtBeginDocument stuff.
+% Note that begindocument is a one-time hook, so we are guaranteed
+% immediate execution when inside \begin{document}...\end{document}.
+\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+\IfFormatAtLeastTF{2020/10/01}
+  {\def\blx@AfterPreamble{\AddToHook{begindocument}[biblatex/afterpreamble]}%
+   \DeclareHookRule{begindocument}{biblatex/afterpreamble}{after}{biblatex}}
+  {\def\blx@AfterPreamble{\AfterPreamble}}
 
 % generalised keyval interface
 % define a new key (possibly with a default value)
@@ -509,8 +523,10 @@
           {\let\xpg@bloaded\xpg@loaded}}
        {}%
      \global\let\blx@maplang\blx@maplang@polyglossia
-     \def\do#1{\blx@langsetup{#1}}%
+     \def\do#1{\blx@langsetup@from@pkglist{#1}}%
      \expandafter\docsvlist\expandafter{\xpg@bloaded}%
+     \def\do#1{\blx@langsetup@from@auxlist{#1}}%
+     \dolistloop\blx@lbx@auxloadlist
      \ifboolexpr{
       not togl {blx@autolangbib}
       and
@@ -521,8 +537,10 @@
     {\global\let\blx@maplang\blx@maplang@babel
      \@ifpackageloaded{babel}
        {% This is required for languages which are never explicitly selected
-        \def\do#1{\blx@langsetup{#1}}%
+        \def\do#1{\blx@langsetup@from@pkglist{#1}}%
         \expandafter\docsvlist\expandafter{\bbl@loaded}%
+        \def\do#1{\blx@langsetup@from@auxlist{#1}}%
+        \dolistloop\blx@lbx@auxloadlist
         \ifboolexpr{
           not togl {blx@autolangbib}
           and
@@ -545,7 +563,10 @@
   % babel/polyglossia has loaded the (main document) language already,
   % so we need to explicitly enable our captions (abx@strings@)
   % and extras (abx@extras@) now
-  \toggletrue{blx@lang@captions@\blx@languagename}%
+  \ifdefstring{\blx@langhook}{captions}
+    {\blx@etb@inittoggle{blx@lang@captions@\blx@languagename}%
+     \toggletrue{blx@lang@captions@\blx@languagename}}
+    {}%
   \csuse{abx@extras@\blx@languagename}%
   \csuse{abx@strings@\blx@languagename}%
   % avoid accidental re-initialization
@@ -637,35 +658,44 @@
      in recent versions of pdfTeX, LuaTeX and XeTeX}}
   {\let\blx@mdfivesum\pdf@mdfivesum}
 
+\newtoggle{blx@bbl@rerun@requested}
 
 \ifundef\pdf@filemdfivesum
   {\blx@warning@noline{Command '\string\pdf@filemdfivesum' undefined.\MessageBreak
      Biber rerun detection may not work as expected.\MessageBreak
      The command is available (via 'pdftexcmds')\MessageBreak
      in recent versions of pdfTeX, LuaTeX and XeTeX}%
-   \let\blx@generate@bbl@mdfivesum@found\relax
+   \let\blx@generate@bbl@mdfivesum@found\@gobble
    \let\blx@generate@bbl@mdfivesum@notfound\relax
-   \let\blx@aux@read@bbl@mdfivesum\@gobble
+   \let\abx@aux@read@bblrerun\relax
+   \let\abx@aux@read@bbl@mdfivesum\@gobble
    \let\blx@aux@write@bbl@mdfivesum\relax
    \let\blx@check@bbl@rerun@mdfivesum\relax}
   {\let\blx@filemdfivesum\pdf@filemdfivesum
 
-   \def\blx@generate@bbl@mdfivesum@found{%
-     \xdef\blx@bbl@mdfivesum@new{\blx@filemdfivesum{\jobname.bbl}}}
+   \def\blx@generate@bbl@mdfivesum@found#1{%
+     \xdef\blx@bbl@mdfivesum@new{\blx@filemdfivesum{#1}}}
 
+   % 'nobblfile' can never be equal to any md5 hash
    \def\blx@generate@bbl@mdfivesum@notfound{%
      \gdef\blx@bbl@mdfivesum@new{nobblfile}}
 
-   \def\blx@aux@read@bbl@mdfivesum{%
+   \def\abx@aux@read@bblrerun{\global\toggletrue{blx@bbl@rerun@requested}}
+
+   \def\abx@aux@read@bbl@mdfivesum{%
      \gdef\blx@bbl@mdfivesum@old}
 
    % If we need Biber to rerun, save the hash of the current .bbl.
    % That way we can detect if the Biber rerun really happened when
    % we run LaTeX the next time.
    \def\blx@aux@write@bbl@mdfivesum{%
+     \blx@auxwrite\@mainaux{}{%
+       \string\abx@aux@read@bbl@mdfivesum{%
+         \ifundef\blx@bbl@mdfivesum@old
+           {nohash}
+           {\blx@bbl@mdfivesum@new}}}%
      \iftoggle{blx@runbiber}
-       {\blx@auxwrite\@mainaux{}{%
-          \string\blx@aux@read@bbl@mdfivesum{\blx@bbl@mdfivesum@new}}}
+       {\blx@auxwrite\@mainaux{}{\string\abx@aux@read@bblrerun}}
        {}}
 
    % There was a Biber rerun request last time (\blx@bbl@mdfivesum@old),
@@ -673,9 +703,11 @@
    % that means *no* Biber rerun happened.
    % So we need to re-request a rerun.
    \def\blx@check@bbl@rerun@mdfivesum{%
-     \ifdefstrequal\blx@bbl@mdfivesum@old\blx@bbl@mdfivesum@new
-       {\blx@logreq@active{}}
-       {}}}
+     \iftoggle{blx@bbl@rerun@requested}
+       {\ifdefstrequal\blx@bbl@mdfivesum@old\blx@bbl@mdfivesum@new}
+       {\@secondoftwo}
+     {\blx@logreq@active{}}
+     {}}}
 
 
 % xstring replacements
@@ -922,6 +954,9 @@
 % Used to track default refcontexts for citations
 \cslet{blx@defaultrefcontexts@0}\@empty
 \listadd\blx@allrefsections{0}
+
+% Used to track defernumbers from .aux
+\global\let\blx@localnumbers\@empty
 
 % Used to track sorting name key specifications
 \global\let\blx@sortingnamekeytemplates\@empty
@@ -2164,15 +2199,15 @@
 \providerobustcmd*{\nohyphenation}{%
   \language\blx@langwohyphens}
 
-% work around odd XeTeX/babel-french behaviour
+% First part of workaround for odd XeTeX/babel-french behaviour
 % https://github.com/plk/biblatex/issues/979
 % fix by Ulrike Fischer
-% https://tex.stackexchange.com/a/544914/
+% https://tex.stackexchange.com/a/544914/.
+% The second bit lives in blx-unicode.def.
 \ifundef\XeTeXrevision
   {\providerobustcmd*{\textnohyphenation}[1]{%
      \bgroup\nohyphenation#1\egroup}}
-  {\providerobustcmd*{\textnohyphenation}[1]{%
-     \bgroup\nohyphenation#1\egroup^^^^200b}}
+  {}
 
 \blx@regimcs{%
   \setpunctfont \resetpunctfont \ifcapital \autocap \ifpunctmark
@@ -5203,6 +5238,7 @@
   \do{november}%
   \do{december}%
   \do{langamerican}%
+  \do{langbasque}%
   \do{langbrazilian}%
   \do{langbulgarian}%
   \do{langcatalan}%
@@ -5235,6 +5271,7 @@
   \do{langturkish}%
   \do{langukrainian}%
   \do{fromamerican}%
+  \do{frombasque}%
   \do{frombrazilian}%
   \do{frombulgarian}%
   \do{fromcatalan}%
@@ -5499,7 +5536,9 @@
   \IfFileExists{#1}
     {\blx@info@noline{... file '#1' found}%
      \csuse{blx@lbxfilehook@simple@preload@#1}%
-     #3\@@input\@filef@und#4%
+     #3%
+     \@@input\@filef@und
+     #4%
      \csuse{blx@lbxfilehook@simple@postload@#1}%
      #5%
      \ifcsundef{blx@file@lbx@simple@#1}
@@ -5518,7 +5557,9 @@
      \IfFileExists{#1}
        {\blx@info@noline{... file '#1' found}%
         \csuse{blx@lbxfilehook@once@preload@#1}%
-        #3\@@input\@filef@und#4%
+        #3%
+        \@@input\@filef@und
+        #4%
         \csuse{blx@lbxfilehook@once@postload@#1}%
         #5%
         \ifcsundef{blx@file@lbx@simple@#1}
@@ -5588,12 +5629,48 @@
   \endgroup}
 
 % {<language>}
-\def\blx@langsetup#1{%
+\protected\def\blx@langsetup#1{%
   \blx@lbxinput{#1}
     {\edef\blx@languagename{#1}}
     {\blx@warning
        {Language '#1' not supported.\MessageBreak
         Using dummy definitions}}}
+
+\protected\def\blx@langsetup@from@pkglist#1{%
+  \global\cslet{blx@lbx@loaded@from@pkglist@#1}\@empty
+  \blx@langsetup{#1}}
+
+\protected\def\blx@langsetup@from@auxlist#1{%
+  \global\cslet{blx@lbx@loaded@from@auxlist@#1}\@empty
+  \blx@langsetup{#1}}
+
+\newcommand*{\blx@lbx@loadlist}{}
+
+\protected\def\blx@langsetup@indoc#1{%
+  \ifcsundef{blx@lbx@loaded@from@pkglist@#1}
+    {\xifinlist{#1}\blx@lbx@loadlist
+       {}
+       {\listxadd\blx@lbx@loadlist{#1}}%
+     \ifcsundef{blx@lbx@loaded@from@auxlist@#1}
+       {\ifcsundef{blx@lbx@loaded@nolistload@#1}
+          {\blx@warning@noline{%
+             No localisation for language '#1' loaded.\MessageBreak
+             Please rerun LaTeX to ensure languages can\MessageBreak
+             be requested properly}%
+           \global\cslet{blx@lbx@loaded@nolistload@#1}\@empty}
+          {}}
+       {\edef\blx@languagename{#1}}}
+    {\edef\blx@languagename{#1}}%
+}
+
+\newcommand*{\blx@lbx@auxloadlist}{}
+
+\def\abx@aux@lbx@loadrequest{%
+  \listgadd\blx@lbx@auxloadlist}
+
+\protected\def\blx@lbx@writeloaderequest#1{%
+  \blx@auxwrite\@mainaux{}{%
+    \string\abx@aux@lbx@loadrequest{#1}}}
 
 % auxiliary macros
 
@@ -6377,6 +6454,7 @@
 \let\blx@hook@endlang\@empty
 \let\blx@hook@initlang\@empty
 \let\blx@imc@mainlang\@empty
+\let\blx@imc@textmainlang\@firstofone
 \def\blx@hyphenreset{%
   \blx@ifhyphenationundef{\blx@languagename}
     {}
@@ -6403,7 +6481,7 @@
   % afterreset was added in 3.9i (~2014-03-16)
   % way before 3.9r (2016-04-23), which we require
   \AddBabelHook{biblatex@langsetup}{afterreset}{%
-    \expandafter\blx@langsetup\expandafter{\languagename}}%
+    \expandafter\blx@langsetup@indoc\expandafter{\languagename}}%
   \ifdef\blx@thelangenv
     {\def\blx@beglang{%
        \blx@clearlang
@@ -6437,8 +6515,20 @@
            {}}}
     {}%
   \def\blx@imc@mainlang{%
+    \ifundef\blx@warn@mainlang
+      {\blx@warning@noline{%
+         '\string\mainlang' is deprecated in favour of\MessageBreak
+         '\string\textmainlang'.%
+         \MessageBreak
+         Please consider using the new command,\MessageBreak
+         but note that the syntax is different.\MessageBreak
+         Using the old, problematic definition}%
+       \global\let\blx@warn@mainlang\@empty}
+      {}%
     \expandafter\selectlanguage\expandafter{\blx@main@language}}%
-  \expandafter\blx@langsetup\expandafter{\blx@main@language}%
+  \def\blx@imc@textmainlang##1{%
+    {{\expandafter\selectlanguage\expandafter{\blx@main@language}##1}}}%
+  \expandafter\blx@langsetup@from@pkglist\expandafter{\blx@main@language}%
 }
 
 \def\blx@beglang@spacefactors{\frenchspacing}
@@ -6453,12 +6543,12 @@
     {\let\blx@main@language\mainbabelname}%
   \ifundef\polyglossia@language@switched
     {\apptocmd\select@language
-       {\expandafter\blx@langsetup\expandafter{\babelname}}
+       {\expandafter\blx@langsetup@indoc\expandafter{\babelname}}
        {}
        {\blx@err@patch{'polyglossia' package}%
         \blx@mknoautolang}}
     {\appto\polyglossia@language@switched{%
-       \expandafter\blx@langsetup\expandafter{\babelname}}}%
+       \expandafter\blx@langsetup@indoc\expandafter{\babelname}}}%
   \ifdef\blx@thelangenv
      {\def\blx@beglang{%
         \blx@clearlang
@@ -6500,15 +6590,27 @@
               \blx@beglang@spacefactors}}
           {}}}
        {}%
-  \def\blx@imc@mainlang{\select@language{\blx@main@language}}%
-  \expandafter\blx@langsetup\expandafter{\blx@main@language}}
+  \def\blx@imc@mainlang{%
+    \ifundef\blx@warn@mainlang
+      {\blx@warning@noline{%
+         '\string\mainlang' is deprecated in favour of\MessageBreak
+         '\string\textmainlang'.%
+         \MessageBreak
+         Please consider using the new command,\MessageBreak
+         but note that the syntax is different.\MessageBreak
+         Using the old, problematic definition}%
+       \global\let\blx@warn@mainlang\@empty}
+      {}%
+    \select@language{\blx@main@language}}%
+  \def\blx@imc@textmainlang##1{{{\select@language{\blx@main@language}##1}}}%
+  \expandafter\blx@langsetup@from@pkglist\expandafter{\blx@main@language}}
 
 \def\blx@mknoautolang{%
   \blx@lbxinput{\blx@languagename}
     {}
     {\blx@err@nolang{\blx@languagename}}}
 
-\blx@regimcs{\mainlang}
+\blx@regimcs{\mainlang \textmainlang}
 
 \newrobustcmd*{\DeclareRedundantLanguages}[2]{%
   \begingroup
@@ -8302,14 +8404,14 @@
   \abx@flfw@getfieldformat{abx@flfw@labelnumberwidth}{labelnumberwidth}{}%
   \abx@flfw@getfieldformat{abx@flfw@labelprefix}{labelprefix}{}%
   \abx@flfw@getfieldformat{abx@flfw@labelnumber}{labelnumber}{}%
-    \iftoggle{blx@defernumbers}
-      {\ifundef\abx@field@localnumber
-        {\numdef\abx@field@localnumber{0}}%
-        {}}
-      {\ifundef\abx@field@localnumber
-         {\edef\abx@field@localnumber{%
-            \csuse{blx@labelnumber@\the\c@refsection}}}
-          {}}%
+  \iftoggle{blx@defernumbers}
+    {\ifundef\abx@field@localnumber
+      {\numdef\abx@field@localnumber{0}}%
+      {}}
+    {\ifundef\abx@field@localnumber
+      {\edef\abx@field@localnumber{%
+          \csuse{blx@labelnumber@\the\c@refsection}}}
+      {}}%
   \blx@setlabwidth{\csname #1labelnumberwidth\endcsname}{%
     \csuse{abx@flfw@labelnumberwidth}{%
       \ifdef\abx@field@labelprefix
@@ -8549,13 +8651,18 @@
   % any citations or add/remove any sorting templates, we need to re-run
   % biber. Also, if we have to re-run biber, we need to defer writing
   % the defernumbers .aux information because it will not yet be correct.
-
+  \begingroup
+  % Test to see if there are any .aux entries with defernums (localnum)
+  % information which are no longer in the .bbl. This is to catch
+  % when .bib entries are removed when using \nocite{*}. In this case,
+  % We need another run to remove the .aux localnumber info
+  \def\do#1{\xifinlist{#1}\blx@entries{}{\blx@rerun@latex}}%
+  \dolistloop\blx@localnumbers
   % Test to see if we *removed* any citations since last run
   % (adding citations is dealt with naturally in \blx@citation@entry)
   % If so, give a rerun biber message. This also sets the
   % rerun biber toggle so defernums doesn't consume the localnumbers
   % in the .aux but instead, re-writes them, which is what we need.
-  \begingroup
   \def\do#1{\ifinlist{#1}\blx@cites{}{\blx@logreq@active{}}\relax}%
   \dolistloop\blx@lastcites
   % Special case - if we are using sortingtemplate with \citeorder anywhere,
@@ -8603,9 +8710,16 @@
       {\def\do#1{\blx@auxwrite\@mainaux{}{#1}}
        \dolistloop\blx@localnumaux}}
     {}%
-  % Wite md5 hash of .bbl to .aux if we need a Biber rerun.
+  % Write out missing languages we still need to load
+  \forlistloop{\blx@lbx@writeloaderequest}{\blx@lbx@loadlist}%
+  % Issue rerun warning if we need to load a language babel/polyglossia
+  % hasn't told us about and that we are not loading it already from previous
+  % runs.
+  \def\do#1{\xifinlist{#1}{\blx@lbx@auxloadlist}{}{\blx@rerun@latex\listbreak}}%
+  \dolistloop\blx@lbx@loadlist
+  % Write md5 hash of .bbl to .aux if we need a Biber rerun.
   % This needs to happen here and not in \blx@check@rerun together with
-  % the other rerun stuff, because \AfterEndBibliography would be too
+  % the other rerun stuff, because \AfterEndDocument would be too
   % late for .aux file writing.
   \blx@aux@write@bbl@mdfivesum
   \endgroup}
@@ -8614,6 +8728,8 @@
 \protected\def\blx@aux@number#1#2#3#4#5{%
   \blx@bbl@addentryfield{\detokenize{#2}}{#3}{localnumber}{#4}{#5}%
   \blx@bbl@addentryfield{\detokenize{#2}}{#3}{labelnumber}{#4}{#5}%
+  \csgdef{blx@localnumber@#3@\detokenize{#2}}{#5}%
+  \xifinlist{\detokenize{#2}}\blx@localnumbers{}{\listxadd\blx@localnumbers{\detokenize{#2}}}%
   \global\toggletrue{blx@localnumber}%
   \ifblank{#5}
     {}
@@ -8632,9 +8748,14 @@
          % Also, don't want to regenerate localnumber for any key in a
          % refsection which we've already seen because this has the nasty
          % side-effect of incrementing the localnum counter
-         {\ifboolexpr { not togl {blx@localnumber}
-                        and
-                        not test {\ifcsdef{blx@defer@\the\c@refsection @\blx@refcontext@context @\abx@field@entrykey}} }
+         % Also, have to create localnumber again if \nocite{*} as items
+         % could have been added to the .bib file without changing the cite
+         % information in the .tex
+         {\ifboolexpr { (not togl {blx@localnumber}
+                         or
+                         test {\ifinlist{*}\blx@nocites})
+                         and
+                         not test {\ifcsdef{blx@defer@\the\c@refsection @\blx@refcontext@context @\abx@field@entrykey}} }
             {\iftoggle{blx@omitnumbers}
                {\let\abx@field@localnumber\@empty}
                {\csnumgdef{blx@labelnumber@\the\c@refsection}{%
@@ -8642,7 +8763,17 @@
                 \edef\abx@field@localnumber{%
                   \csuse{blx@labelnumber@\the\c@refsection}}%
                 \blx@bbl@addentryfield{\abx@field@entrykey}{\the\c@refsection}%
-                    {localnumber}{\blx@refcontext@context}{\abx@field@localnumber}}}
+                {localnumber}{\blx@refcontext@context}{\abx@field@localnumber}}}
+            {}%
+          % Issue re-run message if there was no localnumber in the .aux and
+          % \nocite{*} was used because this means that an entry was added to the .bib
+          % and was not yet recorded in the .aux. We will have generated a localnumber
+          % for such a case above and now we need to re-run to make sure it's in the .aux
+          % for the next run
+          \ifboolexpr { test {\ifinlist{*}\blx@nocites}
+                        and
+                        not test {\ifcsdef{blx@localnumber@\the\c@refsection @\abx@field@entrykey}} }
+            {\blx@rerun@latex}
             {}%
           % If localnumbers were already in the .aux, add them
           % again from the .aux. This prevents some cycling
@@ -8653,8 +8784,8 @@
           \ifcsundef{blx@defer@\the\c@refsection @\blx@refcontext@context @\abx@field@entrykey}
             {\ifundef\abx@field@localnumber
                {}
-                {\listxadd\blx@localnumaux{%
-                   \string\abx@aux@number%
+               {\listxadd\blx@localnumaux{%
+                  \string\abx@aux@number%
                      {\the\c@instcount}%
                      {\abx@field@entrykey}%
                      {\the\c@refsection}%
@@ -8707,10 +8838,9 @@
     {\InputIfFileExists{\jobname.bbl}
        {\blx@info@noline{... file '\jobname.bbl' found}%
         \global\toggletrue{blx@bbldone}%
-        \blx@generate@bbl@mdfivesum@found}
+        \blx@generate@bbl@mdfivesum@found{\jobname.bbl}}
        {\blx@info@noline{... file '\jobname.bbl' not found}%
         \typeout{No file \jobname.bbl.}%
-        % 'nobblfile' can never be equal to any mdfivehash
         \blx@generate@bbl@mdfivesum@notfound}}
     {\blx@generate@bbl@mdfivesum@notfound}%
   \blx@bblend
@@ -8848,6 +8978,7 @@
 \blx@kv@defkey{blx@bib1}{heading}{}
 \blx@kv@defkey{blx@bib1}{env}{}
 \blx@kv@defkey{blx@bib1}{title}{}
+\blx@kv@defkey{blx@bib1}{label}{}
 \blx@kv@defkey{blx@bib1}{prenote}{}
 \blx@kv@defkey{blx@bib1}{postnote}{}
 \blx@kv@defkey{blx@bib1}{omitnumbers}[]{}
@@ -8874,6 +9005,7 @@
 \blx@kv@defkey{blx@biblist1}{heading}{}
 \blx@kv@defkey{blx@biblist1}{env}{}
 \blx@kv@defkey{blx@biblist1}{title}{}
+\blx@kv@defkey{blx@biblist1}{label}{}
 \blx@kv@defkey{blx@biblist1}{prenote}{}
 \blx@kv@defkey{blx@biblist1}{postnote}{}
 
@@ -9079,6 +9211,10 @@
 \blx@kv@defkey{blx@bib2}{title}{\def\blx@thetitle{#1}}
 \blx@kv@defkey{blx@biblist2}{title}{\def\blx@thetitle{#1}}
 
+\blx@kv@defkey{blx@bhd}{label}{\def\blx@thelabel{#1}}
+\blx@kv@defkey{blx@bib2}{label}{\def\blx@thelabel{#1}}
+\blx@kv@defkey{blx@biblist2}{label}{\def\blx@thelabel{#1}}
+
 \cslet{blx@note@}\@empty
 \def\blx@key@bibnote#1#2{%
   \ifcsundef{blx@note@#2}
@@ -9168,10 +9304,12 @@
 \def\blx@printbibheading[#1]{%
   \let\blx@theheading\blx@default@theheading
   \let\blx@thetitle\blx@default@thetitle
+  \undef\blx@thelabel
   \blx@safe@actives
   \blx@kv@setkeys{blx@bhd}{#1}%
   \blx@rest@actives
   \blx@bibheading\blx@theheading\blx@thetitle
+  \blx@biblabel\blx@thelabel
   \endgroup}
 
 % We use this to determine whether an explicit value for resetnumbers is passed to
@@ -9196,6 +9334,7 @@
   \let\blx@theprenote\blx@default@theprenote
   \let\blx@thepostnote\blx@default@thepostnote
   \let\blx@thetitle\blx@default@thetitle
+  \undef\blx@thelabel
   % defaults
   \let\blx@tempa\@empty% before there is a .bbl, this must not be undef
   \edef\blx@tempe{\the\c@refsection}% default refsection is current
@@ -9250,6 +9389,7 @@
   \let\blx@theprenote\blx@default@theprenote
   \let\blx@thepostnote\blx@default@thepostnote
   \let\blx@thetitle\blx@default@thetitle
+  \undef\blx@thelabel
   \c@refsection\z@
   \blx@safe@actives
   \blx@kv@setkeys{blx@bbs}{#1}%
@@ -9289,6 +9429,7 @@
   \let\blx@theprenote\blx@default@theprenote
   \let\blx@thepostnote\blx@default@thepostnote
   \let\blx@thetitle\blx@default@thetitle
+  \undef\blx@thelabel
   \c@refsegment\@ne
   \blx@safe@actives
   \blx@kv@setkeys{blx@bbg}{#1}%
@@ -9333,6 +9474,7 @@
   \let\blx@theprenote\blx@default@theprenote
   \let\blx@thepostnote\blx@default@thepostnote
   \let\blx@thetitle\blx@default@thetitle
+  \undef\blx@thelabel
   \c@refsection\z@
   \blx@safe@actives
   \blx@kv@setkeys{blx@bbc}{#1}%
@@ -9361,6 +9503,7 @@
 % {<entrykey>,...}
 \def\blx@bibliography{%
   \blx@bibheading\blx@theheading\blx@thetitle
+  \blx@biblabel\blx@thelabel
   \blx@bibnote\blx@theprenote
   \begingroup
   \blx@bibinit
@@ -9402,6 +9545,11 @@
     {\csuse{blx@head@#1}[{#2}]}%
   \let\newrefsection\blx@newrefsection
   \let\newrefsegment\blx@newrefsegment}
+
+\def\blx@biblabel#1{%
+  \ifdefvoid#1
+    {}
+    {\expandafter\label\expandafter{#1}}}
 
 \def\blx@bibnote#1{%
   \ifdefempty#1
@@ -9631,6 +9779,7 @@
   \let\blx@theprenote\@empty
   \let\blx@thepostnote\@empty
   \let\blx@thetitle\@empty
+  \undef\blx@thelabel
   % defaults
   \let\blx@tempa\@empty% before there is a .bbl, this must not be undef
   % default sorting template and template name for list is same name as list
@@ -9713,6 +9862,7 @@
     \@restonecolfalse
   \fi
   \blx@bibheading\blx@theheading\blx@thetitle
+  \blx@biblabel\blx@thelabel
   \blx@bibnote\blx@theprenote
   \begingroup
   \blx@bibinit
@@ -9900,6 +10050,7 @@
   \let\blx@tempc\@empty%
   \def\blx@tempd{global}%
   \def\blx@tempe{global}%
+  \blx@kv@setkeys{blx@assignrefcontextmeta}{#2}%
   \blx@kv@setkeys{blx@assignrefcontext}{#2}%
   \def\do##1{%
     \listxadd\blx@assignedrefcontextkeywlist{##1}%
@@ -9919,6 +10070,7 @@
   \let\blx@tempc\@empty%
   \def\blx@tempd{global}%
   \def\blx@tempe{global}%
+  \blx@kv@setkeys{blx@assignrefcontextmeta}{#2}%
   \blx@kv@setkeys{blx@assignrefcontext}{#2}%
   \def\do##1{%
     \listxadd\blx@assignedrefcontextcatlist{##1}%
@@ -9938,22 +10090,38 @@
   \let\blx@tempc\@empty%
   \def\blx@tempd{global}%
   \def\blx@tempe{global}%
+  \blx@kv@setkeys{blx@assignrefcontextmeta}{#2}%
   \blx@kv@setkeys{blx@assignrefcontext}{#2}%
   \def\do##1{%
     \csxdef{blx@assignedrefcontextkeys#1@\the\c@refsection @##1}%
       {\blx@tempa/\blx@tempb/\blx@tempc/\blx@tempd/\blx@tempe}}%
   \docsvlist{#3}}
 
+% This makes sure that named refcontexts set options first
+% Note that the docs say that "name=default" selects the global default
+% refcontext and this is because this won't set anything and the defaults
+% in the above macros will take effect.
+\blx@kv@defkey{blx@assignrefcontextmeta}{name}{%
+  \begingroup
+  \edef\blx@tempf{\endgroup%
+  \noexpand\blx@kv@setkeys{blx@assignrefcontext}{\csuse{blx@refcontext@name@#1}}}%
+  \blx@tempf}
+\blx@kv@defkey{blx@assignrefcontextmeta}{nametemplates}{}
+\blx@kv@defkey{blx@assignrefcontextmeta}{sorting}{}
+\blx@kv@defkey{blx@assignrefcontextmeta}{sortingnamekeytemplatename}{}
+\blx@kv@defkey{blx@assignrefcontextmeta}{labelprefix}{}
+\blx@kv@defkey{blx@assignrefcontextmeta}{uniquenametemplatename}{}
+\blx@kv@defkey{blx@assignrefcontextmeta}{labelalphanametemplatename}{}
+
 % Meta option to set all name template options
+\blx@kv@defkey{blx@assignrefcontext}{name}{}
 \blx@kv@defkey{blx@assignrefcontext}{nametemplates}{%
   \def\blx@tempb{#1}%
   \def\blx@tempd{#1}%
   \def\blx@tempe{#1}}
-
 \blx@kv@defkey{blx@assignrefcontext}{sorting}{\def\blx@tempa{#1}}
 \blx@kv@defkey{blx@assignrefcontext}{sortingnamekeytemplatename}{\def\blx@tempb{#1}}
-\blx@kv@defkey{blx@assignrefcontext}{labelprefix}{%
-  \edef\blx@tempc{\blx@mdfivesum{#1}}}
+\blx@kv@defkey{blx@assignrefcontext}{labelprefix}{\edef\blx@tempc{\blx@mdfivesum{#1}}}
 \blx@kv@defkey{blx@assignrefcontext}{uniquenametemplatename}{\def\blx@tempd{#1}}
 \blx@kv@defkey{blx@assignrefcontext}{labelalphanametemplatename}{\def\blx@tempe{#1}}
 
@@ -10408,7 +10576,7 @@
     {\blx@error
        {Category '#1' not declared}
        {Use \string\DeclareBibliographyCategory\space to declare}}
-    {\AfterPreamble{%
+    {\blx@AfterPreamble{%
        \blx@xsanitizeafter{\forcsvlist{\blx@addtocategory{#1}}}{#2}}}}
 
 % {<category>}{<entrykey>,...}
@@ -10692,6 +10860,7 @@
   \blx@citation@all}
 
 \def\blx@citation@all{%
+  \blx@auxwrite\@mainaux{}{\string\abx@aux@nociteall}%
   \ifbool{citerequest}
     {\blx@bibreq{*}%
      \global\csletcs
@@ -10701,6 +10870,9 @@
        {\blx@logreq@active{}}
        {}}
     {}}
+
+\def\abx@aux@nociteall{%
+  \listgadd\blx@nocites{*}}
 
 \protected\def\blx@bibreq#1{%
   \begingroup
@@ -10746,7 +10918,7 @@
            I'm ignoring the new definition}}}
     {\global\cslet{blx@set@\the\c@refsection @\blx@tempa}\blx@tempb
      \edef\blx@tempa{%
-       \AfterPreamble{\blx@setreq{\blx@tempa}{\blx@tempb}}}%
+       \blx@AfterPreamble{\blx@setreq{\blx@tempa}{\blx@tempb}}}%
      \blx@tempa}%
   \endgroup
   \@esphack}
@@ -11468,7 +11640,7 @@
 
 \def\blx@nocite#1{%
   \@bsphack
-  \AfterPreamble{%
+  \blx@AfterPreamble{%
     \ifstrequal{*}{#1}
       {\blx@nocitation@all}
       {\blx@xsanitizeafter{\forcsvlist\blx@nocite@do}{#1}}}%
@@ -15272,33 +15444,74 @@
 
 
 \csdef{blx@opt@casechanger@auto}{%
-  \RequirePackage{expl3}[2020/04/06]%
-  \@ifpackagelater{expl3}{2020/04/06}
-    {\blx@info{expl3\MessageBreak\csuse{ver@expl3.sty}\MessageBreak
-       is new enough (at least 2020/04/06),\MessageBreak
-       setting 'casechanger=expl3'}%
-     \csuse{blx@opt@casechanger@expl3}}
-    {\blx@info{expl3\MessageBreak\csuse{ver@expl3.sty}\MessageBreak
-       is too old (older than 2020/04/06),\MessageBreak
-       setting 'casechanger=latex2e'}%
+  \ifdefstring{\blx@texencoding}{utf8}
+    {\blx@info@noline{Document encoding is UTF8 ...}%
+     \RequirePackage{expl3}[2020/04/06]%
+     \@ifpackagelater{expl3}{2020/04/06}
+       {\blx@info@noline{... and expl3\MessageBreak\csuse{ver@expl3.sty}\MessageBreak
+          is new enough (at least 2020/04/06),\MessageBreak
+          setting 'casechanger=expl3'}%
+        \csuse{blx@opt@casechanger@expl3}}
+       {\blx@info@noline{... but expl3\MessageBreak\csuse{ver@expl3.sty}\MessageBreak
+          is too old (older than 2020/04/06),\MessageBreak
+          setting 'casechanger=latex2e'}%
+        \csuse{blx@opt@casechanger@latex2e}}}
+    {\blx@info@noline{%
+       Document encoding not detected as UTF8.\MessageBreak
+       Setting 'casechanger=latex2e'}%
      \csuse{blx@opt@casechanger@latex2e}}}
 
 \csdef{blx@opt@casechanger@latex2e}{%
-  \blx@inputonce{blx-case-latex2e.def}
-    {LaTeX2e (legacy) case changing code}
-    {}{}{}{}}
+  \RequirePackage{blx-case-latex2e}}
 \csletcs{blx@opt@casechanger@2e}{blx@opt@casechanger@latex2e}
 
-% Apparently neither \input nor \blx@inputonce ever pops the
-% \ExplSyntaxOff from \ProvidesExplFile, so we do that ourselves.
 \csdef{blx@opt@casechanger@expl3}{%
-  \blx@inputonce{blx-case-expl3.def}
-    {expl3 case changing code}
-    {}{\ExplSyntaxOff}{}{}}
+  \ifdefstring{\blx@texencoding}{utf8}
+    {}
+    {\blx@warning@noline{%
+       The expl3 case changer code should only be used\MessageBreak
+       with UTF-8 encoding.\MessageBreak
+       But the document encoding was detected as
+       '\blx@texencoding'.\MessageBreak
+       Case changing macros may break\MessageBreak
+       if used with non-ASCII characters}}%
+  \RequirePackage{blx-case-expl3}}
 \csletcs{blx@opt@casechanger@3}{blx@opt@casechanger@expl3}
 
 % default to auto
 \csletcs{blx@deferoption@casechanger}{blx@opt@casechanger@auto}
+
+% This is a bit unfortunate, but we need some more definitions after
+% loading the case changing code.
+\def\blx@casechange@postload{%
+  % Language fallback, in order:
+  % * explicit option language=<lang>, which overrides everything
+  % * langid field of entry
+  % * babel/polyglossia lang
+  % * main document lang (we should never reach this)
+  % * <empty> (we should *definitely* never reach this)
+  % Everything here is expandable so that
+  % \blx@mksc@lang expands to the language name.
+  \def\blx@mksc@lang{%
+    \ifundef\blx@forcelanguagename
+      {\ifundef\abx@field@langid
+        {\ifundef\blx@languagename
+          {\ifundef\blx@main@language
+             {}
+             {\blx@main@language}}
+          {\blx@languagename}}
+        {\abx@field@langid}}
+      {\blx@forcelanguagename}}%
+  %
+  \DeclareCaseLangs{%
+    american,british,canadian,
+    english,USenglish,UKenglish,
+    australian,newzealand}%
+  % Textcase defines \NoCaseChange as \let\NoCaseChange\@firstofone
+  \ifundef\NoCaseChange
+    {\let\NoCaseChange\@firstofone}
+    {}}
+% That's it for the case change code
 
 % Set defaults
 \blx@kv@setkeys{blx@opt@ldt}{style=numeric}
@@ -15340,43 +15553,6 @@
 % Process load-time options
 \ProcessOptions*
 
-% this ultimately loads either
-% blx-case-expl3.def or blx-case-latex2e.def
-\blx@deferoption@casechanger
-
-% This is a bit unfortunate, but we need some more definitions here.
-
-% Language fallback, in order:
-% * explicit option language=<lang>, which overrides everything
-% * langid field of entry
-% * babel/polyglossia lang
-% * main document lang (we should never reach this)
-% * <empty> (we should *definitely* never reach this)
-% Everything here is expandable so that
-% \blx@mksc@lang expands to the language name.
-\def\blx@mksc@lang{%
-  \ifundef\blx@forcelanguagename
-    {\ifundef\abx@field@langid
-      {\ifundef\blx@languagename
-        {\ifundef\blx@main@language
-           {}
-           {\blx@main@language}}
-        {\blx@languagename}}
-      {\abx@field@langid}}
-    {\blx@forcelanguagename}}
-
-\DeclareCaseLangs{%
-  american,british,canadian,
-  english,USenglish,UKenglish,
-  australian,newzealand}
-
-
-% Textcase defines \NoCaseChange as \let\NoCaseChange\@firstofone
-\ifundef\NoCaseChange
-  {\let\NoCaseChange\@firstofone}
-  {}
-
-% That's it for the case change code
 
 % Switch to BibTeX support if requested
 \iftoggle{blx@bibtex}
@@ -15542,6 +15718,10 @@
 \AtBeginDocument{%
   \blx@auxwrite\@mainaux{}{\string\abx@aux@refcontext{\blx@refcontext@context}}
   \blx@checkencoding
+  % this ultimately loads either
+  % blx-case-expl3.def or blx-case-latex2e.def
+  \blx@deferoption@casechanger
+  \blx@casechange@postload
   \if@filesw
     \blx@ctrlwrite
   \fi
