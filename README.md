@@ -53,7 +53,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **SuperFastClicker** : console program, press `Capslock` for mouse fast clicking<br>
 **SysinternalsSuite** : the stuff that should be included with every `Windows`<br>
 **texmaker** : LaTeX Editor that needs **miktex** (run `texmaker.bat` to setup the path)<br>
-**tinycc**: little standalone ``C compiler that can help, very fast but still alpha/beta/gamma/...<br>
+**tinycc**: little standalone `C` compiler that can help, very fast but still alpha/beta/gamma/...<br>
 **Total Commander** : the stuff that should replace `Windows` (at least the explorer)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by `Inception`)<br>
 **TTYEmulator** : the best tty emulator, do `ssh` as well (`Linux` session)<br>
