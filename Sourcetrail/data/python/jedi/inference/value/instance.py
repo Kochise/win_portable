@@ -130,6 +130,9 @@ class AbstractInstanceValue(Value):
             for name in names
         )
 
+    def get_type_hint(self, add_class_info=True):
+        return self.py__name__()
+
     def __repr__(self):
         return "<%s of %s>" % (self.__class__.__name__, self.class_value)
 
@@ -238,7 +241,7 @@ class _BaseTreeInstance(AbstractInstanceValue):
     def py__getitem__(self, index_value_set, contextualized_node):
         names = self.get_function_slot_names(u'__getitem__')
         if not names:
-            return super(AbstractInstanceValue, self).py__getitem__(
+            return super(_BaseTreeInstance, self).py__getitem__(
                 index_value_set,
                 contextualized_node,
             )
@@ -249,33 +252,33 @@ class _BaseTreeInstance(AbstractInstanceValue):
     def py__iter__(self, contextualized_node=None):
         iter_slot_names = self.get_function_slot_names(u'__iter__')
         if not iter_slot_names:
-            return super(AbstractInstanceValue, self).py__iter__(contextualized_node)
+            return super(_BaseTreeInstance, self).py__iter__(contextualized_node)
 
         def iterate():
             for generator in self.execute_function_slots(iter_slot_names):
-                if generator.is_instance() and not generator.is_compiled():
-                    # `__next__` logic.
-                    if self.inference_state.environment.version_info.major == 2:
-                        name = u'next'
-                    else:
-                        name = u'__next__'
-                    next_slot_names = generator.get_function_slot_names(name)
-                    if next_slot_names:
-                        yield LazyKnownValues(
-                            generator.execute_function_slots(next_slot_names)
-                        )
-                    else:
-                        debug.warning('Instance has no __next__ function in %s.', generator)
-                else:
-                    for lazy_value in generator.py__iter__():
-                        yield lazy_value
+                for lazy_value in generator.py__next__(contextualized_node):
+                    yield lazy_value
         return iterate()
+
+    def py__next__(self, contextualized_node=None):
+        # `__next__` logic.
+        if self.inference_state.environment.version_info.major == 2:
+            name = u'next'
+        else:
+            name = u'__next__'
+        next_slot_names = self.get_function_slot_names(name)
+        if next_slot_names:
+            yield LazyKnownValues(
+                self.execute_function_slots(next_slot_names)
+            )
+        else:
+            debug.warning('Instance has no __next__ function in %s.', self)
 
     def py__call__(self, arguments):
         names = self.get_function_slot_names(u'__call__')
         if not names:
             # Means the Instance is not callable.
-            return super(AbstractInstanceValue, self).py__call__(arguments)
+            return super(_BaseTreeInstance, self).py__call__(arguments)
 
         return ValueSet.from_sets(name.infer().execute(arguments) for name in names)
 
@@ -285,6 +288,11 @@ class _BaseTreeInstance(AbstractInstanceValue):
         """
         # Arguments in __get__ descriptors are obj, class.
         # `method` is the new parent of the array, don't know if that's good.
+        for cls in self.class_value.py__mro__():
+            result = cls.py__get__on_class(self, instance, class_value)
+            if result is not NotImplemented:
+                return result
+
         names = self.get_function_slot_names(u'__get__')
         if names:
             if instance is None:
@@ -314,8 +322,7 @@ class TreeInstance(_BaseTreeInstance):
             if settings.dynamic_array_additions:
                 arguments = get_dynamic_array_instance(self, arguments)
 
-        super(_BaseTreeInstance, self).__init__(inference_state, parent_context,
-                                                class_value)
+        super(TreeInstance, self).__init__(inference_state, parent_context, class_value)
         self._arguments = arguments
         self.tree_node = class_value.tree_node
 
@@ -330,13 +337,14 @@ class TreeInstance(_BaseTreeInstance):
         for signature in self.class_value.py__getattribute__('__init__').get_signatures():
             # Just take the first result, it should always be one, because we
             # control the typeshed code.
-            if not signature.matches_signature(args) \
-                    or signature.value.tree_node is None:
+            funcdef = signature.value.tree_node
+            if funcdef is None or funcdef.type != 'funcdef' \
+                    or not signature.matches_signature(args):
                 # First check if the signature even matches, if not we don't
                 # need to infer anything.
                 continue
             bound_method = BoundMethod(self, self.class_value.as_context(), signature.value)
-            all_annotations = py__annotations__(signature.value.tree_node)
+            all_annotations = py__annotations__(funcdef)
             type_var_dict = infer_type_vars_for_execution(bound_method, args, all_annotations)
             if type_var_dict:
                 defined, = self.class_value.define_generics(
@@ -544,10 +552,10 @@ class InstanceClassFilter(AbstractFilter):
         self._class_filter = class_filter
 
     def get(self, name):
-        return self._convert(self._class_filter.get(name, from_instance=True))
+        return self._convert(self._class_filter.get(name))
 
     def values(self):
-        return self._convert(self._class_filter.values(from_instance=True))
+        return self._convert(self._class_filter.values())
 
     def _convert(self, names):
         return [
@@ -583,7 +591,7 @@ class SelfAttributeFilter(ClassFilter):
             if trailer.type == 'trailer' \
                     and len(trailer.parent.children) == 2 \
                     and trailer.children[0] == '.':
-                if name.is_definition() and self._access_possible(name, from_instance=True):
+                if name.is_definition() and self._access_possible(name):
                     # TODO filter non-self assignments instead of this bad
                     #      filter.
                     if self._is_in_right_scope(trailer.parent.children[0], name):

@@ -23,6 +23,9 @@ from jedi.inference.value.dynamic_arrays import check_array_additions
 
 
 class IterableMixin(object):
+    def py__next__(self, contextualized_node=None):
+        return self.py__iter__(contextualized_node)
+
     def py__stop_iteration_returns(self):
         return ValueSet([compiled.builtin_from_name(self.inference_state, u'None')])
 
@@ -46,25 +49,24 @@ class GeneratorBase(LazyAttributeOverwrite, IterableMixin):
     array_type = None
 
     def _get_wrapped_value(self):
-        generator, = self.inference_state.typing_module \
-            .py__getattribute__('Generator') \
-            .execute_annotation()
-        return generator
+        instance, = self._get_cls().execute_annotation()
+        return instance
 
-    def is_instance(self):
-        return False
+    def _get_cls(self):
+        generator, = self.inference_state.typing_module.py__getattribute__('Generator')
+        return generator
 
     def py__bool__(self):
         return True
 
     @publish_method('__iter__')
-    def py__iter__(self, contextualized_node=None):
+    def _iter(self, arguments):
         return ValueSet([self])
 
     @publish_method('send')
     @publish_method('next', python_version_match=2)
     @publish_method('__next__', python_version_match=3)
-    def py__next__(self):
+    def _next(self, arguments):
         return ValueSet.from_sets(lazy_value.infer() for lazy_value in self.py__iter__())
 
     def py__stop_iteration_returns(self):
@@ -74,6 +76,12 @@ class GeneratorBase(LazyAttributeOverwrite, IterableMixin):
     def name(self):
         return compiled.CompiledValueName(self, 'Generator')
 
+    def get_annotated_class_object(self):
+        from jedi.inference.gradual.generics import TupleGenericManager
+        gen_values = self.merge_types_of_iterate().py__class__()
+        gm = TupleGenericManager((gen_values, NO_VALUES, NO_VALUES))
+        return self._get_cls().with_generics(gm)
+
 
 class Generator(GeneratorBase):
     """Handling of `yield` functions."""
@@ -82,6 +90,9 @@ class Generator(GeneratorBase):
         self._func_execution_context = func_execution_context
 
     def py__iter__(self, contextualized_node=None):
+        iterators = self._func_execution_context.infer_annotations()
+        if iterators:
+            return iterators.iterate(contextualized_node)
         return self._func_execution_context.get_yield_lazy_values()
 
     def py__stop_iteration_returns(self):
@@ -140,7 +151,6 @@ class ComprehensionMixin(object):
         input_node = comp_for.children[3]
         parent_context = parent_context or self._defining_context
         input_types = parent_context.infer_node(input_node)
-        # TODO: simulate await if self.is_async
 
         cn = ContextualizedNode(parent_context, input_node)
         iterated = input_types.iterate(cn, is_async=is_async)
@@ -193,13 +203,17 @@ class Sequence(LazyAttributeOverwrite, IterableMixin):
     def _get_generics(self):
         return (self.merge_types_of_iterate().py__class__(),)
 
+    @inference_state_method_cache(default=())
+    def _cached_generics(self):
+        return self._get_generics()
+
     def _get_wrapped_value(self):
         from jedi.inference.gradual.base import GenericClass
         from jedi.inference.gradual.generics import TupleGenericManager
         klass = compiled.builtin_from_name(self.inference_state, self.array_type)
         c, = GenericClass(
             klass,
-            TupleGenericManager(self._get_generics())
+            TupleGenericManager(self._cached_generics())
         ).execute_annotation()
         return c
 
@@ -287,12 +301,12 @@ class DictComprehension(ComprehensionMixin, Sequence, _DictKeyMixin):
         return ValueSet.from_sets(values for keys, values in self._iterate())
 
     @publish_method('values')
-    def _imitate_values(self):
+    def _imitate_values(self, arguments):
         lazy_value = LazyKnownValues(self._dict_values())
         return ValueSet([FakeList(self.inference_state, [lazy_value])])
 
     @publish_method('items')
-    def _imitate_items(self):
+    def _imitate_items(self, arguments):
         lazy_values = [
             LazyKnownValue(
                 FakeTuple(
@@ -328,6 +342,11 @@ class SequenceLiteralValue(Sequence):
         else:
             self.array_type = SequenceLiteralValue.mapping[atom.children[0]]
             """The builtin name of the array (list, set, tuple or dict)."""
+
+    def _get_generics(self):
+        if self.array_type == u'tuple':
+            return tuple(x.infer().py__class__() for x in self.py__iter__())
+        return super(SequenceLiteralValue, self)._get_generics()
 
     def py__simple_getitem__(self, index):
         """Here the index is an int/str. Raises IndexError/KeyError."""
@@ -449,12 +468,12 @@ class DictLiteralValue(_DictMixin, SequenceLiteralValue, _DictKeyMixin):
             yield LazyKnownValues(types)
 
     @publish_method('values')
-    def _imitate_values(self):
+    def _imitate_values(self, arguments):
         lazy_value = LazyKnownValues(self._dict_values())
         return ValueSet([FakeList(self.inference_state, [lazy_value])])
 
     @publish_method('items')
-    def _imitate_items(self):
+    def _imitate_items(self, arguments):
         lazy_values = [
             LazyKnownValue(FakeTuple(
                 self.inference_state,
@@ -544,7 +563,7 @@ class FakeDict(_DictMixin, Sequence, _DictKeyMixin):
         return lazy_value.infer()
 
     @publish_method('values')
-    def _values(self):
+    def _values(self, arguments):
         return ValueSet([FakeTuple(
             self.inference_state,
             [LazyKnownValues(self._dict_values())]
@@ -578,33 +597,31 @@ class MergedArray(Sequence):
         return ValueSet.from_sets(lazy_value.infer() for lazy_value in self.py__iter__())
 
 
-def unpack_tuple_to_dict(value, types, exprlist):
+def unpack_tuple_to_dict(context, types, exprlist):
     """
     Unpacking tuple assignments in for statements and expr_stmts.
     """
     if exprlist.type == 'name':
         return {exprlist.value: types}
     elif exprlist.type == 'atom' and exprlist.children[0] in ('(', '['):
-        return unpack_tuple_to_dict(value, types, exprlist.children[1])
+        return unpack_tuple_to_dict(context, types, exprlist.children[1])
     elif exprlist.type in ('testlist', 'testlist_comp', 'exprlist',
                            'testlist_star_expr'):
         dct = {}
         parts = iter(exprlist.children[::2])
         n = 0
-        for lazy_value in types.iterate(exprlist):
+        for lazy_value in types.iterate(ContextualizedNode(context, exprlist)):
             n += 1
             try:
                 part = next(parts)
             except StopIteration:
-                # TODO this value is probably not right.
-                analysis.add(value, 'value-error-too-many-values', part,
+                analysis.add(context, 'value-error-too-many-values', part,
                              message="ValueError: too many values to unpack (expected %s)" % n)
             else:
-                dct.update(unpack_tuple_to_dict(value, lazy_value.infer(), part))
+                dct.update(unpack_tuple_to_dict(context, lazy_value.infer(), part))
         has_parts = next(parts, None)
         if types and has_parts is not None:
-            # TODO this value is probably not right.
-            analysis.add(value, 'value-error-too-few-values', has_parts,
+            analysis.add(context, 'value-error-too-few-values', has_parts,
                          message="ValueError: need more than %s values to unpack" % n)
         return dct
     elif exprlist.type == 'power' or exprlist.type == 'atom_expr':

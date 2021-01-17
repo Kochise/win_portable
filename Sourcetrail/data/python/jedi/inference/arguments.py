@@ -35,7 +35,7 @@ class ParamIssue(Exception):
     pass
 
 
-def repack_with_argument_clinic(string, keep_arguments_param=False, keep_callback_param=False):
+def repack_with_argument_clinic(clinic_string):
     """
     Transforms a function or method with arguments to the signature that is
     given as an argument clinic notation.
@@ -46,35 +46,29 @@ def repack_with_argument_clinic(string, keep_arguments_param=False, keep_callbac
         str.split.__text_signature__
         # Results in: '($self, /, sep=None, maxsplit=-1)'
     """
-    clinic_args = list(_parse_argument_clinic(string))
-
     def decorator(func):
-        def wrapper(context, *args, **kwargs):
-            if keep_arguments_param:
-                arguments = kwargs['arguments']
-            else:
-                arguments = kwargs.pop('arguments')
-            if not keep_arguments_param:
-                kwargs.pop('callback', None)
+        def wrapper(value, arguments):
             try:
-                args += tuple(_iterate_argument_clinic(
-                    context.inference_state,
+                args = tuple(iterate_argument_clinic(
+                    value.inference_state,
                     arguments,
-                    clinic_args
+                    clinic_string,
                 ))
             except ParamIssue:
                 return NO_VALUES
             else:
-                return func(context, *args, **kwargs)
+                return func(value, *args)
 
         return wrapper
     return decorator
 
 
-def _iterate_argument_clinic(inference_state, arguments, parameters):
+def iterate_argument_clinic(inference_state, arguments, clinic_string):
     """Uses a list with argument clinic information (see PEP 436)."""
+    clinic_args = list(_parse_argument_clinic(clinic_string))
+
     iterator = PushBackIterator(arguments.unpack())
-    for i, (name, optional, allow_kwargs, stars) in enumerate(parameters):
+    for i, (name, optional, allow_kwargs, stars) in enumerate(clinic_args):
         if stars == 1:
             lazy_values = []
             for key, argument in iterator:
@@ -94,7 +88,7 @@ def _iterate_argument_clinic(inference_state, arguments, parameters):
             raise ParamIssue
         if argument is None and not optional:
             debug.warning('TypeError: %s expected at least %s arguments, got %s',
-                          name, len(parameters), i)
+                          name, len(clinic_args), i)
             raise ParamIssue
 
         value_set = NO_VALUES if argument is None else argument.infer()
@@ -131,15 +125,6 @@ def _parse_argument_clinic(string):
 
 
 class _AbstractArgumentsMixin(object):
-    def infer_all(self, funcdef=None):
-        """
-        Inferes all arguments as a support for static analysis
-        (normally Jedi).
-        """
-        for key, lazy_value in self.unpack():
-            types = lazy_value.infer()
-            try_iter_content(types)
-
     def unpack(self, funcdef=None):
         raise NotImplementedError
 
@@ -170,7 +155,9 @@ def unpack_arglist(arglist):
         if child == ',':
             continue
         elif child in ('*', '**'):
-            yield len(child.value), next(iterator)
+            c = next(iterator, None)
+            assert c is not None
+            yield len(child.value), c
         elif child.type == 'argument' and \
                 child.children[0] in ('*', '**'):
             assert len(child.children) == 2

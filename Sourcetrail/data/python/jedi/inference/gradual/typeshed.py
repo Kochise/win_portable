@@ -1,7 +1,9 @@
 import os
 import re
 from functools import wraps
+from collections import namedtuple
 
+from jedi import settings
 from jedi.file_io import FileIO
 from jedi._compatibility import FileNotFoundError, cast_path
 from jedi.parser_utils import get_cached_code_lines
@@ -11,42 +13,46 @@ from jedi.inference.value import ModuleValue
 
 _jedi_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TYPESHED_PATH = os.path.join(_jedi_path, 'third_party', 'typeshed')
+DJANGO_INIT_PATH = os.path.join(_jedi_path, 'third_party', 'django-stubs',
+                                'django-stubs', '__init__.pyi')
 
 _IMPORT_MAP = dict(
     _collections='collections',
     _socket='socket',
 )
 
+PathInfo = namedtuple('PathInfo', 'path is_third_party')
 
-def _merge_create_stub_map(directories):
+
+def _merge_create_stub_map(path_infos):
     map_ = {}
-    for directory in directories:
-        map_.update(_create_stub_map(directory))
+    for directory_path_info in path_infos:
+        map_.update(_create_stub_map(directory_path_info))
     return map_
 
 
-def _create_stub_map(directory):
+def _create_stub_map(directory_path_info):
     """
     Create a mapping of an importable name in Python to a stub file.
     """
     def generate():
         try:
-            listed = os.listdir(directory)
+            listed = os.listdir(directory_path_info.path)
         except (FileNotFoundError, OSError):
             # OSError is Python 2
             return
 
         for entry in listed:
             entry = cast_path(entry)
-            path = os.path.join(directory, entry)
+            path = os.path.join(directory_path_info.path, entry)
             if os.path.isdir(path):
                 init = os.path.join(path, '__init__.pyi')
                 if os.path.isfile(init):
-                    yield entry, init
+                    yield entry, PathInfo(init, directory_path_info.is_third_party)
             elif entry.endswith('.pyi') and os.path.isfile(path):
                 name = entry[:-4]
                 if name != '__init__':
-                    yield name, path
+                    yield name, PathInfo(path, directory_path_info.is_third_party)
 
     # Create a dictionary from the tuple generator.
     return dict(generate())
@@ -55,8 +61,8 @@ def _create_stub_map(directory):
 def _get_typeshed_directories(version_info):
     check_version_list = ['2and3', str(version_info.major)]
     for base in ['stdlib', 'third_party']:
-        base = os.path.join(TYPESHED_PATH, base)
-        base_list = os.listdir(base)
+        base_path = os.path.join(TYPESHED_PATH, base)
+        base_list = os.listdir(base_path)
         for base_list_entry in base_list:
             match = re.match(r'(\d+)\.(\d+)$', base_list_entry)
             if match is not None:
@@ -65,7 +71,8 @@ def _get_typeshed_directories(version_info):
                     check_version_list.append(base_list_entry)
 
         for check_version in check_version_list:
-            yield os.path.join(base, check_version)
+            is_third_party = base != 'stdlib'
+            yield PathInfo(os.path.join(base_path, check_version), is_third_party)
 
 
 _version_cache = {}
@@ -102,9 +109,6 @@ def import_module_decorator(func):
                 # ``os.path``, because it's a very important one in Python
                 # that is being achieved by messing with ``sys.modules`` in
                 # ``os``.
-                python_parent = next(iter(parent_module_values))
-                if python_parent is None:
-                    python_parent, = inference_state.import_module(('os',), prefer_stubs=False)
                 python_value_set = ValueSet.from_sets(
                     func(inference_state, (n,), None, sys_path,)
                     for n in [u'posixpath', u'ntpath', u'macpath', u'os2emxpath']
@@ -119,8 +123,8 @@ def import_module_decorator(func):
         if not prefer_stubs:
             return python_value_set
 
-        stub = _try_to_load_stub_cached(inference_state, import_names, python_value_set,
-                                        parent_module_value, sys_path)
+        stub = try_to_load_stub_cached(inference_state, import_names, python_value_set,
+                                       parent_module_value, sys_path)
         if stub is not None:
             return ValueSet([stub])
         return python_value_set
@@ -128,7 +132,10 @@ def import_module_decorator(func):
     return wrapper
 
 
-def _try_to_load_stub_cached(inference_state, import_names, *args, **kwargs):
+def try_to_load_stub_cached(inference_state, import_names, *args, **kwargs):
+    if import_names is None:
+        return None
+
     try:
         return inference_state.stub_module_cache[import_names]
     except KeyError:
@@ -152,7 +159,7 @@ def _try_to_load_stub(inference_state, import_names, python_value_set,
     """
     if parent_module_value is None and len(import_names) > 1:
         try:
-            parent_module_value = _try_to_load_stub_cached(
+            parent_module_value = try_to_load_stub_cached(
                 inference_state, import_names[:-1], NO_VALUES,
                 parent_module_value=None, sys_path=sys_path)
         except KeyError:
@@ -172,6 +179,13 @@ def _try_to_load_stub(inference_state, import_names, python_value_set,
             )
             if m is not None:
                 return m
+        if import_names[0] == 'django' and python_value_set:
+            return _try_to_load_stub_from_file(
+                inference_state,
+                python_value_set,
+                file_io=FileIO(DJANGO_INIT_PATH),
+                import_names=import_names,
+            )
 
     # 2. Try to load pyi files next to py files.
     for c in python_value_set:
@@ -239,27 +253,27 @@ def _load_from_typeshed(inference_state, python_value_set, parent_module_value, 
             # Only if it's a package (= a folder) something can be
             # imported.
             return None
-        path = parent_module_value.py__path__()
-        map_ = _merge_create_stub_map(path)
+        paths = parent_module_value.py__path__()
+        # Once the initial package has been loaded, the sub packages will
+        # always be loaded, regardless if they are there or not. This makes
+        # sense, IMO, because stubs take preference, even if the original
+        # library doesn't provide a module (it could be dynamic). ~dave
+        map_ = _merge_create_stub_map([PathInfo(p, is_third_party=False) for p in paths])
 
     if map_ is not None:
-        path = map_.get(import_name)
-        if path is not None:
+        path_info = map_.get(import_name)
+        if path_info is not None and (not path_info.is_third_party or python_value_set):
             return _try_to_load_stub_from_file(
                 inference_state,
                 python_value_set,
-                file_io=FileIO(path),
+                file_io=FileIO(path_info.path),
                 import_names=import_names,
             )
 
 
 def _try_to_load_stub_from_file(inference_state, python_value_set, file_io, import_names):
     try:
-        stub_module_node = inference_state.parse(
-            file_io=file_io,
-            cache=True,
-            use_latest_grammar=True
-        )
+        stub_module_node = parse_stub_module(inference_state, file_io)
     except (OSError, IOError):  # IOError is Python 2 only
         # The file that you're looking for doesn't exist (anymore).
         return None
@@ -268,6 +282,16 @@ def _try_to_load_stub_from_file(inference_state, python_value_set, file_io, impo
             inference_state, python_value_set, stub_module_node, file_io,
             import_names
         )
+
+
+def parse_stub_module(inference_state, file_io):
+    return inference_state.parse(
+        file_io=file_io,
+        cache=True,
+        diff_cache=settings.fast_parser,
+        cache_path=settings.cache_directory,
+        use_latest_grammar=True
+    )
 
 
 def create_stub_module(inference_state, python_value_set, stub_module_node, file_io, import_names):

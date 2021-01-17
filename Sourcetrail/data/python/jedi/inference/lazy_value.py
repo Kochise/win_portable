@@ -1,10 +1,12 @@
 from jedi.inference.base_value import ValueSet, NO_VALUES
-from jedi.common.utils import monkeypatch
+from jedi.common import monkeypatch
 
 
 class AbstractLazyValue(object):
-    def __init__(self, data):
+    def __init__(self, data, min=1, max=1):
         self.data = data
+        self.min = min
+        self.max = max
 
     def __repr__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.data)
@@ -26,16 +28,16 @@ class LazyKnownValues(AbstractLazyValue):
 
 
 class LazyUnknownValue(AbstractLazyValue):
-    def __init__(self):
-        super(LazyUnknownValue, self).__init__(None)
+    def __init__(self, min=1, max=1):
+        super(LazyUnknownValue, self).__init__(None, min, max)
 
     def infer(self):
         return NO_VALUES
 
 
 class LazyTreeValue(AbstractLazyValue):
-    def __init__(self, context, node):
-        super(LazyTreeValue, self).__init__(node)
+    def __init__(self, context, node, min=1, max=1):
+        super(LazyTreeValue, self).__init__(node, min, max)
         self.context = context
         # We need to save the predefined names. It's an unfortunate side effect
         # that needs to be tracked otherwise results will be wrong.

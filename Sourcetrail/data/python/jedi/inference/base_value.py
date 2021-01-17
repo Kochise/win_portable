@@ -13,7 +13,6 @@ from parso.python.tree import Name
 from jedi import debug
 from jedi._compatibility import zip_longest, unicode
 from jedi.parser_utils import clean_scope_docstring
-from jedi.common import BaseValueSet, BaseValue
 from jedi.inference.helpers import SimpleGetItemNotFound
 from jedi.inference.utils import safe_property
 from jedi.inference.cache import inference_state_as_method_param_cache
@@ -32,11 +31,6 @@ class HelperValueMixin(object):
             if value.parent_context is None:
                 return value
             value = value.parent_context
-
-    @classmethod
-    @inference_state_as_method_param_cache()
-    def create_cached(cls, *args, **kwargs):
-        return cls(*args, **kwargs)
 
     def execute(self, arguments):
         return self.inference_state.execute(self, arguments=arguments)
@@ -70,8 +64,6 @@ class HelperValueMixin(object):
                     yield f
 
     def goto(self, name_or_str, name_context=None, analysis_errors=True):
-        if name_context is None:
-            name_context = self
         from jedi.inference import finder
         filters = self._get_value_filters(name_or_str)
         names = finder.filter_name(filters, name_or_str)
@@ -105,6 +97,9 @@ class HelperValueMixin(object):
             debug.warning('Tried to run __await__ on value %s', self)
         return await_value_set.execute_with_values()
 
+    def py__name__(self):
+        return self.name.string_name
+
     def iterate(self, contextualized_node=None, is_async=False):
         debug.dbg('iterate %s', self)
         if is_async:
@@ -122,10 +117,14 @@ class HelperValueMixin(object):
         return self.py__iter__(contextualized_node)
 
     def is_sub_class_of(self, class_value):
-        for cls in self.py__mro__():
-            if cls.is_same_class(class_value):
-                return True
-        return False
+        with debug.increase_indent_cm('subclass matching of %s <=> %s' % (self, class_value),
+                                      color='BLUE'):
+            for cls in self.py__mro__():
+                if cls.is_same_class(class_value):
+                    debug.dbg('matched subclass True', color='BLUE')
+                    return True
+            debug.dbg('matched subclass False', color='BLUE')
+            return False
 
     def is_same_class(self, class2):
         # Class matching should prefer comparisons that are not this function.
@@ -138,7 +137,7 @@ class HelperValueMixin(object):
         return self._as_context(*args, **kwargs)
 
 
-class Value(HelperValueMixin, BaseValue):
+class Value(HelperValueMixin):
     """
     To be implemented by subclasses.
     """
@@ -146,12 +145,11 @@ class Value(HelperValueMixin, BaseValue):
     # Possible values: None, tuple, list, dict and set. Here to deal with these
     # very important containers.
     array_type = None
+    api_type = 'not_defined_please_report_bug'
 
-    @property
-    def api_type(self):
-        # By default just lower name of the class. Can and should be
-        # overwritten.
-        return self.__class__.__name__.lower()
+    def __init__(self, inference_state, parent_context=None):
+        self.inference_state = inference_state
+        self.parent_context = parent_context
 
     def py__getitem__(self, index_value_set, contextualized_node):
         from jedi.inference import analysis
@@ -177,10 +175,16 @@ class Value(HelperValueMixin, BaseValue):
                 message="TypeError: '%s' object is not iterable" % self)
         return iter([])
 
+    def py__next__(self, contextualized_node=None):
+        return self.py__iter__(contextualized_node)
+
     def get_signatures(self):
         return []
 
     def is_class(self):
+        return False
+
+    def is_class_mixin(self):
         return False
 
     def is_instance(self):
@@ -218,7 +222,6 @@ class Value(HelperValueMixin, BaseValue):
             return ''
         else:
             return clean_scope_docstring(self.tree_node)
-        return None
 
     def get_safe_value(self, default=sentinel):
         if default is sentinel:
@@ -247,6 +250,9 @@ class Value(HelperValueMixin, BaseValue):
         debug.warning("No __get__ defined on %s", self)
         return ValueSet([self])
 
+    def py__get__on_class(self, calling_instance, instance, class_value):
+        return NotImplemented
+
     def get_qualified_names(self):
         # Returns Optional[Tuple[str, ...]]
         return None
@@ -258,11 +264,41 @@ class Value(HelperValueMixin, BaseValue):
     def _as_context(self):
         raise NotImplementedError('Not all values need to be converted to contexts: %s', self)
 
+    @property
     def name(self):
         raise NotImplementedError
 
-    def py__name__(self):
-        return self.name.string_name
+    def get_type_hint(self, add_class_info=True):
+        return None
+
+    def infer_type_vars(self, value_set):
+        """
+        When the current instance represents a type annotation, this method
+        tries to find information about undefined type vars and returns a dict
+        from type var name to value set.
+
+        This is for example important to understand what `iter([1])` returns.
+        According to typeshed, `iter` returns an `Iterator[_T]`:
+
+            def iter(iterable: Iterable[_T]) -> Iterator[_T]: ...
+
+        This functions would generate `int` for `_T` in this case, because it
+        unpacks the `Iterable`.
+
+        Parameters
+        ----------
+
+        `self`: represents the annotation of the current parameter to infer the
+            value for. In the above example, this would initially be the
+            `Iterable[_T]` of the `iterable` parameter and then, when recursing,
+            just the `_T` generic parameter.
+
+        `value_set`: represents the actual argument passed to the parameter
+            we're inferrined for, or (for recursive calls) their types. In the
+            above example this would first be the representation of the list
+            `[1]` and then, when recursing, just of `1`.
+        """
+        return {}
 
 
 def iterate_values(values, contextualized_node=None, is_async=False):
@@ -370,7 +406,70 @@ def _getitem(value, index_values, contextualized_node):
     return result
 
 
-class ValueSet(BaseValueSet):
+class ValueSet(object):
+    def __init__(self, iterable):
+        self._set = frozenset(iterable)
+        for value in iterable:
+            assert not isinstance(value, ValueSet)
+
+    @classmethod
+    def _from_frozen_set(cls, frozenset_):
+        self = cls.__new__(cls)
+        self._set = frozenset_
+        return self
+
+    @classmethod
+    def from_sets(cls, sets):
+        """
+        Used to work with an iterable of set.
+        """
+        aggregated = set()
+        for set_ in sets:
+            if isinstance(set_, ValueSet):
+                aggregated |= set_._set
+            else:
+                aggregated |= frozenset(set_)
+        return cls._from_frozen_set(frozenset(aggregated))
+
+    def __or__(self, other):
+        return self._from_frozen_set(self._set | other._set)
+
+    def __and__(self, other):
+        return self._from_frozen_set(self._set & other._set)
+
+    def __iter__(self):
+        for element in self._set:
+            yield element
+
+    def __bool__(self):
+        return bool(self._set)
+
+    def __len__(self):
+        return len(self._set)
+
+    def __repr__(self):
+        return 'S{%s}' % (', '.join(str(s) for s in self._set))
+
+    def filter(self, filter_func):
+        return self.__class__(filter(filter_func, self._set))
+
+    def __getattr__(self, name):
+        def mapper(*args, **kwargs):
+            return self.from_sets(
+                getattr(value, name)(*args, **kwargs)
+                for value in self._set
+            )
+        return mapper
+
+    def __eq__(self, other):
+        return self._set == other._set
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(self._set)
+
     def py__class__(self):
         return ValueSet(c.py__class__() for c in self._set)
 
@@ -413,6 +512,38 @@ class ValueSet(BaseValueSet):
 
     def get_signatures(self):
         return [sig for c in self._set for sig in c.get_signatures()]
+
+    def get_type_hint(self, add_class_info=True):
+        t = [v.get_type_hint(add_class_info=add_class_info) for v in self._set]
+        type_hints = sorted(filter(None, t))
+        if len(type_hints) == 1:
+            return type_hints[0]
+
+        optional = 'None' in type_hints
+        if optional:
+            type_hints.remove('None')
+
+        if len(type_hints) == 0:
+            return None
+        elif len(type_hints) == 1:
+            s = type_hints[0]
+        else:
+            s = 'Union[%s]' % ', '.join(type_hints)
+        if optional:
+            s = 'Optional[%s]' % s
+        return s
+
+    def infer_type_vars(self, value_set):
+        # Circular
+        from jedi.inference.gradual.annotation import merge_type_var_dicts
+
+        type_var_dict = {}
+        for value in self._set:
+            merge_type_var_dicts(
+                type_var_dict,
+                value.infer_type_vars(value_set),
+            )
+        return type_var_dict
 
 
 NO_VALUES = ValueSet([])
