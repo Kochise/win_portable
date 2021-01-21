@@ -5,9 +5,9 @@
 【概要】
   AMD、Intel、NVIDIAおよびMicrosoftが提供しているエンコーダを利用した動画変換ソフトで主に以下の様な特徴があります。
 
-  ・AMD VCE (Video Codec Engine)によるハードウェアH.264およびH.265/HEVエンコードに対応
-  ・Intel QSV (Quick Sync Video)によるハードウェアH.264およびH.265/HEVCエンコードに対応 (※1)
-  ・NVIDIA NVENC によるハードウェアH.264およびH.265/HEVCエンコードに対応 (※2)
+  ・AMD GPUによるハードウェアH.264およびH.265/HEVエンコードに対応
+  ・Intel GPUによるハードウェアH.264およびH.265/HEVCエンコードに対応 (※1)
+  ・NVIDIA GPUによるハードウェアH.264およびH.265/HEVCエンコードに対応 (※2)
   ・ソフトウェアH.264およびH.265/HEVCエンコードに対応 (※1)
   ・ハードウェアデコードに対応
   ・ハードウェアフィルタ処理に対応 (※3)
@@ -400,12 +400,12 @@
       ○エンコーダ
         エンコーダを指定します。
 
-        ・AMD VCE H.264 Encoder
-          Video Codec Engine (VCE)を利用したハードウェアH.264エンコーダです。
+        ・AMD Hardware H.264 Encoder
+          AMD GPUを利用したハードウェアH.264エンコーダです。
           Bフレーム有りでエンコードする場合は外部Muxerを利用して出力して下さい。
 
-        ・AMD VCE H.265 Encoder
-          Video Codec Engine (VCE)を利用したハードウェアH.265/HEVCエンコーダです。
+        ・AMD Hardware H.265 Encoder
+          AMD GPUを利用したハードウェアH.265/HEVCエンコーダです。
           このエンコーダを利用するためにはCrimson Edition 16.7.1以降が必要です。
 
           ※ Windows8.1/7で利用する場合の注意事項
@@ -416,23 +416,23 @@
 
              外部Muxerを利用して出力する必要があります。
 
-        ・Intel QSV H.264 Encoder
-          Quick Sync Video (QSV)を利用したハードウェアH.264エンコーダです。
+        ・Intel Hardware H.264 Encoder
+          Intel GPUを利用したハードウェアH.264エンコーダです。
 
-        ・Intel QSV H.265 Encoder
-          Quick Sync Video (QSV)を利用したハードウェアH.265/HEVCエンコーダです。
+        ・Intel Hardware H.265 Encoder
+          Intel GPUを利用したハードウェアH.265/HEVCエンコーダです。
           このエンコーダはWindows10でのみ使用可能です。
 
-        ・Intel QSV AV1 Encoder
-          Quick Sync Video (QSV)を利用したハイブリッドAV1エンコーダです。
+        ・Intel Hybrid AV1 Encoder
+          Intel GPUを利用したハイブリッドAV1エンコーダです。
           このエンコーダはWindows10でのみ使用可能です。
 
-        ・NVIDIA NVENC H.264 Encoder
-          NVIDIA NVENCを利用したハードウェアH.264エンコーダです。
+        ・NVIDIA Hardware H.264 Encoder
+          NVIDIA GPUを利用したハードウェアH.264エンコーダです。
           このエンコーダはWindows10でのみ使用可能です。
 
-        ・NVIDIA NVENC H.265 Encoder
-          NVIDIA NVENCを利用したハードウェアH.265/HEVCエンコーダです。
+        ・NVIDIA Hardware H.265 Encoder
+          NVIDIA GPUを利用したハードウェアH.265/HEVCエンコーダです。
           このエンコーダはWindows10でのみ使用可能です。
 
         ・Microsoft H.264 Encoder
@@ -441,7 +441,7 @@
         ・Microsoft H.265 Encoder
           Windows10に付属するソフトウェアH.265/HEVCエンコーダです。
 
-      ○事前解析(AMD VCE H.264/H.265 Encoderのみ)
+      ○事前解析(AMD Hardware H.264/H.265 Encoderのみ)
         チェックをオンにすると事前に1/4に縮小したフレームに対して解析を実行する様になります。
 
         ※ H.264でインターレース保持エンコード時は利用出来ません。
