@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module builder
@@ -126,7 +126,9 @@ fn (mut v Builder) post_process_c_compiler_output(res os.Result) {
 
 fn (mut v Builder) rebuild_cached_module(vexe string, imp_path string) string {
 	res := v.pref.cache_manager.exists('.o', imp_path) or {
-		println('Cached $imp_path .o file not found... Building .o file for $imp_path')
+		if v.pref.is_verbose {
+			println('Cached $imp_path .o file not found... Building .o file for $imp_path')
+		}
 		// do run `v build-module x` always in main vfolder; x can be a relative path
 		pwd := os.getwd()
 		vroot := os.dir(vexe)
@@ -163,26 +165,26 @@ mut:
 	shared_postfix   string // .so, .dll
 	//
 	//
-	debug_mode       bool
-	is_cc_tcc        bool
-	is_cc_gcc        bool
-	is_cc_msvc       bool
-	is_cc_clang      bool
+	debug_mode  bool
+	is_cc_tcc   bool
+	is_cc_gcc   bool
+	is_cc_msvc  bool
+	is_cc_clang bool
 	//
-	env_cflags       string // prepended *before* everything else
-	env_ldflags      string // appended *after* everything else
+	env_cflags  string // prepended *before* everything else
+	env_ldflags string // appended *after* everything else
 	//
-	args             []string // ordinary C options like `-O2`
-	wargs            []string // for `-Wxyz` *exclusively*
-	o_args           []string // for `-o target`
-	post_args        []string // options that should go after .o_args
-	linker_flags     []string // `-lm`
+	args         []string // ordinary C options like `-O2`
+	wargs        []string // for `-Wxyz` *exclusively*
+	o_args       []string // for `-o target`
+	post_args    []string // options that should go after .o_args
+	linker_flags []string // `-lm`
 }
 
 fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	mut ccoptions := CcompilerOptions{}
 	//
-	mut debug_options := '-g3'
+	mut debug_options := '-g'
 	mut optimization_options := '-O2'
 	// arguments for the C compiler
 	// TODO : activate -Werror once no warnings remain
@@ -191,10 +193,10 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	// warnings are totally fixed/removed
 	ccoptions.args = [v.pref.cflags, '-std=gnu99']
 	ccoptions.wargs = ['-Wall', '-Wextra', '-Wno-unused', '-Wno-missing-braces', '-Walloc-zero',
-		'-Wcast-qual', '-Wdate-time', '-Wduplicated-branches', '-Wduplicated-cond', '-Wformat=2', '-Winit-self',
-		'-Winvalid-pch', '-Wjump-misses-init', '-Wlogical-op', '-Wmultichar', '-Wnested-externs', '-Wnull-dereference',
-		'-Wpacked', '-Wpointer-arith', '-Wshadow', '-Wswitch-default', '-Wswitch-enum', '-Wno-unused-parameter',
-		'-Wno-unknown-warning-option', '-Wno-format-nonliteral', '-Wno-unused-command-line-argument']
+		'-Wcast-qual', '-Wdate-time', '-Wduplicated-branches', '-Wduplicated-cond', '-Wformat=2',
+		'-Winit-self', '-Winvalid-pch', '-Wjump-misses-init', '-Wlogical-op', '-Wmultichar', '-Wnested-externs',
+		'-Wnull-dereference', '-Wpacked', '-Wpointer-arith', '-Wshadow', '-Wswitch-default', '-Wswitch-enum',
+		'-Wno-unused-parameter', '-Wno-unknown-warning-option', '-Wno-format-nonliteral']
 	if v.pref.os == .ios {
 		ccoptions.args << '-framework Foundation'
 		ccoptions.args << '-framework UIKit'
@@ -210,7 +212,8 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 		if ccversion := os.exec('cc --version') {
 			if ccversion.exit_code == 0 {
 				if ccversion.output.contains('This is free software;') &&
-					ccversion.output.contains('Free Software Foundation, Inc.') {
+					ccversion.output.contains('Free Software Foundation, Inc.')
+				{
 					ccoptions.guessed_compiler = 'gcc'
 				}
 				if ccversion.output.contains('clang version ') {
@@ -231,7 +234,7 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	}
 	if ccoptions.is_cc_clang {
 		if ccoptions.debug_mode {
-			debug_options = '-g3 -O0'
+			debug_options = '-g -O0'
 		}
 		optimization_options = '-O3'
 		mut have_flto := true
@@ -244,7 +247,7 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	}
 	if ccoptions.is_cc_gcc {
 		if ccoptions.debug_mode {
-			debug_options = '-g3 -no-pie'
+			debug_options = '-g -no-pie'
 		}
 		optimization_options = '-O3 -fno-strict-aliasing -flto'
 	}
@@ -284,14 +287,14 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 		ccoptions.linker_flags << '-static'
 		ccoptions.linker_flags << '-nostdlib'
 	}
-	if ccoptions.debug_mode && os.user_os() != 'windows' {
+	if ccoptions.debug_mode && os.user_os() != 'windows' && v.pref.build_mode != .build_module {
 		ccoptions.linker_flags << ' -rdynamic ' // needed for nicer symbolic backtraces
 	}
 	if ccompiler != 'msvc' && v.pref.os != .freebsd {
 		ccoptions.wargs << '-Werror=implicit-function-declaration'
 	}
 	if v.pref.is_liveshared || v.pref.is_livemain {
-		if v.pref.os == .linux || os.user_os() == 'linux' {
+		if (v.pref.os == .linux || os.user_os() == 'linux') && v.pref.build_mode != .build_module {
 			ccoptions.linker_flags << '-rdynamic'
 		}
 		if v.pref.os == .macos || os.user_os() == 'macos' {
@@ -351,7 +354,8 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	// Without these libs compilation will fail on Linux
 	// || os.user_os() == 'linux'
 	if !v.pref.is_bare && v.pref.build_mode != .build_module && v.pref.os in
-		[.linux, .freebsd, .openbsd, .netbsd, .dragonfly, .solaris, .haiku] {
+		[.linux, .freebsd, .openbsd, .netbsd, .dragonfly, .solaris, .haiku]
+	{
 		ccoptions.linker_flags << '-lm'
 		ccoptions.linker_flags << '-lpthread'
 		// -ldl is a Linux only thing. BSDs have it in libc.
@@ -399,7 +403,8 @@ fn (ccoptions CcompilerOptions) thirdparty_object_args(middle []string) []string
 
 fn (mut v Builder) setup_output_name() {
 	if !v.pref.is_shared && v.pref.build_mode != .build_module && os.user_os() == 'windows' &&
-		!v.pref.out_name.ends_with('.exe') {
+		!v.pref.out_name.ends_with('.exe')
+	{
 		v.pref.out_name += '.exe'
 	}
 	// Output executable name
@@ -411,7 +416,9 @@ fn (mut v Builder) setup_output_name() {
 	}
 	if v.pref.build_mode == .build_module {
 		v.pref.out_name = v.pref.cache_manager.postfix_with_key2cpath('.o', v.pref.path) // v.out_name
-		println('Building $v.pref.path to $v.pref.out_name ...')
+		if v.pref.is_verbose {
+			println('Building $v.pref.path to $v.pref.out_name ...')
+		}
 		v.pref.cache_manager.save('.description.txt', v.pref.path, '${v.pref.path:-30} @ $v.pref.cache_manager.vopts\n')
 		// println('v.table.imports:')
 		// println(v.table.imports)
@@ -510,7 +517,7 @@ fn (mut v Builder) cc() {
 		if v.pref.os == .ios {
 			ios_sdk := if v.pref.is_ios_simulator { 'iphonesimulator' } else { 'iphoneos' }
 			ios_sdk_path_res := os.exec('xcrun --sdk $ios_sdk --show-sdk-path') or {
-				panic("Couldn\'t find iphonesimulator")
+				panic("Couldn't find iphonesimulator")
 			}
 			mut isysroot := ios_sdk_path_res.output.replace('\n', '')
 			ccompiler = 'xcrun --sdk iphoneos clang -isysroot $isysroot'
@@ -527,6 +534,16 @@ fn (mut v Builder) cc() {
 			builtin_obj_path := v.rebuild_cached_module(vexe, 'vlib/builtin')
 			libs += ' ' + builtin_obj_path
 			for ast_file in v.parsed_files {
+				is_test := ast_file.path.ends_with('_test.v')
+				if is_test && ast_file.mod.name != 'main' {
+					imp_path := v.find_module_path(ast_file.mod.name, ast_file.path) or {
+						verror('cannot import module "$ast_file.mod.name" (not found)')
+						break
+					}
+					obj_path := v.rebuild_cached_module(vexe, imp_path)
+					libs += ' ' + obj_path
+					built_modules << ast_file.mod.name
+				}
 				for imp_stmt in ast_file.imports {
 					imp := imp_stmt.mod
 					// strconv is already imported inside builtin, so skip generating its object file
@@ -591,6 +608,12 @@ fn (mut v Builder) cc() {
 			v.pref.cleanup_files << v.out_name_c
 			v.pref.cleanup_files << response_file
 		}
+		$if windows {
+			if v.ccoptions.is_cc_tcc {
+				def_name := v.pref.out_name[0..v.pref.out_name.len - 4]
+				v.pref.cleanup_files << '${def_name}.def'
+			}
+		}
 		//
 		todo()
 		os.chdir(vdir)
@@ -611,6 +634,9 @@ fn (mut v Builder) cc() {
 			v.show_c_compiler_output(res)
 		}
 		os.chdir(original_pwd)
+		$if trace_use_cache ? {
+			eprintln('>>>> v.pref.use_cache: $v.pref.use_cache | v.pref.retry_compilation: $v.pref.retry_compilation | cmd res.exit_code: $res.exit_code | cmd: $cmd')
+		}
 		if res.exit_code != 0 {
 			if ccompiler.contains('tcc.exe') {
 				// a TCC problem? Retry with the system cc:
@@ -621,9 +647,13 @@ fn (mut v Builder) cc() {
 					}
 					exit(101)
 				}
-				v.pref.ccompiler = pref.default_c_compiler()
-				eprintln('Compilation with tcc failed. Retrying with $v.pref.ccompiler ...')
-				continue
+				if v.pref.retry_compilation {
+					v.pref.ccompiler = pref.default_c_compiler()
+					if v.pref.is_verbose {
+						eprintln('Compilation with tcc failed. Retrying with $v.pref.ccompiler ...')
+					}
+					continue
+				}
 			}
 			if res.exit_code == 127 {
 				verror('C compiler error, while attempting to run: \n' +
@@ -778,7 +808,11 @@ fn (mut c Builder) cc_windows_cross() {
 	//
 	cflags := c.get_os_cflags()
 	// -I flags
-	args += if c.pref.ccompiler == 'msvc' { cflags.c_options_before_target_msvc() } else { cflags.c_options_before_target() }
+	args += if c.pref.ccompiler == 'msvc' {
+		cflags.c_options_before_target_msvc()
+	} else {
+		cflags.c_options_before_target()
+	}
 	mut optimization_options := ''
 	mut debug_options := ''
 	if c.pref.is_prod {
@@ -804,7 +838,11 @@ fn (mut c Builder) cc_windows_cross() {
 	// add the thirdparty .o files, produced by all the #flag directives:
 	args += ' ' + cflags.c_options_only_object_files() + ' '
 	args += ' $c.out_name_c '
-	args += if c.pref.ccompiler == 'msvc' { cflags.c_options_after_target_msvc() } else { cflags.c_options_after_target() }
+	args += if c.pref.ccompiler == 'msvc' {
+		cflags.c_options_after_target_msvc()
+	} else {
+		cflags.c_options_after_target()
+	}
 	/*
 	winroot := '${pref.default_module_path}/winroot'
 	if !os.is_dir(winroot) {

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module pref
@@ -94,9 +94,18 @@ pub fn (mut p Preferences) fill_with_defaults() {
 		'$p.lookup_path',
 	])
 	// eprintln('prefs.cache_manager: $p')
-	//
-	// enable use_cache by default
-	// p.use_cache = os.user_os() != 'windows'
+	// disable use_cache for specific cases:
+	if os.user_os() == 'windows' {
+		p.use_cache = false
+	}
+	if p.build_mode == .build_module {
+		// eprintln('-usecache and build-module flags are not compatible')
+		p.use_cache = false
+	}
+	if p.is_shared {
+		// eprintln('-usecache and -shared flags are not compatible')
+		p.use_cache = false
+	}
 }
 
 fn (mut p Preferences) find_cc_if_cross_compiling() {

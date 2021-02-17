@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module picoev
@@ -143,7 +143,7 @@ fn mysubstr(s byteptr, from int, len int) string {
 }
 
 fn rw_callback(loop &C.picoev_loop, fd int, events int, cb_arg voidptr) {
-	mut p := &Picoev(cb_arg)
+	mut p := unsafe {&Picoev(cb_arg)}
 	if (events & C.PICOEV_TIMEOUT) != 0 {
 		close_conn(loop, fd)
 		p.idx[fd] = 0

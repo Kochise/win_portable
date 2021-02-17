@@ -4,7 +4,7 @@ module strconv
 
 f32 to string
 
-Copyright (c) 2019-2020 Dario Deledda. All rights reserved.
+Copyright (c) 2019-2021 Dario Deledda. All rights reserved.
 Use of this source code is governed by an MIT license
 that can be found in the LICENSE file.
 
@@ -371,7 +371,7 @@ fn f64_to_decimal(mant u64, exp u64) Dec64 {
 pub fn f64_to_str(f f64, n_digit int) string {
 	mut u1 := Uf64{}
 	u1.f = f
-	u := u1.u
+	u := unsafe {u1.u}
 
 	neg   := (u>>(mantbits64+expbits64)) != 0
 	mant  := u & ((u64(1)<<mantbits64) - u64(1))
@@ -396,7 +396,7 @@ pub fn f64_to_str(f f64, n_digit int) string {
 pub fn f64_to_str_pad(f f64, n_digit int) string {
 	mut u1 := Uf64{}
 	u1.f = f
-	u := u1.u
+	u := unsafe {u1.u}
 
 	neg   := (u>>(mantbits64+expbits64)) != 0
 	mant  := u & ((u64(1)<<mantbits64) - u64(1))

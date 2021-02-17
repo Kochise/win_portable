@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module util
@@ -131,7 +131,7 @@ pub fn source_context(kind string, source string, column int, pos token.Position
 			mut pointerline := ''
 			for bchar in sline[..start_column] {
 				x := if bchar.is_space() { bchar } else { ` ` }
-				pointerline += x.str()
+				pointerline += x.ascii_str()
 			}
 			underline := if pos.len > 1 { '~'.repeat(end_column - start_column) } else { '^' }
 			pointerline += bold(color(kind, underline))

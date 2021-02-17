@@ -1,3 +1,4 @@
+[manualfree]
 module websocket
 
 import encoding.base64
@@ -30,14 +31,14 @@ fn (mut ws Client) handshake() ? {
 	ws.debug_log('sending handshake: $handshake')
 	ws.socket_write(handshake_bytes) ?
 	ws.read_handshake(seckey) ?
-	unsafe {handshake_bytes.free()}
+	unsafe { handshake_bytes.free() }
 }
 
 // handle_server_handshake manages websocket server handshake process
 fn (mut s Server) handle_server_handshake(mut c Client) ?(string, &ServerClient) {
 	msg := c.read_handshake_str() ?
 	handshake_response, client := s.parse_client_handshake(msg, mut c) ?
-	unsafe {msg.free()}
+	unsafe { msg.free() }
 	return handshake_response, client
 }
 
@@ -83,7 +84,7 @@ fn (mut s Server) parse_client_handshake(client_handshake string, mut c Client) 
 				// we ignore other headers like protocol for now
 			}
 		}
-		unsafe {keys.free()}
+		unsafe { keys.free() }
 	}
 	if flags.len < 3 {
 		return error_with_code('invalid client handshake, $client_handshake', 4)
@@ -118,7 +119,8 @@ fn (mut ws Client) read_handshake_str() ?string {
 		msg[total_bytes_read] = buffer[0]
 		total_bytes_read++
 		if total_bytes_read > 5 && msg[total_bytes_read - 1] == `\n` && msg[total_bytes_read -
-			2] == `\r` && msg[total_bytes_read - 3] == `\n` && msg[total_bytes_read - 4] == `\r` {
+			2] == `\r` && msg[total_bytes_read - 3] == `\n` && msg[total_bytes_read - 4] == `\r`
+		{
 			break
 		}
 	}
@@ -130,7 +132,7 @@ fn (mut ws Client) read_handshake_str() ?string {
 fn (mut ws Client) read_handshake(seckey string) ? {
 	mut msg := ws.read_handshake_str() ?
 	ws.check_handshake_response(msg, seckey) ?
-	unsafe {msg.free()}
+	unsafe { msg.free() }
 }
 
 // check_handshake_response checks the response from handshake and returns
@@ -164,13 +166,13 @@ fn (mut ws Client) check_handshake_response(handshake_response string, seckey st
 						7)
 				}
 				ws.flags << .has_accept
-				unsafe {challenge.free()}
+				unsafe { challenge.free() }
 			}
 			else {}
 		}
-		unsafe {keys.free()}
+		unsafe { keys.free() }
 	}
-	unsafe {lines.free()}
+	unsafe { lines.free() }
 	if ws.flags.len < 3 {
 		ws.close(1002, 'invalid websocket HTTP headers') ?
 		return error_with_code('invalid websocket HTTP headers', 8)

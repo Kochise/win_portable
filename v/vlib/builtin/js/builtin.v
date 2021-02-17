@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 
@@ -22,13 +22,13 @@ pub fn print(s any) {
 }
 
 pub fn eprintln(s any) {
-	JS.console.error(s)
+	JS.console.error(s.toString())
 }
 
 pub fn eprint(s any) {
 	// TODO
 	// $if js.node {
-		JS.process.stderr.write(s)
+		JS.process.stderr.write(s.toString())
 	// } $else {
 	//	panic('Cannot `eprint` in a browser, use `eprintln` instead')
 	// }

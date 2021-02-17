@@ -1,9 +1,9 @@
 module os
 
 pub struct File {
-	cfile     voidptr // Using void* instead of FILE*
+	cfile voidptr // Using void* instead of FILE*
 pub:
-	fd        int
+	fd int
 pub mut:
 	is_opened bool
 }
@@ -33,7 +33,7 @@ pub fn (mut f File) write(buf []byte) ?int {
 		}
 	}
 	*/
-	written := C.fwrite(buf.data, buf.len, 1, f.cfile)
+	written := int(C.fwrite(buf.data, buf.len, 1, f.cfile))
 	if written == 0 && buf.len != 0 {
 		return error('0 bytes written')
 	}
@@ -54,7 +54,7 @@ pub fn (mut f File) writeln(s string) ?int {
 	}
 	*/
 	// TODO perf
-	written := C.fwrite(s.str, s.len, 1, f.cfile)
+	written := int(C.fwrite(s.str, s.len, 1, f.cfile))
 	if written == 0 && s.len != 0 {
 		return error('0 bytes written')
 	}
@@ -70,7 +70,7 @@ pub fn (mut f File) write_string(s string) ?int {
 		return error('file is not opened')
 	}
 	// TODO perf
-	written := C.fwrite(s.str, s.len, 1, f.cfile)
+	written := int(C.fwrite(s.str, s.len, 1, f.cfile))
 	if written == 0 && s.len != 0 {
 		return error('0 bytes written')
 	}
@@ -80,38 +80,30 @@ pub fn (mut f File) write_string(s string) ?int {
 // write_to implements the RandomWriter interface
 pub fn (mut f File) write_to(pos int, buf []byte) ?int {
 	C.fseek(f.cfile, pos, C.SEEK_SET)
-	res := C.fwrite(buf.data, 1, buf.len, f.cfile)
+	res := int(C.fwrite(buf.data, 1, buf.len, f.cfile))
 	C.fseek(f.cfile, 0, C.SEEK_END)
 	return res
 }
 
-[deprecated]
 pub fn (mut f File) write_bytes(data voidptr, size int) int {
-	eprintln('warning `File.write_bytes()` has been deprecated, use `File.write` instead')
-	return C.fwrite(data, 1, size, f.cfile)
+	return int(C.fwrite(data, 1, size, f.cfile))
 }
 
-[deprecated]
 pub fn (mut f File) write_bytes_at(data voidptr, size int, pos int) int {
-	eprintln('warning `File.write_bytes_at()` has been deprecated, use `File.write_at` instead')
 	C.fseek(f.cfile, pos, C.SEEK_SET)
-	res := C.fwrite(data, 1, size, f.cfile)
+	res := int(C.fwrite(data, 1, size, f.cfile))
 	C.fseek(f.cfile, 0, C.SEEK_END)
 	return res
 }
 
 // **************************** Read ops  ***************************
 // read_bytes reads bytes from the beginning of the file
-[deprecated]
 pub fn (f &File) read_bytes(size int) []byte {
-	eprintln('warning `File.read_bytes()` has been deprecated, use `File.read` instead')
 	return f.read_bytes_at(size, 0)
 }
 
 // read_bytes_at reads bytes at the given position in the file
-[deprecated]
 pub fn (f &File) read_bytes_at(size int, pos int) []byte {
-	eprintln('warning `File.read_bytes_at()` has been deprecated, use `File.read_at` instead')
 	mut arr := []byte{len: size}
 	nreadbytes := f.read_bytes_into(pos, mut arr) or {
 		// return err
@@ -120,12 +112,10 @@ pub fn (f &File) read_bytes_at(size int, pos int) []byte {
 	return arr[0..nreadbytes]
 }
 
-// read_bytes_from fills `buf` with bytes at the given position in the file.
+// read_bytes_into fills `buf` with bytes at the given position in the file.
 // `buf` must have length greater than zero.
 // Returns number of bytes read or an error.
-[deprecated]
 pub fn (f &File) read_bytes_into(pos int, mut buf []byte) ?int {
-	eprintln('warning `File.read_bytes_into()` has been deprecated, use `File.read_from_into` instead')
 	if buf.len == 0 {
 		panic(@FN + ': `buf.len` == 0')
 	}
@@ -133,7 +123,7 @@ pub fn (f &File) read_bytes_into(pos int, mut buf []byte) ?int {
 	C.fseek(f.cfile, pos, C.SEEK_SET)
 	// errno is only set if fread fails, so clear it first to tell
 	C.errno = 0
-	nbytes := C.fread(buf.data, 1, buf.len, f.cfile)
+	nbytes := int(C.fread(buf.data, 1, buf.len, f.cfile))
 	if C.errno != 0 {
 		return error(posix_get_error_msg(C.errno))
 	}
@@ -149,7 +139,7 @@ pub fn (f &File) read(mut buf []byte) ?int {
 		return 0
 	}
 	C.errno = 0
-	nbytes := C.fread(buf.data, 1, buf.len, f.cfile)
+	nbytes := int(C.fread(buf.data, 1, buf.len, f.cfile))
 	if C.errno != 0 {
 		return error(posix_get_error_msg(C.errno))
 	}
@@ -163,7 +153,7 @@ pub fn (f &File) read_at(pos int, mut buf []byte) ?int {
 	}
 	C.fseek(f.cfile, pos, C.SEEK_SET)
 	C.errno = 0
-	nbytes := C.fread(buf.data, 1, buf.len, f.cfile)
+	nbytes := int(C.fread(buf.data, 1, buf.len, f.cfile))
 	if C.errno != 0 {
 		return error(posix_get_error_msg(C.errno))
 	}

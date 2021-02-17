@@ -3,6 +3,7 @@ module main
 import os
 import v.pref
 import v.util
+import v.util.recompilation
 
 struct App {
 	is_verbose bool
@@ -12,15 +13,17 @@ struct App {
 
 fn new_app() App {
 	vexe := os.real_path(pref.vexe_path())
+	vroot := os.dir(vexe)
 	return App{
 		is_verbose: '-v' in os.args
 		vexe: vexe
-		vroot: os.dir(vexe)
+		vroot: vroot
 	}
 }
 
 fn main() {
 	app := new_app()
+	recompilation.must_be_enabled(app.vroot, 'Please install V from source, to use `v up` .')
 	os.chdir(app.vroot)
 	println('Updating V...')
 	app.update_from_master()
@@ -36,9 +39,7 @@ fn main() {
 		app.backup('cmd/tools/vup.exe')
 	}
 	app.recompile_v()
-	os.exec('"$app.vexe" cmd/tools/vup.v') or {
-		panic(err)
-	}
+	os.exec('"$app.vexe" cmd/tools/vup.v') or { panic(err) }
 	app.show_current_v_version()
 }
 
@@ -66,9 +67,12 @@ fn (app App) recompile_v() {
 		println('> recompiling v itself with `$vself` ...')
 	}
 	if self_result := os.exec(vself) {
-		println(self_result.output.trim_space())
 		if self_result.exit_code == 0 {
+			println(self_result.output.trim_space())
 			return
+		} else if app.is_verbose {
+			println('`$vself` failed, running `make`...')
+			println(self_result.output.trim_space())
 		}
 	}
 	app.make(vself)
@@ -79,11 +83,10 @@ fn (app App) make(vself string) {
 	$if windows {
 		make = 'make.bat'
 	}
-	println('`$vself` failed, running `$make`...')
-	make_result := os.exec(make) or {
-		panic(err)
+	make_result := os.exec(make) or { panic(err) }
+	if app.is_verbose {
+		println(make_result.output)
 	}
-	println(make_result.output)
 }
 
 fn (app App) show_current_v_version() {
@@ -111,9 +114,7 @@ fn (app App) backup(file string) {
 }
 
 fn (app App) git_command(command string) {
-	git_result := os.exec('git $command') or {
-		panic(err)
-	}
+	git_result := os.exec('git $command') or { panic(err) }
 	if git_result.exit_code != 0 {
 		if git_result.output.contains('Permission denied') {
 			eprintln('No access to `$app.vroot`: Permission denied')

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module os
@@ -81,9 +81,9 @@ pub fn environ() map[string]string {
 		}
 		C.FreeEnvironmentStringsW(estrings)
 	} $else {
-		e := &charptr(C.environ)
-		for i := 0; !isnil(unsafe {e[i]}); i++ {
-			eline := unsafe {cstring_to_vstring(byteptr(e[i]))}
+		e := unsafe { &charptr(C.environ) }
+		for i := 0; !isnil(unsafe { e[i] }); i++ {
+			eline := unsafe { cstring_to_vstring(byteptr(e[i])) }
 			eq_index := eline.index_byte(`=`)
 			if eq_index > 0 {
 				res[eline[0..eq_index]] = eline[eq_index + 1..]

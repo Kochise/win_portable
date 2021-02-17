@@ -1,25 +1,50 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module parser
 
 import v.table
 import v.util
+import v.ast
 
 pub fn (mut p Parser) parse_array_type() table.Type {
 	p.check(.lsbr)
 	// fixed array
-	if p.tok.kind == .number {
-		size := p.tok.lit.int()
-		p.next()
+	if p.tok.kind in [.number, .name] {
+		mut fixed_size := 0
+		size_expr := p.expr(0)
+		match size_expr {
+			ast.IntegerLiteral {
+				fixed_size = size_expr.val.int()
+			}
+			ast.Ident {
+				if const_field := p.global_scope.find_const('${p.mod}.$size_expr.name') {
+					if const_field.expr is ast.IntegerLiteral {
+						fixed_size = const_field.expr.val.int()
+					} else {
+						p.error_with_pos('non existent integer const $size_expr.name while initializing the size of a static array',
+							size_expr.pos)
+					}
+				} else {
+					p.error_with_pos('non existent integer const $size_expr.name while initializing the size of a static array',
+						size_expr.pos)
+				}
+			}
+			else {
+				p.error('expecting `int` for fixed size')
+			}
+		}
 		p.check(.rsbr)
 		elem_type := p.parse_type()
 		if elem_type.idx() == 0 {
 			// error is handled by parse_type
 			return 0
 		}
+		if fixed_size <= 0 {
+			p.error_with_pos('fixed size cannot be zero or negative', size_expr.position())
+		}
 		// sym := p.table.get_type_symbol(elem_type)
-		idx := p.table.find_or_register_array_fixed(elem_type, size, 1)
+		idx := p.table.find_or_register_array_fixed(elem_type, fixed_size)
 		return table.new_type(idx)
 	}
 	// array
@@ -37,7 +62,7 @@ pub fn (mut p Parser) parse_array_type() table.Type {
 		p.check(.rsbr)
 		nr_dims++
 	}
-	idx := p.table.find_or_register_array(elem_type, nr_dims)
+	idx := p.table.find_or_register_array_with_dims(elem_type, nr_dims)
 	return table.new_type(idx)
 }
 
@@ -52,11 +77,16 @@ pub fn (mut p Parser) parse_map_type() table.Type {
 		// error is reported in parse_type
 		return 0
 	}
-	// key_type_sym := p.get_type_symbol(key_type)
-	// if key_type_sym.kind != .string {
-	if key_type.idx() != table.string_type_idx {
-		p.error('maps can only have string keys for now')
+	if !(key_type in [table.string_type_idx, table.voidptr_type_idx] ||
+		(key_type.is_int() && !key_type.is_ptr()))
+	{
+		s := p.table.type_to_str(key_type)
+		p.error_with_pos('maps only support string, integer, rune or voidptr keys for now (not `$s`)',
+			p.tok.position())
 		return 0
+	}
+	if key_type != table.string_type_idx {
+		p.warn_with_pos('non-string keys are work in progress', p.tok.position())
 	}
 	p.check(.rsbr)
 	value_type := p.parse_type()
@@ -117,7 +147,10 @@ pub fn (mut p Parser) parse_fn_type(name string) table.Type {
 		is_variadic: is_variadic
 		return_type: return_type
 	}
-	idx := p.table.find_or_register_fn_type(p.mod, func, false, false)
+	// MapFooFn typedefs are manually added in cheaders.v
+	// because typedefs get generated after the map struct is generated
+	has_decl := p.builtin_mod && name.starts_with('Map') && name.ends_with('Fn')
+	idx := p.table.find_or_register_fn_type(p.mod, func, false, has_decl)
 	return table.new_type(idx)
 }
 
@@ -242,7 +275,7 @@ pub fn (mut p Parser) parse_any_type(language table.Language, is_ptr bool, check
 		name = p.expr_mod + '.' + name
 	} else if name in p.imported_symbols {
 		name = p.imported_symbols[name]
-	} else if p.mod != 'builtin' && name.len > 1 && name !in p.table.type_idxs {
+	} else if !p.builtin_mod && name.len > 1 && name !in p.table.type_idxs {
 		// `Foo` in module `mod` means `mod.Foo`
 		name = p.mod + '.' + name
 	}
@@ -328,6 +361,12 @@ pub fn (mut p Parser) parse_any_type(language table.Language, is_ptr bool, check
 				}
 				'bool' {
 					return table.bool_type
+				}
+				'float_literal' {
+					return table.float_literal_type
+				}
+				'int_literal' {
+					return table.int_literal_type
 				}
 				else {
 					if name.len == 1 && name[0].is_capital() {

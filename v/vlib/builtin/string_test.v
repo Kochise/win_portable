@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 
@@ -365,16 +365,14 @@ fn test_runes() {
 
 fn test_left_right() {
 	s := 'ALOHA'
-	assert s.left(3) == 'ALO'
-	assert s.left(0) == ''
-	assert s.left(8) == s
-	assert s.right(3) == 'HA'
-	assert s.right(6) == ''
+	assert s[..3] == 'ALO'
+	assert s[..0] == ''
+	assert s[..5] == s
 	assert s[3..] == 'HA'
+	//assert s.right(6) == ''
 	u := s.ustring()
 	assert u.left(3) == 'ALO'
 	assert u.left(0) == ''
-	assert s.left(8) == s
 	assert u.right(3) == 'HA'
 	assert u.right(6) == ''
 }
@@ -536,8 +534,8 @@ fn test_bytes_to_string() {
 
 fn test_charptr() {
 	foo := charptr('VLANG'.str)
-	println(typeof(foo))
-	assert typeof(foo) == 'charptr'
+	println(typeof(foo).name)
+	assert typeof(foo).name == 'charptr'
 	assert unsafe { foo.vstring() } == 'VLANG'
 	assert unsafe { foo.vstring_with_len(3) } == 'VLA'
 }
@@ -901,4 +899,11 @@ fn test_sorter() {
 	assert arr[1].i == 100
 	assert arr[2].s == 'ccc'
 	assert arr[2].i == 102
+}
+
+fn test_split_by_whitespace() {
+	assert 'a bcde'.split_by_whitespace() == ['a', 'bcde']
+	assert '  sss \t  ssss '.split_by_whitespace() == ['sss', 'ssss']
+	assert '\n xyz \t abc   def'.split_by_whitespace() == ['xyz', 'abc', 'def']
+	assert ''.split_by_whitespace() == []
 }

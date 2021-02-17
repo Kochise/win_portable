@@ -1,5 +1,3 @@
-import sync
-
 fn test_pointer() {
 	mut arr := []&int{}
 	a := 1
@@ -257,9 +255,9 @@ fn test_left() {
 
 fn test_slice() {
 	a := [1, 2, 3, 4]
-	b := a.slice(2, 4)
+	b := a[2..4]
 	assert b.len == 2
-	assert a.slice(1, 2).len == 1
+	assert a[1..2].len == 1
 	assert a.len == 4
 }
 
@@ -352,11 +350,12 @@ fn test_mut_arg() {
 
 fn test_clone() {
 	nums := [1, 2, 3, 4, 100]
+	_ = nums
 	nums2 := nums.clone()
 	assert nums2.len == 5
 	assert nums.str() == '[1, 2, 3, 4, 100]'
 	assert nums2.str() == '[1, 2, 3, 4, 100]'
-	assert nums.slice(1, 3).str() == '[2, 3]'
+	assert nums[1..3].str() == '[2, 3]'
 }
 
 /*
@@ -689,13 +688,6 @@ fn test_array_str() {
 	assert numbers.str() == '[1, 2, 3]'
 	// QTODO
 	// assert numbers2.str() == '[[1, 2, 3], [4, 5, 6]]'
-}
-
-fn test_eq() {
-	/*
-	assert [5, 6, 7].eq([6, 7]) == false
-	assert [`a`, `b`].eq([`a`, `b`]) == true
-	*/
 }
 
 struct User {
@@ -1194,4 +1186,176 @@ fn test_any_type_array_contains() {
 	assert c.contains([1])
 	assert [2] in c
 	assert [3] !in c
+}
+
+struct Person {
+	name string
+	nums []int
+	kv   map[string]string
+}
+
+fn test_struct_array_of_multi_type_in() {
+	ivan := Person{
+		name: 'ivan'
+		nums: [1, 2, 3]
+		kv: {
+			'aaa': '111'
+		}
+	}
+	people := [Person{
+		name: 'ivan'
+		nums: [1, 2, 3]
+		kv: {
+			'aaa': '111'
+		}
+	}, Person{
+		name: 'bob'
+		nums: [2]
+		kv: {
+			'bbb': '222'
+		}
+	}]
+	println(ivan in people)
+	assert ivan in people
+}
+
+fn test_struct_array_of_multi_type_index() {
+	ivan := Person{
+		name: 'ivan'
+		nums: [1, 2, 3]
+		kv: {
+			'aaa': '111'
+		}
+	}
+	people := [Person{
+		name: 'ivan'
+		nums: [1, 2, 3]
+		kv: {
+			'aaa': '111'
+		}
+	}, Person{
+		name: 'bob'
+		nums: [2]
+		kv: {
+			'bbb': '222'
+		}
+	}]
+	println(people.index(ivan))
+	assert people.index(ivan) == 0
+}
+
+struct Coord {
+	x int
+	y int
+	z int
+}
+
+fn test_array_struct_contains() {
+	mut coords := []Coord{}
+	coord_1 := Coord{
+		x: 1
+		y: 2
+		z: -1
+	}
+	coords << coord_1
+	exists := coord_1 in coords
+	not_exists := coord_1 !in coords
+	println('`exists`: $exists and `not exists`: $not_exists')
+	assert exists == true
+	assert not_exists == false
+}
+
+fn test_array_struct_ref_contains() {
+	mut coords := []&Coord{}
+	coord_1 := &Coord{
+		x: 1
+		y: 2
+		z: -1
+	}
+	coords << coord_1
+	exists := coord_1 in coords
+	println(exists)
+	assert exists == true
+}
+
+fn test_array_struct_ref_index() {
+	mut coords := []&Coord{}
+	coord_1 := &Coord{
+		x: 1
+		y: 2
+		z: -1
+	}
+	coords << coord_1
+	println(coords.index(coord_1))
+	assert coords.index(coord_1) == 0
+}
+
+fn test_array_of_array_append() {
+	mut x := [][]int{len: 4}
+	println(x) // OK
+	x[2] << 123 // RTE
+	println(x)
+	assert '$x' == '[[], [], [123], []]'
+}
+
+fn test_array_of_map_insert() {
+	mut x := []map[string]int{len: 4}
+	println(x) // OK
+	x[2]['123'] = 123 // RTE
+	println(x)
+	assert '$x' == "[{}, {}, {'123': 123}, {}]"
+}
+
+fn test_multi_fixed_array_init() {
+	a := [3][3]int{}
+	assert '$a' == '[[0, 0, 0], [0, 0, 0], [0, 0, 0]]'
+}
+
+struct Numbers {
+	odds  []int
+	evens []int
+}
+
+fn test_array_of_multi_filter() {
+	arr := [1, 2, 3, 4, 5]
+	nums := Numbers{
+		odds: arr.filter(it % 2 == 1)
+		evens: arr.filter(it % 2 == 0)
+	}
+	println(nums)
+	assert nums.odds == [1, 3, 5]
+	assert nums.evens == [2, 4]
+}
+
+fn test_array_of_multi_map() {
+	arr := [1, 3, 5]
+	nums := Numbers{
+		odds: arr.map(it + 2)
+		evens: arr.map(it * 2)
+	}
+	println(nums)
+	assert nums.odds == [3, 5, 7]
+	assert nums.evens == [2, 6, 10]
+}
+
+fn test_multi_fixed_array_with_default_init() {
+	a := [3][3]int{init: [3]int{init: 10}}
+	println(a)
+	assert a == [[10, 10, 10]!, [10, 10, 10]!, [10, 10, 10]!]!
+}
+
+struct Abc {
+mut:
+	x i64
+	y i64
+	z i64
+}
+
+fn test_clone_of_same_elem_size_array() {
+	mut arr := []Abc{}
+	arr << Abc{1, 2, 3}
+	arr << Abc{2, 3, 4}
+	arr2 := arr.clone()
+	println(arr2)
+	assert arr2 == [Abc{1, 2, 3}, Abc{2, 3, 4}]
 }

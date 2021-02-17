@@ -7,11 +7,17 @@ import sync
 import runtime
 import benchmark
 
-const (
-	skip_files = [
+const skip_files = [
 		'vlib/v/checker/tests/custom_comptime_define_if_flag.vv',
 	]
-)
+
+const skip_on_ubuntu_musl = [
+		'vlib/v/checker/tests/vweb_tmpl_used_var.vv',
+]
+
+const turn_off_vcolors = os.setenv('VCOLORS', 'never', true)
+
+const should_autofix = os.getenv('VAUTOFIX') != ''
 
 struct TaskDescription {
 	vexe             string
@@ -20,12 +26,12 @@ struct TaskDescription {
 	result_extension string
 	path             string
 mut:
-	is_error         bool
-	is_skipped       bool
-	is_module        bool
-	expected         string
-	found___         string
-	took             time.Duration
+	is_error   bool
+	is_skipped bool
+	is_module  bool
+	expected   string
+	found___   string
+	took       time.Duration
 }
 
 fn test_all() {
@@ -87,6 +93,9 @@ fn (mut tasks []TaskDescription) run() {
 	mut work := sync.new_channel<TaskDescription>(tasks.len)
 	mut results := sync.new_channel<TaskDescription>(tasks.len)
 	mut m_skip_files := skip_files.clone()
+	if os.getenv('V_CI_UBUNTU_MUSL').len > 0 {
+		m_skip_files << skip_on_ubuntu_musl
+	}
 	$if noskip ? {
 		m_skip_files = []
 	}
@@ -101,7 +110,7 @@ fn (mut tasks []TaskDescription) run() {
 		if tasks[i].path in m_skip_files {
 			tasks[i].is_skipped = true
 		}
-		unsafe {work.push(&tasks[i])}
+		unsafe { work.push(&tasks[i]) }
 	}
 	work.close()
 	for _ in 0 .. vjobs {
@@ -137,7 +146,9 @@ fn (mut tasks []TaskDescription) run() {
 	bench.stop()
 	eprintln(term.h_divider('-'))
 	eprintln(bench.total_message('all tests'))
-	assert total_errors == 0
+	if total_errors != 0 {
+		exit(1)
+	}
 }
 
 // a single worker thread spends its time getting work from the `work` channel,
@@ -163,9 +174,11 @@ fn (mut task TaskDescription) execute() {
 	program := task.path
 	cli_cmd := '$task.vexe $task.voptions $program'
 	res := os.exec(cli_cmd) or { panic(err) }
-	mut expected := os.read_file(program.replace('.vv', '') + task.result_extension) or {
-		panic(err)
+	expected_out_path := program.replace('.vv', '') + task.result_extension
+	if should_autofix && !os.exists(expected_out_path) {
+		os.write_file(expected_out_path, '')
 	}
+	mut expected := os.read_file(expected_out_path) or { panic(err) }
 	task.expected = clean_line_endings(expected)
 	task.found___ = clean_line_endings(res.output)
 	$if windows {
@@ -175,6 +188,9 @@ fn (mut task TaskDescription) execute() {
 	}
 	if task.expected != task.found___ {
 		task.is_error = true
+		if should_autofix {
+			os.write_file(expected_out_path, res.output)
+		}
 	}
 }
 
@@ -189,7 +205,7 @@ fn clean_line_endings(s string) string {
 
 fn diff_content(s1 string, s2 string) {
 	diff_cmd := util.find_working_diff_command() or { return }
-	println('diff: ')
+	println(term.bold(term.yellow('diff: ')))
 	println(util.color_compare_strings(diff_cmd, s1, s2))
 	println('============\n')
 }

@@ -23,7 +23,7 @@ pub struct DB {
 pub mut:
 	is_open bool
 mut:
-	conn    &C.sqlite3
+	conn &C.sqlite3
 }
 
 pub fn (db DB) str() string {
@@ -150,7 +150,6 @@ pub fn (db DB) exec(query string) ([]Row, int) {
 		}
 		rows << row
 	}
-
 	C.sqlite3_finalize(stmt)
 	return rows, res
 }
@@ -178,4 +177,8 @@ pub fn (db DB) exec_param(query string, param string) []Row {
 }
 */
 pub fn (db DB) insert<T>(x T) {
+}
+
+pub fn (db DB) create_table(table_name string, rows []string) {
+	db.exec('create table $table_name (' + rows.join(',\n') + ')')
 }

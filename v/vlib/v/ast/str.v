@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module ast
@@ -19,14 +19,14 @@ pub fn (node &FnDecl) modname() string {
 }
 
 // These methods are used only by vfmt, vdoc, and for debugging.
-pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
+pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string, m2a map[string]string) string {
 	mut f := strings.new_builder(30)
 	if node.is_pub {
 		f.write('pub ')
 	}
 	mut receiver := ''
 	if node.is_method {
-		mut styp := util.no_cur_mod(t.type_to_str(node.receiver.typ), cur_mod)
+		mut styp := util.no_cur_mod(t.type_to_code(node.receiver.typ), cur_mod)
 		m := if node.rec_mut { node.receiver.typ.share().str() + ' ' } else { '' }
 		if node.rec_mut {
 			styp = styp[1..] // remove &
@@ -43,16 +43,20 @@ pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
 		receiver = '($node.receiver.name $m$name) '
 		*/
 	}
-	mut name := if node.is_anon { '' } else { node.name.after_char(`.`) }
-	if !node.is_method {
-		if node.language == .c {
-			name = 'C.$name'
-		} else if node.language == .js {
-			name = 'JS.$name'
-		}
+	mut name := if node.is_anon { '' } else { node.name }
+	if !node.is_anon && !node.is_method && node.language == .v {
+		name = node.name.all_after_last('.')
 	}
+	// mut name := if node.is_anon { '' } else { node.name.after_char(`.`) }
+	// if !node.is_method {
+	// 	if node.language == .c {
+	// 		name = 'C.$name'
+	// 	} else if node.language == .js {
+	// 		name = 'JS.$name'
+	// 	}
+	// }
 	f.write('fn $receiver$name')
-	if name in ['+', '-', '*', '/', '%'] {
+	if name in ['+', '-', '*', '/', '%', '<', '>', '==', '!=', '>=', '<='] {
 		f.write(' ')
 	}
 	if node.is_generic {
@@ -84,6 +88,9 @@ pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
 			}
 		}
 		s = util.no_cur_mod(s, cur_mod)
+		for mod, alias in m2a {
+			s = s.replace(mod, alias)
+		}
 		if should_add_type {
 			if !is_type_only {
 				f.write(' ')
@@ -99,15 +106,13 @@ pub fn (node &FnDecl) stringify(t &table.Table, cur_mod string) string {
 	}
 	f.write(')')
 	if node.return_type != table.void_type {
-		// typ := t.type_to_str(node.typ)
-		// if typ.starts_with('
-		f.write(' ' + util.no_cur_mod(t.type_to_str(node.return_type), cur_mod))
+		mut rs := util.no_cur_mod(t.type_to_str(node.return_type), cur_mod)
+		for mod, alias in m2a {
+			rs = rs.replace(mod, alias)
+		}
+		f.write(' ' + rs)
 	}
 	return f.str()
-}
-
-pub fn (x &InfixExpr) str() string {
-	return '$x.left.str() $x.op.str() $x.right.str()'
 }
 
 // Expressions in string interpolations may have to be put in braces if they
@@ -182,6 +187,23 @@ pub fn (lit &StringInterLiteral) get_fspec_braces(i int) (string, bool) {
 // string representation of expr
 pub fn (x Expr) str() string {
 	match x {
+		ArrayInit {
+			mut fields := []string{}
+			if x.has_len {
+				fields << 'len: $x.len_expr.str()'
+			}
+			if x.has_cap {
+				fields << 'cap: $x.cap_expr.str()'
+			}
+			if x.has_default {
+				fields << 'init: $x.default_expr.str()'
+			}
+			if fields.len > 0 {
+				return '[]T{${fields.join(', ')}}'
+			} else {
+				return x.exprs.str()
+			}
+		}
 		CTempVar {
 			return x.orig.str()
 		}
@@ -206,6 +228,18 @@ pub fn (x Expr) str() string {
 		}
 		CharLiteral {
 			return '`$x.val`'
+		}
+		Comment {
+			if x.is_multi {
+				lines := x.text.split_into_lines()
+				return '/* $lines.len lines comment */'
+			} else {
+				text := x.text.trim('\x01').trim_space()
+				return '// $text'
+			}
+		}
+		ComptimeSelector {
+			return '${x.left}.$$x.field_expr'
 		}
 		EnumVal {
 			return '.$x.val'
@@ -280,7 +314,7 @@ pub fn (x Expr) str() string {
 		}
 		else {}
 	}
-	return '[unhandled expr type ${typeof(x)}]'
+	return '[unhandled expr type $x.type_name()]'
 }
 
 pub fn (a CallArg) str() string {
@@ -308,6 +342,9 @@ pub fn (node &BranchStmt) str() string {
 
 pub fn (node Stmt) str() string {
 	match node {
+		AssertStmt {
+			return 'assert $node.expr'
+		}
 		AssignStmt {
 			mut out := ''
 			for i, left in node.left {
@@ -334,14 +371,36 @@ pub fn (node Stmt) str() string {
 		BranchStmt {
 			return node.str()
 		}
+		ConstDecl {
+			fields := node.fields.map(fn (f ConstField) string {
+				return '${f.name.trim_prefix(f.mod + '.')} = $f.expr'
+			})
+			return 'const (${fields.join(' ')})'
+		}
 		ExprStmt {
 			return node.expr.str()
 		}
 		FnDecl {
-			return 'fn ${node.name}() { $node.stmts.len stmts }'
+			return 'fn ${node.name}( $node.params.len params ) { $node.stmts.len stmts }'
+		}
+		EnumDecl {
+			return 'enum $node.name { $node.fields.len fields }'
+		}
+		Module {
+			return 'module $node.name'
+		}
+		Import {
+			mut out := 'import $node.mod'
+			if node.alias.len > 0 {
+				out += ' as $node.alias'
+			}
+			return out
+		}
+		StructDecl {
+			return 'struct $node.name { $node.fields.len fields }'
 		}
 		else {
-			return '[unhandled stmt str type: ${typeof(node)} ]'
+			return '[unhandled stmt str type: $node.type_name() ]'
 		}
 	}
 }

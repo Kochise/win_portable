@@ -18,20 +18,22 @@ struct Fragment {
 // Frame represents a data frame header
 struct Frame {
 mut:
-	header_len  int = 2 // length of the websocket header part
-	frame_size  int = 2	// size of total frame
-	fin         bool // true if final fragment of message
-	rsv1        bool // reserved for future use in websocket RFC
-	rsv2        bool // reserved for future use in websocket RFC
-	rsv3        bool // reserved for future use in websocket RFC
-	opcode      OPCode // interpretation of the payload data
-	has_mask    bool // true if the payload data is masked
-	payload_len int // payload length
+	// length of the websocket header part
+	header_len int = 2
+	// size of total frame
+	frame_size  int = 2
+	fin         bool    // true if final fragment of message
+	rsv1        bool    // reserved for future use in websocket RFC
+	rsv2        bool    // reserved for future use in websocket RFC
+	rsv3        bool    // reserved for future use in websocket RFC
+	opcode      OPCode  // interpretation of the payload data
+	has_mask    bool    // true if the payload data is masked
+	payload_len int     // payload length
 	masking_key [4]byte // all frames from client to server is masked with this key
 }
 
 const (
-	invalid_close_codes = [999, 1004, 1005, 1006, 1014, 1015, 1016, 1100, 2000, 2999, 5000, 65536] 
+	invalid_close_codes = [999, 1004, 1005, 1006, 1014, 1015, 1016, 1100, 2000, 2999, 5000, 65536]
 )
 
 // validate_client validates client frame rules from RFC6455
@@ -41,7 +43,8 @@ pub fn (mut ws Client) validate_frame(frame &Frame) ? {
 		return error('rsv cannot be other than 0, not negotiated')
 	}
 	if (int(frame.opcode) >= 3 && int(frame.opcode) <= 7) ||
-		(int(frame.opcode) >= 11 && int(frame.opcode) <= 15) {
+		(int(frame.opcode) >= 11 && int(frame.opcode) <= 15)
+	{
 		ws.close(1002, 'use of reserved opcode') ?
 		return error('use of reserved opcode')
 	}
@@ -129,7 +132,7 @@ pub fn (mut ws Client) read_next_message() ?Message {
 				opcode: OPCode(frame.opcode)
 				payload: frame_payload.clone()
 			}
-			unsafe {frame_payload.free()}
+			unsafe { frame_payload.free() }
 			return msg
 		}
 		// if the message is fragmented we just put it on fragments
@@ -139,7 +142,7 @@ pub fn (mut ws Client) read_next_message() ?Message {
 				data: frame_payload.clone()
 				opcode: frame.opcode
 			}
-			unsafe {frame_payload.free()}
+			unsafe { frame_payload.free() }
 			continue
 		}
 		if ws.fragments.len == 0 {
@@ -152,7 +155,7 @@ pub fn (mut ws Client) read_next_message() ?Message {
 				opcode: OPCode(frame.opcode)
 				payload: frame_payload.clone()
 			}
-			unsafe {frame_payload.free()}
+			unsafe { frame_payload.free() }
 			return msg
 		}
 		defer {
@@ -175,6 +178,7 @@ pub fn (mut ws Client) read_next_message() ?Message {
 		}
 		return msg
 	}
+	return none
 }
 
 // payload_from_fragments returs the whole paylaod from fragmented message
@@ -250,7 +254,7 @@ pub fn (mut ws Client) parse_frame_header() ?Frame {
 			frame.header_len += 2
 			frame.payload_len = 0
 			frame.payload_len |= buffer[2] << 8
-			frame.payload_len |= buffer[3] << 0
+			frame.payload_len |= buffer[3]
 			frame.frame_size = frame.header_len + frame.payload_len
 			if !frame.has_mask {
 				break
@@ -258,15 +262,17 @@ pub fn (mut ws Client) parse_frame_header() ?Frame {
 		}
 		if frame.payload_len == 127 && bytes_read == u64(extended_payload64_end_byte) {
 			frame.header_len += 8
-			frame.payload_len = 0
-			frame.payload_len |= buffer[2] << 56
-			frame.payload_len |= buffer[3] << 48
-			frame.payload_len |= buffer[4] << 40
-			frame.payload_len |= buffer[5] << 32
-			frame.payload_len |= buffer[6] << 24
-			frame.payload_len |= buffer[7] << 16
-			frame.payload_len |= buffer[8] << 8
-			frame.payload_len |= buffer[9] << 0
+			// these shift operators needs 64 bit on clang with -prod flag
+			mut payload_len := u64(0)
+			payload_len |= buffer[2] << 56
+			payload_len |= buffer[3] << 48
+			payload_len |= buffer[4] << 40
+			payload_len |= buffer[5] << 32
+			payload_len |= buffer[6] << 24
+			payload_len |= buffer[7] << 16
+			payload_len |= buffer[8] << 8
+			payload_len |= buffer[9]
+			frame.payload_len = int(payload_len)
 			if !frame.has_mask {
 				break
 			}

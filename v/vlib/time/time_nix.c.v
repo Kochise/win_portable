@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module time
@@ -18,13 +18,15 @@ struct C.tm {
 
 fn C.timegm(&tm) time_t
 
+// fn C.gmtime_r(&tm, &gbuf)
 fn C.localtime_r(t &C.time_t, tm &C.tm)
 
 fn make_unix_time(t C.tm) int {
 	return int(C.timegm(&t))
 }
 
-pub fn (t Time) to_local_time() Time {
+// local returns t with the location set to local time.
+pub fn (t Time) local() Time {
 	loc_tm := C.tm{}
 	C.localtime_r(time_t(&t.unix), &loc_tm)
 	return convert_ctime(loc_tm, t.microsecond)
@@ -42,6 +44,7 @@ mut:
 // the first arg is defined in include/bits/types.h as `__S32_TYPE`, which is `int`
 fn C.clock_gettime(int, &C.timespec)
 
+// sys_mono_now returns a *monotonically increasing time*, NOT a time adjusted for daylight savings, location etc.
 pub fn sys_mono_now() u64 {
 	$if macos {
 		return sys_mono_now_darwin()

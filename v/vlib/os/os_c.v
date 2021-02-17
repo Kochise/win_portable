@@ -22,6 +22,8 @@ fn C.fdopen(int, string) voidptr
 
 fn C.CopyFile(&u32, &u32, int) int
 
+fn C.execvp(file charptr, argv &charptr) int
+
 // fn C.proc_pidpath(int, byteptr, int) int
 struct C.stat {
 	st_size  int
@@ -44,6 +46,7 @@ struct C.dirent {
 }
 
 // read_bytes returns all bytes read from file in `path`.
+[manualfree]
 pub fn read_bytes(path string) ?[]byte {
 	mut fp := vfopen(path, 'rb') ?
 	cseek := C.fseek(fp, 0, C.SEEK_END)
@@ -56,12 +59,14 @@ pub fn read_bytes(path string) ?[]byte {
 	}
 	C.rewind(fp)
 	mut res := []byte{len: fsize}
-	nr_read_elements := C.fread(res.data, fsize, 1, fp)
+	nr_read_elements := int(C.fread(res.data, fsize, 1, fp))
 	if nr_read_elements == 0 && fsize > 0 {
 		return error('fread failed')
 	}
 	C.fclose(fp)
-	return res[0..nr_read_elements * fsize]
+	fres := res[0..nr_read_elements * fsize].clone()
+	unsafe { res.free() }
+	return fres
 }
 
 // read_file reads the file in `path` and returns the contents.
@@ -83,7 +88,7 @@ pub fn read_file(path string) ?string {
 	C.rewind(fp)
 	unsafe {
 		mut str := malloc(fsize + 1)
-		nelements := C.fread(str, fsize, 1, fp)
+		nelements := int(C.fread(str, fsize, 1, fp))
 		if nelements == 0 && fsize > 0 {
 			free(str)
 			return error('fread failed')
@@ -112,7 +117,7 @@ pub fn file_size(path string) int {
 }
 
 // mv moves files or folders from `src` to `dst`.
-pub fn mv(src string, dst string) {
+pub fn mv(src string, dst string) ? {
 	mut rdst := dst
 	if is_dir(rdst) {
 		rdst = join_path(rdst.trim_right(path_separator), file_name(src.trim_right(path_separator)))
@@ -120,9 +125,15 @@ pub fn mv(src string, dst string) {
 	$if windows {
 		w_src := src.replace('/', '\\')
 		w_dst := rdst.replace('/', '\\')
-		C._wrename(w_src.to_wide(), w_dst.to_wide())
+		ret := C._wrename(w_src.to_wide(), w_dst.to_wide())
+		if ret != 0 {
+			return error_with_code('failed to rename $src to $dst', int(ret))
+		}
 	} $else {
-		C.rename(charptr(src.str), charptr(rdst.str))
+		ret := C.rename(charptr(src.str), charptr(rdst.str))
+		if ret != 0 {
+			return error_with_code('failed to rename $src to $dst', int(ret))
+		}
 	}
 }
 
@@ -160,7 +171,7 @@ pub fn cp(src string, dst string) ? {
 			}
 		}
 		from_attr := C.stat{}
-		unsafe {C.stat(charptr(src.str), &from_attr)}
+		unsafe { C.stat(charptr(src.str), &from_attr) }
 		if C.chmod(charptr(dst.str), from_attr.st_mode) < 0 {
 			return error_with_code('failed to set permissions for $dst', int(-1))
 		}
@@ -464,7 +475,7 @@ pub fn get_raw_line() string {
 		unsafe {
 			max_line_chars := 256
 			buf := malloc(max_line_chars * 2)
-			h_input := C.GetStdHandle(std_input_handle)
+			h_input := C.GetStdHandle(C.STD_INPUT_HANDLE)
 			mut bytes_read := 0
 			if is_atty(0) > 0 {
 				C.ReadConsole(h_input, buf, max_line_chars * 2, C.LPDWORD(&bytes_read),
@@ -506,7 +517,7 @@ pub fn get_raw_stdin() []byte {
 		unsafe {
 			block_bytes := 512
 			mut buf := malloc(block_bytes)
-			h_input := C.GetStdHandle(std_input_handle)
+			h_input := C.GetStdHandle(C.STD_INPUT_HANDLE)
 			mut bytes_read := 0
 			mut offset := 0
 			for {
@@ -572,15 +583,18 @@ pub fn on_segfault(f voidptr) {
 
 // executable returns the path name of the executable that started the current
 // process.
+[manualfree]
 pub fn executable() string {
 	$if linux {
-		mut result := vcalloc(max_path_len)
-		count := C.readlink('/proc/self/exe', charptr(result), max_path_len)
+		mut xresult := vcalloc(max_path_len)
+		count := C.readlink('/proc/self/exe', charptr(xresult), max_path_len)
 		if count < 0 {
 			eprintln('os.executable() failed at reading /proc/self/exe to get exe path')
 			return executable_fallback()
 		}
-		return unsafe {result.vstring()}
+		res := unsafe { xresult.vstring() }.clone()
+		unsafe { free(xresult) }
+		return res
 	}
 	$if windows {
 		max := 512
@@ -617,14 +631,14 @@ pub fn executable() string {
 			eprintln('os.executable() failed at calling proc_pidpath with pid: $pid . proc_pidpath returned $ret ')
 			return executable_fallback()
 		}
-		return unsafe {result.vstring()}
+		return unsafe { result.vstring() }
 	}
 	$if freebsd {
 		mut result := vcalloc(max_path_len)
 		mib := [1 /* CTL_KERN */, 14 /* KERN_PROC */, 12 /* KERN_PROC_PATHNAME */, -1]
 		size := max_path_len
-		unsafe {C.sysctl(mib.data, 4, result, &size, 0, 0)}
-		return unsafe {result.vstring()}
+		unsafe { C.sysctl(mib.data, 4, result, &size, 0, 0) }
+		return unsafe { result.vstring() }
 	}
 	// "Sadly there is no way to get the full path of the executed file in OpenBSD."
 	$if openbsd {
@@ -640,7 +654,7 @@ pub fn executable() string {
 			eprintln('os.executable() failed at reading /proc/curproc/exe to get exe path')
 			return executable_fallback()
 		}
-		return unsafe {result.vstring_with_len(count)}
+		return unsafe { result.vstring_with_len(count) }
 	}
 	$if dragonfly {
 		mut result := vcalloc(max_path_len)
@@ -649,7 +663,7 @@ pub fn executable() string {
 			eprintln('os.executable() failed at reading /proc/curproc/file to get exe path')
 			return executable_fallback()
 		}
-		return unsafe {result.vstring_with_len(count)}
+		return unsafe { result.vstring_with_len(count) }
 	}
 	return executable_fallback()
 }
@@ -668,7 +682,7 @@ pub fn is_dir(path string) bool {
 		return false
 	} $else {
 		statbuf := C.stat{}
-		if unsafe {C.stat(charptr(path.str), &statbuf)} != 0 {
+		if unsafe { C.stat(charptr(path.str), &statbuf) } != 0 {
 			return false
 		}
 		// ref: https://code.woboq.org/gcc/include/sys/stat.h.html
@@ -705,15 +719,19 @@ pub fn getwd() string {
 		max := 512 // max_path_len * sizeof(wchar_t)
 		buf := &u16(vcalloc(max * 2))
 		if C._wgetcwd(buf, max) == 0 {
+			free(buf)
 			return ''
 		}
 		return string_from_wide(buf)
 	} $else {
 		buf := vcalloc(512)
 		if C.getcwd(charptr(buf), 512) == 0 {
+			free(buf)
 			return ''
 		}
-		return unsafe {buf.vstring()}
+		res := unsafe { buf.vstring() }.clone()
+		free(buf)
+		return res
 	}
 }
 
@@ -722,8 +740,12 @@ pub fn getwd() string {
 // Also https://insanecoding.blogspot.com/2007/11/pathmax-simply-isnt.html
 // and https://insanecoding.blogspot.com/2007/11/implementing-realpath-in-c.html
 // NB: this particular rabbit hole is *deep* ...
+[manualfree]
 pub fn real_path(fpath string) string {
 	mut fullpath := vcalloc(max_path_len)
+	defer {
+		unsafe { free(fullpath) }
+	}
 	mut ret := charptr(0)
 	$if windows {
 		ret = charptr(C._fullpath(charptr(fullpath), charptr(fpath.str), max_path_len))
@@ -736,8 +758,10 @@ pub fn real_path(fpath string) string {
 			return fpath
 		}
 	}
-	res := unsafe {fullpath.vstring()}
-	return normalize_drive_letter(res)
+	res := unsafe { fullpath.vstring() }
+	nres := normalize_drive_letter(res)
+	cres := nres.clone()
+	return cres
 }
 
 fn normalize_drive_letter(path string) string {
@@ -748,7 +772,8 @@ fn normalize_drive_letter(path string) string {
 		return path
 	}
 	if path.len > 2 &&
-		path[0] >= `a` && path[0] <= `z` && path[1] == `:` && path[2] == path_separator[0] {
+		path[0] >= `a` && path[0] <= `z` && path[1] == `:` && path[2] == path_separator[0]
+	{
 		unsafe {
 			x := &path.str[0]
 			(*x) = *x - 32
@@ -759,7 +784,7 @@ fn normalize_drive_letter(path string) string {
 
 // signal will assign `handler` callback to be called when `signum` signal is recieved.
 pub fn signal(signum int, handler voidptr) {
-	unsafe {C.signal(signum, handler)}
+	unsafe { C.signal(signum, handler) }
 }
 
 // fork will fork the current system process and return the pid of the fork.
@@ -791,7 +816,7 @@ pub fn wait() int {
 pub fn file_last_mod_unix(path string) int {
 	attr := C.stat{}
 	// # struct stat attr;
-	unsafe {C.stat(charptr(path.str), &attr)}
+	unsafe { C.stat(charptr(path.str), &attr) }
 	// # stat(path.str, &attr);
 	return attr.st_mtime
 	// # return attr.st_mtime ;
@@ -864,5 +889,49 @@ pub fn create(path string) ?File {
 		cfile: cfile
 		fd: fd
 		is_opened: true
+	}
+}
+
+// execvp - loads and executes a new child process, *in place* of the current process.
+// The child process executable is located in `cmdpath`.
+// The arguments, that will be passed to it are in `args`.
+// NB: this function will NOT return when successfull, since
+// the child process will take control over execution.
+pub fn execvp(cmdpath string, args []string) ? {
+	mut cargs := []charptr{}
+	cargs << charptr(cmdpath.str)
+	for i in 0 .. args.len {
+		cargs << charptr(args[i].str)
+	}
+	cargs << charptr(0)
+	res := C.execvp(charptr(cmdpath.str), cargs.data)
+	if res == -1 {
+		return error_with_code(posix_get_error_msg(C.errno), C.errno)
+	}
+}
+
+// execve - loads and executes a new child process, *in place* of the current process.
+// The child process executable is located in `cmdpath`.
+// The arguments, that will be passed to it are in `args`.
+// You can pass environment variables to through `envs`.
+// NB: this function will NOT return when successfull, since
+// the child process will take control over execution.
+pub fn execve(cmdpath string, args []string, envs []string) ? {
+	mut cargv := []charptr{}
+	mut cenvs := []charptr{}
+	cargv << charptr(cmdpath.str)
+	for i in 0 .. args.len {
+		cargv << charptr(args[i].str)
+	}
+	for i in 0 .. envs.len {
+		cenvs << charptr(envs[i].str)
+	}
+	cargv << charptr(0)
+	cenvs << charptr(0)
+	res := C.execve(charptr(cmdpath.str), cargv.data, cenvs.data)
+	// NB: normally execve does not return at all.
+	// If it returns, then something went wrong...
+	if res == -1 {
+		return error_with_code(posix_get_error_msg(C.errno), C.errno)
 	}
 }

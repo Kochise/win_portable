@@ -1,9 +1,9 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module strings
 
-// strings.Builder is used to efficiently append many strings to a large 
+// strings.Builder is used to efficiently append many strings to a large
 // dynamically growing buffer, then use the resulting large string. Using
 // a string builder is much better for performance/memory usage than doing
 // constantly string concatenation.
@@ -137,7 +137,7 @@ pub fn (mut b Builder) str() string {
 
 // manually free the contents of the buffer
 pub fn (mut b Builder) free() {
-	unsafe {free(b.buf.data)}
+	unsafe { free(b.buf.data) }
 	// b.buf = []byte{cap: b.initial_size}
 	b.len = 0
 	b.str_calls = 0

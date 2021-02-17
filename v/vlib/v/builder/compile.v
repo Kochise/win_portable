@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module builder
@@ -9,21 +9,8 @@ import rand
 import v.pref
 import v.util
 
-fn get_vtmp_folder() string {
-	mut vtmp := os.getenv('VTMP')
-	if vtmp.len > 0 {
-		return vtmp
-	}
-	vtmp = os.join_path(os.temp_dir(), 'v')
-	if !os.exists(vtmp) || !os.is_dir(vtmp) {
-		os.mkdir_all(vtmp)
-	}
-	os.setenv('VTMP', vtmp, true)
-	return vtmp
-}
-
 fn (mut b Builder) get_vtmp_filename(base_file_name string, postfix string) string {
-	vtmp := get_vtmp_folder()
+	vtmp := util.get_vtmp_folder()
 	mut uniq := ''
 	if !b.pref.reuse_tmpc {
 		uniq = '.$rand.u64()'
@@ -61,7 +48,7 @@ pub fn compile(command string, pref &pref.Preferences) {
 	}
 	b.exit_on_invalid_syntax()
 	// running does not require the parsers anymore
-	unsafe {b.myfree()}
+	unsafe { b.myfree() }
 	if pref.is_test || pref.is_run {
 		b.run_compiled_executable_and_exit()
 	}
@@ -72,7 +59,7 @@ pub fn compile(command string, pref &pref.Preferences) {
 fn (mut b Builder) myfree() {
 	// for file in b.parsed_files {
 	// }
-	unsafe {b.parsed_files.free()}
+	unsafe { b.parsed_files.free() }
 }
 
 fn (b &Builder) exit_on_invalid_syntax() {
@@ -236,7 +223,7 @@ pub fn (v &Builder) get_user_files() []string {
 	mut user_files := []string{}
 	// See cmd/tools/preludes/README.md for more info about what preludes are
 	vroot := os.dir(pref.vexe_path())
-	preludes_path := os.join_path(vroot, 'cmd', 'tools', 'preludes')
+	preludes_path := os.join_path(vroot, 'vlib', 'v', 'preludes')
 	if v.pref.is_livemain || v.pref.is_liveshared {
 		user_files << os.join_path(preludes_path, 'live.v')
 	}

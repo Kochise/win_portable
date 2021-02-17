@@ -4,7 +4,7 @@ module strconv
 
 f32 to string
 
-Copyright (c) 2019-2020 Dario Deledda. All rights reserved.
+Copyright (c) 2019-2021 Dario Deledda. All rights reserved.
 Use of this source code is governed by an MIT license
 that can be found in the LICENSE file.
 
@@ -149,7 +149,7 @@ pub fn (d Dec32) get_string_32(neg bool, i_n_digit int, i_pad_digit int) string 
 	}
 	*/
 	return unsafe {
-		tos(byteptr(&buf[0]), i) 
+		tos(byteptr(&buf[0]), i)
 	}
 }
 
@@ -322,7 +322,7 @@ pub fn f32_to_decimal(mant u32, exp u32) Dec32 {
 pub fn f32_to_str(f f32, n_digit int) string {
 	mut u1 := Uf32{}
 	u1.f = f
-	u := u1.u
+	u := unsafe {u1.u}
 
 	neg   := (u>>(mantbits32+expbits32)) != 0
 	mant  := u & ((u32(1)<<mantbits32) - u32(1))
@@ -349,7 +349,7 @@ pub fn f32_to_str(f f32, n_digit int) string {
 pub fn f32_to_str_pad(f f32, n_digit int) string {
 	mut u1 := Uf32{}
 	u1.f = f
-	u := u1.u
+	u := unsafe {u1.u}
 
 	neg   := (u>>(mantbits32+expbits32)) != 0
 	mant  := u & ((u32(1)<<mantbits32) - u32(1))

@@ -2,6 +2,7 @@ module clipboard
 
 import time
 
+#include <windows.h>
 #flag -lUser32
 struct WndClassEx {
 	cb_size         u32
@@ -53,8 +54,8 @@ struct Clipboard {
 	max_retries int
 	retry_delay int
 mut:
-	hwnd        C.HWND
-	foo         int // TODO remove
+	hwnd C.HWND
+	foo  int // TODO remove
 }
 
 fn (cb &Clipboard) get_clipboard_lock() bool {
@@ -125,7 +126,7 @@ fn (mut cb Clipboard) free() {
 }
 
 // the string.to_wide doesn't work with SetClipboardData, don't know why
-fn to_wide(text string) &C.HGLOBAL {
+fn to_wide(text string) C.HGLOBAL {
 	len_required := C.MultiByteToWideChar(C.CP_UTF8, C.MB_ERR_INVALID_CHARS, text.str,
 		text.len + 1, C.NULL, 0)
 	buf := C.GlobalAlloc(C.GMEM_MOVEABLE, i64(sizeof(u16)) * len_required)
@@ -177,6 +178,8 @@ fn (mut cb Clipboard) get_text() string {
 	return str
 }
 
+// new_primary returns a new X11 `PRIMARY` type `Clipboard` instance allocated on the heap.
+// Please note: new_primary only works on X11 based systems.
 pub fn new_primary() &Clipboard {
 	panic('Primary clipboard is not supported on non-Linux systems.')
 }

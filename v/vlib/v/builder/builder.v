@@ -12,15 +12,15 @@ import v.depgraph
 
 pub struct Builder {
 pub:
-	compiled_dir        string // contains os.real_path() of the dir of the final file beeing compiled, or the dir itself when doing `v .`
-	module_path         string
+	compiled_dir string // contains os.real_path() of the dir of the final file beeing compiled, or the dir itself when doing `v .`
+	module_path  string
 mut:
-	pref                &pref.Preferences
-	checker             checker.Checker
-	global_scope        &ast.Scope
-	out_name_c          string
-	out_name_js         string
-	max_nr_errors       int = 100
+	pref          &pref.Preferences
+	checker       checker.Checker
+	global_scope  &ast.Scope
+	out_name_c    string
+	out_name_js   string
+	max_nr_errors int = 100
 pub mut:
 	module_search_paths []string
 	parsed_files        []ast.File
@@ -106,8 +106,6 @@ pub fn (mut b Builder) parse_imports() {
 			import_path := b.find_module_path(mod, ast_file.path) or {
 				// v.parsers[i].error_with_token_index('cannot import module "$mod" (not found)', v.parsers[i].import_table.get_import_tok_idx(mod))
 				// break
-				// println('module_search_paths:')
-				// println(b.module_search_paths)
 				verror('cannot import module "$mod" (not found)')
 				break
 			}
@@ -188,6 +186,9 @@ pub fn (b &Builder) import_graph() &depgraph.DepGraph {
 			}
 		}
 		for m in p.imports {
+			if m.mod == p.mod.name {
+				continue
+			}
 			deps << m.mod
 		}
 		graph.add(p.mod.name, deps)
@@ -230,6 +231,8 @@ fn module_path(mod string) string {
 	return mod.replace('.', os.path_separator)
 }
 
+// TODO: try to merge this & util.module functions to create a 
+// reliable multi use function. see comments in util/module.v
 pub fn (b &Builder) find_module_path(mod string, fpath string) ?string {
 	// support @VROOT/v.mod relative paths:
 	mut mcache := vmod.get_cache()
@@ -237,10 +240,12 @@ pub fn (b &Builder) find_module_path(mod string, fpath string) ?string {
 	mod_path := module_path(mod)
 	mut module_lookup_paths := []string{}
 	if vmod_file_location.vmod_file.len != 0 &&
-		vmod_file_location.vmod_folder !in b.module_search_paths {
+		vmod_file_location.vmod_folder !in b.module_search_paths
+	{
 		module_lookup_paths << vmod_file_location.vmod_folder
 	}
 	module_lookup_paths << b.module_search_paths
+	module_lookup_paths << os.getwd()
 	// go up through parents looking for modules a folder.
 	// we need a proper solution that works most of the time. look at vdoc.get_parent_mod
 	if fpath.contains(os.path_separator + 'modules' + os.path_separator) {
@@ -261,6 +266,18 @@ pub fn (b &Builder) find_module_path(mod string, fpath string) ?string {
 			if b.pref.is_verbose {
 				println('  << found $try_path .')
 			}
+			return try_path
+		}
+	}
+	// look up through parents
+	path_parts := fpath.split(os.path_separator)
+	for i := path_parts.len - 2; i > 0; i-- {
+		p1 := path_parts[0..i].join(os.path_separator)
+		try_path := os.join_path(p1, mod_path)
+		if b.pref.is_verbose {
+			println('  >> trying to find $mod in $try_path ..')
+		}
+		if os.is_dir(try_path) {
 			return try_path
 		}
 	}
@@ -289,7 +306,11 @@ fn (b &Builder) print_warnings_and_errors() {
 	}
 	if b.checker.nr_warnings > 0 && !b.pref.skip_warnings {
 		for i, err in b.checker.warnings {
-			kind := if b.pref.is_verbose { '$err.reporter warning #$b.checker.nr_warnings:' } else { 'warning:' }
+			kind := if b.pref.is_verbose {
+				'$err.reporter warning #$b.checker.nr_warnings:'
+			} else {
+				'warning:'
+			}
 			ferror := util.formatted_error(kind, err.message, err.file_path, err.pos)
 			eprintln(ferror)
 			if err.details.len > 0 {
@@ -307,7 +328,11 @@ fn (b &Builder) print_warnings_and_errors() {
 	}
 	if b.checker.nr_errors > 0 {
 		for i, err in b.checker.errors {
-			kind := if b.pref.is_verbose { '$err.reporter error #$b.checker.nr_errors:' } else { 'error:' }
+			kind := if b.pref.is_verbose {
+				'$err.reporter error #$b.checker.nr_errors:'
+			} else {
+				'error:'
+			}
 			ferror := util.formatted_error(kind, err.message, err.file_path, err.pos)
 			eprintln(ferror)
 			if err.details.len > 0 {
@@ -331,7 +356,7 @@ fn (b &Builder) print_warnings_and_errors() {
 				for stmt in file.stmts {
 					if stmt is ast.FnDecl {
 						if stmt.name == fn_name {
-							fheader := stmt.stringify(b.table, 'main')
+							fheader := stmt.stringify(b.table, 'main', map[string]string{})
 							redefines << FunctionRedefinition{
 								fpath: file.path
 								fline: stmt.pos.line_nr

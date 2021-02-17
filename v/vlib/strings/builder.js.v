@@ -1,11 +1,11 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module strings
 
 pub struct Builder {
 mut:
-	buf          []byte
+	buf []byte
 pub mut:
 	len          int
 	initial_size int = 1
@@ -37,7 +37,7 @@ pub fn (mut b Builder) writeln(s string) {
 }
 
 pub fn (b Builder) str() string {
-	return unsafe {byteptr(b.buf.data).vstring_with_len(b.len)}
+	return unsafe { byteptr(b.buf.data).vstring_with_len(b.len) }
 }
 
 pub fn (mut b Builder) cut(n int) {

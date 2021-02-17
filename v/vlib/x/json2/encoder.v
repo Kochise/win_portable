@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2020 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module json2
@@ -78,12 +78,6 @@ pub fn (f Any) str() string {
 			} else {
 				str_f64
 			}
-		}
-		any_int {
-			return f.str()
-		}
-		any_float {
-			return f.str()
 		}
 		bool {
 			return f.str()
