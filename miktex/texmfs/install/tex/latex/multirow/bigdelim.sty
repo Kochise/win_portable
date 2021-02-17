@@ -19,22 +19,24 @@
 %% 2005/12/01 or later.
 %% 
 %% Copyright (C) 1994 by \O ystein Bache
-%% Copyright (C) 2016 , 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
+%% Copyright (C) 2016-2021 by Pieter van Oostrum <pieter@vanoostrum.org>
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bigdelim}
-           [2019/05/31 v2.5
+           [2021/01/29 v2.7
                   Create big delimiters in tabular or array]
 \RequirePackage{multirow}
 \newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
      \textnormal{#4}\right#1}}}
 \newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
        \textnormal{#4}\right.}}}

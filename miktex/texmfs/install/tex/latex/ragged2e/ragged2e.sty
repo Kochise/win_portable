@@ -5,31 +5,30 @@
 %% The original source files were:
 %%
 %% ragged2e.dtx  (with options: `package')
-%% 
-%% Copyright 1996..2019 Martin Schroeder.
-%% 
-%% This file is part of the Ragged2e package
-%% -----------------------------------------
+%% Copyright (C) 1996–2019 Martin Schröder, 2021 Marei Peischl (peiTeX)  <marei@peitex.de>
 %% 
 %% This work may be distributed and/or modified under the
-%% conditions of the LaTeX Project Public License, either version 1.3
+%% conditions of the LaTeX Project Public License, either version 1.3c
 %% of this license or (at your option) any later version.
 %% The latest version of this license is in
-%%   http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX
+%% http://www.latex-project.org/lppl.txt
+%% and version 1.3c or later is part of all distributions of LaTeX
 %% version 2005/12/01 or later.
 %% 
 %% This work has the LPPL maintenance status `maintained'.
 %% 
-%% The Current Maintainer of this work is Martin Schroeder.
+%% The Current Maintainer of this work is
+%% Marei Peischl <marei@peitex.de>.
 %% 
 %% This work consists of the files ragged2e.dtx and ragged2e.ins
 %% and the derived file ragged2e.sty.
 %% 
+%% \iffalse meta-comment
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \NeedsTeXFormat{LaTeX2e}[2017/03/29]
 \ProvidesPackage{ragged2e}
-         [2019/07/28 v2.2 ragged2e Package (MS)]
-%% Copyright 1996..2019 by Martin Schr\"oder.
+         [2021/02/05 v3.0 ragged2e Package]
 %% \CharacterTable
 %% {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%  Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -46,29 +45,6 @@
 %%  Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%  Right brace   \}     Tilde         \~}
 %%
-%% \iffalse meta-comment
-%% ===================================================================
-%%  @LaTeX-style-file{
-%%     author          = {Martin Schr\"oder},
-%%     version         = "2.2",
-%%     date            = "26 Mar 2019",
-%%     filename        = "ragged2e.sty",
-%%     address         = {Martin Schr\"oder
-%%                        Unterstra\"se 31
-%%                        47051 Duisburg
-%%                        Germany}
-%%     email           = "martin@oneiros.de",
-%%     docstring       = "LaTeX package which defines new commands
-%%                        \Centering, \RaggedLeft, \RaggedRight and
-%%                        \justifying and new environments Center,
-%%                        FlushLeft, FlushRight and justify, which
-%%                        set ragged text and are easily configurable
-%%                        to allow hyphenation.
-%%                        Uses the everysel package.
-%%                       "
-%%  }
-%% ===================================================================
-%% \fi
 \newif\if@raggedtwoe@originalcommands
 \newif\if@raggedtwoe@originalparameters
 \newif\if@raggedtwoe@footmisc
@@ -142,7 +118,8 @@
 %% ^^A -----------------------------
 \ExecuteOptions{originalcommands,newparameters}
 \ProcessOptions\relax
-\RequirePackage{everysel}
+\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+\IfFormatAtLeastTF{2021/01/05}{}{\RequirePackage{everysel}}
 \if@raggedtwoe@footmisc
   \RequirePackage{footmisc}[2002/08/28]
 \fi
@@ -201,7 +178,9 @@
     \spaceskip\z@
   \fi
   }
-\EverySelectfont{\@raggedtwoe@everyselectfont}
+\IfFormatAtLeastTF{2021/01/05}
+{\AddToHook{selectfont}{\@raggedtwoe@everyselectfont}}
+{\EverySelectfont{\@raggedtwoe@everyselectfont}}
 \let\@raggedtwoe@savedcr\\
 \let\@raggedtwoe@saved@gnewline\@gnewline
 \newcommand*{\@raggedtwoe@gnewline}[1]{%

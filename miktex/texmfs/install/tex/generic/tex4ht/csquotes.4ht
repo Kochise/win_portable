@@ -1,4 +1,4 @@
-% csquotes.4ht (2019-02-19-15:55), generated from tex4ht-4ht.tex
+% csquotes.4ht (2020-11-26-13:59), generated from tex4ht-4ht.tex
 % Copyright 2019 TeX Users Group
 %
 % This work may be distributed and/or modified under the
@@ -16,10 +16,22 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-02-19-15:55}
+\immediate\write-1{version 2020-11-26-13:59}
 
 \long\def\csq@bquote@i#1#2#3#4#5#6{%
 \csq@bquote@ii{#1}{#2}{#3}{#4}{#5}{#6}}
+
+\NewConfigure{displayquote}{4}
+\let\csq:bdquote\csq@bdquote
+\def\csq@bdquote#1#2#3#4#5{%
+\a:displayquote%
+\csq:bdquote{#1}{#2}{#3}{#4}{#5}%
+}
+
+\let\csq:edquote\csq@edquote%
+\def\csq@edquote{\csq:edquote\d:displayquote}
+
+\renewcommand{\mkenddispquote}[2]{#1\b:displayquote#2\c:displayquote}
 
 \Hinput{csquotes}
 \endinput

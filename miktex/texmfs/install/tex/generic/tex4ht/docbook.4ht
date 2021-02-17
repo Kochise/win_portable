@@ -1,4 +1,4 @@
-% docbook.4ht (2020-06-23-13:57), generated from tex4ht-docbook.tex
+% docbook.4ht (2021-02-08-13:37), generated from tex4ht-docbook.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 2000-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-06-23-13:57}
+\immediate\write-1{version 2021-02-08-13:37}
 
 \exit:ifnot{Preamble,% 
 algorithmic,% 
@@ -277,19 +277,21 @@ switches of tex4ht.c)
       \no:dupl{colortbl}{\input  colortbl.4ht}%
     }{}}{colortbl}
 
+\def\:strip:quotes"#1"#2"#3\relax{\if .#1.#2\else #1\fi}
 \def\h:input#1.#2.#3!*?: {%
-   \:CheckOption{no_#1}\if:Option
+   \edef\:current:package{\:strip:quotes"#1""\relax}
+   \:CheckOption{no_\:current:package}\if:Option
       \let\:temp\empty
    \else
       \let\:temp\empty
-      \no:dupl{#1}{%
+      \no:dupl{\:current:package}{%
         \def\:warn:msg{}
         \:CheckOption{debug}\if:Option
           \def\:warn:msg{%
-            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+            \:warning{No configuration file for \:current:package.\if .#2.tex\else #2\fi}%
           }
         \fi%
-        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
+        \def\:temp{\input:if:fileexists{\:current:package.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -671,13 +673,20 @@ switches of tex4ht.c)
 \def\:temp{LaTeX}
 \HLet\LaTeX\:temp
 \Configure{footnotetext}
-    {\HCode{<footnote><para>}\bgroup\let\@makefnmark\empty}
+    {\HCode{<footnote><para>}\setbox\tmp:bx=\hbox\bgroup\let\@makefnmark\relax}
     {\egroup}%
     {\HCode{</para></footnote>}}
 \Configure{footnotemark}
    {\setbox\tmp:bx=\hbox\bgroup}
    {\egroup}
 \ifx \tmp:bx\:UnDef \csname newbox\endcsname \tmp:bx \fi
+\Configure{textsuperscript}
+  {\HCode{<superscript>}}
+  {\HCode{</superscript>}}
+
+\Configure{textsubscript}
+  {\HCode{<subscript>}}
+  {\HCode{</subscript>}}
 \Configure{underline}
    {\HCode{<emphasis role="underline">}\:gobble}
    {\HCode{</emphasis>}}
@@ -801,7 +810,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -1114,7 +1123,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -1434,7 +1443,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -1647,6 +1656,7 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -1971,7 +1981,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsbook}
@@ -2526,6 +2535,7 @@ version="5.0"                                                \Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsthm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2558,7 +2568,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -2728,6 +2737,7 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -2922,8 +2932,6 @@ version="5.0"                                                \Hnewline
 
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{fancyvrb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2938,6 +2946,7 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -2987,7 +2996,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -3058,6 +3066,7 @@ version="5.0"                                                \Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{multind}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3120,7 +3129,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -3264,7 +3272,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -3467,6 +3475,9 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 
 
@@ -3906,7 +3917,6 @@ version="5.0"                                                \Hnewline
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrbook}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4017,7 +4027,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -4289,6 +4299,7 @@ version="5.0"                                                \Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrartcl}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4398,7 +4409,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -4591,7 +4602,6 @@ version="5.0"                                                \Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrreprt}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4701,7 +4711,7 @@ version="5.0"                                                \Hnewline
 
 \Configure{maketitle}
    {\HCode{<info role="maketitle">}}
-   {\HCode{</info>}}
+   {\HCode{</info>}\par\ShowPar}
    {\HCode{<title>}}{\HCode{</title>}}
 \Configure{thanks author date and} {}{}
    {\HCode{<author><personname><othername>}}
@@ -4965,6 +4975,7 @@ version="5.0"                                                \Hnewline
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{jurabib}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4975,6 +4986,7 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -5004,7 +5016,6 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5261,7 +5272,6 @@ version="5.0"                                                \Hnewline
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pgf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5333,7 +5343,6 @@ version="5.0"                                                \Hnewline
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{algorithmic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5358,6 +5367,8 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -5415,6 +5426,9 @@ version="5.0"                                                \Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 
 

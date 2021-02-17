@@ -1,4 +1,4 @@
-% html4.4ht (2020-09-28-13:52), generated from tex4ht-html4.tex
+% html4.4ht (2021-02-14-13:56), generated from tex4ht-html4.tex
 % Copyright 2009-2020 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-09-28-13:52}
+\immediate\write-1{version 2021-02-14-13:56}
 
 \exit:ifnot{8859-6,% 
 CJK,% 
@@ -77,6 +77,7 @@ cp852,%
 cp862,% 
 cp865,% 
 croatian,% 
+csquotes,% 
 curve,% 
 czech,% 
 danish,% 
@@ -214,6 +215,7 @@ slovak,%
 slovene,% 
 soul,% 
 spanish,% 
+subcaption,% 
 subeqnarray,% 
 subfigure,% 
 subscript,% 
@@ -224,6 +226,7 @@ syntax,%
 t2benc,% 
 tabulary,% 
 tcilatex,% 
+tcolorbox,% 
 tex4ht,% 
 tex4ht2,% 
 texinfo,% 
@@ -1535,7 +1538,7 @@ switches of tex4ht.c)
      \HCode{<div class="newtheorem">}\par\noindent\HCode{<span
            class="head">}}
    {\HCode{</span>}}
-   {\:xhtml{\EndP}\IgnorePar\HCode{</div>}\ShowPar\par}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par\indent\ShowPar}
 \Css{div.newtheorem { margin-bottom: 2em; margin-top: 2em;}}
 \Configure{ }{\:nbsp}
 
@@ -1584,7 +1587,7 @@ switches of tex4ht.c)
        style="vertical-align:baseline;" class="displaylines"
        >}}{\HCode{</td></tr>}}
 \Css{td.displaylines {text-align:center; white-space:nowrap;}}
-\def\:zbsp#1{cellpadding="0" border="0" cellspacing="0"\Hnewline
+\def\:zbsp#1{cellpadding="0" border="0" \Hnewline
    class="#1"}
 \Configure{centerline}{\ifvmode \IgnorePar
      \fi \EndP\HCode{<div \Hnewline
@@ -1795,19 +1798,21 @@ switches of tex4ht.c)
       \no:dupl{colortbl}{\input  colortbl.4ht}%
     }{}}{colortbl}
 
+\def\:strip:quotes"#1"#2"#3\relax{\if .#1.#2\else #1\fi}
 \def\h:input#1.#2.#3!*?: {%
-   \:CheckOption{no_#1}\if:Option
+   \edef\:current:package{\:strip:quotes"#1""\relax}
+   \:CheckOption{no_\:current:package}\if:Option
       \let\:temp\empty
    \else
       \let\:temp\empty
-      \no:dupl{#1}{%
+      \no:dupl{\:current:package}{%
         \def\:warn:msg{}
         \:CheckOption{debug}\if:Option
           \def\:warn:msg{%
-            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+            \:warning{No configuration file for \:current:package.\if .#2.tex\else #2\fi}%
           }
         \fi%
-        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
+        \def\:temp{\input:if:fileexists{\:current:package.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -2962,7 +2967,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \Css{div.td11{ margin-left:5pt; margin-right:5pt; }}
 \Configure{halignTB<>}{tabular}{\HCode{id="TBL-\TableNo"
                                              class="tabular"\Hnewline
-   cellspacing="0" cellpadding="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -2996,7 +3001,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \Css{td.td10{ padding-left:5pt; padding-right:0pt; }}
 \Css{td.td11{ padding-left:5pt; padding-right:5pt; }}
 \Configure{halignTB<>}{array}{\HCode{id="TBL-\TableNo" class="array"\Hnewline
-   cellpadding="0" cellspacing="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -5812,10 +5817,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -5910,10 +5913,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -8505,10 +8506,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -8603,10 +8602,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -8630,9 +8627,16 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP
     \HCode{<div\Hnewline class="abstract"\Hnewline>}\par\ShowPar}
-   {\ifvmode \IgnorePar\fi \EndP\HCode{</div>}}{}{}
-\Css{.abstract p {margin-left:5\%; margin-right:5\%;}}
+   {\ifvmode \IgnorePar\fi \EndP\HCode{</div>}\par}{}{}
+
+
+\Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
+   {\HCode{</h3>}\HtmlParOn}
+
+\Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
 \Css{div.abstract {width:100\%;}}
+\Css{.abstracttitle{text-align:center;margin-bottom:1em;}}
+
 
 \ConfigureEnv{description}{\IgnorePar}{}{}{}
 \Configure{@begin}{theindex}{\ifx \indexname\empty \else
@@ -11122,10 +11126,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -11220,10 +11222,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -11232,9 +11232,16 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \ConfigureEnv{abstract}
    {\IgnorePar\EndP
     \HCode{<div\Hnewline class="abstract"\Hnewline>}\par\ShowPar}
-   {\ifvmode \IgnorePar\fi \EndP\HCode{</div>}}{}{}
-\Css{.abstract p {margin-left:5\%; margin-right:5\%;}}
+   {\ifvmode \IgnorePar\fi \EndP\HCode{</div>}\par}{}{}
+
+
+\Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
+   {\HCode{</h3>}\HtmlParOn}
+
+\Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
 \Css{div.abstract {width:100\%;}}
+\Css{.abstracttitle{text-align:center;margin-bottom:1em;}}
+
 
 \:CheckOption{1} \if:Option
 \else
@@ -11493,6 +11500,7 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{debug}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11506,7 +11514,6 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -14063,7 +14070,7 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   {\ShowPar\noindent
    \HCode{<span class="subsectionHead"\a:LRdir>}\begingroup\bf
    \TitleMark\space}
-  {.\endgroup\HCode{</span>}\IgnorePar\par\ShowPar}
+  {.\endgroup\HCode{</span>}\IgnorePar}
 \Configure{subsubsection}{}{}
   {\ShowPar\noindent
    \HCode{<span class="subsubsectionHead"\a:LRdir>}\begingroup\it
@@ -14084,7 +14091,6 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsbook}
@@ -19284,6 +19290,7 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsthm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19300,6 +19307,7 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19337,7 +19345,6 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19461,7 +19468,6 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{babel}
@@ -19770,7 +19776,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{plain}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19827,7 +19832,7 @@ Y{0178}\i{00EF}%
        style="vertical-align:baseline;" class="displaylines"
        >}}{\HCode{</td></tr>}}
 \Css{td.displaylines {text-align:center; white-space:nowrap;}}
-\def\:zbsp#1{cellpadding="0" border="0" cellspacing="0"\Hnewline
+\def\:zbsp#1{cellpadding="0" border="0" \Hnewline
    class="#1"}
 \Configure{centerline}{\ifvmode \IgnorePar
      \fi \EndP\HCode{<div \Hnewline
@@ -20008,7 +20013,7 @@ Y{0178}\i{00EF}%
    {\a:accents{cedil}{#1}}     {\b:accents{cedil}{#1}{#2}}
 \Configure{accent}\t\t{{}{}}
    {\a:accents{udot}{#1}}     {\b:accents{udot}{#1}{#2}}
-\Configure{accent}\H\H{{}{}}
+\Configure{accent}\H\H{O{0150}o{0151}U{0170}u{0171}Y{04F2}y{04F3}{}{}}
     {\a:accents{Huml}{#1}} {\b:accents{Huml}{#1}{#2}}
 \Configure{accent}\b\b{{}{}}
     {\a:accents{b}{#1}} {\b:accents{b}{#1}{#2}}
@@ -20203,6 +20208,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{biblatex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20373,6 +20379,7 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{glossary}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20386,26 +20393,21 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{letter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \ConfigureList{description}%
    {\EndP\HCode{<dl \a:LRdir class="description">}%
@@ -20490,6 +20492,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{latin2}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20501,6 +20504,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -20875,7 +20879,7 @@ Y{0178}\i{00EF}%
 \Css{div.td11{ margin-left:5pt; margin-right:5pt; }}
 \Configure{halignTB<>}{tabular}{\HCode{id="TBL-\TableNo"
                                              class="tabular"\Hnewline
-   cellspacing="0" cellpadding="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -20909,7 +20913,7 @@ Y{0178}\i{00EF}%
 \Css{td.td10{ padding-left:5pt; padding-right:0pt; }}
 \Css{td.td11{ padding-left:5pt; padding-right:5pt; }}
 \Configure{halignTB<>}{array}{\HCode{id="TBL-\TableNo" class="array"\Hnewline
-   cellpadding="0" cellspacing="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -20985,7 +20989,7 @@ Y{0178}\i{00EF}%
 
 \else
   \Configure{halignTB<>}{longtable}{\HCode{id="TBL-\TableNo" class="longtable"\Hnewline
-   cellspacing="0" cellpadding="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -21031,7 +21035,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -23459,10 +23462,8 @@ Y{0178}\i{00EF}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -23480,10 +23481,8 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -25949,10 +25948,8 @@ Y{0178}\i{00EF}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -25970,10 +25967,8 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -25989,7 +25984,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mwbk}
@@ -28440,10 +28434,8 @@ Y{0178}\i{00EF}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -28461,10 +28453,8 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 
@@ -28483,6 +28473,19 @@ Y{0178}\i{00EF}%
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{csquotes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{displayquote}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<blockquote>}}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<footer>}}
+{\EndP\HCode{</footer>}}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</blockquote>}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{CJK}
@@ -28540,7 +28543,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{moreverb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28578,7 +28580,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{fancyvrb}
@@ -28629,6 +28630,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{psfig}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28639,7 +28641,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28897,7 +28898,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{index}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28955,7 +28955,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29043,6 +29042,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{adjustbox}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29088,7 +29088,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{alltt}
@@ -29676,7 +29675,7 @@ Y{0178}\i{00EF}%
 
 \Configure{halignTB}{\HCode{<table }}{\HCode{>}}
 \Configure{halignTB<>}{table}{\HCode{id="TBL-\TableNo" class="table"\Hnewline
-   cellspacing="0" cellpadding="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -29896,6 +29895,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{tabulary}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29953,7 +29953,7 @@ Y{0178}\i{00EF}%
       {\IgnorePar \EndP
 \PopStack\Table:Stck\TableNo \d:HA}
 \Configure{halignTB<>}{tabulary}{\HCode{id="TBL-\TableNo" class="tabulary"\Hnewline
-   cellspacing="0" cellpadding="0" \GROUPS\Hnewline
+   \GROUPS\Hnewline
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
@@ -30137,11 +30137,25 @@ Y{0178}\i{00EF}%
 \Css{.booknumber{display:block;}}
 \Configure{toToc}{book}{part}
 
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP
+    \HCode{<div\Hnewline class="abstract"\Hnewline>}\par\ShowPar}
+   {\ifvmode \IgnorePar\fi \EndP\HCode{</div>}\par}{}{}
+
+
+\Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
+   {\HCode{</h3>}\HtmlParOn}
+
+\Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
+\Css{div.abstract {width:100\%;}}
+\Css{.abstracttitle{text-align:center;margin-bottom:1em;}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{verse}
@@ -30196,6 +30210,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{arabicore}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30212,6 +30227,8 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -30302,7 +30319,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{abidir}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30329,6 +30345,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{koi8-r}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30338,7 +30355,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{frenchb}
@@ -30373,6 +30389,7 @@ font-size:70\%;
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{powerdot}
@@ -30538,7 +30555,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{titlesec}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30654,8 +30670,7 @@ description">}%
 \Configure{halignTB<>}
    {smarray}
    {\HCode{id="TBL-\TableNo" class="smarray"\Hnewline
-           cellpadding="0"
-           cellspacing="0" \GROUPS\Hnewline
+           \GROUPS\Hnewline
           }<>\HAlign
    }
 \Configure{tabular*}
@@ -30782,6 +30797,24 @@ description">}%
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{subcaption}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{subfigure}
+{\ifvmode\IgnorePar\fi\EndP%
+\HCode{<div class="subfigure">}\par\ShowPar%
+\Configure{caption}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="caption" ><span class="id">}}%
+   {:} {\HCode{</span><span \Hnewline class="content">}}%
+   {\HCode{</span></div>}}%
+}%
+{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}}%
+\Css{div.subfigure {text-align:center;display:inline-block; max-width:45\%;}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -30845,6 +30878,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{picins}
@@ -31481,6 +31515,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{revtex4}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31975,6 +32010,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{texinfo}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32133,7 +32169,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{doc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32146,6 +32181,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32766,10 +32802,8 @@ description">}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -32878,10 +32912,8 @@ description">}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
 \Configure{endpart}{likepart}
@@ -32930,7 +32962,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrreprt}
@@ -33153,10 +33184,8 @@ description">}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
@@ -33266,10 +33295,8 @@ description">}%
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 
 \Configure{listof}{}{}{}{\HCode{<br />}}{}{ }
@@ -33872,7 +33899,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{JHEP}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34403,6 +34429,7 @@ description">}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsdtx}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34447,7 +34474,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34525,6 +34551,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{bibtopic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34537,6 +34564,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34573,7 +34601,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrjura}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34605,7 +34632,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{8859-6}
@@ -34641,6 +34667,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{manju}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34650,6 +34677,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34679,6 +34707,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pythontex}
@@ -34845,7 +34874,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35222,7 +35250,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slides}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35254,19 +35281,15 @@ description">}%
 \ConfigureEnv{quote}
    {}{}
    {\IgnorePar\EndP
-    \HCode{<div class="\getClass{quote}">}\afterGetClass{quote}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+    \HCode{<blockquote class="\getClass{quote}">}\afterGetClass{quote}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 \NewConfigure{quoteClass}{2}
 \Configure{quoteClass}{quote}{}
 
 \ConfigureEnv{quotation}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quotation">}}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar}
-\Css{.quotation  {margin-bottom:0.25em;
-           margin-top:0.25em; margin-left:1em; }}
+   {\IgnorePar\EndP\HCode{<blockquote class="quotation">}}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar}
 
 \ConfigureList{description}%
    {\EndP\HCode{<dl \a:LRdir class="description">}%
@@ -35415,6 +35438,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slidesec}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35426,7 +35450,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35457,6 +35480,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{diagrams}
@@ -35500,7 +35524,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pst-all}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35524,7 +35547,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mfpic}
@@ -35554,6 +35576,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pgf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35573,7 +35596,6 @@ description">}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{overpic}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35586,7 +35608,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{dratex}
@@ -35687,6 +35708,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{resume}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35783,7 +35805,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{vowel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35816,6 +35837,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35851,7 +35873,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35876,6 +35897,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35937,7 +35959,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{covington}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35998,6 +36019,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36202,7 +36224,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{eurosym}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36225,6 +36246,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{sistyle}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36244,7 +36266,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36274,6 +36295,7 @@ description">}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{appendix}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36283,7 +36305,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{res}
@@ -36357,6 +36378,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36448,7 +36470,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36515,6 +36536,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36600,6 +36622,7 @@ description">}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{longdiv}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36627,6 +36650,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{tugboat}
@@ -36727,15 +36751,14 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ltugboat}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \ConfigureEnv{quote}
    {}{}
-   {\IgnorePar\EndP\HCode{<div class="quote">}\IgnoreIndent}
-   {\IgnorePar\EndP\HCode{</div>}\ShowPar\ShowIndent}
-\Css{.quote  {margin-bottom:0.25em; margin-top:0.25em;
-              margin-left:1em; margin-right:1em; text-align:justify;}}
+   {\IgnorePar\EndP\HCode{<blockquote class="quote">}\IgnoreIndent}
+   {\IgnorePar\EndP\HCode{</blockquote>}\ShowPar\ShowIndent}
 
 \ConfigureEnv{verbatim}
    {\par}{\ShowPar \par{\HCondtrue\noindent}%
@@ -36766,10 +36789,11 @@ description">}%
 \Configure{signature}
    {\def\|{\HCode{<br />}}%
     \Configure{HtmlPar}
-       {}{\HCode{<br />}}
+       {}{\HCode{}}
        {}{\HCode{}}%
    }
-\Css{.makesignature{margin-left:60\%; white-space: nowrap;}}
+\Css{.makesignature{margin-left:4em;}}
+\Css{.signaturemark{display:block-inline;margin-left:-1.33em;}}
 \@ifclassloaded{ltugproc}{}{%
    \@ifpackageloaded{ltugproc}{}{\Configure{@BODY}{\rtitlex}}
 }
@@ -36818,7 +36842,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36876,6 +36899,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mls}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36897,7 +36921,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{boxedminipage}
@@ -36947,6 +36970,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{go}
@@ -37120,7 +37144,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pifont}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37233,6 +37256,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{alphanum}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37308,7 +37332,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{epigraph}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37344,6 +37367,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37691,19 +37715,19 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{endnotes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \Configure{makeenmark}
    {\Link{ennote-\endnoteN}{enmark-\endnoteN}} {\EndLink}
 \Configure{enoteformat}
-   {\Link{enmark-\endnoteN}{ennote-\endnoteN}} {\EndLink}
+   {\Link{enmark-\endnoteN}{ennote-\endnoteN}} {\EndLink\AnchorLabel}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37736,7 +37760,6 @@ description">}%
                 \ConfigureHinput{exerquiz}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \Configure{Form}{}{}
-\Configure{@HEAD}{\input exerqz.4ht }
 \Css{.onClick {color:green;}}
 \Configure{TextField::}{}{%
    \IgnorePar \EndP
@@ -37829,7 +37852,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{nicefrac}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37917,6 +37939,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{th4}
@@ -38124,7 +38147,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{writer}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38227,6 +38249,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{sverb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38263,7 +38286,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{soul}
@@ -38420,7 +38442,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp852}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38440,6 +38461,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp1250}
@@ -38461,7 +38483,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp437}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38481,6 +38502,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp865}
@@ -38503,7 +38525,6 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{polish}
@@ -38528,6 +38549,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{portuges}
@@ -38739,7 +38761,6 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{russianb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38774,6 +38795,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slovak}
@@ -39175,7 +39197,6 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{spanish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39232,6 +39253,7 @@ Y{1EF8}y{1EF9}\i{0129}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{turkish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39255,7 +39277,6 @@ Y{1EF8}y{1EF9}\i{0129}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{usorbian}
@@ -39281,6 +39302,7 @@ Y{1EF8}y{1EF9}\i{0129}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{hebrew}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39304,7 +39326,6 @@ Y{1EF8}y{1EF9}\i{0129}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{catalan}
@@ -39518,6 +39539,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{czech}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39541,7 +39563,6 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{dutch}
@@ -39567,6 +39588,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{esperant}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39591,7 +39613,6 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{finnish}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39615,6 +39636,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{galician}
@@ -39762,7 +39784,6 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{exam}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39855,6 +39876,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{polyglossia}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39878,6 +39900,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -39919,6 +39942,34 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   \Css{\#\mdf:id{border:\mdf:border; background-color: \mdf:bgcolor; color:\mdf:fontcolor;}}
   \global\let\mdfl@linewidth\relax
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{tcolorbox}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{tcolorbox}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="tcolorbox \@currenvir" id="\:tcbcolid">}
+  % \tcbcolid and colors are defined in tcolorbox.4ht
+  \Css{\#\:tcbcolid\space .tcolorbox-title{color: \:tcbcoltitle; background-color: \:tcbcolframe;}}
+  \Css{\#\:tcbcolid\space .tcolorbox-content{color: \:tcbcolupper; background-color: \:tcbcolback; border: 1px solid \:tcbcolframe;}}
+}
+{\HCode{\Hnewline<div class="tcolorbox-title">}\par}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</div>\Hnewline<div class="tcolorbox-content">}}
+{\ifvmode\IgnorePar\fi\EndP\HCode{\Hnewline</div>\Hnewline</div>}\par}
+
+\Css{.tcolorbox{margin-top:0.5em;margin-bottom: 0.5em;}}
+
+\Configure{tcolorlowerbox}{\ifvmode\IgnorePar\fi\EndP\HCode{\Hnewline<div class="lowerbox">}
+  \Css{\#\:tcbcolid\space .lowerbox{border-top: 1px dashed \:tcbcolframe;}}
+}
+{\ifvmode\IgnorePar\fi\EndP\HCode{\Hnewline</div>}}
+
+% there is rule p + div elsewhere in TeX4ht. we want to nullify it.
+\Css{.tcolorbox .lowerbox{margin-top:0pt;}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   

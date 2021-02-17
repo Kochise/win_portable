@@ -1,0 +1,128 @@
+% 'nomnoml' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{nomnoml}
+[2020/11/20 v1.3.1 LaTeX package for drawing UML diagrams based on a simple syntax]
+% Support for https://github.com/skanaar/nomnoml
+% Support for https://github.com/prantlf/nomnoml-cli
+% Based on https://github.com/dakusui/latex-ditaa
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\nomnomlsetup}[1]{\setkeys{nomnoml}{#1}}
+\newcommand*{\nomnomlsetup}{\kvsetkeys{nomnoml}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=nomnoml, prefix=nomnoml@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{nomnoml} location, *not* at \begin[options]{nomnoml}
+% These options can be changed at "runtime" using the \nomnomlsetup{options} macro, though
+\DeclareStringOption{imagepath}								% Path of the image
+%\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+\DeclareBoolOption{cli}										% Use 'cli' version
+\DeclareBoolOption[true]{svg}								% Output is svg format (default, when fixed)
+
+\DeclareBoolOption{H}										% Output usage information
+\DeclareBoolOption{help}									%
+\DeclareBoolOption{V}										% Output the version number
+\DeclareBoolOption{version}									%
+\DeclareStringOption{i}[]									% File with nomnoml source to read from
+\DeclareStringOption{input}[]								%
+\DeclareStringOption{o}[]									% File for the image output to write to
+\DeclareStringOption{output}[]								%
+\DeclareStringOption{f}[]									% Output format (png or svg)
+\DeclareStringOption{format}[]								%
+\DeclareStringOption{w}[800]								% Width of the canvas to draw on
+\DeclareStringOption{width}[800]							% (/!\ already defined as figure layout width on page, not output image width)
+\DeclareStringOption{h}[800]								% Height of the canvas to draw on
+\DeclareStringOption{height}[800]							%
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{nomnoml}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off before this)
+\newenvironment{nomnoml}[3][\nomnoml@width]
+	{ %	\begin{nomnoml}[width]{caption}{refname}
+		\def\nomnomlfigwidth{#1}
+		\def\nomnomlcaption{#2}
+		\def\nomnomlrefname{#3}
+		
+		% Conceptual inception (in case the 'cli' or 'svg' flag is forced)
+		\ifnomnoml@svg
+			\setkeys{nomnoml}{f=svg}
+		\fi
+
+		% -f, --format <format>								% Output format (png or svg)
+		\ifdefstring{\nomnoml@f}{}{\ifdefstring{\nomnoml@format}{}{\def\nomnomloptf{\def\nomnomloptexto{svg}}}{\def\nomnomloptf{--format \nomnoml@format } \def\nomnomloptexto{\nomnoml@format}}}{\def\nomnomloptf{-f \nomnoml@f } \def\nomnomloptexto{\nomnoml@f}}
+
+		\def\nomnomldir{\nomnoml@imagepath/nomnoml}
+		\def\nomnomldpf{\nomnomldir/\nomnomlrefname}
+		\def\nomnomlsrc{\nomnomldpf.noml}					% Input file
+		\def\nomnomldst{\nomnomldpf.\nomnomloptexto}		% The extension shall be set at this point (hopefully so)
+		\def\nomnomlout{\nomnomldpf.out}
+		\def\nomnomlerr{\nomnomldpf.err}
+
+		% -H, --help										% Output usage information
+		\ifthenelse{\boolean{nomnoml@H}}{\def\nomnomloptH{-H }}{\ifthenelse{\boolean{nomnoml@help}}{\def\nomnomloptH{--help }}{\def\nomnomloptH{}}}
+		% -V, --version										% Output the version number
+		\ifthenelse{\boolean{nomnoml@V}}{\def\nomnomloptV{-V }}{\ifthenelse{\boolean{nomnoml@version}}{\def\nomnomloptV{--version }}{\def\nomnomloptV{}}}
+		% -i, --input <input>								% File with nomnoml source to read from
+		\ifdefstring{\nomnoml@i}{}{\ifdefstring{\nomnoml@input}{}{\def\nomnomlopti{-i "\nomnomlsrc" }}{\def\nomnomlopti{--input "\nomnoml@input" }}}{\def\nomnomlopti{-i "\nomnoml@i" }}
+		% -o, --output [output]								% File for the image output to write to
+		\ifdefstring{\nomnoml@o}{}{\ifdefstring{\nomnoml@output}{}{\def\nomnomlopto{-o "\nomnomldst" }}{\def\nomnomlopto{--output "\nomnoml@output" }}}{\def\nomnomlopto{-o "\nomnoml@o" }}
+		% -f, --format <format>								% See above
+		% -w, --width <pixels>								% Width of the canvas to draw on
+		\ifdefstring{\nomnoml@w}{}{\ifdefstring{\nomnoml@width}{}{\def\nomnomloptw{}}{\def\nomnomloptw{--width "\nomnoml@width" }}}{\def\nomnomloptw{-w "\nomnoml@w" }}
+%		\ifdefstring{\nomnoml@w}{}{\def\nomnomloptw{}}{\def\nomnomloptw{-w "\nomnoml@w" }}
+		% -h, --height <pixels>								% Height of the canvas to draw on
+		\ifdefstring{\nomnoml@h}{}{\ifdefstring{\nomnoml@height}{}{\def\nomnomlopth{}}{\def\nomnomlopth{--height "\nomnoml@height" }}}{\def\nomnomlopth{-h "\nomnoml@h" }}
+
+		\immediate\write18{mkdir "\nomnomldir" 2>nul}
+		\VerbatimOut{\nomnomlsrc}}
+	{\endVerbatimOut
+		\ifnomnoml@cli
+			\immediate\write18{npx nomnoml-cli \nomnomloptH \nomnomloptV \nomnomlopti \nomnomlopto \nomnomloptf \nomnomloptw \nomnomlopth >"\nomnomlout" 2>"\nomnomlerr"}
+		\else
+			\immediate\write18{npx nomnoml "\nomnomlsrc" >"\nomnomldst" 2>"\nomnomlerr"}
+		\fi
+
+		% \ifdefequal can only compare macros against macros, not direct values
+		\def\nomnomloptsvg{svg}
+		\expandafter\ifdefequal\expandafter{\nomnomloptexto}{\nomnomloptsvg}{
+%			\immediate\write18{npx svgo -i "\nomnomldst" 2>nul}
+			\setkeys{nomnoml}{svg=true}
+		}{}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\ifnomnoml@svg
+				\includesvg[inkscapelatex=false, width=\nomnomlfigwidth]{\nomnomldst}
+			\else
+				\includegraphics[width=\nomnomlfigwidth]{\nomnomldst}
+			\fi
+%			\vspace{-2em}
+			\caption{\nomnomlcaption}
+			\label{fig:\nomnomlrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `nomnoml.sty'.

@@ -1,4 +1,4 @@
-% ooffice.4ht (2020-05-20-14:34), generated from tex4ht-ooffice.tex
+% ooffice.4ht (2021-01-07-14:02), generated from tex4ht-ooffice.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 2001-2009 Maarten Wisse, James Naughton, Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-05-20-14:34}
+\immediate\write-1{version 2021-01-07-14:02}
 
   \exit:ifnot{Preamble,% 
 algorithmicx,% 
@@ -35,6 +35,7 @@ book,%
 cgloss4e,% 
 color,% 
 covington,% 
+csquotes,% 
 curve,% 
 elsart,% 
 enumerate,% 
@@ -42,7 +43,6 @@ fancyvrb,%
 foils,% 
 fontmath,% 
 footmisc,% 
-footnote-dw,% 
 frenchb,% 
 g-brief,% 
 german,% 
@@ -186,6 +186,43 @@ xmlns:xlink="http://www.w3.org/1999/xlink"\Hnewline
     \Log:Note{For tracing of oo configurations,
        use the `info-oo' option}%
 \fi
+\def\:ParagraphStyle#1{%
+\NewConfigureOO{#1}%
+\ConfigureOO{#1}{%
+<style:style style:name="#1"
+                  style:family="paragraph"
+                  style:parent-style-name="Text-body"
+                  style:class="text">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.5cm" />
+</style:style>
+}
+}
+\def\:DefineParagraph#1#2{%
+\Configure{#1}
+   {\IgnorePar\EndP \HCode{<!--start of #1 -->}}
+   {\IgnorePar\EndP \HCode{<!--start of #1 -->}}
+   {\bgroup\HTML:PAR{#1-p}{#1-p}\par\HCode{<text:span text:style-name="#2" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\egroup}
+\:ParagraphStyle{#1-p}
+}
+\def\:BoldStyle#1{%
+\NewConfigureOO{#1}
+\ConfigureOO{#1}{
+   <style:style style:name="#1" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="normal"
+                        fo:font-weight="bold"/>\Hnewline
+   </style:style>\Hnewline
+}}
+
+\def\:ItalicStyle#1{%
+\NewConfigureOO{#1}
+\ConfigureOO{#1}{
+   <style:style style:name="#1" style:family="text">\Hnewline
+      <style:text-properties fo:font-style="italic"
+                        fo:font-weight="normal"/>\Hnewline
+   </style:style>\Hnewline
+}}
+
 \let\media:type\relax
 \let\:OOmanifest=\empty
 \def\OOmanifest#1{\edef\:OOmanifest{\:OOmanifest #1}}
@@ -455,8 +492,8 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 
 \Configure{HEAD}{}{}
 \def\svg:width{0.0pt}\def\svg:height{0.0pt}
-\def\def:image:mime:type#1#2{\@namedef{image:mime#1}{#2}}
-\def\get:image:mime:type#1{\@nameuse{image:mime#1}}
+\def\def:image:mime:type#1#2{\expandafter\def\csname image:mime#1\endcsname{#2}}
+\def\get:image:mime:type#1{\csname image:mime#1\endcsname}
 \def:image:mime:type{.png}{image/png}
 \def:image:mime:type{.jpg}{image/jpeg}
 \def:image:mime:type{.jpeg}{image/jpeg}
@@ -773,19 +810,21 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
       \no:dupl{colortbl}{\input  colortbl.4ht}%
     }{}}{colortbl}
 
+\def\:strip:quotes"#1"#2"#3\relax{\if .#1.#2\else #1\fi}
 \def\h:input#1.#2.#3!*?: {%
-   \:CheckOption{no_#1}\if:Option
+   \edef\:current:package{\:strip:quotes"#1""\relax}
+   \:CheckOption{no_\:current:package}\if:Option
       \let\:temp\empty
    \else
       \let\:temp\empty
-      \no:dupl{#1}{%
+      \no:dupl{\:current:package}{%
         \def\:warn:msg{}
         \:CheckOption{debug}\if:Option
           \def\:warn:msg{%
-            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+            \:warning{No configuration file for \:current:package.\if .#2.tex\else #2\fi}%
           }
         \fi%
-        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
+        \def\:temp{\input:if:fileexists{\:current:package.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude
@@ -3362,6 +3401,19 @@ style:display-name="Footnote anchor" style:family="text">
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -3528,30 +3580,22 @@ style:display-name="Footnote anchor" style:family="text">
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -4770,6 +4814,19 @@ style:display-name="Footnote anchor" style:family="text">
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -4923,30 +4980,22 @@ style:display-name="Footnote anchor" style:family="text">
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -6146,6 +6195,19 @@ style:display-name="Footnote anchor" style:family="text">
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -6274,30 +6336,22 @@ style:display-name="Footnote anchor" style:family="text">
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -6990,15 +7044,6 @@ style:display-name="Footnote anchor" style:family="text">
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                \ConfigureHinput{footnote-dw}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \protected\long\def\mkfootnotecite#1{#1}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
-\endinput\empty\empty\empty\empty\empty\empty
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -8173,6 +8218,92 @@ Y{0178}\i{00EF}%
       \no:dupl{#1}{\expand:after{\input hebtex.4ht}}\fi \fi}
    {hebtex}
 
+\Configure{accent}\`\grave{A{00C0}E{00C8}I{00CC}N{01F8}O{00D2}U{00D9}W{1E80}%
+Y{1EF2}a{00E0}e{00E8}i{00EC}n{01F9}o{00F2}u{00F9}%
+w{1E81}y{1EF3}\i{00EC}%
+{}{}}
+   {\a:accents{grave}{#1}}   {\b:accents{grave}{#1}{#2}}
+\Configure{accent}\'\acute{A{00C1}C{0106}D{010E}E{00C9}G{01F4}I{00CD}L{0139}N{0143}%
+O{00D3}R{0154}S{015A}U{00DA}Y{00DD}Z{0179}a{00E1}c{0107}%
+d{010F}e{00E9}g{01F5}i{00ED}l{013A}n{0144}o{00F3}r{0155}%
+s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
+{}{}}
+   {\a:accents{acute}{#1}}   {\b:accents{acute}{#1}{#2}}
+\Configure{accent}\^\hat{A{00C2}E{00CA}I{00CE}O{00D4}U{00DB}a{00E2}e{00EA}%
+i{00EE}o{00F4}u{00FB}C{0108}c{0109}G{011C}g{011D}%
+H{0124}h{0125}J{0134}j{0135}S{015C}s{015D}W{0174}%
+w{0175}Y{0176}y{0177}Z{1E90}z{1E91}\i{00EE}\j{0135}%
+{}{}}
+   {\a:accents{circ}{#1}}   {\b:accents{hat}{#1}{#2}}
+\Configure{accent}\~\tilde{A{00C3}N{00D1}O{00D5}a{00E3}n{00F1}o{00F5}I{0128}%
+i{0129}U{0168}u{0169}V{1E7C}v{1E7D}E{1EBC}e{1EBD}%
+Y{1EF8}y{1EF9}\i{0129}%
+{}{}}
+   {\a:accents{tilde}{#1}}   {\b:accents{tilde}{#1}{#2}}
+\Configure{accent}\"\ddot{H{1E26}h{1E27}W{1E84}w{1E85}X{1E8C}x{1E8D}%
+t{1E97}A{00C4}E{00CB}I{00CF}O{00D6}U{00DC}%
+a{00E4}e{00EB}i{00EF}o{00F6}u{00FC}y{00FF}%
+Y{0178}\i{00EF}%
+{}{34}}
+   {\a:accents{uml}{#1}}     {\b:accents{uml}{#1}{#2}}
+\Configure{accent}\c\c{C{C}c{c}{}{}}
+   {\a:accents{cedil}{#1}}     {\b:accents{cedil}{#1}{#2}}
+\Configure{accent}\t\t{{}{}}
+   {\a:accents{udot}{#1}}     {\b:accents{udot}{#1}{#2}}
+\Configure{accent}\H\H{O{0150}o{0151}U{0170}u{0171}Y{04F2}y{04F3}{}{}}
+    {\a:accents{Huml}{#1}} {\b:accents{Huml}{#1}{#2}}
+\Configure{accent}\b\b{{}{}}
+    {\a:accents{b}{#1}} {\b:accents{b}{#1}{#2}}
+\Configure{accent}\d\d{{}{}}
+    {\a:accents{d}{#1}} {\b:accents{d}{#1}{#2}}
+\Configure{accent}\.\.{{}{}}
+   {\a:accents{dot}{#1}} {\b:accents{dot}{#1}{#2}}
+\Configure{accent}\dot\dot{{}{}}
+   {\a:accents{dot}{#1}} {\b:accents{dot}{#1}{#2}}
+\Configure{accent}\u\breve{{}{}}{\a:accents{breve}{#1}}
+   {\b:accents{breve}{#1}{#2}}
+\Configure{accent}\vec\vec{{}{}}{\a:accents{vec}{#1}}
+   {\b:accents{vec}{#1}{#2}}
+\Configure{accent}\v\v{{}{}}{\a:accents{check}{#1}}
+   {\b:accents{check}{#1}{#2}}
+\Configure{accent}\check\check{{}{}}{\a:accents{check}{#1}}
+   {\b:accents{check}{#1}{#2}}
+\Configure{accent}\=\bar{{}{}}
+   {\a:accents{bar}{#1}} {\b:accents{bar}{#1}{#2}}
+\Configure{accent}\widetilde\widetilde{{}{}}
+   {\a:accents{widetilde}{#1}} {\b:accents{widetilde}{#1}{#2}}
+\Configure{accent}\widehat\widehat{{}{}}
+   {\a:accents{widehat}{#1}} {\b:accents{widehat}{#1}{#2}}
+
+   \Configure{accents}
+      {\ht:special{t4ht@+\string&{35}x#2{59}}x}
+      {\Picture+{ \:Picture:{#1}}#2{#3}\EndPicture}
+
+
+\newdimen\paperwidth
+\newdimen\paperheight
+\paperwidth=11truein
+\paperheight=8.5truein
+
+\Configure{centerline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstCenterPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -9143,6 +9274,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -9271,30 +9415,22 @@ Y{0178}\i{00EF}%
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -10523,6 +10659,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -10651,30 +10800,22 @@ Y{0178}\i{00EF}%
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -11904,6 +12045,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -12032,30 +12186,22 @@ Y{0178}\i{00EF}%
 \endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
-\Configure{paragraph}
-   {\par\ShowPar \noindent\HCode{<!--start of paragraph-->}}
-   {\HCode{<!--end of paragraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="paragraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\Configure{subparagraph}
-   {\par\ShowPar \noindent\HCode{<!--start of subparagraph-->}}
-   {\HCode{<!--end of subparagraph-->}\par\ShowPar}
-   {\HCode{<text:span text:style-name="subparagraph-h" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\IgnorePar}
-\NewConfigureOO{paragraph-h}
-\ConfigureOO{paragraph-h}{
-   <style:style style:name="paragraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
-\NewConfigureOO{subparagraph-h}
-\ConfigureOO{subparagraph-h}{
-   <style:style style:name="subparagraph-h" style:family="text">\Hnewline
-      <style:text-properties fo:font-style="normal"
-                        fo:font-weight="bold"/>\Hnewline
-   </style:style>\Hnewline
-}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsection*-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -12521,6 +12667,21 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{csquotes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{displayquote}{\EndP%
+\bgroup \Configure{HtmlPar}%
+{\EndP \HCode{<text:p text:style-name="quote\if@rl-rtl\fi">}}%
+{\EndP \HCode{<text:p text:style-name="quote\if@rl-rtl\fi">}}%
+{\HCode{</text:p>}}%
+{\HCode{</text:p>}}%
+}{}{}{\egroup\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -12769,7 +12930,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{verse}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12899,6 +13059,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -13793,6 +13954,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -13900,6 +14074,37 @@ Y{0178}\i{00EF}%
    {\HCode{<text:h text:style-name="\csname a:Heading-3\endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection*-->}}
+   {\HCode{<text:h text:style-name="\csname a:Heading-4\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+
+
+% use the new mechanism for paragraph handling
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
+
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -15082,6 +15287,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -15165,6 +15383,37 @@ Y{0178}\i{00EF}%
    {\HCode{<text:h text:style-name="\csname a:Heading-3\endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection*-->}}
+   {\HCode{<text:h text:style-name="\csname a:Heading-4\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+
+
+% use the new mechanism for paragraph handling
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
+
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -16388,6 +16637,19 @@ Y{0178}\i{00EF}%
     \HCode{<text:p text:style-name="FirstCenterPar"  >}}
    {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
 }
+
+\Configure{leftline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstLeftPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
+\Configure{rightline}
+   {\EndP \ifvmode \IgnorePar \fi
+    \HCode{<text:p text:style-name="FirstRightPar"  >}}
+   {\HCode{</text:p>}\ShowPar\par{\HCondtrue\noindent}%
+}
+
 \HAssign\tabbing:N=0
 \Configure{tabbing}[1.5]{\IgnorePar\leavevmode
      \gHAdvance\tabbing:N by 1
@@ -16495,6 +16757,37 @@ Y{0178}\i{00EF}%
    {\HCode{<text:h text:style-name="\csname a:Heading-3\endcsname"
                    \text:outlinelevel="3"  >}\IgnoreIndent}
    {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\Configure{likesubsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection*-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection*-->}}
+   {\HCode{<text:h text:style-name="\csname a:Heading-4\endcsname"
+                   \text:outlinelevel="4"  >}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+\ConfigureMark{subsubsection}
+   {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
+    \else \@seccntformat{subsubsection}\fi }
+\Configure{subsubsection}
+   {\IgnorePar\EndP \HCode{<!--start of subsubsection-->}}
+   {\IgnorePar\EndP \HCode{<!--end of subsubsection-->}}
+   {\HCode{<text:h
+           text:style-name="\csname a:Heading-4\if@rl-rtl\fi
+\endcsname"
+                   \text:outlinelevel="4"   ><text:span
+                   text:style-name="subsubsection"  >}\TitleMark\space
+    \HCode{</text:span>}\IgnoreIndent}
+   {\HCode{</text:h>\Hnewline}\par\ShowPar}
+
+
+% use the new mechanism for paragraph handling
+\:DefineParagraph{paragraph}{paragraph-h}
+\:DefineParagraph{likeparagraph}{paragraph-h}
+\:DefineParagraph{subparagraph}{subparagraph-h}
+\:DefineParagraph{likesubparagraph}{subparagraph-h}
+
+
+\:BoldStyle{paragraph-h}
+\:BoldStyle{subparagraph-h}
+
 
 \NewConfigure{Heading-1}{1}
 \Configure{Heading-1}{Heading-1}
@@ -19142,6 +19435,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{footmisc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19241,6 +19535,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{soul}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19327,6 +19622,8 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 

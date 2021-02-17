@@ -19,11 +19,11 @@
 %% 2005/12/01 or later.
 %% 
 %% Copyright (C) 1994 by Jerry Leichter
-%% Copyright (C) 2016 , 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
+%% Copyright (C) 2016-2021 by Pieter van Oostrum <pieter@vanoostrum.org>
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2019/05/31 v2.5
+           [2021/01/29 v2.7
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -55,9 +55,45 @@
 }}
 \DeclareOption{supertabular}{%
 \AtBeginDocument{%
+\ifx\ST@save@lineno\undefined
 \def\ST@tabularcr{%
   {\ifnum0=`}\fi
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
+\else
+\def\ST@tabularcr{%
+  {\ifnum0=`}\fi
+  \ST@save@lineno
+  \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+     \ST@trace@cr\thr@@{Added par box with height \the\ST@pboxht}%
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@
+    \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\fi
 \def\MRST@xtabularcr{%
   \@ifnextchar[%]
     {\MRST@argtabularcr}%
@@ -75,20 +111,6 @@
   \noalign{\global\ST@toadd=#1}\MRST@cr}
 \def\MRST@yargarraycr#1{%
   \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
-\def\MRST@cr{%
-  \noalign{%
-    \ifnum\ST@pboxht<\ST@lineht
-      \global\advance\ST@pageleft -\ST@lineht
-      \global\ST@prevht\ST@lineht
-    \else
-      \global\advance\ST@pageleft -\ST@pboxht
-      \global\advance\ST@pageleft -0.1\ST@pboxht
-      \global\advance\ST@pageleft -\ST@stretchht
-      \global\ST@prevht\ST@pboxht
-      \global\ST@pboxht\z@
-    \fi
-    \global\advance\ST@pageleft -\ST@toadd
-    \global\ST@toadd=\z@}}
 }
 \def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 }
@@ -96,7 +118,7 @@
 \newlength{\multirow@colwidth}
 \newcount\multirow@cntb
 \newlength\multirow@dima
-\def\multirow@setcolwidth#1{%
+\long\def\multirow@setcolwidth#1{%
     \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
     \else
       \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
@@ -125,7 +147,7 @@
     \else \multirow@cntb=#1#2#3%
     \fi
   \fi}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
+\long\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
   \setlength\multirow@dima{#2\ht\@arstrutbox}%
   \addtolength\multirow@dima{#2\dp\@arstrutbox}%

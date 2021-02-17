@@ -1,4 +1,4 @@
-% html4-math.4ht (2020-07-27-14:08), generated from tex4ht-html4.tex
+% html4-math.4ht (2021-01-30-14:17), generated from tex4ht-html4.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 1999-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-07-27-14:08}
+\immediate\write-1{version 2021-01-30-14:17}
 
 \exit:ifnot{accents,% 
 amsfonts,% 
@@ -80,8 +80,9 @@ ushort}
 \let\MathPar\empty
 \Configure{PicDisplay}
   {\edef\MathPar{\ifvmode par-\fi}\IgnorePar\endgraf\EndP
-   \HCode{<center class="\MathPar math-display" \a:LRdir >}}
-  {\HCode{</center>}}  {}  {class="\MathPar math-display" }
+   \HCode{<div class="\MathPar math-display" \a:LRdir >}}
+  {\HCode{</div>}\par\ShowPar}  {}  {class="\MathPar math-display" }
+\Css{div.par-math-display, div.math-display{text-align:center;}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -320,16 +321,7 @@ ushort}
 \Configure{MathJaxConfig}{{
     tex: {
       tags: "ams",
-      \detokenize{%
-      inlineMath: [ ["\\\(","\\\)"] ],
-      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],}
-      processEscapes: true,
-      processEnvironments: true,
-      packages: ['base', 'color', 'ams']
   },
-  loader: {
-    load: ['[tex]/color', '[tex]/ams']
-  }
 };
 }
 \fi
@@ -475,6 +467,7 @@ ushort}
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsmath}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,7 +484,22 @@ ushort}
 \Configure{idotsint}              {\pic:sym{tsint}}
 \Configure{doteq}                 {\pic:sym{tsint}}
 \ifOption{mathjax}{}{%
-\Configure{[]}{\begin{equation*}\protect\nested:math}{\end{equation*}}
+\DeclareRobustCommand\[{%
+\bgroup%
+  \mathdisplay@push%
+  \st@rredtrue \global\@eqnswfalse%
+  \mathdisplay{equation*}%
+\csname st:Math\endcsname
+}
+
+\DeclareRobustCommand\]{%
+\csname ed:Math\endcsname
+  \endmathdisplay{equation*}%
+  \mathdisplay@pop%
+  \ignorespacesafterend%
+\egroup
+}
+\Configure{[]}{\protect\nested:math}{}
 }%
 \Configure{equation}
   {\ifmmode\else\par \IgnorePar\fi \EndP
@@ -669,7 +677,6 @@ ushort}
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsfonts}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -684,6 +691,7 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -723,7 +731,6 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amstex}
@@ -995,6 +1002,7 @@ ushort}
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{array}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1013,8 +1021,6 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -1135,6 +1141,9 @@ ushort}
 
 
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{gauss}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1148,6 +1157,7 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -1175,9 +1185,6 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 
 
 
@@ -1353,6 +1360,7 @@ ushort}
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ushort}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1456,6 +1464,9 @@ ushort}
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 
 

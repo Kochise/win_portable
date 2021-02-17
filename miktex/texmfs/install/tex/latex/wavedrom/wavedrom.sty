@@ -1,0 +1,72 @@
+% 'wavedrom' package
+%
+% (c) David KOCH
+%
+%% This program can be redistributed and/or modified under the terms
+%% of the LaTeX Project Public License Distributed from CTAN archives
+%% in directory macros/latex/base/lppl.txt.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{wavedrom}
+[2020/11/06 v2.6.6 LaTeX package for drawing Timing Diagram or Waveform from simple textual description]
+% Support for https://github.com/wavedrom/cli
+% Based on https://github.com/dakusui/latex-ditaa
+
+\RequirePackage{fancyvrb}
+\RequirePackage{graphicx}
+\RequirePackage{svg}
+\RequirePackage{etoolbox}
+\RequirePackage{xifthen}
+\RequirePackage[debugshow,patch]{kvoptions}
+%\RequirePackage[patch]{kvoptions}
+%\RequirePackage{kvoptions-patch}
+
+%\newcommand*{\wavedromsetup}[1]{\setkeys{wavedrom}{#1}}
+\newcommand*{\wavedromsetup}{\kvsetkeys{wavedrom}}
+\SetupKeyvalOptions{setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{family=wavedrom, prefix=wavedrom@, setkeys=\kvsetkeys}
+%\SetupKeyvalOptions{}
+
+% These options are defined at \usepackage[options]{wavedrom} location, *not* at \begin[options]{wavedrom}
+% These options can be changed at "runtime" using the \wavedromsetup{options} macro, though
+\DeclareStringOption{imagepath}				% Path of the image
+\DeclareStringOption[\columnwidth]{width}[\columnwidth]
+
+\ProcessKeyvalOptions*
+%\ProcessLocalKeyvalOptions*
+%\ProcessKeyvalOptions{wavedrom}
+
+%@formatter:off (This line indicates IntelliJ that formatter should be off after this)
+\newenvironment{wavedrom}[3][\wavedrom@width]
+	{ %	\begin{wavedrom}[width]{caption}{refname}
+		\def\wavedromfigwidth{#1}
+		\def\wavedromcaption{#2}
+		\def\wavedromrefname{#3}
+
+		\def\wavedromdir{\wavedrom@imagepath/wavedrom}
+		\def\wavedromdpf{\wavedromdir/\wavedromrefname}
+		\def\wavedromsrc{\wavedromdpf.wavedrom}
+		\def\wavedromdst{\wavedromdpf.svg}
+		\def\wavedromout{\wavedromdpf.out}
+		\def\wavedromerr{\wavedromdpf.err}
+		
+		\immediate\write18{mkdir "\wavedromdir" 2>nul}
+		\VerbatimOut{\wavedromsrc}}
+	{\endVerbatimOut
+		\immediate\write18{npx wavedrom-cli -i "\wavedromsrc" -s "\wavedromdst" >"\wavedromout" 2>"\wavedromerr"}
+		\begin{figure}[H]
+			\centering
+%			\vspace{-1em}
+			\includesvg[inkscapelatex=false, width=\wavedromfigwidth]{\wavedromdst}
+%			\vspace{-2em}
+			\caption{\wavedromcaption}
+			\label{fig:\wavedromrefname}
+%			\vspace{-1.5em}
+		\end{figure}
+	}
+%@formatter:on (This line indicates IntelliJ that formatter should be off before this)
+%--------------------------------------------------
+
+\endinput
+%%
+%% End of file `wavedrom.sty'.

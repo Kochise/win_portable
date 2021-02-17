@@ -710,7 +710,7 @@
 \def\fmtname{LaTeX2e}
 \edef\fmtversion
    {2020-10-01}
-\def\patch@level{3}
+\def\patch@level{4}
 \edef\development@branch@name{}
 \iffalse
 \def\reserved@a#1/#2/#3\@nil{%
@@ -1630,8 +1630,8 @@
 %% File: lthooks.dtx (C) Copyright 2020 Frank Mittelbach,
 %%                                      Phelype Oleinik & LaTeX Team
 %%% From File: lthooks.dtx
-\def\lthooksversion{v1.0g}
-\def\lthooksdate{2020/12/18}
+\def\lthooksversion{v1.0h}
+\def\lthooksdate{2021/01/07}
 \ExplSyntaxOn
 \bool_new:N \g__hook_debug_bool
 \cs_new_eq:NN \__hook_debug:n \use_none:n
@@ -1668,18 +1668,34 @@
 \cs_generate_variant:Nn \tl_show:n { x }
 \cs_generate_variant:Nn \tl_log:n { x }
 \scan_new:N \s__hook_mark
-\cs_new_eq:NN \__hook_tl_set:Nn \tl_set:Nn
-\cs_generate_variant:Nn \__hook_tl_set:Nn { cn, cx }
-\cs_new_eq:NN \__hook_tl_gset:Nn \tl_gset:Nn
-\cs_generate_variant:Nn \__hook_tl_gset:Nn { cn, co, cx }
-\cs_new_eq:NN \__hook_tl_gput_right:Nn \tl_gput_right:Nn
+\cs_new_protected:Npn \__hook_tl_set:Nn #1#2
+  { \cs_set_nopar:Npx #1 { \__kernel_exp_not:w {#2} } }
+\cs_new_protected:Npn \__hook_tl_set:Nx #1#2
+  { \cs_set_nopar:Npx #1 {#2} }
+\cs_generate_variant:Nn \__hook_tl_set:Nn { c }
+\cs_generate_variant:Nn \__hook_tl_set:Nx { c }
+\cs_new_protected:Npn \__hook_tl_gset:Nn #1#2
+  { \cs_gset_nopar:Npx #1 { \__kernel_exp_not:w {#2} } }
+\cs_new_protected:Npn \__hook_tl_gset:No #1#2
+  { \cs_gset_nopar:Npx #1 { \__kernel_exp_not:w \exp_after:wN {#2} } }
+\cs_new_protected:Npn \__hook_tl_gset:Nx #1#2
+  { \cs_gset_nopar:Npx #1 {#2} }
+\cs_generate_variant:Nn \__hook_tl_gset:Nn { c }
+\cs_generate_variant:Nn \__hook_tl_gset:No { c }
+\cs_generate_variant:Nn \__hook_tl_gset:Nx { c }
+\cs_new_protected:Npn \__hook_tl_gput_right:Nn #1#2
+  { \__hook_tl_gset:Nx #1 { \__kernel_exp_not:w \exp_after:wN { #1 #2 } } }
 \cs_generate_variant:Nn \__hook_tl_gput_right:Nn { No, cn }
-\cs_new_eq:NN \__hook_tl_gput_left:Nn \tl_gput_left:Nn
+\cs_new_protected:Npn \__hook_tl_gput_left:Nn #1#2
+  {
+    \__hook_tl_gset:Nx #1
+      { \__kernel_exp_not:w {#2} \__kernel_exp_not:w \exp_after:wN {#1} }
+  }
 \cs_generate_variant:Nn \__hook_tl_gput_left:Nn { No }
+\cs_new_eq:NN \__hook_tl_gset_eq:NN \tl_gset_eq:NN
 \cs_new_protected:Npn \__hook_tl_gclear:N #1
   { \__hook_tl_gset_eq:NN #1 \c_empty_tl }
 \cs_generate_variant:Nn \__hook_tl_gclear:N { c }
-\cs_new_eq:NN \__hook_tl_gset_eq:NN \tl_gset_eq:NN
 \cs_new_protected:Npn \hook_new:n #1
   { \__hook_normalize_hook_args:Nn \__hook_new:n {#1} }
 \cs_new_protected:Npn \__hook_new:n #1
@@ -1925,11 +1941,11 @@
   { \__hook_strip_double_slash:n {#1} }
 \cs_new:Npn \__hook_strip_double_slash:n #1
   { \__hook_strip_double_slash:w #1 // \s__hook_mark }
-\cs_new:Npn \__hook_strip_double_slash:w #1 // #2 \s__hook_mark
+\cs_new:Npn \__hook_strip_double_slash:w #1/#2/#3 // #4 \s__hook_mark
   {
-    \tl_if_empty:nTF {#2}
-      {#1}
-      { \__hook_strip_double_slash:w #1 / #2 \s__hook_mark }
+    \tl_if_empty:nTF {#4}
+      { #1/#2/#3 }
+      { \__hook_strip_double_slash:w #1/#2/#3 / #4 \s__hook_mark }
   }
 \prop_const_from_keyval:Nn \c__hook_generics_prop
   {env=,file=,package=,class=,include=}
@@ -10634,8 +10650,8 @@ Type  H <return>  for immediate help.}%
 %% File: ltfilehook.dtx (C) Copyright 2020 Frank Mittelbach,
 %%                                         Phelype Oleinik & LaTeX Team
 %%% From File: ltfilehook.dtx
-\providecommand\ltfilehookversion{v1.0d}
-\providecommand\ltfilehookdate{2020/11/24}
+\providecommand\ltfilehookversion{v1.0e}
+\providecommand\ltfilehookdate{2021/01/07}
 \ExplSyntaxOn
 \tl_new:N \CurrentFile
 \tl_new:N \CurrentFilePath
@@ -10703,27 +10719,29 @@ Type  H <return>  for immediate help.}%
 \DeclareRobustCommand \InputIfFileExists[2]{%
   \IfFileExists{#1}%
     {%
-     \@expl@@@filehook@file@push@@
-     \@filehook@set@CurrentFile
-      \edef\reserved@a{%
-        \@expl@@@filehook@file@pop@assign@@nnnn
-          {\CurrentFilePathUsed}%
-          {\CurrentFileUsed}%
-          {\CurrentFilePath}%
-          {\CurrentFile}%
-        \noexpand\@input@file@exists@with@hooks{\@filef@und}}%
+      \@expl@@@filehook@file@push@@
+      \@filehook@set@CurrentFile
       \expandafter\@swaptwoargs\expandafter
-        {\reserved@a}%
+        {\expandafter\@input@file@exists@with@hooks
+          \expandafter{\@filef@und}}%
         {#2}%
       \@expl@@@filehook@file@pop@@
     }%
 }
 \def\@input@file@exists@with@hooks#1{%
-  \edef\reserved@a{\unqu@tefilef@und#1\@nil}%
-  \@addtofilelist{\string@makeletter\reserved@a}%
-  \UseHook{file/before}%
-  \UseHook{file/before/\CurrentFile}%
-  \@@input #1% <- trailing space comes from \@filef@und
+  \edef\reserved@a{%
+    \@expl@@@filehook@file@pop@assign@@nnnn
+      {\CurrentFilePathUsed}%
+      {\CurrentFileUsed}%
+      {\CurrentFilePath}%
+      {\CurrentFile}}%
+  \expandafter\@swaptwoargs\expandafter{\reserved@a}%
+    {\edef\reserved@a{\unqu@tefilef@und#1\@nil}%
+     \@addtofilelist{\string@makeletter\reserved@a}%
+     \UseHook{file/before}%
+     \UseHook{file/before/\CurrentFile}%
+     \@@input #1% <- trailing space comes from \@filef@und
+    }%
   \UseHook{file/after/\CurrentFile}%
   \UseHook{file/after}}
 \def\unqu@tefilef@und"#1" \@nil{#1}

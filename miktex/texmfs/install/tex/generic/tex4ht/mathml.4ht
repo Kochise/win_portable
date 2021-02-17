@@ -1,4 +1,4 @@
-% mathml.4ht (2020-09-08-14:03), generated from tex4ht-mathml.tex
+% mathml.4ht (2021-02-06-14:21), generated from tex4ht-mathml.tex
 % Copyright 2009-2020 TeX Users Group
 % Copyright 1999-2009 Eitan M. Gurari
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-09-08-14:03}
+\immediate\write-1{version 2021-02-06-14:21}
 
 \exit:ifnot{Preamble,% 
 accents,% 
@@ -1295,13 +1295,20 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \def\mathop:prefix#1{%
    \Configure{mathop}{*}{<\a:mathml mo #1\Hnewline>}{</\a:mathml mo>}%
     {\Configure{mathop}{*}{<\a:mathml mo>}{</\a:mathml mo>}{}}}
-\def\:nbsp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+\ifdefined\protect%
+\def\:unicodespace{\protect\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}%
+\def\:unicodenspace{\protect\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}%
+\else%
+\def\:unicodespace{\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}%
+\def\:unicodenspace{\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}%
+\fi
+\def\:nbsp{\ifmtext \:unicodespace%
 \else\ifmathml
-    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+    \Tg<\a:mathml mspace />\else \:unicodespace%
 \fi\fi}
-\def\:ensp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+\def\:ensp{\ifmtext \:unicodenspace%
 \else\ifmathml
-    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+    \Tg<\a:mathml mspace />\else \:unicodenspace%
 \fi\fi}
 \Configure{cases}
     {}{} {\Tg<\a:mathml mtable>}{\Tg</\a:mathml mtable>}
@@ -1714,6 +1721,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsbsy}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2082,7 +2090,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsfonts}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2103,6 +2110,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amstex1}
@@ -2166,7 +2174,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amstex}
@@ -3115,13 +3122,20 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \def\mathop:prefix#1{%
    \Configure{mathop}{*}{<\a:mathml mo #1\Hnewline>}{</\a:mathml mo>}%
     {\Configure{mathop}{*}{<\a:mathml mo>}{</\a:mathml mo>}{}}}
-\def\:nbsp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+\ifdefined\protect%
+\def\:unicodespace{\protect\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}%
+\def\:unicodenspace{\protect\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}%
+\else%
+\def\:unicodespace{\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}%
+\def\:unicodenspace{\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}%
+\fi
+\def\:nbsp{\ifmtext \:unicodespace%
 \else\ifmathml
-    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+    \Tg<\a:mathml mspace />\else \:unicodespace%
 \fi\fi}
-\def\:ensp{\ifmtext \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+\def\:ensp{\ifmtext \:unicodenspace%
 \else\ifmathml
-    \Tg<\a:mathml mspace />\else \leavevmode\special{t4ht@+\string&{35}x2002{59}}x%
+    \Tg<\a:mathml mspace />\else \:unicodenspace%
 \fi\fi}
 \Configure{cases}
     {}{} {\Tg<\a:mathml mtable>}{\Tg</\a:mathml mtable>}
@@ -3226,6 +3240,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{array}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3279,8 +3294,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -3375,6 +3388,8 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 
@@ -3627,6 +3642,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{gauss}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3686,6 +3702,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{rlbabel}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3724,7 +3741,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{dcolumn}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3736,7 +3752,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -3926,7 +3941,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{accents}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3943,6 +3957,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -3999,7 +4014,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{sistyle}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4012,6 +4026,7 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ushort}
@@ -4050,7 +4065,6 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{bm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4066,6 +4080,10 @@ accent="true">&\#x0332;</\a:mathml mo></\a:mathml munder>}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
 
 
 

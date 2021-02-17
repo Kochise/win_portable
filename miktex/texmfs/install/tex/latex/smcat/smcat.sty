@@ -8,7 +8,7 @@
 %
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{smcat}
-[2021/01/04 v7.1.0 LaTeX package for Javascript based diagramming and charting tool]
+[2021/01/26 v7.3.0 LaTeX package for Javascript based diagramming and charting tool]
 % Support for https://github.com/sverweij/state-machine-cat
 % Based on https://github.com/dakusui/latex-ditaa
 
@@ -35,9 +35,9 @@
 
 \DeclareBoolOption{V}										% Output the version number
 \DeclareBoolOption{version}									%
-\DeclareStringOption{T}[]									% Output type (svg|dot|smcat|json|ast|scxml|scjson, default: "svg")
-\DeclareStringOption[svg]{outputtype}[svg]					%
-\DeclareStringOption{I}[]									% Input type (smcat|scxml|json, default: "smcat")
+\DeclareStringOption{T}[]									% Output type (svg|eps|ps|ps2|dot|smcat|json|ast|scxml|oldsvg|scjson, default: "svg")
+\DeclareStringOption[eps]{outputtype}[eps]					%
+\DeclareStringOption{I}[]									% Input type (smcat|json|scxml, default: "smcat")
 \DeclareStringOption[smcat]{inputtype}[smcat]				%
 \DeclareStringOption{E}[]									% Rendering engine (dot|circo|fdp|neato|osage|twopi, default: "dot")
 \DeclareStringOption{engine}[]								%
@@ -70,9 +70,9 @@
 			\setkeys{smcat}{T=svg}
 		\fi
 
-		% -T, --output-type [type]							% Output type (svg|dot|smcat|json|ast|scxml|scjson, default: "svg")
+		% -T, --output-type [type]							% Output type (svg|eps|ps|ps2|dot|smcat|json|ast|scxml|oldsvg|scjson, default: "svg")
 		\ifdefstring{\smcat@T}{}{\ifdefstring{\smcat@outputtype}{}{\def\smcatoptT{\def\smcatoptexto{svg}}}{\def\smcatoptT{--output-type "\smcat@outputtype" } \def\smcatoptexto{\smcat@outputtype}}}{\def\smcatoptT{-T "\smcat@T" } \def\smcatoptexto{\smcat@T}}
-		% -I, --input-type [type]							% Input type (smcat|scxml|json, default: "smcat")
+		% -I, --input-type [type]							% Input type (smcat|json|scxml, default: "smcat")
 		\ifdefstring{\smcat@I}{}{\ifdefstring{\smcat@inputtype}{}{\def\smcatoptI{\def\smcatoptexti{smcat}}}{\def\smcatoptI{--input-type "\smcat@inputtype" } \def\smcatoptexti{\smcat@inputtype}}}{\def\smcatoptI{-I "\smcat@I" } \def\smcatoptexti{\smcat@I}}
 
 		\def\smcatdir{\smcat@imagepath/smcat}

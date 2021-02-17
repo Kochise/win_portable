@@ -14,7 +14,7 @@
                              % \AddFile{1}{latex}   \AddFile{2}{article}
                              % \AddFile{5}{amsmath} \AddFile{2}{report} ...
 
-% cond4ht.4ht (2019-11-07-15:48), generated from tex4ht-cond4ht.tex
+% cond4ht.4ht (2020-10-16-13:47), generated from tex4ht-cond4ht.tex
 % Copyright 2009-2019 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
@@ -33,7 +33,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-11-07-15:48}
+\immediate\write-1{version 2020-10-16-13:47}
 
 
 \ifx \BREAK\UnDef
@@ -338,19 +338,21 @@ it an explicitly check. On the other hand, we should avoid duplications.
 \fi%
 \Hinclude{\input #1.4ht}{fontmath}
 |<*.4ht out of order|>
+\def\:strip:quotes"#1"#2"#3\relax{\if .#1.#2\else #1\fi}
 \def\h:input#1.#2.#3!*?: {%
-   \:CheckOption{no_#1}\if:Option
+   \edef\:current:package{\:strip:quotes"#1""\relax}
+   \:CheckOption{no_\:current:package}\if:Option
       \let\:temp\empty
    \else
       \let\:temp\empty
-      \no:dupl{#1}{%
+      \no:dupl{\:current:package}{%
         \def\:warn:msg{}
         \:CheckOption{debug}\if:Option
           \def\:warn:msg{%
-            \:warning{No configuration file for #1.\if .#2.tex\else #2\fi}%
+            \:warning{No configuration file for \:current:package.\if .#2.tex\else #2\fi}%
           }
         \fi%
-        \def\:temp{\input:if:fileexists{#1.4ht}{}{\:warn:msg}}%
+        \def\:temp{\input:if:fileexists{\:current:package.4ht}{}{\:warn:msg}}%
        }%
    \fi  \:temp}
 \edef\:temp{\noexpand\Hinclude

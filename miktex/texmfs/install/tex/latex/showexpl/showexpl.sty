@@ -22,7 +22,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesPackage{showexpl}
-    [2020/10/08 v0.3r Typesetting example code (RN)]
+    [2021/01/06 v0.3s Typesetting example code (RN)]
 \DeclareOption{final}{%
   \PassOptionsToPackage{\CurrentOption}{graphicx}%
   \PassOptionsToPackage{\CurrentOption}{listings}%
@@ -93,8 +93,14 @@
   \let\tableofcontens\relax \let\listoffigures\relax
   \let\listoftables\relax \let\printindex\relax
   \let\listfiles\relax \let\nofiles\relax
-  \let\index\@gobble \let\label\@gobble
-  \let\refstepcounter=\stepcounter
+  \let\index\@gobble
+  \expandafter\ifx\csname ver@cleveref.sty\endcsname\relax
+    \let\refstepcounter=\stepcounter
+    \let\label\@gobble
+  \else
+    \let\cref@old@refstepcounter=\stepcounter
+    \let\cref@old@label=\@gobble
+  \fi
   \let\bibliography\@gobble
   \let\pagestyle\@gobble \let\thispagestyle\@gobble
   %%\let\immediate\relax \let\write\@gobbletwo

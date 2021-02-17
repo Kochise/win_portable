@@ -11,7 +11,7 @@
 %% 1995-2001 Sebastian Rahtz, with portions written by David Carlisle and Heiko Oberdiek,
 %% 2001-2015 Heiko Oberdiek.
 %% 2016-2019 Oberdiek Package Support Group
-%% 2019-2020 LaTeX3 Project
+%% 2019-2021 LaTeX Project
 %%      https://github.com/latex3/hyperref/issues
 %%
 %% This file is part of the `Hyperref Bundle'.
@@ -27,13 +27,13 @@
 %%
 %% This work has the LPPL maintenance status `maintained'.
 %%
-%% The Current Maintainer of this work is the LaTeX3 Project.
+%% The Current Maintainer of this work is the LaTeX Project.
 %%
 %% The list of all files belonging to the `Hyperref Bundle' is
 %% given in the file `manifest.txt'.
 %%
 \ProvidesFile{pdfmark.def}
-  [2020-05-15 v7.00e %
+  [2021-02-10 v7.00j %
   Hyperref definitions for pdfmark specials]
 \Hy@VersionCheck{pdfmark.def}
 \begingroup
@@ -305,21 +305,9 @@
     \fi
   \fi
 }
-\def\hyper@pagehidden{%
-  \ifHy@useHidKey
-    \pdfmark{%
-      pdfmark=/PUT,%
-      Raw={%
-        \string{ThisPage\string}%
-        <</Hid \ifHy@pdfpagehidden true\else false\fi>>%
-      }%
-    }%
-  \fi
-}
 \g@addto@macro\Hy@EveryPageBoxHook{%
   \hyper@pagetransition
   \hyper@pageduration
-  \hyper@pagehidden
 }
 \def\hyper@image#1#2{%
   \hyper@linkurl{#2}{#1}%
@@ -875,6 +863,7 @@
          /quotedblbase/quotedblleft/quotedblright/quoteleft%
          /quoteright/quotesinglbase/trademark/fi/fl/Lslash/OE/Scaron%
          /Ydieresis/Zcaron/dotlessi/lslash/oe/scaron/zcaron %
+      160/Euro %
       164/currency %
       166/brokenbar %
       168/dieresis/copyright/ordfeminine %

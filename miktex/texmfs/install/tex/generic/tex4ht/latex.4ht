@@ -1,6 +1,6 @@
-% latex.4ht (2020-10-03-14:24), generated from tex4ht-4ht.tex
+% latex.4ht (2021-02-06-14:21), generated from tex4ht-4ht.tex
 % Copyright 1997-2009 Eitan M. Gurari
-% Copyright 2009-2020 TeX Users Group
+% Copyright 2009-2021 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-10-03-14:24}
+\immediate\write-1{version 2021-02-06-14:21}
 
 \ifx\SaveMkHalignConf:g\:UnDef \else \expandafter\endinput\fi
 
@@ -587,6 +587,7 @@
 \ifx \EndPicture\:UnDef  \list:save
 \let\after:end\empty   \csname before:begin#1\endcsname   \fi
 %
+\UseHook{env/#1/before}%
 \@ifundefined{#1}%
   {\def\reserved@a{\@latex@error{Environment #1 undefined}\@eha}}%
   {\def\reserved@a{%
@@ -597,6 +598,7 @@
        \null:listConfigure  \csname on#1:list\endcsname \fi
 \fi
 %
+          \@execute@begin@hook{#1}%
           \csname #1\endcsname
                          %
 %
@@ -638,10 +640,12 @@
    \expandafter\:temp
 \fi
 \fi
-\csname end#1\endcsname
+\UseHook{env/#1/end}%
+\csname end#1\endcsname%
 \@checkend{#1}%
   \aftergroup\recall:afterend
 \expandafter\endgroup\if@endpe\@doendpe\fi
+\UseHook{env/#1/after}%
   \ifx \chk:pic\:UnDef
      \csname after:end\endcsname
 \expandafter\let\csname after:end\endcsname\:UnDef
@@ -1990,10 +1994,10 @@ $\vcenter
              \else \sp:c\fi}
 \NewConfigure{ }[1]{\def\:temp{#1}%
    \ifx \:temp\empty \let\a:sp\sp:c\else\def\a:sp{#1}\fi}
-\def\:nbsp{\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}
-\def\:ensp{\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}
 \Configure{ }{\:nbsp}
 
+\def\:nbsp{\protect\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x}
+\def\:ensp{\protect\leavevmode\special{t4ht@+\string&{35}x2002{59}}x}
 \let\nobreakspace\:nbsp
 
 

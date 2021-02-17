@@ -75,38 +75,6 @@
 		\def\ditaadir{\ditaa@imagepath/ditaa}
 		\def\ditaafile{\ditaadir/\ditaastem.ditaa}
 		\def\ditaafigwidth{#1}
-		% usepackage->program options ('-\/-' is de-ligaturing '--')
-
-%		\def\ditaaoptA{\ifthenelse{\boolean{ditaa@A}}{-A}{\ifthenelse{\boolean{ditaa@noantialias}}{-\/-no-antialias}{}}}
-%		\def\ditaaoptb{\ifdefstring{\ditaa@b}{}{\ifdefstring{\ditaa@background}{}{}{-\/-background \ditaa@background}}{-b \ditaa@b}}
-%		\def\ditaaoptd{\ifthenelse{\boolean{ditaa@d}}{-d}{\ifthenelse{\boolean{ditaa@debug}}{-\/-debug}{}}}
-%		\def\ditaaoptE{\ifthenelse{\boolean{ditaa@E}}{-E}{\ifthenelse{\boolean{ditaa@noseparation}}{-\/-no-separation}{}}}
-%		\def\ditaaopte{\ifdefstring{\ditaa@e}{}{\ifdefstring{\ditaa@encoding}{}{}{-\/-encoding \ditaa@encoding}}{-b \ditaa@e}}
-%		\def\ditaaopth{\ifthenelse{\boolean{ditaa@h}}{-h}{\ifthenelse{\boolean{ditaa@html}}{-\/-html}{}}}
-%		\def\ditaaopthelp{\ifthenelse{\boolean{ditaa@help}}{-\/-help}{}}
-%		\def\ditaaopto{\ifthenelse{\boolean{ditaa@o}}{-o}{\ifthenelse{\boolean{ditaa@overwrite}}{-\/-overwrite}{}}}
-%		\def\ditaaoptr{\ifthenelse{\boolean{ditaa@r}}{-r}{\ifthenelse{\boolean{ditaa@roundcorners}}{-\/-round-corners}{}}}
-%		\def\ditaaoptS{\ifthenelse{\boolean{ditaa@S}}{-S}{\ifthenelse{\boolean{ditaa@noshadows}}{-\/-no-shadows}{}}}
-%		\def\ditaaopts{\ifdefstring{\ditaa@s}{}{\ifdefstring{\ditaa@scale}{}{}{-\/-scale \ditaa@scale}}{-s \ditaa@s}}
-%		\def\ditaaoptsvg{\ifthenelse{\boolean{ditaa@svg}}{-\/-svg}{}}
-%		\def\ditaaoptsvgext{\ifthenelse{\boolean{ditaa@svg}}{svg}{png}}
-%		\def\ditaaoptsvgfonturl{\ifdefstring{\ditaa@svg-font-url}{}{}{-\/-svg-font-url \ditaa@svg-font-url}}
-%		\def\ditaaoptT{\ifthenelse{\boolean{ditaa@T}}{-T}{\ifthenelse{\boolean{ditaa@transparent}}{-\/-transparent}{}}}
-%		\def\ditaaoptt{\ifdefstring{\ditaa@t}{}{\ifdefstring{\ditaa@tabs}{}{}{-\/-tabs \ditaa@tabs}}{-t \ditaa@t}}
-%		\def\ditaaoptv{\ifthenelse{\boolean{ditaa@v}}{-v}{\ifthenelse{\boolean{ditaa@verbose}}{-\/-verbose}{}}}
-%		\def\ditaaoptW{\ifthenelse{\boolean{ditaa@W}}{-W}{\ifthenelse{\boolean{ditaa@fixedslop}}{-\/-fixed-slop}{}}}
-
-		% \\def\\(ditaaopt[-\w]+)\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{([-\w]+)\}\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{-\\/-([-\w]+)\}\{\}\}\}
-		% \\ifthenelse\{\\boolean\{\2\}\}\{\\def\\\1\{\3 \}\}\{\\ifthenelse\{\\boolean\{\4\}\}\{\\def\\\1\{-\\/-\5 \}\}\{\\\1\{\}\}\}
-
-		% \\def\\(ditaaopt[-\w]+)\{\\ifdefstring\{\\(ditaa\@[-\w]+)\}\{\}\{\\ifdefstring\{\\(ditaa\@[-\w]+)\}\{\}\{\}\{-\\/-([-\w]+) \\\3\}\}\{-([-\w]+) \\\2\}\}
-		% \\ifdefstring\{\\\2\}\{\}\{\\ifdefstring\{\\\3\}\{\}\{\\\1\{\}\}\{\\def\\\1\{-\\/-\4 \\\3 \}\}\}\{\\def\\\1\{-\5 \\\2 \}\}
-		
-		% \\def\\(ditaaopt[-\w]+)\{\\ifthenelse\{\\boolean\{(ditaa\@[-\w]+)\}\}\{-\\/-([-\w]+)\}\{\}\}
-		% \\ifthenelse\{\\boolean\{\2\}\}\{\\def\\\1\{-\\/-\3 \}\}\{\\\1\{\}\}
-		
-		% ^(\t*) {4}
-		% \1\t
 
 		\ifthenelse{\boolean{ditaa@A}}{\def\ditaaoptA{-A }}{\ifthenelse{\boolean{ditaa@noantialias}}{\def\ditaaoptA{--no-antialias }}{\def\ditaaoptA{}}}
 		\ifdefstring{\ditaa@b}{}{\ifdefstring{\ditaa@background}{}{\def\ditaaoptb{}}{\def\ditaaoptb{--background \ditaa@background }}}{\def\ditaaoptb{-b \ditaa@b }}

@@ -11,7 +11,7 @@
 %% 1995-2001 Sebastian Rahtz, with portions written by David Carlisle and Heiko Oberdiek,
 %% 2001-2015 Heiko Oberdiek.
 %% 2016-2019 Oberdiek Package Support Group
-%% 2019-2020 LaTeX3 Project
+%% 2019-2021 LaTeX Project
 %%      https://github.com/latex3/hyperref/issues
 %%
 %% This file is part of the `Hyperref Bundle'.
@@ -27,13 +27,13 @@
 %%
 %% This work has the LPPL maintenance status `maintained'.
 %%
-%% The Current Maintainer of this work is the LaTeX3 Project.
+%% The Current Maintainer of this work is the LaTeX Project.
 %%
 %% The list of all files belonging to the `Hyperref Bundle' is
 %% given in the file `manifest.txt'.
 %%
 \ProvidesFile{hpdftex.def}
-  [2020-05-15 v7.00e %
+  [2021-02-10 v7.00j %
   Hyperref driver for pdfTeX]
 \Hy@VersionCheck{hpdftex.def}
 \pdf@ifdraftmode{%
@@ -688,33 +688,10 @@
     \Hy@RemoveDurPageAttr#1#4\END
   \fi
 }
-\def\hyper@pagehidden{%
-  \ifHy@useHidKey
-    \expandafter
-    \Hy@RemoveHidPageAttr\the\pdfpageattr^^J/Hid{} \END
-    \ifHy@pdfpagehidden
-      \edef\@processme{%
-        \global\pdfpageattr{%
-          \the\pdfpageattr
-          ^^J/Hid true % SPACE
-        }%
-      }%
-      \@processme
-    \fi
-  \fi
-}
-\gdef\Hy@RemoveHidPageAttr#1^^J/Hid#2#3 #4\END{%
-  \ifx\\#2\\%
-    \global\pdfpageattr{#1}%
-  \else
-    \Hy@RemoveHidPageAttr#1#4\END
-  \fi
-}
 \pdf@ifdraftmode{}{%
   \g@addto@macro\Hy@EveryPageHook{%
     \hyper@pagetransition
     \hyper@pageduration
-    \hyper@pagehidden
   }%
 }
 \Hy@AtBeginDocument{%
@@ -792,17 +769,6 @@
     \Hy@colorlink\@menucolor#2%
     \close@pdflink
   }%
-}
-\def\Hy@FixNotFirstPage{%
-  \gdef\Hy@FixNotFirstPage{%
-    \setbox\AtBeginShipoutBox=\hbox{%
-      \copy\AtBeginShipoutBox
-    }%
-  }%
-}
-\ltx@ifpackagelater{atbegshi}{2011/10/05}{%
-}{%
-  \AtBeginShipout{\Hy@FixNotFirstPage}%
 }
 \def\@Gauge[#1]#2#3#4{% parameters, label, minimum, maximum
   \Hy@Message{Sorry, pdftex does not support FORM gauges}%
@@ -1249,6 +1215,7 @@
            /quotedblbase/quotedblleft/quotedblright/quoteleft%
            /quoteright/quotesinglbase/trademark/fi/fl/Lslash/OE%
            /Scaron/Ydieresis/Zcaron/dotlessi/lslash/oe/scaron/zcaron %
+        160/Euro %
         164/currency %
         166/brokenbar %
         168/dieresis/copyright/ordfeminine %

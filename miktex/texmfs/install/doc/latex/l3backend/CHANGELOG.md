@@ -6,6 +6,32 @@ this project uses date-based 'snapshot' version identifiers.
 
 ## [Unreleased]
 
+## [2021-02-06]
+
+### Changed
+- Use new (internal) interface for kerns
+
+## [2021-01-29]
+
+### Added
+- Basic opacity support
+
+### Changed
+- Use color stack for fill color, and for stroke color if possible
+
+### Fixed
+- Implementation of `filldraw` for `dvips`
+
+## [2021-01-09]
+
+### Added
+- Support for referencing last link with `(x)dvipdfmx` (requires an up-to-date
+  backend)
+
+### Changed
+- Implementation of color wtih (x)dvipdfmx (requires an up-to-date
+  backend)
+
 ## [2020-09-24]
 
 ### Fixed
@@ -125,7 +151,10 @@ this project uses date-based 'snapshot' version identifiers.
 - Include `l3backend` in file names
 - Moved backend code to internal for each 'parent' module
 
-[Unreleased]: https://github.com/latex3/latex3/compare/2020-09-24...HEAD
+[Unreleased]: https://github.com/latex3/latex3/compare/2021-02-06...HEAD
+[2021-02-06]: https://github.com/latex3/latex3/compare/2021-01-29...2021-02-06
+[2021-01-29]: https://github.com/latex3/latex3/compare/2021-01-09...2021-01-29
+[2021-01-09]: https://github.com/latex3/latex3/compare/2020-09-24...2021-01-09
 [2020-09-24]: https://github.com/latex3/latex3/compare/2020-09-11...2020-09-24
 [2020-09-11]: https://github.com/latex3/latex3/compare/2020-09-01...2020-09-11
 [2020-09-01]: https://github.com/latex3/latex3/compare/2020-08-07...2020-09-01

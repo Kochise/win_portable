@@ -7,7 +7,7 @@
 -- babel.dtx  (with options: `basic')
 -- 
 --
--- Copyright (C) 2012-2020 Javier Bezos and Johannes L. Braams.
+-- Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
 -- Copyright (C) 1989-2012 Johannes L. Braams and
 --           any individual authors listed elsewhere in this file.
 -- All rights reserved.
@@ -266,6 +266,12 @@ function Babel.bidi(head, ispar, hdir)
       end
       first_et = nil
       has_en = false
+    end
+
+    -- Force mathdir in math if ON (currently works as expected only
+    -- with 'l')
+    if inmath and d == 'on' then
+      d = ('TRT' == tex.mathdir) and 'r' or 'l'
     end
 
     if d then

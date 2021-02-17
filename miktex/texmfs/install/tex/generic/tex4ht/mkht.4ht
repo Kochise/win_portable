@@ -1,4 +1,4 @@
-% mkht.4ht (2020-03-16-10:43), generated from tex4ht-mkht.tex
+% mkht.4ht (2020-11-23-10:05), generated from tex4ht-mkht.tex
 % Copyright 2009-2020 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
@@ -13,14 +13,14 @@
 % This work has the LPPL maintenance status "maintained".
 %
 % The Current Maintainer of this work
-% is the TeX4ht Project <http://tug.org/tex4ht>.
+% is the TeX4ht Project <https://tug.org/tex4ht>.
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
 %
-\immediate\write-1{version \ifx \JOBNAME\UnDefined 2020-03-16-10:43\else |version\fi}
+\immediate\write-1{version \ifx \JOBNAME\UnDefined 2020-11-23-10:05\else |version\fi}
 
-\immediate\write-1{version 2020-03-16-10:43}
+\immediate\write-1{version 2020-11-23-10:05}
 
 \def\exit{\documentclass{article}\begin{document}\end{document}\endinput}
 \bgroup
@@ -192,7 +192,7 @@ latex  |<@|>5 |<'|>|<definitions209|>|<get parameters|>|empty>>>
 >>>
 
 \<tex\><<<
-tex  |<@|>5 |<'|>|<tex definitions|>|<get parameters|>|empty>>>
+etex  |<@|>5 |<'|>|<tex definitions|>|<get parameters|>|empty>>>
 
 
 \<tex definitions\><<<
@@ -223,7 +223,7 @@ texinfo.tex file.
 >>>
 
 \<texinfo\><<<
-tex  |<@|>5 |<'|>|<texinfo definitions|>|<get parameters|>|empty>>>
+etex |<@|>5 |<'|>|<texinfo definitions|>|<get parameters|>|empty>>>
 
 
 \<texinfo definitions\><<<
@@ -324,6 +324,7 @@ mex |<@|>5 |<'|>|<tex definitions|>|<get parameters|>|empty>>>
 \def\Argchar{\bgroup \setcats \Acont}\def\Acont#1{\egroup\def\argchar{#1}}
 \def\Dirchar{\bgroup \setcats \Dicont}\def\Dicont#1{\egroup\def\dirchar{#1}}
 \def\Rubycall{\bgroup \setcats \Dcont}\def\Dcont#1{\egroup\def\rubyCall{#1}}
+\def\Echooff{\bgroup \setcats \Dcont}\def\Dcont#1{\egroup\def\echoOff{#1}}
 \def\Ext{\bgroup \setcats \Econt}    \def\Econt#1{\egroup\def\ext{#1}%
     \def\firstln{unix}\ifx \firstln\ext
            \def\firstln##1endfirstln{##1}%
@@ -342,6 +343,7 @@ mex |<@|>5 |<'|>|<tex definitions|>|<get parameters|>|empty>>>
 \let\argchar=\relax
 \let\dirchar=\relax
 \let\rubyCall=\relax
+\let\echoOff=\relax
 \let\ext=\relax
 \ifx \script\UnDef \let\script=\relax \fi
 \let\base=\relax
@@ -374,15 +376,31 @@ mex |<@|>5 |<'|>|<tex definitions|>|<get parameters|>|empty>>>
 \<ruby call\><<<
 |rubyCall>>>
 
+\<echo off\><<<
+|echoOff>>>
+
 \<unix line\><<<
 |firstln#!/bin/sh
+# stop at first error
+set -e
+
+# No interaction on the TeX runs is desirable.
+# Simpler to do that here than on the individual commands;
+# let's hope exec redirections are portable enough.
+exec </dev/null
 endfirstln
 >>>
 
+Despite the name, this macro is not for Windows. It is unconditionally
+included in all the scripts. It should only be the copyright notice,
+which somehow gets transformed for Unix. Thus we go to lots of trouble
+to insert the at-echo off only for Windows.
+
 \<windows line\><<<
-|Rem |ScriptFileName|AddExtn (2020-03-16-10:43), generated from tex4ht-mkht.tex
-|Rem Copyright (C) 2009-2013 TeX Users Group
-|Rem Copyright (C) 2003-2009 Eitan M. Gurari
+|<echo off|>
+|Rem |ScriptFileName|AddExtn (2020-11-23-10:05), generated from tex4ht-mkht.tex
+|Rem Copyright 2009-2020 TeX Users Group
+|Rem Copyright 2003-2009 Eitan M. Gurari
 |Rem
 |Rem This work may be distributed and/or modified under the
 |Rem conditions of the LaTeX Project Public License, either
@@ -395,7 +413,7 @@ endfirstln
 |Rem This work has the LPPL maintenance status "maintained".
 |Rem
 |Rem The Current Maintainer of this work
-|Rem is the TeX4ht Project <http://tug.org/tex4ht>.
+|Rem is the TeX4ht Project <https://tug.org/tex4ht>.
 |Rem
 |Rem If you modify this file, changing the
 |Rem version identification be appreciated.
@@ -420,6 +438,7 @@ endfirstln
    \temp\argchar
    \temp\dirchar
    \temp\rubyCall
+   \temp\echoOff
    \temp\ext
    \temp\script
    \temp\base
@@ -492,6 +511,7 @@ endfirstln
 \Argchar{$}
 \Dirchar{-f/}
 \Rubycall{}
+\Echooff{}
 \Remark{#}
 
 \else
@@ -508,6 +528,7 @@ endfirstln
 \Argchar{%}
 \Dirchar{}
 \Rubycall{call }
+\Echooff{@echo off}
 \Remark{Rem }
 
    \else

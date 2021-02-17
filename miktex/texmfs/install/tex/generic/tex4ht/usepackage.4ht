@@ -1,6 +1,6 @@
-% usepackage.4ht (2020-09-21-13:54), generated from tex4ht-4ht.tex
+% usepackage.4ht (2021-02-07-14:58), generated from tex4ht-4ht.tex
 % Copyright 2003-2009 Eitan M. Gurari
-% Copyright 2009-2020 TeX Users Group
+% Copyright 2009-2021 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-09-21-13:54}
+\immediate\write-1{version 2021-02-07-14:58}
 
    \def\:temp{tex4ht}\ifx \:temp\@currname
    \:warning{\string\usepackage{tex4ht} again?}
@@ -33,200 +33,36 @@
 \fi
 
 \fi
-\gdef\a:usepackage{\use:package cleveref,xr,xr-hyper,eso-pic,showframe,expl3,savetrees,biblatex,xeCJK,ctex,polyglossia,fontspec,tikz,pdfbase,caption,graphics,xcolor,imakeidx,minted,fancyhdr,,!*?: }
+\gdef\a:usepackage{\use:package ,!*?: }
 \gdef\use:package#1,{%
    \if :#1:\def\:temp##1!*?: {}\else
       \def\:temp{#1}\ifx \@currname\:temp
              \def\:temp##1!*?: {\input usepackage.4ht  }%
       \else \let\:temp=\use:package \fi
    \fi \:temp}
-\def\:temp{cleveref}\ifx\@currname\:temp
-\let\HyOrg@addtoreset\@addtoreset
-\fi
-\def\:temp{xr}\ifx \@currname\:temp
-   \:AtEndOfPackage{\let\XR:\XR@
-   \def\XR@[#1]#2{%
-    \Configure{AtBeginDocument}{\XR:[#1]{#2}}{}}%
-}
-
-\fi
-\def\:temp{xr-hyper}\ifx \@currname\:temp
-   \:AtEndOfPackage{\let\XR:\XR@
-    \def\XR@[#1][#2]#3{%
-      \AtBeginDocument{\XR:[#1][#2]{#3}}
-    }%
-}
-
-\fi
-\def\:temp{eso-pic}\ifx \@currname\:temp
-\:dontusepackage{eso-pic}
-\providecommand\AddToShipoutPicture{\@ifstar\@gobble\@gobble}
-\let\AddToShipoutPictureBG\AddToShipoutPicture
-\let\AddToShipoutPictureFG\AddToShipoutPicture
-\let\ClearShipoutPictureBG\relax
-\let\ClearShipoutPictureFG\relax
-\let\ClearShipoutPicture\relax
-\providecommand*\LenToUnit[1]{}
-\providecommand\gridSetup[6][]{}
-\fi
-\def\:temp{showframe}\ifx \@currname\:temp
-\:dontusepackage{showframe}
-\fi
-\def\:temp{expl3}\ifx \@currname\:temp
-\ifdefined\XeTeXversion%
-\xenunidelblock{Latin-expl3}%
-\:AtEndOfPackage{\xeuniuseblock{Latin-expl3}}
-\fi
-\fi
-\def\:temp{savetrees}\ifx \@currname\:temp
-\:dontusepackage{savetrees}
-\fi
-\def\:temp{biblatex}\ifx \@currname\:temp
-\:AtEndOfPackage{%
-  \def\blx@mknoautolang{%
-    \blx@lbxinput{\blx@languagename}%
-    {}{}%
-  }%
-  \def\blx@lbxinput@iii#1#2{%
-  \global\csundef{blx@lng@#2}%
-  \:IfFileExists{#1.lbx}
-    {\blx@lbxinput@iv{#2}{#1}{language '#2' -> '#1'}}
-    {\ifcsdef{blx@suffmaptried@#2}
-      {}
-      {\blx@warning@noline{%
-          File '#1.lbx' not found!\MessageBreak
-          Ignoring mapping '#2' -> '#1'}%
-       \global\cslet{blx@suffmaptried@#2}\@empty}%
-     \blx@lbxinput@iv{#2}{#2}{language '#2'}}}
-
-}
-\fi
-\def\:temp{xeCJK}\ifx \@currname\:temp
-\:dontusepackage{xeCJK}
-\:AtEndOfPackage{%
-  \RequirePackage{fontspec}
-}
-\DeclareDocumentCommand\setCJKmainfont{o m o}{}
-\let\setCJKsansfont\setCJKmainfont
-\let\setCJKmonofont\setCJKmainfont
-
-\DeclareDocumentCommand\setCJKfamilyfont {m o m }{}
-\DeclareDocumentCommand\newCJKfontfamily {o m o m}{\expandafter\gdef\csname #2\endcsname{\relax}}
-
-\DeclareDocumentCommand\xeCJKsetup{m}{}
-% }
-\AtBeginDocument{%
-  \xeuniuseblock{CJK}
-}
-\fi
-\def\:temp{ctex}\ifx \@currname\:temp
-\PassOptionsToPackage{fontset=none,autoindent=false}{ctex}
-\ExplSyntaxOn
-\let\o:file_input\file_input:n% patch \file_input:n to block
-                              % ctex-engine-luatex.def from loading
-\xdef\ctex:luaname{\detokenize{ctex-engine-luatex.def}}
-\def\:tempa#1{%
-  \edef\:tempb{#1}%
-  \ifx\:tempb\ctex:luaname%
-  % this macro is defined in the blocked file, just add dummy definition
-  \cs_new_protected:Npn \ctex_add_to_selectfont:n ##1{}%
-  \else%
-  \o:file_input{#1}%
-  \fi%
-}
-\let\file_input:n\:tempa
-\:AtEndOfPackage{%
-\let\file_input:n\o:file_input
-}
-\ExplSyntaxOff
-\fi
-\def\:temp{polyglossia}\ifx \@currname\:temp
-\ExplSyntaxOn
-\:AtEndOfPackage{
-
-\cs_set_eq:NN\orig_polyglossia@keys_define_lang:n\polyglossia@keys_define_lang:n
-\cs_set_protected:Npn \polyglossia@keys_define_lang:n #1 {
-  \orig_polyglossia@keys_define_lang:n{#1}
-  \keys_define:nn {polyglossia}{
-    #1 / direction
-    .  code:n = {},
-    #1 / script
-    .  code:n = {\ifdefined\XeTeXversion
-      \edef\:tempscript{\str_uppercase:f{\tl_head:n {#1}}\tl_tail:n{#1}}
-      \xeuniuseblock{#1}
-      \expandafter\xeuniuseblock\expandafter{\:tempscript}
-    \fi},
-  }
-}
-\def\RequireBidi{}%
-}
-\ExplSyntaxOff
-\fi
-\def\:temp{fontspec}\ifx \@currname\:temp
-  \ifdefined\texfourhtfontspecloaded%
-    \:dontusepackage{fontspec}
-  \else
-    \input usepackage-fontspec.4ht
-  \fi
-\fi
-\def\:temp{tikz}\ifx \@currname\:temp
-\:AtEndOfPackage{%
-\let\use:tikzlibrary\usetikzlibrary
-\def\find:externalize#1external#2\@nil{%
-\if\relax#2\relax\else
-  \let\tikz:externalize\tikzexternalize
-  \renewcommand\tikzexternalize[1][]{\tikz:externalize[##1,mode=only graphics]}
-    \tikzset{%
-      tex4ht inc/.style={%
-        /pgf/images/include external/.code={%
-          \includegraphics[]{####1.pdf}%
-        }%
-      }
-    }
-    \tikzset{tex4ht inc}
-  \fi
-}
-\append:defI\use@@tikzlibrary{\find:externalize##1external\@nil}%
-}
-\fi
-\def\:temp{pdfbase}\ifx\@currname\:temp
-\:AtEndOfPackage{%
-  \let\old:outputpage\@outputpage
-  \def\@outputpage{\old:outputpage{}}
-}
-\fi
-\def\:temp{caption}\ifx\@currname\:temp
-\:AtEndOfPackage{%
-  \long\def\caption@If@Package@Loaded#1[#2]#3#4{}
-  \renewcommand*\caption@redefine{%
-    \let\caption\caption@caption%
-    \let\@caption\caption@@caption%
-  }%
-}
-\fi
-\def\:temp{graphics}\ifx\@currname\:temp
-  \ifdefined\XeTeXversion
-    \PassOptionsToPackage{dvips}{graphics}
-  \fi
-\fi
-\def\:temp{xcolor}\ifx\@currname\:temp
-  \ifdefined\XeTeXversion
-    \PassOptionsToPackage{dvips}{xcolor}
-  \fi
-\fi
-\def\:temp{imakeidx}\ifx\@currname\:temp
-  \PassOptionsToPackage{noautomatic}{imakeidx}
-\fi
-\def\:temp{minted}\ifx\@currname\:temp
-  \:AtEndOfPackage{%
-    \define@booleankey{minted@opt@g}{breaklines}{}{}{}%
-  }
-\fi
-\def\:temp{fancyhdr}\ifx\@currname\:temp
-  \:AtEndOfPackage{%
-  \def\ps@fancy{}%
-  }
-\fi
+\Configure{PackageHooks}{cleveref.sty}{cleveref-hooks.4ht}
+\Configure{PackageHooks}{xr.sty}{xr-hooks.4ht}
+\Configure{PackageHooks}{xr-hyper.sty}{xrhyper-hooks.4ht}
+\Configure{PackageHooks}{eso-pic.sty}{esopic-hooks.4ht}
+\Configure{PackageHooks}{showframe.sty}{showframe-hooks.4ht}
+\Configure{PackageHooks}{expl3.sty}{expl3-hooks.4ht}
+\Configure{PackageHooks}{savetrees.sty}{savetrees-hooks.4ht}
+\Configure{PackageHooks}{newcomputermodern.sty}{newcomputermodern-hooks.4ht}
+\Configure{PackageHooks}{biblatex.sty}{biblatex-hooks.4ht}
+\Configure{PackageHooks}{xeCJK.sty}{xecjk-hooks.4ht}
+\Configure{PackageHooks}{ctex.sty}{ctex-hooks.4ht}
+\Configure{PackageHooks}{polyglossia.sty}{polyglossia-hooks.4ht}
+\Configure{PackageHooks}{fontspec.sty}{fontspec-hooks.4ht}
+\Configure{PackageHooks}{tikz.sty}{tikz-hooks.4ht}
+\Configure{PackageHooks}{pdfbase.sty}{pdfbase-hooks.4ht}
+\Configure{PackageHooks}{hyperref.sty}{hyperref-hooks.4ht}
+\Configure{PackageHooks}{caption.sty}{caption-hooks.4ht}
+\Configure{PackageHooks}{minted.sty}{minted-sty-hooks.4ht}
+\Configure{PackageHooks}{graphics.sty}{graphics-hooks.4ht}
+\Configure{PackageHooks}{xcolor.sty}{xcolor-hooks.4ht}
+\Configure{PackageHooks}{imakeidx.sty}{imakeidx-hooks.4ht}
+\Configure{PackageHooks}{fancyhdr.sty}{fancyhdr-hooks.4ht}
+\Configure{PackageHooks}{exerquiz.sty}{exerquiz-hooks.4ht}
 
 
 \endinput
