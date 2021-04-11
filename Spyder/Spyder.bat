@@ -1,6 +1,7 @@
 @echo off
 
 set "PYTHONPATH=%cd%\Python"
+set "PYSDL2_DLL_PATH=%cd%\lib"
 set "PATH=%PATH%;%PYTHONPATH%;%PYTHONPATH%\Scripts"
 
 start "" "%PYTHONPATH%\python" "%cd%\Spyder.launch.pyw"
