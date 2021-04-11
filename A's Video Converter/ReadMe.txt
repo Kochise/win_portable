@@ -466,17 +466,17 @@
           Dolby AC-3形式でエンコードします。モノラルおよびステレオにのみ対応しています。Windows10でのみ指定可能です。
 
         ・ALAC
-          ALAC形式でエンコードします。Muxer設定で「MKV」以外を選択している時にのみ指定可能です。
+          ALAC形式でエンコードします。Muxer設定で「MKVToolNix」以外を選択している時にのみ指定可能です。
           外部エンコーダは8chには対応していません。
 
         ・FLAC
-          FLAC形式でエンコードします。Muxer設定で「MKV」を選択している時にのみ指定可能です。
+          FLAC形式でエンコードします。Muxer設定で「MKVToolNix」を選択している時にのみ指定可能です。
 
         ・AAC (Nero)
           Nero AAC Encoderを利用してMPEG4 AAC形式でエンコードします。
 
         ・Opus
-          opusencを利用してOpus形式でエンコードします。Muxer設定で「MKV」を選択している時にのみ指定可能です。
+          opusencを利用してOpus形式でエンコードします。Muxer設定で「MKVToolNix」を選択している時にのみ指定可能です。
 
       ○ファイルパス
         外部エンコーダが必要な場合はファイルのパスが指定可能になるので実行ファイルの場所を指定して下さい。
@@ -495,10 +495,10 @@
         チェックをオンにしたフォーマットはエンコードを行わずにそのままMuxされる様になります。
         Muxerによる対応フォーマットは以下の通りです。
 
-        内部 MP4Muxer: MP3, AAC, AC-3(Windows8以降), E-AC-3(Windows8以降)
-        MP4Box       : MP3, AAC, AC-3, E-AC-3
-        L-SMASH      : MP3, AAC, AC-3, E-AC-3, DTS, DTS-HD
-        MKV          : MP3, AAC, AC-3, E-AC-3, TrueHD, DTS, DTS-HD
+        MP4Muxer  : MP3, AAC, AC-3(Windows8以降), E-AC-3(Windows8以降)
+        MP4Box    : MP3, AAC, AC-3, E-AC-3
+        L-SMASH   : MP3, AAC, AC-3, E-AC-3, DTS, DTS-HD
+        MKVToolNix: MP3, AAC, AC-3, E-AC-3, TrueHD, DTS, DTS-HD
 
         ※ 場合によっては正常に変換出来なくなるか、もしくは音声が正常に出力されなくなる場合があります。
            その様な場合はスプリッタを変更してみて下さい。それでも変わらない場合はエンコードを行って下さい。
@@ -598,9 +598,9 @@
          ただし、AMD Video Decoderの設定内容は個別に保存／復元されます（プリセットによる保存復元の対象）。
 
     ●ファイルフォーマット
-      Muxerの設定を行います。「内部 MP4Muxer」以外は別途ツールを入手する必要があります。
+      Muxerの設定を行います。「MP4Muxer」以外は別途ツールを入手する必要があります。
 
-      ○内部 MP4Muxer
+      ○MP4Muxer
         mp4形式で出力します。
         Windows7ではBフレームに対応していません。Windows8.1/8/7ではH.265/HEVCに対応していません。
         複数のオーディオストリームを格納する事は出来ません。
@@ -613,7 +613,7 @@
         L-SMASHのMuxerを利用してmp4形式で出力します。
         https://pop.4-bit.jp/
 
-      ○MKV
+      ○MKVToolNix
         MKVToolNixのMuxerを利用してmkv形式で出力します。
         https://mkvtoolnix.download/
 
@@ -626,12 +626,12 @@
         可変フレームレートで出力したい場合はチェックをオンにして下さい。
         この場合、各サンプルの開始時間が記録されたタイムコードを利用してストリームが結合される様になります。
 
-        ※ 内部MP4Muxerは特別な事をしなくてもVFRに対応しているためこの設定を変更する事は出来ません。
+        ※ MP4Muxerは特別な事をしなくてもVFRに対応しているためこの設定を変更する事は出来ません。
 
       〇4GB越えのサポートを有効にする
-        Windows7で内部MP4Muxer使用時に4GBを超えるサイズを出力したい場合はチェックをオンにして下さい。
+        Windows7でMP4Muxer使用時に4GBを超えるサイズを出力したい場合はチェックをオンにして下さい。
 
-        ※ Windows8以降の内部MP4Muxerは4GBを超えるサイズの出力に対応しているためこの設定は表示されません。
+        ※ Windows8以降のMP4Muxerは4GBを超えるサイズの出力に対応しているためこの設定は表示されません。
 
     ●その他
       ・プロセス
