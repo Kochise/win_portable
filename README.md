@@ -30,9 +30,12 @@ Some useful Windows programs in one portable package (some with source code incl
 **lite** : lightweight source code editor coded in/for **lua**<br>
 **lua** : simple scripting language used almost everywhere now<br>
 **miktex** : `LaTeX` tools needed by **texmaker** (includes its own package updater)<br>
+**mingw64** : posix compatible toolchain (lighter than Cygwin)<br>
 **MMCE** : `Marble Marcher Community Edition`, mind blowing utility<br>
 **mscgen-0.20** : command line based `Message Sequence Charts` generator<br>
 **Msc-generator** : run `Msc-generator.exe` and select 'Signalling Chart'<br>
+**msys64** : posix compatible toolchain (same-same as **mingw64**, but different)<br>
+**my_basic** : little 8 bits-like `basic` language for pixel-art games<br>
 **MyDefrag** : best defragger, select 'System Disk Monthly', then your `Windows` disk<br>
 **Notepad++** : the best code editor with some extensions installed (regex works there)<br>
 **Notepad2-mod** : the best code editor 2 (`Alt+z` or `Alt+o` are best there)<br>
@@ -46,11 +49,13 @@ Some useful Windows programs in one portable package (some with source code incl
 **PrivaZer** : remove trails and stuff, `CCleaner` upgraded<br>
 **PureText** : `Windows+v` paste raw text without formatting<br>
 **python** : several versions of `Python` interpreters (because you'll need them)<br>
+**qemu** : multiplatform emulator useful for OS development <ins>EXTERNAL INSTALLER</ins><br>
 **RogueKiller** : detect and remove rootkits, won't reboot at the end<br>
 **ShutUp10** : set predefined `Windows 10` settings (like no telemetry)<br>
 **Sourcetrail** : explore source code hierarchy (steep learning curve)<br>
 **Spyder** : the `Visual Studio` of `Python` (targeted to science/plotting) <ins>EXTERNAL INSTALLER</ins><br>
 **Subtitle Edit** : best subtitle editor, can shift time for several lines<br>
+**SumatraPDF** : `pdf` viewer, simple and fast and lightweight (forget about Reader)<br>
 **SuperFastClicker** : console program, press `Capslock` for mouse fast clicking<br>
 **SysExporter** : export (almost) any listbox content as tabular data (`csv`, `Excel`)<br>
 **SysinternalsSuite** : the stuff that should be included with every `Windows`<br>
