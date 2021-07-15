@@ -1,7 +1,7 @@
 @echo off
 
 rem Recompose 'miktex' caches
-start "" /d "%~dp0\miktex" "miktex-cleanup-fndb.bat"
+start "" /d "%~dp0miktex\" "miktex-cleanup-fndb.bat"
 
 rem Recompose 'nvm' dependencies
 cd "nvm\v12.17.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-809590\chrome-win"
@@ -67,7 +67,18 @@ rem	)
 	del "webappsstore.sqlite.002" /q 1>nul 2>nul
 )
 
-cd "..\..\.."
+cd "storage"
+
+if exist "ls-archive.sqlite.001" (
+rem	if not exist "ls-archive.sqlite" (
+		copy /b "ls-archive.sqlite.001"+"ls-archive.sqlite.002" "ls-archive.sqlite" 1>nul 2>nul
+rem	)
+
+	del "ls-archive.sqlite.001" /q 1>nul 2>nul
+	del "ls-archive.sqlite.002" /q 1>nul 2>nul
+)
+
+cd "..\..\..\.."
 
 rem Recompose 'OBS-Studio' dependencies
 cd "OBS-Studio\obs-plugins\64bit"

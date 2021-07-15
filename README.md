@@ -6,6 +6,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **AdwCleaner** : remove adwares and stuff, will reboot at the end<br>
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
+**CleanTemp** : batch file to automatise disk cleanup (run the `sageset` line first)<br>
 **CrossHair** : `Ctrl+&` to des/activate static crosshair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
 **ctags** : source file parser and ast database generator (used by `NppTags` in **Notepad++**)<br>
 **curl** : file and protocol downloader (because everyone loves it, I guess)<br>
@@ -18,6 +19,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **FileZilla** : `ftp` client (better use **Total Commander** in passive mode)<br>
 **Firefox** : ready to use `Firefox` browser with some privacy extensions installed<br>
 **flux** : screen toning utility to change color scheme at night time <ins>INSTALLER</ins><br>
+**git** : just `git-scm` (used by **TortoiseGit**) <ins>EXTERNAL INSTALLER</ins><br>
 **gs** : `GhostScript` parser/renderer (used by **IrfanView** to display `ps` files)<br>
 **ImageMagick** : image manipulator, converter, whatever (`cli` only, strange syntax)<br>
 **inkscape** : vectorial image tools, default `svg` editor and converter (also used by **miktex**)<br>
@@ -62,10 +64,12 @@ Some useful Windows programs in one portable package (some with source code incl
 **texmaker** : `LaTeX` Editor that needs **miktex** (run `texmaker.bat` to setup the path)<br>
 **TextAnalysisTool.NET** : log files digger and forensic tool (filtering large logs)<br>
 **tinycc**: little standalone `C` compiler that can help, very fast but still alpha/beta/gamma/...<br>
+**TortoiseGit** : `git-scm` shell extension (using **git**) <ins>EXTERNAL INSTALLER</ins><br>
 **Total Commander** : the stuff that should replace `Windows` (run `TOTALCMD.BAT`)<br>
 **TreeSheets** : strange hierarchical notepad (inspired by `Inception`)<br>
 **TTYEmulator** : the best `tty` emulator, do `ssh` as well (`Linux` session)<br>
 **USBDeview** : `USB` devices and driver viewer/manager (watch what's really going on)<br>
+**UCheck** : installed softwares' version checker/updater (doesn't work on portable version)<br>
 **UsbTreeView** : mostly like **USBDeview** but also with their `USB` host controllers<br>
 **v** : aka `vlang`, is a lightweight `c`-ish self-compiling language (still maturing)<br>
 **wget** : file and protocol downloader (the other one everyone loves)<br>
