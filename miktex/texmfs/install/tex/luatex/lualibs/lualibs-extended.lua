@@ -7,9 +7,9 @@
 --  lualibs.dtx  (with options: `extended')
 --  This is a generated file.
 --  
---  Copyright (C) 2009--2019 by
+--  Copyright (C) 2009--2021 by
 --          PRAGMA ADE / ConTeXt Development Team
---          The LuaLaTeX Dev Team
+--          The LaTeX Project Team
 --  
 --  See ConTeXt's mreadme.pdf for the license.
 --  
@@ -30,8 +30,8 @@ lualibs = lualibs or { }
 
 local lualibs_extended_module = {
   name          = "lualibs-extended",
-  version       = "2.73",       --TAGVERSION
-  date          = "2020-12-30", --TAGDATE
+  version       = "2.74",       --TAGVERSION
+  date          = "2021-05-20", --TAGDATE
   description   = "ConTeXt Lua libraries -- extended collection.",
   author        = "Hans Hagen, PRAGMA-ADE, Hasselt NL & Elie Roux & Philipp Gesang",
   copyright     = "PRAGMA ADE / ConTeXt Development Team",

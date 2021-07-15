@@ -7,7 +7,7 @@
 %% xfrac.dtx  (with options: `package')
 %% 
 %% Copyright (C) 2004,2008-2010 Morten Hoegholm
-%%           (C) 2011-2020 The LaTeX3 Project
+%%           (C) 2011-2021 The LaTeX Project
 %% 
 %% It may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License (LPPL), either version 1.3c of
@@ -34,7 +34,7 @@
     \endinput
   }
 \RequirePackage{amstext,graphicx,l3keys2e,textcomp,xparse,xtemplate}
-\ProvidesExplPackage{xfrac}{2020-10-27}{}
+\ProvidesExplPackage{xfrac}{2021-06-18}{}
   {L3 Experimental split-level fractions}
 \keys_define:nn { xfrac }
   {
@@ -329,16 +329,15 @@
     scale-factor        = 0.7          ,
     scale-relative      = false        ,
     scaling             = true         ,
-    numerator-top-sep   = 0 pt         ,
     denominator-bot-sep = 0 pt         ,
     math-mode           = true         ,
     phantom             = ( % )
   }
 \DeclareInstance { xfrac } { default } { text } { }
-\DeclareInstance { xfrac } { mathdefault } { math } { }
+\DeclareInstance { xfrac } { mathdefault } { math }
+  { numerator-top-sep = 0pt }
 \DeclareCollectionInstance { plainmath } { xfrac } { mathdefault } { math }
   {
-    denominator-bot-sep = 0 pt       ,
     numerator-bot-sep   = 0 pt       ,
     numerator-top-sep   = \c_max_dim ,
     scale-factor        = 1          ,
@@ -419,8 +418,8 @@
       }
   }
 \msg_new:nnnn { xfrac } { over-specified-numerator-sep }
-  { You have specified both numerator-top-sep and numerator-bot-sep}
-  {I will pretend that you didn't specify either of them}
+  { You~have~specified~both~"numerator-top-sep"~and~"numerator-bot-sep". }
+  { I~will~pretend~that~you~didn't~specify~either~of~them. }
 %% 
 %%
 %% End of file `xfrac.sty'.

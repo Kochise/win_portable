@@ -20,7 +20,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{luatex.def}
-  [2020/10/05 v1.2a Graphics/color driver for luatex]
+  [2021/06/01 v1.2c Graphics/color driver for luatex]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -146,8 +146,8 @@
       \ifGPT@pagecolor
         \put(-\hoffset,-\pageheight+\voffset)%
           {%
-            \pdfextension colorstack\@pdfcolorstack push{\current@page@color}%
-            \aftergroup\reset@color
+            \let\current@color\current@page@color
+            \set@color
             \rule{\pagewidth}{\pageheight}%
           }%
       \fi

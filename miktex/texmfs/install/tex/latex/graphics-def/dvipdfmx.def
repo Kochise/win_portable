@@ -1,5 +1,5 @@
 %% dvipdfmx.def
-%% Copyright (C) 2005-2020 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
+%% Copyright (C) 2005-2021 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
 %%                         (with contributions from many others)
 %%
 %% This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{dvipdfmx.def}
-  [2020/08/26 v5.0h Graphics/color driver for dvipdfmx]
+  [2021/03/18 v5.0j Graphics/color driver for dvipdfmx]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -260,8 +260,7 @@
 \def\Gin@extensions{% order here is like xetex.def, except for PS
   .pdf,.PDF,.ai,.AI,%
   .png,.PNG,.jpg,.JPG,.jpeg,.JPEG,.jp2,.JP2,.jpf,.JPF,.bmp,.BMP,%
-  .ps,.PS,.eps,.EPS,.mps,.MPS,%
-  .pz,.eps.Z,.ps.Z,.ps.gz,.eps.gz}
+  .ps,.PS,.eps,.EPS,.mps,.MPS}
 %
 \@namedef{Gin@rule@.pdf}#1{{pdf}{.xbb}{#1}}
 \@namedef{Gin@rule@.PDF}#1{{pdf}{.xbb}{#1}}
@@ -301,12 +300,6 @@
 %
 \@namedef{Gin@rule@.mps}#1{{mps}{.mps}{#1}}
 \@namedef{Gin@rule@.MPS}#1{{mps}{.mps}{#1}}
-% (don't bother with uppercase versions for these Unixish extensions)
-\@namedef{Gin@rule@.pz}#1{{eps}{.xbb}{`gunzip -c #1}}
-\@namedef{Gin@rule@.eps.Z}#1{{eps}{.eps.xbb}{`gunzip -c #1}}
-\@namedef{Gin@rule@.ps.Z}#1{{eps}{.ps.xbb}{`gunzip -c #1}}
-\@namedef{Gin@rule@.ps.gz}#1{{eps}{.ps.xbb}{`gunzip -c #1}}
-\@namedef{Gin@rule@.eps.gz}#1{{eps}{.eps.xbb}{`gunzip -c #1}}
 %
 \@namedef{Gin@rule@*}#1{{eps}{\Gin@ext}{#1}}
 \@ifundefined{ifGin@setpagesize}
@@ -336,3 +329,99 @@
 }
 \fi
 \fi
+% Disable use of new multiple stacks pending further testing
+\endinput
+% Updates for newer dvipdfmx versions
+% Loaded last as we can then bail-out if not required
+\begingroup
+  \ifcsname\detokenize{c__kernel_sys_dvipdfmx_version_int}\endcsname
+    \edef\extractbbversion{%
+      \number\csname\detokenize{c__kernel_sys_dvipdfmx_version_int}\endcsname}%
+  \else
+    \immediate\openin 0 = |"extractbb --version"
+    \ifeof0 %
+      \def\extractbbversion{0}%
+    \else
+      \read0 to \extractbbversion % \par
+      \ifeof0 %
+        \def\extractbbversion{0}%
+      \else
+        \read0 to \extractbbversion
+          \long\def\getextractbbversion#1Version #2 #3\stop{%
+            \def\extractbbversion{#2}}%
+          \expandafter\getextractbbversion\extractbbversion Version 0 \stop
+      \fi
+    \fi
+  \fi
+\ifnum\extractbbversion<20201111 %
+  \endgroup
+  \expandafter\endinput
+\else
+  \endgroup
+\fi
+% Conversion functions so the internal representation stays unchanged
+\let\init@current@color\current@color
+\def\convert@color#1{%
+  \ifx#1\init@current@color
+    \expandafter\convert@color@init
+  \else
+    \expandafter\convert@@color
+  \fi
+    #1%
+}
+\def\convert@color@init#1{0 g 0 G}
+\def\convert@@color#1{%
+  \expandafter\expandafter\expandafter\convert@@@color#1\stop
+}
+\def\convert@@@color#1 #2\stop{%
+  \csname convert@color@#1\endcsname{#2}%
+}
+\def\convert@color@cmyk#1{#1 k #1 K}
+\def\convert@color@gray#1{#1 g #1 G}
+\def\convert@color@rgb#1{#1 rg #1 RG}
+\def\convert@color@#1{%
+  \expandafter\expandafter\expandafter\convert@@color
+    \expandafter\expandafter\expandafter{\csname col@#1\endcsname}%
+}
+% Deal with named colors
+\def\define@color@named#1#2{\expandafter\edef\csname col@#1\endcsname{#2}}
+% Change the specials to use the stack
+\ifdefined\main@pdfcolorstack\else
+  \chardef\main@pdfcolorstack=1 %
+  \ifx\AtBeginDvi\undefined
+    \long\def\@firstofone#1{#1}%
+    \expandafter\@firstofone
+  \else
+    \expandafter\AtBeginDvi
+  \fi
+    {\special{pdfcolorstackinit \the\main@pdfcolorstack\space page direct (0 g 0 G)}}
+\fi
+\def\@pdfcolorstack{\the\main@pdfcolorstack\space}
+\def\set@color{%
+  \special{pdfcolorstack \@pdfcolorstack push (\convert@color\current@color)}%
+  \aftergroup \reset@color
+}
+\def\reset@color{%
+  \special{pdfcolorstack \@pdfcolorstack pop}%
+}
+% Reinsert stack color to over-ride built-in reinsertion of pdf:bc color
+\def\Grot@end{\special{pdf:etrans}\special{pdfcolorstack \@pdfcolorstack current}}
+\let\Gscale@end\Grot@end
+\def\GPT@clipbox#1{%
+  \setbox#1=\hbox{%
+    \Gin@defaultbp\WIDTH{\wd#1}%
+    \Gin@defaultbp\DEPTH{\dp#1}%
+    \@tempdima\ht#1%
+    \advance\@tempdima\dp#1%
+    \Gin@defaultbp\TOTALHEIGHT{\@tempdima}%
+    \special{x:gsave}%
+    \special{%
+      pdf:literal
+      0 -\DEPTH\GPT@space \WIDTH\GPT@space \TOTALHEIGHT\GPT@space re  W n
+    }%
+    \rlap{\box#1}%
+    \special{x:grestore}%
+    \special{pdfcolorstack \@pdfcolorstack current}%
+    \hskip\wd#1%
+  }%
+}

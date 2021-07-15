@@ -73,7 +73,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -95,7 +95,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -110,13 +110,13 @@
   letter%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   document class (\ClassName)%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -196,10 +196,12 @@
 \@namedef{scr@v@3.30}{17}
 \@namedef{scr@v@3.31}{18}
 \@namedef{scr@v@3.32}{18}
+\@namedef{scr@v@3.33}{18}
+\@namedef{scr@v@3.34}{18}
 \@namedef{scr@v@last}{18}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
 %%%            (run: option)
 \KOMA@key{version}[last]{%
   \scr@ifundefinedorrelax{scr@v@#1}{%
@@ -249,7 +251,7 @@
 \newcommand*{\scr@v@is@ge}[1]{%
   \numexpr\scr@compatibility+\@ne\relax>\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: option)
 \KOMA@key{draft}[true]{%
   \KOMA@set@ifkey{draft}{@tempswa}{#1}%
@@ -337,7 +339,7 @@
 }{orgdate}{true}
 \KOMA@DeclareDeprecatedOption{scrdate}{numericaldate=true}
 \KOMA@DeclareDeprecatedOption{orgdate}{numericaldate=false}
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: option)
 \providecommand*\@ptsize{%
   12%
@@ -554,7 +556,7 @@
 \DeclareOption*{%
   \lco@test
   \x@paper}
-%%% From File: $Id: scrkernel-paragraphs.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-paragraphs.dtx 3596 2021-05-17 12:53:41Z kohm $
 %%%            (run: option)
 \newcommand*{\setparsizes}[3]{%
   \edef\f@parindent{\the\parindent}%
@@ -825,9 +827,9 @@
 \KOMA@DeclareDeprecatedOption{cleardoubleempty}{cleardoublepage=empty}
 \KOMA@DeclareDeprecatedOption{cleardoubleplain}{cleardoublepage=plain}
 \KOMA@DeclareDeprecatedOption{cleardoublestandard}{cleardoublepage=current}
-%%% From File: $Id: scrkernel-floats.dtx 3394 2019-11-19 11:56:28Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-footnotes.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
 %%%            (run: option)
 \KOMA@key{footnotes}{%
   \ifx\@footnotemark\scr@saved@footnotemark
@@ -898,9 +900,9 @@
   \csname FN@mf@prepare\endcsname
   \ifhmode\spacefactor\@x@sf\fi
   \relax}
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3394 2019-11-19 11:56:28Z kohm $
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-notepaper.dtx 3472 2020-03-27 11:01:45Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
 %%%            (run: option)
 \KOMA@ifkey{firsthead}{@firsthead}
 \KOMAExecuteOptions{firsthead=true}
@@ -1487,13 +1489,13 @@
 \newcommand*{\scr@symbol@www}{\undefined}
 %%% From File: $Id: scrkernel-circularletters.dtx 3262 2019-10-10 08:25:29Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{%
   parskip=false,%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3515 2020-08-06 16:16:31Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
 %%%            (run: body)
 \expandafter\ifnum \@nameuse{scr@v@2.95}>\scr@compatibility\relax
   \newcommand*{\@setif}[2][]{%
@@ -1506,7 +1508,7 @@
     \expandafter\endgroup\@tempa
   }%
 \fi
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: body)
 \newcommand*\scr@setlength[4]{%
   \expandafter\ifnum\scr@v@is@lt{3.12}\relax
@@ -1981,7 +1983,7 @@
   \@nomath\sfb}
 \DeclareRobustCommand*{\cal}{\@fontswitch\relax\mathcal}
 \DeclareRobustCommand*{\mit}{\@fontswitch\relax\mathnormal}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: body)
 \setlength{\skip\@mpfootins}{\skip\footins}
 \setlength\fboxsep{3\p@}
@@ -3144,46 +3146,80 @@
 \let\x@@paper             =\relax
 \let\scr@pti@nerr@r       =\relax
 \RequirePackage{typearea}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-paragraphs.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-paragraphs.dtx 3596 2021-05-17 12:53:41Z kohm $
 %%%            (run: body)
 \setlength{\lineskip}{\p@}
 \setlength{\normallineskip}{\p@}
-\newcommand*{\scr@selectfont}{}
-\expandafter\let\expandafter\scr@selectfont\csname selectfont \endcsname
-\BeforePackage{everysel}{%
-  \AtBeginDocument{%
-    \expandafter\ifx\csname selectfont \endcsname\scr@new@selectfont\else
-      \ClassWarningNoLine{\KOMAClassName}{discard change of \string\selectfont}%
-    \fi
-    \expandafter\let\csname selectfont \endcsname\scr@selectfont
-  }%
-}
-\AfterPackage{everysel}{%
-  \scr@ifundefinedorrelax{@EverySelectfont@Init}{%
-    \expandafter\ifx\csname selectfont \endcsname\scr@new@selectfont
-      \ClassWarningNoLine{\KOMAClassName}{%
-        \string\selectfont\space already changed}%
-    \else
-      \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
-      \expandafter\let\expandafter\scr@new@selectfont
-        \csname selectfont \endcsname
-    \fi
-  }{%
-    \g@addto@macro\@EverySelectfont@Init{%
-      \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
-      \expandafter\let\expandafter\scr@new@selectfont
-        \csname selectfont \endcsname
+\IfLTXAtLeastTF{2021/05/01}{%
+  \AddToHook{selectfont}{\par@update}%
+  \AfterPackage{everysel}{%
+    \IfPackageAtLeastTF{everysel}{2021/01/18}{}{%
+      \ClassError{\KOMAClassName}{%
+        incompatible `everysel' detected
+      }{%
+        You are using an old version of `everysel' in combination with a
+        LaTeX\MessageBreak
+        version >= 2021/06/01 and KOMA-Script >= 3.33. This combination
+        is\MessageBreak
+        not supported.\MessageBreak
+        You could switch back to an older LaTeX using package
+        `latexrelease'.\MessageBreak
+        But I recommend to update `everysel'%
+      }%
     }%
   }%
-}
-\AfterPackage{tracefnt}{%
+  \AfterPackage{tracefnt}{%
+    \IfPackageAtLeastTF{tracefnt}{2020/12/22}{}{%
+      \ClassError{\KOMAClassName}{%
+        incompatible `tracefnt' detected
+      }{%
+        `tracefnt' is a LaTeX base package and therefore should be updated
+        together\MessageBreak
+        with LaTeX kernel. So this should never happen! Please check
+        your\MessageBreak
+        LaTeX installation%
+      }%
+    }%
+  }%
+}{%
+  \newcommand*{\scr@selectfont}{}
   \expandafter\let\expandafter\scr@selectfont\csname selectfont \endcsname
-  \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
+  \BeforePackage{everysel}{%
+    \AtBeginDocument{%
+      \expandafter\ifx\csname selectfont \endcsname\scr@new@selectfont\else
+        \ClassWarningNoLine{\KOMAClassName}{%
+          discard change of \string\selectfont}%
+      \fi
+      \expandafter\let\csname selectfont \endcsname\scr@selectfont
+    }%
+  }%
+  \AfterPackage{everysel}{%
+    \scr@ifundefinedorrelax{@EverySelectfont@Init}{%
+      \expandafter\ifx\csname selectfont \endcsname\scr@new@selectfont
+        \ClassWarningNoLine{\KOMAClassName}{%
+          \string\selectfont\space already changed}%
+      \else
+        \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
+        \expandafter\let\expandafter\scr@new@selectfont
+          \csname selectfont \endcsname
+      \fi
+    }{%
+      \g@addto@macro\@EverySelectfont@Init{%
+        \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
+        \expandafter\let\expandafter\scr@new@selectfont
+          \csname selectfont \endcsname
+      }%
+    }%
+  }%
+  \AfterPackage{tracefnt}{%
+    \expandafter\let\expandafter\scr@selectfont\csname selectfont \endcsname
+    \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}%
+    \expandafter\let\expandafter\scr@new@selectfont\csname selectfont \endcsname
+  }%
+  \expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}
+  \newcommand*{\scr@new@selectfont}{}
   \expandafter\let\expandafter\scr@new@selectfont\csname selectfont \endcsname
 }
-\expandafter\g@addto@macro\csname selectfont \endcsname{\par@update}
-\newcommand*{\scr@new@selectfont}{}
-\expandafter\let\expandafter\scr@new@selectfont\csname selectfont \endcsname
 \newcommand*{\par@updaterelative}{%
   \begingroup
     \edef\@tempa{\the\parindent}\ifx\@tempa\f@parindent
@@ -3381,12 +3417,12 @@
 }
 \pagestyle{plain}
 \pagenumbering{arabic}
-%%% From File: $Id: scrkernel-floats.dtx 3394 2019-11-19 11:56:28Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
 %%%            (run: body)
 \newcommand\marginline[1]{%
   \marginpar[\raggedleft{#1}]{\raggedright #1}%
 }
-%%% From File: $Id: scrkernel-footnotes.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
 %%%            (run: body)
 \renewcommand*\footnoterule{%
   \normalsize\ftn@rule@test@values
@@ -3538,13 +3574,13 @@
 \newcommand*{\thefootnotemark}{\@thefnmark}
 \deffootnote[1em]{1.5em}{1em}{\textsuperscript{\thefootnotemark}}
 \deffootnotemark{\textsuperscript{\thefootnotemark}}
-\newcommand*{\footref}[1]{%
+\providecommand*{\footref}[1]{%
   \begingroup
     \unrestored@protected@xdef\@thefnmark{\ref{#1}}%
   \endgroup
   \@footnotemark
 }
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3394 2019-11-19 11:56:28Z kohm $
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
 %%%            (run: body)
   \setlength{\leftmargini}{2.5em}
 \setlength{\leftmarginii}{2.2em}
@@ -3575,10 +3611,10 @@
 \renewcommand*\p@enumii{\theenumi}
 \renewcommand*\p@enumiii{\p@enumii(\theenumii)}
 \renewcommand*\p@enumiv{\p@enumiii\theenumiii}
-\newcommand*\labelitemi{\textbullet}
-\newcommand*\labelitemii{\normalfont\bfseries\textendash}
-\newcommand*\labelitemiii{\textasteriskcentered}
-\newcommand*\labelitemiv{\textperiodcentered}
+\newcommand*\labelitemi{\usekomafont{labelitemi}{\textbullet}}
+\newcommand*\labelitemii{\usekomafont{labelitemii}{\textendash}}
+\newcommand*\labelitemiii{\usekomafont{labelitemiii}{\textasteriskcentered}}
+\newcommand*\labelitemiv{\usekomafont{labelitemiv}{\textperiodcentered}}
 \newenvironment{description}{%
   \list{}{\labelwidth\z@ \itemindent-\leftmargin
     \let\makelabel\descriptionlabel}%
@@ -3693,9 +3729,15 @@
 }
 \newcommand*\descfont{\@gr@gsffamily\bfseries}
 \newcommand*{\scr@fnt@descriptionlabel}{\descfont}
+\newcommand*{\labelitemfont}{\normalfont}
+\newcommand*\scr@fnt@itemizelabel{\labelitemfont}
+\newkomafont{labelitemi}{\usekomafont{itemizelabel}}
+\newkomafont{labelitemii}{\usekomafont{itemizelabel}\bfseries}
+\newkomafont{labelitemiii}{\usekomafont{itemizelabel}}
+\newkomafont{labelitemiv}{\usekomafont{itemizelabel}}
 \newkomafont{labelinglabel}{}
 \newkomafont{labelingseparator}{}
-%%% From File: $Id: scrkernel-notepaper.dtx 3472 2020-03-27 11:01:45Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
 %%%            (run: body)
 \newcommand*{\@firsthead}{%
   \ClassWarning{scrlttr2}{%
@@ -4886,14 +4928,13 @@
 \newcommand*{\stopbreaks}{\interlinepenalty \@M
  \def\par{\@@par\nobreak}\let\\=\@nobreakcr
  \let\vspace\@nobreakvspace}
-\newcommand*{\@nobreakvspace}{%
+\DeclareRobustCommand*{\@nobreakvspace}{%
   \kernel@ifstar{\@nobreakvspacex}{\@nobreakvspacex}}
 \newcommand*{\@nobreakvspacex}[1]{\ifvmode\nobreak\vskip #1\relax\else
  \@bsphack\vadjust{\nobreak\vskip #1}\@esphack\fi}
-\newcommand*{\@nobreakcr}{%
-  \vadjust{\penalty\@M}\kernel@ifstar{\@xnewline}{\@xnewline}}
+\newcommand*{\@nobreakcr}{\kernel@ifstar{\@normalcr*}{\@normalcr*}}
 \newcommand*{\startbreaks}{\let\\=\@normalcr
- \interlinepenalty 200\def\par{\@@par\penalty 200}}
+ \interlinepenalty 200\def\par{\@@par\penalty 200\relax}}
 \newcommand{\opening}[1]{%
   \@PapersizeWarning
   \@gen@firsthead

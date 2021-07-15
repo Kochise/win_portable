@@ -1,6 +1,6 @@
-% listings.4ht (2020-02-13-13:43), generated from tex4ht-4ht.tex
+% listings.4ht (2021-04-25-09:48), generated from tex4ht-4ht.tex
 % Copyright 2001-2009 Eitan M. Gurari
-% Copyright 2009-2020 TeX Users Group
+% Copyright 2009-2021 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-02-13-13:43}
+\immediate\write-1{version 2021-04-25-09:48}
 
 \def\lst@makecaption#1#2{\cptA: #1\if :#1:\else\cptB:\fi \cptC: #2\cptD:}
 
@@ -43,7 +43,7 @@
 \NewConfigure{listings-init}{2}
 \lst@AddToHook{TextStyle}{%
    \Configure{listings}{}{}{}{}%
-   \a:lstinline \bgroup \aftergroup\b:lstinline\egroup
+   \a:lstinline \bgroup \aftergroup\b:lstinline\aftergroup\egroup
   }
 \NewConfigure{lstinline}{2}
 \pend:defI\lst@MakeCaption{%
@@ -59,11 +59,12 @@
     \ifdefined\chapter\chapter*{\lstlistlistingname}\else\section*{\lstlistlistingname}\fi%
     \TableOfContents[lol]%
   \egroup}
-\def\lst@NewLine{%
+\def\:tempa{%
    \ifx\lst@OutputBox\@gobble\else \the\everypar \fi
    \global\advance\lst@newlines\m@ne
    \lst@newlinetrue
 }%
+\HLet\lst@NewLine\:tempa
 \def\lst@InputListing#1{%
     \begingroup
       \lsthk@PreSet \gdef\lst@intname{#1}%
@@ -78,7 +79,7 @@
       \b:lstinputlisting
     \endgroup}
 \NewConfigure{lstinputlisting}{2}
-\def\lst@Kern#1{%
+\def\:tempa#1{%
    \setbox\z@\hbox{{\lst@currstyle{\kern#1}}}%
    \global\advance\lst@currlwidth \wd\z@
    \tmp:dim=#1 \let\:tempc=\empty
@@ -89,6 +90,7 @@
    \repeat
    \setbox\z@\hbox{{\lst@currstyle{\:tempc}}}%
    \lst@OutputBox\z@}
+\HLet\lst@Kern\:tempa
 \NewConfigure{lst@Kern}{2}
 \Configure{lst@Kern}{0.499em}{0.1em}
 \def\lst@outputspace{\:nbsp}

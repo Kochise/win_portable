@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 
-\def\fileversion{1.630}
-\def\filedate{2020/09/19}
+\def\fileversion{1.653}
+\def\filedate{2021/05/24}
 \ProvidesPackage{newtxtext}[\filedate\space v\fileversion]
 
 \message{`newtxtext' v\fileversion, \filedate\space Text macros taking advantage of TeX-Gyre Termes fonts (msharpe)}
@@ -20,6 +20,7 @@
 \@onlypreamble\useproportional
 \RequirePackage{etoolbox}
 
+\def\ntx@dfltfigurestyle{lf}
 \def\ntx@figurestyle{lf}% default is lining figure style
 \def\ntx@figurealign{t}% default is tabular figure alignment
 \newif\ifntx@defaultsups
@@ -41,6 +42,8 @@
 \define@key{ntx}{babel}[true]{\relax}% keep, though no effect
 %\csname ntx@babel#1\endcsname}
 \newif\ifntx@thrm
+\newif\ifntx@sl % slanted means theoremfont, by default
+% If set to true, slanted really does mean true slanted
 \define@key{ntx}{helvratio}[0.9]{\def\ntx@helvratio{#1}}
 \define@key{ntx}{scaled}[1.0]{\def\ntx@scaled{s*[#1]}%
 \def\ntx@scale{#1}\def\LGCscale{#1}}
@@ -60,6 +63,7 @@
 \DeclareOption{lining}{\edef\ntx@figurestyle{lf}}
 \DeclareOption{lf}{\edef\ntx@figurestyle{lf}}
 \DeclareOption{theoremfont}{\ntx@thrmtrue}
+\DeclareOption{trueslanted}{\ntx@sltrue}
 \DeclareOption{oldstyle}{\useosf}
 \DeclareOption{osf}{\useosf}
 \DeclareOption{tabular}{\edef\ntx@figurealign{t}}
@@ -344,9 +348,29 @@
 %	\ntx@figurestyle}
 %	\normalfont
 %\else
-    \AtEndPreamble{%
+
+\DeclareRobustCommand\thfamily % new family for theorem font
+        {\not@math@alphabet\thfamily\relax
+         \fontfamily\thdefault\selectfont}
+\DeclareRobustCommand{\textth}[1]{%
+  {\thfamily #1}%
+}
+\let\textthit\textth
+
+\AtEndPreamble{%
 \renewcommand*{\rmdefault}{ntx\ntx@figurealign%
 \ntx@figurestyle}
+\def\ntx@thfigurestyle{\ntx@figurestyle}
+\ifx\ntx@figurestyle\ntx@dfltfigurestyle
+  \def\ntx@thfigurestyle{tlf}
+\else
+  \def\ntx@thfigurestyle{osf}
+\fi % there just two possible figure styles for the theorem font
+\newcommand*{\thdefault}{ntxth-\ntx@thfigurestyle}
+\ifntx@thrm
+    \theoremstyle{plain}
+    \patchcmd{\th@plain}{\itshape}{\thfamily}{\message{Replaced itshape by thfamily in theorem style plain.}}{\message{Unable to replace itshape by thfamily in theorem style plain.}}
+\fi
 \normalfont}
 %\fi
 

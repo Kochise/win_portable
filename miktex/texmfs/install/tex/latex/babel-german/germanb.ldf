@@ -7,7 +7,7 @@
 %% germanb.dtx  (with options: `germanb')
 %% This is a generated file.
 %% 
-%% Copyright 1989--2018
+%% Copyright 1989--2021
 %%     Johannes L. Braams
 %%     Bernd Raichle
 %%     Walter Schmidt
@@ -34,13 +34,18 @@
 %%                     via: https://github.com/jspitz/babel-german
 %% 
 \ProvidesLanguage{germanb}
-        [2020/07/21 v2.12 German support for babel (pre-1996 orthography)]
+        [2021/02/27 v2.13 German support for babel (pre-1996 orthography)]
+\def\tmpa{germanb}
+\let\SaveCurrentOption\CurrentOption
+\ifx\CurrentOption\tmpa
+  \def\CurrentOption{german}
+\fi
+\LdfInit\CurrentOption{captions\CurrentOption}
 \def\bbl@opt@german{german}
 \def\bbl@opt@germanb{germanb}
 \def\bbl@opt@austrian{austrian}
 \def\bbl@opt@swissgerman{swissgerman}
-\ifx\CurrentOption\bbl@opt@germanb
-  \def\CurrentOption{german}
+\ifx\SaveCurrentOption\bbl@opt@germanb
   \ifx\l@german\@undefined
     \@nopatterns{German (trad. orthography)}
     \adddialect\l@german0
@@ -53,7 +58,6 @@
     \let\noextrasgermanb\noextrasgerman
   }
 \fi
-\LdfInit\CurrentOption{captions\CurrentOption}
 \ifx\l@german\@undefined
   \@nopatterns{German (trad. orthography)}
   \adddialect\l@german0

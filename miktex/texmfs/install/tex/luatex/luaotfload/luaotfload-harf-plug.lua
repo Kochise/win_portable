@@ -2,17 +2,15 @@
 --         FILE:  luaotfload-harf-plug.lua
 --  DESCRIPTION:  part of luaotfload / HarfBuzz / fontloader plugin
 -----------------------------------------------------------------------
-do -- block to avoid to many local variables error
- assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
-     name          = "luaotfload-harf-plug",
-     version       = "3.17",       --TAGVERSION
-     date          = "2021-01-08", --TAGDATE
-     description   = "luaotfload submodule / HarfBuzz shaping",
-     license       = "GPL v2.0",
-     author        = "Khaled Hosny, Marcel Krüger",
-     copyright     = "Luaotfload Development Team",     
- }
-end
+assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") {
+  name          = "luaotfload-harf-plug",
+  version       = "3.18",       --TAGVERSION
+  date          = "2021-05-21", --TAGDATE
+  description   = "luaotfload submodule / HarfBuzz shaping",
+  license       = "GPL v2.0",
+  author        = "Khaled Hosny, Marcel Krüger",
+  copyright     = "Luaotfload Development Team",
+}
 
 local hb                = luaotfload.harfbuzz
 local logreport         = luaotfload.log.report
@@ -181,7 +179,8 @@ local function itemize(head, fontid, direction)
   local dirstack = {}
   local currdir = direction or 0
   local lastskip, lastdir = true
-  local lastrun = {}
+  local dummyrun = { start = 0, len = 0 }
+  local lastrun = dummyrun
   local lastdisc
   local in_disc
 
@@ -226,9 +225,6 @@ local function itemize(head, fontid, direction)
         setlink(prev, n)
         code = nil
         skip = false
-        if not prev then
-          head = n
-        end
       else
         skip = true
       end
@@ -272,6 +268,9 @@ local function itemize(head, fontid, direction)
       lastrun.len = lastrun.len + 1
     elseif disc then
       if lastdisc then
+        if lastrun.len == 0 then
+          runs[#runs - 1].after = n
+        end
         lastdisc.next = disc
         lastdisc = disc
       else
@@ -280,7 +279,7 @@ local function itemize(head, fontid, direction)
     end
   end
 
-  return head, runs
+  return dummyrun.after, runs
 end
 
 
@@ -439,6 +438,7 @@ function shape(head, firstnode, run)
         while disc_cluster and after_cluster <= cluster
            or not disc_cluster and anchor_cluster <= cluster do
           if disc_cluster then
+            if false then -- The saved_... are for nested (aka first/second or init/select) discretionary nodes. The code is currently disabled because the linebreaking for these is broken on the engine level.
             if not saved_after and saved_anchor < cluster then
               saved_after = discs.next.after_cluster + offset
               if saved_after > cluster then
@@ -448,11 +448,14 @@ function shape(head, firstnode, run)
             elseif saved_after then
               saved_after, after_cluster = after_cluster, saved_after
             end
+            end
             local rep_glyphs = table.move(glyphs, disc_glyph, i - 1, 1, {})
             for j = 1, #rep_glyphs do
               local glyph = rep_glyphs[j]
               glyph.cluster = glyph.cluster - disc_cluster
-              glyph.nextcluster = glyph.nextcluster - disc_cluster
+              if glyph.nextcluster then
+                glyph.nextcluster = glyph.nextcluster - disc_cluster
+              end
             end
             do
               local cluster_offset = disc_cluster - cluster + (saved_after and 2 or 1) -- The offset the glyph indices will move
@@ -637,7 +640,6 @@ function shape(head, firstnode, run)
       ::NEXTCLUSTERFOUND:: -- end
       glyph.nextcluster = nextcluster
 
-      local disc, discindex
       -- Calculate the Unicode code points of this glyph. If cluster did not
       -- change then this is a glyph inside a complex cluster and will be
       -- handled with the start of its cluster.
@@ -651,18 +653,11 @@ function shape(head, firstnode, run)
             -- assert(char == codes[j])
             hex = hex .. to_utf16_hex(char)
             str = str .. utf8.char(char)
-          elseif not discindex and id == disc_t then
-            local props = properties[disc]
-            if not (props and props.zwnj) then
-              disc, discindex = node, j
-            end
           end
           node = getnext(node)
         end
         glyph.tounicode = hex
         glyph.string = str
-      end
-      if not fordisc and discindex then
       end
     end
     return head, firstnode, glyphs, run.len - len
@@ -743,7 +738,6 @@ local function tonodes(head, node, run, glyphs)
   local dir = run.dir
   local fontid = run.font
   local fontdata = font.getfont(fontid)
-  local space = fontdata.parameters.space
   local characters = fontdata.characters
   local hbdata = fontdata.hb
   local hfactor = (fontdata.extend or 1000) / 1000
@@ -758,6 +752,7 @@ local function tonodes(head, node, run, glyphs)
   local lastprops
 
   local scale = hbdata.scale
+  local space = hbdata.space
 
   local haspng = hbshared.haspng
   local fonttype = hbshared.fonttype

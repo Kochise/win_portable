@@ -5,8 +5,8 @@
 
 assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-szss",
-    version       = "3.17",       --TAGVERSION
-    date          = "2021-01-08", --TAGDATE
+    version       = "3.18",       --TAGVERSION
+    date          = "2021-05-21", --TAGDATE
     description   = "luaotfload submodule / Special feature handling",
     license       = "GPL v2.0",
     author        = "Marcel Krüger"
@@ -90,6 +90,7 @@ otfregister {
       end
       tfmdata.extend = value * 1000
       tfmdata.hb.hscale = tfmdata.units_per_em * value
+      tfmdata.hb.space = tfmdata.hb.space * value
       local parameters = tfmdata.parameters
       parameters.slant = parameters.slant * value
       parameters.space = parameters.space * value

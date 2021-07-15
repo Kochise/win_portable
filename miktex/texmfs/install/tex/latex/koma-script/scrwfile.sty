@@ -39,10 +39,10 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrwfile.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrwfile.dtx 3600 2021-05-30 19:00:56Z kohm $
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{scrwfile}
-  [2013/08/05 v0.1f-alpha KOMA-Script package (write and clone files)]
+  [2021/05/30 v0.1.9-alpha KOMA-Script package (write and clone files)]
 \PackageWarningNoLine{scrwfile}{%
   THIS IS AN ALPHA VERSION!\MessageBreak
   USAGE OF THIS VERSION IS ON YOUR OWN RISK!\MessageBreak
@@ -52,8 +52,14 @@
   Maybe, it would be better not to load this package.%
 }
 \RequirePackage{scrbase}[2010/09/17]
-\RequirePackage{tocbasic}[2010/10/01]
 \RequirePackage{scrlfile}[2010/09/30]
+\scr@ifluatex{%
+  \PackageInfoNoLine{scrwfile}{LuaLaTeX detected.\MessageBreak
+    With LuaLaTeX you should never get an error message:\MessageBreak
+    \space\space`No room for a new \string\write'.\MessageBreak
+    So scrwfile could make much more harm than benefit\MessageBreak
+    and using it is not recommended}%
+}{}
 \newcommand*{\scrwfile@if@only}[1]{%
   \begingroup
     \scr@ifundefinedorrelax{scrwfile@only}{\@tempswatrue}{%
@@ -65,7 +71,7 @@
     \if@tempswa
       \scr@ifundefinedorrelax{scrwfile@never}{}{%
         \edef\reserved@b{#1}%
-        \@for\reserved@a:=\scrwfile@only\do
+        \@for\reserved@a:=\scrwfile@never\do
           {\ifx\reserved@a\reserved@b\@tempswafalse\fi}%
       }%
     \fi
@@ -137,6 +143,21 @@
     \endgroup
   \fi
 }
+\IfLTXAtLeastTF{2020/10/01}{%
+  \DeclareHookRule{enddocument/afteraux}%
+                  {scrwfile}{before}{scrlayer-notecolumn}%
+}{%
+  \@ifpackageloaded{scrlayer-notecolumn}{%
+    \PackageWarningNoLine{scrwfile}{%
+      Dangerous package order detected!\MessageBreak
+      As a general rule, you should load scrwfile as soon\MessageBreak
+      as possible, maybe even before `\string\documentclass'\MessageBreak
+      (using `\string\RequirePackage' instead of
+      `\string\usepackage').\MessageBreak
+      Following packages should be loaded after scrwfile:\MessageBreak
+      \space - scrlayer-notecolumn}%
+  }{}%
+}
 \newcommand*{\scrwfile@saved@starttoc}{}
 \AtBeginDocument{%
   \begingroup
@@ -199,6 +220,7 @@
   }%
 }%
 \newcommand*{\TOCclone}[3][]{%
+  \RequirePackage{tocbasic}%
   \scr@ifundefinedorrelax{scrwfile@clone@#2}{%
     \expandafter\protected@edef\csname scrwfile@clone@#2\endcsname{%
       #3,\protect\csname scrwfile@clone@#3\endcsname
@@ -233,6 +255,7 @@
     \Iftocfeature{#2}{totoc}{\setuptoc{#3}{totoc}}{}%
   }%
 }
+\@onlypreamble\TOCClone
 %%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
 \@ifundefined{KOMAScript}{%
   \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%

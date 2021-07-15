@@ -12,7 +12,9 @@
 %% 
 %% 
 %% graphics.dtx Copyright (C) 1994      David Carlisle Sebastian Rahtz
-%%              Copyright (C) 1995-2020 David Carlisle, LaTeX3 Project
+%%              Copyright (C) 1995-2021
+%% The LaTeX Project and any individual authors listed elsewhere
+%% in this file.
 %%
 %% This file is part of the Standard LaTeX `Graphics Bundle'.
 %% It may be distributed under the terms of the LaTeX Project Public
@@ -29,7 +31,7 @@
 \DeclareCurrentRelease{}{2019-10-01}
 
 \ProvidesPackage{graphics}
-          [2020/08/30 v1.4c  Standard LaTeX Graphics (DPC,SPQR)]
+          [2021/03/04 v1.4d  Standard LaTeX Graphics (DPC,SPQR)]
 \edef\Gin@codes{%
  \catcode`\noexpand\^^A\the\catcode`\^^A\relax
  \catcode`\noexpand\"\the\catcode`\"\relax
@@ -202,7 +204,7 @@
     \ifx\filename@ext\relax
       \let\filename@ext\Gin@gzext
     \else
-      \edef\Gin@ext{\Gin@ext\Gin@sepdefault\Gin@gzext}%
+      \edef\filename@ext{\filename@ext\Gin@sepdefault\Gin@gzext}%
     \fi
   \fi
   \ifx\filename@ext\relax
@@ -216,9 +218,10 @@
         \ifx\Gin@ext\relax 1%
         \else \@ifundefined{Gin@rule@\Gin@ext}{1}{0}%
         \fi >0
-      \let\Gin@ext\relax
+      \let\Gin@extsaved\Gin@ext
       \let\Gin@savedbase\filename@base
       \let\Gin@savedext\filename@ext
+      \let\Gin@ext\relax
       \edef\filename@base{\filename@base\Gin@sepdefault\filename@ext}%
       \let\filename@ext\relax
       \@for\Gin@temp:=\Gin@extensions\do{%
@@ -226,6 +229,7 @@
             \Gin@getbase\Gin@temp
           \fi}%
       \ifx\Gin@ext\relax
+        \let\Gin@ext\Gin@extsaved
         \let\filename@base\Gin@savedbase
         \let\filename@ext\Gin@savedext
       \fi

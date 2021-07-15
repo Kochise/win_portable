@@ -1,4 +1,4 @@
-% caption.4ht (2021-02-14-13:56), generated from tex4ht-4ht.tex
+% caption.4ht (2021-05-16-09:21), generated from tex4ht-4ht.tex
 % Copyright 2007-2009 Eitan M. Gurari
 % Copyright 2009-2021 TeX Users Group
 %
@@ -17,6 +17,8 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
+\immediate\write-1{version 2021-05-16-09:21}
+
 \let\sv:toclof\toclof
 \def\toclof#1#2#3{%
    \bgroup
@@ -53,6 +55,14 @@
   \cptA:\caption@@make{\cap:ref{#1}}{\cptC:#2}\cptD:%
   \caption@make@below%
 }
+
+ \renewcommand*\caption@@@addcontentsline[5]{%
+   \def\temp{#1}\def\tempa{toc}\ifx \temp\tempa\else%
+   \gHAdvance\TitleCount  1%
+   \fi%
+   \addcontentsline{#1}{#2}{\protect\numberline{#3}{\detokenize{#4}}}%
+ }
+
 
 \Hinput{caption}
 \endinput

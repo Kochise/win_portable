@@ -1,6 +1,6 @@
 % opmac-bib
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Petr Olsak, version Feb. 2018 (beta)
+% Petr Olsak, version Mar. 2021 (beta)
 
 % This is module for OPmac macros, see http://petr.olsak.net/opmac.html
 % The command:
@@ -41,6 +41,8 @@
 % The \usebib command:
 
 \def\usebib/#1 (#2) #3 {%
+  \let\citeI=\relax \xdef\citelist{\citelist\citelistB}%
+  \global\let\addcitelist=\writeXcite
   \ifx\citelist\empty
      \opwarning{No cited items. \noexpand\usebib ignored}%
   \else
@@ -51,8 +53,6 @@
         \def\opmacbibstyle{#2}%
         \input opmac-bib-#2
         \bibtexhook
-        \let\citeI=\relax \xdef\citelist{\citelist\citelistB}%
-        \global\let\addcitelist=\writeXcite
         \def\tmp##1[*]##2\relax{\def\tmp{##2}}\expandafter\tmp\citelist[*]\relax
         \ifx\tmp\empty\else % there was \nocite[*] used. 
            \setbox0=\vbox{\def\citelist{}\adef@{\readbibentry}%
@@ -329,5 +329,6 @@ Apr. 2014:  released
 Jan. 2016:  "first entry wins" implemented
 Apr. 2016:  \readentry -> \readbibentry, \usebib->\MakeReference
 Feb. 2018:  \input librarian does not create \jobname.lbr
+Mar. 2021:  \citelistB added before \ifx\citelist: bug fixed
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% end of the opmac-bib.tex

@@ -42,8 +42,8 @@
 %%% Metadata
 %%%
 
-\def\filedate{2020/01/02}
-\def\fileversion{2.4}
+\def\filedate{2021/05/19}
+\def\fileversion{2.6}
 \def\filename{covington.sty}
 
 % Force redefinition of environments?
@@ -71,6 +71,7 @@
 % Required packages
 %
 \RequirePackage{xkeyval}
+\RequirePackage{iftex}
 
 % Macro to issue warnings
 \newcommand\cov@warning[1]{%
@@ -95,8 +96,10 @@
 %%% Stacked accents
 %%%
 
-% This is adapted from the \diatop macro in wsuipa.sty, which was
-% originally designed by Jean-Pierre Paillet.
+% This is adapted from the \diatop macro (designed by
+% Mike Dunleavy, originally in cjlmac.sty, designed by
+% Jean-Pierre Paillet) and included in wsuipa.sty
+% (designed by Dean Guenther and Janene Winter).
 
 % Length to adjust accent distance
 % Introduced 2016-07-06 JSP. 
@@ -108,7 +111,7 @@
                      \setbox2=\hbox{{#2{}}}%
                      \dimen0=\ifdim\wd1>\wd2\wd1\else\wd2\fi%
                      \dimen1=\ht2\advance\dimen1by\twoaccsep%
-                     \setbox1=\hbox to1\dimen0{\hss#1\hss}%
+                     \setbox1=\hbox to1\dimen0{\hss#1{}\hss}%
                      \rlap{\raise1\dimen1\box1}%
                      \hbox to1\dimen0{\hss#2\hss}}}%
 
@@ -119,14 +122,19 @@
                      \setbox2=\hbox{{#2{#3}}}%
                      \dimen0=\ifdim\wd1>\wd2\wd1\else\wd2\fi%
                      \dimen1=\ht2\advance\dimen1by\twoaccsep%
-                     \setbox1=\hbox to1\dimen0{\hss#1\hss}%
+                     \setbox1=\hbox to1\dimen0{\hss#1{}\hss}%
                      \rlap{\raise1\dimen1\box1}%
                      \hbox to1\dimen0{\hss#2{#3}\hss}}}
 
 % Special cases:
-\def\acm#1{\twodias{\'}{\=}{#1}}   % acute over macron
-\def\grm#1{\twodias{\`}{\=}{#1}}   % grave over macron
-\def\cim#1{\twodias{\^}{\=}{#1}}   % circumflex over macron
+\def\acm#1{\twodias{\'}{\=}{#1}}          % acute over macron
+\def\grm#1{\twodias{\`}{\=}{#1}}          % grave over macron
+% Use MODIFIER LETTER CIRCUMFLEX ACCENT (U+2C6) with Xe/LuaTeX
+\iftutex
+  \def\cim#1{\twodias{\char"2C6}{\=}{#1}} % circumflex over macron
+\else
+  \def\cim#1{\twodias{\^}{\=}{#1}}        % circumflex over macron
+\fi
 
 %%%
 %%% Example numbering
@@ -237,6 +245,9 @@
 \newlength\examplenumbersep
 \setlength\examplenumbersep{0pt}
 
+\newlength\exampleind
+\setlength\exampleind{0pt}
+
 \newcommand*\covexnumber[1]{(#1)}
 
 \newenvironment{covexamples}%         % define "example" environment
@@ -245,6 +256,7 @@
 {%
 \addtolength{\labelwidth}{\examplenumbersep}%
 \addtolength{\leftmargin}{\examplenumbersep}%
+\addtolength{\leftmargin}{\exampleind}%
 \ifownexcounter
   \setcounter{covexsave}{\arabic{covex}}%
   \usecounter{covex}%                          % sets it to zero, unwantedly

@@ -1,5 +1,5 @@
 % standard macros for WEB listings (in addition to PLAIN.TEX)
-\xdef\fmtversion{\fmtversion+WEBMAC4.1} % identifies current set of macros
+\xdef\fmtversion{\fmtversion+WEBMAC4.2} % identifies current set of macros
 \parskip 0pt % no stretch between paragraphs
 \parindent 1em % for paragraphs and for the first line of Pascal text
 
@@ -84,8 +84,10 @@
   \edef\next{\write\cont{\Z{#2}{\modno}{\the\pageno}}}\next % to contents file
   \ifon\startsection{\bf\ignorespaces#2.\quad}\ignorespaces}
 \def\MN#1.{\par % common code for \M, \N
-  {\xdef\modstar{#1}\let\*=\empty\xdef\modno{#1}}
-  \ifx\modno\modstar \onmaybe \else\ontrue \fi \mark{\modno}}
+  {\xdef\modstar{#1}\let\*=\empty\xdef\modno{#1}}% remove \* from section name
+  \ifx\modno\modstar \onmaybe \else\ontrue \fi
+  \mark{{{\tensy x}\modno}{\rhead}}}
+  % each \mark is {section reference or null}{group title}
 \def\O#1{\hbox{\rm\char'23\kern-.2em\it#1\/\kern.05em}} % octal constant
 \def\P{\rightskip=0pt plus 100pt minus 10pt % go into Pascal mode
   \sfcode`;=3000
@@ -115,10 +117,14 @@
 
 \def\onmaybe{\let\ifon=\maybe} \let\maybe=\iftrue
 \newif\ifon \newif\iftitle \newif\ifpagesaved
-\def\lheader{\mainfont\the\pageno\eightrm\qquad\rhead\hfill\title\qquad
-  \tensy x\mainfont\topmark} % top line on left-hand pages
-\def\rheader{\tensy x\mainfont\topmark\eightrm\qquad\title\hfill\rhead
-  \qquad\mainfont\the\pageno} % top line on right-hand pages
+\def\lheader{\mainfont\the\pageno\eightrm\qquad\rhead
+  \hfill\title\qquad\mainfont\topsecno} % top line on left-hand pages
+\def\rheader{\mainfont\topsecno\eightrm\qquad\title\hfill
+  \rhead\qquad\mainfont\the\pageno} % top line on right-hand pages
+\def\topsecno{\expandafter\takeone\topmark}
+\def\takeone#1#2{#1}
+\def\taketwo#1#2{#2}
+\def\nullsec{\eightrm\kern-2em} % the \kern-2em cancels \qquad in headers
 \def\page{\box255 }
 \def\normaloutput#1#2#3{\ifodd\pageno\hoffset=\pageshift\fi
   \shipout\vbox{
@@ -129,6 +135,7 @@
   \global\advance\pageno by1}
 
 \def\rhead{\.{WEB} OUTPUT} % this running head is reset by starred sections
+\mark{\noexpand\nullsec{\rhead}}
 \def\title{} % an optional title can be set by the user
 \def\topofcontents{\centerline{\titlefont\title}
   \vfill} % this material will start the table of contents page
@@ -183,6 +190,7 @@
   \if L\lr\else\null\vfill\eject\fi % finish the current page
   \parfillskip 0pt plus 1fil
   \def\rhead{NAMES OF THE SECTIONS}
+  \let\topsecno=\nullsec
   \message{Section names:}
   \output{\normaloutput\page\lheader\rheader}
   \setpage

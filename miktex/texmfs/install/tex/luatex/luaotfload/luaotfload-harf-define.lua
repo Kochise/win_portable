@@ -5,8 +5,8 @@
 do -- block to avoid to many local variables error
  assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
      name          = "luaotfload-harf-define",
-     version       = "3.17",       --TAGVERSION
-     date          = "2021-01-08", --TAGDATE
+     version       = "3.18",       --TAGVERSION
+     date          = "2021-05-21", --TAGDATE
      description   = "luaotfload submodule / HarfBuzz font loading",
      license       = "GPL v2.0",
      author        = "Khaled Hosny, Marcel Krüger",
@@ -71,7 +71,7 @@ local get_designsize do
 end
 
 local containers = luaotfload.fontloader.containers
-local hbcacheversion = 1.1
+local hbcacheversion = 1.2
 local facecache = containers.define("fonts", "hb", hbcacheversion, true)
 
 local function loadfont(spec)
@@ -119,7 +119,8 @@ local function loadfont(spec)
     local descender = fontextents and fontextents.descender or upem * .2
 
     local gid = hbfont:get_nominal_glyph(0x0020)
-    local space = gid and hbfont:get_glyph_h_advance(gid) or upem / 2
+    local real_space = hbfont:get_glyph_h_advance(gid or 0)
+    local tex_space = gid and real_space or upem / 2
 
     local slant = 0
     if haspost then
@@ -214,7 +215,8 @@ local function loadfont(spec)
       gid_offset = 0x120000,
       upem = upem,
       fonttype = fonttype,
-      space = space,
+      real_space = real_space,
+      tex_space = tex_space,
       xheight = xheight,
       capheight = capheight,
       slant = slant,
@@ -260,7 +262,8 @@ local function scalefont(data, spec)
   local hbface = data.face
   local hbfont = data.font
   local upem = data.upem
-  local space = data.space
+  local tex_space = data.tex_space
+  local real_space = data.real_space
   local gid_offset = data.gid_offset
 
   if size < 0 then
@@ -321,15 +324,16 @@ local function scalefont(data, spec)
     characters = characters,
     parameters = {
       slant = data.slant,
-      space = space * scale,
-      space_stretch = space * scale / 2,
-      space_shrink = space * scale / 3,
+      space = tex_space * scale,
+      space_stretch = tex_space * scale / 2,
+      space_shrink = tex_space * scale / 3,
       x_height = data.xheight * scale,
       quad = size,
-      extra_space = space * scale / 3,
+      extra_space = tex_space * scale / 3,
       [8] = data.capheight * scale, -- for XeTeX compatibility.
     },
     hb = {
+      space = (real_space * scale + .5) // 1,
       scale = scale,
       palette = palette,
       shared = data,

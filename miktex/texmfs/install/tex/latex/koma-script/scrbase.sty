@@ -44,7 +44,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -66,19 +66,19 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: prepare)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{%
   scrbase%
 }[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (%
     KOMA-Script-independent
@@ -120,6 +120,11 @@
   \fi
   \iterate
 }
+\newcommand*{\IfLTXAtLeastTF}{\@ifl@t@r\fmtversion}
+\ifcsname IfFormatAtLeastTF\endcsname
+  \let\IfLTXAtLeastTF\IfFormatAtLeastTF
+\fi
+\@onlypreamble\IfLTXAtLeastTF
 \newcommand{\scr@ifundefinedorrelax}[1]{%
   \ifcsname #1\endcsname
     \expandafter\ifx\csname #1\endcsname\relax
@@ -243,6 +248,124 @@
 \newcommand*{\FamilyOfKey}{}
 \newcommand*{\FamilyMemberOfKey}{}
 \newcommand*{\@globaloptionslist}{}
+\IncludeInRelease{2021/05/01}{\FamilyProcessOptions}%
+                             {Usage of raw or classic option list}
+\newcommand*{\FamilyProcessOptions}[2][.\@currname.\@currext]{%
+  \ifx\AtEndOfFamilyOptions\scr@AtEndOfFamilyOptions
+    \PackageError{scrbase}{nested \string\FamilyProcessOptions\space
+      detected\MessageBreak}{%
+      \string\FamilyProcessOptions\space has been used while processing or
+      setting options.\MessageBreak
+      This is currently not allowed. You should contact the author of the
+      causing\MessageBreak
+      code.\MessageBreak
+      This error is fatal. You should not continue.%
+    }%
+  \fi
+  \scr@ifundefinedorrelax{scr@before@process@options@#2@hook}{}{%
+    \@nameuse{scr@before@process@options@#2@hook}%
+  }%
+  \scr@ifundefinedorrelax{scr@before@process@options@#2#1@hook}{}{%
+    \@nameuse{scr@before@process@options@#2#1@hook}%
+    \expandafter\let\csname scr@before@process@options@#2#1@hook\endcsname
+    \relax
+  }%
+  \scr@ifundefinedorrelax{scr@after@options@#2@hook}{%
+    \@namedef{scr@after@options@#2@hook}{%
+      \@namedef{scr@after@options@#2@hook}{}%
+    }%
+  }{%
+    \expandafter\edef\csname scr@after@options@#2@hook\endcsname{%
+      \noexpand\@namedef{scr@after@options@#2@hook}{%
+        \unexpanded\expandafter\expandafter\expandafter
+        {\csname scr@after@options@#2@hook\endcsname}%
+      }%
+    }%
+  }%
+  \ifx\AtEndOfFamilyOptions\scr@AtEndOfFamilyOptions@immediate
+    \@namedef{scr@after@options@#2@hook@topmost}{%
+      \@namedef{scr@after@options@#2@hook@topmost}{}%
+    }%
+    \expandafter\l@addto@macro\csname scr@after@options@#2@hook\endcsname{%
+      \let\AtEndOfFamilyOptions\scr@AtEndOfFamilyOptions@immediate
+      \@nameuse{scr@after@options@#2@hook@topmost}%
+    }%
+    \let\AtEndOfFamilyOptions\scr@AtEndOfFamilyOptions
+  \fi
+  \let\ds@\@empty
+  \@ifundefined{@raw@opt@\@currname.\@currext}{%
+    \let\@curroptions\@empty
+  }{%
+    \expandafter\let\expandafter\@curroptions
+    \csname @raw@opt@\@currname.\@currext\endcsname
+  }%
+  \ifx\@currext\@clsextension\else
+    \@ifundefined{@raw@classoptionslist}{}{%
+      \@for\CurrentOption:=\@raw@classoptionslist\do{%
+        \scr@trim@spaces\CurrentOption
+        \ifx\CurrentOption\@empty\else
+          \@ifundefined{ds@\CurrentOption}{%
+            \scr@ifprocess@curroption{#1}{#2}{%
+              \@expandtwoargs\@removeelement{%
+                \expandafter\@remove@eq@value\CurrentOption=\@nil}%
+              \@unusedoptionlist\@unusedoptionlist
+            }{}%
+          }{%
+            \@use@ption
+            \expandafter\let\csname ds@\CurrentOption\endcsname\@empty
+          }%
+        \fi
+      }%
+    }%
+  \fi
+  \@for\reserved@a:=\@curroptions\do{%
+    \scr@trim@spaces\reserved@a
+    \def\reserved@b{\CurrentOption}%
+    \ifx\reserved@a\reserved@b
+      \PackageError{scrbase}{%
+        \string\CurrentOption\space loop detected\MessageBreak
+        Perhaps someone uses:\MessageBreak\space\space
+        \ifx\@currext\@clsextension
+          \string\PassOptionsToClass
+        \else
+          \string\PassOptionsToPackage
+        \fi
+        {\string\CurrentOption}{^^e2^^80^^a6}.\MessageBreak
+        With LaTeX 2020/10/01 or 2021/06/01 this results in
+        \string\CurrentOption\MessageBreak
+        in the raw option list and therefore is not allowed.\MessageBreak
+        Please ask the class or package author to use:\MessageBreak\space\space
+        \string\expandafter
+        \ifx\@currext\@clsextension
+          \string\PassOptionsToClass
+        \else
+          \string\PassOptionsToPackage
+        \fi
+        \MessageBreak\space\space\space
+        \string\expandafter{\string\CurrentOption}{^^e2^^80^^a6}\MessageBreak
+        instead or update LaTeX (if possible)%
+      }%
+      \let\CurrentOption\@empty
+    \else
+      \let\CurrentOption\reserved@a
+    \fi
+    \@ifundefined{ds@\CurrentOption}{%
+      \@use@ption
+      \scr@ifprocess@curroption{#1}{#2}{}\default@ds
+    }\@use@ption
+  }%
+  \@for\CurrentOption:=\@declaredoptions\do{%
+    \expandafter\let\csname ds@\CurrentOption\endcsname\relax}%
+  \let\CurrentOption\@empty
+  \let\@fileswith@pti@ns\@@fileswith@pti@ns
+  \AtEndOfPackage{\expandafter\let
+    \csname unprocessedoptions-\@currname.\@currext\endcsname
+    \relax}%
+  \@nameuse{scr@after@options@#2@hook}%
+}
+\EndIncludeInRelease
+\IncludeInRelease{0000/00/00}{\FamilyProcessOptions}%
+                             {Usage of raw or classic option list}
 \newcommand*{\FamilyProcessOptions}[2][.\@currname.\@currext]{%
   \ifx\AtEndOfFamilyOptions\scr@AtEndOfFamilyOptions
     \PackageError{scrbase}{nested \string\FamilyProcessOptions\space
@@ -325,9 +448,16 @@
     \expandafter\let\csname ds@\CurrentOption\endcsname\relax}%
   \let\CurrentOption\@empty
   \let\@fileswith@pti@ns\@@fileswith@pti@ns
-  \AtEndOfPackage{\let\@unprocessedoptions\relax}%
+  \IfLTXAtLeastTF{2020/10/01}{%
+    \AtEndOfPackage{\expandafter\let
+      \csname unprocessedoptions-\@currname.\@currext\endcsname
+      \relax}%
+  }{%
+    \AtEndOfPackage{\let\@unprocessedoptions\relax}%
+  }%
   \@nameuse{scr@after@options@#2@hook}%
 }
+\EndIncludeInRelease
 \@onlypreamble\FamilyProcessOptions
 \newcommand*{\BeforeFamilyProcessOptions}[3][.\@currname.\@currext]{%
   \scr@ifundefinedorrelax{scr@before@process@options@#2#1@hook}{%
@@ -429,6 +559,9 @@
 }
 \@tempa{ }
 \long\def\scr@sp@c#1\@nil#2\relax#3{\@temptokena{#1}\edef#3{\the\@temptokena}}
+\newcommand\scr@trim@spaces[1]{%
+  \expandafter\scr@sp@def\expandafter#1\expandafter{#1}%
+}
 \newcommand{\IfArgIsEmpty}[1]{%
   \if\relax\detokenize{#1}\relax
     \expandafter\@firstoftwo
@@ -464,7 +597,7 @@
 \long\def\l@addto@macro#1#2{%
   \edef#1{\unexpanded\expandafter{#1#2}}%
 }%
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: option)
 \DefineFamily{KOMA}
 \DefineFamilyMember{KOMA}
@@ -478,7 +611,7 @@
 \FamilyProcessOptions{KOMA}\relax
 %%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: body)
 \newcommand*{\XdivY}[2]{%
   \numexpr ( #1 + #2 / 2 ) / #2 - 1\relax
@@ -499,9 +632,6 @@
       \fi
     }%
   \reserved@a
-}
-\newcommand\scr@trim@spaces[1]{%
-  \expandafter\scr@sp@def\expandafter#1\expandafter{#1}%
 }
 \newif\if@atdocument
 \AtBeginDocument{\@atdocumenttrue}

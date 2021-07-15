@@ -1,4 +1,6 @@
-\ProvidesFile{ot1ntxosf.fd}[2015/01/17 v1.0 font definition file for OT1/ntx/osf]
+\ProvidesFile{ot1ntxosf.fd}[2021/05/24 v1.0 font definition file for OT1/ntx/osf]
+
+\@ifundefined{ifntx@sl}{\let\ifntx@sl\iftrue}{}
 
 \expandafter\ifx\csname ntx@scaled\endcsname\relax
   \let\ntx@scaled\@empty%
@@ -21,9 +23,15 @@
 \DeclareFontShape{OT1}{ntxosf}{bx}{n}{<->ssub * ntxosf/b/n}{}
 \DeclareFontShape{OT1}{ntxosf}{bx}{scit}{<->ssub * ntxosf/b/scit}{}
 \DeclareFontShape{OT1}{ntxosf}{bx}{it}{<->ssub * ntxosf/b/it}{}
-\DeclareFontShape{OT1}{ntxosf}{m}{sl}{<-> \ntx@scaled ntx-Italic-osf-th-ot1}{}
-\DeclareFontShape{OT1}{ntxosf}{b}{sl}{<->ssub * ntxosf/m/sl}{}
-\DeclareFontShape{OT1}{ntxosf}{bx}{sl}{<->ssub * ntxosf/m/sl}{}
+\ifntx@sl % point to real slanted fonts
+  \DeclareFontShape{OT1}{ntxosf}{m}{sl}{<-> \ntx@scaled ot1xsl-osf}{}
+  \DeclareFontShape{OT1}{ntxosf}{b}{sl}{<-> \ntx@scaled ztmbsl-osf-ot1}{}
+  \DeclareFontShape{OT1}{ntxosf}{bx}{sl}{<->ssub * ntxosf/b/sl}{}
+\else %point to theorem font
+  \DeclareFontShape{OT1}{ntxosf}{m}{sl}{<-> \ntx@scaled ntxth-Italic-tlf-ot1}{}
+  \DeclareFontShape{OT1}{ntxosf}{b}{sl}{<->ssub * ntxosf/m/sl}{}
+  \DeclareFontShape{OT1}{ntxosf}{bx}{sl}{<->ssub * ntxosf/m/sl}{}
+\fi
 \DeclareFontShape{OT1}{ntxosf}{b}{scsl}{<->ssub * ntxosf/b/scit}{}
 \DeclareFontShape{OT1}{ntxosf}{bx}{scsl}{<->ssub * ntxosf/b/scit}{}
 \DeclareFontShape{OT1}{ntxosf}{m}{scsl}{<->ssub * ntxosf/m/scit}{}

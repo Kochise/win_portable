@@ -1,7 +1,7 @@
-% $Id: pstricks.pro 23 2020-09-18 06:29:04Z herbert $
+% $Id: pstricks.pro 68 2021-04-08 06:41:14Z herbert $
 %
 %% PostScript prologue for pstricks.tex.
-%% Version 1.32, 2020/09/18
+%% Version 1.35, 2021/05/21
 %%
 %% This program can be redistributed and/or modified under the terms
 %% of the LaTeX Project Public License Distributed from CTAN archives
@@ -13,24 +13,17 @@
 
 revision 952 gt 
 {
-  systemdict /.setalphaisshape known not
-  {
-    (\n\n%%%% WARNING: Transparency operations ignored - need to use -dALLOWPSTRANSPARENCY\n\n) print flush
-    /.pushpdf14devicefilter {pop} bind def
-    /.begintransparencygroup {pop pop pop pop pop} bind def
-    /.endtransparencygroup {} bind def
-    /.poppdf14devicefilter {} bind def
-    /.setfillconstantalpha {pop} bind def
-    /.setstrokeconstantalpha {pop} bind def
-    /PageUsesTransparency false def
-  }
-  {
     systemdict /.setopacityalpha known not 
-      { systemdict /.setfillconstantalpha known { /.setopacityalpha /.setfillconstantalpha load def } { /.setopacityalpha { pop } def } ifelse } if
-    systemdict /.setblendmode known not { /.setblendmode { pop } def } if
-    systemdict /.setshapealpha known not 
-      { systemdict /.setstrokeconstantalpha known { /.setshapealpha {dup .setfillconstantalpha .setstrokeconstantalpha true .setalphaisshape } def } { /.setshapealpha { pop } def } ifelse } if
-  } ifelse
+      { 
+         (\n\n%%%% WARNING: Transparency operations ignored - need to use -dALLOWPSTRANSPARENCY\n\n) print flush
+         /.setopacityalpha { pop } bind def 
+         /.setshapealpha { pop } bind def 
+      }
+      {
+        /.setopacityalpha /.setfillconstantalpha load def 
+        /.setblendmode { pop } def 
+        /.setshapealpha {dup .setfillconstantalpha .setstrokeconstantalpha true .setalphaisshape } def  
+      } ifelse
 }
 {
   systemdict /.setopacityalpha known not 
@@ -465,6 +458,28 @@ gsave
   w h curveto % upper left of >
   w neg Inset neg rlineto % move to x=0 and inset
   gsave fill grestore 
+} def 
+%
+/ArrowT { % like tikz
+  CLW mul add dup 
+  2 div /w ED 
+  mul dup /h ED 
+  mul /Inset ED 
+  { 0 h T 1 -1 scale } if % changes the direction
+  w 2 mul /w exch def
+  w neg h moveto % lower left of >
+  w 9 div 4 mul neg h 3 div 2 mul
+  w 9 div neg       h 3 div  
+  0 0 curveto    % tip of >
+  w 9 div        h 3 div  
+  w 9 div 4 mul  h 3 div 2 mul
+  w h curveto % upper left of >
+%  w neg Inset neg rlineto % move to x=0 and inset
+%  CLW SLW
+%  1 0 0 setrgbcolor
+  2 setlinejoin
+  stroke
+  0 0 moveto
 } def 
 %
 /Tbar { 

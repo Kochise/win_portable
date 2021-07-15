@@ -43,7 +43,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -65,29 +65,29 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrhack.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: scrhack.dtx 3602 2021-06-03 17:24:02Z kohm $
 %%% using: package,identify
 \ProvidesPackage{scrhack}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package (hacking other packages)%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrhack.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: scrhack.dtx 3602 2021-06-03 17:24:02Z kohm $
 %%% using: package,option
 \KOMA@ifkey{hyperref}{@scrhack@hyperref}%
 \KOMAExecuteOptions{hyperref=true}%
-\KOMA@ifkey{float}{@scrhack@float}%
-\KOMAExecuteOptions{float=true}%
 \KOMA@ifkey{floatrow}{@scrhack@floatrow}
 \KOMAExecuteOptions{floatrow=true}
+\KOMA@ifkey{float}{@scrhack@float}%
+\KOMAExecuteOptions{float=true}%
 \KOMA@ifkey{listings}{@scrhack@listings}
 \KOMAExecuteOptions{listings=true}
 \RequirePackage{xpatch}%
@@ -101,7 +101,7 @@
 \KOMA@ifkey{standardsections}{@scrhack@standardsections}
 \KOMAExecuteOptions{standardsections=false}
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrhack.dtx 3508 2020-07-08 08:45:20Z kohm $
+%%% From File: $Id: scrhack.dtx 3602 2021-06-03 17:24:02Z kohm $
 %%% using: package,body
 \newcommand{\scr@ifexpected}[2]{%
   \begingroup
@@ -160,19 +160,21 @@
     }%
   \fi
 }
+\AfterPackage*{floatrow}{%
+  \KOMAoptions{float=false}%
+  \PackageInfo{scrhack}{option `float' deactivated}%
+  \KOMA@key[.scrhack.sty]{floatrow}{%
+    \PackageWarning{scrhack}{option `floatrow' ignored}%
+    \FamilyKeyStateProcessed
+  }%
+  \if@scrhack@floatrow\scr@hack@load\@pkgextension{floatrow}\fi
+}
 \AfterPackage*{float}{%
   \KOMA@key[.scrhack.sty]{float}{%
     \PackageWarning{scrhack}{option `float' ignored}%
     \FamilyKeyStateProcessed
   }%
   \if@scrhack@float\scr@hack@load\@pkgextension{float}\fi
-}
-\AfterPackage*{floatrow}{%
-  \KOMA@key[.scrhack.sty]{floatrow}{%
-    \PackageWarning{scrhack}{option `floatrow' ignored}%
-    \FamilyKeyStateProcessed
-  }%
-  \if@scrhack@floatrow\scr@hack@load\@pkgextension{floatrow}\fi
 }
 \AfterPackage*{listings}{%
   \KOMA@key[.scrhack.sty]{listings}{%

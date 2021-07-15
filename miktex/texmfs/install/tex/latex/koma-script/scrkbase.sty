@@ -44,7 +44,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -66,19 +66,19 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: prepare)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{%
   scrkbase%
 }[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (%
     KOMA-Script-dependent
@@ -242,12 +242,12 @@
 }
 \newcommand*{\KOMAProcessOptions}{\FamilyProcessOptions{KOMA}}
 \@onlypreamble\KOMAProcessOptions
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: option)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: body)
 \newcommand*{\KOMAExecuteOptions}[1][.\@currname.\@currext]{%
   \FamilyExecuteOptions[#1]{KOMA}%
@@ -415,7 +415,7 @@
   }%
   \KOMAoptions{#3}%
 }
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: body)
 \newcommand*{\IfExistskomafont}[1]{%
   \scr@ifundefinedorrelax{scr@fnt@#1}{%
@@ -521,14 +521,13 @@
 \newcommand*{\usesizeofkomafont}[1]{%
   \begingroup
     \scr@prepareforkomafont
-    \def\selectfont{%
-      \global\let\g@scr@f@size\f@size
-      \global\let\g@scr@f@baselineskip\f@baselineskip
-      \global\let\g@scr@f@linespread\f@linespread
-    }%
-    \selectfont
     \sbox\@tempboxa{%
-      \usekomafont{#1}{\relax}%
+      \usekomafont{#1}{%
+        \selectfont
+        \global\let\g@scr@f@size\f@size
+        \global\let\g@scr@f@baselineskip\f@baselineskip
+        \global\let\g@scr@f@linespread\f@linespread
+      }%
     }%
   \endgroup
   \linespread{\g@scr@f@linespread}%
@@ -542,34 +541,32 @@
 \newcommand*{\usefontofkomafont}[1]{%
   \begingroup
     \scr@prepareforkomafont
-    \def\selectfont{%
-      \global\let\g@scr@f@encoding\f@encoding
-      \global\let\g@scr@f@family\f@family
-      \global\let\g@scr@f@series\f@series
-      \global\let\g@scr@f@shape\f@shape
-      \global\let\g@scr@f@size\f@size
-      \global\let\g@scr@f@baselineskip\f@baselineskip
-      \global\let\g@scr@f@linespread\f@linespread
-    }%
-    \selectfont
     \sbox\@tempboxa{%
-      \usekomafont{#1}{\relax}%
+      \usekomafont{#1}{%
+        \selectfont
+        \global\let\g@scr@f@encoding\f@encoding
+        \global\let\g@scr@f@family\f@family
+        \global\let\g@scr@f@series\f@series
+        \global\let\g@scr@f@shape\f@shape
+        \global\let\g@scr@f@size\f@size
+        \global\let\g@scr@f@baselineskip\f@baselineskip
+        \global\let\g@scr@f@linespread\f@linespread
+      }%
     }%
   \endgroup
   \linespread{\g@scr@f@linespread}%
   \fontsize{\g@scr@f@size}{\g@scr@f@baselineskip}%
   \usefont{\g@scr@f@encoding}{\g@scr@f@family}{\g@scr@f@series}{\g@scr@f@shape}%
-}
+}%
 \newcommand*{\use@ofkomafont}[2]{%
   \begingroup
     \scr@prepareforkomafont
-    \def\selectfont{%
-      \global\expandafter\let\csname g@scr@f@#1\expandafter\endcsname
-                             \csname f@#1\endcsname
-    }%
-    \selectfont
     \sbox\@tempboxa{%
-      \usekomafont{#2}{\relax}%
+      \usekomafont{#2}{%
+        \selectfont
+        \global\expandafter\let\csname g@scr@f@#1\expandafter\endcsname
+                               \csname f@#1\endcsname
+      }%
     }%
   \endgroup
   \@nameuse{font#1}{\csname g@scr@f@#1\endcsname}%

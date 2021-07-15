@@ -12,6 +12,7 @@
 --           any individual authors listed elsewhere in this file.
 -- All rights reserved.
 --
+--
 -- This file is part of the Babel system.
 -- --------------------------------------
 --
@@ -36,8 +37,10 @@ Babel = Babel or {}
 
 Babel.cjk_characters = {
   [0x0021]={c='ex'},
+  [0x0022]={c='qu'},
   [0x0024]={c='pr'},
   [0x0025]={c='po'},
+  [0x0027]={c='qu'},
   [0x0028]={c='op'},
   [0x0029]={c='cp'},
   [0x002B]={c='pr'},
@@ -58,10 +61,18 @@ Babel.cjk_characters = {
   [0x00A3]={c='pr'},
   [0x00A4]={c='pr'},
   [0x00A5]={c='pr'},
+  [0x00AB]={c='qu'},
   [0x00B0]={c='po'},
   [0x00B1]={c='pr'},
+  [0x00BB]={c='qu'},
+  [0x2018]={c='qu'},
+  [0x2019]={c='qu'},
   [0x201A]={c='op'},
+  [0x201B]={c='qu'},
+  [0x201C]={c='qu'},
+  [0x201D]={c='qu'},
   [0x201E]={c='op'},
+  [0x201F]={c='qu'},
   [0x2024]={c='in'},
   [0x2025]={c='in'},
   [0x2026]={c='in'},
@@ -73,6 +84,8 @@ Babel.cjk_characters = {
   [0x2035]={c='po'},
   [0x2036]={c='po'},
   [0x2037]={c='po'},
+  [0x2039]={c='qu'},
+  [0x203A]={c='qu'},
   [0x203C]={c='ns'},
   [0x203D]={c='ns'},
   [0x2044]={c='is'},
@@ -131,7 +144,23 @@ Babel.cjk_characters = {
   [0x29FD]={c='cl'},
   [0x2CF9]={c='ex'},
   [0x2CFE]={c='ex'},
+  [0x2E02]={c='qu'},
+  [0x2E03]={c='qu'},
+  [0x2E04]={c='qu'},
+  [0x2E05]={c='qu'},
+  [0x2E06]={c='qu'},
+  [0x2E07]={c='qu'},
+  [0x2E08]={c='qu'},
+  [0x2E09]={c='qu'},
+  [0x2E0A]={c='qu'},
+  [0x2E0B]={c='qu'},
+  [0x2E0C]={c='qu'},
+  [0x2E0D]={c='qu'},
   [0x2E18]={c='op'},
+  [0x2E1C]={c='qu'},
+  [0x2E1D]={c='qu'},
+  [0x2E20]={c='qu'},
+  [0x2E21]={c='qu'},
   [0x2E22]={c='op'},
   [0x2E23]={c='cl'},
   [0x2E24]={c='op'},
@@ -284,6 +313,7 @@ Babel.cjk_breaks = {
   ['po'] = { ['op']=1, ['pr']=1, ['po']=1, ['in']=1, ['I']=1 },
   ['in'] = { ['op']=1, ['pr']=1, ['po']=1,           ['I']=1 },
   ['hy'] = { ['op']=1, ['pr']=1, ['po']=1, ['in']=1, ['I']=1 },
+  ['qu'] = { },
   --
   ['I']  = { ['op']=1, ['pr']=1, ['I']=1, ['O']=1 },
   ['O']  = {                     ['I']=1 }

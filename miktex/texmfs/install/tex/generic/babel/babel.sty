@@ -12,6 +12,7 @@
 %%           any individual authors listed elsewhere in this file.
 %% All rights reserved.
 %%
+%%
 %% This file is part of the Babel system.
 %% --------------------------------------
 %%
@@ -33,7 +34,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2021/01/26 3.53 The Babel package]
+\ProvidesPackage{babel}[2021/06/28 3.61 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
    \let\bbl@debug\@firstofone
@@ -216,7 +217,17 @@
   \else
     \expandafter\@firstofone
   \fi}
-  % Temporarily repeat here the code for errors
+\def\bbl@extras@wrap#1#2#3{% 1:in-test, 2:before, 3:after
+  \toks@\expandafter\expandafter\expandafter{%
+    \csname extras\languagename\endcsname}%
+  \bbl@exp{\\\in@{#1}{\the\toks@}}%
+  \ifin@\else
+    \@temptokena{#2}%
+    \edef\bbl@tempc{\the\@temptokena\the\toks@}%
+    \toks@\expandafter{\bbl@tempc#3}%
+    \expandafter\edef\csname extras\languagename\endcsname{\the\toks@}%
+  \fi}
+  % Temporarily repeat here the code for errors. TODO.
   \def\bbl@error#1#2{%
     \begingroup
       \def\\{\MessageBreak}%
@@ -239,16 +250,17 @@
       \def\\{\MessageBreak}%
       \PackageInfo{babel}{#1}%
     \endgroup}
-    \def\bbl@nocaption{\protect\bbl@nocaption@i}
+\def\bbl@nocaption{\protect\bbl@nocaption@i}
 \def\bbl@nocaption@i#1#2{% 1: text to be printed 2: caption macro \langXname
   \global\@namedef{#2}{\textbf{?#1?}}%
   \@nameuse{#2}%
-  \bbl@warning{% TODO.
-    \@backslashchar#2 not set. Please, define it\\%
-    after the language has been loaded (typically\\%
-    in the preamble) with the help of\\%
-    \string\setlocalecaption. An example is:\\%
-    \string\setlocalecaption{mylang}{chapter}{..}\\
+  \edef\bbl@tempa{#1}%
+  \bbl@sreplace\bbl@tempa{name}{}%
+  \bbl@warning{%
+    \@backslashchar#1 not set for '\languagename'. Please,\\%
+    define it after the language has been loaded\\%
+    (typically in the preamble) with\\%
+    \string\setlocalecaption{\languagename}{\bbl@tempa}{..}\\%
     Reported}}
 \def\bbl@tentative{\protect\bbl@tentative@i}
 \def\bbl@tentative@i#1{%
@@ -259,14 +271,14 @@
     Reported}}
 \def\@nolanerr#1{%
   \bbl@error
-    {You haven't defined the language #1\space yet.\\%
+    {You haven't defined the language '#1' yet.\\%
      Perhaps you misspelled it or your installation\\%
      is not complete}%
     {Your command will be ignored, type <return> to proceed}}
 \def\@nopatterns#1{%
   \bbl@warning
     {No hyphenation patterns were preloaded for\\%
-     the language `#1' into the format.\\%
+     the language '#1' into the format.\\%
      Please, configure your TeX system to add them and\\%
      rebuild the format. Now I will use the patterns\\%
      preloaded for \bbl@nulllanguage\space instead}}
@@ -324,7 +336,7 @@
   \ifx\@empty#2%
     \edef\bbl@tempc{\ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1}%
   \else
-    \in@{,provide,}{,#1,}%
+    \in@{,provide=}{,#1}%
     \ifin@
       \edef\bbl@tempc{%
         \ifx\bbl@tempc\@empty\else\bbl@tempc,\fi#1.\bbl@tempb#2}%
@@ -348,7 +360,6 @@
 \DeclareOption{noconfigs}{}
 \DeclareOption{showlanguages}{}
 \DeclareOption{silent}{}
-\DeclareOption{mono}{}
 \DeclareOption{shorthands=off}{\bbl@tempa shorthands=\bbl@tempa}
 \chardef\bbl@iniflag\z@
 \DeclareOption{provide=*}{\chardef\bbl@iniflag\@ne}    % main -> +1
@@ -385,15 +396,16 @@
 \let\bbl@opt@main\@nnil
 \let\bbl@opt@headfoot\@nnil
 \let\bbl@opt@layout\@nnil
+\let\bbl@opt@provide\@nnil
 \def\bbl@tempa#1=#2\bbl@tempa{%
   \bbl@csarg\ifx{opt@#1}\@nnil
     \bbl@csarg\edef{opt@#1}{#2}%
   \else
     \bbl@error
-     {Bad option `#1=#2'. Either you have misspelled the\\%
-      key or there is a previous setting of `#1'. Valid\\%
-      keys are, among others, `shorthands', `main', `bidi',\\%
-      `strings', `config', `headfoot', `safe', `math'.}%
+     {Bad option '#1=#2'. Either you have misspelled the\\%
+      key or there is a previous setting of '#1'. Valid\\%
+      keys are, among others, 'shorthands', 'main', 'bidi',\\%
+      'strings', 'config', 'headfoot', 'safe', 'math'.}%
      {See the manual for further details.}
   \fi}
 \let\bbl@language@opts\@empty
@@ -405,6 +417,12 @@
     \bbl@add@list\bbl@language@opts{\CurrentOption}%
   \fi}
 \ProcessOptions*
+\ifx\bbl@opt@provide\@nnil\else % Tests. Ignore.
+  \chardef\bbl@iniflag\@ne
+  \bbl@replace\bbl@opt@provide{;}{,}
+  \bbl@add\bbl@opt@provide{,import}
+  \show\bbl@opt@provide
+\fi
 \bbl@trace{Conditional loading of shorthands}
 \def\bbl@sh@string#1{%
   \ifx#1\@empty\else
@@ -777,8 +795,8 @@
 \else
   \ifnum\bbl@bidimode>100 \ifnum\bbl@bidimode<200
     \bbl@error
-      {The bidi method `basic' is available only in\\%
-       luatex. I'll continue with `bidi=default', so\\%
+      {The bidi method 'basic' is available only in\\%
+       luatex. I'll continue with 'bidi=default', so\\%
        expect wrong results}%
       {See the manual for further details.}%
     \let\bbl@beforeforeign\leavevmode
@@ -891,16 +909,20 @@
   \def\bbl@dirparastext{\pardir\the\textdir\relax}%   %%%%
   % Sadly, we have to deal with boxes in math with basic.
   % Activated every math with the package option bidi=:
-  \def\bbl@mathboxdir{%
-    \ifcase\bbl@thetextdir\relax
-      \everyhbox{\textdir TLT\relax}%
-    \else
-      \everyhbox{\textdir TRT\relax}%
-    \fi}
-  \frozen@everymath\expandafter{%
-    \expandafter\bbl@mathboxdir\the\frozen@everymath}
-  \frozen@everydisplay\expandafter{%
-    \expandafter\bbl@mathboxdir\the\frozen@everydisplay}
+  \ifnum\bbl@bidimode>\z@
+    \def\bbl@mathboxdir{%
+      \ifcase\bbl@thetextdir\relax
+        \everyhbox{\bbl@mathboxdir@aux L}%
+      \else
+        \everyhbox{\bbl@mathboxdir@aux R}%
+       \fi}
+    \def\bbl@mathboxdir@aux#1{%
+      \@ifnextchar\egroup{}{\textdir T#1T\relax}}
+    \frozen@everymath\expandafter{%
+      \expandafter\bbl@mathboxdir\the\frozen@everymath}
+    \frozen@everydisplay\expandafter{%
+      \expandafter\bbl@mathboxdir\the\frozen@everydisplay}
+  \fi
 \else % pdftex=0, xetex=2
   \newcount\bbl@dirlevel
   \chardef\bbl@thetextdir\z@
@@ -989,18 +1011,6 @@
                        *}}%
         \@empty}}
 \fi
-\ifx\@unexpandable@protect\@undefined
-  \def\@unexpandable@protect{\noexpand\protect\noexpand}
-  \long\def\protected@write#1#2#3{%
-    \begingroup
-      \let\thepage\relax
-      #2%
-      \let\protect\@unexpandable@protect
-      \edef\reserved@a{\write#1{#3}}%
-      \reserved@a
-    \endgroup
-    \if@nobreak\ifvmode\nobreak\fi\fi}
-\fi
 \bbl@trace{Language options}
 \let\bbl@afterlang\relax
 \let\BabelModifiers\relax
@@ -1014,7 +1024,7 @@
      \expandafter\let\expandafter\BabelModifiers
         \csname bbl@mod@\CurrentOption\endcsname}%
     {\bbl@error{%
-       Unknown option `\CurrentOption'. Either you misspelled it\\%
+       Unknown option '\CurrentOption'. Either you misspelled it\\%
        or the language definition file \CurrentOption.ldf was not found}{%
        Valid options are, among others: shorthands=, KeepShorthandsActive,\\%
        activeacute, activegrave, noconfigs, safe=, main=, math=\\%
@@ -1047,7 +1057,7 @@
              * Local config file \bbl@opt@config.cfg used^^J%
              *}}%
     {\bbl@error{%
-       Local config file `\bbl@opt@config.cfg' not found}{%
+       Local config file '\bbl@opt@config.cfg' not found}{%
        Perhaps you misspelled it.}}%
 \fi
 \let\bbl@tempc\relax
@@ -1086,19 +1096,27 @@
 \let\bbl@tempb\@nnil
 \bbl@foreach\@classoptionslist{%
   \bbl@ifunset{ds@#1}%
-    {\IfFileExists{#1.ldf}{}%
-      {\IfFileExists{babel-#1.tex}{}{\@namedef{ds@#1}{}}}}%
-    {}%
-  \bbl@ifunset{ds@#1}%
-    {\def\bbl@tempb{#1}%
-     \DeclareOption{#1}{%
-       \ifnum\bbl@iniflag>\@ne
-         \bbl@ldfinit
-         \babelprovide[import]{#1}%
-         \bbl@afterldf{}%
-       \else
-         \bbl@load@language{#1}%
-       \fi}}%
+    {\IfFileExists{#1.ldf}%
+      {\def\bbl@tempb{#1}%
+       \DeclareOption{#1}{%
+         \ifnum\bbl@iniflag>\@ne
+           \bbl@ldfinit
+           \babelprovide[import]{#1}%
+           \bbl@afterldf{}%
+         \else
+           \bbl@load@language{#1}%
+         \fi}}%
+      {\IfFileExists{babel-#1.tex}% TODO. Copypaste pattern
+        {\def\bbl@tempb{#1}%
+         \DeclareOption{#1}{%
+           \ifnum\bbl@iniflag>\@ne
+             \bbl@ldfinit
+             \babelprovide[import]{#1}%
+             \bbl@afterldf{}%
+           \else
+             \bbl@load@language{#1}%
+           \fi}}%
+         {}}}%
     {}}
 \ifnum\bbl@iniflag=\z@\else
   \ifx\bbl@opt@main\@nnil
@@ -1129,17 +1147,21 @@
   \expandafter\bbl@tempa\bbl@loaded,\@nnil
   \ifx\bbl@tempb\bbl@tempc\else
     \bbl@warning{%
-      Last declared language option is `\bbl@tempc',\\%
-      but the last processed one was `\bbl@tempb'.\\%
-      The main language cannot be set as both a global\\%
-      and a package option. Use `main=\bbl@tempc' as\\%
+      Last declared language option is '\bbl@tempc',\\%
+      but the last processed one was '\bbl@tempb'.\\%
+      The main language can't be set as both a global\\%
+      and a package option. Use 'main=\bbl@tempc' as\\%
       option. Reported}%
   \fi
 \else
   \ifodd\bbl@iniflag  % case 1,3
     \bbl@ldfinit
     \let\CurrentOption\bbl@opt@main
-    \bbl@exp{\\\babelprovide[import,main]{\bbl@opt@main}}
+    \ifx\bbl@opt@provide\@nnil
+      \bbl@exp{\\\babelprovide[import,main]{\bbl@opt@main}}
+    \else
+      \bbl@exp{\\\babelprovide[\bbl@opt@provide,main]{\bbl@opt@main}}%
+    \fi
     \bbl@afterldf{}%
   \else % case 0,2
     \chardef\bbl@iniflag\z@  % Force ldf

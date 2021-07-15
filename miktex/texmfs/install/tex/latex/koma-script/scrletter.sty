@@ -61,7 +61,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3545 2020-09-21 07:45:07Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -83,20 +83,20 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2020/09/21 v3.32 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
 \ProvidesPackage{scrletter}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   letter package extending any KOMA-Script class%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: init)
 \scr@ifundefinedorrelax{KOMAClassName}{%
   \PackageWarningNoLine{scrletter}{%
@@ -122,7 +122,7 @@
 }{}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: option)
 %%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
 %%%            (run: option)
@@ -158,7 +158,7 @@
 }{orgdate}{true}
 \KOMA@DeclareDeprecatedOption{scrdate}{numericaldate=true}
 \KOMA@DeclareDeprecatedOption{orgdate}{numericaldate=false}
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: option)
 %%% From File: $Id: scrkernel-variables.dtx 3393 2019-11-19 10:33:44Z kohm $
 %%%            (run: option)
@@ -166,7 +166,7 @@
 %%%            (run: option)
 %%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-notepaper.dtx 3472 2020-03-27 11:01:45Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
 %%%            (run: option)
 \KOMA@ifkey{firsthead}{@firsthead}
 \KOMAExecuteOptions{firsthead=true}
@@ -735,12 +735,12 @@
 \newcommand*{\scr@symbol@www}{\undefined}
 %%% From File: $Id: scrkernel-circularletters.dtx 3262 2019-10-10 08:25:29Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: execoption)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-fonts.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3514 2020-08-06 16:14:53Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
 %%%            (run: body)
 \providecommand*{\scr@endstrut}{\unskip\ifhmode\nobreak\strut\fi}
 %%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
@@ -1802,7 +1802,7 @@
   \rofoot[\ifnum\@pageat=5 \pagemark\fi]%
          {}%
 }
-%%% From File: $Id: scrkernel-notepaper.dtx 3472 2020-03-27 11:01:45Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
 %%%            (run: body)
 \newkomavar{firsthead}
 \setkomavar{firsthead}{%
@@ -2914,14 +2914,13 @@
 \newcommand*{\stopbreaks}{\interlinepenalty \@M
  \def\par{\@@par\nobreak}\let\\=\@nobreakcr
  \let\vspace\@nobreakvspace}
-\newcommand*{\@nobreakvspace}{%
+\DeclareRobustCommand*{\@nobreakvspace}{%
   \kernel@ifstar{\@nobreakvspacex}{\@nobreakvspacex}}
 \newcommand*{\@nobreakvspacex}[1]{\ifvmode\nobreak\vskip #1\relax\else
  \@bsphack\vadjust{\nobreak\vskip #1}\@esphack\fi}
-\newcommand*{\@nobreakcr}{%
-  \vadjust{\penalty\@M}\kernel@ifstar{\@xnewline}{\@xnewline}}
+\newcommand*{\@nobreakcr}{\kernel@ifstar{\@normalcr*}{\@normalcr*}}
 \newcommand*{\startbreaks}{\let\\=\@normalcr
- \interlinepenalty 200\def\par{\@@par\penalty 200}}
+ \interlinepenalty 200\def\par{\@@par\penalty 200\relax}}
 \newcommand{\opening}[1]{%
   \@PapersizeWarning
   \@gen@firsthead

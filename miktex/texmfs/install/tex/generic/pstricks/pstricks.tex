@@ -80,8 +80,8 @@
 \fi
 \let\pgfforeach\foreach
 %
-\def\fileversion{3.01}
-\def\filedate{2020/09/18}
+\def\fileversion{3.02}
+\def\filedate{2021/05/31}
 \pst@addfams{pstricks}
 %
 %\define@boolkey[psset]{pstricks}[Pst@]{useURWfonts}[true]{}
@@ -1485,7 +1485,7 @@
 %
 \def\psk@arrowA{}
 \def\psk@arrowB{}
-\def\pst@arrowtable{,-,<->,<<->>,>-<,>>-<<,(-),[-],)-(,]-[,|>-<|,<D-D>,D>-<D,<D<D-D>D>} % hv --1.16
+\def\pst@arrowtable{,-,<->,<<->>,>-<,>>-<<,(-),[-],)-(,]-[,|>-<|,<D-D>,D>-<D,<D<D-D>D>,<T-T>} % hv --1.16
 \edef\pst@arrowtable{\pst@arrowtable,|<*->|*,|<->|}
 \begingroup
   \catcode`\<=13
@@ -1498,6 +1498,7 @@
 %
 \def\tx@Arrow{ \tx@setStrokeTransparency Arrow }% hv 2008-01-13
 \def\tx@ArrowD{ \tx@setStrokeTransparency ArrowD }% hv 2008-01-13
+\def\tx@ArrowT{ \tx@setStrokeTransparency ArrowT }% hv 2021-05-31
 %
 \@namedef{psas@<|}{ 
     \psk@tbarsize\space \tx@Tbar
@@ -1575,6 +1576,11 @@
   CP newpath moveto 0 a neg L stroke 0 h neg T
   true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
 }
+\@namedef{psas@T>}{ false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowT }%	hv 20210531
+\@namedef{psas@<T}{ %	hv 20071211
+  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowT
+}
+
 \define@key[psset]{pstricks}{tbarsize}[2pt 5]{%
   \pst@expandafter\pst@getdimnum{#1} 0 {} {}\@nil
   \edef\psk@tbarsize{\pst@number\pst@dimg \pst@tempg}}

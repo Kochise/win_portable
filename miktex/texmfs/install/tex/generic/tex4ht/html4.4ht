@@ -1,5 +1,5 @@
-% html4.4ht (2021-02-14-13:56), generated from tex4ht-html4.tex
-% Copyright 2009-2020 TeX Users Group
+% html4.4ht (2021-06-03-14:10), generated from tex4ht-html4.tex
+% Copyright 2009-2021 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-02-14-13:56}
+\immediate\write-1{version 2021-06-03-14:10}
 
 \exit:ifnot{8859-6,% 
 CJK,% 
@@ -171,6 +171,7 @@ ntheorem,%
 ot4enc,% 
 overpic,% 
 paralist,% 
+parallel,% 
 path,% 
 pb-diagram,% 
 pd1enc,% 
@@ -224,6 +225,7 @@ sverb,%
 swedish,% 
 syntax,% 
 t2benc,% 
+tabularx,% 
 tabulary,% 
 tcilatex,% 
 tcolorbox,% 
@@ -643,7 +645,8 @@ switches of tex4ht.c)
    \def\EndDIV:{\HCode{</div>}}
 
 \Configure{moveright}{\leavevmode\endgraf }
-\Configure{HChar}{x}
+% print x only outside \Picture+
+\Configure{HChar}{\ifx\EndPicture\:UnDef x\fi}
 
 \Configure{TITLE+}{\HCode{\jobname.\:html}}
 
@@ -1395,7 +1398,8 @@ switches of tex4ht.c)
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="trivlist">}\bgroup \bf}
-   {\egroup\HCode{</dt><dd\Hnewline class="trivlist">}}
+   {\egroup\HCode{</dt><dd\Hnewline class="trivlist">}\par\ShowPar
+}
 \ConfigureEnv{list}
    {}{\ShowPar
 }{}{}
@@ -1424,7 +1428,8 @@ switches of tex4ht.c)
 \ifvmode \IgnorePar\fi
     \EndP\HCode{</li></ul>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</li>}\DeleteMark}
-   {\HCode{<li class="\getClass{li}itemize">}\afterGetClass{li}}
+   {\HCode{<li class="\getClass{li}itemize">}\afterGetClass{li}\par\ShowPar
+}
 \NewConfigure{itemizeClass}{2}
 \Configure{itemizeClass}{}{}
 \NewConfigure{liClass}{2}
@@ -1447,7 +1452,8 @@ switches of tex4ht.c)
       {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
       {\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }
 \else
    \:CheckOption{enumerate+} \if:Option
@@ -1459,7 +1465,8 @@ switches of tex4ht.c)
       \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="enumerate">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="enumerate">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="enumerate">}\par\ShowPar
+}
 \Css{dd.enumerate {margin-left: 2em;}}
 \Css{dt.enumerate {float:left;
               clear:left;
@@ -1482,7 +1489,8 @@ switches of tex4ht.c)
          {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
          {{\Configure{Link}{li}{}{ class="enumerate" id=}{}%
- \let\EndLink=\empty \AnchorLabel }%
+ \let\EndLink=\empty\par\ShowPar
+\AnchorLabel }%
 }
       \Log:Note{for enumerated list elements with valued data,
                       use the command line option `enumerate+'}
@@ -2360,7 +2368,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 %
       }
       {\EndP}
-      {\HCode{<span class="bibsp">}~~~\HCode{</span></span>}}
+      {\HCode{<span class="bibsp">}\ \ \ \HCode{</span></span>}}
 %
 \fi
 
@@ -3374,7 +3382,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
                 \ConfigureHinput{book}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \def\tocpart#1#2#3{\par
-   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1~~\fi #2\HCode{</span>}\par}%
+   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1\ \ \fi #2\HCode{</span>}\par}%
 \def\toclikepart#1#2#3{\par
    \HCode{<span class="likepartToc" \a:LRdir>}#2\HCode{</span>}\par}%
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
@@ -5616,8 +5624,10 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{enumiii}
     {\HCode{<span class="roman-numeral">}}
@@ -6058,7 +6068,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
                 \ConfigureHinput{report}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \def\tocpart#1#2#3{\par
-   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1~~\fi #2\HCode{</span>}\par}%
+   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1\ \ \fi #2\HCode{</span>}\par}%
 \def\toclikepart#1#2#3{\par
    \HCode{<span class="likepartToc" \a:LRdir>}#2\HCode{</span>}\par}%
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
@@ -8305,8 +8315,10 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{enumiii}
     {\HCode{<span class="roman-numeral">}}
@@ -8631,7 +8643,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 
 
 \Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
-   {\HCode{</h3>}\HtmlParOn}
+   {\HCode{</h3>}\HtmlParOn\par}
 
 \Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
 \Css{div.abstract {width:100\%;}}
@@ -8678,7 +8690,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
     \Configure{@begin}{theindex}{\ifx \indexname\empty \else
     \section*{\indexname}\fi}
 \def\tocpart#1#2#3{\par
-   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1~~\fi #2\HCode{</span>}\par}%
+   \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else  #1\ \ \fi #2\HCode{</span>}\par}%
 \def\toclikepart#1#2#3{\par
    \HCode{<span class="likepartToc" \a:LRdir>}#2\HCode{</span>}\par}%
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
@@ -10925,8 +10937,10 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{enumiii}
     {\HCode{<span class="roman-numeral">}}
@@ -11236,7 +11250,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 
 
 \Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
-   {\HCode{</h3>}\HtmlParOn}
+   {\HCode{</h3>}\HtmlParOn\par}
 
 \Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
 \Css{div.abstract {width:100\%;}}
@@ -11402,6 +11416,9 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \Configure{ImageMagick}{convert}
 \Configure{Ghostscript}{rungs}
 
+\ifx\gr:density\empty
+\gdef\gr:density{300}
+\fi
 
 \NewConfigure{EpsConvert}{1}
 \NewConfigure{PdfConvert}{2}
@@ -11415,8 +11432,8 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 % it is better to use the following command. pdf2svg must be installed separately.
 \Configure{EpsConvert}{"epstopdf "\Gin@base.eps"  && pdf2svg "\Gin@base.pdf" "\Gin@base.svg""}
 \else
-\Configure{PdfConvert}{png}{"\a:Ghostscript\space -q -dNOPAUSE -dBATCH -dusecropbox -sDEVICE=pngalpha -r300 \ifx\Gin@page\@empty\else -dFirstPage="\Gin@page"  -dLastPage="\Gin@page"\fi\space -sOutputFile="\Gin@base-\Gin@page.\a:PdfConvert" "\Gin@base.pdf" "}
-\Configure{EpsConvert}{"\a:Ghostscript\space -dSAFER    -dBATCH    -dNOPAUSE    -dEPSCrop    -r120  -sDEVICE=pngalpha -sOutputFile="\Gin@base.png" "\Gin@base.eps" "}
+\Configure{PdfConvert}{png}{"\a:Ghostscript\space -q -dNOPAUSE -dBATCH -dusecropbox -sDEVICE=pngalpha -r\gr:density\space \ifx\Gin@page\@empty\else -dFirstPage="\Gin@page"  -dLastPage="\Gin@page"\fi\space -sOutputFile="\Gin@base-\Gin@page.\a:PdfConvert" "\Gin@base.pdf" "}
+\Configure{EpsConvert}{"\a:Ghostscript\space -dSAFER    -dBATCH    -dNOPAUSE    -dEPSCrop    -r\gr:density\space -sDEVICE=pngalpha -sOutputFile="\Gin@base.png" "\Gin@base.eps" "}
 \fi
 \Configure{graphics*}
    {pdf}
@@ -11528,8 +11545,10 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{description}{\IgnorePar}{}{}{}
 \Css{span.footnote-mark{ vertical-align: super; font-size:80\%; }}
@@ -11973,19 +11992,19 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsection}
-  {\HCode{<span class="subsectionToc" \a:LRdir>}~~\toc:Mark{subsection}}
+  {\HCode{<span class="subsectionToc" \a:LRdir>}\ \ \toc:Mark{subsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsubsection}
   {\HCode{<span
-       class="subsubsectionToc" \a:LRdir>}~~~~\toc:Mark{subsubsection}}
+       class="subsubsectionToc" \a:LRdir>}\ \ \ \ \toc:Mark{subsubsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \def\toc:Mark#1#2\End:Mark{\if !#2!\else
    \expandafter\ifx \csname #1name\endcsname\relax\else
-   \csname #1name\endcsname~\fi #2.~~\fi}
+   \csname #1name\endcsname\ \fi #2.\ \ \fi}
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
         {line-height: 200\%; font-weight:bold; font-size:110\%;}}
   
@@ -14102,8 +14121,10 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{description}{\IgnorePar}{}{}{}
 \Css{span.footnote-mark{ vertical-align: super; font-size:80\%; }}
@@ -14547,19 +14568,19 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsection}
-  {\HCode{<span class="subsectionToc" \a:LRdir>}~~\toc:Mark{subsection}}
+  {\HCode{<span class="subsectionToc" \a:LRdir>}\ \ \toc:Mark{subsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsubsection}
   {\HCode{<span
-       class="subsubsectionToc" \a:LRdir>}~~~~\toc:Mark{subsubsection}}
+       class="subsubsectionToc" \a:LRdir>}\ \ \ \ \toc:Mark{subsubsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \def\toc:Mark#1#2\End:Mark{\if !#2!\else
    \expandafter\ifx \csname #1name\endcsname\relax\else
-   \csname #1name\endcsname~\fi #2.~~\fi}
+   \csname #1name\endcsname\ \fi #2.\ \ \fi}
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
         {line-height: 200\%; font-weight:bold; font-size:110\%;}}
   
@@ -16621,19 +16642,19 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   {\HCode{</span><br />}}
 \ConfigureToc{chapter}
   {\HCode{<span class="chapterToc" \a:LRdir>}%
-   \ifx \chaptername\:UnDef\else \chaptername~\fi}
-  {.~~}
+   \ifx \chaptername\:UnDef\else \chaptername\ \fi}
+  {.\ \ }
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{likechapter}
   {\HCode{<span class="likechapterToc" \a:LRdir>}}
-  {~~}
+  {\ \ }
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{appendix}
   {\HCode{<span class="appendixToc" \a:LRdir>}%
-   \ifx \appendixname\:UnDef\else \appendixname~\fi}
-  {.~~}
+   \ifx \appendixname\:UnDef\else \appendixname\ \fi}
+  {.\ \ }
   {}
   {\HCode{</span><br />}}
 \Css{.chapterToc a, .chapterToc, .appendixToc a, .appendixToc
@@ -16724,8 +16745,10 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{description}{\IgnorePar}{}{}{}
 \Css{span.footnote-mark{ vertical-align: super; font-size:80\%; }}
@@ -17169,19 +17192,19 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsection}
-  {\HCode{<span class="subsectionToc" \a:LRdir>}~~\toc:Mark{subsection}}
+  {\HCode{<span class="subsectionToc" \a:LRdir>}\ \ \toc:Mark{subsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \ConfigureToc{subsubsection}
   {\HCode{<span
-       class="subsubsectionToc" \a:LRdir>}~~~~\toc:Mark{subsubsection}}
+       class="subsubsectionToc" \a:LRdir>}\ \ \ \ \toc:Mark{subsubsection}}
   {\End:Mark}
   {}
   {\HCode{</span><br />}}
 \def\toc:Mark#1#2\End:Mark{\if !#2!\else
    \expandafter\ifx \csname #1name\endcsname\relax\else
-   \csname #1name\endcsname~\fi #2.~~\fi}
+   \csname #1name\endcsname\ \fi #2.\ \ \fi}
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
         {line-height: 200\%; font-weight:bold; font-size:110\%;}}
   
@@ -20416,8 +20439,10 @@ Y{0178}\i{00EF}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{enumiii}
     {\HCode{<span class="roman-numeral">}}
@@ -21037,6 +21062,15 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{tabularx}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \ConfigureEnv{tabularx}{\ifvmode\IgnorePar\fi\EndP}{}{}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23457,7 +23491,8 @@ Y{0178}\i{00EF}%
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{quote}
    {}{}
@@ -25943,7 +25978,8 @@ Y{0178}\i{00EF}%
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{quote}
    {}{}
@@ -28429,7 +28465,8 @@ Y{0178}\i{00EF}%
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \ConfigureEnv{quote}
    {}{}
@@ -28828,6 +28865,11 @@ Y{0178}\i{00EF}%
    {\add:color{background-color}{\current@color}{\HRow-\HCol}}
 \def\add:color#1#2#3{%
   \Configure{SetHColor}{\Css{ \#TBL-\TableNo-#3{ #1:\HColor }}}{#2}}
+
+% redefine default table configuration and put the color rule
+\def\a:HBorder{<tr class="hline" style="border-top:1px solid \#\hline:color">}
+% don't display <hr> elements in colored \hline
+\Css{tr.hline td hr{display:none}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
@@ -29436,43 +29478,43 @@ Y{0178}\i{00EF}%
 \ConfigureToc{part}
   {\toc:br
    \HCode{<span class="partToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{chapter}
   {\toc:br
    \HCode{<span class="chapterToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{section}
   {\toc:br
    \HCode{<span class="sectionToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{subsection}
   {\toc:br
    \HCode{<span class="subsectionToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{subsubsection}
   {\toc:br
    \HCode{<span class="subsubsectionToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{subsubsubsection}
   {\toc:br
    \HCode{<span class="subsubsubsectionToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 \ConfigureToc{subsubsubsubsection}
   {\toc:br
    \HCode{<span class="subsubsubsubsectionToc" \a:LRdir><span class="toc-mark">}}
-  {\HCode{</span>}~}
+  {\HCode{</span>}\ }
   {}
   {\HCode{</span>}}
 
@@ -30144,7 +30186,7 @@ Y{0178}\i{00EF}%
 
 
 \Configure{abstracttitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h3 class="abstracttitle">}\HtmlParOff}
-   {\HCode{</h3>}\HtmlParOn}
+   {\HCode{</h3>}\HtmlParOn\par}
 
 \Css{div.abstract p {margin-left:5\%; margin-right:5\%;}}
 \Css{div.abstract {width:100\%;}}
@@ -30479,7 +30521,8 @@ itemize\expandafter\the
 \global\let\pauseId=\pauseId
 }
   {\end:itm \global\def\end:itm{\EndP\Tg</li>}\DeleteMark}
-  {\HCode{<li class="itemize">}}
+  {\HCode{<li class="itemize">}\par\ShowPar
+}
    \ConfigureList{enumerate}%
       {\PushStack\Table:Stck\pauseId
 \gHAdvance\PauseId by 1
@@ -30499,7 +30542,8 @@ enumerate\expandafter
       {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
       {{\Configure{Link}{li}{}{ class="enumerate" id=}{}%
- \let\EndLink=\empty \AnchorLabel }%
+ \let\EndLink=\empty\par\ShowPar
+\AnchorLabel }%
 \expandafter\ifx\csname pi-\pauseId\endcsname\relax \else
   \expandafter\global\expandafter\let\csname
        pi-\pauseId\endcsname=\:UnDef
@@ -30529,7 +30573,8 @@ description">}%
 }
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 \def\pause{\hbox{\expandafter\global\expandafter\let\csname
        pi-\pauseId\endcsname=\def}}
 \let\pd:item\pd@item
@@ -30618,7 +30663,8 @@ description">}%
    {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
    {\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32136,12 +32182,14 @@ description">}%
    {\IgnorePar\EndP\HCode{<ol\space class="enumerate"\Hnewline>}}
    {\IgnorePar\EndP\HCode{</li></ol>}\ShowPar}
    {\IgnorePar\EndP\ifnum \itemno>1 \Tg</li>\fi\DeleteMark}
-   {\HCode{<li class="enumerate">}}
+   {\HCode{<li class="enumerate">}\par\ShowPar
+}
 \Configure{itemize}
    {\IgnorePar\EndP\HCode{<ul\space\a:LRdir class="itemize"\Hnewline>}}
    {\IgnorePar\EndP\HCode{</li></ul>}\ShowPar}
    {\IgnorePar\EndP\ifnum \itemno>1 \Tg</li>\fi\DeleteMark}
-   {\HCode{<li class="itemize">}}
+   {\HCode{<li class="itemize">}\par\ShowPar
+}
 \Configure{table}%
    {\IgnorePar\EndP\HCode{<dl \a:LRdir class="description">}%
     \PushMacro\end:itm
@@ -32150,7 +32198,8 @@ description">}%
 \IgnorePar\EndP\HCode{</dd></dl>}}
    {\IgnorePar\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\IgnorePar\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\IgnorePar\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 \Configure{titlepage}
    {\IgnorePar\EndP\HCode{<div class="titlepage">}}
    {\IgnorePar\EndP\HCode{</div>}}
@@ -32296,7 +32345,7 @@ description">}%
 \Configure{subsection}{}{}
    {\ifvmode \IgnorePar\fi
     \EndP\bgroup \IgnorePar\HCode{<h4 class="subsectionHead"\a:LRdir>}%
-    \TitleMark~~\HtmlParOff}
+    \TitleMark\ \ \HtmlParOff}
    {\HCode{</h4>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
 \Configure{likesubsection}{}{}{\EndP\bgroup
    \ifvmode \IgnorePar\fi
@@ -32305,7 +32354,7 @@ description">}%
 \Configure{likesubsectionTITLE+}{#1}
 \def\tocpart#1#2#3{\par
    \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else
-                                   #1~~\fi #2\HCode{</span>}\par}%
+                                   #1\ \ \fi #2\HCode{</span>}\par}%
 \def\toclikepart#1#2#3{\par
    \HCode{<span class="likepartToc" \a:LRdir>}#2\HCode{</span>}\par}%
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
@@ -32314,13 +32363,13 @@ description">}%
         .appendixToc a, .appendixToc, .addchapToc a
         {line-height: 200\%; font-weight:bold;}}
    \def\tocchapter#1#2#3{\par
-      \HCode{<span class="chapterToc" \a:LRdir>}#1~~#2\HCode{</span>}\par}
+      \HCode{<span class="chapterToc" \a:LRdir>}#1\ \ #2\HCode{</span>}\par}
    \def\toclikechapter#1#2#3{\par
       \HCode{<span class="likechapterToc" \a:LRdir>}#2\HCode{</span>}\par}%
    \def\tocaddchap#1#2#3{\par
       \HCode{<span class="addchapToc" \a:LRdir>}#2\HCode{</span>}\par}%
    \def\tocappendix#1#2#3{\par
-      \HCode{<span class="appendixToc" \a:LRdir>}#1~~#2\HCode{</span>}\par}
+      \HCode{<span class="appendixToc" \a:LRdir>}#1\ \ #2\HCode{</span>}\par}
    \def\tocsection#1#2#3{\par\ \toc:num{section}{#1}{#2}\par}
    \def\toclikesection#1#2#3{\par\
       \HCode{<span class="likesectionToc" \a:LRdir>}#2\HCode{</span>}\par}
@@ -32340,7 +32389,7 @@ description">}%
       \ \ \ \ \ \HCode{<span class="likesubparagraphToc" \a:LRdir>}#2\HCode{</span>}\par}
 \def\toc:num#1#2#3{\def\:temp{#1#2}%
    \HCode{<span class="#1Toc" \a:LRdir>}\ifx \:temp\empty
-   \else \def\:temp{#2}\ifx\:temp\empty\else #2~~\fi\fi #3\HCode{</span>}}
+   \else \def\:temp{#2}\ifx\:temp\empty\else #2\ \ \fi\fi #3\HCode{</span>}}
 \Configure{@begin}{theindex}{\ifx \indexname\empty \else
     \chapter*{\indexname}\fi}
 \ConfigureMark{section}
@@ -32354,7 +32403,7 @@ description">}%
 
 \Configure{section}{}{}
    {\ifvmode \IgnorePar\fi \EndP\IgnorePar
-    \HCode{<h3 class="sectionHead"\a:LRdir>}\TitleMark~~\HtmlParOff}
+    \HCode{<h3 class="sectionHead"\a:LRdir>}\TitleMark\ \ \HtmlParOff}
    {\HCode{</h3>}\HtmlParOn \IgnoreIndent \ShowPar \par}
 \Configure{likesection}{}{}
    {\ifvmode \IgnorePar\fi
@@ -32384,7 +32433,7 @@ description">}%
 \ConfigureMark{appendix}{\HCode{<span class="titlemark">}%
    \thechapter\HCode{</span>}}
 \Configure{appendix}{}{}
-   {\IgnorePar\EndP\HCode{<h2 class="appendixHead"\a:LRdir>}\TitleMark{}.~~}
+   {\IgnorePar\EndP\HCode{<h2 class="appendixHead"\a:LRdir>}\TitleMark{}.\ \ }
    {\HCode{</h2>}\IgnoreIndent\par}
 \Configure{appendixTITLE+}{\thechapter\space#1}
 \Configure{likechapter}{}{}
@@ -32492,8 +32541,10 @@ description">}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 %\def\:SPAN#1#2{\HCode{<span class="#1">}#2\HCode{</span>}}
 \def\:tempa{
@@ -32932,7 +32983,7 @@ description">}%
 
 \ConfigureMark{chapter}
    {\if@mainmatter
-       \HCode{<span class="titlemark">}\thechapter\HCode{</span>}~~\fi}
+       \HCode{<span class="titlemark">}\thechapter\HCode{</span>}\ \ \fi}
 \Configure{chapter}{}{}
    {\IgnorePar\EndP\HCode{<h2 class="chapterHead"\a:LRdir>}\TitleMark{}}
    {\HCode{</h2>}\IgnoreIndent\par}
@@ -33049,7 +33100,7 @@ description">}%
 \Css{div.dedication {text-align:center;}}
 
 \ConfigureMark{chapter}
-   {\HCode{<span class="titlemark">}\thechapter\HCode{</span>}~~}
+   {\HCode{<span class="titlemark">}\thechapter\HCode{</span>}\ \ }
 \Configure{chapter}{}{}
    {\IgnorePar\EndP\HCode{<h2 class="chapterHead"\a:LRdir>}\TitleMark{}}
    {\HCode{</h2>}\IgnoreIndent\par}
@@ -33606,7 +33657,7 @@ description">}%
 \Configure{subsection}{}{}
    {\ifvmode \IgnorePar\fi
     \EndP\bgroup \IgnorePar\HCode{<h4 class="subsectionHead"\a:LRdir>}%
-    \TitleMark~~\HtmlParOff}
+    \TitleMark\ \ \HtmlParOff}
    {\HCode{</h4>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
 \Configure{likesubsection}{}{}{\EndP\bgroup
    \ifvmode \IgnorePar\fi
@@ -33615,7 +33666,7 @@ description">}%
 \Configure{likesubsectionTITLE+}{#1}
 \def\tocpart#1#2#3{\par
    \HCode{<span class="partToc" \a:LRdir>}\if !#1!\else
-                                   #1~~\fi #2\HCode{</span>}\par}%
+                                   #1\ \ \fi #2\HCode{</span>}\par}%
 \def\toclikepart#1#2#3{\par
    \HCode{<span class="likepartToc" \a:LRdir>}#2\HCode{</span>}\par}%
 \Css{.partToc a, .partToc, .likepartToc a, .likepartToc
@@ -33624,13 +33675,13 @@ description">}%
         .appendixToc a, .appendixToc, .addchapToc a
         {line-height: 200\%; font-weight:bold;}}
    \def\tocchapter#1#2#3{\par
-      \HCode{<span class="chapterToc" \a:LRdir>}#1~~#2\HCode{</span>}\par}
+      \HCode{<span class="chapterToc" \a:LRdir>}#1\ \ #2\HCode{</span>}\par}
    \def\toclikechapter#1#2#3{\par
       \HCode{<span class="likechapterToc" \a:LRdir>}#2\HCode{</span>}\par}%
    \def\tocaddchap#1#2#3{\par
       \HCode{<span class="addchapToc" \a:LRdir>}#2\HCode{</span>}\par}%
    \def\tocappendix#1#2#3{\par
-      \HCode{<span class="appendixToc" \a:LRdir>}#1~~#2\HCode{</span>}\par}
+      \HCode{<span class="appendixToc" \a:LRdir>}#1\ \ #2\HCode{</span>}\par}
    \def\tocsection#1#2#3{\par\ \toc:num{section}{#1}{#2}\par}
    \def\toclikesection#1#2#3{\par\
       \HCode{<span class="likesectionToc" \a:LRdir>}#2\HCode{</span>}\par}
@@ -33650,7 +33701,7 @@ description">}%
       \ \ \ \ \ \HCode{<span class="likesubparagraphToc" \a:LRdir>}#2\HCode{</span>}\par}
 \def\toc:num#1#2#3{\def\:temp{#1#2}%
    \HCode{<span class="#1Toc" \a:LRdir>}\ifx \:temp\empty
-   \else \def\:temp{#2}\ifx\:temp\empty\else #2~~\fi\fi #3\HCode{</span>}}
+   \else \def\:temp{#2}\ifx\:temp\empty\else #2\ \ \fi\fi #3\HCode{</span>}}
 \Configure{@begin}{theindex}{\ifx \indexname\empty \else
     \chapter*{\indexname}\fi}
 \ConfigureMark{section}
@@ -33664,7 +33715,7 @@ description">}%
 
 \Configure{section}{}{}
    {\ifvmode \IgnorePar\fi \EndP\IgnorePar
-    \HCode{<h3 class="sectionHead"\a:LRdir>}\TitleMark~~\HtmlParOff}
+    \HCode{<h3 class="sectionHead"\a:LRdir>}\TitleMark\ \ \HtmlParOff}
    {\HCode{</h3>}\HtmlParOn \IgnoreIndent \ShowPar \par}
 \Configure{likesection}{}{}
    {\ifvmode \IgnorePar\fi
@@ -33694,7 +33745,7 @@ description">}%
 \ConfigureMark{appendix}{\HCode{<span class="titlemark">}%
    \thechapter\HCode{</span>}}
 \Configure{appendix}{}{}
-   {\IgnorePar\EndP\HCode{<h2 class="appendixHead"\a:LRdir>}\TitleMark{}.~~}
+   {\IgnorePar\EndP\HCode{<h2 class="appendixHead"\a:LRdir>}\TitleMark{}.\ \ }
    {\HCode{</h2>}\IgnoreIndent\par}
 \Configure{appendixTITLE+}{\thechapter\space#1}
 \Configure{likechapter}{}{}
@@ -33712,8 +33763,10 @@ description">}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{paragraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
@@ -33849,7 +33902,8 @@ description">}%
    {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
    {\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }
 \ConfigureList{APAenumerate}%
    {\EndP\HCode{<ol \a:enumerate:\space
@@ -33865,7 +33919,8 @@ description">}%
    {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
    {\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }
 \Configure{seriate}
    {\HCode{<span class="seriate">}\let\end:seriate=\empty}
@@ -33881,7 +33936,8 @@ description">}%
     \EndP\HCode{</li></ul>}\ShowPar
    }
    {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark}
-   {\HCode{<li class="itemize">}\AnchorLabel }
+   {\HCode{<li class="itemize">}\par\ShowPar
+\AnchorLabel }
 
 \Configure{note}
    {\HCode{<div class="note">}\bgroup
@@ -34753,7 +34809,8 @@ description">}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</li></ul>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</li>}\DeleteMark}
-   {\HCode{<li class="itemize">}}
+   {\HCode{<li class="itemize">}\par\ShowPar
+}
 \ConfigureEnv{itemstep}
    {\ifvmode \IgnorePar\fi
     \EndP\HCode{<ul \a:LRdir class="itemstep\expandafter\the
@@ -34770,7 +34827,8 @@ description">}%
    {}
    {\end:itm \global\def\end:itm{\EndP\Tg</li>}\DeleteMark}
    {\HCode{<li class="itemize\ifnum
-                 \c@item@step>\c@overlaysCount -hide\fi">}}
+                 \c@item@step>\c@overlaysCount -hide\fi">}\par\ShowPar
+}
 \Css{li.itemize-hide {visibility:hidden;}}
 
 \Configure{slidetitle}
@@ -34924,6 +34982,13 @@ description">}%
       {} {}
    \Css{div.slide {border:solid black 0.4pt;}}
 \fi
+
+\Configure{frame}{\ifvmode\IgnorePar\fi\EndP
+    \HCode{<div class="slide">}
+}{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}}
+\Configure{frametitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<h2>}\NoFonts}{\EndNoFonts\ifvmode\IgnorePar\fi\EndP\HCode{</h2>}\par\ShowPar}
+\Css{div.slide {border:solid black 0.4pt;margin-bottom:1em;}}
+
 
 \let\block:Name=\empty
 \ConfigureEnv{block}
@@ -35298,8 +35363,10 @@ description">}%
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
-        class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+        class="description">}\bgroup \par\ShowPar
+\bf}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 
 \Configure{enumiii}
     {\HCode{<span class="roman-numeral">}}
@@ -35884,7 +35951,8 @@ description">}%
       \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="enumerate">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="enumerate">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="enumerate">}\par\ShowPar
+}
 \Css{dd.enumerate {margin-left: 2em;}}
 \Css{dt.enumerate {float:left;
               clear:left;
@@ -37058,7 +37126,8 @@ description">}%
        \def\para:enumIII{\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }%
        \def\para:enumIV{\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }%
     \fi
     }
@@ -37093,7 +37162,8 @@ description">}%
           \def\para:enumIII{\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }%
           \def\para:enumIV{\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }%
        \fi
        }
@@ -37126,7 +37196,8 @@ description">}%
           \def\para:enumIII{\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }%
           \def\para:enumIV{{\Configure{Link}{li}{}{ class="enumerate" id=}{}%
- \let\EndLink=\empty \AnchorLabel }%
+ \let\EndLink=\empty\par\ShowPar
+\AnchorLabel }%
 }%
        \fi
        }
@@ -37203,7 +37274,7 @@ description">}%
     \ifnum \listings:Depth=0 \HCode{</pre>}\else
                              \HCode{</span>}\fi
    }
-   {\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+   {\:nbsp%
 \HCode{<br /><span class="label">}}
    {\HCode{</span>}}%
 \Configure{listings-init}{\ttfamily\special{t4ht@(}}{\special{t4ht@)}}
@@ -37214,8 +37285,8 @@ description">}%
     \HCode{<!--l. \the\inputlineno-->}%
     \gdef\start:LstLn{%
        \HCode{<div class="lstlisting" id="listing-\listingN">}%
-       \gdef\start:LstLn{\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
-\HCode{<br />}}}
+       \gdef\start:LstLn{\:nbsp%
+\HCode{<br />\Hnewline}}}
     \bgroup
        \Configure{listings}
          {{\everypar{}\leavevmode}}
@@ -37238,7 +37309,8 @@ description">}%
        \Configure{listings}
          {{\everypar{}\leavevmode}}
          {{\everypar{}\leavevmode}}
-         {\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+         {\:nbsp%
+%
              \HCode{<br /><span class="label">}}
          {\HCode{</span>}}%
    }
@@ -37927,7 +37999,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
    {\HCode{<br />\html:invisible}}
    {\HCode{<i>}}
    {\HCode{</i>}}
-   {\leavevmode\special{t4ht@+\string&{35}x00A0{59}}x%
+   {\:nbsp%
 }
 \Css{div.ShowCode{background-color:\#EEEEEE; border: 1px white solid;}}
 \Css{div.ShowCode div.head{background-color:\#E0E0E0;}}
@@ -38206,7 +38278,8 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
    {\PopMacro\end:itm \global\let\end:itm \end:itm
 \EndP\HCode{</li></ul>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</li>}\DeleteMark}
-   {\HCode{<li class="itemize">}}
+   {\HCode{<li class="itemize">}\par\ShowPar
+}
 \ConfigureEnv{enumerate*}
    {}{\ShowPar
 }{}{}
@@ -38224,7 +38297,8 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
    {\end:itm \gdef\end:itm{\EndP\Tg</li>}\DeleteMark
 }
    {\HCode{<li class="enumerate" value="\expandafter\the\csname
-   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\AnchorLabel
+   c@enum\romannumeral\the\@enumdepth\endcsname"\Hnewline>}\par\ShowPar
+\AnchorLabel
 }
 \ConfigureList{description*}%
    {\EndP\HCode{<dl \a:LRdir class="description">}%
@@ -38234,7 +38308,8 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
 \EndP\HCode{</dd></dl>}\ShowPar}
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="description">}\bgroup \bf}
-   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}}
+   {\egroup\EndP\HCode{</dt><dd\Hnewline class="description">}\par\ShowPar
+}
 \ConfigureList{basedescript}
    {\EndP\HCode{<dl \a:LRdir class="basedescript">}%
       \PushMacro\end:itm \global\let\end:itm=\empty}
@@ -39978,6 +40053,27 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{parallel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{ParallelLText}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="ltext">}\par}{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+\Configure{ParallelRText}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="rtext">}\par}{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+\ConfigureEnv{Parallel}{\ifvmode\IgnorePar\fi\EndP\HCode{<section class="parallel">}}{\ifvmode\IgnorePar\fi\EndP\HCode{</section>}\par}{}{}
+
+\Css{.parallel .ltext{
+  width: 48\%;
+  float:left;
+}}
+\Css{.parallel .rtext{
+  width: 48\%;
+  margin-left: 52\%;
+}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{skak}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \Configure{SkakBoard}{\Picture+{}}{\EndPicture}
@@ -39986,6 +40082,9 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{animate}
@@ -40018,6 +40117,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 \endinput

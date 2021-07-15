@@ -43,15 +43,42 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (defining layers and page styles)]
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: init)
+\newcommand*{\scrlayer@@inherited@options@cslist}{}
+\newcommand*{\scrlayer@@add@inherited@option}[1]{%
+  \ifx\scrlayer@@inherited@options@cslist\@empty
+    \g@addto@macro\scrlayer@@inherited@options@cslist{#1}%
+  \else
+    \g@addto@macro\scrlayer@@inherited@options@cslist{,#1}%
+  \fi
+}
+\newcommand*{\scrlayer@do@inherited@options}[2][.\@currname.\@currext]{%
+  \@for \reserved@a:=\scrlayer@@inherited@options@cslist \do {%
+    \edef\reserved@a{\unexpanded{#2}{#1}{\reserved@a}}%
+    \reserved@a
+  }%
+}
+\newcommand*{\scrlayer@inherit@option}[2]{%
+  \typeout{TRACE: Define key `#2' of member `#1'}%
+  \DefineFamilyMember[#1]{KOMA}%
+  \expandafter\let\csname KV@KOMA#1@#2\expandafter\endcsname
+                  \csname KV@KOMA.scrlayer.sty@#2\endcsname
+  \expandafter\let\csname KV@KOMA#1@#2@default\expandafter\endcsname
+                  \csname KV@KOMA.scrlayer.sty@#2@default\expandafter\endcsname
+  \AtEndOfPackage{%
+    \RelaxFamilyKey[{#1}]{KOMA}{#2}%
+  }%
+}
+\@onlypreamble\scr@do@inherited@options
+\@onlypreamble\scr@inherit@option
 \RequirePackage{scrkbase}[2013/03/05]
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
   \AtEndOfPackage{\let\scrlayer@AtEndOfPackage\@firstofone}%
@@ -125,7 +152,7 @@
     \@namedef{scrlayer@deprecated@reported@for@#1}{\string #2}%
   }{}%
 }
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
   \begingroup
@@ -161,6 +188,7 @@
     \KOMA@kav@xadd{.scrlayer.sty}{markcase}{#1}%
   \fi
 }
+\scrlayer@@add@inherited@option{markcase}
 \@ifundefined{MakeMarkcase}{\let\MakeMarkcase\@firstofone}{}
 \ifx\MakeMarkcase\@firstofone
   \KOMA@kav@replacevalue{.scrlayer.sty}{markcase}{used}%
@@ -181,6 +209,7 @@
 }
 \newif\ifscrlayer@forceignoreuppercase
 \KOMA@ifkey{autooneside}{scrlayer@autooneside}\scrlayer@autoonesidetrue
+\scrlayer@@add@inherited@option{autooneside}
 \KOMA@kav@replacebool{.scrlayer.sty}{autooneside}{scrlayer@autooneside}
 \KOMA@key{automark}[]{%
   \scrlayer@testunexpectedarg{automark}{#1}%
@@ -208,6 +237,7 @@
   \KOMA@kav@removekey{.scrlayer.sty}{manualmark}%
   \KOMA@kav@add{.scrlayer.sty}{automark}{}%
 }
+\scrlayer@@add@inherited@option{automark}
 \KOMA@key{manualmark}[]{%
   \scrlayer@testunexpectedarg{manualmark}{#1}%
   \scrlayer@AtEndOfPackage{\manualmark}%
@@ -216,11 +246,13 @@
   \KOMA@kav@removekey{.scrlayer.sty}{manualmark}%
   \KOMA@kav@add{.scrlayer.sty}{manualmark}{}%
 }
+\scrlayer@@add@inherited@option{manualmark}
 \KOMA@key{onpsselect}{%
   \l@addto@macro{\@ps@initialhook}{#1}%
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsselect}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsselect}
 \newcommand*{\@ps@initialhook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsselect}{}
 \KOMA@key{onpsinit}{%
@@ -228,6 +260,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsinit}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsinit}
 \newcommand*{\@ps@hook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsinit}{}
 \KOMA@key{onpsoneside}{%
@@ -235,6 +268,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsoneside}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsoneside}
 \newcommand*{\@ps@onesidehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsoneside}{}
 \KOMA@key{onpstwoside}{%
@@ -242,6 +276,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpstwoside}{#1}%
 }
+\scrlayer@@add@inherited@option{onpstwoside}
 \newcommand*{\@ps@twosidehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpstwoside}{}
 \KOMA@key{onpsoddpage}{%
@@ -249,6 +284,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsoddpage}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsoddpage}
 \newcommand*{\@ps@oddpagehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsoddpage}{}
 \KOMA@key{onpsevenpage}{%
@@ -256,6 +292,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsevenpage}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsevenpage}
 \newcommand*{\@ps@evenpagehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsevenpage}{}
 \KOMA@key{onpsfloatpage}{%
@@ -263,6 +300,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsfloatpage}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsfloatpage}
 \newcommand*{\@ps@floatpagehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsfloatpage}{}
 \KOMA@key{onpsnonfloatpage}{%
@@ -270,6 +308,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsnonfloatpage}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsnonfloatpage}
 \newcommand*{\@ps@nonfloatpagehook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsnonfloatpage}{}
 \KOMA@key{onpsbackground}{%
@@ -277,6 +316,7 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsbackground}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsbackground}
 \newcommand*{\@ps@backgroundhook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsbackground}{}
 \KOMA@key{onpsforeground}{%
@@ -284,14 +324,20 @@
   \FamilyKeyStateProcessed
   \KOMA@kav@add{.scrlayer.sty}{onpsforeground}{#1}%
 }
+\scrlayer@@add@inherited@option{onpsforeground}
 \newcommand*{\@ps@foregroundhook}{}
 \KOMA@kav@add{.scrlayer.sty}{onpsforeground}{}
 \KOMA@ifkey{singlespacing}{@ps@singlespacing}
+\scrlayer@@add@inherited@option{singlespacing}
 \KOMA@ifkey{deactivatepagestylelayers}{scrlayer@deactivate@layers}
+\scrlayer@@add@inherited@option{deactivatepagestylelayers}
 \KOMA@ifkey{draft}{scrlayer@draft}
+\scrlayer@@add@inherited@option{draft}
 \KOMA@ifkey{forceoverwrite}{scrlayer@forceoverwrite}
+\scrlayer@@add@inherited@option{forceoverwrite}
 \KOMA@ifkey{autoremoveinterfaces}{scrlayer@autoremoveinterfaces}
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+\scrlayer@@add@inherited@option{autoremoveinterfaces}
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \newcommand*{\rightfirstmark}{\expandafter\@rightmark\firstmark\@empty\@empty}
@@ -2296,7 +2342,7 @@
   \@ifundefined{scrlayer@#1@onremove}{\@namedef{scrlayer@#1@onremove}{}}{}%
   \expandafter\l@addto@macro\csname scrlayer@#1@onremove\endcsname{#2}%
 }
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: final)
 \DeclareNewPageStyleByLayers{@everystyle@}{}
 \RedeclarePageStyleByLayers{empty}{}

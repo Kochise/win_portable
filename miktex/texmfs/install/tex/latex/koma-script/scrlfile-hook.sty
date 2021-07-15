@@ -40,20 +40,34 @@
 %% 
 %%% From File: $Id: scrlfile-hook.dtx$
 \ProvidesPackage{scrlfile-hook}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (using LaTeX hooks)]
-\@ifundefined{AddToHook}{%
-  \PackageError{scrlfile-hook}{LaTeX too old for this package}{%
-    \string\AddToHook\space of LaTeX 2020-10-01 or newer is
-    needed.\MessageBreak
-    Please update LaTeX or use package scrlfile-patch instead of\MessageBreak
-    scrlfile-hook.\MessageBreak
-    If you would continue, I will try to load scrlfile-patch
+\@ifundefined{IfFormatAtLeastTF}{%
+  \PackageError{scrlfile-hook}{not recommended usage of package}{%
+    It seems this package has been loaded directly using a LaTeX
+    version\MessageBreak
+    prior to 2020-10-01. This is not recommend. Please always load
+    package\MessageBreak
+    scrlfile instead of scrlfile-hook.\MessageBreak
+    If you would continue, I will try to load scrlfile-patcholdlatex%
   }%
-  \RequirePackage{scrlfile-patch}%
+  \RequirePackage{scrlfile-patcholdlatex}%
   \endinput
-}{}
+}{%
+  \IfFormatAtLeastTF{2020/10/01}{}{%
+    \PackageError{scrlfile-hook}{LaTeX too old for this package}{%
+      It seems this package has been loaded directly using a LaTeX
+      version\MessageBreak
+      prior to 2020-10-01. This is not recommend. Please always load
+      package\MessageBreak
+      scrlfile instead of scrlfile-hook.\MessageBreak
+      If you would continue, I will try to load scrlfile-patcholdlatex%
+    }%
+    \RequirePackage{scrlfile-patcholdlatex}%
+    \endinput
+  }{}%
+}
 \ExplSyntaxOn
 \NewDocumentCommand \BeforeFile { m }
   {
@@ -94,19 +108,19 @@
 \seq_new:N \g__scrlfile_input_file_seq
 \hook_gput_code:nnn { file / before } { . }
   { \seq_gpush:Nx \g__scrlfile_input_file_seq { \CurrentFile }  }
+\msg_new:nnn { scrlfile-hook } { too-many-pops }
+  {
+    More~file~names~popped~from~stack~than~put~to.~
+    This~should~never~happen.~
+    However,~it~could~happen~if~scrlfile-hook~is~loaded~by~another~
+    package~or~class.~In~this~case~some~packages~or~classes~are~not~
+    recognised~correctly.
+  }
 \hook_gput_code:nnn { file / after } { . }
   {
     \seq_gpop:NNF \g__scrlfile_input_file_seq \l_tmpa_seq
       {
-        \msg_new:nnn { scrlfile-hook } { to-much-pops }
-          {
-            More~file~names~popped~from~stack~than~put~to.~
-            This~should~never~happen.~
-            However,~it~could~happen~if~scrlfile-hook~is~loaded~by~another~
-            package~or~class.~In~this~case~some~packages~or~classes~are~not~
-            recognised~correctly.
-          }
-        \msg_warning:nn { scrlfile-hook } { to-much-pops }
+        \msg_warning:nn { scrlfile-hook } { too-many-pops }
       }
   }
 \cs_if_exist:NTF \g__filehook_input_file_seq

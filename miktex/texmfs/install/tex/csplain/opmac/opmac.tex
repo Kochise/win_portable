@@ -5,7 +5,7 @@
 %% The history of versions is at the end of this file, after \endpinput
 
 \ifx\OPmacversion\undefined \else \endinput \fi
-\def\OPmacversion{Apr. 2020}  
+\def\OPmacversion{May 2020}  
 \immediate\write16{This is OPmac (Olsak's Plain macros), version <\OPmacversion>}
 
 %%%%%%%%%%%%%% Basic macros, sec. 3.1 in opmac-d.pdf
@@ -46,7 +46,7 @@
    \expandafter\tmp#1\endlistsep#2\end
 }
 \long\def\isnextchar#1#2#3{\begingroup\toks0={\endgroup#2}\toks1={\endgroup#3}%
-   \let\tmp=#1\futurelet\next\isnextcharA
+   \let\tmp= #1\futurelet\next\isnextcharA
 }
 \def\isnextcharA{\the\toks\ifx\tmp\next0\else1\fi\space}
 
@@ -1193,7 +1193,7 @@
 \def\paramtabdeclarep#1{\tabiteml\vtop{\hsize=#1\relax \baselineskip=\normalbaselineskip 
    \lineskiplimit=0pt \noindent##\unsskip \vbox to0pt{\vss\hbox{\tabstrutA}}}\tabitemr}
 
-\def\unsskip{\ifdim\lastskip>0pt \unskip\fi}
+\def\unsskip{\ifmmode\else\ifdim\lastskip>0pt \unskip\fi\fi}
 \def\addtabitem{\ifnum\colnum>0 \addtabdata{&}\addto\ddlinedata{&\dditem}\fi
     \advance\colnum by1 \let\tmpa=\relax}
 \def\addtabdata#1{\tabdata\expandafter{\the\tabdata#1}}
@@ -1863,6 +1863,7 @@ Jul. 2019  \fnoteG introduced, \fnotemark bug fixed (if \runningfnotes).
            \colorstackcnt=0 used, \setrgbcolor, \formatcmyk, \formatrgb introduced.
 Apr. 2020  \mnote: \strut -> \lower\dp\strutbox\hbox{}
            \mspan: \cr#2\crcr -> \cr#2\cr (empty text must be formated too)
+May  2020  \isnextchar: \let\tmp=#1 -> \let\tmp= #1 (#1 should be space)
+           \unsskip: \ifmmode\else added.
 
 %%%%%%%%%%%%%% End of opmac.tex
-

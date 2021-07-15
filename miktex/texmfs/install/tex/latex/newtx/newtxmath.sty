@@ -11,8 +11,8 @@
 % of glyph collisions.
 % These modifications are by Michael Sharpe, msharpe at ucsd dot edu
 
-\def\fileversion{1.640}
-\def\filedate{2020/12/20}
+\def\fileversion{1.655}
+\def\filedate{2021/06/01}
 \ProvidesPackage{newtxmath}[\filedate\space v\fileversion ]
 \@ifundefined{newtxmathLoaded}{}{\endinput}
 
@@ -504,15 +504,6 @@ amssymbols,uprightGreek,nosubscriptcorrection}
     \DeclareMathSymbol{8}{\mathord}{letters}{140}
     \DeclareMathSymbol{9}{\mathord}{letters}{141}
 \fi
-\iftx@upscr
- \let\mathscr=\mathuscr
-  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
-  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
-\else
- \let\mathscr=\mathslscr
-  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
-  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
-\fi
 \fi
 %\iftx@upscr
 % \DeclareRobustCommand{\mathscr}[1]{\ntx@alfa{#1}{196}{222}{248}{249}{}{letters}}
@@ -570,8 +561,10 @@ amssymbols,uprightGreek,nosubscriptcorrection}
 \DeclareSymbolFontAlphabet{\symb@ls@lph@}{symbols}
 
 \ifx\AmSfont\@undefined\else
-\renewcommand{\AmSfont}{{%
-  \usefont{LMS}{ntxsy}{\if\@xp\@car\f@series\@nil bb\else m\fi}{n}}}
+\renewcommand{\AmS}{{\protect\AmSfont
+  A\kern-.19em\lower.5ex\hbox{M}\kern-.025emS}}
+\renewcommand{\AmSfont}{%
+  \usefont{LMS}{ntxsy}{\if\@xp\@car\f@series\@nil bb\else m\fi}{n}}
 \fi
 
 
@@ -723,7 +716,8 @@ amssymbols,uprightGreek,nosubscriptcorrection}
 \def\tx@SplitOff#1#2(tx@head:)#3(tx@tail:)#4{\def#3{\noexpand #1}#4={#2}}
 
 \iftx@sbc
-\AtBeginDocument{\mathcode`\_=\string"8000 \catcode`\_=12\relax} \begingroup
+\AtBeginDocument{% first check if _ has been redefined
+ \mathcode`\_=\string"8000 \catcode`\_=12\relax} \begingroup
  \catcode`\_=13
  \gdef_{\expandafter\s@@b@}
 \endgroup
@@ -2352,7 +2346,33 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \DeclareMathSymbol{\m@thbbch@rX}{\mathord}{lettersA}{155}
 \DeclareMathSymbol{\m@thbbch@rY}{\mathord}{lettersA}{156}
 \DeclareMathSymbol{\m@thbbch@rZ}{\mathord}{lettersA}{157}
+\DeclareMathSymbol{\m@thbbch@ra}{\mathord}{lettersA}{158}
+\DeclareMathSymbol{\m@thbbch@rb}{\mathord}{lettersA}{159}
+\DeclareMathSymbol{\m@thbbch@rc}{\mathord}{lettersA}{160}
+\DeclareMathSymbol{\m@thbbch@rd}{\mathord}{lettersA}{161}
+\DeclareMathSymbol{\m@thbbch@re}{\mathord}{lettersA}{162}
+\DeclareMathSymbol{\m@thbbch@rf}{\mathord}{lettersA}{163}
+\DeclareMathSymbol{\m@thbbch@rg}{\mathord}{lettersA}{164}
+\DeclareMathSymbol{\m@thbbch@rh}{\mathord}{lettersA}{165}
+\DeclareMathSymbol{\m@thbbch@ri}{\mathord}{lettersA}{166}
+\DeclareMathSymbol{\m@thbbch@rj}{\mathord}{lettersA}{167}
 \DeclareMathSymbol{\m@thbbch@rk}{\mathord}{lettersA}{168}
+\DeclareMathSymbol{\m@thbbch@rl}{\mathord}{lettersA}{169}
+\DeclareMathSymbol{\m@thbbch@rm}{\mathord}{lettersA}{170}
+\DeclareMathSymbol{\m@thbbch@rn}{\mathord}{lettersA}{171}
+\DeclareMathSymbol{\m@thbbch@ro}{\mathord}{lettersA}{172}
+\DeclareMathSymbol{\m@thbbch@rp}{\mathord}{lettersA}{173}
+\DeclareMathSymbol{\m@thbbch@rq}{\mathord}{lettersA}{174}
+\DeclareMathSymbol{\m@thbbch@rr}{\mathord}{lettersA}{175}
+\DeclareMathSymbol{\m@thbbch@rs}{\mathord}{lettersA}{176}
+\DeclareMathSymbol{\m@thbbch@rt}{\mathord}{lettersA}{177}
+\DeclareMathSymbol{\m@thbbch@ru}{\mathord}{lettersA}{178}
+\DeclareMathSymbol{\m@thbbch@rv}{\mathord}{lettersA}{179}
+\DeclareMathSymbol{\m@thbbch@rw}{\mathord}{lettersA}{180}
+\DeclareMathSymbol{\m@thbbch@rx}{\mathord}{lettersA}{181}
+\DeclareMathSymbol{\m@thbbch@ry}{\mathord}{lettersA}{182}
+\DeclareMathSymbol{\m@thbbch@rz}{\mathord}{lettersA}{183}
+
 \DeclareMathSymbol{\m@thbbch@rzero}{\mathord}{lettersA}{43}
 \DeclareMathSymbol{\m@thbbch@rone}{\mathord}{lettersA}{44}
 \DeclareMathSymbol{\m@thbbch@rtwo}{\mathord}{lettersA}{45}
@@ -2363,8 +2383,8 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \DeclareMathSymbol{\m@thbbch@rseven}{\mathord}{lettersA}{50}
 \DeclareMathSymbol{\m@thbbch@reight}{\mathord}{lettersA}{51}
 \DeclareMathSymbol{\m@thbbch@rnine}{\mathord}{lettersA}{52}
-\DeclareMathSymbol{\m@thbbch@rimath}{\mathord}{lettersA}{125}
-\DeclareMathSymbol{\m@thbbch@rjmath}{\mathord}{lettersA}{126}
+\DeclareMathSymbol{\m@thbbch@rimath}{\mathord}{lettersA}{184}
+\DeclareMathSymbol{\m@thbbch@rjmath}{\mathord}{lettersA}{185}
 \DeclareMathSymbol{\m@thbbch@rGamma}{\mathord}{lettersA}{219}
 \DeclareMathSymbol{\m@thbbch@rPi}{\mathord}{lettersA}{220}
 \DeclareMathSymbol{\m@thbbch@rgamma}{\mathord}{lettersA}{221}
@@ -2473,6 +2493,8 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \DeclareMathSymbol{\tx@Bbbx}{\mathord}{lettersA}{248}
 \DeclareMathSymbol{\tx@Bbby}{\mathord}{lettersA}{249}
 \DeclareMathSymbol{\tx@Bbbz}{\mathord}{lettersA}{250}
+\DeclareMathSymbol{\tx@Bbbimath}{\mathord}{lettersA}{125}
+\DeclareMathSymbol{\tx@Bbbjmath}{\mathord}{lettersA}{126}
 
 \@xp\let\csname tx@Bbb0\endcsname=\m@thbbch@rzero
 \@xp\let\csname tx@Bbb1\endcsname=\m@thbbch@rone
@@ -2488,8 +2510,6 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \@xp\let\csname tx@BbbPi\endcsname=\m@thbbch@rPi
 \@xp\let\csname tx@Bbbgamma\endcsname=\m@thbbch@rgamma
 \@xp\let\csname tx@Bbbpi\endcsname=\m@thbbch@rpi
-\@xp\let\csname tx@Bbbimath\endcsname=\m@thbbch@rimath
-\@xp\let\csname tx@Bbbjmath\endcsname=\m@thbbch@rjmath
 
 % Changed macros which are not limited to a single character, and can include digits, \imath, \jmath
 \def\ntx@@vvbb#1#2\@nil{%
@@ -2624,25 +2644,13 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 	\csname tx@UScr#1\endcsname}	
 	\ifblank{#2}{\relax}{\ntx@@uscr #2\@nil}}
 \DeclareRobustCommand*{\mathuscr}[1]{\ntx@@uscr #1\@nil}
-
-\iftx@digits
-    \DeclareMathSymbol{0}{\mathord}{letters}{132}
-    \DeclareMathSymbol{1}{\mathord}{letters}{133}
-    \DeclareMathSymbol{2}{\mathord}{letters}{134}
-    \DeclareMathSymbol{3}{\mathord}{letters}{135}
-    \DeclareMathSymbol{4}{\mathord}{letters}{136}
-    \DeclareMathSymbol{5}{\mathord}{letters}{137}
-    \DeclareMathSymbol{6}{\mathord}{letters}{138}
-    \DeclareMathSymbol{7}{\mathord}{letters}{139}
-    \DeclareMathSymbol{8}{\mathord}{letters}{140}
-    \DeclareMathSymbol{9}{\mathord}{letters}{141}
-\fi
+%
 \iftx@upscr
- \let\mathscr=\mathuscr
+  \let\mathscr\mathuscr
   \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
   \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
 \else
- \let\mathscr=\mathslscr
+  \let\mathscr\mathslscr
   \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
   \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
 \fi % upscr

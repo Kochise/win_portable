@@ -23,23 +23,25 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bigdelim}
-           [2021/01/29 v2.7
+           [2021/03/15 v2.8
                   Create big delimiters in tabular or array]
 \RequirePackage{multirow}
-\newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
-\def\@ldelim#1#2#3[#4]%
+\newcommand\ldelim[2]{\@ifnextchar[{\@ldelim{#1}{#2}}{\@ldelim{#1}{#2}[0pt]}}
+\def\@ldelim#1#2[#3]#4{\@ifnextchar[{\@@ldelim{#1}{#2}{#3}{#4}}{\@@ldelim{#1}{#2}{#3}{#4}[\null]}}
+\def\@@ldelim#1#2#3#4[#5]%
  {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
-  \multirow{#2}{#3}{%
+  \multirow{#2}{#4}[#3]{%
    \ensuremath
      {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
-     \textnormal{#4}\right#1}}}
-\newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
-\def\@rdelim#1#2#3[#4]%
+     \textnormal{#5}\right#1}}}
+\newcommand\rdelim[2]{\@ifnextchar[{\@rdelim{#1}{#2}}{\@rdelim{#1}{#2}[0pt]}}
+\def\@rdelim#1#2[#3]#4{\@ifnextchar[{\@@rdelim{#1}{#2}{#3}{#4}}{\@@rdelim{#1}{#2}{#3}{#4}[\null]}}
+\def\@@rdelim#1#2#3#4[#5]%
  {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
-  \multirow{#2}{#3}{%
+  \multirow{#2}{#4}[#3]{%
    \ensuremath
      {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
-       \textnormal{#4}\right.}}}
+       \textnormal{#5}\right.}}}
 \endinput
 %%
 %% End of file `bigdelim.sty'.

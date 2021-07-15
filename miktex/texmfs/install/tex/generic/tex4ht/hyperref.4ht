@@ -1,4 +1,4 @@
-% hyperref.4ht (2021-01-02-13:53), generated from tex4ht-4ht.tex
+% hyperref.4ht (2021-05-16-13:57), generated from tex4ht-4ht.tex
 % Copyright 1999-2009 Eitan M. Gurari
 % Copyright 2009-2021 TeX Users Group
 %
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-01-02-13:53}
+\immediate\write-1{version 2021-05-16-13:57}
 
 \csname end:hyperref\endcsname
 
@@ -306,6 +306,12 @@
   \Hy@MakeCurrentHref{#1.\the\Hy@linkcounter}%
 }
 
+\@ifpackageloaded{nameref}{}
+{%
+   \let\sv:label\label
+   \RequirePackage{nameref}%
+   \let\label\sv:label
+}
 \def\hyper@makecurrent#1{%
   \begingroup
     \edef\Hy@param{#1}%
@@ -395,6 +401,8 @@
  \Hy@GlobalStepCount\Hy@linkcounter
  \xdef\@currentHref{likesection.\the\Hy@linkcounter}%
  \Hy@raisedlink{\hyper@anchorstart{\@currentHref}\hyper@anchorend}%
+ \edef\@currentlabel{\the\Hy@linkcounter}%
+ \AnchorLabel%
 }
 \catcode`\:=12
 \def\@hyper@readexternallink#1#2#3#4:#5:#6\\#7{%

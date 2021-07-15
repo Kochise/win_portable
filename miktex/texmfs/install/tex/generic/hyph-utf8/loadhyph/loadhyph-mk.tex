@@ -5,7 +5,7 @@
 %     source/generic/hyph-utf8/generate-pattern-loaders.rb
 % See also http://tug.org/tex-hyphen
 %
-% Copyright 2008-2020 TeX Users Group.
+% Copyright 2008-2021 TeX Users Group.
 % You may freely use, modify and/or distribute this file.
 % (But consider adapting the scripts if you need modifications.)
 %
@@ -21,15 +21,15 @@
 \ifx\secondarg\empty
     % Unicode-aware engine (such as XeTeX or LuaTeX) only sees a single (2-byte) argument
     \message{UTF-8 Macedonian hyphenation patterns}
-    % Set \lccode for ZWNJ and ZWJ.
-    \lccode"200C="200C
-    \lccode"200D="200D
     \input hyph-mk.tex
 \else
     % 8-bit engine (such as TeX or pdfTeX)
-    \message{No Macedonian hyphenation patterns - only for Unicode engines}
+    \message{MACEDONIAN Macedonian hyphenation patterns}
+    % 2006 patterns without ѓ and ќ for 8-bit engines
+    \input hyph-mk.macedonian.tex
 \fi\else
     % pTeX
-    \message{No Macedonian hyphenation patterns - only for Unicode engines}
+    \message{MACEDONIAN Macedonian hyphenation patterns}
+    \input hyph-mk.macedonian.tex
 \fi
 \endgroup

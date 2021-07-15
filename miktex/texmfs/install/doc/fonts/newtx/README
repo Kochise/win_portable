@@ -1,9 +1,39 @@
 This package, initially based on txfonts, provides many fixes and enhancements to the txfonts package, splitting it into two separate packages---newtxtext and newtxmath, which may be run independently of one another. It provides scaling, improved metrics, and other options. In particular, newtxmath offers a libertine option which substitutes Linux Libertine (provided with TeXLive and MikTeX) italic and Greek letters for the default Times letters, providing a good match for the Libertine text font, which is heavier than Computer Modern but lighter than Times, and in my experience, looks very sharp and clear on the screen.
 
-Current version: 1.640 2020-12-20
+Current version: 1.655 2021-06-01
 
 This material is subject to the LaTeX Project Public License. See http://www.ctan.org/license/lppl1.3
 for the details of that license.
+
+Changes in version 1.655
+1. Modified definitions of \AmS and \AmSfont so that \AmS now works properly. (Thanks Maurice Hansen.)
+2. Further modifications to metrics in of characters in subscript and subsubscript sizes
+
+Changes in version 1.654
+Modified metrics in of several characters in subscript and subsubscript sizes, most notably f and x.
+
+Changes in version 1.653
+Following valued input from David Carlisle and Enrico Gregorio, the fd files "corrected" in 1.652 were actually corrected using a suggestion of Enrico Gregorio.
+
+Changes in version 1.652
+Corrected the fd files for the main text fonts. Those in version 1.651 were not functional and were released in error.
+
+Changes in version 1.651
+Corrected an error introduced in version 1.65 in a number of fd files for the main text fonts. (Thanks Alexara Wu.)
+
+Changes in version 1.65
+1. Added a new text family, ntxth, to accommodate the theorem font which is available only in regular weight, italic shape. (In previous versions, the theorem font was accessed as the slanted shape, which turned out to be a bad decision on my part.)
+2. Added true slanted shapes and a new option, trueslanted, to newtxtext. If this option is not specified, newtxtext behaves exactly as in the previous version, with \textsl producing italic with upright punctation. If specified, \textsl produces true slanted text. It is strongly recommended to always use this option in order to get the correct behavior of figures in header text made after specifying \pagestyle{headings}. The only cost will be that you cannot use \textsl to invokee the theorem font. The substitute is \textth or, equivalently, \textthit.
+3. Corrected the mismatched sizes of some extended math parentheses. (Thanks Kazuki Maeda.)
+
+Changes in version 1.642
+Corrected \mathscr, whose definition was absent in 1.641.
+
+Changes in version 1.641
+1. Corrected some metrics problems with the version of  the STIX BB fonts used in this package.
+2. Corrected two math glyphs: odot in symbols at 7pt and big right bracket in bold mathex. (Thanks Davide Campagnari.)
+3. Added lower case letters to the BB alphabet addressed by the option varbb.
+4. The same  corrections now apply to all related packages for which there is an "enhanced" math option to newtx.
 
 Changes in version 1.640
 1. Added several Blackboard Bold Greek glyphs.
@@ -22,7 +52,7 @@ Changes in version 1.630
 2. Corrected an error in newtxmath.sty which affected the rendering of Bbb figures under the option stickstoo.
 3. Corrected some problems with LY1 encodings affecting superior letters and figures, and one of the TS1 encodings.
 4. Added a replacement for the default \textfrac command which did not give satisfactory results with the newtx fonts.
-5. Replaced the previous definition of \textfrac what I think is a better one, but remaing backwards compatible with the previous version.
+5. Replaced the previous definition of \textfrac what I think is a better one, but remaining backwards compatible with the previous version.
 
 Changes in version 1.629
 Added math support for NotoSerif and NotoSans.  See the documentation for the new package notomath, which integrates this support.

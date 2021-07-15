@@ -22,7 +22,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \RequirePackage{expl3}[2018/06/18]
-\ProvidesExplPackage{lualatex-math}{2020/09/25}{1.9}%
+\ProvidesExplPackage{lualatex-math}{2021/07/05}{1.11}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -230,48 +230,61 @@
   }
 }
 \__lltxmath_after_package_or_now:nn { mathtools } {
-  \__lltxmath_patch:NNnnn \MT_cramped_internal:Nn
-    \cs_set_nopar:Npn { #1 #2 } {
-    \sbox \z@ {
-      $
-      \m@th
-      #1
-      \nulldelimiterspace = \z@
-      \radical \z@ { #2 }
-      $
-    }
-    \ifx #1 \displaystyle
-      \dimen@ = \fontdimen 8 \textfont 3
-      \advance \dimen@ .25 \fontdimen 5 \textfont 2
-    \else
-      \dimen@ = 1.25 \fontdimen 8
-      \ifx #1 \textstyle
-        \textfont
+  \@ifpackagelater { mathtools } { 2021/03/28 } { } {
+    \__lltxmath_patch:NNnnn \MT_cramped_internal:Nn
+      \cs_set_nopar:Npn { #1 #2 } {
+      \setbox \z@ \hbox {
+        $
+        \m@th
+        #1
+        \kern -\nulldelimiterspace
+        \radical \z@ { #2 }
+        $
+      }
+      \ifx #1 \displaystyle
+        \dimen@ = \fontdimen 8 \textfont 3
+        \advance \dimen@ .25 \fontdimen 5 \textfont 2
       \else
-        \ifx #1 \scriptstyle
-          \scriptfont
+        \dimen@ = 1.25 \fontdimen 8
+        \ifx #1 \textstyle
+          \textfont
         \else
-          \scriptscriptfont
+          \ifx #1 \scriptstyle
+            \scriptfont
+          \else
+            \scriptscriptfont
+          \fi
         \fi
+        3
       \fi
-      3
-    \fi
-    \advance \dimen@ -\ht\z@
-    \ht\z@ = -\dimen@
-    \box\z@
-  } {
-    {
-      \ensuremath {
-        \use:c { cramped \cs_to_str:N #1 } #2
+      \advance \dimen@ -\ht\z@
+      \ht\z@ = -\dimen@
+      \ifvmode \leavevmode \fi
+      { }
+      \box\z@
+    } {
+      {
+        \ensuremath {
+          \use:c { cramped \cs_to_str:N #1 } #2
+        }
       }
     }
   }
 }
 \__lltxmath_after_package_or_now:nn { icomma } {
-  \tl_replace_once:Nnn \@begindocumenthook {
-    \mathchardef \mathcomma \mathcode `\,
+  \@ifl@t@r \fmtversion { 2020/10/01 } {
+    \hook_gput_code:nnn { begindocument } { lualatex-math } {
+      \__lltxmath_set_mathchar:NN \mathcomma \,
+      \mathcode `\, = "8000 ~
+    }
+    \hook_gset_rule:nnnn
+      { begindocument } { lualatex-math } { voids } { icomma }
   } {
-    \__lltxmath_set_mathchar:NN \mathcomma \,
+    \tl_replace_once:Nnn \@begindocumenthook {
+      \mathchardef \mathcomma \mathcode `\,
+    } {
+      \__lltxmath_set_mathchar:NN \mathcomma \,
+    }
   }
 }
 \endinput

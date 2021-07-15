@@ -10,7 +10,7 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
@@ -29,7 +29,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {microtype}
-  [2020/12/07 v2.8
+  [2021/03/14 v2.8c
    Micro-typographical refinements
    (RS)]
 \def\MT@MT
@@ -426,10 +426,12 @@
   }\@gobble
 }
 \def\MT@restore@p@h{\chardef\%`\% \chardef\#`\# }
-\newif\ifMT@xunicode
-\MT@with@package@T{xunicode}\MT@xunicodetrue
 \newif\ifMT@fontspec
 \MT@with@package@T{fontspec}\MT@fontspectrue
+\newif\ifMT@xunicode
+\MT@with@package@T{xunicode}\MT@xunicodetrue
+\@ifl@t@r\fmtversion{2020/10/01}
+  {\AddToHook{package/after/fontspec}{\MT@fontspectrue}}\relax
 \let\MT@maybe@gobble@with@tikz\@firstofone
 \def\MT@tikz@setup{%
   \def\MT@maybe@gobble@with@tikz{%
@@ -1093,12 +1095,22 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \def\MT@is@symbol{%
   \expandafter\def\expandafter\MT@char\expandafter
       {\csname\MT@encoding\MT@detokenize@c\@tempa\endcsname}%
+  \expandafter\expandafter\expandafter
+    \MT@is@opt@char\MT@char\iffontchar\char\else\fi\relax
   \expandafter\MT@exp@two@c\expandafter\MT@is@char\expandafter
-      \meaning\expandafter\MT@char\MT@charstring\relax\relax\relax
+    \meaning\expandafter\MT@char\MT@charstring\relax\relax\relax
   \ifnum\MT@char@ < \z@
     \expandafter\expandafter\expandafter\MT@is@tlig\MT@char\relax\relax
     \ifnum\MT@char@ < \z@
       \expandafter\expandafter\expandafter\MT@is@letter\MT@char\relax\relax
+    \fi
+  \fi
+}
+\def\MT@is@opt@char#1\iffontchar#2\char#3\else#4\fi\relax{%
+  \ifx\\#1\\%
+    \iffontchar#2%
+      \expandafter\chardef
+        \csname\MT@encoding\MT@detokenize@c\@tempa\endcsname=#3\relax
     \fi
   \fi
 }
@@ -1144,10 +1156,14 @@ time will almost certainly lead to undesired results. Have your choice!}%
     }%
   }
 /x
-\def\MT@is@tlig#1#2{%
-  \ifx#1\remove@tlig
-    \MT@is@number #2\relax\relax
+\def\MT@is@tlig#1#2\relax{%
+  \ifx\remove@tlig#1%
+    \MT@remove@tlig
   \fi
+}
+\def\MT@remove@tlig{%
+  \expandafter\MT@exp@two@c\expandafter\MT@is@number
+  \expandafter\@secondoftwo\MT@char\relax\relax
 }
 \def\MT@is@composite#1#2\relax{%
   \ifx\\#2\\\else
@@ -1169,7 +1185,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \fi
 }
 \def\MT@is@uni@comp#1\iffontchar#2\else#3\fi\relax{%
-  \ifx\\#2\\\else\edef\MT@char{\iffontchar#2\fi}\fi
+  \ifx\\#1\\\edef\MT@char{\iffontchar#2\fi}\fi
 }
 \def\MT@set@listname{%
   \edef\MT@curr@list@name{\@nameuse{MT@abbr@\MT@feat} list\noexpand\MessageBreak
@@ -1536,10 +1552,8 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \else
     \MT@let@cn\@tempa{\MT@val}%
   \fi
-  \ifx\@tempa\relax \else
-    \begingroup
-      \def\set@fontsize##1##2##3##4\@nil{\endgroup\def\MT@val{##2}}%
-      \@tempa\@nil
+  \ifx\@tempa\relax\else
+    \MT@get@size@
   \fi
   \MT@ifdimen\MT@val{%
     \@defaultunits\@tempdima\MT@val pt\relax\@nnil
@@ -1550,6 +1564,23 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \let\MT@val\relax
   }%
 }
+\def\MT@get@size@@{%
+  \begingroup
+    \def\set@fontsize##1##2##3##4\@nil{\endgroup\def\MT@val{##2}}%
+    \@tempa\@nil
+}
+^^X\@ifclassloaded{svjour3}{%
+^^X  \def\MT@get@size@{%
+^^X    \@tempcnta=\currentiflevel
+^^X    \MT@get@size@@
+^^X    \MT@loop
+^^X      \ifnum\numexpr\currentiflevel-1>\@tempcnta
+^^X      \csname fi\endcsname
+^^X    \MT@repeat
+^^X  }%
+^^X}{%
+  \let\MT@get@size@\MT@get@size@@
+^^X}
 \def\MT@define@set@key@font#1{%
   \define@key{MT@#1@set}{font}[]{%
     \MT@glet@nc{MT@#1list@font@\MT@curr@set@name}\@empty
@@ -1840,14 +1871,16 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \def\MT@set@inh@list#1#2{%
   \MT@ifempty\MT@inh@feat{%
-    \MT@map@clist@c\MT@features{{\MT@declare@char@inh{##1}{#1}{#2}}}%
+    \MT@map@clist@c\MT@features{{%
+      \MT@ifstreq{##1}{tr}\relax{\MT@declare@char@inh{##1}{#1}{#2}}%
+    }}%
   }{%
     \MT@map@clist@c\MT@inh@feat{{%
       \KV@@sp@def\@tempa{##1}%
       \MT@ifempty\@tempa\relax{%
-        \MT@exp@one@n\MT@declare@char@inh
-          {\csname MT@rbba@\@tempa\endcsname}{#1}{#2}%
-      }%
+        \edef\@tempa{\csname MT@rbba@\@tempa\endcsname}%
+        \MT@ifstreq\@tempa{tr}\relax{%
+          \MT@exp@one@n\MT@declare@char@inh{\@tempa}{#1}{#2}}}%
     }}%
   }%
   \MT@end@catcodes
@@ -1878,6 +1911,12 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \expandafter\MT@inh@do
   \fi
 }
+\MT@gdef@n{MT@pr@c@U/euroitc///}{euroitc}
+\MT@gdef@n{MT@pr@c@U/euroitcs///}{euroitc}
+\MT@gdef@n{MT@pr@c@U/euroitc//it/}{euroitci}
+\MT@gdef@n{MT@pr@c@U/euroitcs//it/}{euroitci}
+\MT@gdef@n{MT@pr@c@euroitc}{E={100,50}}
+\MT@gdef@n{MT@pr@c@euroitci}{E={100,}}
 \def\MT@permute{%
   \let\MT@cnt@encoding\@ne
   \MT@permute@

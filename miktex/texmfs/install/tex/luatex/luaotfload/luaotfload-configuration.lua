@@ -7,8 +7,8 @@
 
 assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-configuration",
-    version       = "3.17",       --TAGVERSION
-    date          = "2021-01-08", --TAGDATE
+    version       = "3.18",       --TAGVERSION
+    date          = "2021-05-21", --TAGDATE
     description   = "luaotfload submodule / config file reader",
     license       = "GPL v2.0"
 }
@@ -994,7 +994,7 @@ local function dump ()
   end
   if next(confdata) then
     iowrite (stringformat (conf_header,
-                           osdate ("%Y-%m-d %H:%M:%S", os.time ())))
+                           osdate ("%Y-%m-%d %H:%M:%S", os.time ())))
     iowrite (tableconcat (confdata, "\n"))
     iowrite (conf_footer)
   end

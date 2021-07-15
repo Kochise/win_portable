@@ -10,7 +10,7 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
@@ -30,21 +30,24 @@
 %%
 \ProvidesFile
   {microtype-luatex.def}
-  [2020/12/07 v2.8
+  [2021/03/14 v2.8c
    Definitions specific to
    luatex
    (RS)]
 \let\MT@lua\directlua
-\def\MT@luatex@no{5}
-\ifnum\luatexversion<90
-  \def\MT@luatex@no{4}
-  \ifnum\luatexversion<85
-    \def\MT@luatex@no{3}
-    \ifnum\luatexversion<62
-      \def\MT@luatex@no{2}
-      \ifnum\luatexversion<36
-        \def\MT@lua{\directlua0}
-        \def\MT@luatex@no{1}
+\def\MT@luatex@no{6}
+\ifnum\luatexversion<110
+  \def\MT@luatex@no{5}
+  \ifnum\luatexversion<90
+    \def\MT@luatex@no{4}
+    \ifnum\luatexversion<85
+      \def\MT@luatex@no{3}
+      \ifnum\luatexversion<62
+        \def\MT@luatex@no{2}
+        \ifnum\luatexversion<36
+          \def\MT@lua{\directlua0}
+          \def\MT@luatex@no{1}
+        \fi
       \fi
     \fi
   \fi
@@ -57,6 +60,7 @@
 \@ifl@t@r\fmtversion{2016/01/01}\relax{\RequirePackage{luatexbase}}
 \@ifl@t@r\fmtversion{2017/01/01}\relax{\RequirePackage{luaotfload}}
 \MT@lua{require("microtype")}
+\MT@requires@luatex6{\let\MT@glet\glet}\relax
 \def\MT@ifint#1{\csname\MT@lua{microtype.if_int([[#1]])}\endcsname}
 \def\MT@ifdimen#1{\csname\MT@lua{microtype.if_dimen([[#1]])}\endcsname}
 \def\MT@ifstreq#1#2{\csname\MT@lua{microtype.if_str_eq([[#1]],[[#2]])}\endcsname}

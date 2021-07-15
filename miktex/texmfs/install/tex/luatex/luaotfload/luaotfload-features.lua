@@ -5,8 +5,8 @@
 
 assert(luaotfload_module, "This is a part of luaotfload and should not be loaded independently") { 
     name          = "luaotfload-features",
-    version       = "3.17",       --TAGVERSION
-    date          = "2021-01-08", --TAGDATE
+    version       = "3.18",       --TAGVERSION
+    date          = "2021-05-21", --TAGDATE
     description   = "luaotfload submodule / features",
     license       = "GPL v2.0",
     author        = "Hans Hagen, Khaled Hosny, Elie Roux, Philipp Gesang, Marcel Krüger",
@@ -508,6 +508,17 @@ do
             factors[i] = getaxisscale(segments, cur.minimum, default, cur.maximum, value)
         end
         return factors
+    end
+
+    -- Additionally we patch trytosharefont to ensure that variable fonts work
+    -- with default values whenever no explicit values are passed.
+    local original_trytosharefont = fonts.constructors.trytosharefont
+    function fonts.constructors.trytosharefont(target, tfmdata)
+        original_trytosharefont(target, tfmdata)
+        if not target.streamprovider and tfmdata.resources.variabledata then
+            local format = tfmdata.properties.format
+            target.streamprovider = format == 'opentype' and 1 or format == 'truetype' and 2 or 0
+        end
     end
 end
 

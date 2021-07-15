@@ -38,16 +38,23 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlfile.dtx 3537 2020-09-14 07:30:10Z kohm $
+%%% From File: $Id: scrlfile.dtx 3565 2021-02-16 10:43:38Z kohm $
 \ProvidesPackage{scrlfile}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (file load hooks)]
-\@ifundefined{AddToHook}{%
+\@ifundefined{IfFormatAtLeastTF}{%
   \RequirePackage{scrlfile-patcholdlatex}%
   \RequirePackage{xparse}%
+  \ExplSyntaxOff
 }{%
-  \RequirePackage{scrlfile-hook}%
+  \IfFormatAtLeastTF{2020/10/01}{%
+    \RequirePackage{scrlfile-hook}%
+  }{%
+    \RequirePackage{scrlfile-patcholdlatex}%
+    \RequirePackage{xparse}%
+    \ExplSyntaxOff
+  }%
 }
 \DeclareOption{withdeprecated}{%
   \RenewDocumentCommand\AfterClass{}{%

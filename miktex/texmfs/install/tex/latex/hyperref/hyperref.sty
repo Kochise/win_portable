@@ -34,7 +34,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{hyperref}
-  [2021-02-10 v7.00j %
+  [2021-06-07 v7.00m %
   Hypertext links for LaTeX]
 \begingroup
   \@makeother\`%
@@ -764,9 +764,9 @@
 \def\HyPsd@LoadExtra{%
   \ifHy@psdextra
     \ltx@iffileloaded{puenc.def}{%
-      \ltx@iffileloaded{puenc-greek.def}{}{%
+      \ltx@iffileloaded{puenc-greekbasic.def}{}{%
        \Hy@SaveCatcodeSettings{pu}%
-       \input{puenc-greek.def}%
+       \input{puenc-greekbasic.def}%
        \Hy@RestoreCatcodeSettings{pu}}%
       \Hy@SaveCatcodeSettings{psdextra}%
       \input{psdextra.def}%
@@ -2167,10 +2167,10 @@
   \let\Hy@RestoreLastskip\relax
   \ifvmode
     \ifdim\lastskip=\z@
-      \ifnum\lastnodetype=11 %
-        \let\Hy@RestoreLastskip\nobreak
-      \else
+      \ifnum\lastnodetype=1 %
         \let\Hy@RestoreLastskip\relax
+      \else
+        \let\Hy@RestoreLastskip\nobreak
       \fi
     \else
       \begingroup
@@ -4818,6 +4818,7 @@
 \def\Hy@babelnormalise#1[#2]{%
   \begingroup
     \Hy@safe@activestrue
+    \let\protect\@unexpandable@protect
     \edef\Hy@tempa{%
       \endgroup
       \noexpand#1[{#2}]%
@@ -7258,7 +7259,7 @@
     \let\TX@endtabularx\Hy@gtemp
   }{}%
   \@ifpackageloaded{longtable}{%
-    \CheckCommand*{\LT@p@ftntext}[1]{%
+    \CheckCommand{\LT@p@ftntext}[1]{%
       \edef\@tempa{%
         \the\LT@p@ftn
         \noexpand\footnotetext[\the\c@footnote]%
@@ -8381,6 +8382,7 @@
 \def\HyRef@StarSetRef#1{%
   \begingroup
     \Hy@safe@activestrue
+    \let\protect\@unexpandable@protect
     \edef\x{#1}%
     \@onelevel@sanitize\x
     \edef\x{\endgroup

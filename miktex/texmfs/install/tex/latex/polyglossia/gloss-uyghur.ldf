@@ -1,0 +1,429 @@
+\ProvidesFile{gloss-uyghur.ldf}[polyglossia: module for Uyghur]
+%% Translations provided by Osman Tursun (Github Account: neouyghur)
+
+\RequireBidi
+\PolyglossiaSetup{uyghur}{
+  bcp47=ug,
+  script=Arabic,
+  direction=RL,
+  scripttag=arab,
+  langtag=UYG,
+  hyphennames={nohyphenation},
+  fontsetup=true,
+}
+
+% BCP-47 compliant aliases
+\setlanguagealias*{uyghur}{ug}
+
+\newif\if@uyghur@swapcaptions
+\newif\if@uyghur@swapheadings
+\newif\if@uyghur@swapheaders
+\define@choicekey*+{uyghur}{swapstrings}[\xpg@val\xpg@nr]{all,captions,headings,headers,hheaders,none}[all]{%
+   \ifcase\xpg@nr\relax
+      % all:
+      \@uyghur@swapcaptionstrue%
+      \@uyghur@swapheadingstrue%
+      \@uyghur@swapheaderstrue%
+   \or
+      % captions:
+      \@uyghur@swapcaptionstrue%
+      \@uyghur@swapheadingsfalse%
+      \@uyghur@swapheadersfalse%
+   \or
+      % headings:
+      \@uyghur@swapcaptionsfalse%
+      \@uyghur@swapheadingstrue%
+      \@uyghur@swapheadersfalse%
+   \or
+      % headers:
+      \@uyghur@swapcaptionsfalse%
+      \@uyghur@swapheadingsfalse%
+      \@uyghur@swapheaderstrue%
+   \or
+      % hheaders:
+      \@uyghur@swapcaptionsfalse%
+      \@uyghur@swapheadingstrue%
+      \@uyghur@swapheaderstrue%
+   \or
+      % none:
+      \@uyghur@swapcaptionsfalse%
+      \@uyghur@swapheadingsfalse%
+      \@uyghur@swapheadersfalse%
+   \fi
+   \xpg@info{Option: Uyghur, swapstrings=\xpg@val}%
+}{\xpg@warning{Unknown Uyghur swapstrings value `#1'}}
+
+\newif\if@uyghur@ordchapter
+\newif\if@uyghur@romchapter
+\define@choicekey*+{uyghur}{chapterformat}[\xpg@val\xpg@nr]{ordinal,roman,arabic}[ordinal]{%
+   \ifcase\xpg@nr\relax
+      % ordinal:
+      \@uyghur@ordchaptertrue%
+      \@uyghur@romchapterfalse%
+   \or
+      % roman:
+      \@uyghur@ordchapterfalse%
+      \@uyghur@romchaptertrue%
+   \or
+      % arabic:
+      \@uyghur@ordchapterfalse%
+      \@uyghur@romchapterfalse%
+   \fi
+   \xpg@info{Option: Uyghur, chapterformat=\xpg@val}%
+}{\xpg@warning{Unknown Uyghur chapterformat value `#1'}}
+
+% Register default options
+\xpg@initialize@gloss@options{uyghur}{swapstrings=all,chapterformat=ordinal}
+
+
+\def\captionsuyghur{%
+  \def\refname{\@ensure@RTL{پايدىلانمىلار}}%
+  \def\abstractname{\@ensure@RTL{قىسقىچە مەزمۇنى}}%
+  \def\bibname{\@ensure@RTL{پايدىلانمىلار}}%
+  \def\prefacename{\@ensure@RTL{كىرىش سۆز}}%
+  \def\chaptername{\@ensure@RTL{باب}}%
+  \def\appendixname{\@ensure@RTL{قوشۇمچە}}%
+  \def\contentsname{\@ensure@RTL{مۇندەرىجە}}%
+  \def\listfigurename{\@ensure@RTL{رەسىملەر}}%
+  \def\listtablename{\@ensure@RTL{جەدۋەللەر}}%
+  \def\indexname{\@ensure@RTL{ئىندېكىس}}%
+  \def\figurename{\@ensure@RTL{رەسىم}}%
+  \def\tablename{\@ensure@RTL{جەدۋەل}}%
+  %\def\thepart{}%
+  \def\partname{\@ensure@RTL{قىسىم}}%
+  \def\pagename{\@ensure@RTL{بەت}}%
+  \def\seename{\@ensure@RTL{قاراڭ}}%
+  \def\alsoname{\@ensure@RTL{ئايرىم قاراڭ}}%
+  \def\enclname{\@ensure@RTL{قوشۇمچە ھۆججەت}}%
+  \def\ccname{\@ensure@RTL{باشقا تاپشۇرۇۋالغۇچى}}%
+  \def\headtoname{\@ensure@RTL{تاپشۇرۇۋالغۇچى}}%
+  \def\proofname{\@ensure@RTL{ئىسپات}}%
+  \def\glossaryname{\@ensure@RTL{لۇغەت}}%
+  %\def\sectionname{\@ensure@RTL{}}%
+  \def\subjectname{\@ensure@RTL{تېما}}%
+}
+
+% Save original capsformats
+\let\xpg@save@fnum@table\fnum@table
+\let\xpg@save@fnum@figure\fnum@figure
+
+\def\uyghur@capsformat{%
+  %
+  % Change captions
+  \if@uyghur@swapcaptions
+     % change ‫‪'x.x‬‬ ‫ﺭﻩﺳﯩﻢ‬' to 'ﺭﻩﺳﯩﻢ-x.x‬‬'
+     \def\fnum@figure{\thefigure-\figurename}
+     %
+     % same for table
+     \def\fnum@table{\thetable-\tablename}
+  \fi
+  %
+  % change chapter and part headings
+  \if@uyghur@swapheadings
+     % With titlesec
+     \ifcsdef{titleformat}{%
+       \ifcsdef{H@old@part}{% Hyperref
+            \let\xpg@save@part@format\H@old@part%
+            \patchcmd{\H@old@part}%
+                      {\partname\nobreakspace\thepart}%
+                      {\the@uyghur@part\nobreakspace\partname}%
+                      {}%
+                      {\xpg@warning{Failed to patch part for Uyghur}}%
+       }{% not hyperref
+         \ifcsdef{@part}{%
+            \let\xpg@save@part@format\@part%
+            \patchcmd{\@part}%
+                      {\partname\nobreakspace\thepart}%
+                      {\the@uyghur@part\nobreakspace\partname}%
+                      {}%
+                      {\xpg@warning{Failed to patch part for Uyghur}}%
+         }{}%
+       }
+       \ifcsdef{chapter}{%
+          \titleformat\chapter[display]%
+             {\@ifundefined{ttl@fil}{\raggedright}{\ttl@fil}\ttl@fonts\ttl@sizes6}
+             {\the@uyghur@chapter\space\@chapapp}{.8\baselineskip}{\ttl@sizes\z@\ttl@passexplicit}
+       }{}%
+     }{% (not \ifdefined\titleformat)
+       % With KOMA
+       \ifcsdef{sectionformat}{%
+          \ifcsdef{partformat}{%
+            \let\xpg@save@part@format\partformat%
+            \renewcommand{\partformat}{\the@uyghur@part~\partname}%
+          }{}%
+          \ifcsdef{chapterformat}{%
+            \let\xpg@save@chap@format\chapterformat%
+            \renewcommand{\chapterformat}{\mbox{\the@uyghur@chapter%
+                                          \IfUsePrefixLine{\nobreakspace\chapapp}{\enskip}}}%
+          }{}%
+       }{%  (not \ifdefined\sectionformat)
+         % With memoir
+         \ifcsdef{@memptsize}{%
+           \ifcsdef{@makechapterhead}{%
+              \let\xpg@save@chap@format\@makechapterhead%
+              \patchcmd{\@makechapterhead}{\printchaptername \chapternamenum \printchapternum}%
+                       {\chapnumfont\the@uyghur@chapter\chapternamenum\printchaptername}%
+                       {}%
+                       {\xpg@warning{Failed to patch chapter for Uyghur}}%
+           }{}%
+           \ifcsdef{H@old@part}{% Hyperref
+                \let\xpg@save@part@format\H@old@part%
+                \patchcmd{\H@old@part}{\printpartname \partnamenum \printpartnum}%
+                                 {\chapnumfont\the@uyghur@part\partnamenum\printpartname}%
+                                 {}%
+                                 {\xpg@warning{Failed to patch part for Uyghur}}%
+           }{% not hyperref
+             \ifcsdef{@part}{%
+                \let\xpg@save@part@format\@part%
+                \patchcmd{\@part}{\printpartname \partnamenum \printpartnum}%
+                                 {\chapnumfont\the@uyghur@part\partnamenum\printpartname}%
+                                 {}%
+                                 {\xpg@warning{Failed to patch part for Uyghur}}%
+             }{}%
+           }%
+         }{%  (not \ifdefined\@memptsize)
+           % With standard classes
+            \ifcsdef{@makechapterhead}{%
+              \let\xpg@save@chap@format\@makechapterhead%
+              \patchcmd{\@makechapterhead}%
+                       {\@chapapp\space \thechapter}%
+                       {\the@uyghur@chapter\space \@chapapp}%
+                       {}%
+                       {\xpg@warning{Failed to patch chapter for Uyghur}}%
+            }{}%
+            \ifcsdef{H@old@part}{% Hyperref
+              \let\xpg@save@part@format\H@old@part%
+              \patchcmd{\H@old@part}%
+                       {\partname\nobreakspace\thepart}%
+                       {\the@uyghur@part\nobreakspace\partname}%
+                       {}%
+                       {\xpg@warning{Failed to patch part for Uyghur}}%            
+            }{% not hyperref
+              \ifcsdef{@part}{%
+                \let\xpg@save@part@format\@part%
+                \patchcmd{\@part}%
+                         {\partname\nobreakspace\thepart}%
+                         {\the@uyghur@part\nobreakspace\partname}%
+                         {}%
+                         {\ifcsdef{part}{\xpg@warning{Failed to patch part for Uyghur}}{}}%
+              }{}%  (end \ifdefined\@part)
+            }% (end not hyperref)
+          }% (end \ifdefined\@memptsize)
+        }% (end \ifdefined\sectionformat)
+     }% (end \ifdefined\titleformat)
+  \fi% (end \if@uyghur@swapheadings)
+  %
+  % Change running headers
+  \if@uyghur@swapheaders
+    \ifcsdef{chapterformat}{%
+      % With KOMA
+      \let\xpg@save@chaptermark@format\chaptermarkformat%
+      \renewcommand*\chaptermarkformat{%
+         \the@uyghur@chapter\ \IfChapterUsesPrefixLine{\chapapp\enskip}{}}
+    }{% (not \ifdefined\chapterformat)
+      \ifcsdef{@memptsize}{%
+        % With memoir
+        \let\xpg@save@chaptermark@format\chaptermark%
+        \renewcommand*\chaptermark[1]{%
+          \markboth{\memUChead{%
+            \ifnum \c@secnumdepth >\m@ne
+              \ifbool{@mainmatter}{%
+                \the@uyghur@chapter\ \@chapapp\ %
+              }{}%
+            \fi
+            ##1}}{}}%
+      }{% (not \ifdefined\@memptsize)
+        % With standard classes
+        \ifcsdef{chaptermark}{%
+          \ifpatchable{\chaptermark}%
+               {\@chapapp\ \thechapter.}%
+               {\let\xpg@save@chaptermark@format\chaptermark%
+                \patchcmd{\chaptermark}%
+                    {\@chapapp\ \thechapter.}%
+                    {\the@uyghur@chapter\ \@chapapp}%
+                    {}%
+                    {\xpg@warning{Failed to patch chaptermark for Uyghur}}}%
+               {}%
+        }{}% (end \ifdefined\sectionmark)
+                \ifcsdef{sectionmark}{%
+          \ifpatchable{\sectionmark}%
+               {\thesection.}%
+               {\let\xpg@save@sectionmark@format\sectionmark%
+                \patchcmd{\sectionmark}%
+                    {\thesection.}%
+                    {\thesection}%
+                    {}%
+                    {\xpg@warning{Failed to patch sectionmark for Uyghur}}}%
+               {}%
+        }{}% (end \ifdefined\chaptermark)
+      }% (end \ifdefined\@memptsize)
+    }% (end \ifdefined\chapterformat)
+  \fi% (end \if@uyghur@swapheaders)
+}
+
+\def\nouyghur@capsformat{%
+   %
+   % Reset changes of \uyghur@capsformat
+   \let\fnum@table\xpg@save@fnum@table%
+   \let\fnum@figure\xpg@save@fnum@figure%
+   %
+   % Reset chapter and part heading
+   \ifcsdef{titleformat}{%
+      % With titlesec
+     \ifcsdef{xpg@save@part@format}{%
+        \ifcsdef{H@old@part}{%
+            \let\H@old@part\xpg@save@part@format%
+        }{%
+            \let\@part\xpg@save@part@format%
+        }%
+     }{}%
+     \ifcsdef{chapter}{%
+        \titleformat\chapter[display]%
+          {\@ifundefined{ttl@fil}{\raggedright}{\ttl@fil}\ttl@fonts\ttl@sizes6}
+          {\@chapapp\space\thechapter}{.8\baselineskip}{\ttl@sizes\z@\ttl@passexplicit}
+     }{}%
+   }{% (not \ifdefined\titleformat)
+     \ifcsdef{sectionformat}{%
+        % With KOMA
+        \ifcsdef{xpg@save@part@format}{%
+           \let\partformat\xpg@save@part@format
+        }{}%
+        \ifcsdef{xpg@save@chap@format}{%
+           \let\chapterformat\xpg@save@chap@format
+        }{}%
+     }{%
+        % With memoir and standard classes
+        \ifcsdef{xpg@save@part@format}{%
+           \ifcsdef{H@old@part}{%
+               \let\H@old@part\xpg@save@part@format%
+           }{%
+               \let\@part\xpg@save@part@format%
+           }%
+        }{}%
+        \ifcsdef{xpg@save@chap@format}{%
+          \let\@makechapterhead\xpg@save@chap@format
+        }{}%
+     }% (end \ifdefined\sectionformat)
+   }% (end \ifdefined\titleformat)
+  %
+  % Reset headers
+  \ifcsdef{chaptermarkformat}{%
+     % With KOMA
+     \ifcsdef{xpg@save@chaptermark@format}{%
+       \let\chaptermarkformat\xpg@save@chaptermark@format%
+     }{}%
+  }{%
+     \ifcsdef{chaptermark}{%
+       % With memoir and standard classes
+       \ifcsdef{xpg@save@chaptermark@format}{%
+         \let\chaptermark\xpg@save@chaptermark@format%
+       }{}%
+     }{}% (end \ifdefined\chaptermark)
+     \ifcsdef{sectionmark}{%
+       \ifcsdef{xpg@save@sectionmark@format}{%
+         \let\sectionmark\xpg@save@sectionmark@format%
+       }{}%
+     }{}% (end \ifdefined\sectionmark)
+  }% (end \ifdefined\chapterformat)
+}
+
+\def\blockextras@uyghur{%
+   \uyghur@capsformat%
+}
+
+\def\noextras@uyghur{%
+   \nouyghur@capsformat%
+}
+
+\ifxetex
+  \let\xpg@orig@DigitsDotDashInterCharToks\DigitsDotDashInterCharToks%
+\fi
+
+\def\uyghur@ltr@numbers{%
+    \ifxetex
+       % Bidi inserts an RTL mark (0x200f) between number and number separator (- .),
+       % forcing numbers to RTL. This is wrong for Uyghur, where numbers are left to right.
+       % So we defunc the respective command.
+       \renewcommand*{\DigitsDotDashInterCharToks}{}%
+    \fi%
+}
+
+\def\nouyghur@ltr@numbers{%
+    \ifxetex
+      % Restore bidi's \DigitsDotDashInterCharToks
+      \let\DigitsDotDashInterCharToks\xpg@orig@DigitsDotDashInterCharToks%
+    \fi%
+}
+
+\let\the@uyghur@part\thepart
+\let\the@uyghur@chapter\thechapter
+
+\def\uyghur@chapterformat{%
+   \ifcsdef{part}{%
+      \if@uyghur@ordchapter%
+        \renewcommand{\the@uyghur@part}{\uyghurord{part}}%
+      \fi%
+      \if@uyghur@romchapter%
+        \renewcommand{\the@uyghur@part}{\Roman{part}}%
+      \fi%
+   }{}%
+   \ifcsdef{chapter}{%
+      \if@uyghur@ordchapter%
+        \renewcommand{\the@uyghur@chapter}{\uyghurord{chapter}}%
+      \fi%
+      \if@uyghur@romchapter%
+        \renewcommand{\the@uyghur@chapter}{\Roman{chapter}}%
+      \fi%
+   }{}%
+}
+
+\def\uyghur@numbers{%
+   % Prevent bidi from setting the numbers RTL
+   \uyghur@ltr@numbers%
+   % Format chapter and part
+   \uyghur@chapterformat%
+}
+
+\def\nouyghur@numbers{%
+  % Restore previous bidi numbers definition
+  \nouyghur@ltr@numbers
+}
+
+\def\uyghur@globalnumbers{%
+   % Prevent bidi from setting the numbers RTL
+   \uyghur@ltr@numbers%
+   % Format chapter and part
+   \uyghur@chapterformat%
+}
+
+\def\uyghurmonth#1{\ifcase#1%
+  \or يانۋار\or فېۋرال\or مارت\or ئاپرېل\or ماي\or ئىيۇن
+  \or ئىيۇل\or ئاۋغۇست\or سېنتەبىر\or ئۆكتەبىر\or نويابىر\or دېكابىر\fi}
+
+\def\dateuyghur{%
+   \def\today{\number\year-يىلى\space\number\day-\uyghurmonth{\month}}%
+}
+
+\def\uyghurord#1{\expandafter\uyghurordinal\csname c@#1\endcsname}
+
+% Ordinals 1--100
+\def\uyghurordinal#1{\ifcase#1%
+\or بىرىنچى\or ئىككىنچى\or ئۈچىنچى\or تۆتىنچى\or بەشىنچى\or ئالتىنچى\or يەتتىنچى\or سەككىزىنچى
+\or توققۇزىنچى\or ئونىنچى\or ئون بىرىنچى\or ئون ئىككىنچى\or ئون ئۈچىنچى\or ئون تۆتىنچى\or ئون بەشىنچى
+\or ئون ئالتىنچى\or ئون يەتتىنچى\or ئون سەككىزىنچى\or ئون توققۇزىنچى\or يىگىرمىنچى\or يىگىرمە بىرىنچى
+\or يىگىرمە ئىككىنچى\or يىگىرمە ئۈچىنچى\or يىگىرمە تۆتىنچى\or يىگىرمە بەشىنچى\or يىگىرمە ئالتىنچى
+\or يىگىرمە يەتتىنچى\or يىگىرمە سەككىزىنچى\or يىگىرمە توققۇزىنچى\or ئوتتۇزىنچى\or ئوتتۇز بىرىنچى
+\or ئوتتۇز ئىككىنچى\or ئوتتۇز ئۈچىنچى\or ئوتتۇز تۆتىنچى\or ئوتتۇز بەشىنچى\or ئوتتۇز ئالتىنچى\or ئوتتۇز يەتتىنچى
+\or ئوتتۇز سەككىزىنچى\or ئوتتۇز توققۇزىنچى\or قىرىقىنچى\or قىرىق بىرىنچى\or قىرىق ئىككىنچى\or قىرىق ئۈچىنچى
+\or قىرىق تۆتىنچى\or قىرىق بەشىنچى\or قىرىق ئالتىنچى\or قىرىق يەتتىنچى\or قىرىق سەككىزىنچى\or قىرىق توققۇزىنچى
+\or ئەللىكىنچى\or ئەللىك بىرىنچى\or ئەللىك ئىككىنچى\or ئەللىك ئۈچىنچى\or ئەللىك تۆتىنچى\or ئەللىك بەشىنچى
+\or ئەللىك ئالتىنچى\or ئەللىك يەتتىنچى\or ئەللىك سەككىزىنچى\or ئەللىك توققۇزىنچى\or ئاتمىشىنچى\or ئاتمىش بىرىنچى
+\or ئاتمىش ئىككىنچى\or ئاتمىش ئۈچىنچى\or ئاتمىش تۆتىنچى\or ئاتمىش بەشىنچى\or ئاتمىش ئالتىنچى\or ئاتمىش يەتتىنچى
+\or ئاتمىش سەككىزىنچى\or ئاتمىش توققۇزىنچى\or يەتمىشىنچى\or يەتمىش بىرىنچى\or يەتمىش ئىككىنچى\or يەتمىش ئۈچىنچى
+\or يەتمىش تۆتىنچى\or يەتمىش بەشىنچى\or يەتمىش ئالتىنچى\or يەتمىش يەتتىنچى\or يەتمىش سەككىزىنچى\or يەتمىش توققۇزىنچى
+\or سەكسىنىنچى\or سەكسەن بىرىنچى\or سەكسەن ئىككىنچى\or سەكسەن ئۈچىنچى\or سەكسەن تۆتىنچى\or سەكسەن بەشىنچى
+\or سەكسەن ئالتىنچى\or سەكسەن يەتتىنچى\or سەكسەن سەككىزىنچى\or سەكسەن توققۇزىنچى\or توقسىنىنچى\or توقسان بىرىنچى
+\or توقسان ئىككىنچى\or توقسان ئۈچىنچى\or توقسان تۆتىنچى\or توقسان بەشىنچى\or توقسان ئالتىنچى\or توقسان يەتتىنچى
+\or توقسان سەككىزىنچى\or توقسان توققۇزىنچى\or يۈزىنچى\fi}
+
+\endinput

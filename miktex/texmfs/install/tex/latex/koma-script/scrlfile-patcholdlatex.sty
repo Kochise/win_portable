@@ -38,11 +38,25 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlfile-patcholdlatex.dtx 3527 2020-09-11 09:44:32Z kohm $
+%%% From File: $Id: scrlfile-patcholdlatex.dtx 3593 2021-04-21 10:11:38Z kohm $
 \ProvidesPackage{scrlfile-patcholdlatex}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (patching old LaTeX kernels)]
+\@ifundefined{IfFormatAtLeastTF}{}{%
+  \IfFormatAtLeastTF{2020/10/01}{%
+    \PackageError{scrlfile-hook}{LaTeX too young for this package}{%
+      It seems this package has been loaded directly using a LaTeX
+      version\MessageBreak
+      2020-10-01 or newer. This is not recommend. Please always load
+      package\MessageBreak
+      scrlfile instead of scrlfile-patcholdlatex.\MessageBreak
+      If you would continue, I will try to load scrlfile-hook%
+    }%
+    \RequirePackage{scrlfile-hook}%
+    \endinput
+  }{}%
+}
 \@ifclassloaded{memoir}{%
   \PackageInfo{scrlfile}{class `memoir' detected.\MessageBreak
     Using a compatible redefinition of \string\InputIfFileExists,\MessageBreak

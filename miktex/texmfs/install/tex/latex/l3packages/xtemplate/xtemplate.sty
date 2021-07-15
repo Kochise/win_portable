@@ -6,7 +6,7 @@
 %%
 %% xtemplate.dtx  (with options: `package')
 %% 
-%% Copyright (C) 2011-2020 The LaTeX3 Project
+%% Copyright (C) 2011-2021 The LaTeX Project
 %% 
 %% It may be distributed and/or modified under the conditions of
 %% the LaTeX Project Public License (LPPL), either version 1.3c of
@@ -32,7 +32,7 @@
       }%
     \endinput
   }
-\ProvidesExplPackage{xtemplate}{2020-10-27}{}
+\ProvidesExplPackage{xtemplate}{2021-06-18}{}
   {L3 Experimental prototype document functions}
 \tl_const:Nn \c__xtemplate_code_root_tl      { template~code~>~ }
 \tl_const:Nn \c__xtemplate_defaults_root_tl  { template~defaults~>~ }
@@ -485,12 +485,12 @@
 \cs_new_protected:Npn \__xtemplate_store_key_implementation:nnn #1#2#3
   {
     \__xtemplate_recover_defaults:n { #1 / #2 }
+    \__xtemplate_recover_restrictions:n { #1 / #2 }
     \__xtemplate_recover_keytypes:n { #1 / #2 }
     \prop_clear:N \l__xtemplate_vars_prop
     \keyval_parse:NNn
       \__xtemplate_parse_vars_elt:n \__xtemplate_parse_vars_elt:nn {#3}
     \__xtemplate_store_vars:n { #1 / #2 }
-    \clist_clear:N \l__xtemplate_restrict_clist
     \__xtemplate_store_restrictions:n { #1 / #2 }
     \prop_map_inline:Nn \l__xtemplate_keytypes_prop
       {
@@ -681,8 +681,12 @@
   }
 \cs_new_protected:Npn \__xtemplate_parse_values:nn #1#2
   {
-    \__xtemplate_recover_keytypes:n {#1}
     \clist_clear:N \l__xtemplate_restrict_clist
+    \__xtemplate_parse_values_aux:nn {#1} {#2}
+  }
+\cs_new_protected:Npn \__xtemplate_parse_values_aux:nn #1#2
+  {
+    \__xtemplate_recover_keytypes:n {#1}
     \keyval_parse:NNn
       \__xtemplate_parse_values_elt:n \__xtemplate_parse_values_elt:nn {#2}
   }
@@ -733,6 +737,7 @@
     \__xtemplate_execute_if_code_exist:nnT {#1} {#2}
       {
         \__xtemplate_recover_defaults:n { #1 / #2 }
+        \__xtemplate_recover_restrictions:n { #1 / #2 }
         \__xtemplate_recover_vars:n { #1 / #2 }
         \__xtemplate_declare_instance_aux:nnnnn {#1} {#2} {#3} {#4} {#5}
       }
@@ -740,7 +745,7 @@
 \cs_new_protected:Npn \__xtemplate_declare_instance_aux:nnnnn #1#2#3#4#5
   {
     \bool_set_false:N \l__xtemplate_error_bool
-    \__xtemplate_parse_values:nn { #1 / #2 } {#5}
+    \__xtemplate_parse_values_aux:nn { #1 / #2 } {#5}
     \bool_if:NF \l__xtemplate_error_bool
       {
         \prop_put:Nnn \l__xtemplate_values_prop { from~template } {#2}

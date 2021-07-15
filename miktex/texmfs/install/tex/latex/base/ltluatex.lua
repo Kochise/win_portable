@@ -13,8 +13,8 @@
 -- (but please observe conditions on bug reports sent to that address!)
 -- 
 -- 
--- Copyright 2015
--- The LaTeX3 Project and any individual authors listed elsewhere
+-- Copyright (C) 2015-2021
+-- The LaTeX Project and any individual authors listed elsewhere
 -- in this file.
 -- 
 -- This file was generated from file(s) of the LaTeX base system.
@@ -324,6 +324,7 @@ local callbacktypes = callbacktypes or {
   glyph_stream_provider           = exclusive,
   make_extensible                 = exclusive,
   font_descriptor_objnum_provider = exclusive,
+  input_level_string              = exclusive,
 }
 luatexbase.callbacktypes=callbacktypes
 local callback_register = callback_register or callback.register

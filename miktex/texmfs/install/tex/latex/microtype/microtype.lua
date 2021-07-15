@@ -10,7 +10,7 @@
 -- 
 --                       The `microtype' package
 --         Subliminal refinements towards typographical perfection
---           Copyright (c) 2004--2020 R Schlicht <w.m.l@gmx.net>
+--           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
 -- 
 -- This work may be distributed and/or modified under the conditions of the
 -- LaTeX Project Public License, either version 1.3c of this license or (at
@@ -34,8 +34,8 @@ microtype        = microtype or {}
 local microtype  = microtype
 microtype.module = {
     name         = "microtype",
-    version      = "2.8",
-    date         = "2020/12/07",
+    version      = "2.8c",
+    date         = "2021/03/14",
     description  = "microtype module.",
     author       = "E. Roux, R. Schlicht and P. Gesang",
     copyright    = "E. Roux, R. Schlicht and P. Gesang",

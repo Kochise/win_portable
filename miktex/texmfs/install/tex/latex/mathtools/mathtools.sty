@@ -10,16 +10,16 @@
 %% 
 %% Copyright (C) 2002-2011 by Morten Hoegholm
 %% Copyright (C) 2012-2019 by Lars Madsen
-%% Copyright (C) 2020      by Lars Madsen, the LaTeX3 project
+%% Copyright (C) 2020-     by Lars Madsen, the LaTeX3 project
 %% 
 %% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either
-%% version 1.3 of this license or (at your option) any later
+%% version 1.3c of this license or (at your option) any later
 %% version. The latest version of this license is in
 %%    http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of
-%% LaTeX version 2005/12/01 or later.
+%% and version 1.3c or later is part of all distributions of
+%% LaTeX version 2008/05/04 or later.
 %% 
 %% This work has the LPPL maintenance status "maintained".
 %% 
@@ -31,9 +31,9 @@
 %%    mathtools.sty, mathtools.pdf, mathtools.ins, mathtools.drv.
 %% 
 \ProvidesPackage{mathtools}%
-  [2020/03/24 v1.24 mathematical typesetting tools]
+  [2021/04/12 v1.27 mathematical typesetting tools]
 \RequirePackage{keyval,calc}
-\RequirePackage{mhsetup}[2017/03/31]
+\RequirePackage{mhsetup}[2021/03/18]
 \MHInternalSyntaxOn
  % borrowed from fixltx2e
 \def\EQ_MakeRobust#1{%
@@ -611,52 +611,110 @@
     }
   \MT_start_mult:N \MT_mult_default_pos:
 }
-\newcommand\MultlinedHook{
-  \renewenvironment{subarray}[1]{%
-    \vcenter\bgroup
-    \Let@ \restore@math@cr \default@tag
-    \let\math@cr@@\AMS@math@cr@@  % <--- the fix
-    \baselineskip\fontdimen10 \scriptfont\tw@
-    \advance\baselineskip\fontdimen12 \scriptfont\tw@
-    \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
-    \lineskiplimit\lineskip
-    \ialign\bgroup\ifx c##1\hfil\fi
-    $\m@th\scriptstyle####$\hfil\crcr
-  }{%
-    \crcr\egroup\egroup
+\ifx\directlua\@undefined
+  % THIS IS NORMAL
+  \newcommand\MultlinedHook{
+    \renewenvironment{subarray}[1]{%
+      \vcenter\bgroup
+      \Let@ \restore@math@cr \default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip\fontdimen10 \scriptfont\tw@
+      \advance\baselineskip\fontdimen12 \scriptfont\tw@
+      \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+      \lineskiplimit\lineskip
+      \ialign\bgroup\ifx c##1\hfil\fi
+      $\m@th\scriptstyle####$\hfil\crcr
+    }{%
+      \crcr\egroup\egroup
+    }
+    \renewenvironment{crampedsubarray}[1]{%
+      \vcenter\bgroup
+      \Let@ \restore@math@cr \default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip\fontdimen10 \scriptfont\tw@
+      \advance\baselineskip\fontdimen12 \scriptfont\tw@
+      \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+      \lineskiplimit\lineskip
+      \ialign\bgroup\ifx c##1\hfil\fi
+      \span\MT_cramped_internal:Nn \scriptstyle {####}%
+      \hfil\crcr
+    }{%
+      \crcr\egroup\egroup
+    }
+    % from mathtools
+    \def\MT_smallmatrix_begin:N ##1{%
+      \Let@\restore@math@cr\default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
+      \csname MT_smallmatrix_##1_begin:\endcsname
+    }
+    % from amsmath
+    \renewenvironment{smallmatrix}{\null\,\vcenter\bgroup
+      \Let@\restore@math@cr\default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
+      \ialign\bgroup\hfil$\m@th\scriptstyle####$\hfil&&\thickspace\hfil
+      $\m@th\scriptstyle####$\hfil\crcr
+    }{%
+      \crcr\egroup\egroup\,%
+    }
   }
-  \renewenvironment{crampedsubarray}[1]{%
-    \vcenter\bgroup
-    \Let@ \restore@math@cr \default@tag
-    \let\math@cr@@\AMS@math@cr@@  % <--- the fix
-    \baselineskip\fontdimen10 \scriptfont\tw@
-    \advance\baselineskip\fontdimen12 \scriptfont\tw@
-    \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
-    \lineskiplimit\lineskip
-    \ialign\bgroup\ifx c##1\hfil\fi
-    $\m@th\scriptstyle\kern-\nulldelimiterspace\radical\z@{####}$
-    \hfil\crcr
-  }{%
-    \crcr\egroup\egroup
+\else
+  % THIS IS LUALATEX
+  \newcommand\MultlinedHook{
+    % from amsmath
+    \renewenvironment{subarray}[1]{%
+      \vcenter\bgroup
+      \Let@ \restore@math@cr \default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip \Umathstacknumup \scriptstyle
+      \advance\baselineskip \Umathstackdenomdown \scriptstyle
+      \lineskip \Umathstackvgap \scriptstyle
+      \lineskiplimit \lineskip
+      \ialign\bgroup\ifx c##1\hfil\fi
+      \Ustartmath
+      \m@th\scriptstyle####
+      \Ustopmath
+      \hfil\crcr
+    }{%
+      \crcr\egroup\egroup
+    }
+    % from mathtools
+    \renewenvironment{crampedsubarray}[1]{%
+      \vcenter\bgroup
+      \Let@ \restore@math@cr \default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip \Umathstacknumup \scriptstyle
+      \advance\baselineskip \Umathstackdenomdown \scriptstyle
+      \lineskip \Umathstackvgap \scriptstyle
+      \lineskiplimit \lineskip
+      \ialign\bgroup\ifx c##1\hfil\fi
+      \Ustartmath
+        \crampedscriptstyle{####}
+      \Ustopmath
+      \hfil\crcr
+    }{%
+      \crcr\egroup\egroup
+    }
+    % from mathtools
+    \def\MT_smallmatrix_begin:N ##1{%
+      \Let@\restore@math@cr\default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
+      \csname MT_smallmatrix_##1_begin:\endcsname
+    }
+    % from amsmath
+    \renewenvironment{smallmatrix}{\null\,\vcenter\bgroup
+      \Let@\restore@math@cr\default@tag
+      \let\math@cr@@\AMS@math@cr@@  % <--- the fix
+      \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
+      \ialign\bgroup\hfil$\m@th\scriptstyle####$\hfil&&\thickspace\hfil
+      $\m@th\scriptstyle####$\hfil\crcr
+    }{%
+      \crcr\egroup\egroup\,%
+    }
   }
-   % from mathtolls
-  \def\MT_smallmatrix_begin:N ##1{%
-    \Let@\restore@math@cr\default@tag
-    \let\math@cr@@\AMS@math@cr@@  % <--- the fix
-    \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
-    \csname MT_smallmatrix_##1_begin:\endcsname
-  }
-  % from amsmath
-  \renewenvironment{smallmatrix}{\null\,\vcenter\bgroup
-    \Let@\restore@math@cr\default@tag
-    \let\math@cr@@\AMS@math@cr@@  % <--- the fix
-    \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
-    \ialign\bgroup\hfil$\m@th\scriptstyle####$\hfil&&\thickspace\hfil
-    $\m@th\scriptstyle####$\hfil\crcr
-  }{%
-    \crcr\egroup\egroup\,%
-  }
-}
+\fi
 
 \newenvironment{multlined}[1][]
   {\MH_group_align_safe_begin:
@@ -889,19 +947,19 @@
    {\MH_end_cases:\right#6}
 }
 \newcases{dcases}{\quad}{%
-  $\m@th\displaystyle{##}$\hfil}{$\m@th\displaystyle{##}$\hfil}{\lbrace}{.}
+  $\m@th\displaystyle##$\hfil}{$\m@th\displaystyle##$\hfil}{\lbrace}{.}
 \newcases{dcases*}{\quad}{%
-  $\m@th\displaystyle{##}$\hfil}{{##}\hfil}{\lbrace}{.}
+  $\m@th\displaystyle##$\hfil}{##\hfil}{\lbrace}{.}
 \newcases{rcases}{\quad}{%
-  $\m@th{##}$\hfil}{$\m@th{##}$\hfil}{.}{\rbrace}
+  $\m@th##$\hfil}{$\m@th##$\hfil}{.}{\rbrace}
 \newcases{rcases*}{\quad}{%
-  $\m@th{##}$\hfil}{{##}\hfil}{.}{\rbrace}
+  $\m@th##$\hfil}{##\hfil}{.}{\rbrace}
 \newcases{drcases}{\quad}{%
-  $\m@th\displaystyle{##}$\hfil}{$\m@th\displaystyle{##}$\hfil}{.}{\rbrace}
+  $\m@th\displaystyle##$\hfil}{$\m@th\displaystyle##$\hfil}{.}{\rbrace}
 \newcases{drcases*}{\quad}{%
-  $\m@th\displaystyle{##}$\hfil}{{##}\hfil}{.}{\rbrace}
+  $\m@th\displaystyle##$\hfil}{##\hfil}{.}{\rbrace}
 \newcases{cases*}{\quad}{%
-  $\m@th{##}$\hfil}{{##}\hfil}{\lbrace}{.}
+  $\m@th##$\hfil}{##\hfil}{\lbrace}{.}
 \def\MT_matrix_begin:N #1{%
   \hskip -\arraycolsep
   \MH_let:NwN \@ifnextchar \MH_nospace_ifnextchar:Nnn
@@ -975,10 +1033,15 @@
 
 \MHPrecedingSpacesOn
 \newcommand*\smashoperator[2][lr]{
-  \def\MT_smop_use:NNNNN {\@nameuse{MT_smop_smash_#1:NNNNN}}
-  \toks@{#2}
-  \expandafter\MT_smop_get_args:wwwNnNn
+  \@ifundefined{MT_smop_smash_#1:NNNNN}{
+    \PackageError{mathtools}{Opt~ arg~ '#1'~ for~ \@backslashchar smashoperator~
+      is~ not~ supported.\MessageBreak Use~ l,~r~or~lr~ (default)}{}
+  }{
+    \def\MT_smop_use:NNNNN {\@nameuse{MT_smop_smash_#1:NNNNN}}
+    \toks@{#2}
+    \expandafter\MT_smop_get_args:wwwNnNn
     \the\toks@\@nil\@nil\@nil\@nil\@nil\@nil\@@nil
+  }
 }
 \def\MT_smop_remove_nil_vi:N #1\@nil\@nil\@nil\@nil\@nil\@nil{#1}
 \def\MT_smop_mathop:n {\mathop}
@@ -1090,6 +1153,7 @@
 \def\MT_smop_smash_lr:NNNNN #1#2#3#4#5{
   \MT_smop_needed_args:NNNNN #1#2#3#4#5
 }
+\MH_let:NwN \MT_smop_smash_rl:NNNNN \MT_smop_smash_lr:NNNNN
 \def\MT_vphantom:Nn {\v@true\h@false\MT_internal_phantom:N}
 \def\MT_hphantom:Nn {\v@false\h@true\MT_internal_phantom:N}
 \def\MT_phantom:Nn {\v@true\h@true\MT_internal_phantom:N}
@@ -1382,21 +1446,21 @@
 }
 \providecommand*\clap[1]{\hb@xt@\z@{\hss#1\hss}}
 \providecommand*\mathllap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_mathllap:Nn
   \else
     \expandafter \MT_mathllap:Nn \expandafter #1
   \fi
 }
 \providecommand*\mathrlap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_mathrlap:Nn
   \else
     \expandafter \MT_mathrlap:Nn \expandafter #1
   \fi
 }
 \providecommand*\mathclap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_mathclap:Nn
   \else
     \expandafter \MT_mathclap:Nn \expandafter #1
@@ -1423,14 +1487,15 @@
 \def\mathsm@sh#1#2{%
   \setbox\z@\hbox{$\m@th#1{#2}$}{}\finsm@sh}
 \providecommand*\cramped[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_cramped_internal:Nn
   \else
     \expandafter \MT_cramped_internal:Nn \expandafter #1
   \fi
 }
 \def\MT_cramped_internal:Nn #1#2{
-  \sbox\z@{$\m@th#1\nulldelimiterspace=\z@\radical\z@{#2}$}
+  %% \sbox\z@{$\m@th#1\kern-\nulldelimiterspace\radical\z@{#2}$}
+  \setbox\z@\hbox{$\m@th#1\kern-\nulldelimiterspace\radical\z@{#2}$}
     \ifx#1\displaystyle
       \dimen@=\fontdimen8\textfont3
       \advance\dimen@ .25\fontdimen5\textfont2
@@ -1447,10 +1512,21 @@
       3
     \fi
     \advance\dimen@-\ht\z@ \ht\z@=-\dimen@
-    \box\z@
+    \ifvmode\leavevmode\fi
+    {}\box\z@
 }
+\ifx\directlua\@undefined\else
+  \def\MT_cramped_internal:Nn #1#2{
+    {
+      \ensuremath {
+        \use:c { cramped \cs_to_str:N #1 } #2
+      }
+    }
+  }
+\fi
+
 \providecommand*\crampedllap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_cramped_llap_internal:Nn
   \else
     \expandafter \MT_cramped_llap_internal:Nn \expandafter #1
@@ -1460,7 +1536,7 @@
   {}\llap{\MT_cramped_internal:Nn #1{#2}}
 }
 \providecommand*\crampedclap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_cramped_clap_internal:Nn
   \else
     \expandafter \MT_cramped_clap_internal:Nn \expandafter #1
@@ -1470,7 +1546,7 @@
   {}\clap{\MT_cramped_internal:Nn #1{#2}}
 }
 \providecommand*\crampedrlap[1][\@empty]{
-  \ifx\@empty#1\@empty
+  \relax\ifx\@empty#1\@empty
     \expandafter \mathpalette \expandafter \MT_cramped_rlap_internal:Nn
   \else
     \expandafter \MT_cramped_rlap_internal:Nn \expandafter #1
@@ -1479,6 +1555,7 @@
 \def\MT_cramped_rlap_internal:Nn #1#2{
   {}\rlap{\MT_cramped_internal:Nn #1{#2}}
 }
+\ifx\directlua\@undefined
 \newenvironment{crampedsubarray}[1]{%
   \vcenter\bgroup
   \Let@ \restore@math@cr \default@tag
@@ -1487,11 +1564,29 @@
   \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
   \lineskiplimit\lineskip
   \ialign\bgroup\ifx c#1\hfil\fi
-  $\m@th\scriptstyle\kern-\nulldelimiterspace\radical\z@{##}$% <-- changed line
-  \hfil\crcr%
+     %%$\m@th\scriptstyle\kern-\nulldelimiterspace\radical\z@{##}$% <-- changed line
+    \span\MT_cramped_internal:Nn \scriptstyle {##}%
+  \hfil\crcr
 }{%
-\crcr\egroup\egroup
+  \crcr\egroup\egroup
 }
+\else
+\newenvironment{crampedsubarray}[1]{%
+  \vcenter\bgroup
+  \Let@ \restore@math@cr \default@tag
+  \baselineskip \Umathstacknumup \scriptstyle
+  \advance\baselineskip \Umathstackdenomdown \scriptstyle
+  \lineskip \Umathstackvgap \scriptstyle
+  \lineskiplimit \lineskip
+  \ialign\bgroup\ifx c#1\hfil\fi
+  \Ustartmath
+    \crampedscriptstyle{##}
+  \Ustopmath
+  \hfil\crcr
+}{%
+  \crcr\egroup\egroup
+}
+\fi
 \newcommand{\crampedsubstack}[1]{\crampedsubarray{c}#1\endcrampedsubarray}
 \newcommand{\MT_prescript_inner:}[4]{
   \@mathmeasure\z@#4{\MT_prescript_sup:{#1}}

@@ -46,14 +46,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer-notecolumn.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer-notecolumn}[%
-  2020/09/11 v0.3.3533 KOMA-Script 
+  2021/05/30 v0.3.3601 KOMA-Script 
   package
   (end user interface for scrlayer)]
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: init)
 \RequirePackage{scrlayer}
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
@@ -64,7 +64,7 @@
   \fi
 }
 \let\scrlayer@AtEndOfPackage\AtEndOfPackage
-%%% From File: $Id: scrlayer-notecolumn.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
 %%%            (run: init)
 \@tempswatrue
 \scr@ifundefinedorrelax{pdfsavepos}{%
@@ -97,7 +97,7 @@
   }%
   \batchmode\csname @@end\endcsname\end
 \fi
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
   \begingroup
@@ -241,11 +241,11 @@
   \KOMA@kav@replacebool{.scrlayer.sty}{autoremoveinterfaces}
                        {scrlayer@autoremoveinterfaces}%
 }
-%%% From File: $Id: scrlayer-notecolumn.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
 %%%            (run: options)
 \KOMA@ifkey{autoclearnotecolumns}{slnc@autoclearnotecolumns}
 \slnc@autoclearnotecolumnstrue
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \expandafter\let
@@ -317,7 +317,7 @@
 \expandafter\let
   \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces@default\endcsname
   \relax
-%%% From File: $Id: scrlayer-notecolumn.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
 %%%            (run: body)
 \newcommand*{\DeclareNoteColumn}[2][]{%
   \@ifundefined{slnc@#2@box}{%
@@ -545,7 +545,7 @@
     \scr@ifundefinedorrelax{pdfmdfivesum}{%
       \scr@ifundefinedorrelax{mdfivesum}{%
         \ifdefined\directlua
-          \edef\reserved@a{\directlua{slncmdfivesum("\jobname.slnc")}}%
+          \edef\reserved@a{\directlua{slnc.mdfivesum(slnc.slncfile)}}%
         \else
           \let\reserved@a\relax
         \fi
@@ -582,6 +582,10 @@
       \fi
     \fi
   \endgroup
+}
+\AfterPackage*{scrwfile}{%
+  \@ifundefined{scrwfile@never}{\def}{\g@addto@macro}%
+  \scrwfile@never{slnc}%
 }
 \newcommand*{\slnc@unexpanded}{}
 \let\slnc@unexpanded\detokenize
@@ -911,7 +915,8 @@
   \scr@ifundefinedorrelax{mdfivesum}{%
     \ifdefined\directlua
       \directlua{%
-        function slncmdfivesum(filename)
+        slnc = slnc or {}
+        function slnc.mdfivesum(filename)
           local fh = io.open(filename,"rb")
           if fh then
             local sum=md5.sumhexa(fh:read("*a"))
@@ -919,8 +924,16 @@
             fh:close()
           end
         end
+        if (string.sub(tex.jobname,1,1) == '"')
+           and (string.sub(tex.jobname,string.len(tex.jobname),-1) == '"')
+           then
+          slnc.slncfile = string.sub(tex.jobname,2,-2)
+        else
+          slnc.slncfile = tex.jobname
+        end
+        slnc.slncfile = slnc.slncfile .. '.slnc'
       }%
-      \xdef\slnc@mdfivesum{\directlua{slncmdfivesum("\jobname.slnc")}}%
+      \xdef\slnc@mdfivesum{\directlua{slnc.mdfivesum(slnc.slncfile)}}%
     \fi
   }{%
     \xdef\slnc@mdfivesum{\mdfivesum file {\jobname.slnc}}%
@@ -1296,7 +1309,7 @@
   \vadjust{#1}%
   \@esphack
 }
-%%% From File: $Id: scrlayer-notecolumn.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
 %%%            (run: final)
 \DeclareNoteColumn{marginpar}
 \let\reserved@a\clearpage

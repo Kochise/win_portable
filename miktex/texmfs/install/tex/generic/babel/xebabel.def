@@ -12,6 +12,7 @@
 %%           any individual authors listed elsewhere in this file.
 %% All rights reserved.
 %%
+%%
 %% This file is part of the Babel system.
 %% --------------------------------------
 %%
@@ -52,8 +53,8 @@
   \bbl@csarg\gdef{xeipn@\languagename}%
     {\XeTeXlinebreakpenalty #1\relax}}
 \def\bbl@provide@intraspace{%
-  \bbl@xin@{\bbl@cl{lnbrk}}{s}%
-  \ifin@\else\bbl@xin@{\bbl@cl{lnbrk}}{c}\fi
+  \bbl@xin@{/s}{/\bbl@cl{lnbrk}}%
+  \ifin@\else\bbl@xin@{/c}{/\bbl@cl{lnbrk}}\fi
   \ifin@
     \bbl@ifunset{bbl@intsp@\languagename}{}%
       {\expandafter\ifx\csname bbl@intsp@\languagename\endcsname\@empty\else
@@ -72,6 +73,7 @@
         \expandafter\bbl@intrapenalty\bbl@KVP@intrapenalty\@@
       \fi
       \bbl@exp{%
+        % TODO. Execute only once (but redundant):
         \\\bbl@add\<extras\languagename>{%
           \XeTeXlinebreaklocale "\bbl@cl{tbcp}"%
           \<bbl@xeisp@\languagename>%

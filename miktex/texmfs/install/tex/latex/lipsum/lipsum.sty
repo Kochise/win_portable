@@ -19,18 +19,17 @@
 %% version 2005/12/01 or later.
 %% 
 %% Please send error reports and suggestions for improvements to
-%%     Patrick Happel <patrick.happel@rub.de>
+%%     https://github.com/PhelypeOleinik/lipsum
 %% 
-%% Alternatively, use github:
-%%     https://github.com/patta42/lipsum
-%% 
+\def\lipsumversion{2.3}
+\def\lipsumdate{2021-03-03}
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{expl3}[2018/10/31]
 \RequirePackage{xparse}
 \ProvidesExplPackage
   {lipsum}
-  {2019/01/02}
-  {2.2}
+  {\lipsumdate}
+  {\lipsumversion}
   {150 paragraphs of Lorem Ipsum dummy text}
 \@ifpackagelater { expl3 } { 2018/10/31 }
   { }
@@ -43,11 +42,8 @@
       }
     \tex_endinput:D
   }
-\cs_generate_variant:Nn \__xparse_split_argument:nnn {nne}
-\cs_new_eq:NN
-  \__lipsum_split_argument_expanded:nne
-  \__xparse_split_argument:nne
-\cs_generate_variant:Nn \str_if_eq:nnTF {VnTF}
+\cs_new_eq:NN \__lipsum_split_argument_expanded:nnn \SplitArgument
+\cs_generate_variant:Nn \__lipsum_split_argument_expanded:nnn { nne }
 \msg_new:nnnn{lipsum}{DeprecatedCommand}
 {\string#1\msg_line_context:\\
   \string#1~should~be~substituted~by~\string#2.}
@@ -56,7 +52,7 @@
   \string#2.~
   \string#1~might~not~be~available~in~a~
   future~version~of~lipsum.sty.}
-\seq_new:N\g_lipsum_paragraph_seq
+\seq_new:N\g__lipsum_paragraph_seq
 \tl_new:N \g_lipsum_default_range_tl %
 \tl_new:N \l__lipsum_pars_tl
 \tl_new:N \l__lipsum_sentences_tl
@@ -108,7 +104,7 @@
   }
 }
 \cs_new:Npn \lipsum_get_non_terminated_par:n #1{
-  \seq_item:Nn \g_lipsum_paragraph_seq{#1}
+  \seq_item:Nn \g__lipsum_paragraph_seq{#1}
 }
 
 \cs_new:Npn \lipsum_get_terminated_par:n #1 {
@@ -312,7 +308,7 @@
   }
 
 \NewDocumentCommand\NewLipsumPar{m}{
-  \seq_gput_right:Nn{\g_lipsum_paragraph_seq}{#1}
+  \seq_gput_right:Nn{\g__lipsum_paragraph_seq}{#1}
 }
 \NewDocumentCommand\LipsumPar{m}{
   \group_begin:
@@ -580,9 +576,9 @@
 }
 \NewDocumentCommand\SetLipsumText{m}{%
   \IfLipsumText{#1}{}{
-    \seq_clear:N\g_lipsum_paragraph_seq
+    \seq_gclear:N\g__lipsum_paragraph_seq
     \file_input:n{#1.ltd}
-    \str_set:Nn\g_lipsum_text_str{#1}
+    \str_gset:Nn\g__lipsum_text_str{#1}
   }
 }
 

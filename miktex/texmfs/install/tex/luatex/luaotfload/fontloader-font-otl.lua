@@ -52,7 +52,7 @@ local report_otf          = logs.reporter("fonts","otf loading")
 local fonts               = fonts
 local otf                 = fonts.handlers.otf
 
-otf.version               = 3.113 -- beware: also sync font-mis.lua and in mtx-fonts
+otf.version               = 3.116 -- beware: also sync font-mis.lua and in mtx-fonts
 otf.cache                 = containers.define("fonts", "otl", otf.version, true)
 otf.svgcache              = containers.define("fonts", "svg", otf.version, true)
 otf.pngcache              = containers.define("fonts", "png", otf.version, true)
@@ -608,6 +608,7 @@ local function read_from_otf(specification)
         -- this late ? .. needs checking
         tfmdata.properties.name = specification.name
         tfmdata.properties.sub  = specification.sub
+        tfmdata.properties.id   = specification.id
         --
         tfmdata = constructors.scale(tfmdata,specification)
         local allfeatures = tfmdata.shared.features or specification.features.normal

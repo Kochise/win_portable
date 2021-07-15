@@ -45,14 +45,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer-scrpage.dtx 3531 2020-09-11 12:28:41Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer-scrpage}[%
-  2020/09/21 v3.32 KOMA-Script
+  2021/06/25 v3.34 KOMA-Script
   package
   (end user interface for scrlayer)]
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: init)
 \RequirePackage{scrlayer}
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
@@ -63,7 +63,7 @@
   \fi
 }
 \let\scrlayer@AtEndOfPackage\AtEndOfPackage
-%%% From File: $Id: scrlayer-scrpage.dtx 3531 2020-09-11 12:28:41Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
 %%%            (run: init)
 \AtEndOfPackage{%
   \sls@auto@pagestyleset%
@@ -80,7 +80,7 @@
     {pagestyleset=KOMA-Script}%
   }%
 }
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
 \scrlayer@AtEndOfPackage{%
@@ -226,7 +226,7 @@
   \KOMA@kav@replacebool{.scrlayer.sty}{autoremoveinterfaces}
                        {scrlayer@autoremoveinterfaces}%
 }
-%%% From File: $Id: scrlayer-scrpage.dtx 3531 2020-09-11 12:28:41Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
 %%%            (run: options)
 \KOMA@key{headwidth}{%
   \begingroup
@@ -631,7 +631,7 @@
 \KOMA@ifkey{hmode}{sls@leavevmode}
 \KOMA@ifkey{autoenlargeheadfoot}{sls@autoenlarge}
 \KOMAExecuteOptions{autoenlargeheadfoot=true}
-%%% From File: $Id: scrlayer.dtx 3533 2020-09-11 13:32:10Z kohm $
+%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \expandafter\let
@@ -703,7 +703,7 @@
 \expandafter\let
   \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces@default\endcsname
   \relax
-%%% From File: $Id: scrlayer-scrpage.dtx 3531 2020-09-11 12:28:41Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
 %%%            (run: body)
 \newcommand*{\setheadwidth}[2][]{%
   \KOMAoptions{headwidth=#2:#1}%
@@ -1014,7 +1014,7 @@
   \begingroup
     \setbox\z@\vbox{%
       \ifsls@leavevmode\leavevmode\expandafter\ignorespaces\fi
-      #2%
+      #2\par
     }%
     \ifdim #1<\dimexpr \ht\z@+\dp\z@\relax
       \PackageWarning{scrlayer-scrpage}{%
@@ -1127,6 +1127,7 @@
         \if@tempswa
           \hskip \z@\@plus 1fill\@minus \paperwidth\null
         \fi
+        \par
       }%
     }%
   \endgroup

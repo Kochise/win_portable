@@ -56,6 +56,18 @@ local function join_characters(obj,par)
   local is_span = function(next_el)
     return charclasses[get_name(next_el)]
   end
+  local has_children = function(curr)
+    -- don't process spans that have child elements
+    local children = curr:get_children() or {}
+    -- if there is more than one child, we can be sure that it has child elements
+    if #children > 1 then 
+      return true 
+    elseif #children == 1 then
+      -- test if the child is an element
+      return children[1]:is_element()
+    end
+    return false
+  end
   local join_elements = function(el, next_el)
     -- it the following element match, copy it's children to the current element
     for _, child in ipairs(next_el:get_children()) do
@@ -79,8 +91,8 @@ local function join_characters(obj,par)
 
   obj:traverse_elements(function(el)
     -- loop over all elements and test if the current element is in a list of
-    -- processed elements (charclasses)
-    if is_span(el) then
+    -- processed elements (charclasses) and if it doesn't contain children
+    if is_span(el) and not has_children(el) then
       local next_el = get_next(el)
       -- loop over the following elements and test whether they are of the same type
       -- as the current one
