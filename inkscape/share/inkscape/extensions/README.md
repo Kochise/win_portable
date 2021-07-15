@@ -13,27 +13,14 @@ install the files into /usr/share/inkscape/extensions or
 
 ## Testing
 
-These extensions are designed to have good test coverage as well as python 2.7 
-and python 3.6 support.  
-Testing can be run using the setup.py command or pytest directly:
+These extensions are designed to have good test coverage for python 3.6 and above.
 
-    ./setup.py test
-    python2 -m pytest
-    python3 -m pytest
+You must install the program `pytest` in order to run these tests. You may run all tests by omitting any other parameters or select tests by adding the test filename that you want to run.
 
-The latest coverage report for master branch can be found at
-https://inkscape.gitlab.io/extensions/coverage/.
+    pytest
+    pytest tests/test_my_extension.py
 
-## Testing Options
-
-Tests can be run with these options that are provided as environment variables:
-
-    FAIL_ON_DEPRECATION=1 - Will instantly fail any use of deprecated APIs
-    EXPORT_COMPARE=1 - Generate output files from comparisions. This is useful for manually checking the output as well as updating the comparison data.
-    NO_MOCK_COMMANDS=1 - Instead of using the mock data, actually call commands. This will also generate the msg files similar to export compare.
-    INKSCAPE_COMMAND=/other/inkscape - Use a different Inkscape (for example development version) while running commands. Works outside of tests too.
-    XML_DIFF=1 - Attempt to output an XML diff file, this can be useful for debugging to see differences in context.
-    DEBUG_KEY=1 - Export mock file keys for debugging. This is a highly specialised option for debuging key generation.
+See TESTING.md for further details.
 
 ## Extension description
 

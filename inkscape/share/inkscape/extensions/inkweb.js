@@ -6,8 +6,7 @@
 **  ********* Bugs and New Fetures *************************************
 **   If you found any bug on this script or if you want to propose a
 **   new feature, please report it in the inkscape bug tracker
-**   https://bugs.launchpad.net/inkscape/+filebug
-**   and assign that to Aurium.
+**   https://inkscape.org/report .
 **  ********************************************************************
 **
 **  This program is free software: you can redistribute it and/or modify
@@ -213,4 +212,4 @@ InkWeb.moveViewbox = function (conf) {
   document.getElementsByTagName("svg")[0].viewBox.baseVal.y = toEl.getAttribute("y");
 }
 
-InkWeb.log = function () { /* if you need that, use the inkweb-debug.js too */ }
+InkWeb.log = function () { /* requires inkweb-debug.js, not included in Inkscape */ }

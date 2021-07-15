@@ -21,6 +21,7 @@ When elements are selected, these structures provide an advanced API.
 """
 
 from collections import OrderedDict
+from ._utils import natural_sort_key
 
 class ElementList(OrderedDict):
     """
@@ -35,23 +36,26 @@ class ElementList(OrderedDict):
     def __init__(self, svg, _iter=None):
         self.svg = svg
         self.ids = OrderedDict()
-        super(ElementList, self).__init__()
-        if _iter:
+        super().__init__()
+        if _iter is not None:
             self.set(*list(_iter))
 
+    def __iter__(self):
+        return self.values().__iter__()
+
     def __getitem__(self, key):
-        return super(ElementList, self).__getitem__(self._to_key(key))
+        return super().__getitem__(self._to_key(key))
 
     def __contains__(self, key):
-        return super(ElementList, self).__contains__(self._to_key(key))
+        return super().__contains__(self._to_key(key))
 
     def __setitem__(self, orig_key, elem):
         from ._base import BaseElement
         if orig_key != elem and orig_key != elem.get('id'):
-            raise ValueError("Refusing to set bad key in ElementList {}".format(orig_key))
+            raise ValueError(f"Refusing to set bad key in ElementList {orig_key}")
         if isinstance(elem, str):
             key = elem
-            elem = self.svg.getElementById(elem)
+            elem = self.svg.getElementById(elem, literal=True)
             if elem is None:
                 return
         if isinstance(elem, BaseElement):
@@ -60,10 +64,10 @@ class ElementList(OrderedDict):
             element_id = elem.get('id')
             if element_id is not None:
                 self.ids[element_id] = key
-            super(ElementList, self).__setitem__(key, elem)
+            super().__setitem__(key, elem)
         else:
             kind = type(elem).__name__
-            raise ValueError("Unknown element type: {}".format(kind))
+            raise ValueError(f"Unknown element type: {kind}")
 
     def _to_key(self, key, default=None):
         """Takes a key (id, element, etc) and returns an xml_path key"""
@@ -81,7 +85,7 @@ class ElementList(OrderedDict):
     def clear(self):
         """Also clear ids"""
         self.ids.clear()
-        super(ElementList, self).clear()
+        super().clear()
 
     def set(self, *ids):
         """
@@ -102,7 +106,7 @@ class ElementList(OrderedDict):
 
     def pop(self, key=None):
         """Remove the key item or remove the last item selected"""
-        item = super(ElementList, self).pop(self._to_key(key, default=-1))
+        item = super().pop(self._to_key(key, default=-1))
         self.ids.pop(item.get('id'))
         return item
 
@@ -116,14 +120,16 @@ class ElementList(OrderedDict):
             self[elem] = elem # This doesn't matter
 
     def paint_order(self):
-        """Get the selected elements, but ordered by their appearance in the document"""
+        """Get the selected elements by z-order (stacking order), ordered from bottom to top"""
         new_list = ElementList(self.svg)
-        new_list.set(*[elem for _, elem in sorted(self.items(), key=lambda x: x[0])])
+        # the elements are stored with their xpath index, so a natural sort order 
+        # '3' < '20' < '100' has to be applied
+        new_list.set(*[elem for _, elem in sorted(self.items(), key=lambda x: natural_sort_key(x[0]))])
         return new_list
 
     def filter(self, *types):
         """Filter selected elements of the given type, returns a new SelectedElements object"""
-        return ElementList(self.svg, [e for e in self.values() if not types or isinstance(e, types)])
+        return ElementList(self.svg, [e for e in self if not types or isinstance(e, types)])
 
     def get(self, *types):
         """Like filter, but will enter each element searching for any child of the given types"""
@@ -131,13 +137,12 @@ class ElementList(OrderedDict):
             if not types or isinstance(elem, types):
                 yield elem
             for child in elem:
-                for item in _recurse(child):
-                    yield item
-        return ElementList(self.svg, [r for e in self.values() for r in _recurse(e)])
+                yield from _recurse(child)
+        return ElementList(self.svg, [r for e in self for r in _recurse(e)])
 
     def id_dict(self):
         """For compatibility, return regular dictionary of id -> element pairs"""
-        return OrderedDict([(eid, self[xid]) for eid, xid in self.ids.items()])
+        return dict([(eid, self[xid]) for eid, xid in self.ids.items()])
 
     def bounding_box(self):
         """
@@ -150,10 +155,10 @@ class ElementList(OrderedDict):
         When no object is selected or when the object's location cannot be
         determined (e.g. empty group or layer), all coordinates will be None.
         """
-        return sum([elem.bounding_box() for elem in self.values()], None)
+        return sum([elem.bounding_box() for elem in self], None)
 
     def first(self):
         """Returns the first item in the selected list"""
-        for elem in self.values():
+        for elem in self:
             return elem
         return None

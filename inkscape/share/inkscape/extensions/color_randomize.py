@@ -4,18 +4,24 @@
 from random import randrange, uniform
 import inkex
 
-def _rand(limit, value, roof=255, method=randrange):
+def _rand(limit, value, roof=255, method=randrange, circular=False):
+    """Generates a random number which is less than limit % away from value, using the method
+    supplied."""
     limit = roof * float(limit) / 100
     limit /= 2
-    max_ = type(roof)((value * roof) + limit)
-    min_ = type(roof)((value * roof) - limit)
-    if max_ > roof:
-        min_ -= max_ - roof
-        max_ = roof
-    if min_ < 0:
-        max_ -= min_
-        min_ = 0
-    return method(min_, max_)
+    max_ = type(roof)(value + limit)
+    min_ = type(roof)(value - limit)
+    if not (circular):
+        if max_ > roof:
+            min_ -= max_ - roof
+            max_ = roof
+        if min_ < 0:
+            max_ -= min_
+            min_ = 0
+        return method(min_, max_)
+    else:
+        return method(min_, max_) % roof
+
 
 class Randomize(inkex.ColorExtension):
     """Randomize the colours of all objects"""
@@ -30,7 +36,7 @@ class Randomize(inkex.ColorExtension):
     def modify_color(self, name, color):
         hsl = color.to_hsl()
         if self.options.hue_range > 0:
-            hsl.hue = int(_rand(self.options.hue_range, hsl.hue))
+            hsl.hue = int(_rand(self.options.hue_range, hsl.hue, circular=True))
         if self.options.saturation_range > 0:
             hsl.saturation = int(_rand(self.options.saturation_range, hsl.saturation))
         if self.options.lightness_range > 0:
@@ -41,11 +47,11 @@ class Randomize(inkex.ColorExtension):
         try:
             opacity = float(opacity)
         except ValueError:
-            self.msg("Ignoring unusual opacity value: {}".format(opacity))
+            self.msg(f"Ignoring unusual opacity value: {opacity}")
             return opacity
         orange = self.options.opacity_range
         if orange > 0:
-            return _rand(orange, opacity, roof=100.0, method=uniform) / 100
+            return _rand(orange, opacity, roof=1.0, method=uniform)
         return opacity
 
 if __name__ == '__main__':

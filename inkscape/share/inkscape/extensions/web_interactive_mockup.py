@@ -28,8 +28,7 @@ class InteractiveMockup(inkwebeffect.InkWebEffect):
         self.ensureInkWebSupport()
 
         if len(self.options.ids) < 2:
-            raise inkex.AbortExtension("You must select at least two elements."
-                                       " The last one is the object you want to go to")
+            raise inkex.AbortExtension("You must select at least two elements. The last one is the object you want to go to.")
 
         el_from = list(self.svg.selected.values())[:-1]
 

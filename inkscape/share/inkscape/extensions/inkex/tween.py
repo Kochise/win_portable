@@ -23,13 +23,10 @@ from bisect import bisect_left
 from .utils import X, Y
 from .units import convert_unit, parse_unit, render_unit
 
-try:
-    from typing import Union, Tuple, List, TypeVar, Callable, overload
-    hasTypes = True
-    Value = TypeVar('Value')
-    Number = TypeVar('Number', int, float)
-except ImportError:
-    pass
+from typing import Union, Tuple, List, TypeVar, Callable, overload
+hasTypes = True
+Value = TypeVar('Value')
+Number = TypeVar('Number', int, float)
 
 
 def interpcoord(

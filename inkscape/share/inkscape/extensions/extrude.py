@@ -28,7 +28,7 @@ class Extrude(inkex.EffectExtension):
 
     def effect(self):
         paths = []
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             paths.append(node)
         if len(paths) < 2:
             raise inkex.AbortExtension("Need at least 2 paths selected")

@@ -34,7 +34,7 @@ See default.xml for more information.
 
 <!-- Zoom -->
 
-  <bind key="Space" modifiers="Ctrl" action="ToolZoom" display="true"/>
+  <bind key="space" modifiers="Ctrl" action="ToolZoom" display="true"/>
 
 
 <!-- File actions -->
@@ -56,8 +56,8 @@ See default.xml for more information.
   <bind key="i" modifiers="Ctrl,Shift" action="FileImport" display="true"/>
   <bind key="I" modifiers="Ctrl,Shift" action="FileImport" />
 
-<!--  <bind key="e" modifiers="Ctrl" action="FileExport" display="true"/>
-  <bind key="E" modifiers="Ctrl" action="FileExport" /> -->
+<!--  <bind key="e" modifiers="Ctrl" action="DialogExport" display="true"/>
+  <bind key="E" modifiers="Ctrl" action="DialogExport" /> -->
 
   <bind key="p" modifiers="Ctrl" action="FilePrint" display="true"/>
   <bind key="P" modifiers="Ctrl" action="FilePrint" />
@@ -71,13 +71,13 @@ See default.xml for more information.
 
 <!-- Options dialog - make sure it's correct one 
 
-  <bind key="Enter" modifiers="Alt" action="DialogDocumentProperties" display="true"/> -->
+  <bind key="Return" modifiers="Alt" action="DialogDocumentProperties" display="true"/> -->
 
 <!-- Edit actions -->
 
   <bind key="z" modifiers="Ctrl" action="EditUndo" display="true"/>
   <bind key="Z" modifiers="Ctrl" action="EditUndo" />
-  <bind key="Backspace" modifiers="Alt" action="EditUndo" />
+  <bind key="BackSpace" modifiers="Alt" action="EditUndo" />
 
   <bind key="y" modifiers="Ctrl" action="EditRedo" display="true"/>
   <bind key="Y" modifiers="Ctrl" action="EditRedo" />
@@ -110,33 +110,26 @@ F2	Zoom One-Shot
 Zoom1:0: Zoom to 1:1
 ZoomIn: Zoom in 
 
-  <bind key="plus" action="ZoomIn" display="true"/>
-  <bind key="plus" modifiers="Shift" action="ZoomIn" />
-  <bind key="equal" action="ZoomIn" />
-  <bind key="equal" modifiers="Shift" action="ZoomIn" />
-  <bind key="KP_Add" action="ZoomIn" />
+  <bind gaction="win.canvas-zoom-in" keys="plus, &lt;Shift&gt;plus, equal, &lt;Shift&gt;equal, KP_Add" />
   
-  <bind key="1" action="Zoom1:0" display="true"/>
+  <bind gaction=win.canvas-zoom-1-1" keys="1"/>
 
 -->
 
 <!--  <bind key="F3" action="ZoomOut" display="true"/> -->
 
 <!-- Zoom to Object - in Zoner's terminology -->
-  <bind key="a" action="ZoomDrawing" display="true"/>
-  <bind key="A" action="ZoomDrawing" display="true"/>
+  <bind gaction="win.canvas-zoom-drawing" keys="a" />
   
-  <bind key="e" action="ZoomPage" display="true"/>
-  <bind key="E" action="ZoomPage" display="true"/>
+  <bind gaction="win.canvas-zoom-page" keys="e"/>
 
-  <bind key="s" action="ZoomSelection" display="true"/>
-  <bind key="S" action="ZoomSelection" />
+  <bind gaction="win.canvas-zoom-selection" keys="s"/>
 
 <!-- Implemented in Zoner Draw, but does it have hotkeys?
 
-ZoomNext: Next zoom (from the history of zooms)
-ZoomPrev: Previous zoom (from the history of zooms)
-ZoomPageWidth: Zoom to fit page width in window
+win.canvas-zoom-next: Next zoom (from the history of zooms)
+win.canvas-zoom-prev: Previous zoom (from the history of zooms)
+win.canvas-zoom-page-width: Zoom to fit page width in window
 
 -->
 
@@ -164,7 +157,7 @@ ZoomPageWidth: Zoom to fit page width in window
   <bind key="K" modifiers="Ctrl" action="SelectionCombine" />
 
   <bind key="k" modifiers="Ctrl,Shift" action="SelectionBreakApart" display="true"/>
-  <bind key="K" modifiers="Ctrl,SHift" action="SelectionBreakApart" /> -->
+  <bind key="K" modifiers="Ctrl,Shift" action="SelectionBreakApart" />
 
 <!-- Object actions -->
 

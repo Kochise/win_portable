@@ -421,35 +421,7 @@ def propagate_attribs(node, parent_style={}, parent_transform=[[1.0, 0.0, 0.0], 
 
 def get_dimension(s="1024"):
     """Convert an SVG length string from arbitrary units to pixels"""
-    if s == "":
-        return 0
-    if isinstance(s, float):
-        return s
-    try:
-        last = int(s[-1])
-    except:
-        last = None
-
-    if type(last) == int:
-        return float(s)
-    elif s[-1] == "%":
-        return 1024
-    elif s[-2:] == "px":
-        return float(s[:-2])
-    elif s[-2:] == "pt":
-        return float(s[:-2]) * 1.333
-    elif s[-2:] == "em":
-        return float(s[:-2]) * 16
-    elif s[-2:] == "mm":
-        return float(s[:-2]) * 3.779
-    elif s[-2:] == "pc":
-        return float(s[:-2]) * 16
-    elif s[-2:] == "cm":
-        return float(s[:-2]) * 37.79
-    elif s[-2:] == "in":
-        return float(s[:-2]) * 96
-    else:
-        return 1024
+    return inkex.units.convert_unit(s, "px")
 
 
 ###### Main Class #########################################

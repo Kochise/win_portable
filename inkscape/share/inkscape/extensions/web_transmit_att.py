@@ -39,7 +39,7 @@ class TransmitAttribute(inkwebeffect.InkWebEffect):
 
         # All set the last else The first set all
         split = -1 if self.options.from_and_to == "g-to-one" else 1
-        el_from = list(self.svg.selection.values())[:split]
+        el_from = list(self.svg.selection)[:split]
         id_to = list(self.svg.selection.ids)[split:]
 
         ev_code = "InkWeb.transmitAtt({{from:this, to:['{}'], att:'{}'}})".format("','".join(id_to), self.options.att)
@@ -49,6 +49,8 @@ class TransmitAttribute(inkwebeffect.InkWebEffect):
                 el_ev_code = prev_ev_code + ";\n" + ev_code
             if self.options.compatibility == 'prepend':
                 el_ev_code = ev_code + ";\n" + prev_ev_code
+            if self.options.compatibility == 'replace':
+                el_ev_code = ev_code
             elem.set(self.options.when, el_ev_code)
 
 if __name__ == '__main__':

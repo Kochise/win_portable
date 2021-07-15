@@ -104,7 +104,7 @@ class Guide(BaseElement):
 
     @classmethod
     def new(cls, pos_x, pos_y, angle, **attrs):
-        guide = super(Guide, cls).new(**attrs)
+        guide = super().new(**attrs)
         guide.move_to(pos_x, pos_y, angle=angle)
         return guide
 
@@ -114,8 +114,9 @@ class Guide(BaseElement):
 
         Angle may be a float or integer, which will change the orientation. Alternately,
         it may be a pair of numbers (tuple) which will set the orientation directly.
+        If not given at all, the orientation remains unchanged.
         """
-        self.set('position', "{:g},{:g}".format(float(pos_x), float(pos_y)))
+        self.set('position', f"{float(pos_x):g},{float(pos_y):g}")
         if isinstance(angle, str):
             if ',' not in angle:
                 angle = float(angle)
@@ -127,7 +128,8 @@ class Guide(BaseElement):
         if isinstance(angle, (tuple, list)) and len(angle) == 2:
             angle = "{:g},{:g}".format(*angle)
 
-        self.set('orientation', angle)
+        if angle is not None:
+            self.set('orientation', angle)
         return self
 
 class Metadata(BaseElement):

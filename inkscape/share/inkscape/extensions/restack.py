@@ -77,7 +77,7 @@ class Restack(inkex.EffectExtension):
 
     def restack_z_order(self, parentnode):
         """Restack based on z-order"""
-        objects = list(self.svg.selected.values())
+        objects = list(self.svg.selected.paint_order())
         if self.options.zsort == "rev":
             objects.reverse()
         elif self.options.zsort == "rand":

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Optimized PNG</name>
+    <id>org.inkscape.raster.png_output</id>
+    <dependency type="executable" location="path">optipng</dependency>
+
+    <label>Optimize PNG with 'optipng'</label>
+    <param name="tab" type="notebook">
+        <page name="lossless" gui-text="Lossless">
+            <param name="interlace" type="bool" gui-text="Interlaced">true</param>
+
+            <param name="level" type="optiongroup" appearance="combo" gui-text="Level:">
+                <option value="0">Minimal Effort</option>
+                <option value="1">Single Compression Trial</option>
+                <option value="2">Two Compression Trials</option>
+                <option value="5">Five Compression Trials</option>
+                <option value="10">Ten Compression Trials</option>
+            </param>
+
+        </page>
+        <page name="lossy" gui-text="Lossy Options">
+            <param name="bitdepth" type="bool" gui-text="Allow bit depth reduction">false</param>
+            <param name="color" type="bool" gui-text="Allow color type reduction">false</param>
+            <param name="palette" type="bool" gui-text="Allow palette reduction">false</param>
+        </page>
+    </param>
+
+    <output raster="true">
+        <extension>.png</extension>
+        <mimetype>image/png</mimetype>
+        <filetypename>Optimized PNG (*.png)</filetypename>
+        <filetypetooltip>Optimize PNG output for file size.</filetypetooltip>
+    </output>
+
+    <script>
+        <command location="inx" interpreter="python">raster_output_png.py</command>
+    </script>
+</inkscape-extension>

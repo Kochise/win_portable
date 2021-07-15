@@ -89,8 +89,8 @@ Hom/end keys-select minimum or maximum feather values
   <bind key="I" modifiers="Ctrl,Shift" action="FileImport" display="true"/>
   <bind key="i" modifiers="Ctrl,Shift" action="FileImport" />
 
-  <bind key="e" modifiers="Ctrl,Shift" action="FileExport" display="true"/>
-  <bind key="E" modifiers="Ctrl,Shift" action="FileExport" />
+  <bind key="e" modifiers="Ctrl,Shift" action="DialogExport" display="true"/>
+  <bind key="E" modifiers="Ctrl,Shift" action="DialogExport" />
 
   <bind action="FileVacuum" />
 
@@ -191,42 +191,24 @@ Hom/end keys-select minimum or maximum feather values
 
 <!-- Zoom -->
 
-  <bind key="plus" action="ZoomIn" />
-  <bind key="plus" modifiers="Shift" action="ZoomIn" />
-  <bind key="equal" action="ZoomIn" />
-  <bind key="KP_Add" action="ZoomIn" />
-  <bind key="KP_Add" modifiers="Ctrl" action="ZoomIn" display="true"/>
+  <bind gaction="win.canvas-zoom-in" keys="plus, equal, KP_Add, &lt;shift&gt;plus, &lt;primary&gt;KP_Add" />
 
-  <bind key="minus" action="ZoomOut" display="true"/>
-  <bind key="KP_Subtract" action="ZoomOut" />
-  <bind key="KP_Subtract" modifiers="Ctrl" action="ZoomOut" display="true"/>
+  <bind gaction="win.canvas-zoom-out" keys="minus, KP_Subtract, &lt;primary&gt;KP_Subtract" />
 
-  <bind key="1" action="Zoom1:0" display="true"/>
-  <bind key="2" action="Zoom1:2" display="true"/>
+  <bind gaction="win.canvas-zoom-1-1" keys="1"/>
+  <bind gaction="win.canvas-zoom-1-2" keys="2"/>
 
-  <bind key="Z" modifiers="Ctrl,Shift" action="ZoomSelection" display="true"/>
-  <bind key="z" modifiers="Ctrl,Shift" action="ZoomSelection" />
-  <bind key="3" action="ZoomSelection" />
+  <bind gaction="win.canvas-zoom-selection" keys="&lt;primary&gt;&lt;shift&gt;z, 3"/>
 
-  <bind key="J" modifiers="Ctrl,Shift" action="ZoomDrawing" display="true"/>
-  <bind key="j" modifiers="Ctrl,Shift" action="ZoomDrawing" />
-  <bind key="4" action="ZoomDrawing" />
+  <bind gaction="win.canvas-zoom-drawing" keys="&lt;primary&gt;&lt;shift&gt;j, 4"/>
 
-  <bind key="P" modifiers="Ctrl,Shift" action="ZoomPage" display="true"/>
-  <bind key="p" modifiers="Ctrl,Shift" action="ZoomPage" />
-  <bind key="5" action="ZoomPage" />
+  <bind gaction="win.canvas-zoom-page" keys="&lt;primary&gt;&lt;shift&gt;p, 5, KP_5"/>
 
-  <bind key="KP_5" action="ZoomPage" />
-  <bind key="6" action="ZoomPageWidth" display="true"/>
+  <bind gaction="win.canvas-zoom-page-width" keys="6"/>
 
-  <bind action="ZoomPageWidth" />
 
-  <bind key="grave" modifiers="Shift" action="ZoomNext" display="true"/> <!-- ` -->
-  <bind key="asciitilde" modifiers="Shift" action="ZoomNext" /> <!-- ~ -->
-
-  <bind key="R" modifiers="Ctrl" action="ZoomPrev" display="true"/> <!-- ` -->
-  <bind key="r" modifiers="Ctrl" action="ZoomPrev" display="true"/> <!-- ` -->
-  <bind key="grave" action="ZoomPrev" /> <!-- ` -->
+  <bind gaction="win.canvas-zoom-prev" keys="&lt;primary&gt;r, grave"/> <!-- ` -->
+  <bind gaction="win.canvas-zoom-next" keys="&lt;shift&gt;grave, &lt;shift&gt;asciitilde"/> <!-- ~ -->
 
 <!-- View -->
 
@@ -255,6 +237,7 @@ Hom/end keys-select minimum or maximum feather values
 
   <bind action="ViewModeNormal"/>
   <bind action="ViewModeOutline"/>
+  <bind action="ViewModeOutlineOverlay" />
 
 <!-- Edit -->
 
@@ -534,7 +517,6 @@ Hom/end keys-select minimum or maximum feather values
   <bind key="w" modifiers="Ctrl,Shift" action="DialogSwatches"/>
   <bind key="W" modifiers="Ctrl,Shift" action="DialogSwatches" />
 
-  <bind action="DialogMetadata" />
   <bind action="DialogClonetiler" />
   <bind action="DialogArrange" />
   <bind action="DialogDebug" />

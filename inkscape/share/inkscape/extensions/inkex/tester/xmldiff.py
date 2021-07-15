@@ -27,9 +27,9 @@ class DeltaLogger(list):
     def append_tag(self, tag_a, tag_b):
         """Record a tag difference"""
         if tag_a:
-            tag_a = "<{}.../>".format(tag_a)
+            tag_a = f"<{tag_a}.../>"
         if tag_b:
-            tag_b = "<{}.../>".format(tag_b)
+            tag_b = f"<{tag_b}.../>"
         self.append((tag_a, tag_b))
 
     def append_attr(self, attr, value_a, value_b):
@@ -55,7 +55,7 @@ class DeltaLogger(list):
     def __repr__(self):
         if self:
             return "No differences detected"
-        return "{} xml differences".format(len(self))
+        return f"{len(self)} xml differences"
 
 def to_xml(data):
     """Convert string or bytes to xml parsed root node"""
@@ -74,7 +74,7 @@ def xmldiff(data1, data2):
 
 def _xmldiff(xml1, xml2, delta):
     if xml1.tag != xml2.tag:
-        xml1.tag = '{}XXX{}'.format(xml1.tag, xml2.tag)
+        xml1.tag = f"{xml1.tag}XXX{xml2.tag}"
         delta.append_tag(xml1.tag, xml2.tag)
     for name, value in xml1.attrib.items():
         if name not in xml2.attrib:
@@ -82,17 +82,17 @@ def _xmldiff(xml1, xml2, delta):
             xml1.attrib[name] += "XXX"
         elif xml2.attrib.get(name) != value:
             delta.append_attr(name, xml1.attrib.get(name), xml2.attrib.get(name))
-            xml1.attrib[name] = "{}XXX{}".format(xml1.attrib.get(name), xml2.attrib.get(name))
+            xml1.attrib[name] = f"{xml1.attrib.get(name)}XXX{xml2.attrib.get(name)}"
     for name, value in xml2.attrib.items():
         if name not in xml1.attrib:
             delta.append_attr(name, None, value)
             xml1.attrib[name] = "XXX" + value
     if not text_compare(xml1.text, xml2.text):
         delta.append_text(xml1.text, xml2.text)
-        xml1.text = "{}XXX{}".format(xml1.text, xml2.text)
+        xml1.text = f"{xml1.text}XXX{xml2.text}"
     if not text_compare(xml1.tail, xml2.tail):
         delta.append_text(xml1.tail, xml2.tail)
-        xml1.tail = "{}XXX{}".format(xml1.tail, xml2.tail)
+        xml1.tail = f"{xml1.tail}XXX{xml2.tail}"
 
     # Get children and pad with nulls
     children_a = list(xml1)

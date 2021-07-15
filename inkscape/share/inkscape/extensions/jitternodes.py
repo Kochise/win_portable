@@ -36,7 +36,7 @@ class JitterNodes(inkex.EffectExtension):
                           default=self.dist_uniform, help="Distribution of displacement")
 
     def effect(self):
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             path = node.path.to_superpath()
             for subpath in path:
                 closed = subpath[0] == subpath[-1]

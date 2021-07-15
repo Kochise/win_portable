@@ -31,6 +31,7 @@ class LayersToSvgFont(inkex.EffectExtension):
         return 0
 
     def flip_cordinate_system(self, path, emsize, baseline):
+        """Flip Y axis because SVG fonts use a different orientation than regular SVG"""
         path = path.copy()
         path.transform.add_scale(1, -1)
         path.transform.add_translate(0, int(emsize) - int(baseline))
@@ -38,6 +39,7 @@ class LayersToSvgFont(inkex.EffectExtension):
         return str(path.path)
 
     def effect(self):
+        """Main extension code"""
         emsize = int(float(self.svg.get("width")))
         baseline = self.guideline_value("baseline", 1)
         ascender = self.guideline_value("ascender", 1) - baseline
@@ -70,7 +72,7 @@ class LayersToSvgFont(inkex.EffectExtension):
 
                 # use = glyph.get_or_create('svg:use', UseElement)
                 # use.set('xlink:href', "#"+group.get("id"))
-                # TODO: This code creates <use> nodes but they do not render on svg fonts dialog. why?
+                # TODO: This creates <use> nodes; why do they do not render on svg fonts dialog?
 
                 ############################
                 # Option 2:

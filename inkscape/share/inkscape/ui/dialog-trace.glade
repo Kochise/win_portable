@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="MS_scans">
@@ -13,7 +13,7 @@
     <property name="lower">-10</property>
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">0.20000000000000001</property>
+    <property name="step_increment">0.2</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="PA_islands">
@@ -34,7 +34,7 @@
     <property name="lower">-10</property>
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">0.20000000000000001</property>
+    <property name="step_increment">0.2</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="SS_AT_ET_T">
@@ -44,9 +44,16 @@
     <property name="step_increment">0.1</property>
     <property name="page_increment">1</property>
   </object>
+  <object class="GtkAdjustment" id="SS_AT_FI_T">
+    <property name="lower">1</property>
+    <property name="upper">20</property>
+    <property name="value">4</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkAdjustment" id="SS_BC_T">
     <property name="upper">1</property>
-    <property name="value">0.45000000000000001</property>
+    <property name="value">0.45</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">10</property>
   </object>
@@ -57,35 +64,10 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAdjustment" id="SS_AT_FI_T">
-    <property name="lower">1</property>
-    <property name="upper">20</property>
-    <property name="value">4</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
   <object class="GtkAdjustment" id="SS_ED_T">
     <property name="upper">1</property>
-    <property name="value">0.65000000000000002</property>
+    <property name="value">0.65</property>
     <property name="step_increment">0.01</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="optimize">
-    <property name="upper">5</property>
-    <property name="value">0.20000000000000001</property>
-    <property name="step_increment">0.050000000000000003</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="smooth">
-    <property name="upper">1.3400000000000001</property>
-    <property name="value">1</property>
-    <property name="step_increment">0.01</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="speckles">
-    <property name="upper">1000</property>
-    <property name="value">2</property>
-    <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkTextBuffer" id="helptext">
@@ -96,17 +78,34 @@
  * "Color quantization" separates the image into the given number of colors, and separates them with a path (using potrace).
  * "Autotrace" uses the autotrace algorithm with the given option.
  * "Centerline tracing" tries to vectorize a line drawing (with autotrace).
- * "Multiple scans" options separate the image into a number of scans, depending on brightness, color separation, or gray levels, and creates several paths for those. It can also use autotrace.
- * The "Pixel art" tab allows to use the depixelize algorithm to vectorize pixel art images.
+ * "Multiple scans" options separate the image into a number of scans, depending on brightness, color separation, or gray levels (using potrace), or using the autotrace algorithm, and create several paths for those.
+ * The "Pixel art" tab allows to use an algorithm for pixel recognition or one for depixelizing to vectorize pixel art images.
 
  * NOTE:
   1) Save your work before tracing
-  2) Watch your pixel count: "Trace pixel art" creates one path per pixel. It is not recommended for images that are not pixel art.
+  2) Watch your pixel count: "Trace pixel art" creates up to one path per pixel. It is not recommended for images that are not pixel art.
   3) Autotrace is slower than potrace, it is not recommended for big images. Preprocessing your images to increase contrast is recommended.
   4) If your goal is to get few nodes and good precision, manual tracing is always best.
 </property>
-</object>
-
+  </object>
+  <object class="GtkAdjustment" id="optimize">
+    <property name="upper">5</property>
+    <property name="value">0.2</property>
+    <property name="step_increment">0.05</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="smooth">
+    <property name="upper">1.34</property>
+    <property name="value">1</property>
+    <property name="step_increment">0.01</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="speckles">
+    <property name="upper">1000</property>
+    <property name="value">2</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkBox" id="mainBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -307,19 +306,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkSpinButton">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="adjustment">SS_AT_FI_T</property>
-                                        <property name="digits">0</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
@@ -328,7 +314,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">0</property>
+                                        <property name="position">2</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -337,6 +323,18 @@
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">SS_AT_ET_T</property>
                                         <property name="digits">1</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinButton">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="adjustment">SS_AT_FI_T</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -368,19 +366,6 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkSpinButton">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="adjustment">SS_AT_FI_T</property>
-                                        <property name="digits">0</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
                                       <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
@@ -389,7 +374,7 @@
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">0</property>
+                                        <property name="position">2</property>
                                       </packing>
                                     </child>
                                     <child>
@@ -398,6 +383,18 @@
                                         <property name="can_focus">True</property>
                                         <property name="adjustment">SS_AT_ET_T</property>
                                         <property name="digits">1</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSpinButton">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="adjustment">SS_AT_FI_T</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -459,10 +456,10 @@
                             <property name="can_focus">False</property>
                             <property name="active">0</property>
                             <items>
-                              <item translatable="yes">Brightness steps</item>
-                              <item translatable="yes">Colors</item>
-                              <item translatable="yes">Grays</item>
-                              <item translatable="yes">Autotrace (slower)</item>
+                              <item id="MS_BS" translatable="yes">Brightness steps</item>
+                              <item id="MS_C" translatable="yes">Colors</item>
+                              <item id="MS_BW" translatable="yes">Grays</item>
+                              <item id="MS_AT" translatable="yes">Autotrace (slower)</item>
                             </items>
                           </object>
                           <packing>
@@ -657,7 +654,7 @@
                         <property name="tooltip_text" translatable="yes">Increase this to reduce the number of nodes in the trace by more aggressive optimization</property>
                         <property name="adjustment">optimize</property>
                         <property name="digits">2</property>
-                        <property name="value">0.20000000000000001</property>
+                        <property name="value">0.2</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -821,6 +818,21 @@ Heuristics
                         <property name="top_attach">3</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkCheckButton" id="CB_PA_optimize">
+                        <property name="label" translatable="yes">Optimize</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="tooltip_text" translatable="yes">Try to optimize paths by joining adjacent Bezier curve segments</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">4</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -898,25 +910,21 @@ Output
               </packing>
             </child>
             <child>
-
-<object class="GtkScrolledWindow">
+              <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
-<property name="can_focus">True</property>
-<property name="hscrollbar_policy">never</property>
-<property name="shadow_type">in</property>
-  <child>
-  <object class="GtkTextView">
-    <property name="visible">True</property>
-    <property name="can_focus">True</property>
-    <property name="editable">False</property>
-    <property name="wrap_mode">word</property>
-    <property name="buffer">helptext</property>
-  </object>
-</child>
-</object>
-
-
-
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="shadow_type">in</property>
+                <child>
+                  <object class="GtkTextView">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="editable">False</property>
+                    <property name="wrap_mode">word</property>
+                    <property name="buffer">helptext</property>
+                  </object>
+                </child>
+              </object>
               <packing>
                 <property name="position">2</property>
               </packing>
@@ -963,32 +971,7 @@ Output
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-		<property name="can_focus">False</property>
-
-
-
-<!--
-                <child>
-                  <object class="GtkCheckButton" id="CB_live">
-                    <property name="label" translatable="yes">Live</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
--->
-
-
-
-
-
-
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton" id="B_Update">
                     <property name="label" translatable="yes">Update</property>
@@ -1076,7 +1059,7 @@ Output
         </child>
         <child>
           <object class="GtkButton" id="B_OK">
-            <property name="label">gtk-ok</property>
+            <property name="label">gtk-apply</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>

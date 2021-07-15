@@ -27,22 +27,13 @@
 #  * Michel Chatelain, 17-18 janvier 2009, a partir de funcplot.py
 #  * 20 janvier 2009 : adaptation a la version 0.46 a partir de la nouvelle version de funcplot.py
 #
-"""
-Parametric Curves has no real description, even in the inx file, which is really odd.
-"""
 
-from math import pi, cos, sin, tan
+import math
+import random
+from math import pi
+from inkex.utils import math_eval
 
 import inkex
-
-def maths_eval(user_function):
-    """Try and make the eval safer"""
-    func = 'lambda t: ' + (user_function.strip('"') or 't')
-    return eval( # pylint: disable=eval-used
-        func,
-        {
-            'pi': pi, 'sin': sin, 'cos': cos, 'tan': tan,
-        }, {})
 
 def drawfunction(t_start, t_end, xleft, xright, ybottom, ytop, samples, width, height, left, bottom,
                  fx="cos(3*t)", fy="sin(5*t)", times2pi=False, isoscale=True, drawaxis=True):
@@ -78,8 +69,8 @@ def drawfunction(t_start, t_end, xleft, xright, ybottom, ytop, samples, width, h
             ytop = (bottom + height - yzero) / scaley
 
     # functions specified by the user
-    f1 = maths_eval(fx)
-    f2 = maths_eval(fy)
+    f1 = math_eval(fx, "t")
+    f2 = math_eval(fy, "t")
 
     # step is increment of t
     step = (t_end - t_start) / (samples - 1)
@@ -160,7 +151,7 @@ class ParamCurves(inkex.EffectExtension):
         pars.add_argument("--tab", default="sampling")
 
     def effect(self):
-        for node in self.svg.selected.values():
+        for node in self.svg.selected:
             if isinstance(node, inkex.Rectangle):
                 # create new path with basic dimensions of selected rectangle
                 newpath = inkex.PathElement()

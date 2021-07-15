@@ -89,8 +89,8 @@ class Interp(inkex.EffectExtension):
                      'stroke-opacity': 1.0,
                      'fill-opacity': 1.0,
                      'stroke-width': 1.0,
-                     'stroke': None,
-                     'fill': None})
+                     'stroke': 'none',
+                     'fill': 'none'})
                 for key in styledefaults:
                     sst.setdefault(key, styledefaults[key])
                     est.setdefault(key, styledefaults[key])
@@ -112,7 +112,7 @@ class Interp(inkex.EffectExtension):
                 else:
                     fillstyle = 'color'
 
-                if strokestyle is 'color':
+                if strokestyle == 'color':
                     if sst['stroke'] == 'none':
                         sst['stroke-width'] = '0.0'
                         sst['stroke-opacity'] = '0.0'
@@ -122,7 +122,7 @@ class Interp(inkex.EffectExtension):
                         est['stroke-opacity'] = '0.0'
                         est['stroke'] = sst['stroke']
 
-                if fillstyle is 'color':
+                if fillstyle == 'color':
                     if sst['fill'] == 'none':
                         sst['fill-opacity'] = '0.0'
                         sst['fill'] = est['fill']
@@ -269,10 +269,10 @@ class Interp(inkex.EffectExtension):
                             newgrad = grad1.interpolate(grad2, time)
                             stops, orientation = newgrad.stops_and_orientation()
                             self.svg.defs.add(orientation)
-                            basestyle[prop] = 'url(#{})'.format(orientation.get_id())
+                            basestyle[prop] = orientation.get_id(as_url=2)
                             if len(stops):
                                 self.svg.defs.add(stops, orientation)
-                                orientation.set('xlink:href', '#{}'.format(stops.get_id()))
+                                orientation.set('xlink:href', stops.get_id(as_url=1))
 
                 new = group.add(inkex.PathElement())
                 new.style = basestyle

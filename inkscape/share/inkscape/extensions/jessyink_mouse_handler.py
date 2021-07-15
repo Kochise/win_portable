@@ -49,9 +49,9 @@ class AddMouseHandler(JessyInkMixin, inkex.EffectExtension):
             # Default is to remove script and continue
             return
 
-        with open(self.get_resource("jessyInk_core_mouseHandler_" + name + ".js")) as fhl:
+        with open(self.get_resource(f"jessyInk_core_mouseHandler_{name}.js")) as fhl:
             script.text = fhl.read()
-        group.set("jessyink:subtype", "jessyInk_core_mouseHandler_" + name)
+        group.set("jessyink:subtype", f"jessyInk_core_mouseHandler_{name}")
 
         group.append(script)
         self.svg.append(group)

@@ -1,7 +1,7 @@
 @echo off
 rem Execute this to create a debug backtrace of an Inkscape crash.
 
-set TRACEFILE=%USERPROFILE%\inkscape_backtrace.txt
+set TRACEFILE="%USERPROFILE%\inkscape_backtrace.txt"
 
 echo Thanks for creating a debug backtrace!
 echo.

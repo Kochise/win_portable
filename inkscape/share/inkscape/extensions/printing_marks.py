@@ -36,20 +36,20 @@ class PrintingMarks(inkex.EffectExtension):
     stroke_width = 0.25
 
     def add_arguments(self, pars):
-        pars.add_argument("--where", help="Apply crop marks to...")
+        pars.add_argument("--where", help="Apply crop marks to...", default="canvas")
         pars.add_argument("--crop_marks", type=inkex.Boolean, default=True, help="Draw crop Marks")
         pars.add_argument("--bleed_marks", type=inkex.Boolean, help="Draw Bleed Marks")
         pars.add_argument("--registration_marks", type=inkex.Boolean,\
-            dest="reg_marks", default=False, help="Draw Registration Marks?")
+            dest="reg_marks", default=True, help="Draw Registration Marks?")
         pars.add_argument("--star_target", type=inkex.Boolean, help="Draw Star Target?")
-        pars.add_argument("--colour_bars", type=inkex.Boolean, help="Draw Colour Bars?")
+        pars.add_argument("--colour_bars", type=inkex.Boolean, help="Draw Colour Bars?", default=True)
         pars.add_argument("--page_info", type=inkex.Boolean, help="Draw Page Information?")
         pars.add_argument("--unit", default="px", help="Draw measurement")
-        pars.add_argument("--crop_offset", type=float, default=0.0, help="Offset")
-        pars.add_argument("--bleed_top", type=float, default=0.0, help="Bleed Top Size")
-        pars.add_argument("--bleed_bottom", type=float, default=0.0, help="Bleed Bottom Size")
-        pars.add_argument("--bleed_left", type=float, default=0.0, help="Bleed Left Size")
-        pars.add_argument("--bleed_right", type=float, default=0.0, help="Bleed Right Size")
+        pars.add_argument("--crop_offset", type=float, default=5.0, help="Offset")
+        pars.add_argument("--bleed_top", type=float, default=5.0, help="Bleed Top Size")
+        pars.add_argument("--bleed_bottom", type=float, default=5.0, help="Bleed Bottom Size")
+        pars.add_argument("--bleed_left", type=float, default=5.0, help="Bleed Left Size")
+        pars.add_argument("--bleed_right", type=float, default=5.0, help="Bleed Right Size")
         pars.add_argument("--tab", help="The selected UI-tab when OK was pressed")
 
     def draw_crop_line(self, x1, y1, x2, y2, name, parent):
@@ -113,16 +113,15 @@ class PrintingMarks(inkex.EffectExtension):
             d += ' L 0,0 ' + \
                  ' L ' + str(math.sin(i) * r) + ',' + str(math.cos(i) * r) + \
                  ' L ' + str(math.sin(i + 0.09) * r) + ',' + str(math.cos(i + 0.09) * r)
-        regmark_attribs = {'style': str(inkex.Style(style)),
-                           'inkscape:label': name,
-                           'transform': 'translate(' + str(cx) + ',' + str(cy) + ')',
-                           'd': d}
-        parent.add(inkex.PathElement(**regmark_attribs))
+        elem = parent.add(inkex.PathElement())
+        elem.label = name
+        elem.transform.add_translate(cx, cy)
+        elem.path = d
+        elem.style = inkex.Style(style)
 
-    def draw_coluor_bars(self, cx, cy, rotate, name, parent):
+    def draw_coluor_bars(self, cx, cy, rotate, name, parent, bbox):
         group = parent.add(inkex.Group(id=name))
-        group.transform = inkex.Transform(translate=(cx, cy), rotate=rotate)
-        bbox = parent.bounding_box()
+        group.transform = inkex.Transform(translate=(cx, cy)) * inkex.Transform(rotate=rotate)
         loc = 0
         if bbox:
             loc = min(self.mark_size / 3, max(bbox.width, bbox.height) / 45)
@@ -142,10 +141,13 @@ class PrintingMarks(inkex.EffectExtension):
                     color.blue = 255 * i
                 r_att = {'fill': str(color),
                          'stroke': bar['stroke'],
-                         'stroke-width': '0.5',
+                         'stroke-width': loc/8,
                          'x': str((loc * i * 10) + bar['x']), 'y': str(bar['y']),
-                         'width': str(loc), 'height': str(loc)}
-                group.add(Rectangle(*r_att))
+                         'width': loc, 'height': loc}
+                rect = Rectangle()
+                for att, value in r_att.items():
+                    rect.set(att, value)
+                group.add(rect)
                 i += 0.1
 
     def effect(self):
@@ -154,6 +156,8 @@ class PrintingMarks(inkex.EffectExtension):
 
         if self.options.where == 'selection':
             bbox = self.svg.selection.bounding_box()
+            if bbox is None:
+                raise inkex.AbortExtension(_("Selection is empty"))
         else:
             bbox = self.svg.get_page_bbox()
 
@@ -246,9 +250,9 @@ class PrintingMarks(inkex.EffectExtension):
         # Bleed Mark
         if self.options.bleed_marks:
             # Create a group for Bleed Mark
-            g_attribs = {'inkscape:label': 'BleedMarks',
-                         'id': 'BleedMarks'}
-            g_bleed = layer.add(inkex.Group(**g_attribs))
+            g_bleed = layer.add(inkex.Group())
+            g_bleed.label = 'BleedMarks'
+            g_bleed.set('id', 'BleedMarks')
 
             # Top left Mark
             self.draw_bleed_line(bbox.left - bl, offset_top - bmt,
@@ -285,10 +289,9 @@ class PrintingMarks(inkex.EffectExtension):
         # Registration Mark
         if self.options.reg_marks:
             # Create a group for Registration Mark
-            g_attribs = {'inkscape:label': 'RegistrationMarks',
-                         'id': 'RegistrationMarks'}
-            g_center = layer.add(inkex.Group(**g_attribs))
-
+            g_center = layer.add(inkex.Group())
+            g_center.label = 'RegistrationMarks'
+            g_center.set('id', 'RegistrationMarks')
             # Left Mark
             cx = max(bml + offset, self.min_mark_margin)
             self.draw_reg_marks(bbox.left - cx - (self.mark_size / 2),
@@ -316,9 +319,9 @@ class PrintingMarks(inkex.EffectExtension):
         # Star Target
         if self.options.star_target:
             # Create a group for Star Target
-            g_attribs = {'inkscape:label': 'StarTarget',
-                         'id': 'StarTarget'}
-            g_center = layer.add(inkex.Group(**g_attribs))
+            g_center = layer.add(inkex.Group())
+            g_center.label = 'StarTarget'
+            g_center.set('id', 'StarTarget')
 
             if bbox.height < bbox.width:
                 # Left Star
@@ -346,9 +349,9 @@ class PrintingMarks(inkex.EffectExtension):
         # Colour Bars
         if self.options.colour_bars:
             # Create a group for Colour Bars
-            g_attribs = {'inkscape:label': 'ColourBars',
-                         'id': 'PrintingColourBars'}
-            g_center = layer.add(inkex.Group(**g_attribs))
+            g_center = layer.add(inkex.Group())
+            g_center.label = 'ColourBars'
+            g_center.set('id', 'PrintingColourBars')
 
             if bbox.height > bbox.width:
                 # Left Bars
@@ -356,33 +359,33 @@ class PrintingMarks(inkex.EffectExtension):
                 self.draw_coluor_bars(bbox.left - cx - (self.mark_size / 2),
                                       middle_vertical + self.mark_size,
                                       90,
-                                      'PrintingColourBarsL', g_center)
+                                      'PrintingColourBarsL', g_center, bbox)
                 # Right Bars
                 cx = max(bmr + offset, self.min_mark_margin)
                 self.draw_coluor_bars(bbox.right + cx + (self.mark_size / 2),
                                       middle_vertical + self.mark_size,
                                       90,
-                                      'PrintingColourBarsR', g_center)
+                                      'PrintingColourBarsR', g_center, bbox)
             else:
                 # Top Bars
                 cy = max(bmt + offset, self.min_mark_margin)
                 self.draw_coluor_bars(middle_horizontal + self.mark_size,
                                       bbox.top - cy - (self.mark_size / 2),
                                       0,
-                                      'PrintingColourBarsT', g_center)
+                                      'PrintingColourBarsT', g_center, bbox)
                 # Bottom Bars
                 cy = max(bmb + offset, self.min_mark_margin)
                 self.draw_coluor_bars(middle_horizontal + self.mark_size,
                                       bbox.bottom + cy + (self.mark_size / 2),
                                       0,
-                                      'PrintingColourBarsB', g_center)
+                                      'PrintingColourBarsB', g_center, bbox)
 
         # Page Information
         if self.options.page_info:
             # Create a group for Page Information
-            g_attribs = {'inkscape:label': 'PageInformation',
-                         'id': 'PageInformation'}
-            g_pag_info = layer.add(inkex.Group(**g_attribs))
+            g_pag_info = layer.add(inkex.Group())
+            g_pag_info.label = 'PageInformation'
+            g_pag_info.set('id', 'PageInformation')
             y_margin = max(bmb + offset, self.min_mark_margin)
             txt_attribs = {
                 'style': 'font-size:12px;font-style:normal;font-weight:normal;fill:#000000;font-family:Bitstream Vera Sans,sans-serif;text-anchor:middle;text-align:center',

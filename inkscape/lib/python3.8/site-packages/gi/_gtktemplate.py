@@ -17,7 +17,75 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
 # USA
 
+from collections import abc
+from functools import partial
+
 from gi.repository import GLib, GObject, Gio
+
+
+def _extract_handler_and_args(obj_or_map, handler_name):
+    handler = None
+    if isinstance(obj_or_map, abc.Mapping):
+        handler = obj_or_map.get(handler_name, None)
+    else:
+        handler = getattr(obj_or_map, handler_name, None)
+
+    if handler is None:
+        raise AttributeError('Handler %s not found' % handler_name)
+
+    args = ()
+    if isinstance(handler, abc.Sequence):
+        if len(handler) == 0:
+            raise TypeError("Handler %s tuple can not be empty" % handler)
+        args = handler[1:]
+        handler = handler[0]
+
+    elif not callable(handler):
+        raise TypeError('Handler %s is not a method, function or tuple' % handler)
+
+    return handler, args
+
+
+def define_builder_scope():
+    from gi.repository import Gtk
+
+    class BuilderScope(GObject.GObject, Gtk.BuilderScope):
+
+        def __init__(self, scope_object=None):
+            super().__init__()
+            self._scope_object = scope_object
+
+        def do_create_closure(self, builder, func_name, flags, obj):
+            current_object = builder.get_current_object() or self._scope_object
+
+            if not self._scope_object:
+                current_object = builder.get_current_object()
+                if func_name not in current_object.__gtktemplate_methods__:
+                    return None
+
+                current_object.__gtktemplate_handlers__.add(func_name)
+                handler_name = current_object.__gtktemplate_methods__[func_name]
+            else:
+                current_object = self._scope_object
+                handler_name = func_name
+
+            swapped = int(flags & Gtk.BuilderClosureFlags.SWAPPED)
+            if swapped:
+                raise RuntimeError(
+                    "%r not supported" % GObject.ConnectFlags.SWAPPED)
+                return None
+
+            handler, args = _extract_handler_and_args(current_object, handler_name)
+
+            if obj:
+                p = partial(handler, *args, swap_data=obj)
+            else:
+                p = partial(handler, *args)
+
+            p.__gtk_template__ = True
+            return p
+
+    return BuilderScope
 
 
 def connect_func(builder, obj, signal_name, handler_name,
@@ -52,6 +120,8 @@ def connect_func(builder, obj, signal_name, handler_name,
 
 
 def register_template(cls):
+    from gi.repository import Gtk
+
     bound_methods = {}
     bound_widgets = {}
 
@@ -88,7 +158,11 @@ def register_template(cls):
     cls.__gtktemplate_methods__ = bound_methods
     cls.__gtktemplate_widgets__ = bound_widgets
 
-    cls.set_connect_func(connect_func, cls)
+    if Gtk._version == "4.0":
+        BuilderScope = define_builder_scope()
+        cls.set_template_scope(BuilderScope())
+    else:
+        cls.set_connect_func(connect_func, cls)
 
     base_init_template = cls.init_template
     cls.__dontuse_ginstance_init__ = \

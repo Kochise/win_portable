@@ -31,8 +31,8 @@ class KeyBindings(JessyInkMixin, inkex.EffectExtension):
     def set_options(self, namespace, opt_str, value):
         """Sort through all the options and combine them"""
         slot, action = opt_str.split('_', 1)
-        keycodes = getattr(namespace, slot + "KeyCodes", {})
-        charcodes = getattr(namespace, slot + "CharCodes", {})
+        keycodes = getattr(namespace, f"{slot}KeyCodes", {})
+        charcodes = getattr(namespace, f"{slot}CharCodes", {})
         if value:
             for val in value.split(","):
                 val = val.strip()
@@ -40,8 +40,8 @@ class KeyBindings(JessyInkMixin, inkex.EffectExtension):
                     keycodes[val + "_KEY"] = self.actions[slot][action]
                 elif len(val) == 1:
                     charcodes[val] = self.actions[slot][action]
-        setattr(namespace, slot + "KeyCodes", keycodes)
-        setattr(namespace, slot + "CharCodes", charcodes)
+        setattr(namespace, f"{slot}KeyCodes", keycodes)
+        setattr(namespace, f"{slot}CharCodes", charcodes)
 
     actions = {
         'slide': {
@@ -98,7 +98,7 @@ class KeyBindings(JessyInkMixin, inkex.EffectExtension):
         pars.add_argument('--tab')
         for slot, actions in self.actions.items():
             for action in actions:
-                pars.add_argument('--{slot}_{action}'.format(slot=slot, action=action))
+                pars.add_argument(f'--{slot}_{action}')
 
     def effect(self):
         self.is_installed()
@@ -121,13 +121,13 @@ class KeyBindings(JessyInkMixin, inkex.EffectExtension):
 """
 
         for key, value in self.options.slideKeyCodes.items():
-            node_text += "    keyDict[SLIDE_MODE][{key}] = function() {{ {value} }};\n".format(**locals())
+            node_text += f"    keyDict[SLIDE_MODE][{key}] = function() {{ {value} }};\n"
 
         for key, value in self.options.drawingKeyCodes.items():
-            node_text += "    keyDict[DRAWING_MODE][{key}] = function() {{ {value} }};\n".format(**locals())
+            node_text += f"    keyDict[DRAWING_MODE][{key}] = function() {{ {value} }};\n"
 
         for key, value in self.options.indexKeyCodes.items():
-            node_text += "    keyDict[INDEX_MODE][{key}] = function() {{ {value} }};\n".format(**locals())
+            node_text += f"    keyDict[INDEX_MODE][{key}] = function() {{ {value} }};\n"
 
         # Set custom char bindings.
         node_text += """    return keyDict;
@@ -142,13 +142,13 @@ function getCustomCharBindingsSub()
 """
 
         for key, value in self.options.slideCharCodes.items():
-            node_text += '    charDict[SLIDE_MODE]["{key}"] = function() {{ {value} }};\n'.format(**locals())
+            node_text += f'    charDict[SLIDE_MODE]["{key}"] = function() {{ {value} }};\n'
 
         for key, value in self.options.drawingCharCodes.items():
-            node_text += '    charDict[DRAWING_MODE]["{key}"] = function() {{ {value} }};\n'.format(**locals())
+            node_text += f'    charDict[DRAWING_MODE]["{key}"] = function() {{ {value} }};\n'
 
         for key, value in self.options.indexCharCodes.items():
-            node_text += '    charDict[INDEX_MODE]["{key}"] = function() {{ {value} }};\n'.format(**locals())
+            node_text += f'    charDict[INDEX_MODE]["{key}"] = function() {{ {value} }};\n'
 
         node_text += "    return charDict;" + "\n"
         node_text += "}" + "\n"

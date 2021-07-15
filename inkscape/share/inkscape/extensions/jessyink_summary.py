@@ -34,14 +34,14 @@ class Summary(JessyInkMixin, inkex.EffectExtension):
         for node in self.svg.xpath("//svg:script[@id='JessyInk']"):
             version = node.get("jessyink:version")
             if version:
-                self.msg(_("JessyInk script version {} installed.".format(version)))
+                self.msg(_(f"JessyInk script version {version} installed."))
             else:
                 self.msg(_("JessyInk script installed."))
 
         slides = []
         master_slide = None
 
-        for node in self.svg.descendants().get(inkex.Layer).values():
+        for node in self.svg.descendants().get(inkex.Layer):
             if node.get("jessyink:master_slide"):
                 master_slide = node
             else:
@@ -59,7 +59,7 @@ class Summary(JessyInkMixin, inkex.EffectExtension):
     def describe_node(self, node, prefix, dat):
         """Standard print out formatter"""
 
-        self.msg(_("{prefix}Layer name: {node.label}".format(**locals())))
+        self.msg(_(f"{prefix}Layer name: {node.label}"))
         self.describe_transition(node, prefix, "In")
         self.describe_transition(node, prefix, "Out")
         self.describe_autotext(node, prefix, dat)
@@ -67,26 +67,26 @@ class Summary(JessyInkMixin, inkex.EffectExtension):
 
     def describe_transition(self, node, prefix, transition):
         """Display information about transitions."""
-        trans = inkex.Style(node.get("jessyink:transition" + transition))
+        trans = inkex.Style(node.get(f"jessyink:transition{transition}"))
         if trans:
             name = trans["name"]
             if name != "appear" and "length" in trans:
                 length = int(trans["length"] / 1000.0)
-                self.msg(_("{prefix}Transition {transition}: {name} ({length!s} s)".format(**locals())))
+                self.msg(_(f"{prefix}Transition {transition}: {name} ({length!s} s)"))
             else:
-                self.msg(_("{prefix}Transition {transition}: {name}".format(**locals())))
+                self.msg(_(f"{prefix}Transition {transition}: {name}"))
 
     def describe_autotext(self, node, prefix, dat):
         """Display information about auto-texts."""
         auto_texts = {"slide_num" : dat[0], "num" : dat[1], "title" : dat[2]}
         for x, child in enumerate(node.xpath(".//*[@jessyink:autoText]")):
             if not x:
-                self.msg(_("\n{}Auto-texts:".format(prefix)))
+                self.msg(_(f"\n{prefix}Auto-texts:"))
 
             pid = child.getparent().get("id")
             val = auto_texts[child.get('jessyink:autoText')]
             self.msg(_(
-                '{prefix}\t"{child.text}" (object id "{pid}") will be replaced by "{val}".'.format(**locals())))
+                f'{prefix}\t"{child.text}" (object id "{pid}") will be replaced by "{val}".'))
 
     def describe_effects(self, node, prefix):
         """Display information about effects."""
@@ -96,16 +96,16 @@ class Summary(JessyInkMixin, inkex.EffectExtension):
 
             order = effect[0]["order"]
             if not x:
-                ret += _("\n{prefix}Initial effect (order number {order}):".format(**locals()))
+                ret += _(f"\n{prefix}Initial effect (order number {order}):")
             else:
-                ret += _("\n{prefix}Effect {enum!s} (order number {order}):".format(**locals()))
+                ret += _(f"\n{prefix}Effect {enum!s} (order number {order}):")
 
             for item in effect:
                 eid = item["id"]
                 if item["type"] == "view":
-                    ret += _("{prefix}\tView will be set according to object \"{eid}\"".format(**locals()))
+                    ret += _(f"{prefix}\tView will be set according to object \"{eid}\"")
                 else:
-                    ret += _("{prefix}\tObject \"{eid}\"".format(**locals()))
+                    ret += _(f"{prefix}\tObject \"{eid}\"")
 
                     if item["direction"] == "in":
                         ret += _(" will appear")

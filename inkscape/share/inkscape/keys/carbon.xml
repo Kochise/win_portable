@@ -185,36 +185,19 @@ and tooltips. Only one binding for each action may have this attribute.
 
 <!-- Zoom -->
 
-  <bind key="plus" modifiers="Cmd" action="ZoomIn" display="true" />
-  <bind key="equal" modifiers="Cmd" action="ZoomIn" />
-  <bind key="KP_Add" action="ZoomIn" />
+  <bind gaction="win.canvas-zoom-in"               keys="&lt;primary&gt;plus, &lt;primary&gt;equal, KP_Add" />
 
-  <bind key="minus" modifiers="Cmd" action="ZoomOut" display="true" />
-  <bind key="underscore" modifiers="Cmd" action="ZoomOut" />
-  <bind key="KP_Subtract" action="ZoomOut" />
+  <bind gaction="win.canvas-zoom-out"              keys="&lt;primary&gt;minus, &lt;primary&gt;underscore, KP_Subtract" />
 
-  <bind key="1" modifiers="Cmd" action="Zoom1:0" display="true" />
-  <bind key="KP_1" action="Zoom1:0" />
-  <bind key="2" modifiers="Cmd" action="Zoom1:2" display="true" />
-  <bind key="KP_2" action="Zoom1:2" />
-  <bind key="3" modifiers="Cmd" action="ZoomSelection" display="true" />
-  <bind key="KP_3" action="ZoomSelection" />
-  <bind key="4" modifiers="Cmd" action="ZoomDrawing" display="true" />
-  <bind key="KP_4" action="ZoomDrawing" />
-  <bind key="5" modifiers="Cmd" action="ZoomPage" display="true" />
-  <bind key="KP_5" action="ZoomPage" />
-  <bind key="KP_Begin" action="ZoomPage" />
-  <bind key="6" modifiers="Cmd" action="ZoomPageWidth" display="true" />
-  <bind key="KP_6" action="ZoomPageWidth" />
+  <bind gaction="win.canvas-zoom-1-1"              keys="&lt;primary&gt;1, KP_1" />
+  <bind gaction="win.canvas-zoom-1-2"              keys="&lt;primary&gt;2, KP_2" />
+  <bind gaction="win.canvas-zoom-selection"        keys="&lt;primary&gt;3, KP_3" />
+  <bind gaction="win.canvas-zoom-drawing"          keys="&lt;primary&gt;4, KP_4" />
+  <bind gaction="win.canvas-zoom-page"             keys="&lt;primary&gt;5, KP_Begin, KP_5" />
+  <bind gaction="win.canvas-zoom-page-width"       keys="&lt;primary&gt;6, &lt;primary&gt;e, KP_6" />
 
-  <bind key="e" modifiers="Cmd" action="ZoomPageWidth" />
-  <bind key="E" modifiers="Cmd" action="ZoomPageWidth" />
-
-  <bind key="grave" modifiers="Shift" action="ZoomNext" display="true" /> <!-- ` -->
-  <bind key="asciitilde" modifiers="Shift" action="ZoomNext" /> <!-- ~ -->
-  <bind key="KP_9" action="ZoomNext" />
-  <bind key="grave" modifiers="Ctrl" action="ZoomPrev" display="true" /> <!-- ` -->
-  <bind key="KP_8" action="ZoomPrev" />
+  <bind gaction="win.canvas-zoom-next"             keys="&lt;shift&gt;grave, &lt;shift&gt;asciitilde, KP_9" /> <!-- ~ -->
+  <bind gaction="win.canvas-zoom-prev"             keys="&lt;ctrl&gt;grave, KP_8" /> <!-- ` -->
   
 <!-- View -->
 
@@ -233,8 +216,7 @@ and tooltips. Only one binding for each action may have this attribute.
   <bind key="bar" modifiers="Shift" action="ToggleGuides" /> <!-- | -->
   <bind key="bar" action="ToggleGuides" display="true" />
 
-  <bind key="percent" action="ToggleSnapGlobal" display="true" /> <!-- % -->
-  <bind key="percent" modifiers="Shift" action="ToggleSnapGlobal" />
+  <bind gaction="doc.snap-global-toggle" keys="percent, &lt;shift&gt;percent"/>
 
   <bind action="ToggleCommandsToolbar" />
   <bind action="ToggleSnapToolbar" />
@@ -255,19 +237,20 @@ and tooltips. Only one binding for each action may have this attribute.
   <bind action="ViewNew" />
   <bind action="ViewIconPreview" />
 
-  <bind key="KP_5" modifiers="Cmd" action="ViewModeToggle" display="true" />
+  <bind gaction="win.canvas-display-mode-cycle" keys="&lt;primary&gt;KP_5"/>
 
   <bind action="ViewModeNormal" />
   <bind action="ViewModeNoFilters" />
   <bind action="ViewModeOutline" />
+  <bind action="ViewModeOutlineOverlay" />
 
-  <bind key="KP_5" modifiers="Alt" action="ViewColorModeToggle" display="true" />
+  <bind gaction="win.canvas-color-mode" keys="&lt;alt&gt;KP_5"/>
 
   <bind action="ViewColorModeNormal" />
   <bind action="ViewColorModeGrayscale" />
 
-  <bind key="KP_6" modifiers="Cmd" action="ViewSplitModeToggle" display="true" />
-  <bind key="KP_6" modifiers="Alt" action="ViewXRayToggle"  display="true" />
+  <bind gaction="win.canvas-split-mode(1)" keys="&lt;primary&gt;KP_6"/>
+  <bind gaction="win.canvas-split-mode(2)" keys="&lt;alt&gt;KP_6"/>
 
 <!-- Edit -->
   
@@ -608,7 +591,6 @@ and tooltips. Only one binding for each action may have this attribute.
 
   <bind action="RemoveLivePathEffect" />
 
-  <bind action="DialogMetadata" />
   <bind action="DialogClonetiler" />
   <bind action="DialogArrange" />
   <bind action="DialogDebug" />

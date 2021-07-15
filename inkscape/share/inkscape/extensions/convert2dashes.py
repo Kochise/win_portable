@@ -33,7 +33,7 @@ class Dashit(inkex.EffectExtension):
         self.not_converted = []
 
     def effect(self):
-        for node in self.svg.selection.values():
+        for node in self.svg.selection:
             self.convert2dash(node)
         if self.not_converted:
             inkex.errormsg(_('Total number of objects not converted: {}\n').format(

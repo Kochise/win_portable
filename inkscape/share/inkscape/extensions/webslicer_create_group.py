@@ -40,7 +40,7 @@ class CreateGroup(WebSlicerMixin, inkex.EffectExtension):
         base_elements = self.get_slicer_layer().descendants()
         for key, node in self.svg.selected.id_dict().items():
             if node not in base_elements:
-                raise inkex.AbortExtension(_('The element "{}" is not in the Web Slicer layer'.format(key)))
+                raise inkex.AbortExtension(_(f'The element "{key}" is not in the Web Slicer layer'))
             g_parent = node.getparent()
 
         group = g_parent.add(inkex.Group())

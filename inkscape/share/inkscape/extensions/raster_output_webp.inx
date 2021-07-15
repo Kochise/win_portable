@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Export to WebP</name>
+    <id>org.inkscape.raster.webp_output</id>
+
+    <param name="tab" type="notebook">
+        <page name="options" gui-text="Options">
+            <param name="lossless" type="bool"
+                gui-text="Lossless:"
+                gui-description="Do not use lossy compression."
+            >true</param>
+            <param name="quality" type="int" min="1" max="100"
+                gui-text="Quality:"
+                gui-description="Quality between 1 and 100"
+            >80</param>
+            <param name="speed" type="optiongroup" appearance="combo" gui-text="Speed:">
+                <option value="0">Fastest</option>
+                <option value="1">Faster</option>
+                <option value="2">Fast</option>
+                <option value="3">Balanced</option>
+                <option value="4">Good</option>
+                <option value="5">Better</option>
+                <option value="6">Best</option>
+            </param>
+        </page>
+    </param>
+
+    <output raster="true">
+        <extension>.webp</extension>
+        <mimetype>image/webp</mimetype>
+        <filetypename>WebP (*.webp)</filetypename>
+        <filetypetooltip>Export to WebP file format.</filetypetooltip>
+    </output>
+
+    <script>
+        <command location="inx" interpreter="python">raster_output_webp.py</command>
+    </script>
+</inkscape-extension>

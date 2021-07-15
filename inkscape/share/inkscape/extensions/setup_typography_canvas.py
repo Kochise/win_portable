@@ -18,23 +18,36 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
+from typing import Union
+
 import inkex
-from inkex import Guide
+from inkex.localization import inkex_gettext as _
 
 
 class SetupTypographyCanvas(inkex.EffectExtension):
+    """Resizes the canvas and creates typography-relevant guidelines"""
+
     def add_arguments(self, pars):
         pars.add_argument("-e", "--emsize", type=int, default=1000)
-        pars.add_argument("-c", "--caps", type=int, default=700, help="Caps Height")
+        pars.add_argument("-c", "--caps", type=int,
+                          default=700, help="Caps Height")
         pars.add_argument("-x", "--xheight", type=int, default=500)
         pars.add_argument("-a", "--ascender", type=int, default=750)
         pars.add_argument("-d", "--descender", type=int, default=250)
 
-    def create_horizontal_guideline(self, name, position):
-        return self.svg.add(Guide().move_to(0, position, (0, 1)).update(inkscape__label=name))
+    def create_horizontal_guideline(self, name: str, position: Union[int, float]) \
+        -> inkex.BaseElement:
+        """Create a horizontal guideline with name and position
 
-    def create_vertical_guideline(self, name, position):
-        return self.svg.add(Guide().move_to(position, 0, (1, 0)).update(inkscape__label=name))
+        Args:
+            name (str): the name of the guideline
+            position (Union[int, float]): the vertical position of the guideline
+
+        Returns:
+            inkex.BaseElement: the created guideline
+        """
+        return self.svg.namedview \
+                   .add(inkex.Guide().move_to(0, position, (0, 1)).update(inkscape__label=name))
 
     def effect(self):
         # Get all the options
@@ -51,16 +64,17 @@ class SetupTypographyCanvas(inkex.EffectExtension):
 
         baseline = descender
         # Create guidelines
-        self.create_horizontal_guideline("baseline", baseline)
-        self.create_horizontal_guideline("ascender", baseline + ascender)
-        self.create_horizontal_guideline("caps", baseline + caps)
-        self.create_horizontal_guideline("xheight", baseline + xheight)
-        self.create_horizontal_guideline("descender", baseline - descender)
+        self.create_horizontal_guideline(_("baseline"), baseline)
+        self.create_horizontal_guideline(_("ascender"), baseline + ascender)
+        self.create_horizontal_guideline(_("caps"), baseline + caps)
+        self.create_horizontal_guideline(_("xheight"), baseline + xheight)
+        self.create_horizontal_guideline(_("descender"), baseline - descender)
 
         namedview = self.svg.namedview
         namedview.set('inkscape:document-units', 'px')
         namedview.set('inkscape:cx', str(emsize / 2.0))
         namedview.set('inkscape:cy', str(emsize / 2.0))
+
 
 if __name__ == '__main__':
     SetupTypographyCanvas().run()

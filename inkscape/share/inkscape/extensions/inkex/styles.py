@@ -24,20 +24,17 @@ and some color handling on top.
 import re
 from collections import OrderedDict
 
-from .utils import PY3
 from .colors import Color, ColorIdError
 from .tween import interpcoord, interpunit
 
-if PY3:
-    unicode = str  # pylint: disable=redefined-builtin,invalid-name
 
 class Classes(list):
     """A list of classes applied to an element (used in css and js)"""
     def __init__(self, classes=None, callback=None):
         self.callback = None
-        if isinstance(classes, (str, unicode)):
+        if isinstance(classes, str):
             classes = classes.split()
-        super(Classes, self).__init__(classes or ())
+        super().__init__(classes or ())
         self.callback = callback
 
     def __str__(self):
@@ -48,19 +45,19 @@ class Classes(list):
             self.callback(self)
 
     def __setitem__(self, index, value):
-        super(Classes, self).__setitem__(index, value)
+        super().__setitem__(index, value)
         self._callback()
 
     def append(self, value):
         value = str(value)
         if value not in self:
-            super(Classes, self).append(value)
+            super().append(value)
             self._callback()
 
     def remove(self, value):
         value = str(value)
         if value in self:
-            super(Classes, self).remove(value)
+            super().remove(value)
             self._callback()
 
     def toggle(self, value):
@@ -81,13 +78,13 @@ class Style(OrderedDict):
         self.callback = None
         # Either a string style or kwargs (with dashes as underscores).
         style = style or [(k.replace('_', '-'), v) for k, v in kw.items()]
-        if isinstance(style, (str, unicode)):
+        if isinstance(style, str):
             style = self.parse_str(style)
         # Order raw dictionaries so tests can be made reliable
         if isinstance(style, dict) and not isinstance(style, OrderedDict):
             style = [(name, style[name]) for name in sorted(style)]
         # Should accept dict, Style, parsed string, list etc.
-        super(Style, self).__init__(style)
+        super().__init__(style)
         # Now after the initial data, the callback makes sense.
         self.callback = callback
 
@@ -145,12 +142,17 @@ class Style(OrderedDict):
 
     def update(self, other):
         """Make sure callback is called when updating"""
-        super(Style, self).update(Style(other))
+        super().update(Style(other))
+        if self.callback is not None:
+            self.callback(self)
+
+    def __delitem__(self, key):
+        super().__delitem__(key)
         if self.callback is not None:
             self.callback(self)
 
     def __setitem__(self, key, value):
-        super(Style, self).__setitem__(key, value)
+        super().__setitem__(key, value)
         if self.callback is not None:
             self.callback(self)
 
@@ -169,8 +171,8 @@ class Style(OrderedDict):
     def update_urls(self, old_id, new_id):
         """Find urls in this style and replace them with the new id"""
         for (name, value) in self.items():
-            if value == 'url(#{})'.format(old_id):
-                self[name] = 'url(#{})'.format(new_id)
+            if value == f"url(#{old_id})":
+                self[name] = f"url(#{new_id})"
 
     def interpolate_prop(self, other, fraction, prop, svg=None):
         """Interpolate specific property."""
@@ -205,7 +207,7 @@ class Style(OrderedDict):
         return style
 
 
-class AttrFallbackStyle(object):
+class AttrFallbackStyle:
     """
     A container for a style and an element that may have competing styles
 
@@ -263,7 +265,7 @@ class StyleSheets(list):
     re-created on the fly by lxml so lookups have to be centralised.
     """
     def __init__(self, svg=None):
-        super(StyleSheets, self).__init__()
+        super().__init__()
         self.svg = svg
 
     def lookup(self, element_id, svg=None):
@@ -286,7 +288,7 @@ class StyleSheet(list):
     comment_strip = re.compile(r"//.*?\n")
 
     def __init__(self, content=None, callback=None):
-        super(StyleSheet, self).__init__()
+        super().__init__()
         self.callback = None
         # Remove comments
         content = self.comment_strip.sub('', (content or ''))
@@ -314,7 +316,7 @@ class StyleSheet(list):
                 return # Warning?
             rules, style = other.strip('}').split('{', 1)
             other = ConditionalStyle(rules=rules, style=style.strip(), callback=self._callback)
-        super(StyleSheet, self).append(other)
+        super().append(other)
         self._callback()
 
     def lookup(self, element_id, svg):
@@ -331,7 +333,7 @@ class ConditionalStyle(Style):
     rather than being an attribute style.
     """
     def __init__(self, rules='*', style=None, callback=None, **kwargs):
-        super(ConditionalStyle, self).__init__(style=style, callback=callback, **kwargs)
+        super().__init__(style=style, callback=callback, **kwargs)
         self.rules = [ConditionalRule(rule) for rule in rules.split(',')]
 
     def __str__(self):
@@ -339,8 +341,8 @@ class ConditionalStyle(Style):
         content = self.to_str(";\n  ")
         rules = ",\n".join(str(rule) for rule in self.rules)
         if content:
-            return "{0} {{\n  {1};\n}}".format(rules, content)
-        return "{0} {{}}".format(rules)
+            return f"{rules} {{\n  {content};\n}}"
+        return f"{rules} {{}}"
 
     def to_xpath(self):
         """Convert all rules to an xpath"""
@@ -349,7 +351,7 @@ class ConditionalStyle(Style):
         # this xpath transform and provides no extra functionality for reverse lookups.
         return '|'.join([rule.to_xpath() for rule in self.rules])
 
-class ConditionalRule(object):
+class ConditionalRule:
     """A single css rule"""
     step_to_xpath = [
         (re.compile(r'\[(\w+)\^=([^\]]+)\]'), r'[starts-with(@\1,\2)]'), # Starts With
@@ -361,7 +363,7 @@ class ConditionalRule(object):
         #(re.compile(r'\s*~\s*([^\s>~\+]+)'), r'/following-sibling::\1'),
         #(re.compile(r'\s*\+\s*([^\s>~\+]+)'), r'/following-sibling::\1[1]'),
         (re.compile(r'\s*([^\s>~\+]+)'), r'//\1'), # Decendant match
-        (re.compile(r'\.(\w+)'), r"[contains(concat(' ', normalize-space(@class), ' '), ' \1 ')]"),
+        (re.compile(r'\.([-\w]+)'), r"[contains(concat(' ', normalize-space(@class), ' '), ' \1 ')]"),
         (re.compile(r'//\['), r'//*['), # Attribute only match
         (re.compile(r'//(\w+)'), r'//svg:\1'), # SVG namespace addition
     ]

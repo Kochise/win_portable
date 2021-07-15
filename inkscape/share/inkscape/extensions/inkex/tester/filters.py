@@ -23,16 +23,17 @@ Comparison filters for use with the ComparisonMixin.
 Each filter should be initialised in the list of
 filters that are being used.
 
-compare_filters = [
-    CompareNumericFuzzy(),
-    CompareOrderIndependentLines(option=yes),
-]
+.. code-block:: python
+.. compare_filters = [
+..    CompareNumericFuzzy(),
+..    CompareOrderIndependentLines(option=yes),
+.. ]
 """
 
 import re
 from ..utils import to_bytes
 
-class Compare(object):
+class Compare:
     """
     Comparison base class, this acts as a passthrough unless
     the filter staticmethod is overwritten.
@@ -130,7 +131,7 @@ class CompareReplacement(Compare):
     """Replace pieces to make output more comparable"""
     def __init__(self, *replacements):
         self.deltas = replacements
-        super(CompareReplacement, self).__init__()
+        super().__init__()
 
     def filter(self, contents):
         contents = to_bytes(contents)

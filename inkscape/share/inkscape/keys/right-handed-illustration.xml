@@ -74,8 +74,8 @@ Future improvements:
   <bind key="i" modifiers="Ctrl" action="FileImport" display="true"/>
   <bind key="I" modifiers="Ctrl" action="FileImport" />
 
-  <bind key="e" modifiers="Ctrl,Shift" action="FileExport" display="true"/>
-  <bind key="E" modifiers="Ctrl,Shift" action="FileExport" />
+  <bind key="e" modifiers="Ctrl,Shift" action="DialogExport" display="true"/>
+  <bind key="E" modifiers="Ctrl,Shift" action="DialogExport" />
 
   <bind action="FileVacuum" />
 
@@ -178,34 +178,20 @@ Future improvements:
 
 <!-- Zoom -->
 
-  <bind key="plus" action="ZoomIn" display="true"/>
-  <bind key="plus" modifiers="Shift" action="ZoomIn" />
-  <bind key="equal" action="ZoomIn" />
-  <bind key="KP_Add" action="ZoomIn" />
+  <bind gaction="win.canvas-zoom-in" keys="plus, &lt;shift&gt;plus, equal, KP_Add, x" />
   
-  <bind key="X" action="ZoomIn" />
-  <bind key="x" action="ZoomIn" />
-  <bind key="Z" action="ZoomOut" />
-  <bind key="z" action="ZoomOut" />
+  <bind gaction="win.canvas-zoom-out" keys="minus, KP_Subtract, z" />
 
-  <bind key="minus" action="ZoomOut" display="true"/>
-  <bind key="KP_Subtract" action="ZoomOut" />
+  <bind gaction="win.canvas-zoom-1-1" keys="KP_1"/>
+  <bind gaction="win.canvas-zoom-1-2" keys="KP_2"/>
+  <bind gaction="win.canvas-zoom-selection" keys="KP_3"/>
+  <bind gaction="win.canvas-zoom-drawing" keys="KP_4"/>
+  <bind gaction="win.canvas-zoom-page" keys="KP_5, 5"/>
+  <bind gaction="win.canvas-zoom-page-width" keys="KP_6"/>
 
-  <bind key="KP_1" action="Zoom1:0" display="true"/>
-  <bind key="KP_2" action="Zoom1:2" display="true"/>
-  <bind key="KP_3" action="ZoomSelection" display="true"/>
-  <bind key="KP_4" action="ZoomDrawing" display="true"/>
-  <bind key="5" action="ZoomPage" display="true"/>
-  <bind key="KP_5" action="ZoomPage" />
-  <bind key="KP_6" action="ZoomPageWidth" display="true"/>
+  <bind gaction="win.canvas-zoom-next" keys="&lt;shift&gt;asciitilde, &lt;shift&gt;grave"/> <!-- ~ -->
+  <bind gaction="win.canvas-zoom-prev" keys="grave"/> <!-- ` -->
 
-  <bind key="grave" modifiers="Shift" action="ZoomNext" display="true"/> <!-- ` -->
-  <bind key="asciitilde" modifiers="Shift" action="ZoomNext" /> <!-- ~ -->
-  <bind key="grave" action="ZoomPrev" display="true"/> <!-- ` -->
-
-  <bind key="grave" modifiers="Shift" action="ZoomNext" display="true"/> <!-- ` -->
-  <bind key="asciitilde" modifiers="Shift" action="ZoomNext" /> <!-- ~ -->
-  
   <!-- View -->
 
   <bind key="F11" action="FullScreen" display="true"/> 
@@ -232,9 +218,9 @@ Future improvements:
 
   <bind action="ViewModeNormal"/>
   <bind action="ViewModeOutline"/>
+  <bind action="ViewModeOutlineOverlay" />
 
-  <bind key="KP_5" modifiers="Ctrl" action="ViewModeToggle" display="true" />
-  <bind key="KP_Begin" modifiers="Ctrl" action="ViewModeToggle" />
+  <bind gaction="win.canvas-display-mode-cycle" keys="&lt;primary&gt;KP_5, &lt;primary&gt;KP_Begin"/>
   <bind action="ViewColorModeToggle" />
   <bind action="ViewSplitModeToggle" />
   <bind action="ViewXRayToggle" />
@@ -338,9 +324,6 @@ Future improvements:
   
   <bind key="a" action="SelectionRaise" />
   <bind key="s" action="SelectionLower" />
-  
-  <bind key="Page_Down" action="SelectionLower" display="true"/>
-  <bind key="KP_Page_Down" action="SelectionLower" />
   
   <bind key="g" modifiers="Ctrl" action="SelectionGroup" display="true"/>
   <bind key="G" modifiers="Ctrl" action="SelectionGroup" />
@@ -501,8 +484,8 @@ Future improvements:
   <bind key="x" modifiers="Ctrl,Shift" action="DialogXMLEditor" display="true"/>
   <bind key="X" modifiers="Ctrl,Shift" action="DialogXMLEditor" />
 
-  <bind key="q" modifiers="Cmd,Shift" action="DialogSelectors" display="true"/>
-  <bind key="Q" modifiers="Cmd,Shift" action="DialogSelectors" />
+  <bind key="q" modifiers="Ctrl,Shift" action="DialogSelectors" display="true"/>
+  <bind key="Q" modifiers="Ctrl,Shift" action="DialogSelectors" />
 
   <bind key="d" modifiers="Ctrl,Shift" action="DialogDocumentProperties" display="true"/>
   <bind key="D" modifiers="Ctrl,Shift" action="DialogDocumentProperties" />
@@ -531,7 +514,6 @@ Future improvements:
   <bind key="w" modifiers="Ctrl,Shift" action="DialogSwatches" display="true"/>
   <bind key="W" modifiers="Ctrl,Shift" action="DialogSwatches" />
 
-  <bind action="DialogMetadata" />
   <bind action="DialogClonetiler" />
   <bind action="DialogArrange" />
   <bind action="DialogDebug" />

@@ -1,0 +1,2222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.2
+
+Copyright (C) Martin Owens
+
+This file is part of Inkscape Extensions Manager.
+
+Inkscape Extensions Manager is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Inkscape Extensions Manager is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Inkscape Extensions Manager.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<interface>
+  <requires lib="gtk+" version="3.18"/>
+  <!-- interface-license-type gplv3 -->
+  <!-- interface-name Inkscape Extensions Manager -->
+  <!-- interface-description Download and manage inkscape extensions -->
+  <!-- interface-copyright Martin Owens -->
+  <object class="GtkListStore" id="canvases">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name preview -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name pagecolor -->
+      <column type="gchararray"/>
+      <!-- column-name checkered -->
+      <column type="gboolean"/>
+      <!-- column-name border -->
+      <column type="gchararray"/>
+      <!-- column-name shadow -->
+      <column type="gboolean"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">light</col>
+        <col id="1" translatable="yes">Default</col>
+        <col id="2">resources/canvas_aw.png</col>
+        <col id="3">rgba(255, 255, 255, 0)</col>
+        <col id="4">False</col>
+        <col id="5">#999999</col>
+        <col id="6">False</col>
+      </row>
+      <row>
+        <col id="0">dark</col>
+        <col id="1" translatable="yes">Dark</col>
+        <col id="2">resources/canvas_ad.png</col>
+        <col id="3">rgba(80, 80, 80, 0)</col>
+        <col id="4">False</col>
+        <col id="5">#eeeeee</col>
+        <col id="6">False</col>
+      </row>
+      <row>
+        <col id="0">light-check</col>
+        <col id="1" translatable="yes">Light Checkerboard</col>
+        <col id="2">resources/canvas_cw.png</col>
+        <col id="3">rgba(255, 255, 255, 0)</col>
+        <col id="4">True</col>
+        <col id="5">#111111</col>
+        <col id="6">False</col>
+      </row>
+      <row>
+        <col id="0">dark-check</col>
+        <col id="1" translatable="yes">Dark Checkerboard</col>
+        <col id="2">resources/canvas_cd.png</col>
+        <col id="3">rgba(80, 80, 80, 0)</col>
+        <col id="4">True</col>
+        <col id="5">#ffffff</col>
+        <col id="6">False</col>
+      </row>
+      <row>
+        <col id="0">light-solid</col>
+        <col id="1" translatable="yes">Solid White</col>
+        <col id="2">resources/canvas_sw.png</col>
+        <col id="3">#ffffff</col>
+        <col id="4">False</col>
+        <col id="5">#cccccc</col>
+        <col id="6">False</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="keyslist">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name keys_id -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Inkscape (default)</col>
+        <col id="1">default</col>
+      </row>
+      <row>
+        <col id="0">Filled by code</col>
+        <col id="1">nope</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="pages_other">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name width -->
+      <column type="gchararray"/>
+      <!-- column-name height -->
+      <column type="gchararray"/>
+      <!-- column-name desc -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">About Screen</col>
+        <col id="1">resources/template_about.svg</col>
+        <col id="2">about_screen.svg</col>
+        <col id="3">750px</col>
+        <col id="4">625px</col>
+        <col id="5">750px x 625px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 120x120</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">120px</col>
+        <col id="4">120px</col>
+        <col id="5">120px x 120px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 16x16</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">16px</col>
+        <col id="4">16px</col>
+        <col id="5">16px x 16px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 180x180</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">180px</col>
+        <col id="4">180px</col>
+        <col id="5">180px x 180px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 32x32</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">32px</col>
+        <col id="4">32px</col>
+        <col id="5">32px x 32px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 48x48</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">48px</col>
+        <col id="4">48px</col>
+        <col id="5">48px x 48px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Icon 512x512</col>
+        <col id="1">resources/template_icon_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">512px</col>
+        <col id="4">512px</col>
+        <col id="5">512px x 512px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">ID Card (ISO 7810)</col>
+        <col id="1">resources/template_businesscard_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">85.6mm</col>
+        <col id="4">53.98mm</col>
+        <col id="5">85.6mm x 53.98mm</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="pages_print">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name width -->
+      <column type="gchararray"/>
+      <!-- column-name height -->
+      <column type="gchararray"/>
+      <!-- column-name desc -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">A4</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">210mm</col>
+        <col id="4">297mm</col>
+        <col id="5">210mm x 297mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A4 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">279mm</col>
+        <col id="4">210mm</col>
+        <col id="5">279mm x 210mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Letter</col>
+        <col id="1">resources/template_print_US_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">8.5in</col>
+        <col id="4">11in</col>
+        <col id="5">8.5in x 11in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Letter (Landscape)</col>
+        <col id="1">resources/template_print_US_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">11in</col>
+        <col id="4">8.5in</col>
+        <col id="5">11in x 8.5in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A0</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">841mm</col>
+        <col id="4">1189mm</col>
+        <col id="5">841mm x 1189mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A0 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1189mm</col>
+        <col id="4">841mm</col>
+        <col id="5">1189mm x 841mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A1</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">594mm</col>
+        <col id="4">841mm</col>
+        <col id="5">594mm x 841mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A1 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">841mm</col>
+        <col id="4">594mm</col>
+        <col id="5">841mm x 594mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A2</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">420mm</col>
+        <col id="4">594mm</col>
+        <col id="5">420mm x 594mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A2 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">594mm</col>
+        <col id="4">420mm</col>
+        <col id="5">594mm x 420mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A3</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">297mm</col>
+        <col id="4">420mm</col>
+        <col id="5">297mm x 420mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A3 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">420mm</col>
+        <col id="4">297mm</col>
+        <col id="5">420mm x 297mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A5</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">148mm</col>
+        <col id="4">210mm</col>
+        <col id="5">148mm x 210mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">A5 (Landscape)</col>
+        <col id="1">resources/template_print_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">210mm</col>
+        <col id="4">148mm</col>
+        <col id="5">210mm x 148mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card AU/NZ (Landscape)</col>
+        <col id="1">resources/template_businesscard_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">90mm</col>
+        <col id="4">55mm</col>
+        <col id="5">90mm x 55mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card AU/NZ (Portrait)</col>
+        <col id="1">resources/template_businesscard_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">55mm</col>
+        <col id="4">90mm</col>
+        <col id="5">55mm x 90mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card EU (Landscape)</col>
+        <col id="1">resources/template_businesscard_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">85mm</col>
+        <col id="4">55mm</col>
+        <col id="5">85mm x 55mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card EU (Portrait)</col>
+        <col id="1">resources/template_businesscard_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">55mm</col>
+        <col id="4">85mm</col>
+        <col id="5">55mm x 85mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card EU (Square)</col>
+        <col id="1">resources/template_businesscard_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">55mm</col>
+        <col id="4">55mm</col>
+        <col id="5">55mm x 55mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card US (Landscape)</col>
+        <col id="1">resources/template_businesscard_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">3.5in</col>
+        <col id="4">2in</col>
+        <col id="5">3.5in x 2in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card US (Portrait)</col>
+        <col id="1">resources/template_businesscard_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">2in</col>
+        <col id="4">3.5in</col>
+        <col id="5">2in x 3.5in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Business Card US (Square)</col>
+        <col id="1">resources/template_businesscard_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">2in</col>
+        <col id="4">2in</col>
+        <col id="5">2in x 2in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">DL Envelope</col>
+        <col id="1">resources/template_envelope_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">220mm</col>
+        <col id="4">110mm</col>
+        <col id="5">220mm x 110mm</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Ledger/Tabloid</col>
+        <col id="1">resources/template_print_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">11in</col>
+        <col id="4">17in</col>
+        <col id="5">11in x 17in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US #10 Envelope</col>
+        <col id="1">resources/template_envelope_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">9.5in</col>
+        <col id="4">4.125in</col>
+        <col id="5">9.5in x 4.125in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Executive</col>
+        <col id="1">resources/template_print_US_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">7.25in</col>
+        <col id="4">10.5in</col>
+        <col id="5">7.25in x 10.5in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Executive (Landscape)</col>
+        <col id="1">resources/template_print_US_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">10.5in</col>
+        <col id="4">7.25in</col>
+        <col id="5">10.5in x 7.25in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Legal</col>
+        <col id="1">resources/template_print_US_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">8.5in</col>
+        <col id="4">14in</col>
+        <col id="5">8.5in x 14in</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">US Legal (Landscape)</col>
+        <col id="1">resources/template_print_US_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">14in</col>
+        <col id="4">8.5in</col>
+        <col id="5">14in x 8.5in</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="pages_screen">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name width -->
+      <column type="gchararray"/>
+      <!-- column-name height -->
+      <column type="gchararray"/>
+      <!-- column-name desc -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Desktop 1080p</col>
+        <col id="1">resources/template_desktop_hd_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1920px</col>
+        <col id="4">1080px</col>
+        <col id="5">1920px x 1080px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Desktop 2K</col>
+        <col id="1">resources/template_desktop_hd_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">2560px</col>
+        <col id="4">1440px</col>
+        <col id="5">2560px x 1440px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Desktop 4K</col>
+        <col id="1">resources/template_desktop_hd_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">3840px</col>
+        <col id="4">2160px</col>
+        <col id="5">3840px x 2160px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Desktop 720p</col>
+        <col id="1">resources/template_desktop_hd_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1366px</col>
+        <col id="4">768px</col>
+        <col id="5">1366px x 768px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Desktop SD</col>
+        <col id="1">resources/template_desktop_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1024px</col>
+        <col id="4">768px</col>
+        <col id="5">1024px x 768px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Mobile-fruit Phone 5</col>
+        <col id="1">resources/template_mobile_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">640px</col>
+        <col id="4">1136px</col>
+        <col id="5">640px x 1136px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Mobile-fruit Phone X</col>
+        <col id="1">resources/template_mobile_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">1125px</col>
+        <col id="4">2436px</col>
+        <col id="5">1125px x 2436px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Mobile-smallest</col>
+        <col id="1">resources/template_mobile_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">360px</col>
+        <col id="4">640px</col>
+        <col id="5">360px x 640px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Tablet-fruit Pad Pro</col>
+        <col id="1">resources/template_tablet_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">2388px</col>
+        <col id="4">1668px</col>
+        <col id="5">2388px x 1668px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Tablet-smallest</col>
+        <col id="1">resources/template_tablet_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1024px</col>
+        <col id="4">768px</col>
+        <col id="5">1024px x 768px</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="pages_social">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name width -->
+      <column type="gchararray"/>
+      <!-- column-name height -->
+      <column type="gchararray"/>
+      <!-- column-name desc -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Facebook cover photo</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">820px</col>
+        <col id="4">462px</col>
+        <col id="5">820px x 462px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Facebook event image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1920px</col>
+        <col id="4">1080px</col>
+        <col id="5">1920px x 1080px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Facebook image post</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1200px</col>
+        <col id="4">630px</col>
+        <col id="5">1200px x 630px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Facebook link image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1200px</col>
+        <col id="4">630px</col>
+        <col id="5">1200px x 630px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Facebook profile picture</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">180px</col>
+        <col id="4">180px</col>
+        <col id="5">180px x 180px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Facebook video</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1280px</col>
+        <col id="4">720px</col>
+        <col id="5">1280px x 720px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Instagram landscape</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1080px</col>
+        <col id="4">608px</col>
+        <col id="5">1080px x 608px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Instagram portrait</col>
+        <col id="1">resources/template_social_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">1080px</col>
+        <col id="4">1350px</col>
+        <col id="5">1080px x 1350px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Instagram square</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">1080px</col>
+        <col id="4">1080px</col>
+        <col id="5">1080px x 1080px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn business banner image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">646px</col>
+        <col id="4">220px</col>
+        <col id="5">646px x 220px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn company logo</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">300px</col>
+        <col id="4">300px</col>
+        <col id="5">300px x 300px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn cover photo</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1536px</col>
+        <col id="4">768px</col>
+        <col id="5">1536px x 768px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn dynamic ad</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">100px</col>
+        <col id="4">100px</col>
+        <col id="5">100px x 100px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn hero image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1128px</col>
+        <col id="4">376px</col>
+        <col id="5">1128px x 376px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">LinkedIn sponsored content image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1200px</col>
+        <col id="4">627px</col>
+        <col id="5">1200px x 627px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Snapchat advertisement</col>
+        <col id="1">resources/template_social_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">1080px</col>
+        <col id="4">1920px</col>
+        <col id="5">1080px x 1920px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter card image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1200px</col>
+        <col id="4">628px</col>
+        <col id="5">1200px x 628px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter header</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1500px</col>
+        <col id="4">500px</col>
+        <col id="5">1500px x 500px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter post image</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1024px</col>
+        <col id="4">512px</col>
+        <col id="5">1024px x 512px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter profile picture</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">400px</col>
+        <col id="4">400px</col>
+        <col id="5">400px x 400px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter video landscape</col>
+        <col id="1">resources/template_social_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1280px</col>
+        <col id="4">720px</col>
+        <col id="5">1280px x 720px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter video portrait</col>
+        <col id="1">resources/template_social_portrait.svg</col>
+        <col id="2">-</col>
+        <col id="3">720px</col>
+        <col id="4">1280px</col>
+        <col id="5">720px x 1280px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Twitter video square</col>
+        <col id="1">resources/template_social_square.svg</col>
+        <col id="2">-</col>
+        <col id="3">720px</col>
+        <col id="4">720px</col>
+        <col id="5">720px x 720px</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="pages_video">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name icon -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name width -->
+      <column type="gchararray"/>
+      <!-- column-name height -->
+      <column type="gchararray"/>
+      <!-- column-name desc -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Video DCI 2k (Full Frame)</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">2048px</col>
+        <col id="4">1080px</col>
+        <col id="5">2048px x 1080px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video DCI 4k (Full Frame)</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">4096px</col>
+        <col id="4">2160px</col>
+        <col id="5">4096px x 2160px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video HD 1080p</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1920px</col>
+        <col id="4">1080px</col>
+        <col id="5">1920px x 1080px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video HD 720p</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1280px</col>
+        <col id="4">720px</col>
+        <col id="5">1280px x 720px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video SD / NTSC</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">544px</col>
+        <col id="4">480px</col>
+        <col id="5">544px x 480px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video SD / PAL</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">768px</col>
+        <col id="4">576px</col>
+        <col id="5">768px x 576px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video SD-Widescreen / NTSC</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">872px</col>
+        <col id="4">486px</col>
+        <col id="5">872px x 486px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video SD-Widescreen / PAL</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">1024px</col>
+        <col id="4">576px</col>
+        <col id="5">1024px x 576px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video UHD 4k</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">3840px</col>
+        <col id="4">2160px</col>
+        <col id="5">3840px x 2160px</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Video UHD 8k</col>
+        <col id="1">resources/template_video_landscape.svg</col>
+        <col id="2">-</col>
+        <col id="3">7680px</col>
+        <col id="4">4320px</col>
+        <col id="5">7680px x 4320px</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="recent_files">
+    <columns>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name filepath -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">test.svg</col>
+        <col id="1">a</col>
+      </row>
+      <row>
+        <col id="0">test2.svg</col>
+        <col id="1">b</col>
+      </row>
+      <row>
+        <col id="0">another_example_file.svg</col>
+        <col id="1">c</col>
+      </row>
+      <row>
+        <col id="0">drawing.eps</col>
+        <col id="1">d</col>
+      </row>
+      <row>
+        <col id="0">test3.svg</col>
+        <col id="1">e</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="themelist">
+    <columns>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+      <!-- column-name theme_id -->
+      <column type="gchararray"/>
+      <!-- column-name icons_id -->
+      <column type="gchararray"/>
+      <!-- column-name base_color -->
+      <column type="gchararray"/>
+      <!-- column-name base_color_dark -->
+      <column type="gchararray"/>
+      <!-- column-name success_color -->
+      <column type="gchararray"/>
+      <!-- column-name warn_color -->
+      <column type="gchararray"/>
+      <!-- column-name error_color -->
+      <column type="gchararray"/>
+      <!-- column-name symbolic_icons -->
+      <column type="gboolean"/>
+      <!-- column-name small_icons -->
+      <column type="gboolean"/>
+      <!-- column-name available -->
+      <column type="gboolean"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">classic</col>
+        <col id="1" translatable="yes">Classic Inkscape (default)</col>
+        <col id="2">Adwaita</col>
+        <col id="3">Adwaita</col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+        <col id="6">0</col>
+        <col id="7">0</col>
+        <col id="8">0</col>
+        <col id="9">False</col>
+        <col id="10">False</col>
+        <col id="11">False</col>
+      </row>
+      <row>
+        <col id="0">symbolic</col>
+        <col id="1" translatable="yes">Classic Symbolic</col>
+        <col id="2">Adwaita</col>
+        <col id="3">Adwaita</col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+        <col id="6">0</col>
+        <col id="7">0</col>
+        <col id="8">0</col>
+        <col id="9">True</col>
+        <col id="10">False</col>
+        <col id="11">False</col>
+      </row>
+      <row>
+        <col id="0">colorful</col>
+        <col id="1" translatable="yes">Colorful</col>
+        <col id="2">Adwaita</col>
+        <col id="3">multicolor</col>
+        <col id="4">#000000</col>
+        <col id="5">#ebebeb</col>
+        <col id="6">#00990a</col>
+        <col id="7">#ff1990</col>
+        <col id="8">#0099e6</col>
+        <col id="9">True</col>
+        <col id="10">False</col>
+        <col id="11">False</col>
+      </row>
+      <row>
+        <col id="0">grayscale</col>
+        <col id="1" translatable="yes">Grayscale</col>
+        <col id="2">Adwaita</col>
+        <col id="3">multicolor</col>
+        <col id="4">#000000</col>
+        <col id="5">#e5e5e5</col>
+        <col id="6">#cccccc</col>
+        <col id="7">#808080</col>
+        <col id="8">#808080</col>
+        <col id="9">True</col>
+        <col id="10">False</col>
+        <col id="11">False</col>
+      </row>
+      <row>
+        <col id="0">compacted</col>
+        <col id="1" translatable="yes">Compacted (Small Screens)</col>
+        <col id="2">Minwaita-Inkscape</col>
+        <col id="3">hicolor</col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+        <col id="6">0</col>
+        <col id="7">0</col>
+        <col id="8">0</col>
+        <col id="9">True</col>
+        <col id="10">True</col>
+        <col id="11">False</col>
+      </row>
+      <row>
+        <col id="0">system</col>
+        <col id="1" translatable="yes">System Default</col>
+        <col id="2"></col>
+        <col id="3"></col>
+        <col id="4">0</col>
+        <col id="5">0</col>
+        <col id="6">0</col>
+        <col id="7">0</col>
+        <col id="8">0</col>
+        <col id="9">False</col>
+        <col id="10">False</col>
+        <col id="11">True</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkWindow" id="start-screen-window">
+    <property name="can_focus">True</property>
+    <property name="has_focus">True</property>
+    <property name="is_focus">True</property>
+    <property name="can_default">True</property>
+    <property name="has_default">True</property>
+    <property name="title" translatable="yes">Inkscape 1.1</property>
+    <property name="modal">True</property>
+    <property name="window_position">center</property>
+    <property name="default_width">700</property>
+    <property name="default_height">360</property>
+    <property name="urgency_hint">True</property>
+    <child type="titlebar">
+      <object class="GtkFixed" id="banner">
+        <property name="width_request">700</property>
+        <property name="height_request">220</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkRevealer">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="transition_type">crossfade</property>
+            <property name="transition_duration">1500</property>
+            <property name="reveal_child">True</property>
+            <child>
+              <object class="GtkFixed">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width_request">100</property>
+                    <property name="height_request">80</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="pixbuf">../screens/start-welcome.png</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage" id="welcome_text">
+                    <property name="width_request">700</property>
+                    <property name="height_request">220</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="pixbuf">../screens/start-welcome-text.svg</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">False</property>
+                    <property name="label" translatable="yes" comments="Not automatic, but will be turned into start-welcome-text.svg">Welcome!</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">False</property>
+                    <property name="label" translatable="yes" comments="Not automatic, but will be turned into start-welcome-text.svg">Let's set up a few things...</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="transition_type">crossfade</property>
+            <property name="transition_duration">1500</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pixbuf">../screens/start-support.png</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkRevealer">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="transition_type">crossfade</property>
+            <property name="transition_duration">1500</property>
+            <child>
+              <object class="GtkFixed">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="width_request">700</property>
+                    <property name="height_request">220</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="pixbuf">../screens/start-splash.png</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkNotebook" id="tabs">
+        <property name="name">startscreennotebook</property>
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="show_border">False</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkInfoBar" id="keys_warning">
+                <property name="can_focus">False</property>
+                <property name="message_type">error</property>
+                <child internal-child="action_area">
+                  <object class="GtkButtonBox">
+                    <property name="can_focus">False</property>
+                    <property name="spacing">6</property>
+                    <property name="layout_style">end</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child internal-child="content_area">
+                  <object class="GtkBox">
+                    <property name="can_focus">False</property>
+                    <property name="spacing">16</property>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="stock">gtk-dialog-warning</property>
+                        <property name="icon_size">3</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Warning:&lt;/b&gt; Using a non-standard shortcut keyboard layout could make it harder to follow tutorials.</property>
+                        <property name="use_markup">True</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkGrid">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_top">40</property>
+                    <property name="margin_bottom">30</property>
+                    <property name="row_spacing">8</property>
+                    <property name="column_spacing">4</property>
+                    <property name="row_homogeneous">True</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Appearance</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="scale" value="1.2"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Canvas</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="scale" value="1.2"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Keyboard</property>
+                        <property name="xalign">0</property>
+                        <attributes>
+                          <attribute name="scale" value="1.2"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="themes">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">themelist</property>
+                        <property name="id_column">0</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="theme_namerenderer"/>
+                          <attributes>
+                            <attribute name="sensitive">11</attribute>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="keys">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="model">keyslist</property>
+                        <property name="active">0</property>
+                        <property name="id_column">1</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="keys_cellrenderer"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">1</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="iconrow">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_top">4</property>
+                        <property name="margin_bottom">4</property>
+                        <property name="spacing">3</property>
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">tool-pointer</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">tool-node-editor</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">draw-rectangle</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">draw-polygon-star</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">center</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">draw-path</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">draw-freehand</property>
+                            <property name="icon_size">3</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">3</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="canvas">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Select the default color background for the canvas</property>
+                        <property name="model">canvases</property>
+                        <property name="id_column">0</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf" id="canvas_preview">
+                            <property name="xpad">10</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">2</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                        <property name="width">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="valign">end</property>
+                            <property name="margin_bottom">2</property>
+                            <property name="label" translatable="yes">Dark</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSwitch" id="dark_toggle">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="tooltip_text" translatable="yes">Set to dark theme</property>
+                            <property name="halign">center</property>
+                            <property name="valign">start</property>
+                            <property name="margin_top">2</property>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="top_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButtonBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">8</property>
+                <property name="margin_right">8</property>
+                <property name="layout_style">start</property>
+                <child>
+                  <object class="GtkButton" id="save">
+                    <property name="label">gtk-save</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_stock">True</property>
+                    <style>
+                      <class name="primary"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label" translatable="no">Load Preferences</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">4</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Quick Setup</property>
+          </object>
+          <packing>
+            <property name="tab_expand">True</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">30</property>
+                <property name="margin_right">30</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
+                <property name="label" translatable="yes">&lt;big&gt;&lt;b&gt;The Inkscape project is supported by users like you.&lt;/b&gt; Through our collective time, money and skill, we have made this software for everyone in the world to enjoy free from restrictions and free from costs. &lt;b&gt;
+If you would like to get involved and make the next version of Inkscape even better, please consider joining the Inkscape project today.&lt;/b&gt;&lt;/big&gt;</property>
+                <property name="use_markup">True</property>
+                <property name="wrap">True</property>
+                <property name="max_width_chars">50</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">90</property>
+                <property name="margin_right">90</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="spacing">8</property>
+                    <property name="baseline_position">top</property>
+                    <child>
+                      <object class="GtkLinkButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">https://inkscape.org/splash/contribute/</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">10</property>
+                                <property name="margin_right">10</property>
+                                <property name="margin_top">10</property>
+                                <property name="margin_bottom">10</property>
+                                <property name="pixbuf">../pixmaps/user.svg</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">8</property>
+                                <property name="margin_right">8</property>
+                                <property name="margin_top">8</property>
+                                <property name="margin_bottom">8</property>
+                                <property name="label" translatable="yes">Learn how to
+Contribute Time</property>
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                  <attribute name="scale" value="1.8"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLinkButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="relief">none</property>
+                        <property name="uri">https://inkscape.org/splash/support/</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkImage">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_top">10</property>
+                                <property name="margin_bottom">10</property>
+                                <property name="pixbuf">../pixmaps/support.svg</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="margin_left">8</property>
+                                <property name="margin_right">8</property>
+                                <property name="margin_top">8</property>
+                                <property name="margin_bottom">8</property>
+                                <property name="label" translatable="yes">Learn how to
+Fund Inkscape</property>
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                  <attribute name="scale" value="1.8"/>
+                                </attributes>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">False</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButtonBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">8</property>
+                <property name="margin_right">8</property>
+                <property name="layout_style">start</property>
+                <child>
+                  <object class="GtkButton" id="thanks">
+                    <property name="label" translatable="yes">Thanks!</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                    <style>
+                      <class name="primary"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">4</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Supported by You</property>
+          </object>
+          <packing>
+            <property name="position">1</property>
+            <property name="tab_expand">True</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkNotebook" id="kinds">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="tab_pos">left</property>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="recent_treeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="model">recent_files</property>
+                        <property name="search_column">1</property>
+                        <property name="tooltip_column">1</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn" id="recent_name">
+                            <property name="title" translatable="yes" context="Welcome dialog">Recent Files</property>
+                            <property name="reorderable">True</property>
+                            <property name="sort_indicator">True</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Welcome dialog">Existing Files</property>
+                  </object>
+                  <packing>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkIconView" id="pages_print_view">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin">6</property>
+                        <property name="model">pages_print</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf">
+                            <property name="xpad">6</property>
+                            <property name="ypad">6</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">1</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                            <property name="scale">0.9</property>
+                            <property name="foreground_rgba">rgb(136,138,133)</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Document format category">Print</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkIconView" id="pages_digital_view">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin">6</property>
+                        <property name="model">pages_screen</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf">
+                            <property name="xpad">6</property>
+                            <property name="ypad">6</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">1</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                            <property name="scale">0.9</property>
+                            <property name="foreground_rgba">rgb(136,138,133)</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Document format category">Screen</property>
+                  </object>
+                  <packing>
+                    <property name="position">2</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkIconView">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin">6</property>
+                        <property name="model">pages_video</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf">
+                            <property name="xpad">6</property>
+                            <property name="ypad">6</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">1</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                            <property name="scale">0.9</property>
+                            <property name="foreground_rgba">rgb(136,138,133)</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Document format category">Video</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkIconView">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin">6</property>
+                        <property name="model">pages_social</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf">
+                            <property name="xpad">6</property>
+                            <property name="ypad">6</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">1</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                            <property name="scale">0.9</property>
+                            <property name="foreground_rgba">rgb(136,138,133)</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Document format category" comments="Social Media">Social</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkIconView">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="margin">6</property>
+                        <property name="model">pages_other</property>
+                        <child>
+                          <object class="GtkCellRendererPixbuf">
+                            <property name="xpad">6</property>
+                            <property name="ypad">6</property>
+                          </object>
+                          <attributes>
+                            <attribute name="pixbuf">1</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                        <child>
+                          <object class="GtkCellRendererText">
+                            <property name="alignment">center</property>
+                            <property name="xalign">0.5</property>
+                            <property name="scale">0.9</property>
+                            <property name="foreground_rgba">rgb(136,138,133)</property>
+                          </object>
+                          <attributes>
+                            <attribute name="text">5</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" context="Document format category">Other</property>
+                  </object>
+                  <packing>
+                    <property name="position">5</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButtonBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_left">8</property>
+                <property name="margin_right">8</property>
+                <property name="spacing">4</property>
+                <property name="layout_style">start</property>
+                <child>
+                  <object class="GtkButton" id="load">
+                    <property name="label" translatable="yes">Load</property>
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="show_toggle">
+                    <property name="label" translatable="yes">Show this every time</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="new">
+                    <property name="label" translatable="yes">New Document</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="focus_on_click">False</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                    <property name="secondary">True</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="padding">4</property>
+                <property name="pack_type">end</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child type="tab">
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Time to Draw</property>
+          </object>
+          <packing>
+            <property name="position">2</property>
+            <property name="tab_expand">True</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

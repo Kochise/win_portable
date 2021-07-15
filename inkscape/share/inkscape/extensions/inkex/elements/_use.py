@@ -36,7 +36,7 @@ class Use(ShapeElement):
 
     @classmethod
     def new(cls, elem, x, y, **attrs): # pylint: disable=arguments-differ
-        ret = super(Use, cls).new(x=x, y=y, **attrs)
+        ret = super().new(x=x, y=y, **attrs)
         ret.href = elem
         return ret
 
@@ -59,7 +59,7 @@ class Use(ShapeElement):
             group = Group(**copy.attrib)
             group.extend(copy)
             copy = group
-        copy.transform *= self.transform
+        copy.transform = self.transform * copy.transform
         copy.style = self.style + copy.style
         self.replace_with(copy)
         copy.set_random_ids()

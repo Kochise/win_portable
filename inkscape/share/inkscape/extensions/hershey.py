@@ -55,7 +55,7 @@ import math
 from copy import deepcopy
 
 import inkex
-from inkex import Transform, Style, units
+from inkex import Transform, Style, units, AbortExtension
 
 from inkex import load_svg, Group, TextElement, FlowPara, SVGfont, FontFace,\
     FlowSpan, Glyph, MissingGlyph, Tspan, FlowRoot, Rectangle, Use, PathElement, Defs
@@ -344,7 +344,10 @@ Evil Mad Scientist Laboratories
 
         if width <= 0 or height <= 0:
             return 1, 1, 0, 0 # invalid viewbox; return default transform
-
+        
+        if doc_width is None or doc_height is None:
+            raise AbortExtension('Width or height attribute missing on toplevel <svg> tag')
+        
         d_width = float(doc_width)
         d_height = float(doc_height)
 

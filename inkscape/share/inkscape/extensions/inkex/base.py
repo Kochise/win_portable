@@ -19,47 +19,38 @@
 """
 The ultimate base functionality for every Inkscape extension.
 """
-from __future__ import absolute_import, print_function, unicode_literals
 
 import os
 import sys
 import copy
-import shutil
+
+from typing import Dict, List, Tuple, Type, Optional, Callable, Any, Union, IO, TYPE_CHECKING, cast
 
 from argparse import ArgumentParser, Namespace
 from lxml import etree
 
-from .utils import PY3, filename_arg, AbortExtension, ABORT_STATUS, errormsg, do_nothing
+from .utils import filename_arg, AbortExtension, ABORT_STATUS, errormsg, do_nothing
 from .elements._base import load_svg, BaseElement # pylint: disable=unused-import
+from .elements._utils import NSS
 from .localization import localize
 
-stdout = sys.stdout
-
-try:
-    from typing import (List, Tuple, Type, Optional, Callable, Any, Union, IO,
-                        TYPE_CHECKING, cast)
-except ImportError:
-    cast = lambda x, y: y
-    TYPE_CHECKING = False
-
-if PY3:
-    unicode = str  # pylint: disable=redefined-builtin,invalid-name
-    basestring = str  # pylint: disable=redefined-builtin,invalid-name
-    stdout = sys.stdout.buffer  # type: ignore
+stdout = sys.stdout.buffer  # type: ignore
 
 
-class InkscapeExtension(object):
+class InkscapeExtension:
     """
     The base class extension, provides argument parsing and basic
     variable handling features.
     """
     multi_inx = False # Set to true if this class is used by multiple inx files.
+    extra_nss = {} # type: Dict[str, str]
 
     def __init__(self):
         # type: () -> None
+        NSS.update(self.extra_nss)
         self.file_io = None # type: Optional[IO]
         self.options = Namespace()
-        self.document = None # type: Union[None, bytes, str, unicode, etree]
+        self.document = None # type: Union[None, bytes, str, etree]
         self.arg_parser = ArgumentParser(description=self.__doc__)
 
         self.arg_parser.add_argument(
@@ -97,8 +88,9 @@ class InkscapeExtension(object):
         ...
         self.options.tab(arguments)
         ...
-        def method_foo(self, arguments):
-            # do something
+        .. code-block:: python
+        .. def method_foo(self, arguments):
+        ..     # do something
         """
         def _inner(value):
             name = '{}_{}'.format(prefix, value.strip('"').lower()).replace('-', '_')
@@ -107,13 +99,13 @@ class InkscapeExtension(object):
             except AttributeError:
                 if name.startswith('_'):
                     return do_nothing
-                raise AbortExtension("Can not find method {}".format(name))
+                raise AbortExtension(f"Can not find method {name}")
         return _inner
 
     def debug(self, msg):
         # type: (str) -> None
         """Write a debug message"""
-        errormsg("DEBUG<{}> {}\n".format(type(self).__name__, msg))
+        errormsg(f"DEBUG<{type(self).__name__}> {msg}\n")
 
     @staticmethod
     def msg(msg):
@@ -133,7 +125,6 @@ class InkscapeExtension(object):
                 self.options.input_file = sys.stdin
 
             if self.options.output is None:
-                # assert output
                 self.options.output = output
 
             self.load_raw()
@@ -147,7 +138,7 @@ class InkscapeExtension(object):
     def load_raw(self):
         # type: () -> None
         """Load the input stream or filename, save everything to self"""
-        if isinstance(self.options.input_file, (str, unicode)):
+        if isinstance(self.options.input_file, str):
             self.file_io = open(self.options.input_file, 'rb')
             document = self.load(self.file_io)
         else:
@@ -158,7 +149,7 @@ class InkscapeExtension(object):
         # type: (Any) -> None
         """Save to the output stream, use everything from self"""
         if self.has_changed(ret):
-            if isinstance(self.options.output, (str, unicode)):
+            if isinstance(self.options.output, str):
                 with open(self.options.output, 'wb') as stream:
                     self.save(stream)
             else:
@@ -167,17 +158,17 @@ class InkscapeExtension(object):
     def load(self, stream):
         # type: (IO) -> str 
         """Takes the input stream and creates a document for parsing"""
-        raise NotImplementedError("No input handle for {}".format(self.name))
+        raise NotImplementedError(f"No input handle for {self.name}")
 
     def save(self, stream):
         # type: (IO) -> None 
         """Save the given document to the output file"""
-        raise NotImplementedError("No output handle for {}".format(self.name))
+        raise NotImplementedError(f"No output handle for {self.name}")
 
     def effect(self):
         # type: () -> Any 
         """Apply some effects on the document or local context"""
-        raise NotImplementedError("No effect handle for {}".format(self.name))
+        raise NotImplementedError(f"No effect handle for {self.name}")
 
     def has_changed(self, ret): # pylint: disable=no-self-use
         # type: (Any) -> bool
@@ -190,15 +181,19 @@ class InkscapeExtension(object):
         if self.file_io is not None:
             self.file_io.close()
 
-    def svg_path(self):
-        # type: () -> Optional[str]
+    @classmethod
+    def svg_path(cls, default=None):
+        # type: (Optional[str]) -> Optional[str]
         """
-        Return the folder the svg is contained in.
+        Return the folder the
         Returns None if there is no file.
         """
-        if self.options.input_file:
-            return os.path.dirname(self.options.input_file)
-        return None
+        path = cls.document_path()
+        if path:
+            return os.path.dirname(path)
+        elif default:
+            return default
+        return path # Return None or '' for context
 
     @classmethod
     def ext_path(cls):
@@ -210,25 +205,51 @@ class InkscapeExtension(object):
     def get_resource(cls, name, abort_on_fail=True):
         # type: (str, bool) -> str
         """Return the full filename of the resource in the extension's dir"""
-        filename = os.path.join(cls.ext_path(), name)
+        filename = cls.absolute_href(name, cwd=cls.ext_path())
         if abort_on_fail and not os.path.isfile(filename):
-            raise AbortExtension("Could not find resource file: {}".format(filename))
+            raise AbortExtension(f"Could not find resource file: {filename}")
         return filename
 
-    def absolute_href(self, filename, default='~/'):
-        # type: (str, str) -> str
+    @classmethod
+    def document_path(cls):
+        # type: () -> Optional[str]
+        """Returns the saved location of the document
+
+         * Normal return is a string containing the saved location
+         * Empty string means the document was never saved
+         * 'None' means this version of Inkscape doesn't support DOCUMENT_PATH
+
+        DO NOT READ OR WRITE TO THE DOCUMENT FILENAME!
+
+         * Inkscape may have not written the latest changes, leaving you reading old data.
+         * Inkscape will not respect anything you write to the file, causing data loss.
+        """
+        return os.environ.get('DOCUMENT_PATH', None)
+
+    @classmethod
+    def absolute_href(cls, filename, default='~/', cwd=None):
+        # type: (str, str, Optional[str]) -> str
         """
         Process the filename such that it's turned into an absolute filename
         with the working directory being the directory of the loaded svg.
 
         User's home folder is also resolved. So '~/a.png` will be `/home/bob/a.png`
 
-        Default is a fallback directory to use if the svg's filename is not available.
+        Default is a fallback working directory to use if the svg's filename is not
+        available, if you set default to None, then the user will be given errors if
+        there's no working directory available from Inkscape.
         """
         filename = os.path.expanduser(filename)
         if not os.path.isabs(filename):
-            path = self.svg_path() or default
-            filename = os.path.join(path, filename)
+            filename = os.path.expanduser(filename)
+        if not os.path.isabs(filename):
+            if cwd is None:
+                cwd = cls.svg_path(default)
+                if cwd is None:
+                    raise AbortExtension(f"Can not use relative path, Inkscape isn't telling us the current working directory.")
+                elif cwd == '':
+                    raise AbortExtension(f"The SVG must be saved before you can use relative paths.")
+            filename = os.path.join(cwd, filename)
         return os.path.realpath(os.path.expanduser(filename))
 
     @property
@@ -253,21 +274,23 @@ class TempDirMixin(_Base):
 
     def __init__(self, *args, **kwargs):
         self.tempdir = None
-        super(TempDirMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def load_raw(self):
         # type: () -> None
         """Create the temporary directory"""
-        from tempfile import mkdtemp
-        self.tempdir = mkdtemp(self.dir_suffix, self.dir_prefix, None)
-        super(TempDirMixin, self).load_raw()
+        from tempfile import TemporaryDirectory
+        # Need to hold a reference to the Directory object or else it might get GC'd
+        self._tempdir = TemporaryDirectory(prefix=self.dir_prefix, suffix=self.dir_suffix)
+        self.tempdir = self._tempdir.name
+        super().load_raw()
 
     def clean_up(self):
         # type: () -> None
         """Delete the temporary directory"""
-        if self.tempdir and os.path.isdir(self.tempdir):
-            shutil.rmtree(self.tempdir)
-        super(TempDirMixin, self).clean_up()
+        self.tempdir = None
+        self._tempdir.cleanup()
+        super().clean_up()
 
 
 class SvgInputMixin(_Base):  # pylint: disable=too-few-public-methods
@@ -278,7 +301,7 @@ class SvgInputMixin(_Base):  # pylint: disable=too-few-public-methods
     select_all = () # type: Tuple[Type[BaseElement], ...]
 
     def __init__(self):
-        super(SvgInputMixin, self).__init__()
+        super().__init__()
 
         self.arg_parser.add_argument(
             "--id", action="append", type=str, dest="ids", default=[],
@@ -326,15 +349,14 @@ class SvgOutputMixin(_Base):  # pylint: disable=too-few-public-methods
     def save(self, stream):
         # type: (IO) -> None
         """Save the svg document to the given stream"""
-        if isinstance(self.document, (bytes, str, unicode)):
+        if isinstance(self.document, (bytes, str)):
             document = self.document
         elif 'Element' in type(self.document).__name__:
             # isinstance can't be used here because etree is broken
             doc = cast(etree, self.document)
             document = doc.getroot().tostring()
         else:
-            raise ValueError("Unknown type of document: {} can not save."\
-                .format(type(self.document).__name__))
+            raise ValueError(f"Unknown type of document: {type(self.document).__name__} can not save.")
 
         try:
             stream.write(document)

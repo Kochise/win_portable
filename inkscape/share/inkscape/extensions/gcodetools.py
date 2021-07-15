@@ -3441,14 +3441,14 @@ class Gcodetools(inkex.EffectExtension):
                 if self.layers[i] in self.orientation_points:
                     break
             if self.layers[i] not in self.orientation_points:
-                self.error("Orientation points for '{}' layer have not been found! Please add orientation points using Orientation tab!".format(layer.label), "error")
+                self.error(f"Orientation points for '{layer.label}' layer have not been found! Please add orientation points using Orientation tab!", "error")
             elif self.layers[i] in self.transform_matrix:
                 self.transform_matrix[layer] = self.transform_matrix[self.layers[i]]
                 self.Zcoordinates[layer] = self.Zcoordinates[self.layers[i]]
             else:
                 orientation_layer = self.layers[i]
                 if len(self.orientation_points[orientation_layer]) > 1:
-                    self.error("There are more than one orientation point groups in '{}' layer".format(orientation_layer.label))
+                    self.error(f"There are more than one orientation point groups in '{orientation_layer.label}' layer")
                 points = self.orientation_points[orientation_layer][0]
                 if len(points) == 2:
                     points += [[[(points[1][0][1] - points[0][0][1]) + points[0][0][0], -(points[1][0][0] - points[0][0][0]) + points[0][0][1]], [-(points[1][1][1] - points[0][1][1]) + points[0][1][0], points[1][1][0] - points[0][1][0] + points[0][1][1]]]]
@@ -3484,7 +3484,7 @@ class Gcodetools(inkex.EffectExtension):
                     self.error("Orientation points are wrong! (if there are two orientation points they should not be the same. If there are three orientation points they should not be in a straight line.)", "error")
 
             self.transform_matrix_reverse[layer] = numpy.linalg.inv(self.transform_matrix[layer]).tolist()
-            print_("\n Layer '{}' transformation matrixes:".format(layer.label))
+            print_(f"\n Layer '{layer.label}' transformation matrixes:")
             print_(self.transform_matrix)
             print_(self.transform_matrix_reverse)
 
@@ -3581,22 +3581,22 @@ class Gcodetools(inkex.EffectExtension):
                     points = self.get_orientation_points(i)
                     if points is not None:
                         self.orientation_points[layer] = self.orientation_points[layer] + [points[:]] if layer in self.orientation_points else [points[:]]
-                        print_("Found orientation points in '{}' layer: {}".format(layer.label, points))
+                        print_(f"Found orientation points in '{layer.label}' layer: {points}")
                     else:
-                        self.error("Warning! Found bad orientation points in '{}' layer. Resulting Gcode could be corrupt!".format(layer.label))
+                        self.error(f"Warning! Found bad orientation points in '{layer.label}' layer. Resulting Gcode could be corrupt!")
 
                 # Need to recognise old files ver 1.6.04 and earlier
                 elif i.get("gcodetools") == "Gcodetools tool definition" or i.get("gcodetools") == "Gcodetools tool definition":
                     tool = self.get_tool(i)
                     self.tools[layer] = self.tools[layer] + [tool.copy()] if layer in self.tools else [tool.copy()]
-                    print_("Found tool in '{}' layer: {}".format(layer.label, tool))
+                    print_(f"Found tool in '{layer.label}' layer: {tool}")
 
                 elif i.get("gcodetools") == "Gcodetools graffiti reference point":
                     point = self.get_graffiti_reference_points(i)
                     if point:
                         self.graffiti_reference_points[layer] = self.graffiti_reference_points[layer] + [point[:]] if layer in self.graffiti_reference_points else [point]
                     else:
-                        self.error("Warning! Found bad graffiti reference point in '{}' layer. Resulting Gcode could be corrupt!".format(layer.label))
+                        self.error(f"Warning! Found bad graffiti reference point in '{layer.label}' layer. Resulting Gcode could be corrupt!")
 
                 elif isinstance(i, inkex.PathElement):
                     if "gcodetools" not in i.keys():
@@ -3732,10 +3732,10 @@ class Gcodetools(inkex.EffectExtension):
                 self.tools[layer] = self.tools[self.layers[i]]
             if len(self.tools[layer]) > 1:
                 label = self.layers[i].label
-                self.error("Layer '{}' contains more than one tool!".format(label))
+                self.error(f"Layer '{label}' contains more than one tool!")
             return self.tools[layer]
         else:
-            self.error("Can not find tool for '{}' layer! Please add one with Tools library tab!".format(layer.label), "error")
+            self.error(f"Can not find tool for '{layer.label}' layer! Please add one with Tools library tab!", "error")
 
     ################################################################################
     #
@@ -3958,7 +3958,7 @@ class Gcodetools(inkex.EffectExtension):
                         keys = range(len(curves))
                     for key in keys:
                         d = curves[key][0][1]
-                        for step in range(0, 1 + int(math.ceil(abs((zs - d) / self.tools[layer][0]["depth step"])))):
+                        for step in range(0, int(math.ceil(abs((zs - d) / self.tools[layer][0]["depth step"])))):
                             z = max(d, zs - abs(self.tools[layer][0]["depth step"] * (step + 1)))
 
                             gcode += gcode_comment_str("\nStart cutting path id: {}".format(curves[key][0][0]))
@@ -4086,7 +4086,7 @@ class Gcodetools(inkex.EffectExtension):
             if layer in self.selected_paths:
                 self.set_tool(layer)
                 if self.tools[layer][0]['diameter'] <= 0:
-                    self.error("Tool diameter must be > 0 but tool's diameter on '{}' layer is not!".format(layer.label), "error")
+                    self.error(f"Tool diameter must be > 0 but tool's diameter on '{layer.label}' layer is not!", "error")
 
                 for path in self.selected_paths[layer]:
                     print_(("doing path", path.get("style"), path.get("d")))
@@ -4132,13 +4132,14 @@ class Gcodetools(inkex.EffectExtension):
                                         n = [[j[2][:], j[1][:], j[0][:]]] + n
                                     csp[i] = n[:]
 
-                        # What the absolute fudge is this doing? Closing paths? Ugh.
-                        d = str(CubicSuperPath(csp))
-                        print_(("original  d=", d))
-                        d = re.sub(r'(?i)(m[^mz]+)', r'\1 Z ', d)
-                        d = re.sub(r'(?i)\s*z\s*z\s*', r' Z ', d)
-                        d = re.sub(r'(?i)\s*([A-Za-z])\s*', r' \1 ', d)
-                        print_(("formatted d=", d))
+                    # What the absolute fudge is this doing? Closing paths? Ugh.
+                    # Not sure but it most be at this level and not in the if statement, or it will not work with dynamic offsets
+                    d = str(CubicSuperPath(csp))
+                    print_(("original  d=", d))
+                    d = re.sub(r'(?i)(m[^mz]+)', r'\1 Z ', d)
+                    d = re.sub(r'(?i)\s*z\s*z\s*', r' Z ', d)
+                    d = re.sub(r'(?i)\s*([A-Za-z])\s*', r' \1 ', d)
+                    print_(("formatted d=", d))
                     p0 = self.transform([0, 0], layer)
                     p1 = self.transform([0, 1], layer)
                     scale = (P(p0) - P(p1)).mag()
@@ -4161,11 +4162,11 @@ class Gcodetools(inkex.EffectExtension):
                         if abs(radius) > abs(r):
                             radius = -r
 
-                        elem = area_group.add(PathElement(style=MARKER_STYLE["biarc_style_i"]['area']))
+                        elem = area_group.add(PathElement(style=str(MARKER_STYLE["biarc_style_i"]['area'])))
                         elem.set('sodipodi:type', 'inkscape:offset')
                         elem.set('inkscape:radius', radius)
                         elem.set('inkscape:original', d)
-                        print_(("adding curve", area_group, d, MARKER_STYLE["biarc_style_i"]['area']))
+                        print_(("adding curve", area_group, d, str(MARKER_STYLE["biarc_style_i"]['area'])))
                         if radius == -r:
                             break
 
@@ -4181,7 +4182,7 @@ class Gcodetools(inkex.EffectExtension):
             if layer in self.selected_paths:
                 self.set_tool(layer)
                 if self.tools[layer][0]['diameter'] <= 0:
-                    self.error("Tool diameter must be > 0 but tool's diameter on '{}' layer is not!".format(layer.label), "error")
+                    self.error(f"Tool diameter must be > 0 but tool's diameter on '{layer.label}' layer is not!", "error")
                 tool = self.tools[layer][0]
                 for path in self.selected_paths[layer]:
                     lines = []
@@ -5040,7 +5041,7 @@ class Gcodetools(inkex.EffectExtension):
                 '-6.84374864039 0,0 0.6875,0.6875 -6.84375,6.84375 1.90625,0.8125000000'\
                 '01 z z'.format(graffiti_reference_points_count * 100, 0)
 
-            draw_text(axis, graffiti_reference_points_count * 100 + 10, -10, group=g, gcodetools_tag="Gcodetools graffiti reference point text")
+            draw_text(axis, graffiti_reference_points_count * 100 + 10, -10, group=group, gcodetools_tag="Gcodetools graffiti reference point text")
 
         elif self.options.orientation_points_count == "in-out reference point":
             draw_pointer(group=self.svg.get_current_layer(), x=self.svg.namedview.center, figure="arrow", pointer_type="In-out reference point", text="In-out point")
@@ -5264,7 +5265,9 @@ G01 Z1 (going to cutting z)\n""",
     # TODO Launch browser on help tab
     ################################################################################
     def tab_help(self):
-        self.error("Tutorials, manuals and support can be found at\n"
+        self.error("Switch to another tab to run the extensions.\n"
+                   "No changes are made if the preferences or help tabs are active.\n\n"
+                   "Tutorials, manuals and support can be found at\n"
                    " English support forum:\n"
                    "    http://www.cnc-club.ru/gcodetools\n"
                    "and Russian support forum:\n"
@@ -5276,6 +5279,10 @@ G01 Z1 (going to cutting z)\n""",
 
     def tab_preferences(self):
         return self.tab_help()
+
+    def tab_options(self):
+        return self.tab_help()
+
 
     ################################################################################
     # Lathe

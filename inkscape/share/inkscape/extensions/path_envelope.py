@@ -20,6 +20,7 @@
 import inkex
 from inkex.transforms import DirectedLineSegment
 from inkex.localization import inkex_gettext as _
+from operator import truediv
 
 class Envelope(inkex.EffectExtension):
     """Distort a path/group of paths to a second path"""
@@ -27,7 +28,7 @@ class Envelope(inkex.EffectExtension):
         if len(self.svg.selection) != 2:
             raise inkex.AbortExtension(_("You must select two objects only."))
 
-        obj, envelope = self.svg.selection.values()
+        obj, envelope = self.svg.selection
 
         if isinstance(obj, (inkex.PathElement, inkex.Group)):
             if isinstance(envelope, inkex.PathElement):
@@ -36,18 +37,7 @@ class Envelope(inkex.EffectExtension):
 
                 # distill trafo into four node points
                 path = envelope.path.transform(envelope.composed_transform()).to_superpath()
-                if len(path[0]) < 4:
-                    raise inkex.AbortExtension(_("Selected path is too short. Must be four or more nodes."))
-
-                trafo = [[(csp[1][0], csp[1][1]) for csp in subs] for subs in path][0][:4]
-
-                #vectors pointing away from the trafo origin
-                tbox = [
-                    DirectedLineSegment(trafo[0], trafo[1]),
-                    DirectedLineSegment(trafo[1], trafo[2]),
-                    DirectedLineSegment(trafo[3], trafo[2]),
-                    DirectedLineSegment(trafo[0], trafo[3]),
-                ]
+                tbox = self.envelope_box_from_path(path)
             else:
                 if isinstance(envelope, inkex.Group):
                     raise inkex.AbortExtension(_("The second selected object is a group, not a"
@@ -59,6 +49,22 @@ class Envelope(inkex.EffectExtension):
                                          " the procedure Path->Object to Path."))
 
         self.process_object(obj, tbox, bbox)
+
+    def envelope_box_from_path(self, envelope_path):
+        if len(envelope_path) < 1 or len(envelope_path[0]) < 4:
+            raise inkex.AbortExtension(_("Second selected path is too short. Must be four or more nodes."))
+        trafo = [[(csp[1][0], csp[1][1]) for csp in subs] for subs in envelope_path][0][:4]
+        #vectors pointing away from the trafo origin
+        tbox = [
+            DirectedLineSegment(trafo[0], trafo[1]),
+            DirectedLineSegment(trafo[1], trafo[2]),
+            DirectedLineSegment(trafo[3], trafo[2]),
+            DirectedLineSegment(trafo[0], trafo[3]),
+        ]
+        vects = [segment.vector for segment in tbox]
+        if 0.0 == vects[0].cross(vects[1]) == vects[1].cross(vects[2]) == vects[2].cross(vects[3]):
+            raise inkex.AbortExtension(_("The points for the selected envelope must not all be in a line."))
+        return tbox
 
     def process_object(self, obj, tbox, bbox):
         if isinstance(obj, inkex.PathElement):
@@ -88,12 +94,30 @@ class Envelope(inkex.EffectExtension):
     @staticmethod
     def transform_point(tbox, bbox, x, y):
         """Transform algorithm thanks to Jose Hevia (freon)"""
-        vector = DirectedLineSegment((bbox.left, bbox.top), (x, y))
-        xratio = vector.dx / bbox.width
-        yratio = vector.dy / bbox.height
+        vector = (x, y) - bbox.minimum
+        xratio, yratio = map(truediv, vector, (bbox.width, bbox.height))
         horz = DirectedLineSegment(tbox[0].point_at_ratio(xratio), tbox[2].point_at_ratio(xratio))
         vert = DirectedLineSegment(tbox[3].point_at_ratio(yratio), tbox[1].point_at_ratio(yratio))
-        return vert.intersect(horz)
+        denom = horz.vector.cross(vert.vector)
+        if denom == 0.0:
+            # Degenerate cases of intersecting envelope edges
+            if horz.length == 0.0:
+                return horz.start
+            if vert.length == 0.0:
+                return vert.start
+            # Here we should know that the lines share a start or end point.
+            if horz.vector.dot(vert.vector) < 0:
+                # Segments point opposite directions
+                if (horz.start - vert.start).length <= 1e-8:
+                    return horz.start
+                return horz.end
+            # Otherwise they are pointing the same direction
+            if (horz.start - vert.end).length < 1e-8:
+                return horz.start
+            return horz.end
+        # If we didn't hit a degenerate case we can treat the segments as infinite lines
+        intersect_ratio = (vert.start - horz.start).cross(vert.vector) / denom
+        return horz.point_at_ratio(intersect_ratio)
 
 if __name__ == '__main__':
     Envelope().run()

@@ -31,7 +31,7 @@ try:
 except ImportError:
     serial = None
 
-class Serial(object):
+class Serial:
     """
     Attempt to get access to the computer's serial port.
 

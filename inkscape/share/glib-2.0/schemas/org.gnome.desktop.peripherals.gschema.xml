@@ -16,7 +16,7 @@
     </key>
     <key name="two-finger-scrolling-enabled" type="b">
       <default>true</default>
-      <summary>Whether edge scrolling is enabled</summary>
+      <summary>Whether two-finger scrolling is enabled</summary>
       <description>When enabled, touchpads that support two-finger scrolling will have that feature enabled.</description>
     </key>
     <key name="disable-while-typing" type="b">
@@ -29,10 +29,20 @@
       <summary>Enable mouse clicks with touchpad</summary>
       <description>Set this to TRUE to be able to send mouse clicks by tapping on the touchpad.</description>
     </key>
+    <key name="tap-button-map" enum="org.gnome.desktop.GDesktopTouchpadTapButtonMap">
+      <default>'default'</default>
+      <summary>Tap Button Map</summary>
+      <description>Defines the mapping between the number of fingers and touchpad buttons. The default is to have a 1, 2 and 3 finger tap to map to the left, right and middle button ("lrm"), respectively.</description>
+    </key>
     <key name="tap-and-drag" type="b">
       <default>true</default>
       <summary>Enable tap-and-drag with touchpad</summary>
       <description>Set this to TRUE to be able to start a drag by tapping and immediately moving the finger that’s now pressed on the touchpad.</description>
+    </key>
+    <key name="tap-and-drag-lock" type="b">
+      <default>false</default>
+      <summary>Enable tap-and-drag-lock with touchpad</summary>
+      <description>Set this to TRUE to lock the dragging process within a short timeout when the finger is lifted on the touchpad and the tap-and-drag setting is enabled.</description>
     </key>
     <key name="send-events" enum="org.gnome.desktop.GDesktopDeviceSendEvents">
       <default>'enabled'</default>
@@ -120,6 +130,16 @@
       <summary>Emulate middle click</summary>
       <description>Set this to TRUE to enable middle click during simultaneous left and right click.</description>
     </key>
+    <key name="double-click" type="i">
+      <default>400</default>
+      <summary>Double click time</summary>
+      <description>Length of a double click in milliseconds.</description>
+    </key>
+    <key name="drag-threshold" type="i">
+      <default>8</default>
+      <summary>Drag threshold</summary>
+      <description>Distance before a drag is started.</description>
+    </key>
   </schema>
   <schema id="org.gnome.desktop.peripherals.tablet">
     <key name="output" type="as">
@@ -199,6 +219,11 @@
       <default>0</default>
       <range min="0" max="24"/>
       <summary>Mouse wheel emulation button. 0 to disable the feature.</summary>
+    </key>
+    <key name="scroll-wheel-emulation-button-lock" type="b">
+      <default>false</default>
+      <summary>Mouse wheel emulation button lock</summary>
+      <description>Set this to TRUE to enable button locking for the wheel emulation button. If enabled, the first click of the button enables scrolling, the second click disables scrolling again.</description>
     </key>
     <key name="accel-profile" enum="org.gnome.desktop.GDesktopPointerAccelProfile">
       <default>'default'</default>

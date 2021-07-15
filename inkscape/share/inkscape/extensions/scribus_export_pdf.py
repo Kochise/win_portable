@@ -41,16 +41,16 @@ VERSION_REGEX = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 class Scribus(TempDirMixin, inkex.OutputExtension):
     def add_arguments(self, arg_parser):
         arg_parser.add_argument("--pdf-version", type=int, dest="pdfVersion", default="13",
-                                help="PDF version (see Scribus documentation)")
+                                help="PDF version (e.g. integer numbers between 11 and 15, see Scribus documentation for details)")
         arg_parser.add_argument("--bleed", type=float, dest="bleed", default="0",
                                 help="Bleed value")
         arg_parser.add_argument("--bleed-marks", type=inkex.Boolean, dest="bleedMarks",
-                default=False, help="Bleed marks")
+                default=False, help="Draw bleed marks")
         arg_parser.add_argument("--color-marks", type=inkex.Boolean, dest="colorMarks",
-                default=False, help="Color Marks")
+                default=False, help="Draw color Marks")
         arg_parser.add_argument("--intent", type=int, dest="intent", default="0",
-                                help="0: Perceptual, 1: Relative Colorimetric, 2: Saturation, 3: Absolute Colorimetric")
-        arg_parser.add_argument("--title", type=str, dest="title", default="", help="PDF title")
+                                help="Rendering intent. Options: 0: Perceptual, 1: Relative Colorimetric, 2: Saturation, 3: Absolute Colorimetric")
+        arg_parser.add_argument("--title", type=str, dest="title", default="", help="PDF title, required for PDF/X")
         #arg_parser.add_argument("--fonts", type=int, dest="fonts", default="1",
         #                        help="Embed fonts : 0 for embedding, 1 to convert to path, 2 to prevent embedding")
 
@@ -61,10 +61,10 @@ class Scribus(TempDirMixin, inkex.OutputExtension):
         bleedMarks = self.options.bleedMarks
         colorMarks = self.options.colorMarks
         if ((bleedMarks or colorMarks) and margin < 7):
-            raise AbortExtension("You need 7mm bleed to show cutting marks or color marks")
+            raise AbortExtension("You need at least 7mm bleed to show cutting marks or color marks")
         if (bleedMarks or colorMarks):
             margin = margin - 7 #because scribus is weird. At the time of 1.5.5, it adds 7 when those are set.
-        stream.write("""
+        stream.write(f"""
 import scribus
 import sys
 icc = "{icc}"
@@ -108,27 +108,27 @@ class exportPDF():
         pdf.thumbnails = True
 
         pdf.save()
-exportPDF()""".format(**locals()))
+exportPDF()""")
 
     def save(self, stream):
-        scribus_version = call(SCRIBUS_EXE, '-g', '--version').decode('utf-8')
+        scribus_version = call(SCRIBUS_EXE, '-g', '--version')
         version_match = VERSION_REGEX.search(scribus_version)
         if version_match is None:
-            raise AbortExtension("Could not detect Scribus version ({})".format(scribus_version))
+            raise AbortExtension(f"Could not detect Scribus version ({scribus_version})")
         major = int(version_match.group(1))
         minor = int(version_match.group(2))
         point = int(version_match.group(3))
         if (major < 1) or (major == 1 and minor < 5):
-            raise AbortExtension("Found Scribus {}. This extension requires Scribus 1.5.x".format(version_match.group(0)))
+            raise AbortExtension(f"Found Scribus {version_match.group(0)}. This extension requires Scribus 1.5.x.")
 
         input_file = self.options.input_file
         py_file = os.path.join(self.tempdir, 'scribus.py')
         svg_file = os.path.join(self.tempdir, 'in.svg')
         profiles = self.svg.defs.findall("svg:color-profile")
         if len(profiles) == 0:
-            raise AbortExtension("You did not link a color profile in this document.")
+            raise AbortExtension("Please select a color profile in the document settings.")
         elif len(profiles) > 1:
-            raise AbortExtension("More than one color profiles are linked in this document. No output generated.")
+            raise AbortExtension("Please only link a single color profile in the document settings. No output generated.")
         iccPath = profiles[0].get("xlink:href")
 
 

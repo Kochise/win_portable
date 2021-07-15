@@ -28,20 +28,21 @@ import re
 import sys
 import types
 
-from .utils import errormsg, Boolean, CloningVat, PY3
+from .utils import errormsg, Boolean
 from .colors import Color, ColorIdError, ColorError
 from .elements import load_svg, BaseElement, ShapeElement, Group, Layer, Grid, \
                       TextElement, FlowPara, FlowDiv
+from .elements._utils import CloningVat
 from .base import InkscapeExtension, SvgThroughMixin, SvgInputMixin, SvgOutputMixin, TempDirMixin
 from .transforms import Transform
 
 # All the names that get added to the inkex API itself.
-__all__ = ('EffectExtension', 'GenerateExtension', 'InputExtension', 'OutputExtension',
+__all__ = ('EffectExtension', 'GenerateExtension', 'InputExtension',
+           'OutputExtension', 'RasterOutputExtension',
            'CallExtension', 'TemplateExtension', 'ColorExtension', 'TextExtension')
 
 stdout = sys.stdout
-if PY3:
-    unicode = str  # pylint: disable=redefined-builtin,invalid-name
+
 
 class EffectExtension(SvgThroughMixin, InkscapeExtension):
     """
@@ -63,6 +64,23 @@ class OutputExtension(SvgInputMixin, InkscapeExtension):
     def save(self, stream):
         """But save certainly is, we give a more exact message here"""
         raise NotImplementedError("Output extensions require a save(stream) method!")
+
+class RasterOutputExtension(InkscapeExtension):
+    """
+    Takes a PNG from Inkscape and outputs it to another rather format.
+    """
+    def load(self, stream):
+        from PIL import Image
+        self.img = Image.open(stream)
+
+    def effect(self):
+        """Not needed since image isn't being changed"""
+        pass
+
+    def save(self, stream):
+        """Implement raster image saving here from PIL"""
+        raise NotImplementedError("Raster Output extension requires a save method!")
+
 
 class InputExtension(SvgOutputMixin, InkscapeExtension):
     """
@@ -91,7 +109,7 @@ class CallExtension(TempDirMixin, InputExtension):
         TempDirMixin.load_raw(self)
         input_file = self.options.input_file
 
-        if not isinstance(input_file, (unicode, str)):
+        if not isinstance(input_file, str):
             data = input_file.read()
             input_file = os.path.join(self.tempdir, 'input.' + self.input_ext)
             with open(input_file, 'wb') as fhl:
@@ -99,15 +117,15 @@ class CallExtension(TempDirMixin, InputExtension):
 
         output_file = os.path.join(self.tempdir, 'output.' + self.output_ext)
         document = self.call(input_file, output_file) or output_file
-        if isinstance(document, (str, unicode)):
+        if isinstance(document, str):
             if not os.path.isfile(document):
-                raise IOError("Can't find generated document: {}".format(document))
+                raise IOError(f"Can't find generated document: {document}")
 
             if self.output_ext == 'svg':
                 with open(document, 'r') as fhl:
                     document = fhl.read()
                 if '<' in document:
-                    document = load_svg(document)
+                    document = load_svg(document.encode('utf-8'))
             else:
                 with open(document, 'rb') as fhl:
                     document = fhl.read()
@@ -146,16 +164,32 @@ class GenerateExtension(EffectExtension):
             pos_y = 0
         return Transform(translate=(pos_x, pos_y))
 
+    def create_container(self):
+        """
+        Return the container the generated elements will go into.
+
+        Default is a new layer or current layer depending on the container_layer flag.
+        """
+        container = (Layer if self.container_layer else Group).new(self.container_label)
+        if self.container_layer:
+            self.svg.append(container)
+        else:
+            container.transform = self.container_transform()
+            parent = self.svg.get_current_layer()
+            try:
+                parent_transform = parent.composed_transform()
+            except AttributeError:
+                pass
+            else:
+                container.transform = -parent_transform * container.transform
+            parent.append(container)
+        return container
+
     def effect(self):
         layer = self.svg.get_current_layer()
         fragment = self.generate()
         if isinstance(fragment, types.GeneratorType):
-            container = (Layer if self.container_layer else Group).new(self.container_label)
-            if self.container_layer:
-                self.svg.append(container)
-            else:
-                container.transform = self.container_transform()
-                layer.append(container)
+            container = self.create_container()
             for child in fragment:
                 if isinstance(child, BaseElement):
                     container.append(child)
@@ -173,7 +207,7 @@ class TemplateExtension(EffectExtension):
     template_id = "SVGRoot"
 
     def __init__(self):
-        super(TemplateExtension, self).__init__()
+        super().__init__()
         # Arguments added on after add_arguments so it can be overloaded cleanly.
         self.arg_parser.add_argument("--size", type=self.arg_size(), dest="size")
         self.arg_parser.add_argument("--width", type=int, default=800)
@@ -223,7 +257,7 @@ class TemplateExtension(EffectExtension):
         self.svg.set("id", self.template_id)
         self.svg.set("width", str(width) + width_unit)
         self.svg.set("height", str(height) + height_unit)
-        self.svg.set("viewBox", "0 0 {} {}".format(width, height))
+        self.svg.set("viewBox", f"0 0 {width} {height}")
         self.set_namedview(width_px, height_px, width_unit)
 
     def set_namedview(self, width, height, unit):
@@ -249,13 +283,13 @@ class ColorExtension(EffectExtension):
         # this prevents defs from being processed twice.
         self._renamed = {}
         gradients = CloningVat(self.svg)
-        for elem in self.svg.selection.get(ShapeElement).values():
+        for elem in self.svg.selection.get(ShapeElement):
             self.process_element(elem, gradients)
         gradients.process(self.process_elements, types=(ShapeElement,))
 
     def process_elements(self, elem):
         """Process multiple elements (gradients)"""
-        for child in elem.descendants().values():
+        for child in elem.descendants():
             self.process_element(child)
 
     def process_element(self, elem, gradients=None):
@@ -282,7 +316,7 @@ class ColorExtension(EffectExtension):
 
     def _ref_cloned(self, old_id, new_id, style, name):
         self._renamed[old_id] = new_id
-        style[name] = "url(#{})".format(new_id)
+        style[name] = f"url(#{new_id})"
 
     def _xlink_cloned(self, old_id, new_id, linker):
         lid = linker.get('id')
@@ -311,7 +345,7 @@ class TextExtension(EffectExtension):
     newpar = True
 
     def effect(self):
-        nodes = self.svg.selected.values() or {None: self.document.getroot()}
+        nodes = self.svg.selected or {None: self.document.getroot()}
         for elem in nodes.values():
             self.process_element(elem)
 

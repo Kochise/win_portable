@@ -161,8 +161,8 @@ class NiceChart(inkex.GenerateExtension):
             filt = defs.add(Filter(height='3', width='3', x='-0.5', y='-0.5'))
             # Append Gaussian Blur to that Filter
             filt.add_primitive('feGaussianBlur', stdDeviation='1.1')
-            return 'filter:url(#%s);' % filt.get_id()
-        return ''
+            return inkex.Style(filter=filt.get_id(as_url=2))
+        return inkex.Style()
 
     def get_color(self):
         """Get the next available color"""
@@ -285,7 +285,7 @@ class NiceChart(inkex.GenerateExtension):
         """Draw a rectangle bar with optional shadow"""
         if self.blur:
             shadow = Rectangle(x=str(x+1), y=str(y+1), width=str(width), height=str(height))
-            shadow.set("style", self.blur)
+            shadow.style = self.blur
             yield shadow
 
         rect = Rectangle(x=str(x), y=str(y), width=str(width), height=str(height))
@@ -329,7 +329,7 @@ class NiceChart(inkex.GenerateExtension):
         if self.blur:
             shadow = Circle(cx=str(x), cy=str(y))
             shadow.set('r', str(pie_radius))
-            shadow.set("style", self.blur + "fill:#000000")
+            shadow.style = self.blur + inkex.Style(fill='#000000')
             yield shadow
 
         # Add a grey background circle with a light stroke
@@ -452,7 +452,7 @@ class NiceChart(inkex.GenerateExtension):
             )
 
             # Set shadow blur (connect to filter object in xml path)
-            shadow.set("style", self.blur)
+            shadow.style = self.blur
             yield shadow
 
         # Draw Single bars

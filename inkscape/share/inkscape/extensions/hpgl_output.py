@@ -56,10 +56,10 @@ class HpglOutput(inkex.OutputExtension):
                 _("No paths were found. Please convert objects you want into paths."))
         # convert raw HPGL to HPGL
         hpgl_init = 'IN'
-        if self.options.force > 0:
-            hpgl_init += ';FS%d' % self.options.force
-        if self.options.speed > 0:
-            hpgl_init += ';VS%d' % self.options.speed
+       # if self.options.force > 0:
+        #    hpgl_init += ';FS%d' % self.options.force
+       # if self.options.speed > 0:
+        #    hpgl_init += ';VS%d' % self.options.speed
         hpgl = hpgl_init + hpgl + ';SP0;PU0,0;IN; '
         stream.write(hpgl.encode('utf-8'))
 

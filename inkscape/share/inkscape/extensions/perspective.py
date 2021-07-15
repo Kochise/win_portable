@@ -45,7 +45,7 @@ class Perspective(inkex.EffectExtension):
         if len(self.svg.selection) != 2:
             raise inkex.AbortExtension(_("This extension requires two selected objects."))
 
-        obj, envelope = self.svg.selection.values()
+        obj, envelope = self.svg.selection
 
         if isinstance(obj, (inkex.PathElement, inkex.Group)):
             if isinstance(envelope, inkex.PathElement):

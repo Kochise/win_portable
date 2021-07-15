@@ -89,8 +89,8 @@ File, Edit, View, Modify, Text, Xtras, Window, Help.
   <bind key="r" modifiers="Ctrl" action="FileImport" display="true"/>
   <bind key="R" modifiers="Ctrl" action="FileImport" />
 
-  <bind key="r" modifiers="Ctrl,Shift" action="FileExport" display="true"/>
-  <bind key="R" modifiers="Ctrl,Shift" action="FileExport" />
+  <bind key="r" modifiers="Ctrl,Shift" action="DialogExport" display="true"/>
+  <bind key="R" modifiers="Ctrl,Shift" action="DialogExport" />
 
   <bind key="q" modifiers="Ctrl" action="FileQuit" display="true"/>
   <bind key="Q" modifiers="Ctrl" action="FileQuit" display="true"/>
@@ -101,27 +101,21 @@ File, Edit, View, Modify, Text, Xtras, Window, Help.
 
   <!-- Not included in Freehand but including here anyway for sanity.  
   Fireworks does use Ctrl+= for Zoom In and Ctrl+- for Zoom Out.  -->
-  <bind key="plus" action="ZoomIn" display="true"/>
-  <bind key="plus" modifiers="Shift" action="ZoomIn" />
-  <bind key="equal" action="ZoomIn" />
-  <bind key="KP_Add" action="ZoomIn" />
+  <bind gaction="win.canvas-zoom-in" keys="plus, equal, KP_Add, &lt;shift&gt;plus" />
 
-  <bind key="minus" action="ZoomOut" display="true"/>
-  <bind key="KP_Subtract" action="ZoomOut" />
+  <bind gaction="win.canvas-zoom-out" keys="minus, underscore, KP_Subtract" />
 
   <!-- Fit Selection  Ctrl+Alt+0 --> 
-  <bind key="0" modifiers="Ctrl,Alt" action="ZoomSelection" display="true"/>
+  <bind gaction="win.canvas-zoom-selection" keys="&lt;primary&gt;&lt;alt&gt;0"/>
   <!-- Fit to Page  Ctrl+Shift+W -->
-  <bind key="w" modifiers="Ctrl,Shift" action="ZoomPage" display="true"/>
-  <bind key="W" modifiers="Ctrl,Shift" action="ZoomPage" display="true"/>
-  <bind key="" action="ZoomPageWidth" />
+  <bind gaction="win.canvas-zoom-page" keys="&lt;primary&gt;&lt;shift&gt;w"/>
   <!-- Fit All  Ctrl+0 -->
-  <bind key="0" modifiers="Ctrl" action="ZoomDrawing" display="true"/>
+  <bind gaction="win.canvas-zoom-drawing" keys="&lt;primary&gt;0"/>
 
   <!-- Magnification 50%  Ctrl+5-->
-  <bind key="5" modifiers="Ctrl" action="Zoom1:2" display="true"/>
+  <bind gaction="win.canvas-zoom-1-2" keys="&lt;primary&gt;5"/>
   <!-- Magnification 100%  Ctrl+1 -->
-  <bind key="1" modifiers="Ctrl" action="Zoom1:0" display="true"/>
+  <bind gaction="win.canvas-zoom-1-1" keys="&lt;primary&gt;1"/>
   <!-- Magnification 200%  Ctrl+2 -->
   <!-- Magnification 400%  Ctrl+4 -->
   <!-- Magnification 800%  Ctrl+8 -->
@@ -171,6 +165,7 @@ File, Edit, View, Modify, Text, Xtras, Window, Help.
   <bind action="ViewModeNormal"/>
   <!-- Wireframe View (Inkscape).  Keyline View Ctrl+K  (Freehand).  -->
   <bind key="K" modifiers="Ctrl" action="ViewModeOutline"/>
+  <bind action="ViewModeOutlineOverlay" />
 
   <!-- Freehand also has a Fast Mode  Ctrl+Shift+K  
   which can be used in combination with Keyline.  --> 
@@ -410,7 +405,6 @@ File, Edit, View, Modify, Text, Xtras, Window, Help.
   <!-- Swatches in Freehand is a sub-tab of the Assets Panel.  -->
   <bind key="F9" modifiers="Ctrl" action="DialogSwatches" display="true"/>
 
-  <bind action="DialogMetadata" />
   <bind action="DialogClonetiler" />
   <bind action="DialogArrange" />
   <bind action="DialogDebug" />
@@ -422,7 +416,7 @@ File, Edit, View, Modify, Text, Xtras, Window, Help.
 
   <!-- This is a useful help section section to link to but it might be 
   better to later link to an introductory beginners guide.  -->
-  <bind key="F1" action="HelpKeys" display="true"/>
+  <bind key="F1" action="HelpUrlKeys" display="true"/>
 
 <!-- Effects (Inkscape).  Xtras (Freehand) -->
 

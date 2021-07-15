@@ -43,7 +43,7 @@ if False: # pylint: disable=using-constant-test
 
 FIXED_BOUNDARY = '--CALLDATA--//--CALLDATA--'
 
-class Capture(object):
+class Capture:
     """Capture stdout or stderr. Used as `with Capture('stdout') as stream:`"""
     def __init__(self, io_name='stdout', swap=True):
         self.io_name = io_name
@@ -52,8 +52,6 @@ class Capture(object):
         self.swap = swap
 
     def __enter__(self):
-        # We can't control python2 correctly (unicode vs. bytes-like) but
-        # we don't need it, so we're ignore python2 as if it doesn't exist.
         if self.swap:
             setattr(sys, self.io_name, self.stream)
         return self.stream
@@ -64,7 +62,7 @@ class Capture(object):
             self.original.write(self.stream.getvalue())
         setattr(sys, self.io_name, self.original)
 
-class ManualVerbosity(object):
+class ManualVerbosity:
     """Change the verbosity of the test suite manually"""
     result = property(lambda self: self.test._current_result)
 
@@ -82,7 +80,7 @@ class ManualVerbosity(object):
     __exit__ = flip
 
 
-class MockMixin(object):
+class MockMixin:
     """
     Add mocking ability to any test base class, will set up mock on setUp
     and remove it on tearDown.
@@ -118,7 +116,7 @@ class MockMixin(object):
 
     def setUp(self): # pylint: disable=invalid-name
         """For each mock instruction, set it up and store the return"""
-        super(MockMixin, self).setUp()
+        super().setUp()
         for x, mock in enumerate(self.mocks):
             if len(mock) == 4:
                 logging.error("Mock was already set up, so it wasn't cleared previously!")
@@ -127,7 +125,7 @@ class MockMixin(object):
 
     def tearDown(self): # pylint: disable=invalid-name
         """For each returned stored, tear it down and restore mock instruction"""
-        super(MockMixin, self).tearDown()
+        super().tearDown()
         try:
             for x, (owner, name, old, _) in enumerate(self.mocks):
                 self.mocks[x] = (owner, name, getattr(owner, name))
@@ -155,7 +153,7 @@ class MockCommandMixin(MockMixin):
     recorded_tempdirs = [] # type:List[str]
 
     def setUp(self): # pylint: disable=invalid-name
-        super(MockCommandMixin, self).setUp()
+        super().setUp()
         # This is a the daftest thing I've ever seen, when in the middle
         # of a mock, the 'self' variable magically turns from a FooTest
         # into a TestCase, this makes it impossible to find the datadir.
@@ -198,7 +196,7 @@ class MockCommandMixin(MockMixin):
                 path = os.path.join(fdir, fname)
                 # We store the modified time so if a program modifies
                 # the input file in-place, it will look different.
-                ret.add(path + ';{}'.format(os.path.getmtime(path)))
+                ret.add(path + f";{os.path.getmtime(path)}")
 
         return ret
 
@@ -273,9 +271,9 @@ class MockCommandMixin(MockMixin):
             return self.load_call(program, key, outputs)
         except IOError:
             self.save_key(program, key, keystr, 'bad-key')
-            raise IOError("Problem loading call: {}/{} use the environment variable "\
+            raise IOError(f"Problem loading call: {program}/{key} use the environment variable "\
                 "NO_MOCK_COMMANDS=1 to call out to the external program and generate "\
-                "the mock call file.".format(program, key))
+                "the mock call file.")
 
     def add_call_files(self, msg, args, kwargs):
         """
@@ -331,7 +329,7 @@ class MockCommandMixin(MockMixin):
         path = self.get_call_path(program, create=create)
         fname = os.path.join(path, key + '.msg')
         if not create and not os.path.isfile(fname):
-            raise IOError("Attempted to find call test data {}".format(key))
+            raise IOError(f"Attempted to find call test data {key}")
         return fname
 
     def get_program_name(self, program):
@@ -348,9 +346,8 @@ class MockCommandMixin(MockMixin):
                 os.makedirs(command_dir)
             else:
                 raise IOError("A test is attempting to use an external program in a test:"\
-                              " {}; but there is not a command data directory which should"\
-                              " contain the results of the command here: {}"\
-                              .format(program, command_dir))
+                              f" {program}; but there is not a command data directory which should"\
+                              f" contain the results of the command here: {command_dir}")
         return command_dir
 
     def load_call(self, program, key, files):

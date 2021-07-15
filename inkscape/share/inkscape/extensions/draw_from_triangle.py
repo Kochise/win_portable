@@ -232,7 +232,7 @@ class DrawFromTriangle(inkex.EffectExtension):
         so = self.options  # shorthand
 
         pts = []  # initialise in case nothing is selected and following loop is not executed
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             # find the (x,y) coordinates of the first 3 points of the path
             pts = get_n_points_from_path(node, 3)
 

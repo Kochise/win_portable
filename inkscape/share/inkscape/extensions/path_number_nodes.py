@@ -32,9 +32,10 @@ class NumberNodes(inkex.EffectExtension):
         pars.add_argument("--tab", help="The selected UI-tab when OK was pressed")
 
     def effect(self):
-        if not self.svg.selected:
-            raise inkex.AbortExtension("Please select an object.")
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        filtered = self.svg.selection.filter(inkex.PathElement)
+        if not filtered:
+            raise inkex.AbortExtension("Please select at least one path object.")
+        for node in filtered:
             self.add_dot(node)
 
     def add_dot(self, node):
@@ -42,11 +43,12 @@ class NumberNodes(inkex.EffectExtension):
         group = node.getparent().add(inkex.Group())
         dot_group = group.add(inkex.Group())
         num_group = group.add(inkex.Group())
-        group.transform = node.transform
+        path_trans_applied = node.path.transform(node.composed_transform())
+        group.transform = - node.getparent().composed_transform()
 
         style = inkex.Style({'stroke': 'none', 'fill': '#000'})
 
-        for step, (x, y) in enumerate(node.path.end_points):
+        for step, (x, y) in enumerate(path_trans_applied.end_points):
             circle = dot_group.add(Circle(cx=str(x), cy=str(y),\
                     r=str(self.svg.unittouu(self.options.dotsize) / 2)))
             circle.style = style

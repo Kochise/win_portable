@@ -80,8 +80,8 @@ See default.xml for more information.
   <bind key="i" modifiers="Ctrl" action="FileImport" display="true"/>
   <bind key="I" modifiers="Ctrl" action="FileImport" />
 
-  <bind key="e" modifiers="Ctrl" action="FileExport" display="true"/>
-  <bind key="E" modifiers="Ctrl" action="FileExport" />
+  <bind key="e" modifiers="Ctrl" action="DialogExport" display="true"/>
+  <bind key="E" modifiers="Ctrl" action="DialogExport" />
 
   <bind key="p" modifiers="Ctrl" action="FilePrint" display="true"/>
   <bind key="P" modifiers="Ctrl" action="FilePrint" />
@@ -93,13 +93,13 @@ See default.xml for more information.
 
 <!-- Options dialog - make sure it's correct one -->
 
-  <bind key="Enter" modifiers="Alt" action="DialogDocumentProperties" display="true"/>
+  <bind key="Return" modifiers="Alt" action="DialogDocumentProperties" display="true"/>
 
 <!-- Edit actions -->
 
   <bind key="z" modifiers="Ctrl" action="EditUndo" display="true"/>
   <bind key="Z" modifiers="Ctrl" action="EditUndo" />
-  <bind key="Backspace" modifiers="Alt" action="EditUndo" />
+  <bind key="BackSpace" modifiers="Alt" action="EditUndo" />
 
   <bind key="z" modifiers="Ctrl,Shift" action="EditRedo" display="true"/>
   <bind key="Z" modifiers="Ctrl,Shift" action="EditRedo" />
@@ -128,17 +128,16 @@ See default.xml for more information.
 <!-- View actions -->
 
 <!--  
-  <bind key="F2" action="ZoomIn" display="true"/>
-
+  <bind gaction="win.canvas-zoom-in" keys="F2" />
 -->
 
-  <bind key="F3" action="ZoomOut" display="true"/>
+  <bind gaction="win.canvas-zoom-out" keys="F3" />
 
-  <bind key="F4" action="ZoomDrawing" display="true"/>
-  
-  <bind key="F4" modifiers="Shift" action="ZoomPage" display="true"/>
+  <bind gaction="win.canvas-zoom-drawing" keys="F4"/>
 
-  <bind key="F2" modifiers="Shift" action="ZoomSelection" display="true"/>
+  <bind gaction="win.canvas-zoom-page" keys="&lt;shift&gt;F4"/>
+
+  <bind gaction="win.canvas-zoom-selection" keys="&lt;shift&gt;F2"/>
 
 <!-- Not implemented in Corel? !!!!!!!!!!!!
 
@@ -156,10 +155,11 @@ See default.xml for more information.
 
 <!-- Toggle View -->
 
-  <bind key="F9" modifiers="Shift" action="ViewModeToggle" display="true" />
+  <bind gaction="win.canvas-display-mode-cycle" keys="&lt;shift&gt;F9"/>
   <bind action="ViewColorModeToggle" />
   <bind action="ViewSplitModeToggle" />
   <bind action="ViewXRayToggle" />
+
 <!-- Path actions -->
 
   <bind key="q" modifiers="Ctrl" action="ObjectToPath" display="true"/>

@@ -27,7 +27,6 @@ from __future__ import print_function
 
 from itertools import product
 
-import sys
 import inkex
 from inkex import Group, Rectangle, Use, PathElement
 
@@ -307,9 +306,9 @@ class QRCode(object):
             if length <= QRUtil.getMaxLength(
                     typeNumber, mode, errorCorrectLevel):
                 qr.setTypeNumber(typeNumber)
-                break
-        qr.make()
-        return qr
+                qr.make()
+                return qr
+        raise ValueError("Couldn't get minimum QR Code length...")
 
 
 class Mode(object):
@@ -534,22 +533,18 @@ class QRUtil(object):
             data >>= 1
         return digit
 
-    @staticmethod
-    def stringToBytes(s):
-        return [ord(c) & 0xff for c in s]
-
-
 class QR8BitByte(object):
 
     def __init__(self, data):
         self.mode = Mode.MODE_8BIT_BYTE
+        if isinstance(data, str):
+            data = data.encode('ascii', 'ignore')
+        if not isinstance(data, bytes):
+            raise ValueError("Data must be in bytes!")
         self.data = data
 
     def getMode(self):
         return self.mode
-
-    def getData(self):
-        return self.data
 
     '''
     def write(self, buffer): raise Exception('not implemented.')
@@ -557,12 +552,11 @@ class QR8BitByte(object):
     '''
 
     def write(self, buffer):
-        data = QRUtil.stringToBytes(self.getData())
-        for d in data:
+        for d in self.data:
             buffer.put(d, 8)
 
     def getLength(self):
-        return len(QRUtil.stringToBytes(self.getData()))
+        return len(self.data)
 
     def getLengthInBits(self, type):
         if 1 <= type < 10:  # 1 - 9
@@ -889,13 +883,9 @@ class QrCode(inkex.GenerateExtension):
         elif opt.drawtype == "symbol" and opt.symbolid == "":
             raise inkex.AbortExtension('Please enter symbol id')
 
-        if sys.version_info >= (3, 0, 0):
-            # for Python 3 ugly hack to represent bytes as str for Python2 compatibility
-            text_bytes = bytes(opt.text, opt.encoding).decode("latin_1")
-            text_str = str(opt.text)
-        else:
-            text_bytes = opt.text
-            text_str = opt.text.decode('utf-8')
+        # for Python 3 ugly hack to represent bytes as str for Python2 compatibility
+        text_bytes = bytes(opt.text, opt.encoding).decode("latin_1")
+        text_str = str(opt.text)
 
         grp = Group()
         grp.set('inkscape:label', 'QR Code: ' + text_str)
@@ -1009,7 +999,7 @@ class QrCode(inkex.GenerateExtension):
     def render_symbol(self):
         symbol = self.svg.getElementById(self.options.symbolid)
         if symbol is None:
-            raise inkex.AbortExtension("Can't find symbol " + self.options.symbolid)
+            raise inkex.AbortExtension(f"Can't find symbol {self.options.symbolid}")
         bbox = symbol.path.bounding_box()
         transform = inkex.Transform(scale=(
             float(self.boxsize) / bbox.width,
@@ -1038,7 +1028,7 @@ class QrCode(inkex.GenerateExtension):
 
     def render_svg(self, grp, drawtype):
         """Render to svg"""
-        drawer = getattr(self, "render_" + drawtype, self.render_obsolete)
+        drawer = getattr(self, f"render_{drawtype}", self.render_obsolete)
         if drawer is None:
             raise Exception("Unknown draw type: " + drawtype)
 

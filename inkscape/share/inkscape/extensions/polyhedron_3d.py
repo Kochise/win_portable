@@ -290,10 +290,13 @@ class Poly3D(inkex.GenerateExtension):
 
     def get_filename(self):
         """Get the filename for the spec file"""
+        name = ""
         if self.options.obj == 'from_file':
-            return self.options.spec_file
+            name = self.options.spec_file
+        else:
+            name = self.options.obj + '.obj'
         moddir = self.ext_path()
-        return os.path.join(moddir, 'Poly3DObjects', self.options.obj + '.obj')
+        return os.path.join(moddir, 'Poly3DObjects', name)
 
     def generate(self):
         if numpy is None:

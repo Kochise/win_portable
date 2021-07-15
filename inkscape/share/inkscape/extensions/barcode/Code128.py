@@ -69,7 +69,7 @@ def map_extra(data, chars):
 CHAR_AB = list(" !\"#$%&\'()*+,-./0123456789:;<=>?@"
                "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_")
 CHAR_A = map_extra(CHAR_AB, range(0, 31))  # Offset 64
-CHAR_B = map_extra(CHAR_AB, range(96, 125))  # Offset -32
+CHAR_B = map_extra(CHAR_AB, range(96, 127))  # Offset -32
 
 
 class Code128(Barcode):
@@ -98,10 +98,10 @@ class Code128(Barcode):
         return self.encode_blocks(blocks)
 
     def best_block(self, block):
-        """If this has lower case then select B over A"""
-        if block.upper() == block:
-            return ['A', block]
-        return ['B', block]
+        """If this has characters above 63, select B over A"""
+        if any(ord(x) > 63 for x in block):
+            return ['B', block]
+        return ['A', block]
 
     def encode_blocks(self, blocks):
         """Encode the given blocks into A, B or C codes"""

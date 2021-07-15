@@ -197,6 +197,7 @@ class WireframeSphere(inkex.GenerateExtension):
             'sodipodi:end': str(start_end[1]),
             'sodipodi:open': 'true',  # all ellipse sectors we will draw are open
             'sodipodi:type': 'arc',
+            'sodipodi:arc-type': 'arc',
         })
         return path
 

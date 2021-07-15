@@ -26,19 +26,15 @@ Element interface for patterns, filters, gradients and path effects.
 from lxml import etree
 from copy import deepcopy
 
-from ..utils import addNS
 from ..transforms import Transform
 from ..tween import interpcoord, interp
-from ..units import convert_unit
-
 from ..styles import Style
+
+from ._utils import addNS
 from ._base import BaseElement
 
 
-try:
-    from typing import overload, Iterable, List, Tuple, Union, Optional  # pylint: disable=unused-import
-except ImportError:
-    overload = lambda x: x
+from typing import overload, Iterable, List, Tuple, Union, Optional  # pylint: disable=unused-import
 
 
 class Filter(BaseElement):
@@ -169,8 +165,8 @@ class Gradient(BaseElement):
 
         # interpolate orientation
         for attr in self.orientation_attributes:
-            newattr = interpcoord(convert_unit(self.get(attr), 'px'), convert_unit(other.get(attr), 'px'), fraction)
-            newgrad.set(attr, newattr)
+            newattr = interpcoord(self.uutounit(self.get(attr)), self.uutounit(other.get(attr)), fraction)
+            newgrad.set(attr, self.unittouu(newattr))
 
         # interpolate stops
         if self.href is not None and self.href is other.href:
@@ -203,11 +199,15 @@ class LinearGradient(Gradient):
     def apply_transform(self): # type: () -> None
        """Apply transform to orientation points and set it to identity."""
        trans = self.pop('gradientTransform')
-       p1 = (convert_unit(self.get('x1'), 'px'), convert_unit(self.get('y1'), 'px'))
-       p2 = (convert_unit(self.get('x2'), 'px'), convert_unit(self.get('y2'), 'px'))
+       p1 = (self.uutounit(self.get('x1')), self.uutounit(self.get('y1')))
+       p2 = (self.uutounit(self.get('x2')), self.uutounit(self.get('y2')))
        p1t = trans.apply_to_point(p1)
        p2t = trans.apply_to_point(p2)
-       self.update(x1=p1t[0], y1=p1t[1], x2=p2t[0], y2=p2t[1])
+       self.update(
+            x1=self.unittouu(p1t[0]),
+            y1=self.uutounit(p1t[1]),
+            x2=self.uutounit(p2t[0]),
+            y2=self.uutounit(p2t[1]))
 
 
 class RadialGradient(Gradient):
@@ -217,11 +217,15 @@ class RadialGradient(Gradient):
     def apply_transform(self): # type: () -> None
        """Apply transform to orientation points and set it to identity."""
        trans = self.pop('gradientTransform')
-       p1 = (convert_unit(self.get('cx'), 'px'), convert_unit(self.get('cy'), 'px'))
-       p2 = (convert_unit(self.get('fx'), 'px'), convert_unit(self.get('fy'), 'px'))
+       p1 = (self.uutounit(self.get('cx')), self.uutounit(self.get('cy')))
+       p2 = (self.uutounit(self.get('fx')), self.uutounit(self.get('fy')))
        p1t = trans.apply_to_point(p1)
        p2t = trans.apply_to_point(p2)
-       self.update(cx=p1t[0], cy=p1t[1], fx=p2t[0], fy=p2t[1])
+       self.update(
+            cx=self.uutounit(p1t[0]),
+            cy=self.uutounit(p1t[1]),
+            fx=self.uutounit(p2t[0]),
+            fy=self.uutounit(p2t[1]))
 
 class PathEffect(BaseElement):
     """Inkscape LPE element"""

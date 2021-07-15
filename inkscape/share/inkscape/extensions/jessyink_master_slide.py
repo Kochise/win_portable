@@ -37,8 +37,8 @@ class MasterSlide(JessyInkMixin, inkex.EffectExtension):
 
         # Set new master slide.
         if self.options.layerName != "":
-            nodes = self.svg.xpath(("//*[@inkscape:groupmode='layer' "
-                                   "and @inkscape:label='{self.options.layerName}']").format(**locals()))
+            nodes = self.svg.xpath(f"//*[@inkscape:groupmode='layer' "
+                                   f"and @inkscape:label='{self.options.layerName}']")
             if not nodes:
                 inkex.errormsg(_("Layer not found. Removed current master slide selection.\n"))
             elif len(nodes) > 1:

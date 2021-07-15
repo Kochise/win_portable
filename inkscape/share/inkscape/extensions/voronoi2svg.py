@@ -219,10 +219,10 @@ class Voronoi(inkex.EffectExtension):
                 height = self.svg.unittouu(svg.get('height'))
                 clip_box = (0, width, 0, height)
             else:
-                clip_box = (2 * group_bbox[0] - group_bbox[1],
-                            2 * group_bbox[1] - group_bbox[0],
-                            2 * group_bbox[2] - group_bbox[3],
-                            2 * group_bbox[3] - group_bbox[2])
+                clip_box = (group_bbox.left,
+                            group_bbox.right,
+                            group_bbox.top,
+                            group_bbox.bottom)
 
             # Safebox adds points so that no Voronoi edge in clip_box is infinite
             safe_box = (2 * clip_box[0] - clip_box[1],

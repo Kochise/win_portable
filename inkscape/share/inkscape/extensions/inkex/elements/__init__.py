@@ -5,6 +5,7 @@ interact directly with the SVG xml interface.
 See the documentation for each of the elements for details on how it works.
 """
 
+from ._utils import addNS, NSS
 from ._base import SVG_PARSER, load_svg, ShapeElement, BaseElement
 from ._svg import SvgDocumentElement
 from ._groups import Group, Layer, Anchor, Marker, ClipPath

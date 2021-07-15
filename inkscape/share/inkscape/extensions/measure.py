@@ -72,8 +72,12 @@ class MeasureLength(inkex.EffectExtension):
         factor *= scale / self.svg.unittouu('1' + self.options.unit)
 
         # loop over all selected paths
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        filtered = self.svg.selection.filter(inkex.PathElement)
+        if not filtered:
+            raise inkex.AbortExtension("Please select at least one path object.")
+        for node in filtered:
             csp = node.path.transform(node.composed_transform()).to_superpath()
+            inverse_parent_transform = - node.getparent().composed_transform()
             if self.options.mtype == "length":
                 slengths, stotal = csplength(csp)
                 self.group = node.getparent().add(TextElement())
@@ -88,9 +92,11 @@ class MeasureLength(inkex.EffectExtension):
                 self.group = node.getparent().add(inkex.PathElement())
                 self.group.set('id', 'MassCenter_' + node.get('id'))
                 self.add_cross(self.group, xc, yc, scale)
+                self.group.transform = inverse_parent_transform
                 continue
             # Format the length as string
             val = round(stotal * factor * self.options.scale, prec)
+            # Transform the result back
             self.options.method(node, str(val))
 
     def method_textonpath(self, node, lenstr):
@@ -109,7 +115,7 @@ class MeasureLength(inkex.EffectExtension):
             tx, ty = cspcofm(csp)
             anchor = 'middle'
         elif self.options.position == "center":
-            bbox = node.bounding_box()
+            bbox = node.bounding_box(True)
             tx, ty = bbox.center
             anchor = 'middle'
         else:  # default
@@ -190,6 +196,7 @@ class MeasureLength(inkex.EffectExtension):
         node.set('x', str(x))
         node.set('y', str(y))
         node.set('transform', 'rotate(%s, %s, %s)' % (angle, x, y))
+        node.transform = - node.getparent().composed_transform() * node.transform
 
 if __name__ == '__main__':
     MeasureLength().run()

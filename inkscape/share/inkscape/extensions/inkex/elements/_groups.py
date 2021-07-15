@@ -26,9 +26,9 @@ Interface for all group based elements such as Groups, Use, Markers etc.
 from lxml import etree # pylint: disable=unused-import
 
 from ..paths import Path
-from ..utils import addNS
 from ..transforms import Transform
 
+from ._utils import addNS
 from ._base import ShapeElement
 
 try:
@@ -63,7 +63,7 @@ class Group(GroupBase):
     @classmethod
     def new(cls, label, *children, **attrs):
         attrs['inkscape:label'] = label
-        return super(Group, cls).new(*children, **attrs)
+        return super().new(*children, **attrs)
 
 
     def effective_style(self):
@@ -98,7 +98,7 @@ class Anchor(GroupBase):
     @classmethod
     def new(cls, href, *children, **attrs):
         attrs['xlink:href'] = href
-        return super(Anchor, cls).new(*children, **attrs)
+        return super().new(*children, **attrs)
 
 
 class ClipPath(GroupBase):

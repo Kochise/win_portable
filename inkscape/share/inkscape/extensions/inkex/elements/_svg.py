@@ -29,13 +29,13 @@ import random
 from lxml import etree
 
 from ..deprecated import DeprecatedSvgMixin
-from ..units import discover_unit, convert_unit, render_unit
+from ..units import discover_unit
 from ._selected import ElementList
 from ..transforms import BoundingBox
 from ..styles import StyleSheets
 
 from ._base import BaseElement
-from ._meta import NamedView, Defs, StyleElement, Metadata
+from ._meta import StyleElement
 
 if False: # pylint: disable=using-constant-test
     import typing # pylint: disable=unused-import
@@ -88,32 +88,32 @@ class SvgDocumentElement(DeprecatedSvgMixin, BaseElement):
         """Gets a single element from the given xpath or returns None"""
         return self.findone(xpath)
 
-    def getElementById(self, eid, elm='*'):  # pylint: disable=invalid-name
+    def getElementById(self, eid, elm='*', literal=False): # pylint: disable=invalid-name
         """Get an element in this svg document by it's ID attribute"""
-        if eid is not None:
+        if eid is not None and not literal:
             eid = eid.strip()[4:-1] if eid.startswith('url(') else eid
             eid = eid.lstrip('#')
-        return self.getElement('//{elm}[@id="{eid}"]'.format(elm=elm, eid=eid))
+        return self.getElement(f'//{elm}[@id="{eid}"]')
 
     def getElementByName(self, name, elm='*'): # pylint: disable=invalid-name
         """Get an element by it's inkscape:label (aka name)"""
-        return self.getElement('//{elm}[@inkscape:label="{name}"]'.format(elm=elm, name=name))
+        return self.getElement(f'//{elm}[@inkscape:label="{name}"]')
 
     def getElementsByClass(self, class_name): # pylint: disable=invalid-name
         """Get elements by it's class name"""
         from inkex.styles import ConditionalRule
-        return self.xpath(ConditionalRule(".{}".format(class_name)).to_xpath())
+        return self.xpath(ConditionalRule(f".{class_name}").to_xpath())
 
     def getElementsByHref(self, eid): # pylint: disable=invalid-name
         """Get elements by their href xlink attribute"""
-        return self.xpath('//*[@xlink:href="#{}"]'.format(eid))
+        return self.xpath(f'//*[@xlink:href="#{eid}"]')
 
     def getElementsByStyleUrl(self, eid, style=None): # pylint: disable=invalid-name
         """Get elements by a style attribute url"""
-        url = "url(#{})".format(eid)
+        url = f"url(#{eid})"
         if style is not None:
             url = style + ":" + url
-        return self.xpath('//*[contains(@style,"{}")]'.format(url))
+        return self.xpath(f'//*[contains(@style,"{url}")]')
 
     @property
     def name(self):
@@ -123,17 +123,17 @@ class SvgDocumentElement(DeprecatedSvgMixin, BaseElement):
     @property
     def namedview(self):
         """Return the sp namedview meta information element"""
-        return self.get_or_create('//sodipodi:namedview', NamedView, True)
+        return self.get_or_create('//sodipodi:namedview', prepend=True)
 
     @property
     def metadata(self):
         """Return the svg metadata meta element container"""
-        return self.get_or_create('//svg:metadata', Metadata, True)
+        return self.get_or_create('//svg:metadata', prepend=True)
 
     @property
     def defs(self):
         """Return the svg defs meta element container"""
-        return self.get_or_create('//svg:defs', Defs, True)
+        return self.get_or_create('//svg:defs', prepend=True)
 
     def get_viewbox(self):
         """Parse and return the document's viewBox attribute"""
@@ -175,22 +175,12 @@ class SvgDocumentElement(DeprecatedSvgMixin, BaseElement):
         defines what units are used for SVG coordinates, it tries to calculate
         the unit from the SVG width and viewBox attributes.
         Defaults to 'px' units."""
-        viewbox = self.get_viewbox()
-        if viewbox and set(viewbox) != {0}:
-            return discover_unit(self.get('width'), viewbox[2], default='px')
-        return 'px'  # Default is px
-
-    def unittouu(self, value):
-        """Convert a unit value into the document's units"""
-        return convert_unit(value, self.unit)
-
-    def uutounit(self, value, to_unit):
-        """Convert from the document's units to the given unit"""
-        return convert_unit(render_unit(value, self.unit), to_unit)
-
-    def add_unit(self, value):
-        """Add document unit when no unit is specified in the string """
-        return render_unit(value, self.unit)
+        if not hasattr(self, '_unit'):
+            self._unit = 'px' # Default is px
+            viewbox = self.get_viewbox()
+            if viewbox and set(viewbox) != {0}:
+                self._unit = discover_unit(self.get('width'), viewbox[2], default='px')
+        return self._unit
 
     @property
     def stylesheets(self):

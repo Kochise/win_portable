@@ -55,7 +55,7 @@ class Fractalize(inkex.EffectExtension):
                           help="Smoothness of the subdivision")
 
     def effect(self):
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             path = node.path.to_absolute()
             result = []
             for cmd_proxy in path.proxy_iterator():  # type: inkex.Path.PathCommandProxy

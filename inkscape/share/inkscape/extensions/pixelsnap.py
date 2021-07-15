@@ -412,7 +412,7 @@ class PixelSnap(inkex.EffectExtension):
         # parents have already been snapped, or don't need to be
         if self.options.snap_ancestors and parent_transform is None:
             # Loop through ancestors from outermost to innermost, excluding this element.
-            for child in elem.ancestors().values():
+            for child in elem.ancestors():
                 self.snap_transform(child)
 
         # If we haven't been given a parent_transform, then we need to calculate it
@@ -440,7 +440,7 @@ class PixelSnap(inkex.EffectExtension):
 
         self.document_offset = self.svg.unittouu(svg.attrib['height']) % 1  # although SVG units are absolute, the elements are positioned relative to the top of the page, rather than zero
 
-        for elem in self.svg.selected.values():
+        for id, elem in self.svg.selected.items():
             try:
                 self.pixel_snap(elem)
             except TransformError as err:

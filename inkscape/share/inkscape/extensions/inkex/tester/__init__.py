@@ -66,8 +66,6 @@ of the `.export` suffix. pytest should then be re-run to confirm before
 committing to the repository.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 import os
 import re
 import sys
@@ -76,6 +74,7 @@ import tempfile
 import hashlib
 import random
 import uuid
+from typing import List, Union, Tuple
 
 from io import BytesIO, StringIO
 import xml.etree.ElementTree as xml
@@ -83,7 +82,8 @@ import xml.etree.ElementTree as xml
 from unittest import TestCase as BaseCase
 from inkex.base import InkscapeExtension
 
-from ..utils import PY3, to_bytes
+from .. import Transform
+from ..utils import to_bytes
 from .xmldiff import xmldiff
 from .mock import MockCommandMixin, Capture
 
@@ -115,29 +115,20 @@ class TestCase(MockCommandMixin, BaseCase):
     stderr_output = False
     stdout_protect = True
     stderr_protect = True
-    python3_only = False
 
     def __init__(self, *args, **kw):
-        super(TestCase, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         self._temp_dir = None
         self._effect = None
 
     def setUp(self): # pylint: disable=invalid-name
         """Make sure every test is seeded the same way"""
         self._effect = None
-        super(TestCase, self).setUp()
-        if self.python3_only and not PY3:
-            self.skipTest("No available in python2")
-        try:
-            # python3, with version 1 to get the same numbers
-            # as in python2 during tests.
-            random.seed(0x35f, version=1)
-        except TypeError:
-            # But of course this kwarg doesn't exist in python2
-            random.seed(0x35f)
+        super().setUp()
+        random.seed(0x35f)
 
     def tearDown(self):
-        super(TestCase, self).tearDown()
+        super().tearDown()
         if self._temp_dir and os.path.isdir(self._temp_dir):
             shutil.rmtree(self._temp_dir)
 
@@ -186,7 +177,7 @@ class TestCase(MockCommandMixin, BaseCase):
             full_path = os.path.join(cls.datadir(), filename, *parts)
 
         if not os.path.isfile(full_path):
-            raise IOError("Can't find test data file: {}".format(full_path))
+            raise IOError(f"Can't find test data file: {full_path}")
         return full_path
 
     @property
@@ -212,11 +203,13 @@ class TestCase(MockCommandMixin, BaseCase):
 
            filename should point to a starting svg document, default is empty_svg
         """
-        effect = kwargs.pop('effect', self.effect_class)()
+        data_file = self.data_file(*filename) if filename else self.empty_svg
 
-        args = [self.data_file(*filename)] if filename else [self.empty_svg]  # pylint: disable=no-value-for-parameter
-        args += kwargs.pop('args', [])
+        os.environ['DOCUMENT_PATH'] = data_file
+        args = [data_file] + list(kwargs.pop('args', []))
         args += ['--{}={}'.format(*kw) for kw in kwargs.items()]
+
+        effect = kwargs.pop('effect', self.effect_class)()
 
         # Output is redirected to this string io buffer
         if self.stderr_output:
@@ -249,6 +242,13 @@ class TestCase(MockCommandMixin, BaseCase):
         else:
             self.assertAlmostEqual(first, second, places, msg, delta)
 
+    def assertTransformEqual(self, lhs, rhs, places=7):
+        """Assert that two transform expressions evaluate to the same
+        transformation matrix.
+        """
+        self.assertAlmostTuple(tuple(Transform(lhs).to_hexad()),
+                               tuple(Transform(rhs).to_hexad()), places)
+
     @property
     def effect(self):
         """Generate an effect object"""
@@ -256,7 +256,7 @@ class TestCase(MockCommandMixin, BaseCase):
             self._effect = self.effect_class()
         return self._effect
 
-class InkscapeExtensionTestMixin(object):
+class InkscapeExtensionTestMixin:
     """Automatically setup self.effect for each test and test with an empty svg"""
     def setUp(self): # pylint: disable=invalid-name
         """Check if there is an effect_class set and create self.effect if it is"""
@@ -268,12 +268,12 @@ class InkscapeExtensionTestMixin(object):
         """Extension works with empty svg file"""
         self.effect.run([self.empty_svg])
 
-class ComparisonMixin(object):
+class ComparisonMixin:
     """
     Add comparison tests to any existing test suite.
     """
     # This input svg file sent to the extension (if any)
-    compare_file = 'svg/shapes.svg'
+    compare_file: Union[List[str], Tuple[str], str] = 'svg/shapes.svg'
     # The ways in which the output is filtered for comparision (see filters.py)
     compare_filters = [] # type: List[Compare]
     # If true, the filtered output will be saved and only applied to the
@@ -320,7 +320,7 @@ class ComparisonMixin(object):
             outfile = self.get_compare_outfile(args)
 
         if not os.path.isfile(outfile):
-            raise IOError("Comparison file {} not found".format(outfile))
+            raise IOError(f"Comparison file {outfile} not found")
 
         data_a = effect.test_output.getvalue()
         if os.environ.get('EXPORT_COMPARE', False):
@@ -328,7 +328,7 @@ class ComparisonMixin(object):
                 if sys.version_info[0] == 3 and isinstance(data_a, str):
                     data_a = data_a.encode('utf-8')
                 fhl.write(self._apply_compare_filters(data_a, True))
-                print("Written output: {}.export".format(outfile))
+                print(f"Written output: {outfile}.export")
 
         data_a = self._apply_compare_filters(data_a)
 
@@ -343,7 +343,7 @@ class ComparisonMixin(object):
                 print('The XML is different, you can save the output using the EXPORT_COMPARE=1'\
                       ' envionment variable. This will save the compared file as a ".output" file'\
                       ' next to the reference file used in the test.\n')
-            diff = 'SVG Differences: {}\n\n'.format(outfile)
+            diff = f"SVG Differences: {outfile}\n\n"
             if os.environ.get('XML_DIFF', False):
                 diff = '<- ' + diff_xml
             else:
@@ -352,7 +352,7 @@ class ComparisonMixin(object):
                         # Take advantage of better text diff in testcase's own asserts.
                         self.assertEqual(value_a, value_b)
                     except AssertionError as err:
-                        diff += " {}. {}\n".format(x, str(err))
+                        diff += f" {x}. {str(err)}\n"
             self.assertTrue(delta, diff)
         else:
             # compare any content (non svg)
@@ -381,4 +381,4 @@ class ComparisonMixin(object):
                 # avoid filename-too-long error
                 opstr = hashlib.md5(opstr.encode('latin1')).hexdigest()
             opstr = '__' + opstr
-        return self.data_file("refs", "{}{}.out".format(self.effect_name, opstr))
+        return self.data_file("refs", f"{self.effect_name}{opstr}.out")

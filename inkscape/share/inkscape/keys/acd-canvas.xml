@@ -87,8 +87,8 @@ Scissor tool - C
   This is actually a trick since in Canvas 11 Ctrl+Spacebar is for zooming in 
   and Ctrl+Shift+Spacebar is for zooming out
 -->
-  <bind key="Spacebar" modifiers="Ctrl" action="ToolZoom" display="true"/>
-  <bind key="Spacebar" modifiers="Ctrl,Shift" action="ToolZoom" />
+  <bind key="space" modifiers="Ctrl" action="ToolZoom" display="true"/>
+  <bind key="space" modifiers="Ctrl,Shift" action="ToolZoom" />
 
   <bind key="R" action="ToolRect" display="true"/>
   <bind key="r" action="ToolRect" />
@@ -222,11 +222,11 @@ Small Caps - Ctrl+Shift+\
 Superscript - Ctrl+Shift+=
 Subscript - Ctrl+Shift+- -->
 
-  <bind key="]" modifiers="Ctrl,Shift" action="org.inkscape.text.uppercase" display="true"/>
+  <bind key="braceleft" modifiers="Ctrl" action="org.inkscape.text.uppercase" display="true" />
 
-  <bind key="[" modifiers="Ctrl,Shift" action="org.inkscape.text.lowercase" display="true"/>
+  <bind key="braceright" modifiers="Ctrl" action="org.inkscape.text.lowercase" display="true" />
 
-  <bind key=";" modifiers="Ctrl,Shift" action="org.inkscape.text.titlecase" display="true"/>
+  <bind key="colon" modifiers="Ctrl" action="org.inkscape.text.title_case" display="true"/>
 
 <!-- we don't seem to have verbs for them: 
 Right Justification - Ctrl+Shift+R
@@ -259,9 +259,9 @@ Kerning -> Loosen Fine Kerning 0,25 - Ctrl+Alt+Shift+Right arrow
   <bind key="B" modifiers="Ctrl" action="SelectionToBack" display="true"/>
   <bind key="b" modifiers="Ctrl" action="SelectionToBack" />
 
-  <bind key="[" modifiers="Ctrl" action="SelectionRaise" display="true"/>
+  <bind key="bracketleft" modifiers="Ctrl" action="SelectionRaise" display="true"/>
 
-  <bind key="]" modifiers="Ctrl" action="SelectionLower" display="true"/>
+  <bind key="bracketright" modifiers="Ctrl" action="SelectionLower" display="true"/>
 
   <bind key="F6" action="DialogAlignDistribute" display="true"/>
 
@@ -295,11 +295,11 @@ Path -> Unsmooth - Ctrl+Alt+U
 -->
 
 <!-- Live Curve Editing is conceptually close to wireframe mode, thus using the verb -->
-  <bind key="l" modifiers="Ctrl,Alt" action="ViewModeToggle" display="true" />
-  <bind key="L" modifiers="Ctrl,Alt" action="ViewModeToggle" />
+  <bind gaction="win.canvas-display-mode-cycle" keys="&lt;ctrl&gt;&lt;alt&gt;l"/>
   <bind action="ViewColorModeToggle" />
   <bind action="ViewSplitModeToggle" />
   <bind action="ViewXRayToggle" />
+
 <!-- LAYOUT MENU -->
 
 <!-- Needs checking
@@ -324,12 +324,12 @@ Display -> Refresh - F5
 Views -> New... - Ctrl+Alt+N
 -->
 
-  <bind key="KP_Add" modifiers="Shift,Alt" action="ZoomIn" display="true"/>
+  <bind gaction="win.canvas-zoom-in" keys="&lt;shift&gt;&lt;alt&gt;KP_Add"/>
 
-  <bind key="KP_Subtract" modifiers="Shift,Alt" action="ZoomOut" display="true"/>
+  <bind gaction="win.canvas-zoom-out" keys="&lt;shift&gt;&lt;alt&gt;KP_Subtract"/>
 
 <!-- This is "Home View" in Canvas's terminology -->
-  <bind key="F3" action="Zoom1:0" display="true"/>
+  <bind gaction="win.canvas-zoom-1-1" keys="F3"/>
 
 <!-- Views -> Fit to Window - Shift+F3
   <bind key="4" action="ZoomDrawing" display="true"/>
@@ -351,7 +351,7 @@ Slide Show - F12 -->
   This is a trick again, since Smart Mouse analog (snapping to objects/nodes/etc.) 
   and snapping to grids/guides are setup in Document Properties in Inkscape
 -->
-  <bind key="[" modifiers="Ctrl,Alt" action="DialogDocumentProperties" />
+  <bind key="bracketleft" modifiers="Ctrl,Alt" action="DialogDocumentProperties" />
 
   <bind key="F9" modifiers="Ctrl,Shift" action="DialogDocumentProperties" />
 

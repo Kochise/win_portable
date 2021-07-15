@@ -19,11 +19,10 @@
 
 import inkex
 from inkex import Script
-from inkex.utils import NSS
 
 from inkex.localization import inkex_gettext as _
 
-NSS[u"jessyink"] = u"https://launchpad.net/jessyink"
+inkex.NSS[u"jessyink"] = u"https://launchpad.net/jessyink"
 
 class JessyInkMixin(object):
     """Common jessyInk items"""
@@ -40,18 +39,18 @@ class JessyInkMixin(object):
     def attr_remove(self, prop, is_removed=True):
         """Remove a property if it exists in the svg"""
         if is_removed:
-            for node in self.svg.xpath("//*[@jessyink:{}]".format(prop)):
-                node.set("jessyink:{}".format(prop), None)
-            for node in self.svg.xpath("//*[@jessyInk_{}]".format(prop)):
-                node.set("jessyInk_{}".format(prop), None)
+            for node in self.svg.xpath(f"//*[@jessyink:{prop}]"):
+                node.set(f"jessyink:{prop}", None)
+            for node in self.svg.xpath(f"//*[@jessyInk_{prop}]"):
+                node.set(f"jessyInk_{prop}", None)
 
     def attr_update(self, name):
         """Update a single attr"""
-        for node in self.svg.xpath("//*[@jessyInk_{}]".format(name)):
-            node.set("jessyink:{}".format(name), node.get("jessyInk_{}".format(name)))
-            node.set("jessyInk_{}".format(name), None)
-        for node in self.svg.xpath("//*[@jessyink:{}]".format(name)):
-            node.set("jessyink:{}".format(name), node.get("jessyink:{}".format(name)).replace("=", ":"))
+        for node in self.svg.xpath(f"//*[@jessyInk_{name}]"):
+            node.set(f"jessyink:{name}", node.get(f"jessyInk_{name}"))
+            node.set(f"jessyInk_{name}", None)
+        for node in self.svg.xpath(f"//*[@jessyink:{name}]"):
+            node.set(f"jessyink:{name}", node.get(f"jessyink:{name}").replace("=", ":"))
 
     @staticmethod
     def prop_str_to_list(string):

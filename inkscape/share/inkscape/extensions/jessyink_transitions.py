@@ -38,10 +38,10 @@ class Transitions(JessyInkMixin, inkex.EffectExtension):
         if not self.options.layerName:
             raise inkex.AbortExtension(_("Please enter a layer name."))
 
-        node = self.svg.getElement("//*[@inkscape:groupmode='layer' "
-                                   "and @inkscape:label='{}']".format(self.options.layerName))
+        node = self.svg.getElement(f"//*[@inkscape:groupmode='layer' "
+                                   f"and @inkscape:label='{self.options.layerName}']")
         if node is None:
-            raise inkex.AbortExtension(_("Layer '{}' not found.".format(self.options.layerName)))
+            raise inkex.AbortExtension(_(f"Layer '{self.options.layerName}' not found."))
 
         if self.options.effectIn == "default":
             node.set("jessyink:transitionIn", None)

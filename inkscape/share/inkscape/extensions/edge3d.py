@@ -56,7 +56,7 @@ class Edge3D(inkex.EffectExtension):
            for the current shade.  shade is a floating point 0-1 white-black"""
         # size of a wedge for shade i, wedges come in pairs
         delta = 360. / self.options.shades / 2.
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             array = node.path.to_arrays()
             group = None
             filt = None
@@ -95,8 +95,10 @@ class Edge3D(inkex.EffectExtension):
                         group, filt = self.get_group(node)
                     new_node = group.add(node.copy())
                     new_node.path = result
+                    new_node.style = 'fill:none;stroke-opacity:1;stroke-width:10'
+                    new_node.style += filt
                     col = 255 - int(255. * level)
-                    new_node.style = 'fill:none;stroke:#%02x%02x%02x;stroke-opacity:1;stroke-width:10;%s' % ((col,) * 3 + (filt,))
+                    new_node.style['stroke'] = inkex.Color((col, col, col))
 
     def get_group(self, node):
         """
@@ -108,7 +110,7 @@ class Edge3D(inkex.EffectExtension):
         new_node = clip.add(node.copy())
         clip_group = node.getparent().add(inkex.Group())
         group = clip_group.add(inkex.Group())
-        clip_group.set('clip-path', 'url(#' + clip.get_id() + ')')
+        clip_group.set('clip-path', clip.get_id(as_url=2))
 
         # make a blur filter reference by the style of each path
         filt = defs.add(Filter(x='-0.5', y='-0.5',\
@@ -116,7 +118,7 @@ class Edge3D(inkex.EffectExtension):
             width=str(self.options.blurwidth)))
 
         filt.add_primitive('feGaussianBlur', stdDeviation=self.options.stddev)
-        return group, 'filter:url(#%s);' % filt.get_id()
+        return group, inkex.Style(filter=filt.get_id(as_url=2))
 
 if __name__ == '__main__':
     Edge3D().run()

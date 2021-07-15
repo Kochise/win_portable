@@ -39,7 +39,7 @@ class AddNodes(inkex.EffectExtension):
         pars.add_argument("--method", help="The kind of division to perform")
 
     def effect(self):
-        for node in self.svg.selection.filter(PathElement).values():
+        for node in self.svg.selection.filter(PathElement):
             new = []
             for sub in node.path.to_superpath():
                 new.append([sub[0][:]])

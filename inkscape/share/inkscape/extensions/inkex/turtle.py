@@ -21,7 +21,7 @@ import math
 import random
 
 
-class pTurtle(object):
+class pTurtle:
     """A Python path turtle"""
 
     def __init__(self, home=(0, 0)):

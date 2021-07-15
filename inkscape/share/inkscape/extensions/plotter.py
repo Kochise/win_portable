@@ -67,10 +67,10 @@ class Plot(inkex.EffectExtension):
     def convert_hpgl(self, hpgl):
         """Convert raw HPGL to HPGL"""
         init = 'IN'
-        if self.options.force > 0:
-            init += ';FS%d' % self.options.force
-        if self.options.speed > 0:
-            init += ';VS%d' % self.options.speed
+       # if self.options.force > 0:
+        #    init += ';FS%d' % self.options.force
+       # if self.options.speed > 0:
+        #    init += ';VS%d' % self.options.speed
         return init + hpgl + ';PU0,0;SP0;IN; '
 
     def convert_dmpl(self, hpgl):
@@ -99,10 +99,10 @@ class Plot(inkex.EffectExtension):
     def convert_knk(self, hpgl):
         """Convert HPGL to KNK Plotter Language"""
         init = 'ZG'
-        if self.options.force > 0:
-            init += ';FS%d' % self.options.force
-        if self.options.speed > 0:
-            init += ';VS%d' % self.options.speed
+       # if self.options.force > 0:
+        #    init += ';FS%d' % self.options.force
+       # if self.options.speed > 0:
+        #    init += ';VS%d' % self.options.speed
         return init + hpgl + ';SP0;PU0,0;@ '
 
     def to_parallel(self, hpgl):

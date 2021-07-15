@@ -9,9 +9,9 @@
     <page name="plotter" gui-text="Plotter Settings">
       <param name="resolutionX" type="float" min="1.0" max="4096.0" precision="1" gui-text="Resolution X (dpi):" gui-description="The amount of steps the plotter moves if it moves for 1 inch on the X axis (Default: 1016.0)">1016.0</param>
       <param name="resolutionY" type="float" min="1.0" max="4096.0" precision="1" gui-text="Resolution Y (dpi):" gui-description="The amount of steps the plotter moves if it moves for 1 inch on the Y axis (Default: 1016.0)">1016.0</param>
-      <param name="pen" type="int" min="0" max="99" gui-text="Pen number:" gui-description="The number of the pen (tool) to use (Standard: '1')">1</param>
+      <param name="pen" type="int" min="0" max="99" gui-text="Pen number:" gui-description="The number of the pen (tool) to use (Standard: '1')Can be defined in the layer name. eg. (Pen 1)">1</param>
       <param name="force" type="int" min="0" max="1000" gui-text="Pen force (g):" gui-description="The amount of force pushing down the pen in grams, set to 0 to omit command; most plotters ignore this command (Default: 0)">0</param>
-      <param name="speed" type="int" min="0" max="10000" gui-text="Pen speed (cm/s or mm/s):" gui-description="The speed the pen will move with in centimeters or millimeters per second (depending on your plotter model), set to 0 to omit command; most plotters ignore this command (Default: 0)">0</param>
+      <param name="speed" type="int" min="0" max="10000" gui-text="Pen speed (cm/s or mm/s):" gui-description="The speed the pen will move with in centimeters or millimeters per second (depending on your plotter model), set to 0 to omit command; most plotters ignore this command (Default: 0)Can be defined in the layer name together with the pen number. eg. (Pen3 Speed10)">0</param>
       <param name="orientation" type="optiongroup" appearance="combo" gui-text="Rotation (°, Clockwise):" gui-description="Rotation of the drawing (Default: 0°)">
         <option translatable="no" value="0">0</option>
         <option translatable="no" value="90">90</option>
@@ -22,7 +22,7 @@
       <param name="mirrorY" type="bool" gui-text="Mirror Y axis" gui-description="Check this to mirror the Y axis (Default: Unchecked)">false</param>
       <param name="center" type="bool" gui-text="Center zero point" gui-description="Check this if your plotter uses a centered zero point (Default: Unchecked)">false</param>
       <spacer/>
-      <label>If you want to use multiple pens on your pen plotter create one layer for each pen, name the layers "Pen 1", "Pen 2", etc., and put your drawings in the corresponding layers. This overrules the pen number option above.</label>
+      <label>If you want to use multiple pens and speeds on your pen plotter create one layer for each pen, name the layers "Pen1 Speed10", "Pen2", etc., and put your drawings in the corresponding layers. This overrules the pen number and speed value from the menu option above.</label>
     </page>
     <page name="overcutToolOffset" gui-text="Plot Features">
       <param name="overcut" type="float" min="0.0" max="100.0" precision="2" gui-text="Overcut (mm):" gui-description="The distance in mm that will be cut over the starting point of the path to prevent open paths, set to 0.0 to omit command (Default: 1.00)">1.00</param>

@@ -31,7 +31,7 @@ class SegmentStraightener(inkex.EffectExtension):
             help="straightening behavior for cubic segments")
 
     def effect(self):
-        for node in self.svg.selection.get(inkex.PathElement).values():
+        for node in self.svg.selection.get(inkex.PathElement):
             path = node.path.to_arrays()
             last = []
             sub_start = []

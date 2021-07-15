@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Export to TIFF</name>
+    <id>org.inkscape.raster.tiff_output</id>
+
+    <param name="tab" type="notebook">
+        <page name="options" gui-text="Options">
+            <param name="compression" type="optiongroup" appearance="combo" gui-text="Speed:">
+                <option value="">None</option>
+                <option value="tiff_ccitt">CCITT</option>
+                <option value="group3">Group 3</option>
+                <option value="group4">Group 4</option>
+                <option value="tiff_jpeg">JPEG</option>
+                <option value="tiff_deflate">Deflate</option>
+                <option value="tiff_sgilog">SGI Log</option>
+                <option value="tiff_sgilog24">SGI Log 24</option>
+                <option value="tiff_raw_16">Raw 16</option>
+            </param>
+
+            <param name="quality" type="int" min="0" max="100"
+                gui-text="Quality:"
+                gui-description="Quality between 0 and 100"
+            >90</param>
+        </page>
+    </param>
+
+    <output raster="true">
+        <extension>.tiff</extension>
+        <mimetype>image/tiff</mimetype>
+        <filetypename>TIFF (*.tiff)</filetypename>
+        <filetypetooltip>Render to TIFF file format</filetypetooltip>
+    </output>
+
+    <script>
+        <command location="inx" interpreter="python">raster_output_tiff.py</command>
+    </script>
+</inkscape-extension>

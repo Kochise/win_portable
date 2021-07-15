@@ -47,7 +47,7 @@ class Extract(inkex.EffectExtension):
 
     def effect(self):
         # move them to the top of the object stack in this order.
-        for node in sorted(self.svg.selection.get(TextElement, FlowRoot).values(), key=self._sort):
+        for node in sorted(self.svg.selection.get(TextElement, FlowRoot), key=self._sort):
             self.recurse(node)
 
     def _sort(self, node):

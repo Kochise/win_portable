@@ -22,14 +22,10 @@
 Basic color controls
 """
 
-from .utils import PY3
 from .tween import interpcoord
 
 # All the names that get added to the inkex API itself.
 __all__ = ('Color', 'ColorError', 'ColorIdError')
-
-if PY3:
-    unicode = str  # pylint: disable=redefined-builtin,invalid-name
 
 SVG_COLOR = {
     'aliceblue': '#f0f8ff',
@@ -221,11 +217,11 @@ class Color(list):
     lightness = lightness.setter(lambda self, value: self._set(2, value, ('hsl',)))
 
     def __init__(self, color=None, space='rgb'):
-        super(Color, self).__init__()
+        super().__init__()
         if isinstance(color, Color):
             space, color = color.space, list(color)
 
-        if isinstance(color, (str, unicode)):
+        if isinstance(color, str):
             # String from xml or css attributes
             space, color = self.parse_str(color.strip())
 
@@ -274,7 +270,7 @@ class Color(list):
         if len(self) == len(self.space):
             raise ValueError("Can't add any more values to color.")
 
-        if isinstance(val, (unicode, str)):
+        if isinstance(val, str):
             val = val.strip()
             if val.endswith('%'):
                 val = float(val.strip('%')) / 100
@@ -289,7 +285,7 @@ class Color(list):
             val *= 255
 
         if isinstance(val, (int, float)):
-            super(Color, self).append(max(end_type(val), 0))
+            super().append(max(end_type(val), 0))
 
     @staticmethod
     def parse_str(color):
@@ -316,7 +312,7 @@ class Color(list):
             try:
                 return 'rgb', (int(col[1:3], 16), int(col[3:5], 16), int(col[5:], 16))
             except ValueError:
-                raise ColorError("Bad RGB hex color value {}".format(col))
+                raise ColorError(f"Bad RGB hex color value {col}")
 
         # Handle other css color values
         elif '(' in color and ')' in color:
@@ -328,7 +324,7 @@ class Color(list):
         except ValueError:
             pass
 
-        raise ColorError("Unknown color format: {}".format(color))
+        raise ColorError(f"Unknown color format: {color}")
 
     @staticmethod
     def parse_int(color):
@@ -363,7 +359,7 @@ class Color(list):
             return 'rgba({:g}, {:g}, {:g}, {:g})'.format(*self)
         elif self.space == 'hsl':
             return 'hsl({0:g}, {1:g}, {2:g})'.format(*self)
-        raise ColorError("Can't print colour space '{}'".format(self.space))
+        raise ColorError(f"Can't print colour space '{self.space}'")
 
     def __int__(self):
         """int array to large integer"""
@@ -384,7 +380,7 @@ class Color(list):
             return self
         elif self.space == 'rgb':
             return Color(rgb_to_hsl(*self.to_floats()), space='hsl')
-        raise ColorError("Unknown color conversion {}->hsl".format(self.space))
+        raise ColorError(f"Unknown color conversion {self.space}->hsl")
 
     def to_rgb(self):
         """Turn this color into a Red/Green/Blue colour space"""
@@ -396,7 +392,7 @@ class Color(list):
             return Color(self[:3], space='rgb')
         elif self.space == 'hsl':
             return Color(hsl_to_rgb(*self.to_floats()), space='rgb')
-        raise ColorError("Unknown color conversion {}->rgb".format(self.space))
+        raise ColorError(f"Unknown color conversion {self.space}->rgb")
 
     def to_rgba(self, alpha=1.0):
         """Turn this color isn't an RGB with Alpha colour space"""

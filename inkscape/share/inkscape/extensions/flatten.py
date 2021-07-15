@@ -26,7 +26,7 @@ class Flatten(inkex.EffectExtension):
         pars.add_argument("--flatness", type=float, default=10.0, help="Minimum flattness")
 
     def effect(self):
-        for node in self.svg.selection.filter(inkex.PathElement).values():
+        for node in self.svg.selection.filter(inkex.PathElement):
             path = node.path.to_superpath()
             bezier.cspsubdiv(path, self.options.flatness)
             newpath = []

@@ -53,6 +53,12 @@ class PdfLatex(TempDirMixin, inkex.GenerateExtension):
         inkscape(pdf_file, export_filename=svg_file, pdf_page=1,
                  pdf_poppler=True, export_type="svg")
 
+        if not os.path.isfile(svg_file):
+            fn = os.path.basename(svg_file)
+            if os.path.isfile(fn):
+                # Inkscape bug detected, file got saved wrong
+                svg_file = fn
+
         with open(svg_file, 'r') as fhl:
             svg = load_svg(fhl).getroot()
             svg.set_random_ids(backlinks=True)

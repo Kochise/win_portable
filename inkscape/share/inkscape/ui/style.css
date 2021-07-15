@@ -65,6 +65,8 @@
     * by this way you can always know if the UI is in dark mode or using symbolic icons
     * Also added some helper clases:
     * ".inverted" invert colors fon widhet and childs
+    * ".highlight-dark" highlights with red tint
+    * ".highlight-light" highlights with yellow tint
     * ".symbolic" Force icon symbolic
     * ".regular" Force colorful icons
     * " .forcebright Force darlk even if the towp wingow has clas dark (happends when theme is dark)
@@ -72,6 +74,10 @@
     * :::::::: Combo box.
     * "..combobright" Combo bright
     */
+
+*{
+    font-feature-settings: "tnum=1";
+}
 
 *:disabled image {
     opacity: 0.4;
@@ -98,6 +104,33 @@
     caret-color: @theme_bg_color;
     -gtk-secondary-caret-color: @theme_fg_color;
 }
+
+.highlight {
+    color: @theme_fg_color;
+    background-color: alpha(@theme_selected_bg_color,0.5);
+    background-image: image(alpha(@theme_selected_bg_color,0.5));
+    caret-color: @theme_bg_color;
+    border-radius:4px;
+    -gtk-secondary-caret-color: @theme_fg_color;
+}
+
+
+/* blinking animation for dialogs */
+@keyframes blink_border {
+  from { border-color: @theme_selected_fg_color; }
+  to   { border-color: @theme_selected_bg_color; }
+}
+@keyframes blink_background {
+  from { background-color: @theme_bg_color; }
+  to   { background-color: @theme_selected_bg_color; }
+}
+notebook.blink {
+  animation: blink_border 333ms ease-in-out infinite;
+}
+notebook.blink > header > tabs > tab:checked {
+  animation: blink_background 333ms ease-in-out infinite;
+}
+
 
 .inverted :not(menuitem):not(.rawstyle):not(overshoot):not(undershoot):not(selection),
 .bright .forcedark :not(menuitem):not(.rawstyle):not(overshoot):not(undershoot):not(selection),
@@ -161,10 +194,25 @@ iconview *:hover {
     border-color: @theme_bg_color;
 }
 
+#startscreennotebook iconview *:hover{
+    background-color:@theme_selected_bg_color;
+    border-radius:5px;
+    border-width:0;
+}
+
 .inksmall {
     font-size: 11px;
 }
 
+#CommandPaletteBase {
+    background-color: @theme_base_color; /* some themes don't seem to have a background color for list rows defined and would end up transparent otherwise */
+    border: 5px solid @theme_bg_color;
+    border-radius: 5px;
+}
+
+#CommandPaletteBase list row:not(:last-child) {
+    border-bottom: 1px solid @bg_color5;
+}
 
 /* LPE Dialog add */
 #LPESelectorFlowBox GtkFlowBoxChild,
@@ -182,11 +230,15 @@ iconview *:hover {
     color: @theme_fg_color;
 }
 
+#LPESelectorFlowBox flowboxchild image,
+#LPESelectorFlowBox flowboxchild label {
+    background-color: transparent;
+    background-image: image(transparent);
+}
+
 #LPESelectorFlowBox flowboxchild:selected image,
 #LPESelectorFlowBox flowboxchild:selected label {
     color: @theme_selected_fg_color;
-    background-color: @theme_selected_bg_color;
-    background-image: image(@theme_selected_bg_color);
 }
 
 #LPESelectorFlowBox *:selected #LPESelectorEffectFavTop,
@@ -444,4 +496,47 @@ treeview.view:drop(active).after,
 treeview.view:drop(active).before {
     border-width: 4px;
     border-radius: 10px;
+}
+
+button.close-button{
+    background-image: none;
+    padding: 0px;
+    min-height: 1px;
+    min-width: 1px;
+    border: none;
+    opacity: 0.5;
+    box-shadow: none;
+}
+
+button.close-button:hover{
+    box-shadow: none;
+    opacity: 1;
+}
+
+/*
+ * Inkscape start dialog styles
+ */
+button.primary {
+    background-image: linear-gradient(to bottom, rgba(22, 169, 249, 1), rgba(2, 135, 204, 1));
+    box-shadow: 0 1px rgba(255, 255, 255, 0.3) inset;
+    text-shadow: none;
+}
+button.primary:hover {
+    background-image: linear-gradient(to bottom, rgba(32, 179, 255, 1), rgba(12, 145, 214, 1));
+}
+button.primary:active {
+    background-image: linear-gradient(to top, rgba(12, 149, 219, 1), rgba(0, 115, 184, 1));
+}
+button.primary label {
+    color: white;
+}
+button.link:hover image {
+    -gtk-icon-effect: dim;
+}
+
+#start-screen-window .combo {
+    padding:15px 20px;
+}
+#start-screen-window notebook > *:nth-child(2) label{
+    font-size:12px;
 }

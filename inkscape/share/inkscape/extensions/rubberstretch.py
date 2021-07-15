@@ -27,6 +27,7 @@ Curve gives further effect by bunching the surface towards the ends.
 
 from inkex.utils import X, Y
 from pathmodifier import Diffeo
+import inkex
 
 
 class RubberStretch(Diffeo):
@@ -35,8 +36,8 @@ class RubberStretch(Diffeo):
     curve = property(lambda self: min(self.options.curve / 100, 0.99))
 
     def add_arguments(self, pars):
-        pars.add_argument("-r", "--ratio", type=float, default=0.5)
-        pars.add_argument("-c", "--curve", type=float, default=0.5)
+        pars.add_argument("-r", "--ratio", type=float, default=25)
+        pars.add_argument("-c", "--curve", type=float, default=25)
 
     def applyDiffeo(self, bpt, vects=()):
         for vect in vects:
@@ -48,10 +49,10 @@ class RubberStretch(Diffeo):
         by0 = -self.bbox.center.y
 
         x, y = (bpt[0] - bx0), (bpt[1] - by0)
-        sx1 = (1 + self.curve * (x / self.bbox.width + 1) * \
-              (x / self.bbox.width - 1)) * 2 ** self.ratio
-        sy1 = (1 + self.curve * (y / self.bbox.height + 1) * \
-              (y / self.bbox.height - 1)) * 2 ** self.ratio
+        sx1 = (1 + self.curve * (x / (self.bbox.width / 2) + 1) * \
+              (x / (self.bbox.width / 2) - 1)) * 2 ** self.ratio
+        sy1 = (1 + self.curve * (y / (self.bbox.height / 2) + 1) * \
+              (y / (self.bbox.height / 2) - 1)) * 2 ** self.ratio
         bpt[0] = bx0 + x * sy1
         bpt[1] = by0 + y / sx1
         for vect in vects:

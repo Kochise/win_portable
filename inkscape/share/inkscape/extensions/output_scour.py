@@ -57,11 +57,11 @@ class ScourInkscape(inkex.OutputExtension):
             scour_version = scour.__version__
             scour_version_min = self.options.scour_version
             if StrictVersion(scour_version) < StrictVersion(scour_version_min):
-                raise inkex.AbortExtension("""
+                raise inkex.AbortExtension(f"""
 The extension 'Optimized SVG Output' is designed for Scour {scour_version_min} or later but you're
  using the older version Scour {scour_version}.
 
-Note: You can permanently disable this message on the 'About' tab of the extension window.""".format(**locals()))
+Note: You can permanently disable this message on the 'About' tab of the extension window.""")
         del self.options.scour_version
         del self.options.scour_version_warn_old
 
