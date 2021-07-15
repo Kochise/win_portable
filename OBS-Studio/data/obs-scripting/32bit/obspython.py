@@ -124,6 +124,9 @@ GS_DXT1 = _obspython.GS_DXT1
 GS_DXT3 = _obspython.GS_DXT3
 GS_DXT5 = _obspython.GS_DXT5
 GS_R8G8 = _obspython.GS_R8G8
+GS_RGBA_UNORM = _obspython.GS_RGBA_UNORM
+GS_BGRX_UNORM = _obspython.GS_BGRX_UNORM
+GS_BGRA_UNORM = _obspython.GS_BGRA_UNORM
 GS_ZS_NONE = _obspython.GS_ZS_NONE
 GS_Z16 = _obspython.GS_Z16
 GS_Z24_S8 = _obspython.GS_Z24_S8
@@ -456,6 +459,32 @@ GS_SHADER_PARAM_INT3 = _obspython.GS_SHADER_PARAM_INT3
 GS_SHADER_PARAM_INT4 = _obspython.GS_SHADER_PARAM_INT4
 GS_SHADER_PARAM_MATRIX4X4 = _obspython.GS_SHADER_PARAM_MATRIX4X4
 GS_SHADER_PARAM_TEXTURE = _obspython.GS_SHADER_PARAM_TEXTURE
+class gs_shader_texture(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, gs_shader_texture, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, gs_shader_texture, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["tex"] = _obspython.gs_shader_texture_tex_set
+    __swig_getmethods__["tex"] = _obspython.gs_shader_texture_tex_get
+    if _newclass:
+        tex = _swig_property(_obspython.gs_shader_texture_tex_get, _obspython.gs_shader_texture_tex_set)
+    __swig_setmethods__["srgb"] = _obspython.gs_shader_texture_srgb_set
+    __swig_getmethods__["srgb"] = _obspython.gs_shader_texture_srgb_get
+    if _newclass:
+        srgb = _swig_property(_obspython.gs_shader_texture_srgb_get, _obspython.gs_shader_texture_srgb_set)
+
+    def __init__(self):
+        this = _obspython.new_gs_shader_texture()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _obspython.delete_gs_shader_texture
+    __del__ = lambda self: None
+gs_shader_texture_swigregister = _obspython.gs_shader_texture_swigregister
+gs_shader_texture_swigregister(gs_shader_texture)
+
 
 def gs_effect_destroy(effect: 'gs_effect_t *') -> "void":
     return _obspython.gs_effect_destroy(effect)
@@ -568,6 +597,10 @@ gs_effect_set_vec4 = _obspython.gs_effect_set_vec4
 def gs_effect_set_texture(param: 'gs_eparam_t *', val: 'gs_texture_t *') -> "void":
     return _obspython.gs_effect_set_texture(param, val)
 gs_effect_set_texture = _obspython.gs_effect_set_texture
+
+def gs_effect_set_texture_srgb(param: 'gs_eparam_t *', val: 'gs_texture_t *') -> "void":
+    return _obspython.gs_effect_set_texture_srgb(param, val)
+gs_effect_set_texture_srgb = _obspython.gs_effect_set_texture_srgb
 
 def gs_effect_set_val(param: 'gs_eparam_t *', val: 'void const *', size: 'size_t') -> "void":
     return _obspython.gs_effect_set_val(param, val, size)
@@ -869,6 +902,9 @@ gs_vertexshader_create_from_file = _obspython.gs_vertexshader_create_from_file
 def gs_pixelshader_create_from_file(file: 'char const *', error_string: 'char **') -> "gs_shader_t *":
     return _obspython.gs_pixelshader_create_from_file(file, error_string)
 gs_pixelshader_create_from_file = _obspython.gs_pixelshader_create_from_file
+GS_IMAGE_ALPHA_STRAIGHT = _obspython.GS_IMAGE_ALPHA_STRAIGHT
+GS_IMAGE_ALPHA_PREMULTIPLY_SRGB = _obspython.GS_IMAGE_ALPHA_PREMULTIPLY_SRGB
+GS_IMAGE_ALPHA_PREMULTIPLY = _obspython.GS_IMAGE_ALPHA_PREMULTIPLY
 
 def gs_texture_create_from_file(file: 'char const *') -> "gs_texture_t *":
     return _obspython.gs_texture_create_from_file(file)
@@ -877,6 +913,10 @@ gs_texture_create_from_file = _obspython.gs_texture_create_from_file
 def gs_create_texture_file_data(file: 'char const *', format: 'enum gs_color_format *', cx: 'uint32_t *', cy: 'uint32_t *') -> "uint8_t *":
     return _obspython.gs_create_texture_file_data(file, format, cx, cy)
 gs_create_texture_file_data = _obspython.gs_create_texture_file_data
+
+def gs_create_texture_file_data2(file: 'char const *', alpha_mode: 'enum gs_image_alpha_mode', format: 'enum gs_color_format *', cx: 'uint32_t *', cy: 'uint32_t *') -> "uint8_t *":
+    return _obspython.gs_create_texture_file_data2(file, alpha_mode, format, cx, cy)
+gs_create_texture_file_data2 = _obspython.gs_create_texture_file_data2
 GS_FLIP_U = _obspython.GS_FLIP_U
 GS_FLIP_V = _obspython.GS_FLIP_V
 
@@ -1059,6 +1099,22 @@ gs_set_render_target = _obspython.gs_set_render_target
 def gs_set_cube_render_target(cubetex: 'gs_texture_t *', side: 'int', zstencil: 'gs_zstencil_t *') -> "void":
     return _obspython.gs_set_cube_render_target(cubetex, side, zstencil)
 gs_set_cube_render_target = _obspython.gs_set_cube_render_target
+
+def gs_enable_framebuffer_srgb(enable: 'bool') -> "void":
+    return _obspython.gs_enable_framebuffer_srgb(enable)
+gs_enable_framebuffer_srgb = _obspython.gs_enable_framebuffer_srgb
+
+def gs_framebuffer_srgb_enabled() -> "bool":
+    return _obspython.gs_framebuffer_srgb_enabled()
+gs_framebuffer_srgb_enabled = _obspython.gs_framebuffer_srgb_enabled
+
+def gs_get_linear_srgb() -> "bool":
+    return _obspython.gs_get_linear_srgb()
+gs_get_linear_srgb = _obspython.gs_get_linear_srgb
+
+def gs_set_linear_srgb(linear_srgb: 'bool') -> "bool":
+    return _obspython.gs_set_linear_srgb(linear_srgb)
+gs_set_linear_srgb = _obspython.gs_set_linear_srgb
 
 def gs_copy_texture(dst: 'gs_texture_t *', src: 'gs_texture_t *') -> "void":
     return _obspython.gs_copy_texture(dst, src)
@@ -1380,6 +1436,10 @@ def gs_is_compressed_format(format: 'enum gs_color_format') -> "bool":
     return _obspython.gs_is_compressed_format(format)
 gs_is_compressed_format = _obspython.gs_is_compressed_format
 
+def gs_is_srgb_format(format: 'enum gs_color_format') -> "bool":
+    return _obspython.gs_is_srgb_format(format)
+gs_is_srgb_format = _obspython.gs_is_srgb_format
+
 def gs_get_total_levels(width: 'uint32_t', height: 'uint32_t', depth: 'uint32_t') -> "uint32_t":
     return _obspython.gs_get_total_levels(width, height, depth)
 gs_get_total_levels = _obspython.gs_get_total_levels
@@ -1541,6 +1601,10 @@ vec4_from_rgba = _obspython.vec4_from_rgba
 def vec4_from_bgra(dst: 'vec4', bgra: 'uint32_t') -> "void":
     return _obspython.vec4_from_bgra(dst, bgra)
 vec4_from_bgra = _obspython.vec4_from_bgra
+
+def vec4_from_rgba_srgb(dst: 'vec4', rgba: 'uint32_t') -> "void":
+    return _obspython.vec4_from_rgba_srgb(dst, rgba)
+vec4_from_rgba_srgb = _obspython.vec4_from_rgba_srgb
 
 def vec4_transform(dst: 'vec4', v: 'vec4', m: 'matrix4') -> "void":
     return _obspython.vec4_transform(dst, v, m)
@@ -2266,6 +2330,10 @@ def obs_data_get_json(data: 'obs_data_t *') -> "char const *":
     return _obspython.obs_data_get_json(data)
 obs_data_get_json = _obspython.obs_data_get_json
 
+def obs_data_get_last_json(data: 'obs_data_t *') -> "char const *":
+    return _obspython.obs_data_get_last_json(data)
+obs_data_get_last_json = _obspython.obs_data_get_last_json
+
 def obs_data_save_json(data: 'obs_data_t *', file: 'char const *') -> "bool":
     return _obspython.obs_data_save_json(data, file)
 obs_data_save_json = _obspython.obs_data_save_json
@@ -2310,6 +2378,10 @@ def obs_data_set_array(data: 'obs_data_t *', name: 'char const *', array: 'obs_d
     return _obspython.obs_data_set_array(data, name, array)
 obs_data_set_array = _obspython.obs_data_set_array
 
+def obs_data_get_defaults(data: 'obs_data_t *') -> "obs_data_t *":
+    return _obspython.obs_data_get_defaults(data)
+obs_data_get_defaults = _obspython.obs_data_get_defaults
+
 def obs_data_set_default_string(data: 'obs_data_t *', name: 'char const *', val: 'char const *') -> "void":
     return _obspython.obs_data_set_default_string(data, name, val)
 obs_data_set_default_string = _obspython.obs_data_set_default_string
@@ -2329,6 +2401,10 @@ obs_data_set_default_bool = _obspython.obs_data_set_default_bool
 def obs_data_set_default_obj(data: 'obs_data_t *', name: 'char const *', obj: 'obs_data_t *') -> "void":
     return _obspython.obs_data_set_default_obj(data, name, obj)
 obs_data_set_default_obj = _obspython.obs_data_set_default_obj
+
+def obs_data_set_default_array(data: 'obs_data_t *', name: 'char const *', arr: 'obs_data_array_t *') -> "void":
+    return _obspython.obs_data_set_default_array(data, name, arr)
+obs_data_set_default_array = _obspython.obs_data_set_default_array
 
 def obs_data_set_autoselect_string(data: 'obs_data_t *', name: 'char const *', val: 'char const *') -> "void":
     return _obspython.obs_data_set_autoselect_string(data, name, val)
@@ -2457,6 +2533,10 @@ obs_data_array_push_back_array = _obspython.obs_data_array_push_back_array
 def obs_data_array_erase(array: 'obs_data_array_t *', idx: 'size_t') -> "void":
     return _obspython.obs_data_array_erase(array, idx)
 obs_data_array_erase = _obspython.obs_data_array_erase
+
+def obs_data_array_enum(array: 'obs_data_array_t *', cb: 'void (*)(obs_data_t *,void *)', param: 'void *') -> "void":
+    return _obspython.obs_data_array_enum(array, cb, param)
+obs_data_array_enum = _obspython.obs_data_array_enum
 
 def obs_data_has_user_value(data: 'obs_data_t *', name: 'char const *') -> "bool":
     return _obspython.obs_data_has_user_value(data, name)
@@ -2874,6 +2954,7 @@ OBS_SOURCE_MONITOR_BY_DEFAULT = _obspython.OBS_SOURCE_MONITOR_BY_DEFAULT
 OBS_SOURCE_SUBMIX = _obspython.OBS_SOURCE_SUBMIX
 OBS_SOURCE_CONTROLLABLE_MEDIA = _obspython.OBS_SOURCE_CONTROLLABLE_MEDIA
 OBS_SOURCE_CEA_708 = _obspython.OBS_SOURCE_CEA_708
+OBS_SOURCE_SRGB = _obspython.OBS_SOURCE_SRGB
 class obs_source_audio_mix(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_audio_mix, name, value)
@@ -2910,6 +2991,7 @@ OBS_PROPERTY_FONT = _obspython.OBS_PROPERTY_FONT
 OBS_PROPERTY_EDITABLE_LIST = _obspython.OBS_PROPERTY_EDITABLE_LIST
 OBS_PROPERTY_FRAME_RATE = _obspython.OBS_PROPERTY_FRAME_RATE
 OBS_PROPERTY_GROUP = _obspython.OBS_PROPERTY_GROUP
+OBS_PROPERTY_COLOR_ALPHA = _obspython.OBS_PROPERTY_COLOR_ALPHA
 OBS_COMBO_FORMAT_INVALID = _obspython.OBS_COMBO_FORMAT_INVALID
 OBS_COMBO_FORMAT_INT = _obspython.OBS_COMBO_FORMAT_INT
 OBS_COMBO_FORMAT_FLOAT = _obspython.OBS_COMBO_FORMAT_FLOAT
@@ -3019,6 +3101,10 @@ obs_properties_add_list = _obspython.obs_properties_add_list
 def obs_properties_add_color(props: 'obs_properties_t *', name: 'char const *', description: 'char const *') -> "obs_property_t *":
     return _obspython.obs_properties_add_color(props, name, description)
 obs_properties_add_color = _obspython.obs_properties_add_color
+
+def obs_properties_add_color_alpha(props: 'obs_properties_t *', name: 'char const *', description: 'char const *') -> "obs_property_t *":
+    return _obspython.obs_properties_add_color_alpha(props, name, description)
+obs_properties_add_color_alpha = _obspython.obs_properties_add_color_alpha
 
 def obs_properties_add_button2(props: 'obs_properties_t *', name: 'char const *', text: 'char const *', callback: 'obs_property_clicked_t', priv: 'void *') -> "obs_property_t *":
     return _obspython.obs_properties_add_button2(props, name, text, callback, priv)
@@ -3878,6 +3964,7 @@ class obs_source_cea_708(_object):
 obs_source_cea_708_swigregister = _obspython.obs_source_cea_708_swigregister
 obs_source_cea_708_swigregister(obs_source_cea_708)
 
+OBS_SOURCE_FRAME_LINEAR_ALPHA = _obspython.OBS_SOURCE_FRAME_LINEAR_ALPHA
 class obs_source_frame(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_frame, name, value)
@@ -3928,6 +4015,10 @@ class obs_source_frame(_object):
     __swig_getmethods__["flip"] = _obspython.obs_source_frame_flip_get
     if _newclass:
         flip = _swig_property(_obspython.obs_source_frame_flip_get, _obspython.obs_source_frame_flip_set)
+    __swig_setmethods__["flags"] = _obspython.obs_source_frame_flags_set
+    __swig_getmethods__["flags"] = _obspython.obs_source_frame_flags_get
+    if _newclass:
+        flags = _swig_property(_obspython.obs_source_frame_flags_get, _obspython.obs_source_frame_flags_set)
     __swig_setmethods__["refs"] = _obspython.obs_source_frame_refs_set
     __swig_getmethods__["refs"] = _obspython.obs_source_frame_refs_get
     if _newclass:
@@ -3998,6 +4089,10 @@ class obs_source_frame2(_object):
     __swig_getmethods__["flip"] = _obspython.obs_source_frame2_flip_get
     if _newclass:
         flip = _swig_property(_obspython.obs_source_frame2_flip_get, _obspython.obs_source_frame2_flip_set)
+    __swig_setmethods__["flags"] = _obspython.obs_source_frame2_flags_set
+    __swig_getmethods__["flags"] = _obspython.obs_source_frame2_flags_get
+    if _newclass:
+        flags = _swig_property(_obspython.obs_source_frame2_flags_get, _obspython.obs_source_frame2_flags_set)
 
     def __init__(self):
         this = _obspython.new_obs_source_frame2()
@@ -4116,6 +4211,10 @@ obs_init_module = _obspython.obs_init_module
 def obs_get_module(name: 'char const *') -> "obs_module_t *":
     return _obspython.obs_get_module(name)
 obs_get_module = _obspython.obs_get_module
+
+def obs_get_module_lib(module: 'obs_module_t *') -> "void *":
+    return _obspython.obs_get_module_lib(module)
+obs_get_module_lib = _obspython.obs_get_module_lib
 
 def obs_module_get_locale_string(mod: 'obs_module_t const *', lookup_string: 'char const *', translated_string: 'char const **') -> "bool":
     return _obspython.obs_module_get_locale_string(mod, lookup_string, translated_string)
@@ -4335,6 +4434,10 @@ def obs_source_load(source: 'obs_source_t *') -> "void":
     return _obspython.obs_source_load(source)
 obs_source_load = _obspython.obs_source_load
 
+def obs_source_load2(source: 'obs_source_t *') -> "void":
+    return _obspython.obs_source_load2(source)
+obs_source_load2 = _obspython.obs_source_load2
+
 def obs_load_sources(array: 'obs_data_array_t *', cb: 'obs_load_source_cb', private_data: 'void *') -> "void":
     return _obspython.obs_load_sources(array, cb, private_data)
 obs_load_sources = _obspython.obs_load_sources
@@ -4367,6 +4470,10 @@ obs_obj_invalid = _obspython.obs_obj_invalid
 def obs_obj_get_data(obj: 'void *') -> "void *":
     return _obspython.obs_obj_get_data(obj)
 obs_obj_get_data = _obspython.obs_obj_get_data
+
+def obs_obj_is_private(obj: 'void *') -> "bool":
+    return _obspython.obs_obj_is_private(obj)
+obs_obj_is_private = _obspython.obs_obj_is_private
 
 def obs_enum_audio_monitoring_devices(cb: 'obs_enum_audio_device_cb', data: 'void *') -> "void":
     return _obspython.obs_enum_audio_monitoring_devices(cb, data)
@@ -4550,6 +4657,14 @@ def obs_source_removed(source: 'obs_source_t const *') -> "bool":
     return _obspython.obs_source_removed(source)
 obs_source_removed = _obspython.obs_source_removed
 
+def obs_source_set_hidden(source: 'obs_source_t *', hidden: 'bool') -> "void":
+    return _obspython.obs_source_set_hidden(source, hidden)
+obs_source_set_hidden = _obspython.obs_source_set_hidden
+
+def obs_source_is_hidden(source: 'obs_source_t *') -> "bool":
+    return _obspython.obs_source_is_hidden(source)
+obs_source_is_hidden = _obspython.obs_source_is_hidden
+
 def obs_source_get_output_flags(source: 'obs_source_t const *') -> "uint32_t":
     return _obspython.obs_source_get_output_flags(source)
 obs_source_get_output_flags = _obspython.obs_source_get_output_flags
@@ -4566,6 +4681,14 @@ def obs_get_source_properties(id: 'char const *') -> "obs_properties_t *":
     return _obspython.obs_get_source_properties(id)
 obs_get_source_properties = _obspython.obs_get_source_properties
 
+def obs_source_get_missing_files(source: 'obs_source_t const *') -> "obs_missing_files_t *":
+    return _obspython.obs_source_get_missing_files(source)
+obs_source_get_missing_files = _obspython.obs_source_get_missing_files
+
+def obs_source_replace_missing_file(cb: 'obs_missing_file_cb', source: 'obs_source_t *', new_path: 'char const *', data: 'void *') -> "void":
+    return _obspython.obs_source_replace_missing_file(cb, source, new_path, data)
+obs_source_replace_missing_file = _obspython.obs_source_replace_missing_file
+
 def obs_is_source_configurable(id: 'char const *') -> "bool":
     return _obspython.obs_is_source_configurable(id)
 obs_is_source_configurable = _obspython.obs_is_source_configurable
@@ -4581,6 +4704,10 @@ obs_source_properties = _obspython.obs_source_properties
 def obs_source_update(source: 'obs_source_t *', settings: 'obs_data_t *') -> "void":
     return _obspython.obs_source_update(source, settings)
 obs_source_update = _obspython.obs_source_update
+
+def obs_source_reset_settings(source: 'obs_source_t *', settings: 'obs_data_t *') -> "void":
+    return _obspython.obs_source_reset_settings(source, settings)
+obs_source_reset_settings = _obspython.obs_source_reset_settings
 
 def obs_source_video_render(source: 'obs_source_t *') -> "void":
     return _obspython.obs_source_video_render(source)
@@ -4686,6 +4813,10 @@ def obs_source_enum_active_tree(source: 'obs_source_t *', enum_callback: 'obs_so
     return _obspython.obs_source_enum_active_tree(source, enum_callback, param)
 obs_source_enum_active_tree = _obspython.obs_source_enum_active_tree
 
+def obs_source_enum_full_tree(source: 'obs_source_t *', enum_callback: 'obs_source_enum_proc_t', param: 'void *') -> "void":
+    return _obspython.obs_source_enum_full_tree(source, enum_callback, param)
+obs_source_enum_full_tree = _obspython.obs_source_enum_full_tree
+
 def obs_source_active(source: 'obs_source_t const *') -> "bool":
     return _obspython.obs_source_active(source)
 obs_source_active = _obspython.obs_source_active
@@ -4735,6 +4866,10 @@ obs_source_enum_filters = _obspython.obs_source_enum_filters
 def obs_source_get_filter_by_name(source: 'obs_source_t *', name: 'char const *') -> "obs_source_t *":
     return _obspython.obs_source_get_filter_by_name(source, name)
 obs_source_get_filter_by_name = _obspython.obs_source_get_filter_by_name
+
+def obs_source_filter_count(source: 'obs_source_t const *') -> "size_t":
+    return _obspython.obs_source_filter_count(source)
+obs_source_filter_count = _obspython.obs_source_filter_count
 
 def obs_source_copy_filters(dst: 'obs_source_t *', src: 'obs_source_t *') -> "void":
     return _obspython.obs_source_copy_filters(dst, src)
@@ -4849,6 +4984,14 @@ obs_source_get_monitoring_type = _obspython.obs_source_get_monitoring_type
 def obs_source_get_private_settings(item: 'obs_source_t *') -> "obs_data_t *":
     return _obspython.obs_source_get_private_settings(item)
 obs_source_get_private_settings = _obspython.obs_source_get_private_settings
+
+def obs_source_backup_filters(source: 'obs_source_t *') -> "obs_data_array_t *":
+    return _obspython.obs_source_backup_filters(source)
+obs_source_backup_filters = _obspython.obs_source_backup_filters
+
+def obs_source_restore_filters(source: 'obs_source_t *', array: 'obs_data_array_t *') -> "void":
+    return _obspython.obs_source_restore_filters(source, array)
+obs_source_restore_filters = _obspython.obs_source_restore_filters
 
 def obs_source_get_type_data(source: 'obs_source_t *') -> "void *":
     return _obspython.obs_source_get_type_data(source)
@@ -5193,6 +5336,10 @@ def obs_scene_find_sceneitem_by_id(scene: 'obs_scene_t *', id: 'int64_t') -> "ob
     return _obspython.obs_scene_find_sceneitem_by_id(scene, id)
 obs_scene_find_sceneitem_by_id = _obspython.obs_scene_find_sceneitem_by_id
 
+def obs_get_scene_by_name(name: 'char const *') -> "obs_scene_t *":
+    return _obspython.obs_get_scene_by_name(name)
+obs_get_scene_by_name = _obspython.obs_get_scene_by_name
+
 def obs_scene_enum_items(scene: 'obs_scene_t *', callback: 'bool (*)(obs_scene_t *,obs_sceneitem_t *,void *)', param: 'void *') -> "void":
     return _obspython.obs_scene_enum_items(scene, callback, param)
 obs_scene_enum_items = _obspython.obs_scene_enum_items
@@ -5231,6 +5378,10 @@ def obs_scene_reorder_items2(scene: 'obs_scene_t *', item_order: 'obs_sceneitem_
     return _obspython.obs_scene_reorder_items2(scene, item_order, item_order_size)
 obs_scene_reorder_items2 = _obspython.obs_scene_reorder_items2
 
+def obs_source_is_scene(source: 'obs_source_t const *') -> "bool":
+    return _obspython.obs_source_is_scene(source)
+obs_source_is_scene = _obspython.obs_source_is_scene
+
 def obs_scene_add(scene: 'obs_scene_t *', source: 'obs_source_t *') -> "obs_sceneitem_t *":
     return _obspython.obs_scene_add(scene, source)
 obs_scene_add = _obspython.obs_scene_add
@@ -5250,6 +5401,34 @@ obs_sceneitem_release = _obspython.obs_sceneitem_release
 def obs_sceneitem_remove(item: 'obs_sceneitem_t *') -> "void":
     return _obspython.obs_sceneitem_remove(item)
 obs_sceneitem_remove = _obspython.obs_sceneitem_remove
+
+def obs_sceneitems_add(scene: 'obs_scene_t *', data: 'obs_data_array_t *') -> "void":
+    return _obspython.obs_sceneitems_add(scene, data)
+obs_sceneitems_add = _obspython.obs_sceneitems_add
+
+def obs_sceneitem_save(item: 'obs_sceneitem_t *', arr: 'obs_data_array_t *') -> "void":
+    return _obspython.obs_sceneitem_save(item, arr)
+obs_sceneitem_save = _obspython.obs_sceneitem_save
+
+def obs_sceneitem_set_id(sceneitem: 'obs_sceneitem_t *', id: 'int64_t') -> "void":
+    return _obspython.obs_sceneitem_set_id(sceneitem, id)
+obs_sceneitem_set_id = _obspython.obs_sceneitem_set_id
+
+def obs_scene_sceneitem_from_source(scene: 'obs_scene_t *', source: 'obs_source_t *') -> "obs_sceneitem_t *":
+    return _obspython.obs_scene_sceneitem_from_source(scene, source)
+obs_scene_sceneitem_from_source = _obspython.obs_scene_sceneitem_from_source
+
+def obs_scene_save_transform_states(scene: 'obs_scene_t *', all_items: 'bool') -> "obs_data_t *":
+    return _obspython.obs_scene_save_transform_states(scene, all_items)
+obs_scene_save_transform_states = _obspython.obs_scene_save_transform_states
+
+def obs_scene_load_transform_states(state: 'char const *') -> "void":
+    return _obspython.obs_scene_load_transform_states(state)
+obs_scene_load_transform_states = _obspython.obs_scene_load_transform_states
+
+def obs_sceneitem_get_order_position(item: 'obs_sceneitem_t *') -> "int":
+    return _obspython.obs_sceneitem_get_order_position(item)
+obs_sceneitem_get_order_position = _obspython.obs_sceneitem_get_order_position
 
 def obs_sceneitem_get_scene(item: 'obs_sceneitem_t const *') -> "obs_scene_t *":
     return _obspython.obs_sceneitem_get_scene(item)
@@ -5501,6 +5680,10 @@ def obs_group_from_source(source: 'obs_source_t const *') -> "obs_scene_t *":
     return _obspython.obs_group_from_source(source)
 obs_group_from_source = _obspython.obs_group_from_source
 
+def obs_group_or_scene_from_source(source: 'obs_source_t const *') -> "obs_scene_t *":
+    return _obspython.obs_group_or_scene_from_source(source)
+obs_group_or_scene_from_source = _obspython.obs_group_or_scene_from_source
+
 def obs_sceneitem_defer_group_resize_begin(item: 'obs_sceneitem_t *') -> "void":
     return _obspython.obs_sceneitem_defer_group_resize_begin(item)
 obs_sceneitem_defer_group_resize_begin = _obspython.obs_sceneitem_defer_group_resize_begin
@@ -5508,6 +5691,50 @@ obs_sceneitem_defer_group_resize_begin = _obspython.obs_sceneitem_defer_group_re
 def obs_sceneitem_defer_group_resize_end(item: 'obs_sceneitem_t *') -> "void":
     return _obspython.obs_sceneitem_defer_group_resize_end(item)
 obs_sceneitem_defer_group_resize_end = _obspython.obs_sceneitem_defer_group_resize_end
+
+def obs_sceneitem_set_show_transition(item: 'obs_sceneitem_t *', transition: 'obs_source_t *') -> "void":
+    return _obspython.obs_sceneitem_set_show_transition(item, transition)
+obs_sceneitem_set_show_transition = _obspython.obs_sceneitem_set_show_transition
+
+def obs_sceneitem_set_show_transition_duration(item: 'obs_sceneitem_t *', duration_ms: 'uint32_t') -> "void":
+    return _obspython.obs_sceneitem_set_show_transition_duration(item, duration_ms)
+obs_sceneitem_set_show_transition_duration = _obspython.obs_sceneitem_set_show_transition_duration
+
+def obs_sceneitem_get_show_transition(item: 'obs_sceneitem_t *') -> "obs_source_t *":
+    return _obspython.obs_sceneitem_get_show_transition(item)
+obs_sceneitem_get_show_transition = _obspython.obs_sceneitem_get_show_transition
+
+def obs_sceneitem_get_show_transition_duration(item: 'obs_sceneitem_t *') -> "uint32_t":
+    return _obspython.obs_sceneitem_get_show_transition_duration(item)
+obs_sceneitem_get_show_transition_duration = _obspython.obs_sceneitem_get_show_transition_duration
+
+def obs_sceneitem_set_hide_transition(item: 'obs_sceneitem_t *', transition: 'obs_source_t *') -> "void":
+    return _obspython.obs_sceneitem_set_hide_transition(item, transition)
+obs_sceneitem_set_hide_transition = _obspython.obs_sceneitem_set_hide_transition
+
+def obs_sceneitem_set_hide_transition_duration(item: 'obs_sceneitem_t *', duration_ms: 'uint32_t') -> "void":
+    return _obspython.obs_sceneitem_set_hide_transition_duration(item, duration_ms)
+obs_sceneitem_set_hide_transition_duration = _obspython.obs_sceneitem_set_hide_transition_duration
+
+def obs_sceneitem_get_hide_transition(item: 'obs_sceneitem_t *') -> "obs_source_t *":
+    return _obspython.obs_sceneitem_get_hide_transition(item)
+obs_sceneitem_get_hide_transition = _obspython.obs_sceneitem_get_hide_transition
+
+def obs_sceneitem_get_hide_transition_duration(item: 'obs_sceneitem_t *') -> "uint32_t":
+    return _obspython.obs_sceneitem_get_hide_transition_duration(item)
+obs_sceneitem_get_hide_transition_duration = _obspython.obs_sceneitem_get_hide_transition_duration
+
+def obs_sceneitem_do_transition(item: 'obs_sceneitem_t *', visible: 'bool') -> "void":
+    return _obspython.obs_sceneitem_do_transition(item, visible)
+obs_sceneitem_do_transition = _obspython.obs_sceneitem_do_transition
+
+def obs_sceneitem_transition_load(item: 'struct obs_scene_item *', data: 'obs_data_t *', show: 'bool') -> "void":
+    return _obspython.obs_sceneitem_transition_load(item, data, show)
+obs_sceneitem_transition_load = _obspython.obs_sceneitem_transition_load
+
+def obs_sceneitem_transition_save(item: 'struct obs_scene_item *', show: 'bool') -> "obs_data_t *":
+    return _obspython.obs_sceneitem_transition_save(item, show)
+obs_sceneitem_transition_save = _obspython.obs_sceneitem_transition_save
 
 def obs_output_get_display_name(id: 'char const *') -> "char const *":
     return _obspython.obs_output_get_display_name(id)
@@ -6497,6 +6724,10 @@ def os_dlclose(module: 'void *') -> "void":
     return _obspython.os_dlclose(module)
 os_dlclose = _obspython.os_dlclose
 
+def os_is_obs_plugin(path: 'char const *') -> "bool":
+    return _obspython.os_is_obs_plugin(path)
+os_is_obs_plugin = _obspython.os_is_obs_plugin
+
 def os_cpu_usage_info_start() -> "os_cpu_usage_info_t *":
     return _obspython.os_cpu_usage_info_start()
 os_cpu_usage_info_start = _obspython.os_cpu_usage_info_start
@@ -6807,6 +7038,9 @@ OBS_FRONTEND_EVENT_RECORDING_PAUSED = _obspython.OBS_FRONTEND_EVENT_RECORDING_PA
 OBS_FRONTEND_EVENT_RECORDING_UNPAUSED = _obspython.OBS_FRONTEND_EVENT_RECORDING_UNPAUSED
 OBS_FRONTEND_EVENT_TRANSITION_DURATION_CHANGED = _obspython.OBS_FRONTEND_EVENT_TRANSITION_DURATION_CHANGED
 OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED = _obspython.OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED
+OBS_FRONTEND_EVENT_VIRTUALCAM_STARTED = _obspython.OBS_FRONTEND_EVENT_VIRTUALCAM_STARTED
+OBS_FRONTEND_EVENT_VIRTUALCAM_STOPPED = _obspython.OBS_FRONTEND_EVENT_VIRTUALCAM_STOPPED
+OBS_FRONTEND_EVENT_TBAR_VALUE_CHANGED = _obspython.OBS_FRONTEND_EVENT_TBAR_VALUE_CHANGED
 
 def obs_frontend_streaming_start() -> "void":
     return _obspython.obs_frontend_streaming_start()
@@ -6939,6 +7173,26 @@ obs_frontend_take_screenshot = _obspython.obs_frontend_take_screenshot
 def obs_frontend_take_source_screenshot(source: 'obs_source_t *') -> "void":
     return _obspython.obs_frontend_take_source_screenshot(source)
 obs_frontend_take_source_screenshot = _obspython.obs_frontend_take_source_screenshot
+
+def obs_frontend_get_virtualcam_output() -> "obs_output_t *":
+    return _obspython.obs_frontend_get_virtualcam_output()
+obs_frontend_get_virtualcam_output = _obspython.obs_frontend_get_virtualcam_output
+
+def obs_frontend_start_virtualcam() -> "void":
+    return _obspython.obs_frontend_start_virtualcam()
+obs_frontend_start_virtualcam = _obspython.obs_frontend_start_virtualcam
+
+def obs_frontend_stop_virtualcam() -> "void":
+    return _obspython.obs_frontend_stop_virtualcam()
+obs_frontend_stop_virtualcam = _obspython.obs_frontend_stop_virtualcam
+
+def obs_frontend_virtualcam_active() -> "bool":
+    return _obspython.obs_frontend_virtualcam_active()
+obs_frontend_virtualcam_active = _obspython.obs_frontend_virtualcam_active
+
+def obs_frontend_reset_video() -> "void":
+    return _obspython.obs_frontend_reset_video()
+obs_frontend_reset_video = _obspython.obs_frontend_reset_video
 # This file is compatible with both classic and new-style classes.
 
 
