@@ -1,5 +1,5 @@
-<!-- Creator     : groff version 1.22.3 -->
-<!-- CreationDate: Sat Apr  6 16:01:09 2019 -->
+<!-- Creator     : groff version 1.22.4 -->
+<!-- CreationDate: Sat Mar 20 20:24:19 2021 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -103,8 +103,9 @@ remember, but take time to type. You may freely mix
 different option styles, or specify options after the
 command-line arguments. Thus you may write:</p>
 
-<pre style="margin-left:11%; margin-top: 1em">        wget -r --tries=10 http://fly.srk.fer.hr/ -o log</pre>
-
+<p style="margin-left:11%; margin-top: 1em">wget -r
+--tries=10 http://fly.srk.fer.hr/ -o
+log</p>
 
 <p style="margin-left:11%; margin-top: 1em">The space
 between the option accepting an argument and the argument
@@ -115,14 +116,14 @@ may be omitted. Instead of <b>-o log</b> you can write
 several options that do not require arguments together,
 like:</p>
 
-<pre style="margin-left:11%; margin-top: 1em">        wget -drc &lt;URL&gt;</pre>
-
+<p style="margin-left:11%; margin-top: 1em">wget -drc
+&lt;URL&gt;</p>
 
 <p style="margin-left:11%; margin-top: 1em">This is
 completely equivalent to:</p>
 
-<pre style="margin-left:11%; margin-top: 1em">        wget -d -r -c &lt;URL&gt;</pre>
-
+<p style="margin-left:11%; margin-top: 1em">wget -d
+-r -c &lt;URL&gt;</p>
 
 <p style="margin-left:11%; margin-top: 1em">Since the
 options can be specified after the arguments, you may
@@ -130,22 +131,21 @@ terminate them with <b>--</b>. So the following
 will try to download <small>URL</small> <b>-x</b>,
 reporting failure to <i>log</i>:</p>
 
-<pre style="margin-left:11%; margin-top: 1em">        wget -o log -- -x</pre>
-
+<p style="margin-left:11%; margin-top: 1em">wget -o
+log -- -x</p>
 
 <p style="margin-left:11%; margin-top: 1em">The options
 that accept comma-separated lists all respect the convention
 that specifying an empty list clears its value. This can be
 useful to clear the <i>.wgetrc</i> settings. For instance,
-if your <i>.wgetrc</i> sets
-<tt>&quot;exclude_directories&quot;</tt> to
-<i>/cgi-bin</i>, the following example will first
+if your <i>.wgetrc</i> sets &quot;exclude_directories&quot;
+to <i>/cgi-bin</i>, the following example will first
 reset it, and then set it to exclude <i>/~nobody</i> and
 <i>/~somebody</i>. You can also clear the lists in
 <i>.wgetrc</i>.</p>
 
-<pre style="margin-left:11%; margin-top: 1em">        wget -X &quot; -X /~nobody,/~somebody</pre>
-
+<p style="margin-left:11%; margin-top: 1em">wget -X
+&quot; -X /~nobody,/~somebody</p>
 
 <p style="margin-left:11%; margin-top: 1em">Most options
 that do not accept arguments are <i>boolean</i> options, so
@@ -176,10 +176,10 @@ superfluous---if the default for an
 affirmative option is to not do something, then why provide
 a way to explicitly turn it off? But the startup file may in
 fact change the default. For instance, using
-<tt>&quot;follow_ftp = on&quot;</tt> in <i>.wgetrc</i> makes
-Wget <i>follow</i> <small>FTP</small> links by default, and
-using <b>--no-follow-ftp</b> is the
-only way to restore the factory default from the command
+&quot;follow_ftp = on&quot; in <i>.wgetrc</i> makes Wget
+<i>follow</i> <small>FTP</small> links by default, and using
+<b>--no-follow-ftp</b> is the only
+way to restore the factory default from the command
 line.</p>
 
 <p style="margin-left:11%; margin-top: 1em"><b>Basic
@@ -377,9 +377,8 @@ line.</p>
 specify <b>--force-html</b>, the document
 will be regarded as <b>html</b>. In that case you may have
 problems with relative links, which you can solve either by
-adding <tt>&quot;&lt;base
-href=&quot;</tt><i>url</i><tt>&quot;&gt;&quot;</tt> to the
-documents or by specifying
+adding &quot;&lt;base href=&quot;<i>url</i>&quot;&gt;&quot;
+to the documents or by specifying
 <b>--base=</b><i>url</i> on the command
 line.</p>
 
@@ -466,8 +465,7 @@ like access tokens or credentials.</p>
 force it to be treated as an <small>HTML</small> file. This
 enables you to retrieve relative links from existing
 <small>HTML</small> files on your local disk, by adding
-<tt>&quot;&lt;base
-href=&quot;</tt><i>url</i><tt>&quot;&gt;&quot;</tt> to
+&quot;&lt;base href=&quot;<i>url</i>&quot;&gt;&quot; to
 <small>HTML,</small> or using the <b>--base</b>
 command-line option.</p>
 
@@ -482,10 +480,10 @@ the <b>-i</b>/<b>--input-file</b>
 option (together with <b>--force-html</b>,
 or when the input file was fetched remotely from a server
 describing it as <small>HTML</small> ). This is equivalent
-to the presence of a <tt>&quot;BASE&quot;</tt> tag in the
+to the presence of a &quot;BASE&quot; tag in the
 <small>HTML</small> input file, with
 <i><small>URL</small></i> as the value for the
-<tt>&quot;href&quot;</tt> attribute.</p>
+&quot;href&quot; attribute.</p>
 
 <p style="margin-left:17%; margin-top: 1em">For instance,
 if you specify <b>http://foo/bar/a.html</b> for
@@ -643,12 +641,11 @@ even if <b>-r</b> or <b>-p</b> are in effect.)
 When <b>-nc</b> is specified, this behavior is
 suppressed, and Wget will refuse to download newer copies of
 <i>file</i>. Therefore,
-&quot;<tt>&quot;no-clobber&quot;</tt>&quot; is
-actually a misnomer in this
-mode---it&rsquo;s not clobbering
-that&rsquo;s prevented (as the numeric suffixes were already
-preventing clobbering), but rather the multiple version
-saving that&rsquo;s prevented.</p>
+&quot;&quot;no-clobber&quot;&quot; is actually a
+misnomer in this mode---it&rsquo;s not
+clobbering that&rsquo;s prevented (as the numeric suffixes
+were already preventing clobbering), but rather the multiple
+version saving that&rsquo;s prevented.</p>
 
 <p style="margin-left:17%; margin-top: 1em">When running
 Wget with <b>-r</b> or <b>-p</b>, but without
@@ -716,8 +713,8 @@ partially-downloaded file. This is useful when you want to
 finish up a download started by a previous instance of Wget,
 or by another program. For instance:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -c ftp://sunsite.doc.ic.ac.uk/ls-lR.Z</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -c
+ftp://sunsite.doc.ic.ac.uk/ls-lR.Z</p>
 
 <p style="margin-left:17%; margin-top: 1em">If there is a
 file named <i>ls-lR.Z</i> in the current directory,
@@ -758,9 +755,9 @@ occurs.</p>
 side of the coin, while using <b>-c</b>, any file
 that&rsquo;s bigger on the server than locally will be
 considered an incomplete download and only
-<tt>&quot;(length(remote) - length(local))&quot;</tt>
-bytes will be downloaded and tacked onto the end of the
-local file. This behavior can be desirable in certain
+&quot;(length(remote) - length(local))&quot; bytes
+will be downloaded and tacked onto the end of the local
+file. This behavior can be desirable in certain
 cases---for instance, you can use <b>wget
 -c</b> to download just the new portion that&rsquo;s
 been appended to a data collection or log file.</p>
@@ -786,7 +783,7 @@ case.</p>
 <p style="margin-left:17%; margin-top: 1em">Note that
 <b>-c</b> only works with <small>FTP</small> servers
 and with <small>HTTP</small> servers that support the
-<tt>&quot;Range&quot;</tt> header.</p>
+&quot;Range&quot; header.</p>
 
 
 <p style="margin-left:11%;"><b>--start-pos=</b>
@@ -841,21 +838,20 @@ the type sperated by a colon (:) like this:
 <p style="margin-left:17%; margin-top: 1em">When using the
 dotted retrieval, you may set the <i>style</i> by specifying
 the type as <b>dot:</b><i>style</i>. Different styles assign
-different meaning to one dot. With the
-<tt>&quot;default&quot;</tt> style each dot represents 1K,
-there are ten dots in a cluster and 50 dots in a line. The
-<tt>&quot;binary&quot;</tt> style has a more
-&quot;computer&quot;-like
+different meaning to one dot. With the &quot;default&quot;
+style each dot represents 1K, there are ten dots in a
+cluster and 50 dots in a line. The &quot;binary&quot; style
+has a more &quot;computer&quot;-like
 orientation---8K dots, 16-dots
 clusters and 48 dots per line (which makes for 384K lines).
-The <tt>&quot;mega&quot;</tt> style is suitable for
-downloading large files---each dot
-represents 64K retrieved, there are eight dots in a cluster,
-and 48 dots on each line (so each line contains 3M). If
-<tt>&quot;mega&quot;</tt> is not enough then you can use the
-<tt>&quot;giga&quot;</tt> style---each dot
-represents 1M retrieved, there are eight dots in a cluster,
-and 32 dots on each line (so each line contains 32M).</p>
+The &quot;mega&quot; style is suitable for downloading large
+files---each dot represents 64K retrieved,
+there are eight dots in a cluster, and 48 dots on each line
+(so each line contains 3M). If &quot;mega&quot; is not
+enough then you can use the &quot;giga&quot;
+style---each dot represents 1M retrieved,
+there are eight dots in a cluster, and 32 dots on each line
+(so each line contains 32M).</p>
 
 <p style="margin-left:17%; margin-top: 1em">With
 <b>--progress=bar</b>, there are currently two
@@ -881,10 +877,10 @@ display as much of the filename as possible without
 scrolling through it.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Note that you
-can set the default style using the
-<tt>&quot;progress&quot;</tt> command in <i>.wgetrc</i>.
-That setting may be overridden from the command line. For
-example, to force the bar output without scrolling, use
+can set the default style using the &quot;progress&quot;
+command in <i>.wgetrc</i>. That setting may be overridden
+from the command line. For example, to force the bar output
+without scrolling, use
 <b>--progress=bar:force:noscroll</b>.</p>
 
 
@@ -977,8 +973,9 @@ Wget will behave as a Web <i>spider</i>, which means that it
 will not download the pages, just check that they are there.
 For example, you can use Wget to check your bookmarks:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget --spider --force-html -i bookmarks.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+--spider --force-html -i
+bookmarks.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">This feature
 needs much more work for Wget to get close to the
@@ -1081,9 +1078,9 @@ files.</p>
 seconds between the retrievals. Use of this option is
 recommended, as it lightens the server load by making the
 requests less frequent. Instead of in seconds, the time can
-be specified in minutes using the <tt>&quot;m&quot;</tt>
-suffix, in hours using <tt>&quot;h&quot;</tt> suffix, or in
-days using <tt>&quot;d&quot;</tt> suffix.</p>
+be specified in minutes using the &quot;m&quot; suffix, in
+hours using &quot;h&quot; suffix, or in days using
+&quot;d&quot; suffix.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Specifying a
 large value for this option is useful if the network or the
@@ -1091,8 +1088,7 @@ destination host is down, so that Wget can wait long enough
 to reasonably expect the network error to be fixed before
 the retry. The waiting interval specified by this function
 is influenced by
-<tt>&quot;--random-wait&quot;</tt>, which
-see.</p>
+&quot;--random-wait&quot;, which see.</p>
 
 
 <p style="margin-left:11%;"><b>--waitretry=</b><i>seconds</i></p>
@@ -1136,7 +1132,7 @@ users from a web site due to the actions of one.</p>
 <p style="margin-left:11%;"><b>--no-proxy</b></p>
 
 <p style="margin-left:17%;">Don&rsquo;t use proxies, even
-if the appropriate <tt>*_proxy</tt> environment variable is
+if the appropriate *_proxy environment variable is
 defined.</p>
 
 <p style="margin-left:11%;"><b>-Q</b> <i>quota</i>
@@ -1153,12 +1149,13 @@ will never affect downloading a single file. So if you
 specify <b>wget -Q10k
 https://example.com/ls-lR.gz</b>, all of the
 <i>ls-lR.gz</i> will be downloaded. The same goes even
-when several URLs are specified on the command-line.
-However, quota is respected when retrieving either
-recursively, or from an input file. Thus you may safely type
-<b>wget -Q2m -i
-sites</b>---download will be aborted when
-the quota is exceeded.</p>
+when several URLs are specified on the command-line. The
+quota is checked only at the end of each downloaded file, so
+it will never result in a partially downloaded file. Thus
+you may safely type <b>wget -Q2m -i
+sites</b>---download will be aborted after
+the file that exhausts the quota is completely
+downloaded.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Setting quota
 to 0 or to <b>inf</b> unlimits the download quota.</p>
@@ -1180,12 +1177,11 @@ been reported that in some situations it is not desirable to
 cache host names, even for the duration of a short-running
 application like Wget. With this option Wget issues a new
 <small>DNS</small> lookup (more precisely, a new call to
-<tt>&quot;gethostbyname&quot;</tt> or
-<tt>&quot;getaddrinfo&quot;</tt>) each time it makes a new
-connection. Please note that this option will <i>not</i>
-affect caching that might be performed by the resolving
-library or by an external caching layer, such as
-<small>NSCD.</small></p>
+&quot;gethostbyname&quot; or &quot;getaddrinfo&quot;) each
+time it makes a new connection. Please note that this option
+will <i>not</i> affect caching that might be performed by
+the resolving library or by an external caching layer, such
+as <small>NSCD.</small></p>
 
 <p style="margin-left:17%; margin-top: 1em">If you
 don&rsquo;t understand exactly what this option does, you
@@ -1308,8 +1304,8 @@ host&rsquo;s <small>DNS</small> record. If the
 <small>DNS</small> responds with both IPv4 and IPv6
 addresses, Wget will try them in sequence until it finds one
 it can connect to. (Also see
-<tt>&quot;--prefer-family&quot;</tt>
-option described below.)</p>
+&quot;--prefer-family&quot; option
+described below.)</p>
 
 <p style="margin-left:17%; margin-top: 1em">These options
 can be used to deliberately force the use of IPv4 or IPv6
@@ -1334,11 +1330,11 @@ that resolve to both IPv6 and IPv4 addresses from IPv4
 networks. For example, <b>www.kame.net</b> resolves to
 <b>2001:200:0:8002:203:47ff:fea5:3085</b> and to
 <b>203.178.141.194</b>. When the preferred family is
-<tt>&quot;IPv4&quot;</tt>, the IPv4 address is used first;
-when the preferred family is <tt>&quot;IPv6&quot;</tt>, the
-IPv6 address is used first; if the specified value is
-<tt>&quot;none&quot;</tt>, the address order returned by
-<small>DNS</small> is used without change.</p>
+&quot;IPv4&quot;, the IPv4 address is used first; when the
+preferred family is &quot;IPv6&quot;, the IPv6 address is
+used first; if the specified value is &quot;none&quot;, the
+address order returned by <small>DNS</small> is used without
+change.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Unlike
 <b>-4</b> and <b>-6</b>, this option
@@ -1411,8 +1407,8 @@ support is activated by default.</p>
 
 <p style="margin-left:17%; margin-top: 1em">You can set the
 default state of <small>IRI</small> support using the
-<tt>&quot;iri&quot;</tt> command in <i>.wgetrc</i>. That
-setting may be overridden from the command line.</p>
+&quot;iri&quot; command in <i>.wgetrc</i>. That setting may
+be overridden from the command line.</p>
 
 
 <p style="margin-left:11%;"><b>--local-encoding=</b><i>encoding</i></p>
@@ -1424,15 +1420,14 @@ how Wget converts URLs specified as arguments from locale to
 support.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Wget use the
-function <tt>&quot;nl_langinfo()&quot;</tt> and then the
-<tt>&quot;CHARSET&quot;</tt> environment variable to get the
-locale. If it fails, <small>ASCII</small> is used.</p>
+function &quot;nl_langinfo()&quot; and then the
+&quot;CHARSET&quot; environment variable to get the locale.
+If it fails, <small>ASCII</small> is used.</p>
 
 <p style="margin-left:17%; margin-top: 1em">You can set the
-default local encoding using the
-<tt>&quot;local_encoding&quot;</tt> command in
-<i>.wgetrc</i>. That setting may be overridden from the
-command line.</p>
+default local encoding using the &quot;local_encoding&quot;
+command in <i>.wgetrc</i>. That setting may be overridden
+from the command line.</p>
 
 
 <p style="margin-left:11%;"><b>--remote-encoding=</b><i>encoding</i></p>
@@ -1446,16 +1441,14 @@ support, for the interpretation of non-ASCII characters.</p>
 
 <p style="margin-left:17%; margin-top: 1em">For
 <small>HTTP,</small> remote encoding can be found in
-<small>HTTP</small> <tt>&quot;Content-Type&quot;</tt>
-header and in <small>HTML</small>
-<tt>&quot;Content-Type http-equiv&quot;</tt>
-meta tag.</p>
+<small>HTTP</small> &quot;Content-Type&quot; header
+and in <small>HTML</small> &quot;Content-Type
+http-equiv&quot; meta tag.</p>
 
 <p style="margin-left:17%; margin-top: 1em">You can set the
-default encoding using the
-<tt>&quot;remoteencoding&quot;</tt> command in
-<i>.wgetrc</i>. That setting may be overridden from the
-command line.</p>
+default encoding using the &quot;remoteencoding&quot;
+command in <i>.wgetrc</i>. That setting may be overridden
+from the command line.</p>
 
 
 <p style="margin-left:11%;"><b>--unlink</b></p>
@@ -1562,13 +1555,15 @@ Wget not &quot;see&quot; <i>number</i> remote directory
 components. Here are several examples of how
 <b>--cut-dirs</b> option works.</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        No options        -&gt; ftp.xemacs.org/pub/xemacs/
-        -nH               -&gt; pub/xemacs/
-        -nH --cut-dirs=1  -&gt; xemacs/
-        -nH --cut-dirs=2  -&gt; .
-        --cut-dirs=1      -&gt; ftp.xemacs.org/xemacs/
-        ...</pre>
-
+<p style="margin-left:17%; margin-top: 1em">No options
+-&gt; ftp.xemacs.org/pub/xemacs/ <br>
+-nH -&gt; pub/xemacs/ <br>
+-nH --cut-dirs=1 -&gt; xemacs/
+<br>
+-nH --cut-dirs=2 -&gt; . <br>
+--cut-dirs=1 -&gt;
+ftp.xemacs.org/xemacs/ <br>
+...</p>
 
 <p style="margin-left:17%; margin-top: 1em">If you just
 want to get rid of the directory structure, this option is
@@ -1645,7 +1640,7 @@ but should now be considered deprecated.</p>
 
 <p style="margin-left:17%; margin-top: 1em">As of version
 1.19.2, Wget will also ensure that any downloaded files with
-a <tt>&quot;Content-Encoding&quot;</tt> of <b>br</b>,
+a &quot;Content-Encoding&quot; of <b>br</b>,
 <b>compress</b>, <b>deflate</b> or <b>gzip</b> end in the
 suffix <b>.br</b>, <b>.Z</b>, <b>.zlib</b> and <b>.gz</b>
 respectively.</p>
@@ -1664,20 +1659,18 @@ that are not parsed by Wget.</p>
 <i>user</i> and password <i>password</i> on an
 <small>HTTP</small> server. According to the type of the
 challenge, Wget will encode them using either the
-<tt>&quot;basic&quot;</tt> (insecure), the
-<tt>&quot;digest&quot;</tt>, or the Windows
-<tt>&quot;NTLM&quot;</tt> authentication scheme.</p>
+&quot;basic&quot; (insecure), the &quot;digest&quot;, or the
+Windows &quot;NTLM&quot; authentication scheme.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Another way to
 specify username and password is in the <small>URL</small>
 itself. Either method reveals your password to anyone who
-bothers to run <tt>&quot;ps&quot;</tt>. To prevent the
-passwords from being seen, use the
-<b>--use-askpass</b> or store them in
-<i>.wgetrc</i> or <i>.netrc</i>, and make sure to protect
-those files from other users with
-<tt>&quot;chmod&quot;</tt>. If the passwords are really
-important, do not leave them lying in those files
+bothers to run &quot;ps&quot;. To prevent the passwords from
+being seen, use the <b>--use-askpass</b>
+or store them in <i>.wgetrc</i> or <i>.netrc</i>, and make
+sure to protect those files from other users with
+&quot;chmod&quot;. If the passwords are really important, do
+not leave them lying in those files
 either---edit the files and delete them
 after Wget has started the download.</p>
 
@@ -1718,12 +1711,12 @@ allowed by default.</p>
 <p style="margin-left:17%;">Disable the use of cookies.
 Cookies are a mechanism for maintaining server-side state.
 The server sends the client a cookie using the
-<tt>&quot;Set-Cookie&quot;</tt> header, and the client
-responds with the same cookie upon further requests. Since
-cookies allow the server owners to keep track of visitors
-and for sites to exchange this information, some consider
-them a breach of privacy. The default is to use cookies;
-however, <i>storing</i> cookies is not on by default.</p>
+&quot;Set-Cookie&quot; header, and the client responds
+with the same cookie upon further requests. Since cookies
+allow the server owners to keep track of visitors and for
+sites to exchange this information, some consider them a
+breach of privacy. The default is to use cookies; however,
+<i>storing</i> cookies is not on by default.</p>
 
 
 <p style="margin-left:11%;"><b>--load-cookies</b>
@@ -1790,8 +1783,9 @@ Write down the name and value of the cookie, and manually
 instruct Wget to send those cookies, bypassing the
 &quot;official&quot; cookie support:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget --no-cookies --header &quot;Cookie: &lt;name&gt;=&lt;value&gt;&quot;</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+--no-cookies --header
+&quot;Cookie: &lt;name&gt;=&lt;value&gt;&quot;</p>
 
 
 <p style="margin-left:11%;"><b>--save-cookies</b>
@@ -1834,16 +1828,16 @@ again.</p>
 <p style="margin-left:17%;">Unfortunately, some
 <small>HTTP</small> servers ( <small>CGI</small> programs,
 to be more precise) send out bogus
-<tt>&quot;Content-Length&quot;</tt> headers, which
-makes Wget go wild, as it thinks not all the document was
-retrieved. You can spot this syndrome if Wget retries
-getting the same document again and again, each time
-claiming that the (otherwise normal) connection has closed
-on the very same byte.</p>
+&quot;Content-Length&quot; headers, which makes Wget
+go wild, as it thinks not all the document was retrieved.
+You can spot this syndrome if Wget retries getting the same
+document again and again, each time claiming that the
+(otherwise normal) connection has closed on the very same
+byte.</p>
 
 <p style="margin-left:17%; margin-top: 1em">With this
 option, Wget will ignore the
-<tt>&quot;Content-Length&quot;</tt>
+&quot;Content-Length&quot;
 header---as if it never existed.</p>
 
 
@@ -1859,10 +1853,11 @@ contain newlines.</p>
 more than one additional header by specifying
 <b>--header</b> more than once.</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget --header='Accept-Charset: iso-8859-2' \
-             --header='Accept-Language: hr'        \
-               http://fly.srk.fer.hr/</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+--header='Accept-Charset:
+iso-8859-2' \ <br>
+--header='Accept-Language: hr' \ <br>
+http://fly.srk.fer.hr/</p>
 
 <p style="margin-left:17%; margin-top: 1em">Specification
 of an empty string as the header value will clear all
@@ -1872,10 +1867,11 @@ previous user-defined headers.</p>
 1.10, this option can be used to override headers otherwise
 generated automatically. This example instructs Wget to
 connect to localhost, but to specify <b>foo.bar</b> in the
-<tt>&quot;Host&quot;</tt> header:</p>
+&quot;Host&quot; header:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget --header=&quot;Host: foo.bar&quot; http://localhost/</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+--header=&quot;Host: foo.bar&quot;
+http://localhost/</p>
 
 <p style="margin-left:17%; margin-top: 1em">In versions of
 Wget prior to 1.10 such use of <b>--header</b>
@@ -1892,7 +1888,7 @@ to be used. Legal values are <b>auto</b>, <b>gzip</b> and
 or <b>gzip</b> are specified, Wget asks the server to
 compress the file using the gzip compression format. If the
 server compresses the file and responds with the
-<tt>&quot;Content-Encoding&quot;</tt> header field set
+&quot;Content-Encoding&quot; header field set
 appropriately, the file will be decompressed
 automatically.</p>
 
@@ -1904,7 +1900,7 @@ the default.</p>
 <p style="margin-left:17%; margin-top: 1em">Compression
 support is currently experimental. In case it is turned on,
 please report any bugs to
-<tt>&quot;bug-wget@gnu.org&quot;</tt>.</p>
+&quot;bug-wget@gnu.org&quot;.</p>
 
 
 <p style="margin-left:11%;"><b>--max-redirect=</b><i>number</i></p>
@@ -1923,7 +1919,7 @@ the option to use.</p>
 <p style="margin-left:17%;">Specify the username
 <i>user</i> and password <i>password</i> for authentication
 on a proxy server. Wget will encode them using the
-<tt>&quot;basic&quot;</tt> authentication scheme.</p>
+&quot;basic&quot; authentication scheme.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Security
 considerations similar to those with
@@ -1956,30 +1952,30 @@ to the <small>HTTP</small> server.</p>
 
 <p style="margin-left:17%; margin-top: 1em">The
 <small>HTTP</small> protocol allows the clients to identify
-themselves using a <tt>&quot;User-Agent&quot;</tt>
-header field. This enables distinguishing the
-<small>WWW</small> software, usually for statistical
-purposes or for tracing of protocol violations. Wget
-normally identifies as <b>Wget/</b><i>version</i>,
-<i>version</i> being the current version number of Wget.</p>
+themselves using a &quot;User-Agent&quot; header
+field. This enables distinguishing the <small>WWW</small>
+software, usually for statistical purposes or for tracing of
+protocol violations. Wget normally identifies as
+<b>Wget/</b><i>version</i>, <i>version</i> being the current
+version number of Wget.</p>
 
 <p style="margin-left:17%; margin-top: 1em">However, some
 sites have been known to impose the policy of tailoring the
 output according to the
-<tt>&quot;User-Agent&quot;</tt>-supplied
-information. While this is not such a bad idea in theory, it
-has been abused by servers denying information to clients
-other than (historically) Netscape or, more frequently,
-Microsoft Internet Explorer. This option allows you to
-change the <tt>&quot;User-Agent&quot;</tt> line issued
-by Wget. Use of this option is discouraged, unless you
-really know what you are doing.</p>
+&quot;User-Agent&quot;-supplied information.
+While this is not such a bad idea in theory, it has been
+abused by servers denying information to clients other than
+(historically) Netscape or, more frequently, Microsoft
+Internet Explorer. This option allows you to change the
+&quot;User-Agent&quot; line issued by Wget. Use of
+this option is discouraged, unless you really know what you
+are doing.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Specifying
 empty user agent with
 <b>--user-agent=&quot;&quot;</b> instructs
-Wget not to send the <tt>&quot;User-Agent&quot;</tt>
-header in <small>HTTP</small> requests.</p>
+Wget not to send the &quot;User-Agent&quot; header in
+<small>HTTP</small> requests.</p>
 
 
 <p style="margin-left:11%;"><b>--post-data=</b><i>string</i>
@@ -1993,29 +1989,27 @@ specified data in the request body.
 data, whereas <b>--post-file</b> sends the
 contents of <i>file</i>. Other than that, they work in
 exactly the same way. In particular, they <i>both</i> expect
-content of the form
-<tt>&quot;key1=value1&amp;key2=value2&quot;</tt>, with
-percent-encoding for special characters; the only difference
-is that one expects its content as a command-line parameter
-and the other accepts its content from a file. In
+content of the form &quot;key1=value1&amp;key2=value2&quot;,
+with percent-encoding for special characters; the only
+difference is that one expects its content as a command-line
+parameter and the other accepts its content from a file. In
 particular, <b>--post-file</b> is
 <i>not</i> for transmitting files as form attachments: those
-must appear as <tt>&quot;key=value&quot;</tt> data (with
-appropriate percent-coding) just like everything else. Wget
-does not currently support
-<tt>&quot;multipart/form-data&quot;</tt> for
+must appear as &quot;key=value&quot; data (with appropriate
+percent-coding) just like everything else. Wget does not
+currently support &quot;multipart/form-data&quot; for
 transmitting <small>POST</small> data; only
-<tt>&quot;application/x-www-form-urlencoded&quot;</tt>.
+&quot;application/x-www-form-urlencoded&quot;.
 Only one of <b>--post-data</b> and
 <b>--post-file</b> should be
 specified.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Please note
 that wget does not require the content to be of the form
-<tt>&quot;key1=value1&amp;key2=value2&quot;</tt>, and
-neither does it test for it. Wget will simply transmit
-whatever data is provided to it. Most servers however expect
-the <small>POST</small> data to be in the above format when
+&quot;key1=value1&amp;key2=value2&quot;, and neither does it
+test for it. Wget will simply transmit whatever data is
+provided to it. Most servers however expect the
+<small>POST</small> data to be in the above format when
 processing <small>HTML</small> Forms.</p>
 
 <p style="margin-left:17%; margin-top: 1em">When sending a
@@ -2030,10 +2024,10 @@ in the text will also be sent as-is in the
 <p style="margin-left:17%; margin-top: 1em">Please be aware
 that Wget needs to know the size of the <small>POST</small>
 data in advance. Therefore the argument to
-<tt>&quot;--post-file&quot;</tt> must be a
-regular file; specifying a <small>FIFO</small> or something
-like <i>/dev/stdin</i> won&rsquo;t work. It&rsquo;s not
-quite clear how to work around this limitation inherent in
+&quot;--post-file&quot; must be a regular
+file; specifying a <small>FIFO</small> or something like
+<i>/dev/stdin</i> won&rsquo;t work. It&rsquo;s not quite
+clear how to work around this limitation inherent in
 <small>HTTP/1.0.</small> Although <small>HTTP/1.1</small>
 introduces <i>chunked</i> transfer that doesn&rsquo;t
 require knowing the request length in advance, a client
@@ -2059,14 +2053,15 @@ shows how to log in to a server using <small>POST</small>
 and then proceed to download the desired pages, presumably
 only accessible to authorized users:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        # Log in to the server.  This can be done only once.
-        wget --save-cookies cookies.txt \
-             --post-data 'user=foo&amp;password=bar' \
-             http://example.com/auth.php
-        # Now grab the page or pages we care about.
-        wget --load-cookies cookies.txt \
-             -p http://example.com/interesting/article.php</pre>
-
+<p style="margin-left:17%; margin-top: 1em"># Log in to the
+server. This can be done only once. <br>
+wget --save-cookies cookies.txt \ <br>
+--post-data 'user=foo&amp;password=bar' \
+<br>
+http://example.com/auth.php <br>
+# Now grab the page or pages we care about. <br>
+wget --load-cookies cookies.txt \ <br>
+-p http://example.com/interesting/article.php</p>
 
 <p style="margin-left:17%; margin-top: 1em">If the server
 is using session cookies to track user authentication, the
@@ -2105,9 +2100,9 @@ exactly the same way.</p>
 <p style="margin-left:17%; margin-top: 1em">Currently,
 <b>--body-file</b> is <i>not</i> for
 transmitting files as a whole. Wget does not currently
-support <tt>&quot;multipart/form-data&quot;</tt> for
+support &quot;multipart/form-data&quot; for
 transmitting data; only
-<tt>&quot;application/x-www-form-urlencoded&quot;</tt>.
+&quot;application/x-www-form-urlencoded&quot;.
 In the future, this may be changed so that wget sends the
 <b>--body-file</b> as a complete file
 instead of sending its contents to the server. Please be
@@ -2127,8 +2122,8 @@ till the redirection is completed. This is true for all
 redirection response codes except 307 Temporary Redirect
 which is used to explicitly specify that the request method
 should <i>not</i> change. Another exception is when the
-method is set to <tt>&quot;POST&quot;</tt>, in which case
-the redirection rules specified under
+method is set to &quot;POST&quot;, in which case the
+redirection rules specified under
 <b>--post-data</b> are followed.</p>
 
 
@@ -2136,24 +2131,23 @@ the redirection rules specified under
 
 <p style="margin-left:17%;">If this is set to on,
 experimental (not fully-functional) support for
-<tt>&quot;Content-Disposition&quot;</tt> headers is
-enabled. This can currently result in extra round-trips to
-the server for a <tt>&quot;HEAD&quot;</tt> request, and is
-known to suffer from a few bugs, which is why it is not
-currently enabled by default.</p>
+&quot;Content-Disposition&quot; headers is enabled.
+This can currently result in extra round-trips to the server
+for a &quot;HEAD&quot; request, and is known to suffer from
+a few bugs, which is why it is not currently enabled by
+default.</p>
 
 <p style="margin-left:17%; margin-top: 1em">This option is
 useful for some file-downloading <small>CGI</small> programs
-that use <tt>&quot;Content-Disposition&quot;</tt>
-headers to describe what the name of a downloaded file
-should be.</p>
+that use &quot;Content-Disposition&quot; headers to
+describe what the name of a downloaded file should be.</p>
 
 <p style="margin-left:17%; margin-top: 1em">When combined
 with <b>--metalink-over-http</b> and
 <b>--trust-server-names</b>, a
 <b>Content-Type: application/metalink4+xml</b> file is named
-using the <tt>&quot;Content-Disposition&quot;</tt>
-filename field, if available.</p>
+using the &quot;Content-Disposition&quot; filename
+field, if available.</p>
 
 
 <p style="margin-left:11%;"><b>--content-on-error</b></p>
@@ -2369,10 +2363,10 @@ time.</p>
 Each file contains one <small>CA</small> certificate, and
 the file name is based on a hash value derived from the
 certificate. This is achieved by processing a certificate
-directory with the <tt>&quot;c_rehash&quot;</tt> utility
-supplied with OpenSSL. Using
-<b>--ca-directory</b> is more efficient
-than <b>--ca-certificate</b> when many
+directory with the &quot;c_rehash&quot; utility supplied
+with OpenSSL. Using <b>--ca-directory</b>
+is more efficient than
+<b>--ca-certificate</b> when many
 certificates are installed because it allows Wget to fetch
 certificates on demand.</p>
 
@@ -2420,7 +2414,7 @@ randomness to initialize. Randomness may be provided by
 <small>EGD</small> (see <b>--egd-file</b>
 below) or read from an external source specified by the
 user. If this option is not specified, Wget looks for random
-data in <tt>$RANDFILE</tt> or, if that is unset, in
+data in $RANDFILE or, if that is unset, in
 <i>$HOME/.rnd</i>.</p>
 
 <p style="margin-left:17%; margin-top: 1em">If you&rsquo;re
@@ -2444,9 +2438,9 @@ keys.</p>
 
 <p style="margin-left:17%; margin-top: 1em">OpenSSL allows
 the user to specify his own source of entropy using the
-<tt>&quot;RAND_FILE&quot;</tt> environment variable. If this
-variable is unset, or if the specified file does not produce
-enough randomness, OpenSSL will read random data from
+&quot;RAND_FILE&quot; environment variable. If this variable
+is unset, or if the specified file does not produce enough
+randomness, OpenSSL will read random data from
 <small>EGD</small> socket specified using this option.</p>
 
 <p style="margin-left:17%; margin-top: 1em">If this option
@@ -2464,9 +2458,9 @@ Security, <small>RFC 6797</small> ) by default. Use
 <b>--no-hsts</b> to make Wget act as a
 non-HSTS-compliant <small>UA.</small> As a consequence, Wget
 would ignore all the
-<tt>&quot;Strict-Transport-Security&quot;</tt>
-headers, and would not enforce any existing
-<small>HSTS</small> policy.</p>
+&quot;Strict-Transport-Security&quot; headers,
+and would not enforce any existing <small>HSTS</small>
+policy.</p>
 
 
 <p style="margin-left:11%;"><b>--hsts-file=</b><i>file</i></p>
@@ -2484,22 +2478,22 @@ unspecified.</p>
 Wget&rsquo;s <small>HSTS</small> database is a plain text
 file. Each line contains an <small>HSTS</small> entry (ie. a
 site that has issued a
-<tt>&quot;Strict-Transport-Security&quot;</tt>
-header and that therefore has specified a concrete
-<small>HSTS</small> policy to be applied). Lines starting
-with a dash (<tt>&quot;#&quot;</tt>) are ignored by Wget.
-Please note that in spite of this convenient
-human-readability hand-hacking the <small>HSTS</small>
-database is generally not a good idea.</p>
+&quot;Strict-Transport-Security&quot; header and
+that therefore has specified a concrete <small>HSTS</small>
+policy to be applied). Lines starting with a dash
+(&quot;#&quot;) are ignored by Wget. Please note that in
+spite of this convenient human-readability hand-hacking the
+<small>HSTS</small> database is generally not a good
+idea.</p>
 
 <p style="margin-left:17%; margin-top: 1em">An
 <small>HSTS</small> entry line consists of several fields
 separated by one or more whitespace:</p>
 
 
-<p style="margin-left:17%; margin-top: 1em"><tt>&quot;&lt;hostname&gt;
+<p style="margin-left:17%; margin-top: 1em">&quot;&lt;hostname&gt;
 SP [&lt;port&gt;] SP &lt;include subdomains&gt; SP
-&lt;created&gt; SP &lt;max-age&gt;&quot;</tt></p>
+&lt;created&gt; SP &lt;max-age&gt;&quot;</p>
 
 <p style="margin-left:17%; margin-top: 1em">The
 <i>hostname</i> and <i>port</i> fields indicate the hostname
@@ -2523,8 +2517,8 @@ Same-Origin Policy&quot;). Thus, this functionality should
 not be used in production environments and <i>port</i> will
 typically be zero. The last three fields do what they are
 expected to. The field <i>include_subdomains</i> can either
-be <tt>1</tt> or <tt>0</tt> and it signals whether the
-subdomains of the target domain should be part of the given
+be 1 or 0 and it signals whether the subdomains of the
+target domain should be part of the given
 <small>HSTS</small> policy as well. The <i>created</i> and
 <i>max-age</i> fields hold the timestamp values of when such
 entry was created (first seen by Wget) and the HSTS-defined
@@ -2540,7 +2534,7 @@ your own <small>HSTS</small> database via
 <b>--hsts-file</b>, be aware that Wget may
 modify the provided file if any change occurs between the
 <small>HSTS</small> policies requested by the remote servers
-and those in the file. When Wget exists, it effectively
+and those in the file. When Wget exits, it effectively
 updates the <small>HSTS</small> database by rewriting the
 database file with the new entries.</p>
 
@@ -2548,9 +2542,9 @@ database file with the new entries.</p>
 file does not exist, Wget will create one. This file will
 contain the new <small>HSTS</small> entries. If no
 <small>HSTS</small> entries were generated (no
-<tt>&quot;Strict-Transport-Security&quot;</tt>
-headers were sent by any of the servers) then no file will
-be created, not even an empty one. This behaviour applies to
+&quot;Strict-Transport-Security&quot; headers
+were sent by any of the servers) then no file will be
+created, not even an empty one. This behaviour applies to
 the default database file (<i>~/.wget-hsts</i>) as
 well: it will not be created until some server enforces an
 <small>HSTS</small> policy.</p>
@@ -2641,13 +2635,13 @@ corresponding startup option, the password defaults to
 <p style="margin-left:17%; margin-top: 1em">Another way to
 specify username and password is in the <small>URL</small>
 itself. Either method reveals your password to anyone who
-bothers to run <tt>&quot;ps&quot;</tt>. To prevent the
-passwords from being seen, store them in <i>.wgetrc</i> or
-<i>.netrc</i>, and make sure to protect those files from
-other users with <tt>&quot;chmod&quot;</tt>. If the
-passwords are really important, do not leave them lying in
-those files either---edit the files and
-delete them after Wget has started the download.</p>
+bothers to run &quot;ps&quot;. To prevent the passwords from
+being seen, store them in <i>.wgetrc</i> or <i>.netrc</i>,
+and make sure to protect those files from other users with
+&quot;chmod&quot;. If the passwords are really important, do
+not leave them lying in those files
+either---edit the files and delete them
+after Wget has started the download.</p>
 
 
 <p style="margin-left:11%;"><b>--no-remove-listing</b></p>
@@ -2665,22 +2659,21 @@ mirror you&rsquo;re running is complete).</p>
 though Wget writes to a known filename for this file, this
 is not a security hole in the scenario of a user making
 <i>.listing</i> a symbolic link to <i>/etc/passwd</i> or
-something and asking <tt>&quot;root&quot;</tt> to run Wget
-in his or her directory. Depending on the options used,
-either Wget will refuse to write to <i>.listing</i>, making
-the globbing/recursion/time-stamping operation fail,
-or the symbolic link will be deleted and replaced with the
+something and asking &quot;root&quot; to run Wget in his or
+her directory. Depending on the options used, either Wget
+will refuse to write to <i>.listing</i>, making the
+globbing/recursion/time-stamping operation fail, or
+the symbolic link will be deleted and replaced with the
 actual <i>.listing</i> file, or the listing will be written
 to a <i>.listing.number</i> file.</p>
 
 <p style="margin-left:17%; margin-top: 1em">Even though
 this situation isn&rsquo;t a problem, though,
-<tt>&quot;root&quot;</tt> should never run Wget in a
-non-trusted user&rsquo;s directory. A user could do
-something as simple as linking <i>index.html</i> to
-<i>/etc/passwd</i> and asking <tt>&quot;root&quot;</tt> to
-run Wget with <b>-N</b> or <b>-r</b> so the file
-will be overwritten.</p>
+&quot;root&quot; should never run Wget in a non-trusted
+user&rsquo;s directory. A user could do something as simple
+as linking <i>index.html</i> to <i>/etc/passwd</i> and
+asking &quot;root&quot; to run Wget with <b>-N</b> or
+<b>-r</b> so the file will be overwritten.</p>
 
 
 <p style="margin-left:11%;"><b>--no-glob</b></p>
@@ -2691,8 +2684,8 @@ characters (<i>wildcards</i>), like <b>*</b>, <b>?</b>,
 <b>[</b> and <b>]</b> to retrieve more than one file from
 the same directory at once, like:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget ftp://gnjilux.srk.fer.hr/*.msg</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+ftp://gnjilux.srk.fer.hr/*.msg</p>
 
 <p style="margin-left:17%; margin-top: 1em">By default,
 globbing will be turned on if the <small>URL</small>
@@ -2704,8 +2697,7 @@ quote the <small>URL</small> to protect it from being
 expanded by your shell. Globbing makes Wget look for a
 directory listing, which is system-specific. This is why it
 currently works only with Unix <small>FTP</small> servers
-(and the ones emulating Unix <tt>&quot;ls&quot;</tt>
-output).</p>
+(and the ones emulating Unix &quot;ls&quot; output).</p>
 
 
 <p style="margin-left:11%;"><b>--no-passive-ftp</b></p>
@@ -2725,7 +2717,7 @@ in some rare firewall configurations, active
 <small>FTP</small> actually works when passive
 <small>FTP</small> doesn&rsquo;t. If you suspect this to be
 the case, use this option, or set
-<tt>&quot;passive_ftp=off&quot;</tt> in your init file.</p>
+&quot;passive_ftp=off&quot; in your init file.</p>
 
 
 <p style="margin-left:11%;"><b>--preserve-permissions</b></p>
@@ -2770,15 +2762,14 @@ Options <br>
 <small>FTPS</small> implicitly. Implicit <small>FTPS</small>
 consists of initializing <small>SSL/TLS</small> from the
 very beginning of the control connection. This option does
-not send an <tt>&quot;AUTH TLS&quot;</tt> command: it
-assumes the server speaks <small>FTPS</small> and directly
-starts an <small>SSL/TLS</small> connection. If the attempt
-is successful, the session continues just like regular
-<small>FTPS</small> (<tt>&quot;PBSZ&quot;</tt> and
-<tt>&quot;PROT&quot;</tt> are sent, etc.). Implicit
-<small>FTPS</small> is no longer a requirement for
-<small>FTPS</small> implementations, and thus many servers
-may not support it. If
+not send an &quot;AUTH TLS&quot; command: it assumes the
+server speaks <small>FTPS</small> and directly starts an
+<small>SSL/TLS</small> connection. If the attempt is
+successful, the session continues just like regular
+<small>FTPS</small> (&quot;PBSZ&quot; and &quot;PROT&quot;
+are sent, etc.). Implicit <small>FTPS</small> is no longer a
+requirement for <small>FTPS</small> implementations, and
+thus many servers may not support it. If
 <b>--ftps-implicit</b> is passed and no
 explicit port number specified, the default port for
 implicit <small>FTPS, 990,</small> will be used, instead of
@@ -2809,9 +2800,9 @@ for.</p>
 
 <p style="margin-left:17%;">All the data connections will
 be in plain text. Only the control connection will be under
-<small>SSL/TLS.</small> Wget will send a <tt>&quot;PROT
-C&quot;</tt> command to achieve this, which must be approved
-by the server.</p>
+<small>SSL/TLS.</small> Wget will send a &quot;PROT C&quot;
+command to achieve this, which must be approved by the
+server.</p>
 
 
 <p style="margin-left:11%;"><b>--ftps-fallback-to-ftp</b></p>
@@ -2821,11 +2812,10 @@ if <small>FTPS</small> is not supported by the target
 server. For security reasons, this option is not asserted by
 default. The default behaviour is to exit with an error. If
 a server does not successfully reply to the initial
-<tt>&quot;AUTH TLS&quot;</tt> command, or in the case of
-implicit <small>FTPS,</small> if the initial
-<small>SSL/TLS</small> connection attempt is rejected, it is
-considered that such server does not support
-<small>FTPS.</small></p>
+&quot;AUTH TLS&quot; command, or in the case of implicit
+<small>FTPS,</small> if the initial <small>SSL/TLS</small>
+connection attempt is rejected, it is considered that such
+server does not support <small>FTPS.</small></p>
 
 <p style="margin-left:11%; margin-top: 1em"><b>Recursive
 Retrieval Options</b></p>
@@ -2852,8 +2842,28 @@ The default maximum depth is 5.</p>
 <b><br>
 --level=</b><i>depth</i></p>
 
-<p style="margin-left:17%;">Specify recursion maximum depth
-level <i>depth</i>.</p>
+<p style="margin-left:17%;">Set the maximum number of
+subdirectories that Wget will recurse into to <i>depth</i>.
+In order to prevent one from accidentally downloading very
+large websites when using recursion this is limited to a
+depth of 5 by default, i.e., it will traverse at most 5
+directories deep starting from the provided
+<small>URL.</small> Set <b>-l 0</b> or <b>-l
+inf</b> for infinite recursion depth.</p>
+
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-l 0 http://&lt;site&gt;/1.html</p>
+
+<p style="margin-left:17%; margin-top: 1em">Ideally, one
+would expect this to download just <i>1.html</i>. but
+unfortunately this is not the case, because <b>-l
+0</b> is equivalent to <b>-l
+inf</b>---that is, infinite recursion. To
+download a single <small>HTML</small> page (or a handful of
+them), specify them all on the command line and leave away
+<b>-r</b> and <b>-l</b>. To download the
+essential items to view a single <small>HTML</small> page,
+see <b>page requisites</b>.</p>
 
 
 <p style="margin-left:11%;"><b>--delete-after</b></p>
@@ -2863,8 +2873,9 @@ delete every single file it downloads, <i>after</i> having
 done so. It is useful for pre-fetching popular pages through
 a proxy, e.g.:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -r -nd --delete-after http://whatever.com/~popular/page/</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-nd --delete-after
+http://whatever.com/~popular/page/</p>
 
 <p style="margin-left:17%; margin-top: 1em">The
 <b>-r</b> option is to retrieve recursively, and
@@ -2991,9 +3002,9 @@ local destination is intended to be
 converted to <i>//foo.com/bar.cgi?xyz.css</i>. Note that
 only the filename part has been modified. The rest of the
 <small>URL</small> has been left untouched, including the
-net path (<tt>&quot;//&quot;</tt>) which would otherwise be
-processed by Wget and converted to the effective scheme (ie.
-<tt>&quot;http://&quot;</tt>).</p>
+net path (&quot;//&quot;) which would otherwise be processed
+by Wget and converted to the effective scheme (ie.
+&quot;http://&quot;).</p>
 
 <table width="100%" border="0" rules="none" frame="void"
        cellspacing="0" cellpadding="0">
@@ -3068,18 +3079,17 @@ documents&quot; that are missing their requisites.</p>
 
 <p style="margin-left:17%; margin-top: 1em">For instance,
 say document <i>1.html</i> contains an
-<tt>&quot;&lt;IMG&gt;&quot;</tt> tag referencing
-<i>1.gif</i> and an <tt>&quot;&lt;A&gt;&quot;</tt> tag
-pointing to external document <i>2.html</i>. Say that
-<i>2.html</i> is similar but that its image is <i>2.gif</i>
-and it links to <i>3.html</i>. Say this continues up to some
-arbitrarily high number.</p>
+&quot;&lt;IMG&gt;&quot; tag referencing <i>1.gif</i> and an
+&quot;&lt;A&gt;&quot; tag pointing to external document
+<i>2.html</i>. Say that <i>2.html</i> is similar but that
+its image is <i>2.gif</i> and it links to <i>3.html</i>. Say
+this continues up to some arbitrarily high number.</p>
 
 <p style="margin-left:17%; margin-top: 1em">If one executes
 the command:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -r -l 2 http://&lt;site&gt;/1.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-l 2 http://&lt;site&gt;/1.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">then
 <i>1.html</i>, <i>1.gif</i>, <i>2.html</i>, <i>2.gif</i>,
@@ -3089,22 +3099,22 @@ Wget is simply counting the number of hops (up to 2) away
 from <i>1.html</i> in order to determine where to stop the
 recursion. However, with this command:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -r -l 2 -p http://&lt;site&gt;/1.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-l 2 -p http://&lt;site&gt;/1.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">all the above
 files <i>and 3.html</i>&rsquo;s requisite <i>3.gif</i> will
 be downloaded. Similarly,</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -r -l 1 -p http://&lt;site&gt;/1.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-l 1 -p http://&lt;site&gt;/1.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">will cause
 <i>1.html</i>, <i>1.gif</i>, <i>2.html</i>, and <i>2.gif</i>
 to be downloaded. One might think that:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -r -l 0 -p http://&lt;site&gt;/1.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -r
+-l 0 -p http://&lt;site&gt;/1.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">would download
 just <i>1.html</i> and <i>1.gif</i>, but unfortunately this
@@ -3116,8 +3126,8 @@ a handful of them, all specified on the command-line or in a
 their) requisites, simply leave off <b>-r</b> and
 <b>-l</b>:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -p http://&lt;site&gt;/1.html</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -p
+http://&lt;site&gt;/1.html</p>
 
 <p style="margin-left:17%; margin-top: 1em">Note that Wget
 will behave as if <b>-r</b> had been specified, but
@@ -3129,17 +3139,17 @@ make sure the lot displays properly locally, this author
 likes to use a few options in addition to
 <b>-p</b>:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget -E -H -k -K -p http://&lt;site&gt;/&lt;document&gt;</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget -E
+-H -k -K -p
+http://&lt;site&gt;/&lt;document&gt;</p>
 
 <p style="margin-left:17%; margin-top: 1em">To finish off
 this topic, it&rsquo;s worth knowing that Wget&rsquo;s idea
 of an external document link is any <small>URL</small>
-specified in an <tt>&quot;&lt;A&gt;&quot;</tt> tag, an
-<tt>&quot;&lt;AREA&gt;&quot;</tt> tag, or a
-<tt>&quot;&lt;LINK&gt;&quot;</tt> tag other than
-<tt>&quot;&lt;LINK
-REL=&quot;stylesheet&quot;&gt;&quot;</tt>.</p>
+specified in an &quot;&lt;A&gt;&quot; tag, an
+&quot;&lt;AREA&gt;&quot; tag, or a &quot;&lt;LINK&gt;&quot;
+tag other than &quot;&lt;LINK
+REL=&quot;stylesheet&quot;&gt;&quot;.</p>
 
 
 <p style="margin-left:11%;"><b>--strict-comments</b></p>
@@ -3271,18 +3281,19 @@ for documents to download, specify them in a comma-separated
 this option was the best bet for downloading a single page
 and its requisites, using a command-line like:</p>
 
-<pre style="margin-left:17%; margin-top: 1em">        wget --ignore-tags=a,area -H -k -K -r http://&lt;site&gt;/&lt;document&gt;</pre>
-
+<p style="margin-left:17%; margin-top: 1em">wget
+--ignore-tags=a,area -H -k
+-K -r http://&lt;site&gt;/&lt;document&gt;</p>
 
 <p style="margin-left:17%; margin-top: 1em">However, the
 author of this option came across a page with tags like
-<tt>&quot;&lt;LINK REL=&quot;home&quot;
-HREF=&quot;/&quot;&gt;&quot;</tt> and came to the
-realization that specifying tags to ignore was not enough.
-One can&rsquo;t just tell Wget to ignore
-<tt>&quot;&lt;LINK&gt;&quot;</tt>, because then stylesheets
-will not be downloaded. Now the best bet for downloading a
-single page and its requisites is the dedicated
+&quot;&lt;LINK REL=&quot;home&quot;
+HREF=&quot;/&quot;&gt;&quot; and came to the realization
+that specifying tags to ignore was not enough. One
+can&rsquo;t just tell Wget to ignore
+&quot;&lt;LINK&gt;&quot;, because then stylesheets will not
+be downloaded. Now the best bet for downloading a single
+page and its requisites is the dedicated
 <b>--page-requisites</b> option.</p>
 
 
@@ -3633,8 +3644,8 @@ easier to trace bugs with debug support on.</p></td></tr>
 <p style="margin-left:17%; margin-top: 1em">Note: please
 make sure to remove any potentially sensitive information
 from the debug log before sending it to the bug address. The
-<tt>&quot;-d&quot;</tt> won&rsquo;t go out of its way
-to collect sensitive information, but the log <i>will</i>
+&quot;-d&quot; won&rsquo;t go out of its way to
+collect sensitive information, but the log <i>will</i>
 contain a fairly complete transcript of Wget&rsquo;s
 communication with the server, which may include passwords
 and pieces of downloaded data. Since the bug address is
@@ -3654,10 +3665,10 @@ visible to the public.</p>
 
 
 <p style="margin-top: 1em">If Wget has crashed, try to run
-it in a debugger, e.g. <tt>&quot;gdb `which wget`
-core&quot;</tt> and type <tt>&quot;where&quot;</tt> to get
-the backtrace. This may not work if the system administrator
-has disabled core files, but it is safe to try.</p></td></tr>
+it in a debugger, e.g. &quot;gdb `which wget` core&quot; and
+type &quot;where&quot; to get the backtrace. This may not
+work if the system administrator has disabled core files,
+but it is safe to try.</p></td></tr>
 </table>
 
 <h2>SEE ALSO
@@ -3673,14 +3684,21 @@ commands available for use with <i>.wgetrc</i> files and the
 <b>-e</b> option, see the <small>GNU</small> Info
 entry for <i>wget</i>.</p>
 
+<p style="margin-left:11%; margin-top: 1em">Also see
+<b>wget2</b>(1), the updated version of <small>GNU</small>
+Wget with even better support for recursive downloading and
+modern protocols like <small>HTTP/2.</small></p>
+
 <h2>AUTHOR
 <a name="AUTHOR"></a>
 </h2>
 
 
 <p style="margin-left:11%; margin-top: 1em">Originally
-written by Hrvoje Nik&Aring;&iexcl;i&Auml;
-&lt;hniksic@xemacs.org&gt;.</p>
+written by Hrvoje Nik&scaron;i&cacute;
+&lt;hniksic@xemacs.org&gt;. Currently maintained by Darshit
+Shah &lt;darnir@gnu.org&gt; and Tim R&uuml;hsen
+&lt;tim.ruehsen@gmx.de&gt;.</p>
 
 <h2>COPYRIGHT
 <a name="COPYRIGHT"></a>
@@ -3688,8 +3706,8 @@ written by Hrvoje Nik&Aring;&iexcl;i&Auml;
 
 
 <p style="margin-left:11%; margin-top: 1em">Copyright (c)
-1996-2011, 2015, 2018-2019 Free Software
-Foundation, Inc.</p>
+1996--2011, 2015, 2018--2021 Free
+Software Foundation, Inc.</p>
 
 <p style="margin-left:11%; margin-top: 1em">Permission is
 granted to copy, distribute and/or modify this document
