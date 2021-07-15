@@ -2,7 +2,7 @@
 <Language Name="한국어">
   <General>
     <Title>Subtitle Edit</Title>
-    <Version>3.5.16</Version>
+    <Version>3.6.1</Version>
     <TranslatedBy>☞ 한글화: 도움돌 (domddol@gmail.com)</TranslatedBy>
     <CultureName>ko-KR</CultureName>
     <HelpFile />
@@ -15,6 +15,8 @@
     <SubtitleFiles>자막 파일</SubtitleFiles>
     <AllFiles>모든 파일</AllFiles>
     <VideoFiles>비디오 파일</VideoFiles>
+    <Images>이미지</Images>
+    <Fonts>글꼴</Fonts>
     <AudioFiles>오디오 파일</AudioFiles>
     <OpenSubtitle>자막 열기</OpenSubtitle>
     <OpenVideoFile>비디오 열기</OpenVideoFile>
@@ -32,8 +34,9 @@
     <NumberSymbol>번호</NumberSymbol>
     <Number>번호</Number>
     <Text>텍스트</Text>
-    <HourMinutesSecondsMilliseconds>시:분:초:밀리초</HourMinutesSecondsMilliseconds>
+    <HourMinutesSecondsDecimalSeparatorMilliseconds>시간:분:초{0}밀리초</HourMinutesSecondsDecimalSeparatorMilliseconds>
     <HourMinutesSecondsFrames>시:분:초:프레임</HourMinutesSecondsFrames>
+    <XSeconds>{0:0.0##} 초</XSeconds>
     <Bold>굵게</Bold>
     <Italic>기울임꼴</Italic>
     <Underline>밑줄</Underline>
@@ -60,6 +63,7 @@
     <OpenOriginalSubtitleFile>원본 자막 파일 열기</OpenOriginalSubtitleFile>
     <PleaseWait>잠시만 기다려 주십시오...</PleaseWait>
     <SessionKey>세션 키</SessionKey>
+    <SessionKeyGenerate>새 키 생성</SessionKeyGenerate>
     <UserName>사용자</UserName>
     <UserNameAlreadyInUse>사용자 이름이 이미 사용되고 있습니다!</UserNameAlreadyInUse>
     <WebServiceUrl>웹 서비스</WebServiceUrl>
@@ -156,6 +160,20 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <FixesAvailable>수리 가능: {0}</FixesAvailable>
     <UnableToFix>수리 불가: {0}</UnableToFix>
   </ApplyDurationLimits>
+  <AssaAttachments>
+    <Title>Advanced Sub Station Alpha 첨부파일</Title>
+    <AttachFiles>파일 첨부...</AttachFiles>
+    <FontsAndImages>글꼴 및 이미지</FontsAndImages>
+    <Graphics>그래픽</Graphics>
+    <Font>글꼴</Font>
+    <ImageName>이미지 이름 ({0}x{1}):</ImageName>
+    <IconName>아이콘 이름:</IconName>
+    <FontName>글꼴 이름:</FontName>
+    <ImageResized>현재 창에 맞게 이미지 크기 조정</ImageResized>
+    <FilesSkippedX>파일 건너뛰기 : {0}</FilesSkippedX>
+    <RemoveOneAttachment>하나의 첨부 파일을 제거하시겠습니까?</RemoveOneAttachment>
+    <RemoveXAttachments>{0} 첨부파일을 제거하시겠습니까?</RemoveXAttachments>
+  </AssaAttachments>
   <AudioToText>
     <Title>오디오를 텍스트로</Title>
     <ExtractingAudioUsingX>{0}을 사용하여 오디오를 추출하는 중...</ExtractingAudioUsingX>
@@ -184,6 +202,7 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <UseStyleFromSource>원본 스타일 사용</UseStyleFromSource>
     <ConvertOptions>변환 옵션</ConvertOptions>
     <RemoveFormatting>서식 태그 제거</RemoveFormatting>
+    <RemoveStyleActor>스타일/배우 제거</RemoveStyleActor>
     <RemoveTextForHI>청각 장애인용 텍스트 삭제</RemoveTextForHI>
     <OverwriteOriginalFiles>원본 파일 덮어쓰기 (형식이 변경된 경우)</OverwriteOriginalFiles>
     <RedoCasing>대/소문자 구분</RedoCasing>
@@ -210,6 +229,7 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <FilterMoreThanTwoLines>한 자막 당 두 개 이상의 줄</FilterMoreThanTwoLines>
     <FilterContains>텍스트 포함...</FilterContains>
     <FilterFileNameContains>파일 이름 포함 ...</FilterFileNameContains>
+    <MkvLanguageCodeContains>Matroska(.mkv) 언어코드 포함...</MkvLanguageCodeContains>
     <FixCommonErrorsErrorX>일반적인 오류 수정: {0}</FixCommonErrorsErrorX>
     <MultipleReplaceErrorX>다중 바꾸기: {0}</MultipleReplaceErrorX>
     <AutoBalanceErrorX>자동 조정: {0}</AutoBalanceErrorX>
@@ -221,7 +241,11 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <TransportStreamFileNameEnding>파일 이름 끝</TransportStreamFileNameEnding>
     <TransportStreamSettingsButton>TS 설정...</TransportStreamSettingsButton>
     <RemoveLineBreaks>줄바꿈 제거</RemoveLineBreaks>
+    <DeleteLines>줄 삭제</DeleteLines>
     <TryToUseSourceEncoding>소스 인코딩을 사용 하십시오</TryToUseSourceEncoding>
+    <DeleteFirstLines>첫번째 줄 삭제</DeleteFirstLines>
+    <DeleteLastLines>마지막 줄 삭제</DeleteLastLines>
+    <DeleteContaining>포함된 줄 삭제</DeleteContaining>
     <MkvLanguageInOutputFileName>출력 파일 이름의 "언어"</MkvLanguageInOutputFileName>
     <MkvLanguageInOutputFileNameX>출력 파일 이름의 Matroska(.mkv) "언어": {0}</MkvLanguageInOutputFileNameX>
     <MkvLanguageStyleTwoLetter>두 문자 언어 코드</MkvLanguageStyleTwoLetter>
@@ -231,10 +255,37 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
   <Beamer>
     <Title>프로젝터</Title>
   </Beamer>
+  <BinEdit>
+    <ImportImage>이미지 가져오기...</ImportImage>
+    <ExportImage>이미지 내보내기...</ExportImage>
+    <SetText>텍스트 설정...</SetText>
+    <QuickOcr>빠른 OCR 텍스트(개요용)</QuickOcr>
+    <ResizeBitmaps>이미지 크기 조정...</ResizeBitmaps>
+    <ChangeBrightness>밝기 조정...</ChangeBrightness>
+    <ChangeAlpha>알파 조정...</ChangeAlpha>
+    <ResizeBitmapsForSelectedLines>선택한 줄의 이미지 크기 조정...</ResizeBitmapsForSelectedLines>
+    <ChangeColorForSelectedLines>선택한 줄의 색상 변경...</ChangeColorForSelectedLines>
+    <ChangeBrightnessForSelectedLines>선택한 줄의 밝기 조정...</ChangeBrightnessForSelectedLines>
+    <ChangeAlphaForSelectedLines>선택한 줄에 대한 알파 조정...</ChangeAlphaForSelectedLines>
+    <AlignSelectedLines>선택한 줄 정렬</AlignSelectedLines>
+    <CenterSelectedLines>중앙 정렬(수평, 수직 위치 유지)</CenterSelectedLines>
+    <TopAlignSelectedLines>상단 정렬(수평 위치 유지)</TopAlignSelectedLines>
+    <BottomAlignSelectedLines>하단 정렬(수평 위치 유지)</BottomAlignSelectedLines>
+    <ToggleForcedSelectedLines>선택한 줄의 "적용됨" 전환</ToggleForcedSelectedLines>
+    <SelectForcedLines>적용된 줄 선택</SelectForcedLines>
+    <SizeXY>크기: {0}x{1}</SizeXY>
+    <SetAspectRatio11>가로세로 비율 1:1 설정</SetAspectRatio11>
+    <ChangeBrightnessTitle>밝기 조정</ChangeBrightnessTitle>
+    <BrightnessX>밝기: {0}%</BrightnessX>
+    <ResizeTitle>이미지 크기 조정</ResizeTitle>
+    <ResizeX>크기 조정: {0}%</ResizeX>
+    <ChangeAlphaTitle>알파 조정</ChangeAlphaTitle>
+    <AlphaX>알파: {0}%</AlphaX>
+  </BinEdit>
   <Bookmarks>
-    <EditBookmark>책갈피 편집</EditBookmark>
-    <AddBookmark>책갈피 추가</AddBookmark>
-    <GoToBookmark>책갈피로 이동</GoToBookmark>
+    <EditBookmark>북마크 편집</EditBookmark>
+    <AddBookmark>북마크 추가</AddBookmark>
+    <GoToBookmark>북마크로 이동</GoToBookmark>
   </Bookmarks>
   <ChangeCasing>
     <Title>* 대/소문자 바꾸기</Title>
@@ -310,6 +361,7 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
   </ColumnPaste>
   <CompareSubtitles>
     <Title>* 자막 비교</Title>
+    <Reload>새로 고침</Reload>
     <PreviousDifference>이전(&amp;P)...</PreviousDifference>
     <NextDifference>다음(&amp;N)...</NextDifference>
     <SubtitlesNotAlike>완전히 다른 자막입니다!</SubtitlesNotAlike>
@@ -353,9 +405,13 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <Title>* 자막 사이의 작은 간격 메우기</Title>
     <GapsBridgedX>메워진 간격: {0}개</GapsBridgedX>
     <GapToNext>다음 줄과의 시간 간격</GapToNext>
+    <GapToNextFrames>프레임에서 다음 간격</GapToNextFrames>
     <BridgeGapsSmallerThanXPart1>- 다음보다 작은 간격 메움:</BridgeGapsSmallerThanXPart1>
     <BridgeGapsSmallerThanXPart2>(밀리초)</BridgeGapsSmallerThanXPart2>
+    <BridgeGapsSmallerThanXPart1Frames>보다 작은 간격</BridgeGapsSmallerThanXPart1Frames>
+    <BridgeGapsSmallerThanXPart2Frames>프레임</BridgeGapsSmallerThanXPart2Frames>
     <MinMillisecondsBetweenLines>- 줄 사이의 최소 밀리초:</MinMillisecondsBetweenLines>
+    <MinFramesBetweenLines>줄 사이의 최소 프레임</MinFramesBetweenLines>
     <ProlongEndTime>이전 텍스트로 시간 간격 메움</ProlongEndTime>
     <DivideEven>텍스트로 시간 간격을 공유</DivideEven>
   </DurationsBridgeGaps>
@@ -395,6 +451,8 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <DiskFormatCode>디스크 포맷 코드</DiskFormatCode>
     <DisplayStandardCode>표준 코드 표시</DisplayStandardCode>
     <ColorRequiresTeletext>텔레텍스트는 색상 필요!</ColorRequiresTeletext>
+    <AlignmentRequiresTeletext>정렬에는 텔레텍스트가 필요합니다!</AlignmentRequiresTeletext>
+    <TeletextCharsShouldBe38>텔레텍스트의 '줄당 최대 문자수'는 38 이어야 합니다!</TeletextCharsShouldBe38>
     <CharacterCodeTable>문자 코드 테이블</CharacterCodeTable>
     <LanguageCode>언어 코드</LanguageCode>
     <OriginalProgramTitle>원본 프로그램 제목</OriginalProgramTitle>
@@ -433,13 +491,13 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
   <EffectKaraoke>
     <Title>노래방 효과</Title>
     <ChooseColor>색상 선택 :</ChooseColor>
-    <TotalMilliseconds>총 시간 (밀리초):</TotalMilliseconds>
-    <EndDelayInMilliseconds>끝지점 지연 (밀리초):</EndDelayInMilliseconds>
+    <TotalSeconds>총 시간(초):</TotalSeconds>
+    <EndDelayInSeconds>종료 지연 시간(초):</EndDelayInSeconds>
   </EffectKaraoke>
   <EffectTypewriter>
     <Title>타자기 효과</Title>
-    <TotalMilliseconds>총 시간 (밀리초):</TotalMilliseconds>
-    <EndDelayInMilliseconds>끝지점 지연 (밀리초):</EndDelayInMilliseconds>
+    <TotalSeconds>총 시간(초):</TotalSeconds>
+    <EndDelayInSeconds>종료 지연 시간(초):</EndDelayInSeconds>
   </EffectTypewriter>
   <ExportCustomText>
     <Title>사용자 지정 텍스트 형식으로 내보내기</Title>
@@ -494,21 +552,24 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <HalfTopBottom3D>상/하</HalfTopBottom3D>
     <Depth>깊이</Depth>
     <ExportAllLines>모든 줄 내보내기...</ExportAllLines>
-    <XImagesSavedInY>{0}개의 이미지가 {1}에 저장되었습니다.</XImagesSavedInY>
+    <XImagesSavedInY>{0:#,##0} 이미지가 {1}에 저장되었습니다.</XImagesSavedInY>
     <VideoResolution>비디오 해상도</VideoResolution>
     <Align>정렬</Align>
     <Left>왼쪽</Left>
     <Right>오른쪽</Right>
     <Center>가운데</Center>
     <CenterLeftJustify>가운데, 왼쪽 맞춤</CenterLeftJustify>
+    <CenterLeftJustifyDialogs>가운데, 왼쪽 맞춤</CenterLeftJustifyDialogs>
     <CenterTopJustify>가운데, 상단 맞춤</CenterTopJustify>
+    <CenterRightJustify>가운데, 오른쪽 맞춤</CenterRightJustify>
     <BottomMargin>하단 여백</BottomMargin>
     <LeftRightMargin>좌/우 여백</LeftRightMargin>
-    <SaveBluRraySupAs>블루레이 자막 (sup) 파일로 저장</SaveBluRraySupAs>
+    <SaveBluRaySupAs>블루레이 자막 (sup) 파일로 저장</SaveBluRaySupAs>
     <SaveVobSubAs>VobSub 파일로 저장</SaveVobSubAs>
     <SaveFabImageScriptAs>FAB 이미지 스크립트 파일 이름 선택</SaveFabImageScriptAs>
     <SaveDvdStudioProStlAs>DVD Studio Pro STL로 저장</SaveDvdStudioProStlAs>
     <SaveDigitalCinemaInteropAs>Digital Cinema Interop 파일 이름 선택</SaveDigitalCinemaInteropAs>
+    <SaveDigitalCinemaSmpte2014>Digital Cinema SMPTE 2014 파일 이름 선택</SaveDigitalCinemaSmpte2014>
     <SavePremiereEdlAs>Premier EDL 파일 이름 선택</SavePremiereEdlAs>
     <SaveFcpAs>Final Cut Pro xml 파일 이름 선택</SaveFcpAs>
     <SaveDostAs>DoStudio dost 파일 이름 선택</SaveDostAs>
@@ -584,7 +645,6 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <RemovedEmptyLineAtBottom>마지막 빈 줄 제거</RemovedEmptyLineAtBottom>
     <RemovedEmptyLineInMiddle>가운데 빈 줄 제거</RemovedEmptyLineInMiddle>
     <RemovedEmptyLinesUnsedLineBreaks>빈 줄 및 불필요한 줄의 줄바꿈 제거</RemovedEmptyLinesUnsedLineBreaks>
-    <EmptyLinesRemovedX>제거한 빈 줄: {0}</EmptyLinesRemovedX>
     <FixOverlappingDisplayTimes>중복된 표시시간 수정하기</FixOverlappingDisplayTimes>
     <FixShortDisplayTimes>짧은 표시시간 수정하기</FixShortDisplayTimes>
     <FixLongDisplayTimes>긴 표시시간 수정하기</FixLongDisplayTimes>
@@ -608,21 +668,18 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <CommonOcrErrorsFixed>수정된 일반적인 OCR 오류 (OCR 재배치 목록을 사용함): {0}</CommonOcrErrorsFixed>
     <RemoveSpaceBetweenNumber>숫자 사이의 공백 제거하기</RemoveSpaceBetweenNumber>
     <FixDialogsOnOneLine>한 줄 안에 많은 대화형식이 있을 때 수정하기</FixDialogsOnOneLine>
-    <RemoveSpaceBetweenNumbersFixed>수정된 숫자 사이의 공백: {0}</RemoveSpaceBetweenNumbersFixed>
+    <NormalizeStrings>문자열 정규화</NormalizeStrings>
     <FixTurkishAnsi>유니코드로 터키의 ANSI (아이슬란드) 문자 수정하기</FixTurkishAnsi>
     <FixDanishLetterI>덴마크 문자 'i' 수정하기</FixDanishLetterI>
     <FixSpanishInvertedQuestionAndExclamationMarks>스페인어의 역물음표와 역감탄사 수정하기</FixSpanishInvertedQuestionAndExclamationMarks>
     <AddMissingQuote>누락된 따옴표('') 추가하기</AddMissingQuote>
     <AddMissingQuotes>누락된 따옴표("") 추가하기</AddMissingQuotes>
     <RemoveHyphensSingleLine>단일 라인의 대화 대시(-) 제거</RemoveHyphensSingleLine>
-    <XHyphensSingleLineRemoved>단일 라인에서 제거된 대화 대시(-): {0}</XHyphensSingleLineRemoved>
     <FixHyphensInDialogs>스타일을 통해 대화안의 대시(-) 수정: {0}</FixHyphensInDialogs>
-    <XHyphensInDialogsFixed>수정된 대시(-): {0}</XHyphensInDialogsFixed>
     <AddMissingQuotesExample>"힘들었지? -&gt; "힘들었지?"</AddMissingQuotesExample>
     <XMissingQuotesAdded>누락된 따옴표 추가: {0}</XMissingQuotesAdded>
+    <Fix3PlusLine>두 줄 이상의 자막 수정</Fix3PlusLine>
     <Fix3PlusLines>3줄 이상의 자막 수정하기</Fix3PlusLines>
-    <Fix3PlusLine>3줄 이상의 자막 수정하기</Fix3PlusLine>
-    <X3PlusLinesFixed>수정된 3줄 이상의 자막: {0}</X3PlusLinesFixed>
     <Analysing>분석 중 . . .</Analysing>
     <NothingToFix>수정할 곳이 없습니다:</NothingToFix>
     <FixesFoundX>수정할 곳: {0}</FixesFoundX>
@@ -630,12 +687,9 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <NothingFixableBut>아무것도 자동으로 수정할 수 없음.  자막에 오류가 있습니다 - 자세한 내용은 로그를 참조하십시오.</NothingFixableBut>
     <XFixedBut>{0}개의 문제가 수정되었지만 자막에는 여전히 오류가 있습니다 - 자세한 내용은 로그를 참조하십시오.</XFixedBut>
     <XCouldBeFixedBut>{0}개의 문제를 수정할 수 있지만 자막에는 여전히 오류가 있을 것입니다.- 자세한 내용은 로그를 참조하십시오.</XCouldBeFixedBut>
-    <UncheckedFixLowercaseIToUppercaseI>"소문자 'i'를 대문자 'I'로 수정하기(영어)" 실행을 취소합니다.</UncheckedFixLowercaseIToUppercaseI>
-    <XIsChangedToUppercase>{0}개의 'i'가 대문자로 변환되었습니다.</XIsChangedToUppercase>
     <FixFirstLetterToUppercaseAfterParagraph>단락이 끝난 뒤에 나오는 첫글자를 대문자로 바꾸기</FixFirstLetterToUppercaseAfterParagraph>
     <MergeShortLine>짧은 줄 병합 (단일 문장)</MergeShortLine>
     <MergeShortLineAll>짧은 줄 병합 (대화형식 제외)</MergeShortLineAll>
-    <XLineBreaksAdded>{0}개의 줄바꿈이 추가되었습니다.</XLineBreaksAdded>
     <BreakLongLine>긴 줄(행) 줄바꿈</BreakLongLine>
     <FixLongDisplayTime>긴 표시시간 수정하기</FixLongDisplayTime>
     <FixInvalidItalicTag>잘못된 기울임꼴 태그 수정하기</FixInvalidItalicTag>
@@ -652,23 +706,11 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <UnableToFixStartTimeLaterThanEndTime>텍스트 번호 {0}을 수정할 수 없음. 시작 시간이 종료 시간 {1} 보다 느림</UnableToFixStartTimeLaterThanEndTime>
     <XFixedToYZ>{0} 수정함: {1}{2}</XFixedToYZ>
     <UnableToFixTextXY>텍스트 번호 {0}을 수정할 수 없음: {1}</UnableToFixTextXY>
-    <XOverlappingTimestampsFixed>{0}개의 중복된 시간을 수정했습니다.</XOverlappingTimestampsFixed>
-    <XDisplayTimesProlonged>{0}개의 표시시간이 연장되었습니다.</XDisplayTimesProlonged>
-    <XInvalidHtmlTagsFixed>{0}개의 잘못된 HTML 태그가 수정되었습니다.</XInvalidHtmlTagsFixed>
-    <XDisplayTimesShortned>{0}개의 표시시간이 단축되었습니다.</XDisplayTimesShortned>
-    <XGapsFixed>{0}개의 짧은 간격이 수정되었습니다.</XGapsFixed>
-    <XLinesUnbreaked>{0}개가 줄바꿈 제거되었습니다.</XLinesUnbreaked>
     <UnneededSpace>불필요한 공백</UnneededSpace>
-    <XUnneededSpacesRemoved>{0}개의 불필요한 공백이 제거되었습니다.</XUnneededSpacesRemoved>
     <UnneededPeriod>불필요한 마침표</UnneededPeriod>
-    <XUnneededPeriodsRemoved>{0}개의 불필요한 마침표가 삭제되었습니다.</XUnneededPeriodsRemoved>
     <FixMissingSpace>잘못된 공백 수정하기</FixMissingSpace>
-    <XMissingSpacesAdded>{0}개의 잘못된 공백이 수정되었습니다.</XMissingSpacesAdded>
     <FixUppercaseIInsideLowercaseWord>한 단어 중간에 대문자 'I'가 쓰인 것 수정하기</FixUppercaseIInsideLowercaseWord>
-    <XPeriodsAdded>{0}개의 마침표가 추가되었습니다.</XPeriodsAdded>
     <FixMissingPeriodAtEndOfLine>줄 끝에 누락된 마침표 추가하기</FixMissingPeriodAtEndOfLine>
-    <XDoubleApostrophesFixed>{0}개의 따옴표("")가 수정되었습니다.</XDoubleApostrophesFixed>
-    <XUppercaseIsFoundInsideLowercaseWords>{0}개의 대문자 'I'가 단어 중간에 있습니다.</XUppercaseIsFoundInsideLowercaseWords>
     <RefreshFixes>새로 고침</RefreshFixes>
     <ApplyFixes>수정 적용하기</ApplyFixes>
     <AutoBreak>자동 줄바꿈(&amp;B)</AutoBreak>
@@ -678,11 +720,6 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <FixEllipsesStart>말머리에 쓰인 '...' 제거하기</FixEllipsesStart>
     <FixMissingOpenBracket>줄 안에 누락된 '[' 수정하기</FixMissingOpenBracket>
     <FixMusicNotation>음표(예: âTª)를 기본으로 바꾸기</FixMusicNotation>
-    <XFixDoubleDash>{0} '--'을 수정했습니다.</XFixDoubleDash>
-    <XFixDoubleGreaterThan>{0} &gt;&gt; 을 제거했습니다.</XFixDoubleGreaterThan>
-    <XFixEllipsesStart>{0} 말머리의 '...' 을 제거합니다.</XFixEllipsesStart>
-    <XFixMissingOpenBracket>{0} 줄 안에 누락된 '[' 가 수정됐습니다.</XFixMissingOpenBracket>
-    <XFixMusicNotation>{0} 줄 안에 있는 음표를 수정합니다.</XFixMusicNotation>
     <FixDoubleDashExample>'음-- 맛있구나!' -&gt; '음... 맛있구나!'</FixDoubleDashExample>
     <FixDoubleGreaterThanExample>'&gt;&gt; 영희: 뛰어!' -&gt; '영희: 뛰어!'</FixDoubleGreaterThanExample>
     <FixEllipsesStartExample>'...그리고 우리는 ~' -&gt; '그리고 우리는 ~'</FixEllipsesStartExample>
@@ -694,10 +731,9 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <FixSpaceBetweenNumbersExample>3 300 --&gt; 3300</FixSpaceBetweenNumbersExample>
     <FixDialogsOneLineExample>안녕 존! - 안녕 리나! --&gt; 안녕 존!&lt;br /&gt;- 안녕 리나!</FixDialogsOneLineExample>
     <SelectDefault>기본값 선택</SelectDefault>
+    <SetDefault>현재 수정사항을 기본값으로 설정</SetDefault>
     <FixContinuationStyleX>연속 스타일 수정: {0}</FixContinuationStyleX>
-    <XFixContinuationStyle>{0} 개의 연속 스타일 수정됨</XFixContinuationStyle>
     <FixUnnecessaryLeadingDots>불필요한 선행 점 제거</FixUnnecessaryLeadingDots>
-    <XFixUnnecessaryLeadingDots>{0} 개의 불필요한 선행 점 제거됨.</XFixUnnecessaryLeadingDots>
   </FixCommonErrors>
   <GetDictionaries>
     <Title>* 사전 다운로드</Title>
@@ -719,7 +755,7 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <XDownloaded>{0}을 다운로드하고 설치했습니다!</XDownloaded>
   </GetTesseractDictionaries>
   <GoogleTranslate>
-    <Title>Google 번역기</Title>
+    <Title>번역</Title>
     <From>번역 전:</From>
     <To>번역 후:</To>
     <Translate>번역</Translate>
@@ -729,10 +765,24 @@ C# 코드는 https://github.com/SubtitleEdit/subtitleedit 에 있습니다.
     <MsClientSecretNeeded>죄송합니다,  최신 Microsoft 번역기를 사용하려면, Microsoft에서 인지 가능한 'Translator Text' 키 필요합니다.
 
 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구" 로 이동하십시오.</MsClientSecretNeeded>
-    <GoogleApiKeyNeeded>죄송합니다, 최신 Google 번역기를 사용하려면 Google의 API 키가 필요합니다.
-
-Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구" 로 이동하십시오.</GoogleApiKeyNeeded>
-    <GoogleNoApiKeyWarning>API 키 없이 번역하기... (느리고 데이터가 제한됨)</GoogleNoApiKeyWarning>
+    <GoogleNoApiKeyWarning>API 키 없이 번역... (느리고 데이터가 제한됨)
+	
+	API 키를 사용하려면 "옵션 -&gt; 환경설정 -&gt; 도구"로 이동하여 Google 번역 API 키를 입력하십시오.</GoogleNoApiKeyWarning>
+    <Service>서비스:</Service>
+    <LineMergeHandling>줄 병합:</LineMergeHandling>
+    <ProcessorMergeNext>최대 두 줄 병합</ProcessorMergeNext>
+    <ProcessorSentence>문장 병합</ProcessorSentence>
+    <ProcessorSingle>병합 안함</ProcessorSingle>
+    <AutoTranslateViaCopyPaste>복사-붙여넣기를 통해 자동 번역</AutoTranslateViaCopyPaste>
+    <CopyPasteMaxSize>최대 블록 크기</CopyPasteMaxSize>
+    <AutoCopyToClipboard>클립보드에 자동 복사</AutoCopyToClipboard>
+    <AutoCopyLineSeparator>줄 분리기</AutoCopyLineSeparator>
+    <TranslateBlockXOfY>{1}의 {0} 블록 번역</TranslateBlockXOfY>
+    <TranslateBlockInfo>번역기로 가서 텍스트를 붙여넣고, 결과를 클립보드에 다시 복사하고 아래 단추를 누릅니다.</TranslateBlockInfo>
+    <TranslateBlockGetFromClipboard>클립보드에서 번역된 텍스트 가져오기 (Ctrl + V)</TranslateBlockGetFromClipboard>
+    <TranslateBlockCopySourceText>원본 텍스트 클립보드 복사</TranslateBlockCopySourceText>
+    <TranslateBlockClipboardError1>클립보드에 원본 텍스트가 있습니다!</TranslateBlockClipboardError1>
+    <TranslateBlockClipboardError2>번역기로 이동하여 번역하고, 클립보드로 결과를 복사하고 이 단추를 다시 클릭합니다.</TranslateBlockClipboardError2>
   </GoogleTranslate>
   <GoogleOrMicrosoftTranslate>
     <Title>Google | Microsoft 번역기</Title>
@@ -787,7 +837,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <RemoveEmptyLines>빈 줄 제거</RemoveEmptyLines>
     <RemoveLinesWithoutLetters>문자 없는 줄 제거</RemoveLinesWithoutLetters>
     <GenerateTimeCodes>타임코드 생성</GenerateTimeCodes>
-    <TakeTimeFromFileName>Take time from file name</TakeTimeFromFileName>
+    <TakeTimeFromCurrentFile>현재 파일에서 타임코드 얻기</TakeTimeFromCurrentFile>
+    <TakeTimeFromFileName>파일 이름에서 시간 얻기</TakeTimeFromFileName>
     <GapBetweenSubtitles>자막 간격 (ms)</GapBetweenSubtitles>
     <Auto>자동</Auto>
     <Fixed>수정</Fixed>
@@ -979,17 +1030,18 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <CloseOriginal>원본 자막 닫기</CloseOriginal>
         <OpenContainingFolder>현재 폴더 열기</OpenContainingFolder>
         <Compare>자막 비교(&amp;C)...</Compare>
-        <Statistics>통계 자료(&amp;S)...</Statistics>
+        <Statistics>통계 자료(&amp;T)...</Statistics>
         <Plugins>플러그 인...</Plugins>
-        <ImportOcrFromDvd>DVD(VOB/IFO)에서 자막 가져오기/OCR...</ImportOcrFromDvd>
-        <ImportOcrVobSubSubtitle>VobSub(sub/idx)에서 자막 가져오기/OCR...</ImportOcrVobSubSubtitle>
-        <ImportBluRaySupFile>Blu-ray(.sup)에서 자막 가져오기/OCR...</ImportBluRaySupFile>
-        <ImportXSub>Divx/avi에서 XSub 가져오기/OCR...</ImportXSub>
-        <ImportSubtitleFromMatroskaFile>Matroska(.mkv)에서 자막 가져오기</ImportSubtitleFromMatroskaFile>
-        <ImportSubtitleWithManualChosenEncoding>사용자 정의의 인코딩 자막 가져오기</ImportSubtitleWithManualChosenEncoding>
-        <ImportText>일반 텍스트 파일에서 자막 가져오기</ImportText>
-        <ImportImages>이미지 가져오기</ImportImages>
-        <ImportTimecodes>다른 자막에서 타임코드 가져오기</ImportTimecodes>
+        <ImportSubtitleFromVideoFile>비디오 파일에서 자막...</ImportSubtitleFromVideoFile>
+        <ImportOcrFromDvd>DVD(VOB/IFO)에서 자막...</ImportOcrFromDvd>
+        <ImportOcrVobSubSubtitle>OCR용 VobSub(sub/idx) 자막...</ImportOcrVobSubSubtitle>
+        <ImportBluRaySupFile>OCR용 Blu-ray(.sup) 자막 파일...</ImportBluRaySupFile>
+        <ImportBluRaySupFileEdit>편집용 Blu-ray (.sup) 자막 파일...</ImportBluRaySupFileEdit>
+        <ImportSubtitleWithManualChosenEncoding>수동으로 선택한 인코딩이 포함된 자막...</ImportSubtitleWithManualChosenEncoding>
+        <ImportText>일반 텍스트...</ImportText>
+        <ImportImages>이미지...</ImportImages>
+        <ImportTimecodes>타임코드...</ImportTimecodes>
+        <Import>가져오기</Import>
         <Export>내보내기</Export>
         <ExportBdnXml>BDN xml/png...</ExportBdnXml>
         <ExportBluRaySup>블루레이 자막(sup)으로...</ExportBluRaySup>
@@ -1028,7 +1080,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <MultipleReplace>다중 바꾸기(&amp;M)</MultipleReplace>
         <GoToSubtitleNumber>자막 번호로 이동(&amp;G)...</GoToSubtitleNumber>
         <RightToLeftMode>RTL 모드...</RightToLeftMode>
-        <FixTrlViaUnicodeControlCharacters>유니코드 제어 문자로 RTL 수정...</FixTrlViaUnicodeControlCharacters>
+        <FixRtlViaUnicodeControlCharacters>유니코드 제어 문자로 RTL 수정...</FixRtlViaUnicodeControlCharacters>
+        <RemoveUnicodeControlCharacters>유니코드 제어 문자 제거 (선택한 줄)...</RemoveUnicodeControlCharacters>
         <ReverseRightToLeftStartEnd>LTR 모드 (선택한 줄)...</ReverseRightToLeftStartEnd>
         <ShowOriginalTextInAudioAndVideoPreview>오디오/비디오 미리 보기에 원본 텍스트 표시</ShowOriginalTextInAudioAndVideoPreview>
         <ModifySelection>줄 선택 바꾸기</ModifySelection>
@@ -1051,7 +1104,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <SplitLongLines>긴 줄 분할하기</SplitLongLines>
         <MinimumDisplayTimeBetweenParagraphs>자막 사이의 최소 간격 설정...</MinimumDisplayTimeBetweenParagraphs>
         <SortBy>정렬 기준</SortBy>
-        <NetflixQualityCheck>Netflix 품질 검사...</NetflixQualityCheck>
+        <NetflixQualityCheck>넷플릭스 품질 검사...</NetflixQualityCheck>
         <Number>번호 순</Number>
         <StartTime>시작 시간</StartTime>
         <EndTime>종료 시간</EndTime>
@@ -1080,9 +1133,11 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <OpenDvd>DVD 열기...</OpenDvd>
         <ChooseAudioTrack>오디오 트랙 선택하기</ChooseAudioTrack>
         <CloseVideo>비디오 파일 닫기</CloseVideo>
+        <OpenSecondSubtitle>두 번째 자막 파일 열기...</OpenSecondSubtitle>
         <SetVideoOffset>비디오 오프셋 설정...</SetVideoOffset>
         <SmptTimeMode>SMPTE 타이밍 (드롭 프레임)</SmptTimeMode>
         <GenerateTextFromVideo>비디오에서 텍스트 생성...</GenerateTextFromVideo>
+        <ImportChaptersFromVideo>비디오에서 챕터 가져오기</ImportChaptersFromVideo>
         <GenerateImportSceneChanges>장면 전환 생성/가져오기...</GenerateImportSceneChanges>
         <RemoveSceneChanges>장면 전환 제거</RemoveSceneChanges>
         <WaveformBatchGenerate>파형 일괄 생성...</WaveformBatchGenerate>
@@ -1110,9 +1165,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
       </Synchronization>
       <AutoTranslate>
         <Title>번역</Title>
-        <TranslatePoweredByGoogle>Google 번역...</TranslatePoweredByGoogle>
-        <TranslatePoweredByMicrosoft>Bing 번역...</TranslatePoweredByMicrosoft>
-        <TranslateFromSwedishToDanish>스웨덴어를 덴마크어로 번역 (nikse.dk 제공)</TranslateFromSwedishToDanish>
+        <AutoTranslate>자동 번역...</AutoTranslate>
+        <AutoTranslateViaCopyPaste>복사-붙여넣기를 통해 자동 변역...</AutoTranslateViaCopyPaste>
       </AutoTranslate>
       <Options>
         <Title>옵션</Title>
@@ -1144,7 +1198,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <RemoveTextForHi>청각 장애인용 텍스트 삭제</RemoveTextForHi>
         <VisualSync>시각 동기화</VisualSync>
         <SpellCheck>맞춤법 검사</SpellCheck>
-        <NetflixQualityCheck>Netflix 품질 검사</NetflixQualityCheck>
+        <NetflixQualityCheck>넷플릭스 품질 검사</NetflixQualityCheck>
         <Settings>환경 설정</Settings>
         <Help>도움말</Help>
         <ShowHideWaveform>파형 표시 | 숨김</ShowHideWaveform>
@@ -1217,6 +1271,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <GoogleAndMicrosoftTranslateSelectedLine>Google/Microsoft 번역</GoogleAndMicrosoftTranslateSelectedLine>
         <TranslateSelectedLines>선택한 줄 번역...</TranslateSelectedLines>
         <AdjustDisplayDurationForSelectedLines>표시시간 조정...</AdjustDisplayDurationForSelectedLines>
+        <ApplyDurationLimitsForSelectedLines>선택한 줄의 표시시간 제한 적용...</ApplyDurationLimitsForSelectedLines>
         <FixCommonErrorsInSelectedLines>일반 오류 수정...</FixCommonErrorsInSelectedLines>
         <ChangeCasingForSelectedLines>대/소문자 바꾸기</ChangeCasingForSelectedLines>
         <SaveSelectedLines>선택한 줄 저장...</SaveSelectedLines>
@@ -1224,15 +1279,15 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
         <WebVTTRemoveVoices>음성 제거</WebVTTRemoveVoices>
         <NewActor>새 배우...</NewActor>
         <RemoveActors>배우 제거</RemoveActors>
-        <EditBookmark>책갈피 편집</EditBookmark>
-        <RemoveBookmark>책갈피 제거</RemoveBookmark>
+        <EditBookmark>북마크 편집</EditBookmark>
+        <RemoveBookmark>북마크 제거</RemoveBookmark>
+        <GoToSourceView>소스 보기로 이동</GoToSourceView>
+        <GoToListView>자막 보기로 이동</GoToListView>
       </ContextMenu>
     </Menu>
     <Controls>
       <SubtitleFormat>형식</SubtitleFormat>
       <FileEncoding>인코딩</FileEncoding>
-      <ListView>자막 보기</ListView>
-      <SourceView>소스 보기</SourceView>
       <UndoChangesInEditPanel>편집 취소</UndoChangesInEditPanel>
       <Previous>&lt; 이전</Previous>
       <Next>다음 &gt;</Next>
@@ -1263,17 +1318,20 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
       <AutoContinueInXSeconds>{0}초 후에 자동으로 진행합니다.</AutoContinueInXSeconds>
       <StillTypingAutoContinueStopped>입력하는 중... 자동 진행이 중지되었습니다.</StillTypingAutoContinueStopped>
       <InsertNewSubtitleAtVideoPosition>재생 위치에 새 자막 삽입</InsertNewSubtitleAtVideoPosition>
+      <InsertNewSubtitleAtVideoPositionNoTextBoxFocus>비디오 위치에 새 자막 삽입 (텍스트 상자 포커스 없음)</InsertNewSubtitleAtVideoPositionNoTextBoxFocus>
       <Auto>자동</Auto>
       <PlayFromJustBeforeText>텍스트 직전부터 재생(&amp;T)</PlayFromJustBeforeText>
+      <PlayFromBeginning>비디오 시작점에서 재생</PlayFromBeginning>
       <Pause>중지</Pause>
       <GoToSubtitlePositionAndPause>자막 위치로 이동</GoToSubtitlePositionAndPause>
       <SetStartTime>시작 시간 설정(&amp;S)</SetStartTime>
       <SetEndTimeAndGoToNext>종료점 정하고 다음으로(&amp;E)</SetEndTimeAndGoToNext>
       <AdjustedViaEndTime>종료 시간 {0}을(를) 통해 조정했습니다.</AdjustedViaEndTime>
       <SetEndTime>종료 시간 설정(&amp;N)</SetEndTime>
-      <SetstartTimeAndOffsetOfRest>시작점 정하고 나머지를 보정(&amp;R)</SetstartTimeAndOffsetOfRest>
+      <SetStartTimeAndOffsetTheRest>시작점 정하고 나머지를 보정(&amp;R)</SetStartTimeAndOffsetTheRest>
       <SearchTextOnline>인터넷으로 텍스트 검색</SearchTextOnline>
       <GoogleTranslate>Google 번역</GoogleTranslate>
+      <AutoTranslate>자동 번역</AutoTranslate>
       <GoogleIt>GoogleIt</GoogleIt>
       <SecondsBackShort>&lt;&lt;</SecondsBackShort>
       <SecondsForwardShort>&gt;&gt;</SecondsForwardShort>
@@ -1290,6 +1348,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <SaveChangesToOriginalX>원본 자막을 {0} 이름으로 저장하시겠습니까?</SaveChangesToOriginalX>
     <SaveSubtitleAs>자막 저장...</SaveSubtitleAs>
     <SaveOriginalSubtitleAs>원본 자막을 다른 이름으로 저장...</SaveOriginalSubtitleAs>
+    <CannotSaveEmptySubtitle>빈 자막을 저장할 수 없습니다</CannotSaveEmptySubtitle>
     <NoSubtitleLoaded>로드된 자막이 없습니다!</NoSubtitleLoaded>
     <VisualSyncSelectedLines>시각 동기화 - 선택한 줄</VisualSyncSelectedLines>
     <VisualSyncTitle>시각 동기화</VisualSyncTitle>
@@ -1312,6 +1371,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
 이 파일은 읽기 전용입니다!</FileXIsReadOnly>
     <UnableToSaveSubtitleX>자막 파일 {0}을 저장할 수 없습니다.
 빈 자막 같습니다 - 유효한 자막을 만들어 다시 저장해 보십시오!</UnableToSaveSubtitleX>
+    <FormatXShouldUseUft8>{0} 파일을 저장할 때 UTF-8 인코딩을 사용해야 합니다!</FormatXShouldUseUft8>
     <BeforeNew>새 작업 전</BeforeNew>
     <New>새 작업</New>
     <BeforeConvertingToX>{0}으(로) 변환하기 전</BeforeConvertingToX>
@@ -1378,7 +1438,6 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <BeforeSwedishToDanishTranslation>스웨덴어를 덴마크어로 번역 전</BeforeSwedishToDanishTranslation>
     <TranslationFromSwedishToDanishComplete>스웨덴어를 덴마크어로 번역했습니다!</TranslationFromSwedishToDanishComplete>
     <TranslationFromSwedishToDanishFailed>스웨덴어를 덴마크어로 번역하지 못했습니다!</TranslationFromSwedishToDanishFailed>
-    <BeforeUndo>취소 전</BeforeUndo>
     <UndoPerformed>실행 취소</UndoPerformed>
     <RedoPerformed>다시 실행</RedoPerformed>
     <NothingToUndo>취소할 것이 없습니다!</NothingToUndo>
@@ -1409,16 +1468,20 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <LineSplitted>줄을 분할했습니다.</LineSplitted>
     <BeforeMergeLines>줄 병합 전</BeforeMergeLines>
     <LinesMerged>줄이 병합되었습니다.</LinesMerged>
+    <MergeSentences>문장 병합...</MergeSentences>
+    <MergeSentencesXLines>문장 병합 - 병합된 줄: {0}</MergeSentencesXLines>
     <BeforeSettingColor>색상 설정 전</BeforeSettingColor>
     <BeforeSettingFontName>글꼴 설정 전</BeforeSettingFontName>
     <BeforeTypeWriterEffect>타자기 효과 전</BeforeTypeWriterEffect>
     <BeforeKaraokeEffect>가라오케 효과 전</BeforeKaraokeEffect>
     <BeforeImportingDvdSubtitle>DVD에서 자막 가져오기 전</BeforeImportingDvdSubtitle>
-    <OpenMatroskaFile>Matroska 파일 열기...</OpenMatroskaFile>
-    <MatroskaFiles>Matroska 파일</MatroskaFiles>
+    <OpenSubtitleVideoFile>비디오 파일에서 자막 열기...</OpenSubtitleVideoFile>
+    <VideoFiles>비디오 파일</VideoFiles>
     <NoSubtitlesFound>자막이 없습니다!</NoSubtitlesFound>
     <NotAValidMatroskaFileX>유효한 Matroska 파일이 없습니다: {0}</NotAValidMatroskaFileX>
     <BlurayNotSubtitlesFound>Blu-ray sup 파일에 어떠한 자막도 들어 있지 않거나 오류입니다 - 다시 추출하십시오.</BlurayNotSubtitlesFound>
+    <ImportingChapters>챕터 가져오는 중...</ImportingChapters>
+    <XChaptersImported>{0} 챕터 가져옴</XChaptersImported>
     <ParsingMatroskaFile>Matroska 파일의 구문을 분석하는 중...</ParsingMatroskaFile>
     <ParsingTransportStreamFile>전송 스트림 파일의 구문을 분석하는 중... 잠시 기다려 주십시오!</ParsingTransportStreamFile>
     <BeforeImportFromMatroskaFile>Matroska 파일에서 자막을 가져오기 전</BeforeImportFromMatroskaFile>
@@ -1439,8 +1502,6 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <VobSubFiles>VobSub 자막 파일</VobSubFiles>
     <OpenBluRaySupFile>블루레이 자막 (Sup) 파일 열기...</OpenBluRaySupFile>
     <BluRaySupFiles>블루레이 자막 (Sup) 파일</BluRaySupFiles>
-    <OpenXSubFiles>XSUB 파일 열기...</OpenXSubFiles>
-    <XSubFiles>XSUB 파일</XSubFiles>
     <BeforeImportingVobSubFile>VobSub 자막 가져오기 전</BeforeImportingVobSubFile>
     <BeforeImportingBluRaySupFile>블루레이 자막 (Sup) 파일 가져오기 전</BeforeImportingBluRaySupFile>
     <BeforeImportingBdnXml>BDN xml 파일 가져오기 전</BeforeImportingBdnXml>
@@ -1533,7 +1594,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ParsingTransportStream>전송 스트림을 분석하는 중... 잠시 기다려 주십시오!</ParsingTransportStream>
     <XPercentCompleted>{0}% 완료</XPercentCompleted>
     <NextX>다음: {0}</NextX>
-    <PromptInsertSubtitleOverlap>파형 위치에 자막을 삽입하면 오버랩이 발생합니다!
+    <PromptInsertSubtitleOverlap>파형 위치에 자막을 삽입하면 오버랩이 발생합니다! 
 
 그래도 계속하겠습니까?</PromptInsertSubtitleOverlap>
     <SubtitleContainsNegativeDurationsX>자막에 표시시간이 음수인 줄이 있습니다: {0} </SubtitleContainsNegativeDurationsX>
@@ -1555,6 +1616,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <NoSupportHereDvdSup>DVD sup 파일은 여기서 지원되지 않습니다.</NoSupportHereDvdSup>
     <NoSupportHereVobSub>VobSub 파일은 여기서 지원되지 않습니다.</NoSupportHereVobSub>
     <NoSupportHereDivx>DivX 파일은 여기서 지원되지 않습니다.</NoSupportHereDivx>
+    <NoChapters>비디오에 챕터가 없습니다.</NoChapters>
+    <DarkThemeRestart>어두운 테마 변경을 적용하려면 Subtitle Edit를 다시 시작하십시오</DarkThemeRestart>
   </Main>
   <MatroskaSubtitleChooser>
     <Title>MATROSKA 파일 안에 있는 자막 선택하기</Title>
@@ -1567,16 +1630,110 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ConvertFrom>변환 대상:</ConvertFrom>
     <ConvertTo>변환 결과:</ConvertTo>
     <CopyToClipboard>클립보드에 복사</CopyToClipboard>
-    <Celsius>섭씨</Celsius>
-    <Fahrenheit>화씨</Fahrenheit>
-    <Miles>마일</Miles>
+    <CloseOnInsert>삽입 시 닫기</CloseOnInsert>
+    <Length>길이</Length>
+    <Mass>질량</Mass>
+    <Volume>볼륨</Volume>
+    <Area>영역</Area>
+    <Time>시간</Time>
+    <Temperature>온도</Temperature>
+    <Velocity>속도</Velocity>
+    <Force>힘</Force>
+    <Energy>에너지</Energy>
+    <Power>파워</Power>
+    <Pressure>압력</Pressure>
     <Kilometers>킬로미터</Kilometers>
     <Meters>미터</Meters>
+    <Centimeters>센티미터</Centimeters>
+    <Millimeters>밀리미터</Millimeters>
+    <Micrometers>마이크로미터</Micrometers>
+    <Nanometers>나노미터</Nanometers>
+    <Angstroms>옹스트롬</Angstroms>
+    <MilesTerrestial>마일 (지상)</MilesTerrestial>
+    <MilesNautical>마일 (해상)</MilesNautical>
     <Yards>야드</Yards>
     <Feet>피트</Feet>
     <Inches>인치</Inches>
-    <Pounds>파운드</Pounds>
+    <Chains>체인</Chains>
+    <Fathoms>패덤스</Fathoms>
+    <Hands>손</Hands>
+    <Rods>막대 </Rods>
+    <Spans>뼘</Spans>
+    <LongTonnes>긴 톤</LongTonnes>
+    <ShortTonnes>짧은 톤</ShortTonnes>
+    <Tonnes>톤</Tonnes>
     <Kilos>킬로그램</Kilos>
+    <Grams>그램</Grams>
+    <Milligrams>밀리그램</Milligrams>
+    <Micrograms>마이크로그램</Micrograms>
+    <Pounds>파운드</Pounds>
+    <Ounces>온스</Ounces>
+    <Carats>캐럿</Carats>
+    <Drams>드람</Drams>
+    <Grains>곡물</Grains>
+    <Stones>돌</Stones>
+    <CubicKilometers>입방 킬로미터</CubicKilometers>
+    <CubicMeters>입방 미터</CubicMeters>
+    <Litres>리터</Litres>
+    <CubicCentimeters>입방 센티미터</CubicCentimeters>
+    <CubicMillimeters>입방 밀리미터</CubicMillimeters>
+    <CubicMiles>입방 마일</CubicMiles>
+    <CubicYards>입방 야드</CubicYards>
+    <CubicFTs>입방 피트</CubicFTs>
+    <CubicInches>입방 인치</CubicInches>
+    <OilBarrels>오일 배럴</OilBarrels>
+    <GallonUS>갤런 (미국)</GallonUS>
+    <QuartsUS>쿼트 (미국)</QuartsUS>
+    <PintsUS>파인트 (미국)</PintsUS>
+    <FluidOuncesUS>유체 온스 (미국)</FluidOuncesUS>
+    <Bushels>부셸</Bushels>
+    <Pecks>펙스</Pecks>
+    <GallonsUK>갤런 (영국)</GallonsUK>
+    <QuartsUK>쿼트 (영국)</QuartsUK>
+    <PintsUK>파인트 (영국)</PintsUK>
+    <FluidOuncesUK>유체 온스 (영국)</FluidOuncesUK>
+    <SquareKilometers>평방 킬로미터</SquareKilometers>
+    <SquareMeters>평방 미터</SquareMeters>
+    <SquareCentimeters>제곱 센티미터</SquareCentimeters>
+    <SquareMillimeters>제곱 밀리미터</SquareMillimeters>
+    <SquareMiles>평방 마일</SquareMiles>
+    <SquareYards>평방 야드</SquareYards>
+    <SquareFTs>평방 피트</SquareFTs>
+    <SquareInches>평방 인치</SquareInches>
+    <Hectares>헥타르</Hectares>
+    <Acres>에이커</Acres>
+    <Ares>아르</Ares>
+    <Hours>시간</Hours>
+    <Minutes>분</Minutes>
+    <Seconds>초</Seconds>
+    <Milliseconds>밀리초</Milliseconds>
+    <Microseconds>마이크로초</Microseconds>
+    <Fahrenheit>화씨</Fahrenheit>
+    <Celsius>섭씨</Celsius>
+    <Kelvin>켈빈</Kelvin>
+    <KilometersPerHour>킬로미터/시간</KilometersPerHour>
+    <MetersPerSecond>미터/초</MetersPerSecond>
+    <MilesPerHour>마일/시간</MilesPerHour>
+    <YardsPerMinute>야드/분</YardsPerMinute>
+    <FTsPerSecond>피트/초</FTsPerSecond>
+    <Knots>노트</Knots>
+    <PoundsForce>파운드-포스</PoundsForce>
+    <Newtons>뉴턴</Newtons>
+    <KilosForce>킬로-포스</KilosForce>
+    <Jouls>줄</Jouls>
+    <Calories>칼로리</Calories>
+    <Ergs>에르그</Ergs>
+    <ElectronVolts>전자-볼트</ElectronVolts>
+    <Btus>Btus</Btus>
+    <Watts>와트</Watts>
+    <Horsepower>마력</Horsepower>
+    <Atmospheres>대기</Atmospheres>
+    <Bars>바</Bars>
+    <Pascals>파스칼</Pascals>
+    <MillimetersOfMercury>수은 밀리미터</MillimetersOfMercury>
+    <PoundPerSquareInch>평방 인치당 파운드 력</PoundPerSquareInch>
+    <KilogramPerSquareCentimeter>평방 센티미터당 킬로그램 력</KilogramPerSquareCentimeter>
+    <KiloPascals>킬로파스칼</KiloPascals>
   </MeasurementConverter>
   <MergeDoubleLines>
     <Title>* 동일한 텍스트로 된 라인(줄) 병합하기</Title>
@@ -1613,10 +1770,12 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <EndsWith>다음 텍스트로 끝나는 줄</EndsWith>
     <NoContains>다음 텍스트가 없는(無) 줄</NoContains>
     <RegEx>정규 표현식</RegEx>
-    <UnequalLines>홀수 라인</UnequalLines>
-    <EqualLines>짝수 라인</EqualLines>
+    <OddLines>홀수 라인</OddLines>
+    <EvenLines>짝수 라인</EvenLines>
     <DurationLessThan>표시시간 미달</DurationLessThan>
     <DurationGreaterThan>표시시간 초과</DurationGreaterThan>
+    <MoreThanTwoLines>두 줄 이상</MoreThanTwoLines>
+    <Bookmarked>북마크됨</Bookmarked>
   </ModifySelection>
   <MultipleReplace>
     <Title>다중 바꾸기</Title>
@@ -1766,7 +1925,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ShowOnlyModifiedLines>수정된 줄만 표시</ShowOnlyModifiedLines>
     <MinimumMillisecondsBetweenParagraphs>단락 사이의 최소 간격 (밀리초)</MinimumMillisecondsBetweenParagraphs>
     <FrameInfo>프레임 속도 정보</FrameInfo>
-    <OneFrameXisYMilliseconds>{0:0.00} fps에서 1 프레임은 {1} 밀리초 입니다.</OneFrameXisYMilliseconds>
+    <Frames>프레임</Frames>
+    <XFrameYisZMilliseconds>{1}fps에서 {0}프레임은 {2}밀리초 입니다.</XFrameYisZMilliseconds>
   </SetMinimumDisplayTimeBetweenParagraphs>
   <SetSyncPoint>
     <Title>"{0}" 줄의 지점 동기화</Title>
@@ -1779,6 +1939,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
   <Settings>
     <Title>환경 설정</Title>
     <General>일반</General>
+    <SubtitleFormats>자막 형식</SubtitleFormats>
     <Toolbar>도구 모음</Toolbar>
     <VideoPlayer>비디오 플레이어</VideoPlayer>
     <WaveformAndSpectrogram>파형 | 스펙트로그램</WaveformAndSpectrogram>
@@ -1796,19 +1957,23 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <Replace>바꾸기</Replace>
     <VisualSync>시각 동기화</VisualSync>
     <SpellCheck>맞춤법</SpellCheck>
-    <NetflixQualityCheck>Netflix 품질 검사</NetflixQualityCheck>
+    <NetflixQualityCheck>넷플릭스 품질 검사</NetflixQualityCheck>
     <SettingsName>환경 설정</SettingsName>
-    <Help>도움말</Help>
-    <UnbreakNoSpace>공백없이 줄바꿈 제거 (CJK)</UnbreakNoSpace>
-    <ToggleBookmarks>책갈피 전환</ToggleBookmarks>
-    <ToggleBookmarksWithComment>책갈피 전환 - 설명 추가</ToggleBookmarksWithComment>
-    <ClearBookmarks>책갈피 지우기</ClearBookmarks>
-    <GoToBookmark>책갈피로 이동</GoToBookmark>
-    <GoToPreviousBookmark>이전 책갈피로 이동</GoToPreviousBookmark>
-    <GoToNextBookmark>다음 책갈피로 이동</GoToNextBookmark>
+    <ToggleBookmarks>북마크 전환</ToggleBookmarks>
+    <ToggleBookmarksWithComment>북마크 전환 - 설명 추가</ToggleBookmarksWithComment>
+    <ClearBookmarks>북마크 지우기</ClearBookmarks>
+    <ExportBookmarks>북마크 내보내기...</ExportBookmarks>
+    <GoToBookmark>북마크로 이동</GoToBookmark>
+    <GoToPreviousBookmark>이전 북마크로 이동</GoToPreviousBookmark>
+    <GoToNextBookmark>다음 북마크로 이동</GoToNextBookmark>
     <ChooseProfile>프로필 선택</ChooseProfile>
     <DuplicateLine>중복 줄</DuplicateLine>
+    <ToggleView>자막/소스 보기 전환</ToggleView>
+    <ToggleMode>번역/생성/조정 모드 전환</ToggleMode>
+    <TogglePreviewOnVideo>비디오 미리보기 전환</TogglePreviewOnVideo>
+    <Help>도움말</Help>
     <FontInUi>UI 글꼴</FontInUi>
+    <Appearance>모양</Appearance>
     <ShowFrameRate>도구 모음에 프레임 속도 표시</ShowFrameRate>
     <DefaultFrameRate>기본 프레임 속도</DefaultFrameRate>
     <DefaultFileEncoding>기본 파일 인코딩</DefaultFileEncoding>
@@ -1820,7 +1985,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <SubtitleLineMaximumLength>줄당 최대 문자수</SubtitleLineMaximumLength>
     <OptimalCharactersPerSecond>최적 문자/초</OptimalCharactersPerSecond>
     <MaximumCharactersPerSecond>초당 최대 문자수</MaximumCharactersPerSecond>
-    <MaximumWordssPerMinute>분당 최대 문자수</MaximumWordssPerMinute>
+    <MaximumWordsPerMinute>분당 최대 문자수</MaximumWordsPerMinute>
     <AutoWrapWhileTyping>타이핑시 자동 줄바꿈</AutoWrapWhileTyping>
     <DurationMinimumMilliseconds>최소 표시시간 (밀리초)</DurationMinimumMilliseconds>
     <DurationMaximumMilliseconds>최대 표시시간 (밀리초)</DurationMaximumMilliseconds>
@@ -1841,6 +2006,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <RememberPositionAndSize>메인 창의 위치 및 크기 기억</RememberPositionAndSize>
     <StartInSourceView>「소스 보기」로 시작</StartInSourceView>
     <RemoveBlankLinesWhenOpening>자막 열 때, 빈 줄 제거</RemoveBlankLinesWhenOpening>
+    <RemoveBlankLines>빈 줄 제거</RemoveBlankLines>
     <ShowLineBreaksAs>다음 기호로 줄바꿈 표시</ShowLineBreaksAs>
     <SaveAsFileNameFrom>"다른 이름으로 저장..."에서 사용하는 파일 이름</SaveAsFileNameFrom>
     <MainListViewDoubleClickAction>「자막 보기」에서 줄을 더블 클릭하면 다음 실행:</MainListViewDoubleClickAction>
@@ -1871,9 +2037,9 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <TimeCodeModeHHMMSSMS>HH:MM:SS.Msek (00:00:01.500)</TimeCodeModeHHMMSSMS>
     <TimeCodeModeHHMMSSFF>HH:MM:SS:FF (00:00:01:12)</TimeCodeModeHHMMSSFF>
     <SplitBehavior>동작 분할</SplitBehavior>
-    <SplitBehaviorPrevious>분할 지점 좌측에 간격 추가</SplitBehaviorPrevious>
-    <SplitBehaviorHalf>분할 지점 가운데 간격 추가</SplitBehaviorHalf>
-    <SplitBehaviorNext>분할 지점 우측에 간격 추가</SplitBehaviorNext>
+    <SplitBehaviorPrevious>분할 지점 왼쪽에 간격 추가 (오른쪽 포커스)</SplitBehaviorPrevious>
+    <SplitBehaviorHalf>분할 지점 가운데 간격 추가 (왼쪽 포커스)</SplitBehaviorHalf>
+    <SplitBehaviorNext>분할 지점 오른쪽에 간격 추가 (왼쪽 포커스)</SplitBehaviorNext>
     <VideoEngine>비디오 장치</VideoEngine>
     <DirectShow>다이렉트쇼</DirectShow>
     <DirectShowDescription>system32\quartz.dll</DirectShowDescription>
@@ -1888,6 +2054,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ShowStopButton>정지 버튼 표시</ShowStopButton>
     <ShowMuteButton>음소거 버튼 표시</ShowMuteButton>
     <ShowFullscreenButton>전체 화면 버튼 표시</ShowFullscreenButton>
+    <PreviewFontName>자막 미리보기 글꼴 이름</PreviewFontName>
     <PreviewFontSize>미리 보기의 글자 크기:</PreviewFontSize>
     <MainWindowVideoControls>메인 창의 비디오 컨트롤</MainWindowVideoControls>
     <CustomSearchTextAndUrl>사용자 지정 검색 서비스 / URL</CustomSearchTextAndUrl>
@@ -1908,6 +2075,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <WaveformColor>색상</WaveformColor>
     <WaveformSelectedColor>선택된 색상</WaveformSelectedColor>
     <WaveformBackgroundColor>배경 색상</WaveformBackgroundColor>
+    <WaveformCursorColor>커서 색상</WaveformCursorColor>
     <WaveformTextColor>텍스트 색상</WaveformTextColor>
     <WaveformTextFontSize>텍스트 글꼴 크기</WaveformTextFontSize>
     <WaveformAndSpectrogramsFolderEmpty>파형 및 스펙트로그램 폴더 비우기</WaveformAndSpectrogramsFolderEmpty>
@@ -1977,6 +2145,11 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <FixCommonOcrErrorsUseHardcodedRules>일반적인 OCR 오류 해결 - 하드 코딩 규칙 포함</FixCommonOcrErrorsUseHardcodedRules>
     <FixCommonerrorsFixShortDisplayTimesAllowMoveStartTime>짧은 표시시간 수정 - 시작 시간 이동을 허용</FixCommonerrorsFixShortDisplayTimesAllowMoveStartTime>
     <FixCommonErrorsSkipStepOne>1 단계 건너뛰기 (수정 규칙 선택)</FixCommonErrorsSkipStepOne>
+    <DefaultFormat>기본 형식</DefaultFormat>
+    <DefaultSaveAsFormat>기본값으로 저장</DefaultSaveAsFormat>
+    <Favorites>즐겨찾기</Favorites>
+    <FavoriteFormats>즐겨찾기 형식</FavoriteFormats>
+    <FavoriteSubtitleFormatsNote>참고: 형식을 선택할 때 즐겨찾기 형식이 먼저 표시되며 기본 형식이 항상 먼저 표시될 것입니다.</FavoriteSubtitleFormatsNote>
     <Shortcuts>단축키</Shortcuts>
     <Shortcut>단축키</Shortcut>
     <Control>Ctrl</Control>
@@ -1986,40 +2159,76 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ListViewAndTextBox>목록 보기 및 텍스트 상자</ListViewAndTextBox>
     <ListView>목록 보기</ListView>
     <TextBox>텍스트 상자</TextBox>
+    <UseSyntaxColoring>구문 색상 사용</UseSyntaxColoring>
+    <HtmlColor>Html 색상</HtmlColor>
+    <AssaColor>ASSA 색상</AssaColor>
+    <DarkTheme>어두운 테마</DarkTheme>
+    <DarkThemeEnabled>어두운 테마 사용</DarkThemeEnabled>
+    <DarkThemeShowGridViewLines>목록 보기 그리드 선 표시</DarkThemeShowGridViewLines>
     <UpdateShortcut>업데이트</UpdateShortcut>
+    <FoucsSetVideoPosition>초점에 비디오 위치 설정</FoucsSetVideoPosition>
     <ToggleDockUndockOfVideoControls>비디오 컨트롤 연결 | 해제</ToggleDockUndockOfVideoControls>
     <CreateSetEndAddNewAndGoToNew>끝 지점과 새로 추가할 지점을 정하고 새 지점으로 이동</CreateSetEndAddNewAndGoToNew>
     <AdjustViaEndAutoStart>끝 지점을 통해 조정</AdjustViaEndAutoStart>
     <AdjustViaEndAutoStartAndGoToNext>끝 지점을 통해 조정하고 다음으로 이동</AdjustViaEndAutoStartAndGoToNext>
+    <AdjustSetEndMinusGapAndStartNextHere>끝 지점의 음수 간격 조정, 다음으로 이동하고 여기에서 다음 시작</AdjustSetEndMinusGapAndStartNextHere>
     <AdjustSetEndTimeAndGoToNext>끝 지점 정하고 다음으로 이동</AdjustSetEndTimeAndGoToNext>
+    <AdjustSetEndTimeAndPause>끝 지점 정하고 일시 중지</AdjustSetEndTimeAndPause>
     <AdjustSetStartAutoDurationAndGoToNext>시작 지점과 표시시간을 정하고 다음으로 이동</AdjustSetStartAutoDurationAndGoToNext>
     <AdjustSetEndNextStartAndGoToNext>끝 지점과 다음 시작 지점을 정하고 다음으로 이동</AdjustSetEndNextStartAndGoToNext>
     <AdjustStartDownEndUpAndGoToNext>'↓'키=시작 지점 설정, '↑'키=끝 지점 정하고 다음으로 이동</AdjustStartDownEndUpAndGoToNext>
+    <AdjustSetStartAndEndOfPrevious>시작 지점 정하고 이전 끝 지점 설정 (최소 간격 빼기)</AdjustSetStartAndEndOfPrevious>
+    <AdjustSetStartAndEndOfPreviousAndGoToNext>시작 지점 정하고 이전 끝 지점 정하고 다음으로 이동 (최소 간격 빼기)</AdjustSetStartAndEndOfPreviousAndGoToNext>
     <AdjustSelected100MsForward>선택한 줄을 0.1초 앞으로 이동</AdjustSelected100MsForward>
     <AdjustSelected100MsBack>선택한 줄을 0.1초 뒤로 이동</AdjustSelected100MsBack>
     <AdjustStartXMsBack>시작 지점 {0} 밀리초 뒤로 이동</AdjustStartXMsBack>
     <AdjustStartXMsForward>시작 지점 {0} 밀리초 앞으로 이동</AdjustStartXMsForward>
     <AdjustEndXMsBack>끝 지점 {0} 밀리초 뒤로 이동</AdjustEndXMsBack>
     <AdjustEndXMsForward>끝지점 {0} 밀리초 앞으로 이동</AdjustEndXMsForward>
+    <AdjustStartOneFrameBack>시작을 1프레임 뒤로 이동</AdjustStartOneFrameBack>
+    <AdjustStartOneFrameForward>시작을 1프레임 앞으로 이동</AdjustStartOneFrameForward>
+    <AdjustEndOneFrameBack>끝을 1프레임 뒤로 이동</AdjustEndOneFrameBack>
+    <AdjustEndOneFrameForward>끝을 1프레임 앞으로 이동</AdjustEndOneFrameForward>
+    <AdjustStartOneFrameBackKeepGapPrev>시작을 1프레임 뒤로 이동 (가까운 경우 이전과 간격 유지)</AdjustStartOneFrameBackKeepGapPrev>
+    <AdjustStartOneFrameForwardKeepGapPrev>시작을 1프레임 앞으로 이동 (가까운 경우 이전과 간격 유지)</AdjustStartOneFrameForwardKeepGapPrev>
+    <AdjustEndOneFrameBackKeepGapNext>끝을 1프레임 뒤로 이동 (가까운 경우 다음과 간격 유지)</AdjustEndOneFrameBackKeepGapNext>
+    <AdjustEndOneFrameForwardKeepGapNext>끝을 1프레임 앞으로 이동 (가까운 경우 다음과 간격 유지)</AdjustEndOneFrameForwardKeepGapNext>
     <AdjustSetStartTimeKeepDuration>시작 설정, 간격 유지</AdjustSetStartTimeKeepDuration>
+    <AdjustVideoSetStartForAppropriateLine>적절한 줄에 대한 시작 설정</AdjustVideoSetStartForAppropriateLine>
+    <AdjustVideoSetEndForAppropriateLine>적절한 줄에 대한 끝 설정</AdjustVideoSetEndForAppropriateLine>
+    <AdjustSetStartAndOffsetTheWholeSubtitle>시작 시간을 설정하고 전체 자막을 오프셋합니다.</AdjustSetStartAndOffsetTheWholeSubtitle>
     <AdjustSetEndAndOffsetTheRest>끝 설정, 나머지 보충</AdjustSetEndAndOffsetTheRest>
     <AdjustSetEndAndOffsetTheRestAndGoToNext>끝 설정, 나머지 보충하고 다음으로 이동</AdjustSetEndAndOffsetTheRestAndGoToNext>
-    <AdjustExtendCurrentSubtitle>현재 줄을 다음 자막으로 확장하거나 표시시간 최대화</AdjustExtendCurrentSubtitle>
+    <AdjustSnapStartToNextSceneChange>선택한 줄의 시작을 다음 장면 변경에 맞춤</AdjustSnapStartToNextSceneChange>
+    <AdjustSnapStartToNextSceneChangeWithGap>선택한 줄의 시작을 최소 간격으로 다음 장면 변경에 맞춤</AdjustSnapStartToNextSceneChangeWithGap>
+    <AdjustSnapEndToPreviousSceneChange>선택한 줄의 끝을 이전 장면 변경에 맞춤</AdjustSnapEndToPreviousSceneChange>
+    <AdjustSnapEndToPreviousSceneChangeWithGap>선택한 줄의 끝을 최소 간격으로 이전 장면 변경에 맞춤</AdjustSnapEndToPreviousSceneChangeWithGap>
     <AdjustExtendToNextSceneChange>선택한 줄을 다음 장면 변경으로 확장 (또는 다음 자막)</AdjustExtendToNextSceneChange>
+    <AdjustExtendToNextSceneChangeWithGap>선택한 줄을 다음 장면 변경으로 최소 간격으로 확장 (또는 다음 자막)</AdjustExtendToNextSceneChangeWithGap>
     <AdjustExtendToPreviousSceneChange>선택한 줄을 이전 장면 변경으로 확장 (또는 이전 자막)</AdjustExtendToPreviousSceneChange>
+    <AdjustExtendToPreviousSceneChangeWithGap>선택한 줄을 최소 간격으로 이전 장면 변경으로 확장 (또는 이전 자막)</AdjustExtendToPreviousSceneChangeWithGap>
     <AdjustExtendToNextSubtitle>선택한 줄을 다음 자막으로 확장</AdjustExtendToNextSubtitle>
     <AdjustExtendToPreviousSubtitle>선택한 줄을 이전 자막으로 확장</AdjustExtendToPreviousSubtitle>
+    <AdjustExtendCurrentSubtitle>현재 줄을 다음 자막으로 확장하거나 표시시간 최대화</AdjustExtendCurrentSubtitle>
+    <AdjustExtendPreviousLineEndToCurrentStart>이전 줄의 끝을 현재의 시작으로 확장</AdjustExtendPreviousLineEndToCurrentStart>
+    <AdjustExtendNextLineStartToCurrentEnd>다음 줄의 시작을 현재의 끝으로 확장</AdjustExtendNextLineStartToCurrentEnd>
     <RecalculateDurationOfCurrentSubtitle>현재 자막의 표시시간 다시 계산</RecalculateDurationOfCurrentSubtitle>
     <MainCreateStartDownEndUp>'↓'키로 새로운 자막 삽입, '↑'키로 종료 시간 설정</MainCreateStartDownEndUp>
     <MergeDialog>대화 병합 (대시 삽입)</MergeDialog>
     <GoToNext>다음 줄로 이동</GoToNext>
+    <GoToNextCursorAtEnd>다음 줄로 이동하여 끝에 커서 설정</GoToNextCursorAtEnd>
     <GoToPrevious>이전 줄로 이동</GoToPrevious>
     <GoToCurrentSubtitleStart>현재 줄의 시작 지점으로 이동</GoToCurrentSubtitleStart>
     <GoToCurrentSubtitleEnd>현재 줄의 끝 지점으로 이동</GoToCurrentSubtitleEnd>
     <GoToPreviousSubtitleAndFocusVideo>이전 줄로 이동하고 비디오 위치 설정</GoToPreviousSubtitleAndFocusVideo>
     <GoToNextSubtitleAndFocusVideo>다음 줄로 이동하고 비디오 위치 설정</GoToNextSubtitleAndFocusVideo>
+    <GoToPrevSubtitleAndPlay>이전 줄로 이동하여 재생</GoToPrevSubtitleAndPlay>
+    <GoToNextSubtitleAndPlay>다음 줄로 이동하여 재생</GoToNextSubtitleAndPlay>
     <ToggleFocus>목록 보기와 자막 텍스트 상자 간의 포커스 전환</ToggleFocus>
+    <ToggleFocusWaveform>목록 보기와 파형/스펙트로그램 간의 포커스 전환</ToggleFocusWaveform>
     <ToggleDialogDashes>대화의 대시('-') 전환</ToggleDialogDashes>
+    <ToggleQuotes>따옴표 전환</ToggleQuotes>
+    <ToggleHiTags>HI 태그 전환</ToggleHiTags>
     <ToggleMusicSymbols>음악 기호 전환</ToggleMusicSymbols>
     <Alignment>정렬 (선택한 줄)</Alignment>
     <AlignmentN1>좌측 하단 정렬 - {\an1}</AlignmentN1>
@@ -2031,9 +2240,12 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <AlignmentN7>좌측 상단 정렬 - {\an7}</AlignmentN7>
     <AlignmentN8>중앙 상단 정렬 - {\an8}</AlignmentN8>
     <AlignmentN9>우측 상단 정렬 - {\an9}</AlignmentN9>
+    <ColorX>색상 {0} ({1})</ColorX>
     <CopyTextOnly>클립보드에 텍스트 복사 (선택한 줄)</CopyTextOnly>
     <CopyTextOnlyFromOriginalToCurrent>원본 텍스트를 현재 줄에 복사</CopyTextOnlyFromOriginalToCurrent>
     <AutoDurationSelectedLines>자동 표시시간 (선택한 줄)</AutoDurationSelectedLines>
+    <FixRTLViaUnicodeChars>유니코드 제어 문자로 RTL 수정</FixRTLViaUnicodeChars>
+    <RemoveRTLUnicodeChars>유니코드 제어 문자 제거</RemoveRTLUnicodeChars>
     <ReverseStartAndEndingForRtl>RTL 시작/끝 반전</ReverseStartAndEndingForRtl>
     <VerticalZoom>세로 확대</VerticalZoom>
     <VerticalZoomOut>세로 축소</VerticalZoomOut>
@@ -2045,7 +2257,6 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <WaveformPlayNewSelection>선택을 재생</WaveformPlayNewSelection>
     <WaveformPlayNewSelectionEnd>선택의 끝을 재생</WaveformPlayNewSelectionEnd>
     <WaveformPlayFirstSelectedSubtitle>처음 선택한 자막 재생</WaveformPlayFirstSelectedSubtitle>
-    <WaveformFocusListView>「자막 보기」로 이동</WaveformFocusListView>
     <WaveformGoToPreviousSceneChange>이전 장면 전환으로 이동</WaveformGoToPreviousSceneChange>
     <WaveformGoToNextSceneChange>다음 장면 전환으로 이동</WaveformGoToNextSceneChange>
     <WaveformToggleSceneChange>장면 전환</WaveformToggleSceneChange>
@@ -2062,12 +2273,18 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <GoForward1Second>1초 앞으로</GoForward1Second>
     <GoBack5Seconds>5초 뒤로</GoBack5Seconds>
     <GoForward5Seconds>5초 앞으로</GoForward5Seconds>
+    <GoBackXSSeconds>작은 선택된 시간 뒤로</GoBackXSSeconds>
+    <GoForwardXSSeconds>작은 선택된 시간 앞으로</GoForwardXSSeconds>
+    <GoBackXLSeconds>큰 선택된 시간 뒤로</GoBackXLSeconds>
+    <GoForwardXLSeconds>큰 선택된 시간 앞으로</GoForwardXLSeconds>
     <GoBack3Second>3초 뒤로</GoBack3Second>
     <GoToStartCurrent>비디오 위치를  현재 자막의 시작으로 설정</GoToStartCurrent>
     <ToggleStartEndCurrent>현재 자막의 시작/끝 사이의 비디오 위치 전환</ToggleStartEndCurrent>
     <PlayCurrent>현재 자막 재생</PlayCurrent>
     <WaveformGoToPrevSubtitle>이전 자막으로 이동 (비디오 위치에서)</WaveformGoToPrevSubtitle>
     <WaveformGoToNextSubtitle>다음 자막으로 이동 (비디오 위치에서)</WaveformGoToNextSubtitle>
+    <WaveformGoToPrevChapter>이전 챕터로 이동</WaveformGoToPrevChapter>
+    <WaveformGoToNextChapter>다음 챕터로 이동</WaveformGoToNextChapter>
     <WaveformSelectNextSubtitle>다음 자막 선택 (비디오 위치에서, 비디오 위치를 유지)</WaveformSelectNextSubtitle>
     <TogglePlayPause>재생 및 일시 중지</TogglePlayPause>
     <Pause>일시 중지</Pause>
@@ -2075,6 +2292,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <PlayRateSlower>재생 속도 느리게</PlayRateSlower>
     <PlayRateFaster>재생 속도 빠르게</PlayRateFaster>
     <VideoResetSpeedAndZoom>속도/줌 재설정</VideoResetSpeedAndZoom>
+    <MainToggleVideoControls>비디오 컨트롤 전환</MainToggleVideoControls>
     <CustomSearch1>번역, 사용자 지정 검색 1</CustomSearch1>
     <CustomSearch2>번역, 사용자 지정 검색 2</CustomSearch2>
     <CustomSearch3>번역, 사용자 지정 검색 3</CustomSearch3>
@@ -2117,21 +2335,24 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ListViewColumnPaste>문자열, 붙여넣기</ListViewColumnPaste>
     <ListViewColumnTextUp>문자열, 텍스트 위로</ListViewColumnTextUp>
     <ListViewColumnTextDown>문자열, 텍스트 아래로</ListViewColumnTextDown>
-    <ListViewFocusWaveform>파형/스펙트로그램으로 이동</ListViewFocusWaveform>
     <ListViewGoToNextError>다음 오류로 이동</ListViewGoToNextError>
     <ShowBeamer>전체 화면으로 자막 프로젝터 시작</ShowBeamer>
+    <ShowStyleManager>스타일 관리자 표시</ShowStyleManager>
     <MainTextBoxMoveLastWordDown>마지막 단어를 아래로 이동</MainTextBoxMoveLastWordDown>
     <MainTextBoxMoveFirstWordFromNextUp>다음 줄의 첫 단어를 위로 이동</MainTextBoxMoveFirstWordFromNextUp>
     <MainTextBoxMoveFirstWordUpCurrent>다음 줄의 첫 단어를 위로 이동 (현재 자막)</MainTextBoxMoveFirstWordUpCurrent>
+    <MainTextBoxMoveFromCursorToNext>커서 위치를 다음 자막에 둔 후 텍스트 이동하고 다음으로 이동</MainTextBoxMoveFromCursorToNext>
     <MainTextBoxMoveLastWordDownCurrent>첫째 줄의 마지막 단어를 아래로 이동 (현재 자막)</MainTextBoxMoveLastWordDownCurrent>
     <MainTextBoxSelectionToLower>선택한 영역 소문자로...</MainTextBoxSelectionToLower>
     <MainTextBoxSelectionToUpper>선택한 영역 대문자로...</MainTextBoxSelectionToUpper>
+    <MainTextBoxSelectionToggleCasing>대/소문자 전환 (대문자/대문자/소문자)</MainTextBoxSelectionToggleCasing>
     <MainTextBoxSelectionToRuby>루비로 선택 (일본어)</MainTextBoxSelectionToRuby>
     <MainTextBoxToggleAutoDuration>자동 표시시간</MainTextBoxToggleAutoDuration>
     <MainTextBoxAutoBreak>자동 줄바꿈</MainTextBoxAutoBreak>
     <MainTextBoxAutoBreakFromPos>커서 위치에서 첫 번째 공간에 줄바꿈</MainTextBoxAutoBreakFromPos>
     <MainTextBoxAutoBreakFromPosAndGoToNext>커서 위치에서 첫 번째 공간에 줄바꿈하고 다음으로 이동</MainTextBoxAutoBreakFromPosAndGoToNext>
     <MainTextBoxUnbreak>줄바꿈 제거</MainTextBoxUnbreak>
+    <MainTextBoxUnbreakNoSpace>공백없이 줄바꿈 제거 (CJK)</MainTextBoxUnbreakNoSpace>
     <MainFileSaveAll>모두 저장</MainFileSaveAll>
     <Miscellaneous>기타</Miscellaneous>
     <CpsIncludesSpace>초당 문자수(CPS)에 공백도 포함</CpsIncludesSpace>
@@ -2148,7 +2369,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <MicrosoftTranslateApiKey>키</MicrosoftTranslateApiKey>
     <MicrosoftTranslateTokenEndpoint>토큰 끝점</MicrosoftTranslateTokenEndpoint>
     <FontNote>※ 참고 : 이 글꼴 설정은 오직 Subtitle Edit UI에만 적용됩니다.
-자막의 글꼴 설정은 일반적으로 비디오 플레이어에서 이루어지나, "Advanced Sub Station Alpha" 또는 이미지 기반 형식으로 내보내기 처럼
+자막의 글꼴 설정은 일반적으로 비디오 플레이어에서 이루어지나, "Advanced Sub Station Alpha" 또는 이미지 기반 형식으로 내보내기 처럼 
 글꼴 정보가 내장된 자막 형식을 사용할 때도 가능합니다.</FontNote>
     <RestoreDefaultSettings>설정 초기화</RestoreDefaultSettings>
     <RestoreDefaultSettingsMsg>모든 설정이 기본값으로 초기화 됩니다.
@@ -2162,9 +2383,11 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <UncheckInsertsLowercase>소문자 단일 제목 또는 가사 감지 및 선택 취소</UncheckInsertsLowercase>
     <HideContinuationCandidatesWithoutName>가능성 없는 연속 문장 숨기기</HideContinuationCandidatesWithoutName>
     <IgnoreLyrics>음악 기호 사이의 가사 무시</IgnoreLyrics>
+    <MinFrameGap>최소 프레임 간격</MinFrameGap>
+    <XFramesAtYFrameRateGivesZMs>{1} 프레임 속도에서 {0} 프레임은 {2} 밀리초를 제공합니다.</XFramesAtYFrameRateGivesZMs>
+    <UseXAsNewGap>"{0}" 밀리초를 새로운 최소 간격으로 사용하시겠습니까?</UseXAsNewGap>
   </Settings>
   <SettingsMpv>
-    <Title>mpv 설정</Title>
     <DownloadMpv>mpv lib 다운로드</DownloadMpv>
     <DownloadMpvFailed>mpv를 다운로드할 수 없음 - 나중에 다시 시도하십시오!</DownloadMpvFailed>
     <DownloadMpvOk>mpv lib를 다운로드하고 사용준비를 완료했습니다.</DownloadMpvOk>
@@ -2184,12 +2407,12 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
   <ShowEarlierLater>
     <Title>* 선택한 줄 빠르게/느리게 표시</Title>
     <TitleAll>* 모든 줄 빠르게/느리게 표시</TitleAll>
-    <ShowEarlier>빠르게</ShowEarlier>
-    <ShowLater>느리게</ShowLater>
+    <ShowEarlier>빠르게(&amp;E)</ShowEarlier>
+    <ShowLater>느리게(&amp;L)</ShowLater>
     <TotalAdjustmentX>☞ 싱크 조정 : {0} 초</TotalAdjustmentX>
-    <AllLines>모든 줄</AllLines>
-    <SelectedLinesOnly>선택한 줄</SelectedLinesOnly>
-    <SelectedLinesAndForward>선택한 줄 이후</SelectedLinesAndForward>
+    <AllLines>모든 줄(&amp;A)</AllLines>
+    <SelectedLinesOnly>선택한 줄(&amp;S)</SelectedLinesOnly>
+    <SelectedLinesAndForward>선택한 줄 이후(&amp;F)</SelectedLinesAndForward>
   </ShowEarlierLater>
   <ShowHistory>
     <Title>히스토리 (롤백)</Title>
@@ -2222,23 +2445,27 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <AddXToNames>이름 목록에 '{0}' 추가</AddXToNames>
     <AddXToUserDictionary>사용자 사전에 '{0}' 추가</AddXToUserDictionary>
     <AutoFixNames>자동으로 이름의 대소문자 수정</AutoFixNames>
+    <AutoFixNamesViaSuggestions>또한 '맞춤법 검사 제안'을 통해 이름 수정</AutoFixNamesViaSuggestions>
     <CheckOneLetterWords>알 수 없는 홑문자 단어 알림</CheckOneLetterWords>
     <TreatINQuoteAsING>단어 끝의 "in"→"ing"로 바꿈 (영어 전용)</TreatINQuoteAsING>
     <RememberUseAlwaysList>"항상 사용" 목록 기억</RememberUseAlwaysList>
+    <LiveSpellCheck>실시간 맞춤법 검사</LiveSpellCheck>
+    <LiveSpellCheckLanguage>실시간 맞춤법 검사 - 언어 작업 [{0}]</LiveSpellCheckLanguage>
+    <NoDictionaryForLiveSpellCheck>실시간 맞춤법 검사 - 이 언어에 대한 사전이 없습니다 [{0}]</NoDictionaryForLiveSpellCheck>
     <ImageText>이미지 텍스트</ImageText>
     <SpellCheckCompleted>맞춤법 검사 완료!</SpellCheckCompleted>
     <SpellCheckAborted>맞춤법 검사 중지!</SpellCheckAborted>
     <SpacesNotAllowed>한 단어에서 공백은 허용되지 않습니다!</SpacesNotAllowed>
-    <UndoX>실행 취소: {0}</UndoX>
+    <UndoX>실행 취소: "{0}"</UndoX>
   </SpellCheck>
   <NetflixQualityCheck>
     <GlyphCheckReport>{1} 열에 잘못된 문자 {0}이(가) 발견되었습니다.</GlyphCheckReport>
     <WhiteSpaceCheckReport>{0} 열에 잘못된 공백이 있습니다.</WhiteSpaceCheckReport>
     <ReportPrompt>여기 전체 보고서를 참조하십시오: {0}.</ReportPrompt>
     <OpenReportInFolder>폴더에서 보고서 열기</OpenReportInFolder>
-    <FoundXIssues>Netflix 품질 검사에서 {0:#,###} 문제가 발견되었습니다.</FoundXIssues>
-    <CheckOk>Netflix 품질 검사 OK :)</CheckOk>
-    <MaximumXCharsPerSecond>초당 최대 문자수(공백 제외): {0} </MaximumXCharsPerSecond>
+    <FoundXIssues>넷플릭스 품질 검사에서 {0:#,##0} 문제가 발견되었습니다.</FoundXIssues>
+    <CheckOk>넷플릭스 품질 검사 OK :)</CheckOk>
+    <MaximumXCharsPerSecond>초당 최대 문자수(공백 포함): {0} </MaximumXCharsPerSecond>
     <MaximumLineLength>최대 줄 길이: ({0})</MaximumLineLength>
     <MinimumDuration>최소 표시시간: 5/6 초 (833 ms)</MinimumDuration>
   </NetflixQualityCheck>
@@ -2259,7 +2486,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
   </Split>
   <SplitLongLines>
     <Title>* 긴 줄 분할/줄바꿈</Title>
-    <SingleLineMaximumLength>한 줄의 문자수가 다음 이상이면 분할:</SingleLineMaximumLength>
+    <SingleLineMaximumLength>줄의 문자수가 다음 이상이면 분할:</SingleLineMaximumLength>
     <LineMaximumLength>다음 문자수 이상인 자막 분할:</LineMaximumLength>
     <LineContinuationBeginEndStrings>줄의 시작/끝부분에 다음 문자열 추가:</LineContinuationBeginEndStrings>
     <NumberOfSplits>분할/줄바꿈: {0}개</NumberOfSplits>
@@ -2338,6 +2565,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <UpdateDetails>업데이트 정보</UpdateDetails>
     <Resolution>해상도</Resolution>
     <VideoResolution>비디오 해상도</VideoResolution>
+    <FromCurrentVideo>현재 비디오에서</FromCurrentVideo>
     <Options>옵션</Options>
     <WrapStyle>배치 스타일</WrapStyle>
     <Collision>충돌</Collision>
@@ -2373,7 +2601,8 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <Margins>여백</Margins>
     <MarginLeft>왼쪽 여백</MarginLeft>
     <MarginRight>오른쪽 여백</MarginRight>
-    <MarginVertical>수직 여백</MarginVertical>
+    <MarginVertical>세로 여백</MarginVertical>
+    <Vertical>세로</Vertical>
     <Border>테두리</Border>
     <PlusShadow>+ 그림자</PlusShadow>
     <OpaqueBox>불투명 상자 (테두리 색 사용)</OpaqueBox>
@@ -2391,7 +2620,30 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <StyleAlreadyExits>이미 존재하는 스타일: {0}</StyleAlreadyExits>
     <StyleXExportedToFileY>'{0}'스타일을 '{1}'파일로 내보냈습니다.</StyleXExportedToFileY>
     <StyleXImportedFromFileY>'{0}'스타일을 '{1}'파일에서 가져왔습니다.</StyleXImportedFromFileY>
+    <SetPreviewText>미리 보기 텍스트 설정...</SetPreviewText>
+    <AddToFile>파일에 추가</AddToFile>
+    <AddToStorage>저장소에 추가</AddToStorage>
+    <StyleStorage>저장소 스타일</StyleStorage>
+    <StyleCurrentFile>현재 파일의 스타일</StyleCurrentFile>
+    <OverwriteX>{0}을 덮어쓰시겠습니까?</OverwriteX>
+    <CategoryNote>참고: 기본 카테고리(녹색 색상)의 스타일이 새로운 ASSA 파일에 적용됩니다.</CategoryNote>
+    <CategoriesManage>관리</CategoriesManage>
+    <MoveToCategory>선택한 스타일을 카테고리로 이동...</MoveToCategory>
   </SubStationAlphaStyles>
+  <SubStationAlphaStylesCategoriesManager>
+    <Category>카테고리 </Category>
+    <Categories>카테고리</Categories>
+    <CategoryName>카테고리 이름</CategoryName>
+    <CategoryDelete>선택한 카테고리/카테고리를 삭제 하시겠습니까?</CategoryDelete>
+    <NewCategory>새 카테고리</NewCategory>
+    <CategoryRename>카테고리 이름바꾸기</CategoryRename>
+    <CategorySetDefault>기본값으로 설정</CategorySetDefault>
+    <NumberOfStyles>스타일 수</NumberOfStyles>
+    <CategoryDefault>기본값</CategoryDefault>
+    <ChooseCategories>카테고리를 {0}으로 선택</ChooseCategories>
+    <ImportCategoriesTitle>카테고리 가져오기...</ImportCategoriesTitle>
+    <ExportCategoriesTitle>카테고리 내보내기...</ExportCategoriesTitle>
+  </SubStationAlphaStylesCategoriesManager>
   <PointSync>
     <Title>* 지점 동기화</Title>
     <TitleViaOtherSubtitle>다른 자막을 통해 지점 동기화</TitleViaOtherSubtitle>
@@ -2503,16 +2755,26 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <CaptureTopAlign>상단 정렬 캡처</CaptureTopAlign>
     <InspectCompareMatchesForCurrentImage>현재 이미지에 대한 일치 항목 비교 검사...</InspectCompareMatchesForCurrentImage>
     <EditLastAdditions>마지막 이미지 추가 비교 편집...</EditLastAdditions>
-    <SetUnitalicFactor>기울임꼴 인자 설정...</SetUnitalicFactor>
+    <SetItalicAngle>기울임꼴 각도 설정...</SetItalicAngle>
+    <ItalicAngle>기울임꼴 각도</ItalicAngle>
     <DiscardTitle>OCR 변경사항 폐기</DiscardTitle>
     <DiscardText>현재 OCR 세션의 변경사항을 폐기합니까?</DiscardText>
     <MinLineSplitHeight>최소 줄 높이 (분할)</MinLineSplitHeight>
     <FallbackToX>{0}으로 대체</FallbackToX>
     <ImagePreProcessing>이미지 사전 처리중...</ImagePreProcessing>
     <EditImageDb>이미지 DB 편집</EditImageDb>
+    <OcrTraining>OCR 연습...</OcrTraining>
+    <SubtitleTrainingFile>연습용 자막 파일</SubtitleTrainingFile>
+    <LetterCombinations>하나의 이미지로 분할될 수 있는 문자 조합</LetterCombinations>
+    <TrainingOptions>연습 옵션</TrainingOptions>
+    <NumberOfSegments>문자당 세그먼트 수</NumberOfSegments>
+    <AlsoTrainItalic>기울임꼴도 연습</AlsoTrainItalic>
+    <AlsoTrainBold>볼드도 연습</AlsoTrainBold>
+    <StartTraining>연습 시작</StartTraining>
+    <NowTraining>현재 글꼴 '{1}' 연습중입니다.  연습한 총 문자 수: {0:#,###,##0}, {2:#,###,##0} </NowTraining>
   </VobSubOcr>
   <VobSubOcrCharacter>
-    <Title>VobSub의 이미지 자막을 텍스트로...</Title>
+    <Title>OCR - 이미지 자막을 텍스트로</Title>
     <ShrinkSelection>선택 영역 축소(&amp;D)</ShrinkSelection>
     <ExpandSelection>선택 영역 확대(&amp;E)</ExpandSelection>
     <SubtitleImage>이미지 자막</SubtitleImage>
@@ -2537,10 +2799,10 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <Title>새 폴더</Title>
     <Message>새 문자 데이터베이스 폴더의 이름</Message>
   </VobSubOcrNewFolder>
-  <VobSubOcrSetItalicFactor>
-    <Title>기울임꼴 인자 설정</Title>
-    <Description>텍스트가 기울임이 없어질 때까지 값을 조정하십시오! 원본 이미지가 기울임꼴(이탤릭체)이어야 합니다.</Description>
-  </VobSubOcrSetItalicFactor>
+  <VobSubOcrSetItalicAngle>
+    <Title>기울임꼴 각도 설정</Title>
+    <Description>텍스트 스타일이 정상이고 기울임꼴이 아닐 때까지 값을 조정하십시오. 원본 이미지는 기울임꼴이어야 합니다.</Description>
+  </VobSubOcrSetItalicAngle>
   <OcrPreprocessing>
     <Title>OCR 이미지 전처리</Title>
     <Colors>색상</Colors>
@@ -2567,6 +2829,7 @@ Google 번역 API 키를 입력하려면 "옵션 -&gt; 환경설정 -&gt; 도구
     <ErrorUnicodeEncodingOnly>워터마크는 오직 유니코드 파일 인코딩으로 작업합니다.</ErrorUnicodeEncodingOnly>
   </Watermark>
   <Waveform>
+    <AddWaveformAndSpectrogram>파형 및 스펙트로그램 추가</AddWaveformAndSpectrogram>
     <ClickToAddWaveform>파형을 추가하려면 여기를 클릭하십시오!</ClickToAddWaveform>
     <ClickToAddWaveformAndSpectrogram>파형 및 스펙트로그램을 추가하려면 여기를 클릭하십시오.</ClickToAddWaveformAndSpectrogram>
     <Seconds>초</Seconds>
