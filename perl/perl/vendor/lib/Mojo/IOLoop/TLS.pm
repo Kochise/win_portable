@@ -6,9 +6,9 @@ use Mojo::IOLoop;
 use Scalar::Util qw(weaken);
 
 # TLS support requires IO::Socket::SSL
-use constant TLS => $ENV{MOJO_NO_TLS} ? 0 : eval { require IO::Socket::SSL; IO::Socket::SSL->VERSION('2.009'); 1 };
-use constant READ  => TLS ? IO::Socket::SSL::SSL_WANT_READ()  : 0;
-use constant WRITE => TLS ? IO::Socket::SSL::SSL_WANT_WRITE() : 0;
+use constant TLS   => $ENV{MOJO_NO_TLS} ? 0 : eval { require IO::Socket::SSL; IO::Socket::SSL->VERSION('2.009'); 1 };
+use constant READ  => TLS               ? IO::Socket::SSL::SSL_WANT_READ()  : 0;
+use constant WRITE => TLS               ? IO::Socket::SSL::SSL_WANT_WRITE() : 0;
 
 has reactor => sub { Mojo::IOLoop->singleton->reactor }, weak => 1;
 
@@ -95,14 +95,8 @@ Mojo::IOLoop::TLS - Non-blocking TLS handshake
 
   # Negotiate TLS
   my $tls = Mojo::IOLoop::TLS->new($old_handle);
-  $tls->on(upgrade => sub {
-    my ($tls, $new_handle) = @_;
-    ...
-  });
-  $tls->on(error => sub {
-    my ($tls, $err) = @_;
-    ...
-  });
+  $tls->on(upgrade => sub ($tls, $new_handle) {...});
+  $tls->on(error => sub ($tls, $err) {...});
   $tls->negotiate(server => 1, tls_version => 'TLSv1_2');
 
   # Start reactor if necessary
@@ -118,19 +112,13 @@ L<Mojo::IOLoop::TLS> inherits all events from L<Mojo::EventEmitter> and can emit
 
 =head2 upgrade
 
-  $tls->on(upgrade => sub {
-    my ($tls, $handle) = @_;
-    ...
-  });
+  $tls->on(upgrade => sub ($tls, $handle) {...});
 
 Emitted once TLS has been negotiated.
 
 =head2 error
 
-  $tls->on(error => sub {
-    my ($tls, $err) = @_;
-    ...
-  });
+  $tls->on(error => sub ($tls, $err) {...});
 
 Emitted if an error occurs during negotiation, fatal if unhandled.
 

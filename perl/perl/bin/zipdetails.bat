@@ -1,31 +1,18 @@
 @rem = '--*-Perl-*--
-@echo off
-if "%OS%" == "Windows_NT" goto WinNT
-IF EXIST "%~dp0perl.exe" (
-"%~dp0perl.exe" -x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9
-) ELSE IF EXIST "%~dp0..\..\bin\perl.exe" (
-"%~dp0..\..\bin\perl.exe" -x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9
-) ELSE (
-perl -x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9
-)
-
-goto endofperl
+@set "ErrorLevel="
+@if "%OS%" == "Windows_NT" @goto WinNT
+@perl -x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9
+@set ErrorLevel=%ErrorLevel%
+@goto endofperl
 :WinNT
-IF EXIST "%~dp0perl.exe" (
-"%~dp0perl.exe" -x -S %0 %*
-) ELSE IF EXIST "%~dp0..\..\bin\perl.exe" (
-"%~dp0..\..\bin\perl.exe" -x -S %0 %*
-) ELSE (
-perl -x -S %0 %*
-)
-
-if NOT "%COMSPEC%" == "%SystemRoot%\system32\cmd.exe" goto endofperl
-if %errorlevel% == 9009 echo You do not have Perl in your PATH.
-if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
-goto endofperl
+@perl -x -S %0 %*
+@set ErrorLevel=%ErrorLevel%
+@if NOT "%COMSPEC%" == "%SystemRoot%\system32\cmd.exe" @goto endofperl
+@if %ErrorLevel% == 9009 @echo You do not have Perl in your PATH.
+@goto endofperl
 @rem ';
 #!/usr/bin/perl
-#line 29
+#line 30
 
 # zipdetails
 #
@@ -215,7 +202,7 @@ my %Extras = (
 
        );
 
-my $VERSION = "2.01" ;
+my $VERSION = "2.02" ;
 
 my $FH;
 
@@ -225,10 +212,10 @@ my $LocalHeaderCount = 0;
 my $CentralHeaderCount = 0;
 
 my $START;
-my $OFFSET = new U64 0;
+my $OFFSET = U64->new( 0 );
 my $TRAILING = 0 ;
-my $PAYLOADLIMIT = 256; #new U64 256;
-my $ZERO = new U64 0 ;
+my $PAYLOADLIMIT = 256; # U64->new( 256 );
+my $ZERO = U64->new( 0 );
 
 sub prOff
 {
@@ -622,7 +609,7 @@ sub read_U64
     myRead($b, 8);
     my ($lo, $hi) = unpack ("V V" , $b);
     no warnings 'uninitialized';
-    return ($b, new U64 $hi, $lo);
+    return ($b, U64->new( $hi, $lo) );
 }
 
 sub read_VV
@@ -741,7 +728,7 @@ die "$filename does not exist\n"
 die "$filename not a standard file\n"
     unless -f $filename ;
 
-$FH = new IO::File "<$filename"
+$FH = IO::File->new( "<$filename" )
     or die "Cannot open $filename: $!\n";
 
 
@@ -928,7 +915,7 @@ sub LocalHeader
     myRead($filename, $filenameLength);
     outputFilename($filename);
 
-    my $cl64 = new U64 $compressedLength ;
+    my $cl64 = U64->new( $compressedLength );
     my %ExtraContext = ();
     if ($extraLength)
     {
@@ -1181,7 +1168,7 @@ sub GeneralPurposeBits
 
     if ($method == ZIP_CM_DEFLATE)
     {
-        my $mid = $gp & 0x03;
+        my $mid = ($gp >> 1) & 0x03 ;
 
         out1 "[Bits 1-2]", "$mid '$lookup{$mid}'";
     }
@@ -1198,8 +1185,8 @@ sub GeneralPurposeBits
 
     if ($method == ZIP_CM_IMPLODE) # Imploding
     {
-        out1 "[Bit 1]", ($gp & 1 ? "1 '8k" : "0 '4k") . " Sliding Dictionary'" ;
-        out1 "[Bit 2]", ($gp & 2 ? "1 '3" : "0 '2"  ) . " Shannon-Fano Trees'" ;
+        out1 "[Bit 1]", ($gp & (1 << 1) ? "1 '8k" : "0 '4k") . " Sliding Dictionary'" ;
+        out1 "[Bit 2]", ($gp & (2 << 1) ? "1 '3" : "0 '2"  ) . " Shannon-Fano Trees'" ;
     }
 
     out1 "[Bit  3]", "1 'Streamed'"           if $gp & ZIP_GP_FLAG_STREAMING_MASK;
@@ -1390,7 +1377,7 @@ sub Ntfs2Unix
     # NTFS offset is 19DB1DED53E8000
 
     my $hex = Value_U64($u64) ;
-    my $NTFS_OFFSET = new U64 0x19DB1DE, 0xD53E8000 ;
+    my $NTFS_OFFSET = U64->new( 0x19DB1DE, 0xD53E8000 );
     $u64->subtract($NTFS_OFFSET);
     my $elapse = $u64->get64bit();
     my $ns = ($elapse % 10000000) * 100;
@@ -1793,8 +1780,8 @@ sub scanCentralDirectory
 
         my $got = [$locHeaderOffset, $compressedLength] ;
 
-        # my $v64 = new U64 $compressedLength ;
-        # my $loc64 = new U64 $locHeaderOffset ;
+        # my $v64 = U64->new( $compressedLength );
+        # my $loc64 = U64->new( $locHeaderOffset );
         # my $got = [$loc64, $v64] ;
 
         # if (full32 $compressedLength || full32  $locHeaderOffset) {
@@ -2312,7 +2299,7 @@ OPTIONS
      -v        Verbose - output more stuff
      --version Print version number
 
-Copyright (c) 2011-2020 Paul Marquess. All rights reserved.
+Copyright (c) 2011-2021 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
@@ -2500,6 +2487,6 @@ Copyright (c) 2011-2020 Paul Marquess. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
 __END__
 :endofperl
+@set "ErrorLevel=" & @goto _undefined_label_ 2>NUL || @"%COMSPEC%" /d/c @exit %ErrorLevel%

@@ -43,9 +43,9 @@ goto endofperl
     eval 'exec C:\strawberry\perl\bin\perl.exe -S $0 ${1+"$@"}'
 	if $running_under_some_shell;
 
-my $config_tag1 = '5.32.0 - Sun Aug  2 19:47:17 2020';
+my $config_tag1 = '5.32.1 - Sun Jan 24 15:01:28 2021';
 
-my $patchlevel_date = 1592175685;
+my $patchlevel_date = 1610211291;
 my @patches = Config::local_patches();
 my $patch_tags = join "", map /(\S+)/ ? "+$1 " : (), @patches;
 

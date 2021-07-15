@@ -44,7 +44,7 @@ my %ENTITIES;
   open my $file, '<', $path or croak "Unable to open html entities file ($path): $!";
   my $lines = do { local $/; <$file> };
 
-  for my $line (split "\n", $lines) {
+  for my $line (split /\n/, $lines) {
     next unless $line =~ /^(\S+)\s+U\+(\S+)(?:\s+U\+(\S+))?/;
     $ENTITIES{$1} = defined $3 ? (chr(hex $2) . chr(hex $3)) : chr(hex $2);
   }
@@ -63,13 +63,11 @@ my $ENTITY_RE = qr/&(?:\#((?:[0-9]{1,7}|x[0-9a-fA-F]{1,6}));|(\w+[;=]?))/;
 my (%ENCODING, %PATTERN);
 
 our @EXPORT_OK = (
-  qw(b64_decode b64_encode camelize class_to_file class_to_path decamelize),
-  qw(decode deprecated dumper encode extract_usage getopt gunzip gzip),
-  qw(hmac_sha1_sum html_attr_unescape html_unescape humanize_bytes md5_bytes),
-  qw(md5_sum monkey_patch punycode_decode punycode_encode quote scope_guard),
-  qw(secure_compare sha1_bytes sha1_sum slugify split_cookie_header),
-  qw(split_header steady_time tablify term_escape trim unindent unquote),
-  qw(url_escape url_unescape xml_escape xor_encode)
+  qw(b64_decode b64_encode camelize class_to_file class_to_path decamelize decode deprecated dumper encode),
+  qw(extract_usage getopt gunzip gzip hmac_sha1_sum html_attr_unescape html_unescape humanize_bytes md5_bytes md5_sum),
+  qw(monkey_patch punycode_decode punycode_encode quote scope_guard secure_compare sha1_bytes sha1_sum slugify),
+  qw(split_cookie_header split_header steady_time tablify term_escape trim unindent unquote url_escape url_unescape),
+  qw(xml_escape xor_encode)
 );
 
 # Aliases
@@ -91,8 +89,8 @@ sub camelize {
 
   # CamelCase words
   return join '::', map {
-    join('', map { ucfirst lc } split '_')
-  } split '-', $str;
+    join('', map { ucfirst lc } split /_/)
+  } split /-/, $str;
 }
 
 sub class_to_file {
@@ -111,7 +109,7 @@ sub decamelize {
   # snake_case words
   return join '-', map {
     join('_', map {lc} grep {length} split /([A-Z]{1}[^A-Z]*)/)
-  } split '::', $str;
+  } split /::/, $str;
 }
 
 sub decode {
@@ -171,7 +169,7 @@ sub humanize_bytes {
 
   my $prefix = $size < 0 ? '-' : '';
 
-  return "$prefix${size}B" if ($size = abs $size) < 1024;
+  return "$prefix${size}B"               if ($size = abs $size) < 1024;
   return $prefix . _round($size) . 'KiB' if ($size /= 1024) < 1024;
   return $prefix . _round($size) . 'MiB' if ($size /= 1024) < 1024;
   return $prefix . _round($size) . 'GiB' if ($size /= 1024) < 1024;
@@ -193,7 +191,7 @@ sub punycode_decode {
   my ($n, $i, $bias, @output) = (PC_INITIAL_N, 0, PC_INITIAL_BIAS);
 
   # Consume all code points before the last delimiter
-  push @output, split('', $1) if $input =~ s/(.*)\x2d//s;
+  push @output, split(//, $1) if $input =~ s/(.*)\x2d//s;
 
   while (length $input) {
     my ($oldi, $w) = ($i, 1);
@@ -226,7 +224,7 @@ sub punycode_encode {
   my ($n, $delta, $bias) = (PC_INITIAL_N, 0, PC_INITIAL_BIAS);
 
   # Extract basic code points
-  my @input = map {ord} split '', $output;
+  my @input = map {ord} split //, $output;
   $output =~ s/[^\x00-\x7f]+//gs;
   my $h = my $basic = length $output;
   $output .= "\x2d" if $basic > 0;
@@ -238,7 +236,7 @@ sub punycode_encode {
 
     for my $c (@input) {
 
-      if ($c < $n) { $delta++ }
+      if    ($c < $n) { $delta++ }
       elsif ($c == $n) {
         my $q = $delta;
 
@@ -276,8 +274,8 @@ sub scope_guard { Mojo::Util::_Guard->new(cb => shift) }
 
 sub secure_compare {
   my ($one, $two) = @_;
-  return undef if length $one != length $two;
-  my $r = 0;
+  my $r = length $one != length $two;
+  $two = $one if $r;
   $r |= ord(substr $one, $_) ^ ord(substr $two, $_) for 0 .. length($one) - 1;
   return $r == 0;
 }
@@ -334,7 +332,7 @@ sub trim {
 
 sub unindent {
   my $str = shift;
-  my $min = min map { m/^([ \t]*)/; length $1 || () } split "\n", $str;
+  my $min = min map { m/^([ \t]*)/; length $1 || () } split /\n/, $str;
   $str =~ s/^[ \t]{0,$min}//gm if $min;
   return $str;
 }
@@ -475,7 +473,7 @@ sub _stash {
   my ($name, $object) = (shift, shift);
 
   # Hash
-  return $object->{$name} ||= {} unless @_;
+  return $object->{$name} //= {} unless @_;
 
   # Get
   return $object->{$name}{$_[0]} unless @_ > 1 || ref $_[0];
@@ -710,8 +708,7 @@ Unescape all HTML entities in string.
 
   my $str = humanize_bytes 1234;
 
-Turn number of bytes into a simplified human readable format. Note that this function is B<EXPERIMENTAL> and might
-change without warning!
+Turn number of bytes into a simplified human readable format.
 
   # "1B"
   humanize_bytes 1;
@@ -756,7 +753,7 @@ Monkey patch functions into package.
 
   my $str = punycode_decode $punycode;
 
-Punycode decode string as described in L<RFC 3492|http://tools.ietf.org/html/rfc3492>.
+Punycode decode string as described in L<RFC 3492|https://tools.ietf.org/html/rfc3492>.
 
   # "bücher"
   punycode_decode 'bcher-kva';
@@ -765,7 +762,7 @@ Punycode decode string as described in L<RFC 3492|http://tools.ietf.org/html/rfc
 
   my $punycode = punycode_encode $str;
 
-Punycode encode string as described in L<RFC 3492|http://tools.ietf.org/html/rfc3492>.
+Punycode encode string as described in L<RFC 3492|https://tools.ietf.org/html/rfc3492>.
 
   # "bcher-kva"
   punycode_encode 'bücher';
@@ -792,7 +789,8 @@ Create anonymous scope guard object that will execute the passed callback when t
 
   my $bool = secure_compare $str1, $str2;
 
-Constant time comparison algorithm to prevent timing attacks.
+Constant time comparison algorithm to prevent timing attacks. The secret string should be the second argument, to avoid
+leaking information about the length of the string.
 
 =head2 sha1_bytes
 
@@ -832,7 +830,7 @@ in the result according to unicode semantics.
 
   my $tree = split_cookie_header 'a=b; expires=Thu, 07 Aug 2008 07:07:59 GMT';
 
-Same as L</"split_header">, but handles C<expires> values from L<RFC 6265|http://tools.ietf.org/html/rfc6265>.
+Same as L</"split_header">, but handles C<expires> values from L<RFC 6265|https://tools.ietf.org/html/rfc6265>.
 
 =head2 split_header
 
@@ -910,7 +908,7 @@ Unquote string.
   my $escaped = url_escape $str;
   my $escaped = url_escape $str, '^A-Za-z0-9\-._~';
 
-Percent encode unsafe characters in string as described in L<RFC 3986|http://tools.ietf.org/html/rfc3986>, the pattern
+Percent encode unsafe characters in string as described in L<RFC 3986|https://tools.ietf.org/html/rfc3986>, the pattern
 used defaults to C<^A-Za-z0-9\-._~>.
 
   # "foo%3Bbar"
@@ -920,7 +918,7 @@ used defaults to C<^A-Za-z0-9\-._~>.
 
   my $str = url_unescape $escaped;
 
-Decode percent encoded characters in string as described in L<RFC 3986|http://tools.ietf.org/html/rfc3986>.
+Decode percent encoded characters in string as described in L<RFC 3986|https://tools.ietf.org/html/rfc3986>.
 
   # "foo;bar"
   url_unescape 'foo%3Bbar';

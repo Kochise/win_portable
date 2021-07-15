@@ -77,8 +77,7 @@ Mojo::Server::CGI - CGI server
   use Mojo::Server::CGI;
 
   my $cgi = Mojo::Server::CGI->new;
-  $cgi->unsubscribe('request')->on(request => sub {
-    my ($cgi, $tx) = @_;
+  $cgi->unsubscribe('request')->on(request => sub ($cgi, $tx) {
 
     # Request
     my $method = $tx->req->method;
@@ -96,7 +95,7 @@ Mojo::Server::CGI - CGI server
 
 =head1 DESCRIPTION
 
-L<Mojo::Server::CGI> is a simple and portable implementation of L<RFC 3875|http://tools.ietf.org/html/rfc3875>.
+L<Mojo::Server::CGI> is a simple and portable implementation of L<RFC 3875|https://tools.ietf.org/html/rfc3875>.
 
 See L<Mojolicious::Guides::Cookbook/"DEPLOYMENT"> for more.
 

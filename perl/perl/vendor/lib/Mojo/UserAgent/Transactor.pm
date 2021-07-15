@@ -202,7 +202,7 @@ sub _form_parts {
 
   my @parts;
   for my $name (sort keys %$form) {
-    next unless defined(my $values = $form->{$name});
+    next                unless defined(my $values = $form->{$name});
     $values = [$values] unless ref $values eq 'ARRAY';
     push @parts, @{_parts($charset, $name, $values)};
   }
@@ -369,10 +369,7 @@ L<Mojo::UserAgent::Transactor> inherits all methods from L<Mojo::Base> and imple
 
 Register a content generator.
 
-  $t->add_generator(foo => sub {
-    my ($t, $tx, @args) = @_;
-    ...
-  });
+  $t->add_generator(foo => sub ($t, $tx, @args) {...});
 
 =head2 endpoint
 

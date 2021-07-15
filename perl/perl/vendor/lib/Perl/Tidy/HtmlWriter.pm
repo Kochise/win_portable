@@ -7,7 +7,7 @@
 package Perl::Tidy::HtmlWriter;
 use strict;
 use warnings;
-our $VERSION = '20200619';
+our $VERSION = '20210111';
 
 use File::Basename;
 
@@ -36,6 +36,32 @@ BEGIN {
     if ( !eval { require Pod::Html; 1 } ) {
         $missing_pod_html = $@ ? $@ : 1;
     }
+}
+
+sub AUTOLOAD {
+
+    # Catch any undefined sub calls so that we are sure to get
+    # some diagnostic information.  This sub should never be called
+    # except for a programming error.
+    our $AUTOLOAD;
+    return if ( $AUTOLOAD =~ /\bDESTROY$/ );
+    my ( $pkg, $fname, $lno ) = caller();
+    my $my_package = __PACKAGE__;
+    print STDERR <<EOM;
+======================================================================
+Error detected in package '$my_package', version $VERSION
+Received unexpected AUTOLOAD call for sub '$AUTOLOAD'
+Called from package: '$pkg'  
+Called from File '$fname'  at line '$lno'
+This error is probably due to a recent programming change
+======================================================================
+EOM
+    exit 1;
+}
+
+sub DESTROY {
+
+    # required to avoid call to AUTOLOAD in some versions of perl
 }
 
 sub new {
@@ -534,7 +560,8 @@ sub check_options {
     # check for conflict
     if ( $css_linkname && $rOpts->{'nohtml-style-sheets'} ) {
         $rOpts->{'nohtml-style-sheets'} = 0;
-        warning("You can't specify both -css and -nss; -nss ignored\n");
+        Perl::Tidy::Warn(
+            "You can't specify both -css and -nss; -nss ignored\n");
     }
 
     # write a style sheet file if necessary
@@ -695,7 +722,7 @@ sub pod_to_html {
         # "header!", "index!", "recurse!", "quiet!", "verbose!"
         foreach my $kw (qw(podheader podindex podrecurse podquiet podverbose)) {
             my $kwd = $kw;    # allows us to strip 'pod'
-            if ( $rOpts->{$kw} ) { $kwd =~ s/^pod//; push @args, "--$kwd" }
+            if    ( $rOpts->{$kw} ) { $kwd =~ s/^pod//; push @args, "--$kwd" }
             elsif ( defined( $rOpts->{$kw} ) ) {
                 $kwd =~ s/^pod//;
                 push @args, "--no$kwd";
@@ -713,7 +740,7 @@ sub pod_to_html {
             Perl::Tidy::Die( $_[0] );
         };
 
-        pod2html(@args);
+        Pod::Html::pod2html(@args);
     }
     $fh_tmp = IO::File->new( $tmpfile, 'r' );
     unless ($fh_tmp) {

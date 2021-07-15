@@ -1,3 +1,13 @@
+package Test2::Manual::Concurrency;
+use strict;
+use warnings;
+
+our $VERSION = '0.000139';
+
+1;
+
+__END__
+
 =head1 NAME
 
 Test2::Manual::Concurrency - Documentation for Concurrency support.
@@ -59,7 +69,7 @@ reports welcome).
 =head2 Test::Builder
 
 L<Test::Builder> has had thread support for a long time. With Test2 the
-mechanism for thread support was switched to L<Test2::IPC>. L<Test2::Builder>
+mechanism for thread support was switched to L<Test2::IPC>. L<Test::Builder>
 should still support threads as much as it did before the switch to Test2.
 Support includes auto-enabling thread support if L<threads> is loaded before
 Test::Builder.

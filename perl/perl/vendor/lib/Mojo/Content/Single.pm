@@ -67,8 +67,8 @@ Mojo::Content::Single - HTTP content
 
 =head1 DESCRIPTION
 
-L<Mojo::Content::Single> is a container for HTTP content, based on L<RFC 7230|http://tools.ietf.org/html/rfc7230> and
-L<RFC 7231|http://tools.ietf.org/html/rfc7231>.
+L<Mojo::Content::Single> is a container for HTTP content, based on L<RFC 7230|https://tools.ietf.org/html/rfc7230> and
+L<RFC 7231|https://tools.ietf.org/html/rfc7231>.
 
 =head1 EVENTS
 
@@ -76,15 +76,11 @@ L<Mojo::Content::Single> inherits all events from L<Mojo::Content> and can emit 
 
 =head2 upgrade
 
-  $single->on(upgrade => sub {
-    my ($single, $multi) = @_;
-    ...
-  });
+  $single->on(upgrade => sub ($single, $multi) {...});
 
 Emitted when content gets upgraded to a L<Mojo::Content::MultiPart> object.
 
-  $single->on(upgrade => sub {
-    my ($single, $multi) = @_;
+  $single->on(upgrade => sub ($single, $multi) {
     return unless $multi->headers->content_type =~ /multipart\/([^;]+)/i;
     say "Multipart: $1";
   });
@@ -149,8 +145,7 @@ parser.
 =head2 parse
 
   $single = $single->parse("Content-Length: 12\x0d\x0a\x0d\x0aHello World!");
-  my $multi
-    = $single->parse("Content-Type: multipart/form-data\x0d\x0a\x0d\x0a");
+  my $multi = $single->parse("Content-Type: multipart/form-data\x0d\x0a\x0d\x0a");
 
 Parse content chunk and upgrade to L<Mojo::Content::MultiPart> object if necessary.
 

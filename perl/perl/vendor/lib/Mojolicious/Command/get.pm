@@ -23,7 +23,8 @@ sub run {
 
   my $ua = Mojo::UserAgent->new(ioloop => Mojo::IOLoop->singleton);
   my %form;
-  getopt \@args,
+  die $self->usage
+    unless getopt \@args,
     'C|charset=s'            => \my $charset,
     'c|content=s'            => \$in,
     'f|form=s'               => sub { _form(\%form) if $_[1] =~ /^(.+)=(\@?)(.+)$/ },
@@ -47,7 +48,7 @@ sub run {
   # Detect proxy for absolute URLs
   $url !~ m!^/! ? $ua->proxy->detect : $ua->server->app($self->app);
   $url = Mojo::URL->new($url)->userinfo($user) if $user;
-  $ua->max_redirects(10) if $redirect;
+  $ua->max_redirects(10)                       if $redirect;
 
   my $buffer = '';
   $ua->on(

@@ -1,4 +1,4 @@
-=== Strawberry Perl (64-bit) Portable 5.32.0.1-64bit README ===
+=== Strawberry Perl (64-bit) Portable 5.32.1.1-64bit README ===
 
 What is Strawberry Perl Portable?
 ---------------------------------

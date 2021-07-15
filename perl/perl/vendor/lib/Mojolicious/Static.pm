@@ -41,7 +41,7 @@ sub file {
   my ($self, $rel) = @_;
 
   # Search all paths
-  my @parts = split '/', $rel;
+  my @parts = split /\//, $rel;
   for my $path (@{$self->paths}) {
     next unless my $asset = _get_file(path($path, @parts)->to_string);
     return $asset;
@@ -70,7 +70,7 @@ sub is_fresh {
 
   # If-None-Match
   $etag //= $res_headers->etag // '';
-  return undef if $match && !grep { $_ eq $etag || "W/$_" eq $etag } map { trim($_) } split ',', $match;
+  return undef if $match && !grep { $_ eq $etag || "W/$_" eq $etag } map { trim($_) } split /,/, $match;
 
   # If-Modified-Since
   return !!$match unless ($last //= $res_headers->last_modified) && $since;
@@ -158,7 +158,7 @@ Mojolicious::Static - Serve static files
 =head1 DESCRIPTION
 
 L<Mojolicious::Static> is a static file server with C<Range>, C<If-Modified-Since> and C<If-None-Match> support, based
-on L<RFC 7232|http://tools.ietf.org/html/rfc7232> and L<RFC 7233|http://tools.ietf.org/html/rfc7233>.
+on L<RFC 7232|https://tools.ietf.org/html/rfc7232> and L<RFC 7233|https://tools.ietf.org/html/rfc7233>.
 
 =head1 ATTRIBUTES
 

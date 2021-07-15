@@ -9,9 +9,9 @@
 
 /* Package name      : perl5
  * Source directory  : 
- * Configuration time: Sun Aug  2 19:47:17 2020
+ * Configuration time: Sun Jan 24 15:01:28 2021
  * Configured by     : strawberry-perl
- * Target system     : Win32 strawberry-perl 5.32.0.1 #1 Sun Aug  2 19:46:04 2020 x64
+ * Target system     : Win32 strawberry-perl 5.32.1.1 #1 Sun Jan 24 15:00:15 2021 x64
  */
 
 #ifndef _config_h_
@@ -1369,7 +1369,7 @@
  *	feature tests from Configure are generally more reliable.
  */
 #define OSNAME "MSWin32"		/**/
-#define OSVERS "10.0.19041.388"		/**/
+#define OSVERS "10.0.19042.746"		/**/
 
 /* CAT2:
  *	This macro concatenates 2 tokens together.

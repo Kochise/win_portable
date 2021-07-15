@@ -1,23 +1,18 @@
 package Crypt::RIPEMD160::MAC;
 
-use Crypt::RIPEMD160 0.03;
+use Crypt::RIPEMD160;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT);
+use warnings;
 
-require Exporter;
-@ISA = qw(Exporter);
-
-# Items to export into callers namespace by default
-@EXPORT = qw();
-$VERSION = '0.01';
+our $VERSION = '0.08';
 
 sub new {
     my($pkg, $key) = @_;
 
     my $self = {
 	'key' => $key,
-	'hash' => new Crypt::RIPEMD160,
+	'hash' => Crypt::RIPEMD160->new,
 	'k_ipad' => chr(0x36) x 64,
 	'k_opad' => chr(0x5c) x 64,
 	};
@@ -118,7 +113,7 @@ Crypt::RIPEMD160::MAC - Perl extension for RIPEMD-160 MAC function
     
     $key = "This is the secret key";
 
-    $mac = new Crypt::RIPEMD160::MAC($key);
+    $mac = Crypt::RIPEMD160::MAC->new($key);
 
     $mac->reset();
     
@@ -137,7 +132,7 @@ Message Digest algorithm from within Perl programs.
 
     use Crypt::RIPEMD160;
     
-    $ripemd160 = new Crypt::RIPEMD160;
+    $ripemd160 = Crypt::RIPEMD160->new;
     $ripemd160->add('foo', 'bar');
     $ripemd160->add('baz');
     $digest = $ripemd160->digest();

@@ -2,12 +2,13 @@ package Alien::Build::Plugin::Download::Negotiate;
 
 use strict;
 use warnings;
+use 5.008004;
 use Alien::Build::Plugin;
 use Alien::Build::Util qw( _has_ssl );
 use Carp ();
 
 # ABSTRACT: Download negotiation plugin
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 has '+url' => undef;
@@ -194,7 +195,7 @@ Alien::Build::Plugin::Download::Negotiate - Download negotiation plugin
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -302,6 +303,8 @@ Returns the fetch plugin and any optional decoders that should be used.
 
 =head1 SEE ALSO
 
+L<Alien::Build::Plugin::Prefer::BadVersion>, L<Alien::Build::Plugin::Prefer::GoodVersion>
+
 L<Alien::Build>, L<alienfile>, L<Alien::Build::MM>, L<Alien>
 
 =head1 AUTHOR
@@ -361,6 +364,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

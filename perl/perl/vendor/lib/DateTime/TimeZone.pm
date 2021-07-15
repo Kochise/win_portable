@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '2.39';
+our $VERSION = '2.46';
 
 # Note that while we make use of DateTime::Duration in this module if we
 # actually try to load it here all hell breaks loose with circular
@@ -79,7 +79,10 @@ my %SpecialName = map { $_ => 1 }
         }
 
         if ( $p{name} =~ m{Etc/(?:GMT|UTC)(\+|-)(\d{1,2})}i ) {
-            my $sign  = $1;
+
+            # Etc/GMT+4 is actually UTC-4. For more info, see
+            # https://data.iana.org/time-zones/tzdb/etcetera
+            my $sign  = $1 eq '-' ? '+' : '-';
             my $hours = $2;
             die "The timezone '$p{name}' is an invalid name.\n"
                 unless $hours <= 14;
@@ -509,7 +512,7 @@ sub offset_as_seconds {
         return undef;
     }
 
-    $sign = '+' unless defined $sign;
+    $sign = '+'  unless defined $sign;
     return undef unless $hours >= 0   && $hours <= 99;
     return undef unless $minutes >= 0 && $minutes <= 59;
     return undef
@@ -529,6 +532,7 @@ sub offset_as_string {
         local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
+    my $sep = shift || q{};
 
     return undef unless defined $offset;
     return undef unless $offset >= -359999 && $offset <= 359999;
@@ -545,8 +549,10 @@ sub offset_as_string {
 
     return (
         $secs
-        ? sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs )
-        : sprintf( '%s%02d%02d',     $sign, $hours, $mins )
+        ? sprintf(
+            '%s%02d%s%02d%s%02d', $sign, $hours, $sep, $mins, $sep, $secs
+            )
+        : sprintf( '%s%02d%s%02d', $sign, $hours, $sep, $mins )
     );
 }
 
@@ -614,7 +620,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 =head1 VERSION
 
-version 2.39
+version 2.46
 
 =head1 SYNOPSIS
 
@@ -850,10 +856,13 @@ these, C<undef> will be returned.
 This means that if you want to specify hours as a single digit, then
 each element of the offset must be separated by a colon (:).
 
-=head2 DateTime::TimeZone->offset_as_string( $offset )
+=head2 DateTime::TimeZone->offset_as_string( $offset, $sep )
 
 Given an offset as a number, this returns the offset as a string.
 Returns C<undef> if $offset is not in the range C<-359999> to C<359999>.
+
+You can also provide an optional separator which will go between the hours,
+minutes, and seconds (if applicable) portions of the offset.
 
 =head2 Storable Hooks
 
@@ -929,7 +938,7 @@ Dave Rolsky <autarch@urth.org>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Alexey Molchanov Alfie John Andrew Paprocki Bron Gondwana Daisuke Maki David Pinkowitz Iain Truskett Jakub Wilk James E Keenan Joshua Hoblitt Karen Etheridge karupanerura kclaggett Mohammad S Anwar Olaf Alders Peter Rabbitson Tom Wyant
+=for stopwords Alexey Molchanov Alfie John Andrew Paprocki Bron Gondwana Daisuke Maki David Pinkowitz Iain Truskett Jakub Wilk James E Keenan Joshua Hoblitt Karen Etheridge karupanerura kclaggett Matthew Horsfall Mohammad S Anwar Olaf Alders Peter Rabbitson Tom Wyant
 
 =over 4
 
@@ -984,6 +993,10 @@ karupanerura <karupa@cpan.org>
 =item *
 
 kclaggett <kclaggett@proofpoint.com>
+
+=item *
+
+Matthew Horsfall <wolfsage@gmail.com>
 
 =item *
 

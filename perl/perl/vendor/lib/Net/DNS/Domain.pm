@@ -1,9 +1,9 @@
 package Net::DNS::Domain;
 
-#
-# $Id: Domain.pm 1784 2020-05-24 19:27:13Z willem $
-#
-our $VERSION = (qw$LastChangedRevision: 1784 $)[1];
+use strict;
+use warnings;
+
+our $VERSION = (qw$Id: Domain.pm 1825 2020-11-18 13:15:01Z willem $)[2];
 
 
 =head1 NAME
@@ -14,7 +14,7 @@ Net::DNS::Domain - DNS domains
 
     use Net::DNS::Domain;
 
-    $domain = new Net::DNS::Domain('example.com');
+    $domain = Net::DNS::Domain->new('example.com');
     $name   = $domain->name;
 
 =head1 DESCRIPTION
@@ -26,8 +26,8 @@ Each domain object instance represents a single DNS domain which
 has a fixed identity throughout its lifetime.
 
 Internally, the primary representation is a (possibly empty) list
-of ASCII domain name labels, and optional link to an arbitrary
-origin domain object topologically closer to the DNS root.
+of ASCII domain name labels, and optional link to an origin domain
+object topologically closer to the DNS root.
 
 The computational expense of Unicode character-set conversion is
 partially mitigated by use of caches.
@@ -35,8 +35,6 @@ partially mitigated by use of caches.
 =cut
 
 
-use strict;
-use warnings;
 use integer;
 use Carp;
 
@@ -50,10 +48,10 @@ use constant UTF8 => scalar eval {	## not UTF-EBCDIC  [see Unicode TR#16 3.6]
 	Encode::encode_utf8( chr(182) ) eq pack( 'H*', 'C2B6' );
 };
 
-use constant LIBIDN  => defined eval 'require Net::LibIDN';
-use constant LIBIDN2 => ref eval 'require Net::LibIDN2; Net::LibIDN2->can("idn2_to_ascii_8")';
+use constant LIBIDN2 => defined eval { require Net::LibIDN2 };
+use constant LIBIDN  => LIBIDN2 ? undef : defined eval { require Net::LibIDN };
 
-use constant IDN2FLAG => eval 'Net::LibIDN2::IDN2_NFC_INPUT + Net::LibIDN2::IDN2_NONTRANSITIONAL';
+use constant IDN2FLAG => LIBIDN2 ? &Net::LibIDN2::IDN2_NFC_INPUT + &Net::LibIDN2::IDN2_NONTRANSITIONAL : 0;
 
 # perlcc: address of encoding objects must be determined at runtime
 my $ascii = ASCII ? Encode::find_encoding('ascii') : undef;	# Osborn's Law:
@@ -64,7 +62,7 @@ my $utf8  = UTF8  ? Encode::find_encoding('utf8')  : undef;	# Variables won't; c
 
 =head2 new
 
-    $object = new Net::DNS::Domain('example.com');
+    $object = Net::DNS::Domain->new('example.com');
 
 Creates a domain object which represents the DNS domain specified
 by the character string argument. The argument consists of a
@@ -113,24 +111,22 @@ sub new {
 	my $label = $self->{label} = ( $s eq '@' ) ? [] : [split /\056/, _encode_utf8($s)];
 
 	foreach (@$label) {
-		croak 'empty domain label' unless length;
+		croak qq(empty label in "$s") unless length;
 
 		if ( LIBIDN2 && UTF8 && /[^\000-\177]/ ) {
 			my $rc = 0;
-			s/\134/\357\277\275/;			# disallow escapes
 			$_ = Net::LibIDN2::idn2_to_ascii_8( $_, IDN2FLAG, $rc );
 			croak Net::LibIDN2::idn2_strerror($rc) unless $_;
 		}
 
-		if ( !LIBIDN2 && LIBIDN && UTF8 && /[^\000-\177]/ ) {
-			s/\134/\357\277\275/;			# disallow escapes
+		if ( LIBIDN && UTF8 && /[^\000-\177]/ ) {
 			$_ = Net::LibIDN::idn_to_ascii( $_, 'utf-8' );
 			croak 'name contains disallowed character' unless $_;
 		}
 
-		s/\134([\060-\071]{3})/$unescape{$1}/eg;	# numeric escape
-		s/\134(.)/$1/g;					# character escape
-		croak 'long domain label' if length > 63;
+		s/\134([\060-\071]{3})/$unescape{$1}/eg;	# restore numeric escapes
+		s/\134(.)/$1/g;					# restore character escapes
+		croak qq(label too long in "$s") if length > 63;
 	}
 
 	$$cache1{$k} = $self;					# cache object reference
@@ -162,10 +158,13 @@ sub name {
 	return $self->{name} if defined $self->{name};
 	return unless defined wantarray;
 
-	my @label = map { s/([^\055\101-\132\141-\172\060-\071])/$escape{$1}/eg; $_ } $self->_wire;
+	my @label = shift->_wire;
+	for (@label) {
+		s/([^\055\101-\132\141-\172\060-\071])/$escape{$1}/eg;
+	}
 
 	return $self->{name} = '.' unless scalar @label;
-	$self->{name} = _decode_ascii( join chr(46), @label );
+	return $self->{name} = _decode_ascii( join chr(46), @label );
 }
 
 
@@ -205,7 +204,7 @@ sub xname {
 		return $self->{xname} = $u8 ? $utf8->decode($u8) : $name;
 	}
 
-	if ( !LIBIDN2 && LIBIDN && UTF8 && $name =~ /xn--/i ) {
+	if ( LIBIDN && UTF8 && $name =~ /xn--/i ) {
 		my $self = shift;
 		return $self->{xname} if defined $self->{xname};
 		return $self->{xname} = $utf8->decode( Net::LibIDN::idn_to_unicode $name, 'utf-8' );
@@ -223,19 +222,12 @@ Identifies the domain by means of a list of domain labels.
 =cut
 
 sub label {
-	map {
+	my @label = shift->_wire;
+	for (@label) {
 		s/([^\055\101-\132\141-\172\060-\071])/$escape{$1}/eg;
 		_decode_ascii($_)
-	} shift->_wire;
-}
-
-
-sub _wire {
-	my $self = shift;
-
-	my $label = $self->{label};
-	my $origin = $self->{origin} || return (@$label);
-	return ( @$label, $origin->_wire );
+	}
+	return @label;
 }
 
 
@@ -259,9 +251,9 @@ sub string {
 
 =head2 origin
 
-    $create = origin Net::DNS::Domain( $ORIGIN );
-    $result = &$create( sub{ new Net::DNS::RR( 'mx MX 10 a' ); } );
-    $expect = new Net::DNS::RR( "mx.$ORIGIN. MX 10 a.$ORIGIN." );
+    $create = Net::DNS::Domain->origin( $ORIGIN );
+    $result = &$create( sub{ Net::DNS::RR->new( 'mx MX 10 a' ); } );
+    $expect = Net::DNS::RR->new( "mx.$ORIGIN. MX 10 a.$ORIGIN." );
 
 Class method which returns a reference to a subroutine wrapper
 which executes a given constructor in a dynamically scoped context
@@ -273,7 +265,7 @@ my $placebo = sub { my $constructor = shift; &$constructor; };
 
 sub origin {
 	my ( $class, $name ) = @_;
-	my $domain = defined $name ? new Net::DNS::Domain($name) : return $placebo;
+	my $domain = defined $name ? Net::DNS::Domain->new($name) : return $placebo;
 
 	return sub {						# closure w.r.t. $domain
 		my $constructor = shift;
@@ -294,7 +286,7 @@ sub _decode_ascii {			## ASCII to perl internal encoding
 	[ !"#$%&'()*+,\-./0-9:;<=>?@A-Z\[\\\]^_`a-z{|}~?] unless ASCII;
 
 	my $z = length($_) - length($_);			# pre-5.18 taint workaround
-	ASCII ? substr( $ascii->decode($_), $z ) : $_;
+	return ASCII ? substr( $ascii->decode($_), $z ) : $_;
 }
 
 
@@ -307,14 +299,23 @@ sub _encode_utf8 {			## perl internal encoding to UTF8
 	[\040-\176\077] unless ASCII;
 
 	my $z = length($_) - length($_);			# pre-5.18 taint workaround
-	ASCII ? substr( ( UTF8 ? $utf8 : $ascii )->encode($_), $z ) : $_;
+	return ASCII ? substr( ( UTF8 ? $utf8 : $ascii )->encode($_), $z ) : $_;
+}
+
+
+sub _wire {
+	my $self = shift;
+
+	my $label = $self->{label};
+	my $origin = $self->{origin};
+	return ( @$label, $origin ? $origin->_wire : () );
 }
 
 
 %escape = eval {			## precalculated ASCII escape table
 	my %table = (						# ASCII printable,	\. \\
-		map( ( $_ => $_ ), map pack( 'C', $_ ), ( 33 .. 126 ) ),
-		map( ( pack( 'C', $_ ) => pack( 'C2', 92, $_ ) ), ( 46, 92 ) ),
+		( map { ( $_ => $_ ) } map { pack( 'C', $_ ) } ( 33 .. 126 ) ),
+		( map { pack( 'C', $_ ) => pack( 'C2', 92, $_ ) } ( 46, 92 ) ),
 		);
 
 	foreach my $n ( 0 .. 32, 127 .. 255 ) {			# \ddd

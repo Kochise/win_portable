@@ -2,13 +2,13 @@ package FFI::Platypus;
 
 use strict;
 use warnings;
-use 5.008001;
+use 5.008004;
 use Carp qw( croak );
 use FFI::Platypus::Function;
 use FFI::Platypus::Type;
 
 # ABSTRACT: Write Perl bindings to non-Perl libraries with FFI. No XS required.
-our $VERSION = '1.31'; # VERSION
+our $VERSION = '1.34'; # VERSION
 
 # Platypus Man,
 # Platypus Man,
@@ -583,7 +583,7 @@ FFI::Platypus - Write Perl bindings to non-Perl libraries with FFI. No XS requir
 
 =head1 VERSION
 
-version 1.31
+version 1.34
 
 =head1 SYNOPSIS
 
@@ -954,7 +954,7 @@ L<attach|/attach> method.
 In addition to looking up a function by name you can provide the address
 of the symbol yourself:
 
- my $address = $ffi->find_symbol('my_functon');
+ my $address = $ffi->find_symbol('my_function');
  my $function = $ffi->function($address => ...);
 
 Under the covers, L<function|/function> uses L<find_symbol|/find_symbol>
@@ -1029,8 +1029,8 @@ method.
 
 Examples:
 
- $ffi->attach('my_functon_name', ['int', 'string'] => 'string');
- $ffi->attach(['my_c_functon_name' => 'my_perl_function_name'], ['int', 'string'] => 'string');
+ $ffi->attach('my_function_name', ['int', 'string'] => 'string');
+ $ffi->attach(['my_c_function_name' => 'my_perl_function_name'], ['int', 'string'] => 'string');
  my $string1 = my_function_name($int);
  my $string2 = my_perl_function_name($int);
 
@@ -2036,6 +2036,9 @@ described above from an FFI perspective.  Thus the process of defining enum valu
 is identical to the process of defining macro constants in Perl.
 
 For more details on enumerated types see L<FFI::Platypus::Type/"Enum types">.
+
+There is also a type plugin (L<FFI::Platypus::Type::Enum>) that can be helpful
+in writing interfaces that use enums.
 
 =head2 Memory leaks
 

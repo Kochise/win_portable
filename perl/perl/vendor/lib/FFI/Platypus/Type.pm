@@ -2,11 +2,12 @@ package FFI::Platypus::Type;
 
 use strict;
 use warnings;
+use 5.008004;
 use Carp qw( croak );
 require FFI::Platypus;
 
 # ABSTRACT: Defining types for FFI::Platypus
-our $VERSION = '1.31'; # VERSION
+our $VERSION = '1.34'; # VERSION
 
 # The TypeParser and Type classes are used internally ONLY and
 # are not to be exposed to the user.  External users should
@@ -57,7 +58,7 @@ FFI::Platypus::Type - Defining types for FFI::Platypus
 
 =head1 VERSION
 
-version 1.31
+version 1.34
 
 =head1 SYNOPSIS
 
@@ -362,6 +363,9 @@ at install time.  See L<FFI::Platypus::Constant> for details.
 
 The main FAQ (L<FFI::Platypus/FAQ>) also has a discussion on dealing
 with constants and enumerated types.
+
+There is also a type plugin (L<FFI::Platypus::Type::Enum>) that can be helpful
+in writing interfaces that use enums.
 
 =head3 Boolean types
 

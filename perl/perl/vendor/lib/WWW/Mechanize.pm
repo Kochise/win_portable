@@ -6,7 +6,7 @@ package WWW::Mechanize;
 use strict;
 use warnings;
 
-our $VERSION = '2.00';
+our $VERSION = '2.03';
 
 use Tie::RefHash;
 use HTTP::Request 1.30;
@@ -288,6 +288,13 @@ sub title {
 }
 
 
+sub redirects {
+    my $self = shift;
+
+    return $self->response->redirects;
+}
+
+
 sub content {
     my $self = shift;
     my %params = @_;
@@ -392,7 +399,7 @@ sub find_link {
 
     my $wantall = ( $params{n} eq 'all' );
 
-    $self->_clean_keys( \%params, qr/^(n|(text|url|url_abs|name|tag|id|class)(_regex)?)$/ );
+    $self->_clean_keys( \%params, qr/^(n|(text|url|url_abs|name|tag|id|class|rel)(_regex)?)$/ );
 
     my @links = $self->links or return;
 
@@ -442,6 +449,9 @@ sub _match_any_link_params {
     return if defined $p->{id_regex}      && !($link->attrs->{id} && $link->attrs->{id} =~ $p->{id_regex} );
     return if defined $p->{class}         && !($link->attrs->{class} && $link->attrs->{class} eq $p->{class} );
     return if defined $p->{class_regex}   && !($link->attrs->{class} && $link->attrs->{class} =~ $p->{class_regex} );
+
+    return if defined $p->{rel}         && !($link->attrs->{rel} && $link->attrs->{rel} eq $p->{rel} );
+    return if defined $p->{rel_regex}   && !($link->attrs->{rel} && $link->attrs->{rel} =~ $p->{rel_regex} );
 
     # Success: everything that was defined passed.
     return 1;
@@ -965,6 +975,20 @@ sub click_button {
         }
     }
 
+    my %exclusive_options = (
+        id     => 1,
+        input  => 1,
+        name   => 1,
+        number => 1,
+        value  => 1,
+    );
+
+    my @present_exclusive_options = @exclusive_options{ keys %args };
+
+    if ( scalar @present_exclusive_options > 1 ) {
+        $self->die( 'click_button: More than one button selector has been used' );
+    }
+
     for ($args{x}, $args{y}) {
         $_ = 1 unless defined;
     }
@@ -982,6 +1006,7 @@ sub click_button {
         $request = $input->click( $form, $args{x}, $args{y} );
     }
     elsif ( $args{number} ) {
+        # changing this 'submit' to qw/submit button image/ will probably break people's code
         my $input = $form->find_input( undef, 'submit', $args{number} );
         $request = $input->click( $form, $args{x}, $args{y} );
     }
@@ -989,14 +1014,13 @@ sub click_button {
         $request = $args{input}->click( $form, $args{x}, $args{y} );
     }
     elsif ( $args{value} ) {
-        my $i = 1;
-        while ( my $input = $form->find_input(undef, 'submit', $i) ) {
-            if ( $args{value} && ($args{value} eq $input->value) ) {
+        my @inputs = map { $form->find_input(undef, $_) } qw/submit button image/;
+        foreach  my $input ( @inputs ) {
+            if ( $input->value && ($args{value} eq $input->value) ) {
                 $request = $input->click( $form, $args{x}, $args{y} );
                 last;
             }
-            $i++;
-        } # while
+        } # foreach
     } # $args{value}
 
     return $self->request( $request );
@@ -1759,7 +1783,7 @@ WWW::Mechanize - Handy web browsing in a Perl object
 
 =head1 VERSION
 
-version 2.00
+version 2.03
 
 =head1 SYNOPSIS
 
@@ -2129,7 +2153,7 @@ include the most recently made request.
 This returns the I<n>th item in history.  The 0th item is the most recent
 request and response, which would be acted on by methods like
 C<L<< find_link()|"$mech->find_link( ... )" >>>.
-The 1th item is the state you'd return to if you called
+The 1st item is the state you'd return to if you called
 C<L<< back()|/$mech->back() >>>.
 
 The maximum useful value for C<$n> is C<< $mech->history_count - 1 >>.
@@ -2199,6 +2223,15 @@ HTTP headers.
 Returns the contents of the C<< <TITLE> >> tag, as parsed by
 L<HTML::HeadParser>.  Returns undef if the content is not HTML.
 
+=head2 $mech->redirects()
+
+Convenience method to get the L<< redirects|HTTP::Response/$r->redirects >> from the most recent L<HTTP::Response>.
+
+Note that you can also use L<< is_redirect|HTTP::Response/$r->is_redirect >> to see if the most recent response was a redirect like this.
+
+    $mech->get($url);
+    do_stuff() if $mech->res->is_redirect;
+
 =head1 CONTENT-HANDLING METHODS
 
 =head2 $mech->content(...)
@@ -2248,6 +2281,9 @@ Returns C<< $self->response()->decoded_content(charset => $charset) >>
 To preserve backwards compatibility, additional parameters will be
 ignored unless none of C<< raw | decoded_by_headers | charset >> is
 specified and the text is HTML, in which case an error will be triggered.
+
+A fresh instance of WWW::Mechanize will return C<undef> when C<< $mech->content() >>
+is called, because no content is present before a request has been made.
 
 =head2 $mech->text()
 
@@ -2318,8 +2354,8 @@ You can take the URL part and pass it to the C<get()> method.  If
 that's your plan, you might as well use the C<follow_link()> method
 directly, since it does the C<get()> for you automatically.
 
-Note that C<< <FRAME SRC="..."> >> tags are parsed out of the the HTML
-and treated as links so this method works with them.
+Note that C<< <FRAME SRC="..."> >> tags are parsed out of the HTML and
+treated as links so this method works with them.
 
 You can select which link to find by passing in one or more of these
 key/value pairs:
@@ -2357,6 +2393,12 @@ in the page.
 =item * C<< name => string >> and C<< name_regex => regex >>
 
 Matches the name of the link against I<string> or I<regex>, as appropriate.
+
+=item * C<< rel => string >> and C<< rel_regex => regex >>
+
+Matches the rel of the link against I<string> or I<regex>, as appropriate.
+This can be used to find stylesheets, favicons, or links the author of the
+page does not want bots to follow.
 
 =item * C<< id => string >> and C<< id_regex => regex >>
 
@@ -2808,9 +2850,10 @@ Returns an L<HTTP::Response> object.
 =head2 $mech->click_button( ... )
 
 Has the effect of clicking a button on the current form by specifying
-its name, value, or index.  Its arguments are a list of key/value
-pairs.  Only one of name, number, input or value must be specified in
-the keys.
+its attributes. The arguments are a list of key/value pairs. Only one
+of name, id, number, input or value must be specified in the keys.
+
+Dies if no button is found.
 
 =over 4
 
@@ -2824,7 +2867,8 @@ Clicks the button with the id I<id> in the current form.
 
 =item * C<< number => n >>
 
-Clicks the I<n>th button in the current form. Numbering starts at 1.
+Clicks the I<n>th button with type I<submit> in the current form.
+Numbering starts at 1.
 
 =item * C<< value => value >>
 
@@ -2837,7 +2881,7 @@ L<HTML::Form::SubmitInput> obtained e.g. from
 
     $mech->current_form()->find_input( undef, 'submit' )
 
-$inputobject must belong to the current form.
+C<$inputobject> must belong to the current form.
 
 =item * C<< x => x >>
 

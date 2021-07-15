@@ -24,7 +24,7 @@ sub render {
   $prepend .= q[my $app = shift; sub app; local *app = sub { $app };];
   $prepend .= q[use Mojo::Base -strict; no warnings 'ambiguous';];
 
-  my $mt     = Mojo::Template->new($conf->{template} || {})->name($file);
+  my $mt     = Mojo::Template->new($conf->{template} // {})->name($file);
   my $output = $mt->prepend($prepend . $mt->prepend)->render($content, $app);
   return ref $output ? die $output : $output;
 }
@@ -108,8 +108,7 @@ following new ones.
 
 Process content with L</"render"> and parse it with L<Mojo::JSON>.
 
-  sub parse {
-    my ($self, $content, $file, $conf, $app) = @_;
+  sub parse ($self, $content, $file, $conf, $app) {
     ...
     $content = $self->render($content, $file, $conf, $app);
     ...
@@ -129,8 +128,7 @@ Register plugin in L<Mojolicious> application and merge configuration.
 
 Process configuration file with L<Mojo::Template>.
 
-  sub render {
-    my ($self, $content, $file, $conf, $app) = @_;
+  sub render ($self, $content, $file, $conf, $app) {
     ...
     return $content;
   }

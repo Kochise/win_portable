@@ -78,7 +78,7 @@ sub pairs {
     return $pairs unless length $str;
 
     my $charset = $self->charset;
-    for my $pair (split '&', $str) {
+    for my $pair (split /&/, $str) {
       next unless $pair =~ /^([^=]+)(?:=(.*))?$/;
       my ($name, $value) = ($1, $2 // '');
 
@@ -93,7 +93,7 @@ sub pairs {
     }
   }
 
-  return $self->{pairs} ||= [];
+  return $self->{pairs} //= [];
 }
 
 sub param {
@@ -197,7 +197,7 @@ Mojo::Parameters - Parameters
 =head1 DESCRIPTION
 
 L<Mojo::Parameters> is a container for form parameters used by L<Mojo::URL>, based on L<RFC
-3986|http://tools.ietf.org/html/rfc3986> and the L<HTML Living Standard|https://html.spec.whatwg.org>.
+3986|https://tools.ietf.org/html/rfc3986> and the L<HTML Living Standard|https://html.spec.whatwg.org>.
 
 =head1 ATTRIBUTES
 

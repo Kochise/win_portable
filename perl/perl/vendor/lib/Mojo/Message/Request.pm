@@ -6,13 +6,13 @@ use Mojo::Cookie::Request;
 use Mojo::Util qw(b64_encode b64_decode sha1_sum);
 use Mojo::URL;
 
-my ($SEED, $COUNTER) = ($$ . time . rand, int rand 0xffffff);
-
 has env    => sub { {} };
 has method => 'GET';
 has [qw(proxy reverse_proxy)];
 has request_id => sub {
-  my $b64 = substr(sha1_base64($SEED . ($COUNTER = ($COUNTER + 1) % 0xffffff)), 0, 8);
+  state $seed    = $$ . time . rand;
+  state $counter = int rand 0xffffff;
+  my $b64 = substr(sha1_base64($seed . ($counter = ($counter + 1) % 0xffffff)), 0, 8);
   $b64 =~ tr!+/!-_!;
   return $b64;
 };
@@ -77,8 +77,8 @@ sub fix_headers {
   }
 
   # Basic proxy authentication
-  return $self unless (my $proxy = $self->proxy) && $self->via_proxy;
-  return $self unless my $info = $proxy->userinfo;
+  return $self                                                    unless (my $proxy = $self->proxy) && $self->via_proxy;
+  return $self                                                    unless my $info = $proxy->userinfo;
   $headers->proxy_authorization('Basic ' . b64_encode($info, '')) unless $headers->proxy_authorization;
   return $self;
 }
@@ -255,9 +255,9 @@ Mojo::Message::Request - HTTP request
 
 =head1 DESCRIPTION
 
-L<Mojo::Message::Request> is a container for HTTP requests, based on L<RFC 7230|http://tools.ietf.org/html/rfc7230>,
-L<RFC 7231|http://tools.ietf.org/html/rfc7231>, L<RFC 7235|http://tools.ietf.org/html/rfc7235> and L<RFC
-2817|http://tools.ietf.org/html/rfc2817>.
+L<Mojo::Message::Request> is a container for HTTP requests, based on L<RFC 7230|https://tools.ietf.org/html/rfc7230>,
+L<RFC 7231|https://tools.ietf.org/html/rfc7231>, L<RFC 7235|https://tools.ietf.org/html/rfc7235> and L<RFC
+2817|https://tools.ietf.org/html/rfc2817>.
 
 =head1 EVENTS
 

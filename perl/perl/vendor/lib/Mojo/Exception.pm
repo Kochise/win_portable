@@ -24,7 +24,7 @@ sub check {
   return undef unless $err;
 
   my ($default, $handler);
-  my ($is_obj, $str) = (!!blessed($err), "$err");
+  my ($is_obj,  $str) = (!!blessed($err), "$err");
 CHECK: for (my $i = 0; $i < @spec; $i += 2) {
     my ($checks, $cb) = @spec[$i, $i + 1];
 
@@ -65,7 +65,7 @@ sub inspect {
   }
 
   # Search for context in sources
-  $self->_context($files[-1][1], [map { [split "\n"] } @sources]) if @sources;
+  $self->_context($files[-1][1], [map { [split /\n/] } @sources]) if @sources;
 
   return $self;
 }

@@ -13,7 +13,7 @@ sub _pointer {
 
   my $data = $self->data;
   return length $pointer ? undef : $get ? $data : 1 unless $pointer =~ s!^/!!;
-  for my $p (length $pointer ? (split '/', $pointer, -1) : ($pointer)) {
+  for my $p (length $pointer ? (split /\//, $pointer, -1) : ($pointer)) {
     $p =~ s!~1!/!g;
     $p =~ s/~0/~/g;
 
@@ -48,7 +48,7 @@ Mojo::JSON::Pointer - JSON Pointers
 
 =head1 DESCRIPTION
 
-L<Mojo::JSON::Pointer> is an implementation of L<RFC 6901|http://tools.ietf.org/html/rfc6901>.
+L<Mojo::JSON::Pointer> is an implementation of L<RFC 6901|https://tools.ietf.org/html/rfc6901>.
 
 =head1 ATTRIBUTES
 

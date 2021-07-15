@@ -2,7 +2,7 @@ package Test::Alien::Build;
 
 use strict;
 use warnings;
-use 5.008001;
+use 5.008004;
 use base qw( Exporter);
 use Path::Tiny qw( path );
 use Carp qw( croak );
@@ -29,7 +29,7 @@ our @EXPORT = qw(
 );
 
 # ABSTRACT: Tools for testing Alien::Build + alienfile
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 my $build;
@@ -606,7 +606,7 @@ sub alien_subtest
   $pass;
 }
 
-delete $ENV{$_} for qw( ALIEN_BUILD_LOG ALIEN_BUILD_PRELOAD ALIEN_BUILD_POSTLOAD ALIEN_INSTALL_TYPE PKG_CONFIG_PATH );
+delete $ENV{$_} for qw( ALIEN_BUILD_LOG ALIEN_BUILD_PRELOAD ALIEN_BUILD_POSTLOAD ALIEN_INSTALL_TYPE PKG_CONFIG_PATH ALIEN_BUILD_PKG_CONFIG );
 $ENV{ALIEN_BUILD_RC} = '-';
 
 1;
@@ -623,7 +623,7 @@ Test::Alien::Build - Tools for testing Alien::Build + alienfile
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -894,6 +894,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

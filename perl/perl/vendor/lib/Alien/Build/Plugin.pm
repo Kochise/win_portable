@@ -2,19 +2,24 @@ package Alien::Build::Plugin;
 
 use strict;
 use warnings;
+use 5.008004;
+use Data::Dumper ();
 use Carp ();
+use Digest::SHA ();
 
 our @CARP_NOT = qw( alienfile Alien::Build Alien::Build::Meta );
 
 # ABSTRACT: Plugin base class for Alien::Build
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 sub new
 {
   my $class = shift;
   my %args = @_ == 1 ? ($class->meta->default => $_[0]) : @_;
-  my $self = bless {}, $class;
+
+  my $instance_id = Digest::SHA::sha1_hex(Data::Dumper->new([$class, \%args])->Sortkeys(1)->Dump);
+  my $self = bless { instance_id => $instance_id }, $class;
 
   my $prop = $self->meta->prop;
   foreach my $name (keys %$prop)
@@ -33,6 +38,9 @@ sub new
 
   $self;
 }
+
+
+sub instance_id { shift->{instance_id} }
 
 
 sub init
@@ -138,7 +146,7 @@ Alien::Build::Plugin - Plugin base class for Alien::Build
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -222,6 +230,17 @@ Look for packages already installed on the system.
 =head2 new
 
  my $plugin = Alien::Build::Plugin->new(%props);
+
+=head2 PROPERTIES
+
+=head2 instance_id
+
+ my $id = $plugin->instance_id;
+
+Returns an instance id for the plugin.  This is computed from the class and
+arguments that are passed into the plugin constructor, so technically two
+instances with the exact same arguments will have the same instance id, but
+in practice you should never have two instances with the exact same arguments.
 
 =head1 METHODS
 
@@ -332,6 +351,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

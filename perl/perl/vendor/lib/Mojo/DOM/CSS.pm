@@ -1,6 +1,7 @@
 package Mojo::DOM::CSS;
 use Mojo::Base -base;
 
+use Carp qw(croak);
 use Mojo::Util qw(dumper trim);
 
 use constant DEBUG => $ENV{MOJO_DOM_CSS_DEBUG} || 0;
@@ -90,7 +91,7 @@ sub _compile {
 
     # Combinator
     elsif ($css =~ /\G\s*([ >+~])\s*/gc) {
-      push @$last, ['pc', 'scope'] unless @$last;
+      push @$last,      ['pc', 'scope'] unless @$last;
       push @$selectors, $1;
     }
 
@@ -129,7 +130,7 @@ sub _compile {
       push @$last, ['tag', $name eq '*' ? undef : _name($name), _unescape($ns)];
     }
 
-    else {last}
+    else { pos $css < length $css ? croak "Unknown CSS selector: $css" : last }
   }
 
   warn qq{-- CSS Selector ($css)\n@{[dumper $group]}} if DEBUG;
@@ -196,8 +197,9 @@ sub _namespace {
 sub _pc {
   my ($class, $args, $current, $tree, $scope) = @_;
 
-  # ":scope"
+  # ":scope" (root can only be a :scope)
   return $current eq $scope if $class eq 'scope';
+  return undef              if $current->[0] eq 'root';
 
   # ":checked"
   return exists $current->[2]{checked} || exists $current->[2]{selected} if $class eq 'checked';
@@ -385,7 +387,7 @@ Mojo::DOM::CSS - CSS selector engine
 =head1 DESCRIPTION
 
 L<Mojo::DOM::CSS> is the CSS selector engine used by L<Mojo::DOM>, based on the L<HTML Living
-Standard|https://html.spec.whatwg.org> and L<Selectors Level 3|http://www.w3.org/TR/css3-selectors/>.
+Standard|https://html.spec.whatwg.org> and L<Selectors Level 3|https://www.w3.org/TR/css3-selectors/>.
 
 =head1 SELECTORS
 
@@ -425,7 +427,7 @@ that this selector is B<EXPERIMENTAL> and might change without warning!
   my $case_insensitive = $css->select('input[type=hidden i]');
   my $case_insensitive = $css->select('input[class~="foo" i]');
 
-This selector is part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+This selector is part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 
 =head2 E[foo="bar" s]
 
@@ -434,7 +436,7 @@ is B<EXPERIMENTAL> and might change without warning!
 
   my $case_sensitive = $css->select('input[type="hidden" s]');
 
-This selector is part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+This selector is part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 
 =head2 E[foo~="bar"]
 
@@ -558,7 +560,7 @@ An C<E> element that has no children (including text nodes).
 =head2 E:any-link
 
 Alias for L</"E:link">. Note that this selector is B<EXPERIMENTAL> and might change without warning! This selector is
-part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 
 =head2 E:link
 
@@ -583,7 +585,7 @@ without warning!
   my $scoped = $css->select('div :scope p');
   my $scoped = $css->select('~ p');
 
-This selector is part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+This selector is part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 
 =head2 E:checked
 
@@ -610,7 +612,7 @@ compound selectors is B<EXPERIMENTAL> and might change without warning!
 
   my $others = $css->select('div p:not(:first-child, :last-child)');
 
-Support for compound selectors was added as part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is
+Support for compound selectors was added as part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is
 still a work in progress.
 
 =head2 E:is(s1, s2)
@@ -620,7 +622,7 @@ B<EXPERIMENTAL> and might change without warning!
 
   my $headers = $css->select(':is(section, article, aside, nav) h1');
 
-This selector is part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+This selector is part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 
 =head2 E:has(rs1, rs2)
 
@@ -629,7 +631,7 @@ match an element. Note that this selector is B<EXPERIMENTAL> and might change wi
 
   my $link = $css->select('a:has(> img)');
 
-This selector is part of L<Selectors Level 4|http://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
+This selector is part of L<Selectors Level 4|https://dev.w3.org/csswg/selectors-4>, which is still a work in progress.
 Also be aware that this feature is currently marked C<at-risk>, so there is a high chance that it will get removed
 completely.
 

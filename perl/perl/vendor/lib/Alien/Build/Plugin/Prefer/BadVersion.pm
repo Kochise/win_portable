@@ -2,11 +2,12 @@ package Alien::Build::Plugin::Prefer::BadVersion;
 
 use strict;
 use warnings;
+use 5.008004;
 use Alien::Build::Plugin;
 use Carp ();
 
 # ABSTRACT: Plugin to filter out known bad versions
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 has '+filter' => sub { Carp::croak("The filter property is required for the Prefer::BadVersion plugin") };
@@ -75,7 +76,7 @@ Alien::Build::Plugin::Prefer::BadVersion - Plugin to filter out known bad versio
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -97,7 +98,7 @@ Filter out any files that match the given version.
  use alienfile;
  plugin 'Prefer::BadVersion' => '1.2.3';
 
-=item as a array
+=item as an array
 
 Filter out all files that match any of the given versions.
 
@@ -205,6 +206,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

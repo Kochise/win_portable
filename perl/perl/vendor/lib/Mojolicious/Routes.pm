@@ -6,7 +6,6 @@ use Mojo::Cache;
 use Mojo::DynamicMethods;
 use Mojo::Loader qw(load_class);
 use Mojo::Util qw(camelize);
-use Mojolicious::Routes::Match;
 
 has base_classes               => sub { [qw(Mojolicious::Controller Mojolicious)] };
 has cache                      => sub { Mojo::Cache->new };
@@ -81,8 +80,8 @@ sub match {
 
   # Check cache
   my $ws    = $c->tx->is_websocket ? 1 : 0;
-  my $match = Mojolicious::Routes::Match->new(root => $self);
-  $c->match($match);
+  my $match = $c->match;
+  $match->root($self);
   my $cache = $self->cache;
   if (my $result = $cache->get("$method:$path:$ws")) {
     return $match->endpoint($result->{endpoint})->stack($result->{stack});
@@ -169,7 +168,7 @@ sub _controller {
 
       if (my $sub = $new->can($method)) {
         $old->stash->{'mojo.routed'} = 1 if $last;
-        return 1 if _action($old->app, $new, $sub, $last);
+        return 1                         if _action($old->app, $new, $sub, $last);
       }
 
       else { $log->debug('Action not found in controller') }
@@ -213,13 +212,13 @@ Mojolicious::Routes - Always find your destination with routes
 
   # Simple route
   my $r = Mojolicious::Routes->new;
-  $r->route('/')->to(controller => 'blog', action => 'welcome');
+  $r->any('/')->to(controller => 'blog', action => 'welcome');
 
   # More advanced routes
   my $blog = $r->under('/blog');
   $blog->get('/list')->to('blog#list');
   $blog->get('/:id' => [id => qr/\d+/])->to('blog#show', id => 23);
-  $blog->patch(sub { shift->render(text => 'Go away!', status => 405) });
+  $blog->patch(sub ($c) { $c->render(text => 'Go away!', status => 405) });
 
 =head1 DESCRIPTION
 
@@ -300,26 +299,22 @@ L<Mojolicious::Routes> inherits all methods from L<Mojolicious::Routes::Route> a
 
 =head2 add_condition
 
-  $r = $r->add_condition(foo => sub {...});
+  $r = $r->add_condition(foo => sub ($route, $c, $captures, $arg) {...});
 
 Register a condition.
 
-  $r->add_condition(foo => sub {
-    my ($route, $c, $captures, $arg) = @_;
+  $r->add_condition(foo => sub ($route, $c, $captures, $arg) {
     ...
     return 1;
   });
 
 =head2 add_shortcut
 
-  $r = $r->add_shortcut(foo => sub {...});
+  $r = $r->add_shortcut(foo => sub ($route, @args) {...});
 
 Register a shortcut.
 
-  $r->add_shortcut(foo => sub {
-    my ($route, @args) = @_;
-    ...
-  });
+  $r->add_shortcut(foo => sub ($route, @args) {...});
 
 =head2 add_type
 

@@ -150,11 +150,9 @@ The attribute L<Mojolicious/"routes"> contains a router you can use to generate 
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub startup {
-    my $self = shift;
-
+  sub startup ($self) {
     # Router
     my $r = $self->routes;
 
@@ -170,12 +168,10 @@ everywhere (even at runtime).
 
   # Controller
   package MyApp::Controller::Foo;
-  use Mojo::Base 'Mojolicious::Controller';
+  use Mojo::Base 'Mojolicious::Controller', -signatures;
 
   # Action
-  sub welcome {
-    my $self = shift;
-
+  sub welcome ($self) {
     # Render response
     $self->render(text => 'Hello there.');
   }
@@ -246,14 +242,12 @@ The generated hash of a matching route is actually the center of the whole L<Moj
 stash, and it persists until a response has been generated.
 
   # /bye -> {controller => 'foo', action => 'bye', mymessage => 'Bye'}
-  $r->get('/bye')
-    ->to(controller => 'foo', action => 'bye', mymessage => 'Bye');
+  $r->get('/bye')->to(controller => 'foo', action => 'bye', mymessage => 'Bye');
 
 There are a few stash values with special meaning, such as C<controller> and C<action>, but you can generally fill it
 with whatever data you need to generate a response. Once dispatched the whole stash content can be changed at any time.
 
-  sub bye {
-    my $self = shift;
+  sub bye ($self) {
 
     # Get message from stash
     my $msg = $self->stash('mymessage');
@@ -297,11 +291,9 @@ searched in that order. The action value is not changed at all, so both values a
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub startup {
-    my $self = shift;
-
+  sub startup ($self) {
     # /bye -> MyApp::Controller::Foo->bye
     $self->routes->get('/bye')->to(controller => 'foo', action => 'bye');
   }
@@ -310,12 +302,10 @@ searched in that order. The action value is not changed at all, so both values a
 
   # Controller
   package MyApp::Controller::Foo;
-  use Mojo::Base 'Mojolicious::Controller';
+  use Mojo::Base 'Mojolicious::Controller', -signatures;
 
   # Action
-  sub bye {
-    my $self = shift;
-
+  sub bye ($self) {
     # Render response
     $self->render(text => 'Good bye.');
   }
@@ -346,8 +336,7 @@ L<Mojolicious::Controller> or L<Mojo> before dispatching to it.
 You can use the C<namespace> stash value to change the namespace of a whole route with all its children.
 
   # /bye -> MyApp::MyController::Foo::Bar->bye
-  $r->get('/bye')
-    ->to(namespace => 'MyApp::MyController::Foo::Bar', action => 'bye');
+  $r->get('/bye')->to(namespace => 'MyApp::MyController::Foo::Bar', action => 'bye');
 
 The C<controller> is always converted from C<snake_case> to C<CamelCase> with L<Mojo::Util/"camelize">, and then
 appended to this C<namespace>.
@@ -369,15 +358,13 @@ L<Mojolicious::Routes/"namespaces">, which usually defaults to a namespace based
 The C<cb> stash value, which won't be inherited by nested routes, can be used to bypass controllers and execute a
 callback instead.
 
-  $r->get('/bye')->to(cb => sub {
-    my $c = shift;
+  $r->get('/bye')->to(cb => sub ($c) {
     $c->render(text => 'Good bye.');
   });
 
 But just like in L<Mojolicious::Lite> you can also pass the callback directly, which usually looks much better.
 
-  $r->get('/bye' => sub {
-    my $c = shift;
+  $r->get('/bye' => sub ($c) {
     $c->render(text => 'Good bye.');
   });
 
@@ -389,7 +376,7 @@ internally rely on L<Mojolicious::Controller/"url_for"> for this.
   # /foo/marcus -> {controller => 'foo', action => 'bar', user => 'marcus'}
   $r->get('/foo/:user')->to('foo#bar')->name('baz');
 
-  # Generate URL "/foo/marcus" for route "baz"
+  # Generate URL "/foo/marcus" for route "baz" (in previous request context)
   my $url = $c->url_for('baz');
 
   # Generate URL "/foo/jan" for route "baz"
@@ -541,8 +528,7 @@ be a very powerful tool for authentication.
 
   # /blackjack -> {cb => sub {...}}
   #               {controller => 'hideout', action => 'blackjack'}
-  my $auth = $r->under('/' => sub {
-    my $c = shift;
+  my $auth = $r->under('/' => sub ($c) {
 
     # Authenticated
     return 1 if $c->req->headers->header('X-Bender');
@@ -556,8 +542,7 @@ be a very powerful tool for authentication.
 Broken dispatch chains can be continued by calling L<Mojolicious::Controller/"continue">, this allows for example,
 non-blocking operations to finish before reaching the next dispatch cycle.
 
-  my $maybe = $r->under('/maybe' => sub {
-    my $c = shift;
+  my $maybe = $r->under('/maybe' => sub ($c) {
 
     # Wait 3 seconds and then give visitors a 50% chance to continue
     Mojo::IOLoop->timer(3 => sub {
@@ -633,13 +618,11 @@ normal C<GET> requests with some additional information.
 
   # Controller
   package MyApp::Controller::Foo;
-  use Mojo::Base 'Mojolicious::Controller';
+  use Mojo::Base 'Mojolicious::Controller', -signatures;
 
   # Action
-  sub echo {
-    my $self = shift;
-    $self->on(message => sub {
-      my ($self, $msg) = @_;
+  sub echo ($self) {
+    $self->on(message => sub ($self, $msg) {
       $self->send("echo: $msg");
     });
   }
@@ -671,8 +654,7 @@ Since routes match in the order in which they were defined, you can catch all re
 route with an optional wildcard placeholder.
 
   # * /*
-  $r->any('/*whatever' => {whatever => ''} => sub {
-    my $c        = shift;
+  $r->any('/*whatever' => {whatever => ''} => sub ($c) {
     my $whatever = $c->param('whatever');
     $c->render(text => "/$whatever did not match.", status => 404);
   });
@@ -680,19 +662,19 @@ route with an optional wildcard placeholder.
 =head2 Conditions
 
 Conditions such as C<headers>, C<agent> and C<host> from L<Mojolicious::Plugin::HeaderCondition> can be applied to any
-route with the method L<Mojolicious::Routes::Route/"over">, and allow even more powerful route constructs.
+route with the method L<Mojolicious::Routes::Route/"requires">, and allow even more powerful route constructs.
 
   # / (Origin: http://perl.org)
-  $r->get('/')->over(headers => {Origin => qr/perl\.org/})->to('foo#bar');
+  $r->get('/')->requires(headers => {Origin => qr/perl\.org/})->to('foo#bar');
 
   # / (Firefox)
-  $r->get('/')->over(agent => qr/Firefox/)->to('browser-test#firefox');
+  $r->get('/')->requires(agent => qr/Firefox/)->to('browser-test#firefox');
 
   # / (Internet Explorer)
-  $r->get('/')->over(agent => qr/Internet Explorer/)->to('browser-test#ie');
+  $r->get('/')->requires(agent => qr/Internet Explorer/)->to('browser-test#ie');
 
-  # http://mojolicious.org/perldoc
-  $r->get('/perldoc')->over(host => 'mojolicious.org')->to('perldoc#index');
+  # http://docs.mojolicious.org/Mojolicious
+  $r->get('/')->requires(host => 'docs.mojolicious.org')->to('perldoc#index');
 
 Just be aware that conditions are too complex for the routing cache, which normally speeds up recurring requests, and
 can therefore reduce performance.
@@ -704,16 +686,13 @@ indiscriminately through L<Mojolicious/"hook">, which makes them a very powerful
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub startup {
-    my $self = shift;
+  sub startup ($self) {
 
     # Check all requests for a "/test" prefix
-    $self->hook(before_dispatch => sub {
-      my $c = shift;
-      $c->render(text => 'This request did not reach the router.')
-        if $c->req->url->path->contains('/test');
+    $self->hook(before_dispatch => sub ($c) {
+      $c->render(text => 'This request did not reach the router.') if $c->req->url->path->contains('/test');
     });
 
     # These will not be reached if the hook above renders a response
@@ -727,22 +706,19 @@ indiscriminately through L<Mojolicious/"hook">, which makes them a very powerful
 Post-processing the response to add or remove headers is a very common use.
 
   # Make sure static files are cached
-  $app->hook(after_static => sub {
-    my $c = shift;
+  $app->hook(after_static => sub ($c) {
     $c->res->headers->cache_control('max-age=3600, must-revalidate');
   });
 
   # Remove a default header
-  $app->hook(after_dispatch => sub {
-    my $c = shift;
+  $app->hook(after_dispatch => sub ($c) {
     $c->res->headers->remove('Server');
   });
 
 Same for pre-processing the request.
 
   # Choose template variant based on request headers
-  $app->hook(before_dispatch => sub {
-    my $c = shift;
+  $app->hook(before_dispatch => sub ($c) {
     return unless my $agent = $c->req->headers->user_agent;
     $c->stash(variant => 'ie') if $agent =~ /Internet Explorer/;
   });
@@ -750,8 +726,7 @@ Same for pre-processing the request.
 Or more advanced extensions to add monitoring to your application.
 
   # Forward exceptions to a web service
-  $app->hook(after_dispatch => sub {
-    my $c = shift;
+  $app->hook(after_dispatch => sub ($c) {
     return unless my $e = $c->stash('exception');
     $c->ua->post('https://example.com/bugs' => form => {exception => $e});
   });
@@ -759,15 +734,13 @@ Or more advanced extensions to add monitoring to your application.
 You can even extend much of the core functionality.
 
   # Make controller object available to actions as $_
-  $app->hook(around_action => sub {
-    my ($next, $c, $action, $last) = @_;
+  $app->hook(around_action => sub ($next, $c, $action, $last) {
     local $_ = $c;
     return $next->();
   });
 
   # Pass route name as argument to actions
-  $app->hook(around_action => sub {
-    my ($next, $c, $action, $last) = @_;
+  $app->hook(around_action => sub ($next, $c, $action, $last) {
     return $c->$action($c->current_route);
   });
 
@@ -783,8 +756,7 @@ To make route generation more expressive, you can also add your own shortcuts wi
 L<Mojolicious::Routes/"add_shortcut">.
 
   # Simple "resource" shortcut
-  $r->add_shortcut(resource => sub {
-    my ($r, $name) = @_;
+  $r->add_shortcut(resource => sub ($r, $name) {
 
     # Prefix for resource
     my $resource = $r->any("/$name")->to("$name#");
@@ -854,8 +826,7 @@ basically router plugins that run every time a new request arrives, and which ne
 to match.
 
   # A condition that randomly allows a route to match
-  $r->add_condition(random => sub {
-    my ($route, $c, $captures, $num) = @_;
+  $r->add_condition(random => sub ($route, $c, $captures, $num) {
 
     # Loser
     return undef if int rand $num;
@@ -865,13 +836,12 @@ to match.
   });
 
   # /maybe (25% chance)
-  $r->get('/maybe')->over(random => 4)->to('foo#bar');
+  $r->get('/maybe')->requires(random => 4)->to('foo#bar');
 
 Use whatever request information you need.
 
   # A condition to check query parameters (useful for mock web services)
-  $r->add_condition(query => sub {
-    my ($route, $c, $captures, $hash) = @_;
+  $r->add_condition(query => sub ($route, $c, $captures, $hash) {
 
     for my $key (keys %$hash) {
       my $param = $c->req->url->query->param($key);
@@ -882,7 +852,7 @@ Use whatever request information you need.
   });
 
   # /hello?to=world&test=1
-  $r->get('/hello')->over(query => {test => 1, to => 'world'})->to('foo#bar');
+  $r->get('/hello')->requires(query => {test => 1, to => 'world'})->to('foo#bar');
 
 =head2 Condition plugins
 
@@ -890,16 +860,14 @@ You can also package your conditions as reusable plugins.
 
   # Plugin
   package Mojolicious::Plugin::WerewolfCondition;
-  use Mojo::Base 'Mojolicious::Plugin';
+  use Mojo::Base 'Mojolicious::Plugin', -signatures;
 
   use Astro::MoonPhase;
 
-  sub register {
-    my ($self, $app) = @_;
+  sub register ($self, $app, $conf) {
 
     # Add "werewolf" condition
-    $app->routes->add_condition(werewolf => sub {
-      my ($route, $c, $captures, $days) = @_;
+    $app->routes->add_condition(werewolf => sub ($route, $c, $captures, $days) {
 
       # Keep the werewolves out!
       return undef if abs(14 - (phase(time))[2]) > ($days / 2);
@@ -915,17 +883,15 @@ Now just load the plugin and you are ready to use the condition in all your appl
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub startup {
-    my $self = shift;
+  sub startup ($self) {
 
     # Plugin
     $self->plugin('WerewolfCondition');
 
     # /hideout (keep them out for 4 days after full moon)
-    $self->routes->get('/hideout')->over(werewolf => 4)
-      ->to(controller => 'foo', action => 'bar');
+    $self->routes->get('/hideout')->requires(werewolf => 4)->to(controller => 'foo', action => 'bar');
   }
 
   1;
@@ -935,7 +901,7 @@ Now just load the plugin and you are ready to use the condition in all your appl
 The easiest way to embed one application into another is L<Mojolicious::Plugin::Mount>, which allows you to mount whole
 self-contained applications under a domain and/or prefix.
 
-  use Mojolicious::Lite;
+  use Mojolicious::Lite -signatures;
 
   # Whole application mounted under "/prefix"
   plugin Mount => {'/prefix' => '/home/sri/myapp/script/myapp'};
@@ -944,7 +910,9 @@ self-contained applications under a domain and/or prefix.
   plugin Mount => {'test.example.com' => '/home/sri/myapp2.pl'};
 
   # Normal route
-  get '/' => sub { shift->render(text => 'Hello World!') };
+  get '/' => sub ($c) {
+    $c->render(text => 'Hello World!');
+  };
 
   app->start;
 
@@ -955,32 +923,29 @@ the use of the L<Mojolicious::Lite> domain specific language in normal L<Mojolic
 
   # Controller
   package MyApp::Controller::Bar;
-  use Mojolicious::Lite;
+  use Mojolicious::Lite -signatures;
 
   # /hello
-  get '/hello' => sub {
-    my $c    = shift;
+  get '/hello' => sub ($c) {
     my $name = $c->param('name');
     $c->render(text => "Hello $name.");
   };
 
   1;
 
-With the method L<Mojolicious::Routes::Route/"detour"> which is very similar to L<Mojolicious::Routes::Route/"to">, you
-can allow the route to partially match and use only the remaining path in the embedded application, the base path will
-be passed along in the C<path> stash value.
+With the attribute L<Mojolicious::Routes::Route/"partial">, you can allow the route to partially match and use only the
+remaining path in the embedded application, the base path will be passed along in the C<path> stash value.
 
   # /foo/*
-  $r->any('/foo')->detour('bar#', name => 'Mojo');
+  $r->any('/foo')->partial(1)->to('bar#', name => 'Mojo');
 
 A minimal embeddable application is nothing more than a subclass of L<Mojolicious>, containing a C<handler> method
 accepting L<Mojolicious::Controller> objects.
 
   package MyApp::Controller::Bar;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub handler {
-    my ($self, $c) = @_;
+  sub handler ($self, $c) {
     $c->res->code(200);
     my $name = $c->param('name');
     $c->res->body("Hello $name.");
@@ -998,13 +963,12 @@ You can even package applications as self-contained reusable plugins.
 
   # Plugin
   package Mojolicious::Plugin::MyEmbeddedApp;
-  use Mojo::Base 'Mojolicious::Plugin';
+  use Mojo::Base 'Mojolicious::Plugin', -signatures;
 
-  sub register {
-    my ($self, $app) = @_;
+  sub register ($self, $app, $conf) {
 
     # Automatically add route
-    $app->routes->any('/foo')->detour(app => EmbeddedApp::app());
+    $app->routes->any('/foo')->partial(1)->to(app => EmbeddedApp::app());
   }
 
   package EmbeddedApp;
@@ -1022,10 +986,9 @@ Now just load the plugin and you're done.
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
-  sub startup {
-    my $self = shift;
+  sub startup ($self) {
 
     # Plugin
     $self->plugin('MyEmbeddedApp');
@@ -1036,13 +999,13 @@ Now just load the plugin and you're done.
 =head1 MORE
 
 You can continue with L<Mojolicious::Guides> now or take a look at the L<Mojolicious
-wiki|http://github.com/mojolicious/mojo/wiki>, which contains a lot more documentation and examples by many different
+wiki|https://github.com/mojolicious/mojo/wiki>, which contains a lot more documentation and examples by many different
 authors.
 
 =head1 SUPPORT
 
-If you have any questions the documentation might not yet answer, don't hesitate to ask on the L<mailing
-list|http://groups.google.com/group/mojolicious> or the official IRC channel C<#mojo> on C<irc.freenode.net> (L<chat
-now!|https://webchat.freenode.net/#mojo>).
+If you have any questions the documentation might not yet answer, don't hesitate to ask in the
+L<Forum|https://forum.mojolicious.org> or the official IRC channel C<#mojo> on C<chat.freenode.net>
+(L<chat now!|https://webchat.freenode.net/#mojo>).
 
 =cut

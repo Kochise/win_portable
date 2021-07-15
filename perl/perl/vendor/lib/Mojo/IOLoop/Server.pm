@@ -53,8 +53,8 @@ sub listen {
     if ($path) {
       path($path)->remove if -S $path;
       $options{Local} = $path;
-      $handle = $class->new(%options) or croak "Can't create listen socket: $!";
-      $reuse = $self->{reuse} = join ':', 'unix', $path, fileno $handle;
+      $handle         = $class->new(%options) or croak "Can't create listen socket: $!";
+      $reuse          = $self->{reuse} = join ':', 'unix', $path, fileno $handle;
     }
 
     # IP socket
@@ -66,7 +66,7 @@ sub listen {
       $options{ReusePort} = $args->{reuse};
       $handle             = $class->new(%options) or croak "Can't create listen socket: $@";
       $fd                 = fileno $handle;
-      $reuse = $self->{reuse} = join ':', $address, $handle->sockport, $fd;
+      $reuse              = $self->{reuse} = join ':', $address, $handle->sockport, $fd;
     }
 
     $ENV{MOJO_REUSE} .= length $ENV{MOJO_REUSE} ? ",$reuse" : "$reuse";
@@ -124,10 +124,7 @@ Mojo::IOLoop::Server - Non-blocking TCP and UNIX domain socket server
 
   # Create listen socket
   my $server = Mojo::IOLoop::Server->new;
-  $server->on(accept => sub {
-    my ($server, $handle) = @_;
-    ...
-  });
+  $server->on(accept => sub ($server, $handle) {...});
   $server->listen(port => 3000);
 
   # Start and stop accepting connections
@@ -147,10 +144,7 @@ L<Mojo::IOLoop::Server> inherits all events from L<Mojo::EventEmitter> and can e
 
 =head2 accept
 
-  $server->on(accept => sub {
-    my ($server, $handle) = @_;
-    ...
-  });
+  $server->on(accept => sub ($server, $handle) {...});
 
 Emitted for each accepted connection.
 

@@ -19,7 +19,7 @@ has escape                                      => sub { \&Mojo::Util::xml_escap
 has [qw(escape_mark expression_mark trim_mark)] => '=';
 has [qw(line_start replace_mark)]               => '%';
 has name                                        => 'template';
-has namespace                                   => 'Mojo::Template::SandBox';
+has namespace                                   => 'Mojo::Template::Sandbox';
 has tag_start                                   => '<%';
 has tag_end                                     => '%>';
 has tree                                        => sub { [] };
@@ -59,7 +59,7 @@ sub parse {
   # Split lines
   my $op = 'text';
   my ($trimming, $capture);
-  for my $line (split "\n", $template) {
+  for my $line (split /\n/, $template) {
 
     # Turn Perl line into mixed line
     if ($op eq 'text' && $line =~ $line_re) {
@@ -188,7 +188,7 @@ sub _compile {
 
     # Text (quote and fix line ending)
     if ($op eq 'text') {
-      $value = join "\n", map { quotemeta $_ } split("\n", $value, -1);
+      $value = join "\n", map { quotemeta $_ } split(/\n/, $value, -1);
       $value      .= '\n'                          if $newline;
       $blocks[-1] .= "\$_O .= \"" . $value . "\";" if length $value;
     }
@@ -223,7 +223,7 @@ sub _compile {
     }
 
     # Capture start
-    if ($op eq 'cpst') { $capture = 1 }
+    if    ($op eq 'cpst') { $capture = 1 }
     elsif ($capture) {
       $blocks[-1] .= "sub { my \$_O = ''; ";
       $capture = 0;
@@ -492,10 +492,7 @@ Encoding used for template files, defaults to C<UTF-8>.
 
 A callback used to escape the results of escaped expressions, defaults to L<Mojo::Util/"xml_escape">.
 
-  $mt->escape(sub {
-    my $str = shift;
-    return reverse $str;
-  });
+  $mt->escape(sub ($str) { return reverse $str });
 
 =head2 escape_mark
 
@@ -537,7 +534,7 @@ newline characters, or error messages might end up being wrong.
   my $namespace = $mt->namespace;
   $mt           = $mt->namespace('main');
 
-Namespace used to compile templates, defaults to C<Mojo::Template::SandBox>. Note that namespaces should only be shared
+Namespace used to compile templates, defaults to C<Mojo::Template::Sandbox>. Note that namespaces should only be shared
 very carefully between templates, since functions and global variables will not be cleared automatically.
 
 =head2 prepend

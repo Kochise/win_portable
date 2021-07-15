@@ -6,6 +6,7 @@ use Carp ();
 use Mojo::DynamicMethods -dispatch;
 use Mojo::Exception;
 use Mojo::Home;
+use Mojo::Loader;
 use Mojo::Log;
 use Mojo::Util;
 use Mojo::UserAgent;
@@ -26,23 +27,28 @@ has home             => sub { Mojo::Home->new->detect(ref shift) };
 has log              => sub {
   my $self = shift;
 
-  # Check if we have a log directory that is writable
-  my $log  = Mojo::Log->new;
-  my $home = $self->home;
   my $mode = $self->mode;
-  $log->path($home->child('log', "$mode.log")) if -d $home->child('log') && -w _;
+  my $log  = Mojo::Log->new;
+
+  # DEPRECATED!
+  my $home = $self->home;
+  if (-d $home->child('log') && -w _) {
+    $log->path($home->child('log', "$mode.log"));
+    Mojo::Util::deprecated(qq{Logging to "log/$mode.log" is DEPRECATED});
+  }
 
   # Reduced log output outside of development mode
   return $log->level($ENV{MOJO_LOG_LEVEL}) if $ENV{MOJO_LOG_LEVEL};
   return $mode eq 'development' ? $log : $log->level('info');
 };
 has 'max_request_size';
-has mode     => sub { $ENV{MOJO_MODE} || $ENV{PLACK_ENV} || 'development' };
-has moniker  => sub { Mojo::Util::decamelize ref shift };
-has plugins  => sub { Mojolicious::Plugins->new };
-has renderer => sub { Mojolicious::Renderer->new };
-has routes   => sub { Mojolicious::Routes->new };
-has secrets  => sub {
+has mode               => sub { $ENV{MOJO_MODE} || $ENV{PLACK_ENV} || 'development' };
+has moniker            => sub { Mojo::Util::decamelize ref shift };
+has plugins            => sub { Mojolicious::Plugins->new };
+has preload_namespaces => sub { [] };
+has renderer           => sub { Mojolicious::Renderer->new };
+has routes             => sub { Mojolicious::Routes->new };
+has secrets            => sub {
   my $self = shift;
 
   # Warn developers about insecure default
@@ -58,7 +64,7 @@ has ua        => sub { Mojo::UserAgent->new };
 has validator => sub { Mojolicious::Validator->new };
 
 our $CODENAME = 'Supervillain';
-our $VERSION  = '8.57';
+our $VERSION  = '8.71';
 
 sub BUILD_DYNAMIC {
   my ($class, $method, $dyn_methods) = @_;
@@ -156,7 +162,8 @@ sub new {
   push @{$self->static->paths},   $home->child('public')->to_string;
 
   # Default to controller and application namespace
-  my $r = $self->routes->namespaces(["@{[ref $self]}::Controller", ref $self]);
+  my $controller = "@{[ref $self]}::Controller";
+  my $r          = $self->preload_namespaces([$controller])->routes->namespaces([$controller, ref $self]);
 
   # Hide controller attributes/methods
   $r->hide(qw(app continue cookie every_cookie every_param every_signed_cookie finish helpers match on param render));
@@ -169,6 +176,7 @@ sub new {
   $self->hook(around_dispatch => \&_exception);
 
   $self->startup;
+  $self->warmup;
 
   return $self;
 }
@@ -187,6 +195,8 @@ sub start {
 }
 
 sub startup { }
+
+sub warmup { Mojo::Loader::load_classes $_ for @{shift->preload_namespaces} }
 
 sub _action {
   my ($next, $c, $action, $last) = @_;
@@ -215,21 +225,19 @@ Mojolicious - Real-time web framework
 
   # Application
   package MyApp;
-  use Mojo::Base 'Mojolicious';
+  use Mojo::Base 'Mojolicious', -signatures;
 
   # Route
-  sub startup {
-    my $self = shift;
+  sub startup ($self) {
     $self->routes->get('/hello')->to('foo#hello');
   }
 
   # Controller
   package MyApp::Controller::Foo;
-  use Mojo::Base 'Mojolicious::Controller';
+  use Mojo::Base 'Mojolicious::Controller', -signatures;
 
   # Action
-  sub hello {
-    my $self = shift;
+  sub hello ($self) {
     $self->render(text => 'Hello World!');
   }
 
@@ -251,10 +259,7 @@ L<Mojolicious> will emit the following hooks in the listed order.
 Emitted right before the application runs a command through the command line interface. Note that this hook is
 B<EXPERIMENTAL> and might change without warning!
 
-  $app->hook(before_command => sub {
-    my ($command, $args) = @_;
-    ...
-  });
+  $app->hook(before_command => sub ($command, $args) {...});
 
 Useful for reconfiguring the application before running a command or to modify the behavior of a command. (Passed the
 command object and the command arguments)
@@ -264,10 +269,7 @@ command object and the command arguments)
 Emitted right before the application server is started, for web servers that support it, which includes all the
 built-in ones (except for L<Mojo::Server::CGI>).
 
-  $app->hook(before_server_start => sub {
-    my ($server, $app) = @_;
-    ...
-  });
+  $app->hook(before_server_start => sub ($server, $app) {...});
 
 Useful for reconfiguring application servers dynamically or collecting server diagnostics information. (Passed the
 server and application objects)
@@ -276,10 +278,7 @@ server and application objects)
 
 Emitted right after the transaction is built and before the HTTP request gets parsed.
 
-  $app->hook(after_build_tx => sub {
-    my ($tx, $app) = @_;
-    ...
-  });
+  $app->hook(after_build_tx => sub ($tx, $app) {...});
 
 This is a very powerful hook and should not be used lightly, it makes some rather advanced features such as upload
 progress bars possible. Note that this hook will not work for embedded applications, because only the host application
@@ -292,8 +291,7 @@ manually forward to the next hook if you want to continue the chain. Default exc
 L<Mojolicious::Plugin::DefaultHelpers/"reply-E<gt>exception"> is the first hook in the chain and a call to
 L</"dispatch"> the last, yours will be in between.
 
-  $app->hook(around_dispatch => sub {
-    my ($next, $c) = @_;
+  $app->hook(around_dispatch => sub ($next, $c) {
     ...
     $next->();
     ...
@@ -307,10 +305,7 @@ default controller object)
 
 Emitted right before the static file server and router start their work.
 
-  $app->hook(before_dispatch => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(before_dispatch => sub ($c) {...});
 
 Very useful for rewriting incoming requests and other preprocessing tasks. (Passed the default controller object)
 
@@ -318,10 +313,7 @@ Very useful for rewriting incoming requests and other preprocessing tasks. (Pass
 
 Emitted after a static file response has been generated by the static file server.
 
-  $app->hook(after_static => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(after_static => sub ($c) {...});
 
 Mostly used for post-processing static file responses. (Passed the default controller object)
 
@@ -330,10 +322,7 @@ Mostly used for post-processing static file responses. (Passed the default contr
 Emitted after the static file server determined if a static file should be served and before the router starts its
 work.
 
-  $app->hook(before_routes => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(before_routes => sub ($c) {...});
 
 Mostly used for custom dispatchers and collecting metrics. (Passed the default controller object)
 
@@ -342,8 +331,7 @@ Mostly used for custom dispatchers and collecting metrics. (Passed the default c
 Emitted right before an action gets executed and wraps around it, so you have to manually forward to the next hook if
 you want to continue the chain. Default action dispatching is the last hook in the chain, yours will run before it.
 
-  $app->hook(around_action => sub {
-    my ($next, $c, $action, $last) = @_;
+  $app->hook(around_action => sub ($next, $c, $action, $last) {
     ...
     return $next->();
   });
@@ -358,10 +346,7 @@ callback and a flag indicating if this action is an endpoint)
 Emitted before content is generated by the renderer. Note that this hook can trigger out of order due to its dynamic
 nature, and with embedded applications will only work for the application that is rendering.
 
-  $app->hook(before_render => sub {
-    my ($c, $args) = @_;
-    ...
-  });
+  $app->hook(before_render => sub ($c, $args) {...});
 
 Mostly used for pre-processing arguments passed to the renderer. (Passed the current controller object and the render
 arguments)
@@ -372,10 +357,7 @@ Emitted after content has been generated by the renderer that will be assigned t
 trigger out of order due to its dynamic nature, and with embedded applications will only work for the application that
 is rendering.
 
-  $app->hook(after_render => sub {
-    my ($c, $output, $format) = @_;
-    ...
-  });
+  $app->hook(after_render => sub ($c, $output, $format) {...});
 
 Mostly used for post-processing dynamically generated content. (Passed the current controller object, a reference to
 the content and the format)
@@ -385,10 +367,7 @@ the content and the format)
 Emitted in reverse order after a response has been generated. Note that this hook can trigger out of order due to its
 dynamic nature, and with embedded applications will only work for the application that is generating the response.
 
-  $app->hook(after_dispatch => sub {
-    my $c = shift;
-    ...
-  });
+  $app->hook(after_dispatch => sub ($c) {...});
 
 Useful for rewriting outgoing responses and other post-processing tasks. (Passed the current controller object)
 
@@ -431,7 +410,7 @@ The home directory of your application, defaults to a L<Mojo::Home> object which
 
 The logging layer of your application, defaults to a L<Mojo::Log> object. The level will default to either the
 C<MOJO_LOG_LEVEL> environment variable, C<debug> if the L</mode> is C<development>, or C<info> otherwise. All messages
-will be written to C<STDERR>, or a C<log/$mode.log> file if a C<log> directory exists.
+will be written to C<STDERR> by default.
 
   # Log debug message
   $app->log->debug('It works');
@@ -472,6 +451,14 @@ a plugin.
 
   # Add another namespace to load plugins from
   push @{$app->plugins->namespaces}, 'MyApp::Plugin';
+
+=head2 preload_namespaces
+
+  my $namespaces = $app->preload_namespaces;
+  $app           = $app->preload_namespaces(['MyApp:Controller']);
+
+Namespaces to preload classes from during application startup. Note that this attribute is B<EXPERIMENTAL> and might
+change without warning!
 
 =head2 renderer
 
@@ -584,14 +571,12 @@ A full featured HTTP user agent for use in your applications, defaults to a L<Mo
 Validate values, defaults to a L<Mojolicious::Validator> object.
 
   # Add validation check
-  $app->validator->add_check(foo => sub {
-    my ($v, $name, $value) = @_;
+  $app->validator->add_check(foo => sub ($v, $name, $value) {
     return $value ne 'foo';
   });
 
   # Add validation filter
-  $app->validator->add_filter(quotemeta => sub {
-    my ($v, $name, $value) = @_;
+  $app->validator->add_filter(quotemeta => sub ($v, $name, $value) {
     return quotemeta $value;
   });
 
@@ -691,8 +676,7 @@ Extend L<Mojolicious> with hooks, which allow code to be shared with all request
 available hooks see L</"HOOKS">.
 
   # Dispatchers will not run if there's already a response code defined
-  $app->hook(before_dispatch => sub {
-    my $c = shift;
+  $app->hook(before_dispatch => sub ($c) {
     $c->render(text => 'Skipped static file server and router!')
       if $c->req->url->path->to_route =~ /do_not_dispatch/;
   });
@@ -747,10 +731,14 @@ shared by all commands, will be parsed from C<@ARGV> during compile time.
 This is your main hook into the application, it will be called at application startup. Meant to be overloaded in a
 subclass.
 
-  sub startup {
-    my $self = shift;
-    ...
-  }
+  sub startup ($self) {...}
+
+=head2 warmup
+
+  $app->warmup;
+
+Preload classes from L</"preload_namespaces"> for future use. Note that this method is B<EXPERIMENTAL> and might change
+without warning!
 
 =head1 HELPERS
 
@@ -771,7 +759,7 @@ The L<Mojolicious> distribution includes a few files with different licenses tha
 
 =head2 Mojolicious Artwork
 
-  Copyright (C) 2010-2020, Sebastian Riedel.
+  Copyright (C) 2010-2021, Sebastian Riedel.
 
 Licensed under the CC-SA License, Version 4.0 L<http://creativecommons.org/licenses/by-sa/4.0>.
 
@@ -781,11 +769,23 @@ Licensed under the CC-SA License, Version 4.0 L<http://creativecommons.org/licen
 
 Licensed under the MIT License, L<http://creativecommons.org/licenses/MIT>.
 
-=head2 prettify.js
+=head2 highlight.js
 
-  Copyright (C) 2006, 2013 Google Inc..
+  Copyright (C) 2006, Ivan Sagalaev.
 
-Licensed under the Apache License, Version 2.0 L<http://www.apache.org/licenses/LICENSE-2.0>.
+Licensed under the BSD License, L<https://github.com/highlightjs/highlight.js/blob/master/LICENSE>.
+
+=head2 Bootstrap
+
+  Copyright 2011-2020 The Bootstrap Authors.
+  Copyright 2011-2020 Twitter, Inc.
+
+Licensed under the MIT License, L<http://creativecommons.org/licenses/MIT>.
+
+=head2 Font Awesome
+
+Licensed under the CC-BY License, Version 4.0 L<https://creativecommons.org/licenses/by/4.0/> and SIL OFL, Version 1.1
+L<https://opensource.org/licenses/OFL-1.1>.
 
 =head1 CODE NAMES
 
@@ -818,21 +818,23 @@ its copyright to Sebastian Riedel.
 
 =item
 
-Some of the work on this distribution has been sponsored by L<The Perl Foundation|http://www.perlfoundation.org>.
+Some of the work on this distribution has been sponsored by L<The Perl Foundation|https://www.perlfoundation.org>.
 
 =back
 
-=head1 PROJECT FOUNDER
+=head1 AUTHORS
+
+L<Mojolicious> is an open source project that relies on the tireless support of its contributors.
+
+=head2 Project Founder
 
 Sebastian Riedel, C<kraih@mojolicious.org>
 
-=head1 CORE DEVELOPERS
+=head2 Core Developers
 
 Current voting members of the core team in alphabetical order:
 
 =over 2
-
-CandyAngel, C<candyangel@mojolicious.org>
 
 Christopher Rasch-Olsen Raa, C<christopher@mojolicious.org>
 
@@ -852,11 +854,13 @@ The following members of the core team are currently on hiatus:
 
 Abhijit Menon-Sen, C<ams@cpan.org>
 
+CandyAngel, C<candyangel@mojolicious.org>
+
 Glen Hinkle, C<tempire@cpan.org>
 
 =back
 
-=head1 CREDITS
+=head2 Contributors
 
 In alphabetical order:
 
@@ -930,6 +934,8 @@ Chas. J. Owens IV
 
 Chase Whitener
 
+Chris Scheller
+
 Christian Hansen
 
 chromatic
@@ -963,6 +969,8 @@ Dominique Dumont
 Dotan Dimet
 
 Douglas Christopher Wilson
+
+Elmar S. Heeb
 
 Ettore Di Giacinto
 
@@ -1104,6 +1112,8 @@ Rick Delaney
 
 Robert Hicks
 
+Robert Rothenberg
+
 Robin Lee
 
 Roland Lammel
@@ -1188,7 +1198,7 @@ Zoffix Znet
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2008-2020, Sebastian Riedel and others.
+Copyright (C) 2008-2021, Sebastian Riedel and others.
 
 This program is free software, you can redistribute it and/or modify it under the terms of the Artistic License version
 2.0.

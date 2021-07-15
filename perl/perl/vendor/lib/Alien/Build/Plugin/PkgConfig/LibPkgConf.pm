@@ -2,11 +2,12 @@ package Alien::Build::Plugin::PkgConfig::LibPkgConf;
 
 use strict;
 use warnings;
+use 5.008004;
 use Alien::Build::Plugin;
 use Carp ();
 
 # ABSTRACT: Probe system and determine library or tool properties using PkgConfig::LibPkgConf
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 has '+pkg_name' => sub {
@@ -72,6 +73,9 @@ sub init
       my($build) = @_;
       $build->runtime_prop->{legacy}->{name} ||= $pkg_name;
 
+      $build->hook_prop->{probe_class} = __PACKAGE__;
+      $build->hook_prop->{probe_instance_id} = $self->instance_id;
+
       require PkgConfig::LibPkgConf::Client;
       my $client = PkgConfig::LibPkgConf::Client->new;
       my $pkg = $client->find($pkg_name);
@@ -120,6 +124,10 @@ sub init
   $meta->register_hook(
     $_ => sub {
       my($build) = @_;
+
+      return if $build->hook_prop->{name} eq 'gather_system'
+      &&        ($build->install_prop->{system_probe_instance_id} || '') ne $self->instance_id;
+
       require PkgConfig::LibPkgConf::Client;
       my $client = PkgConfig::LibPkgConf::Client->new;
 
@@ -166,7 +174,7 @@ Alien::Build::Plugin::PkgConfig::LibPkgConf - Probe system and determine library
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -280,6 +288,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

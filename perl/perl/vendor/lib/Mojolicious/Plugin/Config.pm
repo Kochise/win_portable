@@ -37,7 +37,7 @@ sub register {
   my $home = $app->home;
   $file = $home->child($file) unless path($file)->is_abs;
   $mode = $home->child($mode) if $mode && !path($mode)->is_abs;
-  $mode = undef unless $mode && -e $mode;
+  $mode = undef unless $mode           && -e $mode;
 
   # Read config file
   my $config = {};
@@ -146,8 +146,7 @@ L<Mojolicious::Plugin::Config> inherits all methods from L<Mojolicious::Plugin> 
 
 Loads configuration file and passes the content to L</"parse">.
 
-  sub load {
-    my ($self, $file, $conf, $app) = @_;
+  sub load ($self, $file, $conf, $app) {
     ...
     return $self->parse($content, $file, $conf, $app);
   }
@@ -158,8 +157,7 @@ Loads configuration file and passes the content to L</"parse">.
 
 Parse configuration file.
 
-  sub parse {
-    my ($self, $content, $file, $conf, $app) = @_;
+  sub parse ($self, $content, $file, $conf, $app) {
     ...
     return $hash;
   }

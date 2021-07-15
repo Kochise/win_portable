@@ -145,7 +145,7 @@ mech-dump - Dumps information about a web page
 
 =head1 VERSION
 
-version 2.00
+version 2.03
 
 =head1 SYNOPSIS
 

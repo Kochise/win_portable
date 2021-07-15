@@ -7,7 +7,7 @@ use Mojo::Loader qw(data_section);
 use Mojo::Server;
 use Mojo::Template;
 
-has app         => sub { $_[0]{app_ref} = Mojo::Server->new->build_app('Mojo::HelloWorld') }, weak => 1;
+has app => sub { $_[0]{app_ref} = Mojo::Server->new->build_app('Mojo::HelloWorld') }, weak => 1;
 has description => 'No description';
 has 'quiet';
 has template => sub { {vars => 1} };
@@ -34,7 +34,7 @@ sub extract_usage { Mojo::Util::extract_usage((caller)[1]) }
 
 sub help { print shift->usage }
 
-sub rel_file { path->child(split('/', pop)) }
+sub rel_file { path->child(split(/\//, pop)) }
 
 sub render_data {
   my ($self, $name) = (shift, shift);
@@ -83,16 +83,15 @@ Mojolicious::Command - Command base class
 
   # Lowercase command name
   package Mojolicious::Command::mycommand;
-  use Mojo::Base 'Mojolicious::Command';
+  use Mojo::Base 'Mojolicious::Command', -signatures;
 
   # Short description
   has description => 'My first Mojo command';
 
   # Usage message from SYNOPSIS
-  has usage => sub { shift->extract_usage };
+  has usage => sub ($self) { $self->extract_usage };
 
-  sub run {
-    my ($self, @args) = @_;
+  sub run ($self, @args) {
 
     # Magic here! :)
   }

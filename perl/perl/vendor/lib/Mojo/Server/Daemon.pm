@@ -16,14 +16,14 @@ has [qw(backlog max_clients silent)];
 has inactivity_timeout => sub { $ENV{MOJO_INACTIVITY_TIMEOUT} // 30 };
 has ioloop             => sub { Mojo::IOLoop->singleton };
 has keep_alive_timeout => sub { $ENV{MOJO_KEEP_ALIVE_TIMEOUT} // 5 };
-has listen             => sub { [split ',', $ENV{MOJO_LISTEN} || 'http://*:3000'] };
+has listen             => sub { [split /,/, $ENV{MOJO_LISTEN} || 'http://*:3000'] };
 has max_requests       => 100;
 
 sub DESTROY {
   return if Mojo::Util::_global_destruction();
   my $self = shift;
   my $loop = $self->ioloop;
-  $loop->remove($_) for keys %{$self->{connections} || {}}, @{$self->acceptors};
+  $loop->remove($_) for keys %{$self->{connections} // {}}, @{$self->acceptors};
 }
 
 sub ports { [map { $_[0]->ioloop->acceptor($_)->port } @{$_[0]->acceptors}] }
@@ -194,8 +194,8 @@ sub _listen {
       warn "-- Accept $id (@{[$stream->handle->peerhost]})\n" if DEBUG;
       $stream->timeout($self->inactivity_timeout);
 
-      $stream->on(close => sub { $self && $self->_close($id) });
-      $stream->on(error => sub { $self && $self->app->log->error(pop) && $self->_close($id) });
+      $stream->on(close   => sub { $self && $self->_close($id) });
+      $stream->on(error   => sub { $self && $self->app->log->error(pop) && $self->_close($id) });
       $stream->on(read    => sub { $self->_read($id => pop) });
       $stream->on(timeout => sub { $self->_debug($id, 'Inactivity timeout') });
     }
@@ -254,8 +254,7 @@ Mojo::Server::Daemon - Non-blocking I/O HTTP and WebSocket server
   use Mojo::Server::Daemon;
 
   my $daemon = Mojo::Server::Daemon->new(listen => ['http://*:8080']);
-  $daemon->unsubscribe('request')->on(request => sub {
-    my ($daemon, $tx) = @_;
+  $daemon->unsubscribe('request')->on(request => sub ($daemon, $tx) {
 
     # Request
     my $method = $tx->req->method;

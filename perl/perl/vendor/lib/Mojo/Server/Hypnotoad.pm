@@ -17,7 +17,7 @@ sub configure {
 
   # Hypnotoad settings
   my $prefork = $self->prefork;
-  my $c       = $prefork->app->config($name) || {};
+  my $c       = $prefork->app->config($name) // {};
   $self->upgrade_timeout($c->{upgrade_timeout}) if $c->{upgrade_timeout};
 
   # Pre-fork settings
@@ -25,8 +25,8 @@ sub configure {
   $prefork->max_clients($c->{clients})   if $c->{clients};
   $prefork->max_requests($c->{requests}) if $c->{requests};
   defined $c->{$_} and $prefork->$_($c->{$_})
-    for qw(accepts backlog graceful_timeout heartbeat_interval),
-    qw(heartbeat_timeout inactivity_timeout keep_alive_timeout listen pid_file), qw(spare workers);
+    for qw(accepts backlog graceful_timeout heartbeat_interval heartbeat_timeout inactivity_timeout keep_alive_timeout),
+    qw(listen pid_file spare workers);
 }
 
 sub run {

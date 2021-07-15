@@ -2,7 +2,7 @@ package Alien::Build;
 
 use strict;
 use warnings;
-use 5.008001;
+use 5.008004;
 use Path::Tiny ();
 use Carp ();
 use File::chdir;
@@ -13,7 +13,7 @@ use Config ();
 use Alien::Build::Log;
 
 # ABSTRACT: Build external dependencies for use in CPAN
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 sub _path { goto \&Path::Tiny::path }
@@ -30,6 +30,7 @@ sub new
     runtime_prop => {
       alien_build_version => $Alien::Build::VERSION || 'dev',
     },
+    plugin_instance_prop => {},
     bin_dir => [],
     pkg_config_path => [],
     aclocal_path => [],
@@ -132,7 +133,7 @@ sub load
   unless(defined $self->meta->prop->{network})
   {
     $self->meta->prop->{network} = 1;
-    ## https://github.com/Perl5-Alien/Alien-Build/issues/23#issuecomment-341114414
+    ## https://github.com/PerlAlien/Alien-Build/issues/23#issuecomment-341114414
     #$self->meta->prop->{network} = 0 if $ENV{NO_NETWORK_TESTING};
     $self->meta->prop->{network} = 0 if (defined $ENV{ALIEN_INSTALL_NETWORK}) && ! $ENV{ALIEN_INSTALL_NETWORK};
   }
@@ -165,8 +166,9 @@ sub resume
   my(undef, $alienfile, $root) = @_;
   my $h = JSON::PP::decode_json(_path("$root/state.json")->slurp);
   my $self = Alien::Build->load("$alienfile", @{ $h->{args} });
-  $self->{install_prop} = $h->{install};
-  $self->{runtime_prop} = $h->{runtime};
+  $self->{install_prop}         = $h->{install};
+  $self->{plugin_instance_prop} = $h->{plugin_instance};
+  $self->{runtime_prop}         = $h->{runtime};
   $self;
 }
 
@@ -181,6 +183,14 @@ sub meta_prop
 sub install_prop
 {
   shift->{install_prop};
+}
+
+
+sub plugin_instance_prop
+{
+  my($self, $plugin) = @_;
+  my $instance_id = $plugin->instance_id;
+  $self->{plugin_instance_prop}->{$instance_id} ||= {};
 }
 
 
@@ -220,9 +230,10 @@ sub checkpoint
   my $root = $self->root;
   _path("$root/state.json")->spew(
     JSON::PP->new->pretty->canonical(1)->ascii->encode({
-      install => $self->install_prop,
-      runtime => $self->runtime_prop,
-      args    => $self->{args},
+      install         => $self->install_prop,
+      runtime         => $self->runtime_prop,
+      plugin_instance => $self->{plugin_instance_prop},
+      args            => $self->{args},
     })
   );
   $self;
@@ -428,7 +439,23 @@ sub probe
             $CWD = $self->root;
           },
           ok       => 'system',
-          continue => sub { $_[0] ne 'system' },
+          continue => sub {
+            if($_[0] eq 'system')
+            {
+              foreach my $name (qw( probe_class probe_instance_id ))
+              {
+                if(exists $self->hook_prop->{$name} && defined $self->hook_prop->{$name})
+                {
+                  $self->install_prop->{"system_$name"} = $self->hook_prop->{$name};
+                }
+              }
+              return undef;
+            }
+            else
+            {
+              return 1;
+            }
+          },
         },
         'probe',
       );
@@ -1165,7 +1192,7 @@ Alien::Build - Build external dependencies for use in CPAN
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -1505,7 +1532,33 @@ absolute form of C<./_alien> by default.
 The stage directory where files will be copied.  This is usually the
 root of the blib share directory.
 
+=item system_probe_class
+
+After the probe step this property may contain the plugin class that
+performed the system probe.  It shouldn't be filled in directly by
+the plugin (instead if should use the hook property C<probe_class>,
+see below).  This is optional, and not all probe plugins will provide
+this information.
+
+=item system_probe_instance_id
+
+After the probe step this property may contain the plugin instance id that
+performed the system probe.  It shouldn't be filled in directly by
+the plugin (instead if should use the hook property C<probe_instance_id>,
+see below).  This is optional, and not all probe plugins will provide
+this information.
+
 =back
+
+=head2 plugin_instance_prop
+
+ my $href = $build->plugin_instance_prop($plugin);
+
+This returns the private plugin instance properties for a given plugin.
+This method should usually only be called internally by plugins themselves
+to keep track of internal state.  Because the content can be used arbitrarily
+by the owning plugin because it is private to the plugin, and thus is not
+part of the L<Alien::Build> spec.
 
 =head2 runtime_prop
 
@@ -1639,6 +1692,20 @@ The name of the currently running hook.
 Probe and PkgConfig plugins I<may> set this property indicating the
 version of the alienized package.  Not all plugins and configurations
 may be able to provide this.
+
+=item probe_class (probe)
+
+Probe and PkgConfig plugins I<may> set this property indicating the
+plugin class that made the probe.  If the probe results in a system
+install this will be propagated to C<system_probe_class> for later
+use.
+
+=item probe_instance_id (probe)
+
+Probe and PkgConfig plugins I<may> set this property indicating the
+plugin instance id that made the probe.  If the probe results in a
+system install this will be propagated to C<system_probe_instance_id>
+for later use.
 
 =back
 
@@ -1963,7 +2030,7 @@ CPAN module.
 
 =item ALIEN_BUILD_LOG
 
-The default log class used.  See L<Alien::Build::Log> and L<Alien:Build::Log::Default>.
+The default log class used.  See L<Alien::Build::Log> and L<Alien::Build::Log::Default>.
 
 =item ALIEN_BUILD_RC
 
@@ -2013,7 +2080,7 @@ project GitHub Issue tracker:
 
 =over 4
 
-=item L<https://github.com/Perl5-Alien/Alien-Build/issues>
+=item L<https://github.com/PerlAlien/Alien-Build/issues>
 
 =back
 
@@ -2022,7 +2089,7 @@ pull-request on the project GitHub:
 
 =over 4
 
-=item L<https://github.com/Perl5-Alien/Alien-Build/pulls>
+=item L<https://github.com/PerlAlien/Alien-Build/pulls>
 
 =back
 
@@ -2059,7 +2126,7 @@ the same license as the rest of the Alien::Build and related tools distributed a
 C<Alien-Build>.  Joel Berger thanked a number of people who helped in in the development
 of L<Alien::Base>, in the documentation for that module.
 
-I would also like to acknowledge the other members of the Perl5-Alien github
+I would also like to acknowledge the other members of the PerlAlien github
 organization, Zakariyya Mughal (sivoais, ZMUGHAL) and mohawk (ETJ).  Also important
 in the early development of L<Alien::Build> were the early adopters Chase Whitener
 (genio, CAPOEIRAB, author of L<Alien::libuv>), William N. Braswell, Jr (willthechill,
@@ -2126,6 +2193,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 

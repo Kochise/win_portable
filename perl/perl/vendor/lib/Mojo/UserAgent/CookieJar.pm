@@ -25,7 +25,7 @@ sub add {
     next unless my $domain = lc($cookie->domain // '');
     next unless my $path   = $cookie->path;
     next unless length(my $name = $cookie->name // '');
-    my $jar = $self->{jar}{$domain} ||= [];
+    my $jar = $self->{jar}{$domain} //= [];
     @$jar = (grep({ _compare($_, $path, $name, $domain) } @$jar), $cookie);
   }
 
@@ -139,7 +139,7 @@ Mojo::UserAgent::CookieJar - Cookie jar for HTTP user agents
 =head1 DESCRIPTION
 
 L<Mojo::UserAgent::CookieJar> is a minimalistic and relaxed cookie jar used by L<Mojo::UserAgent>, based on L<RFC
-6265|http://tools.ietf.org/html/rfc6265>.
+6265|https://tools.ietf.org/html/rfc6265>.
 
 =head1 ATTRIBUTES
 
@@ -156,8 +156,7 @@ A callback used to decide if a cookie should be ignored by L</"collect">.
   $jar->ignore(sub { 1 });
 
   # Ignore cookies for domains "com", "net" and "org"
-  $jar->ignore(sub {
-    my $cookie = shift;
+  $jar->ignore(sub ($cookie) {
     return undef unless my $domain = $cookie->domain;
     return $domain eq 'com' || $domain eq 'net' || $domain eq 'org';
   });

@@ -3,10 +3,11 @@ package DateTime::Helpers;
 use strict;
 use warnings;
 
-our $VERSION = '1.52';
+our $VERSION = '1.54';
 
 use Scalar::Util ();
 
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub can {
     my $object = shift;
     my $method = shift;

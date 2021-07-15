@@ -8,7 +8,7 @@ use Scalar::Util qw(looks_like_number);
 
 has [qw(auto_decompress auto_relax relaxed skip_body)];
 has headers           => sub { Mojo::Headers->new };
-has max_buffer_size   => sub { $ENV{MOJO_MAX_BUFFER_SIZE} || 262144 };
+has max_buffer_size   => sub { $ENV{MOJO_MAX_BUFFER_SIZE}   || 262144 };
 has max_leftover_size => sub { $ENV{MOJO_MAX_LEFTOVER_SIZE} || 262144 };
 
 my $BOUNDARY_RE = qr!multipart.*boundary\s*=\s*(?:"([^"]+)"|([\w'(),.:?\-+/]+))!i;
@@ -139,8 +139,8 @@ sub write {
 
   $self->{dynamic} = 1;
   $self->{body_buffer} .= $chunk if defined $chunk;
-  $self->once(drain => $cb) if $cb;
-  $self->{eof} = 1 if defined $chunk && !length $chunk;
+  $self->once(drain => $cb)      if $cb;
+  $self->{eof} = 1               if defined $chunk && !length $chunk;
 
   return $self;
 }
@@ -152,8 +152,8 @@ sub write_chunk {
   @{$self}{qw(chunked dynamic)} = (1, 1);
 
   $self->{body_buffer} .= $self->_build_chunk($chunk) if defined $chunk;
-  $self->once(drain => $cb) if $cb;
-  $self->{eof} = 1 if defined $chunk && !length $chunk;
+  $self->once(drain => $cb)                           if $cb;
+  $self->{eof} = 1                                    if defined $chunk && !length $chunk;
 
   return $self;
 }
@@ -282,7 +282,7 @@ Mojo::Content - HTTP content base class
 =head1 DESCRIPTION
 
 L<Mojo::Content> is an abstract base class for HTTP content containers, based on L<RFC
-7230|http://tools.ietf.org/html/rfc7230> and L<RFC 7231|http://tools.ietf.org/html/rfc7231>, like
+7230|https://tools.ietf.org/html/rfc7230> and L<RFC 7231|https://tools.ietf.org/html/rfc7231>, like
 L<Mojo::Content::MultiPart> and L<Mojo::Content::Single>.
 
 =head1 EVENTS
@@ -291,43 +291,31 @@ L<Mojo::Content> inherits all events from L<Mojo::EventEmitter> and can emit the
 
 =head2 body
 
-  $content->on(body => sub {
-    my $content = shift;
-    ...
-  });
+  $content->on(body => sub ($content) {...});
 
 Emitted once all headers have been parsed and the body starts.
 
-  $content->on(body => sub {
-    my $content = shift;
+  $content->on(body => sub ($content) {
     $content->auto_upgrade(0) if $content->headers->header('X-No-MultiPart');
   });
 
 =head2 drain
 
-  $content->on(drain => sub {
-    my ($content, $offset) = @_;
-    ...
-  });
+  $content->on(drain => sub ($content, $offset) {...});
 
 Emitted once all data has been written.
 
-  $content->on(drain => sub {
-    my $content = shift;
+  $content->on(drain => sub ($content) {
     $content->write_chunk(time);
   });
 
 =head2 read
 
-  $content->on(read => sub {
-    my ($content, $bytes) = @_;
-    ...
-  });
+  $content->on(read => sub ($content, $bytes) {...});
 
 Emitted when a new chunk of content arrives.
 
-  $content->on(read => sub {
-    my ($content, $bytes) = @_;
+  $content->on(read => sub ($content, $bytes) {
     say "Streaming: $bytes";
   });
 
@@ -529,10 +517,8 @@ Calling this method without a chunk of data will finalize the L</"headers"> and 
 later. You can write an empty chunk of data at any time to end the stream.
 
   # Make sure previous chunk of data has been written before continuing
-  $content->write('He' => sub {
-    my $content = shift;
-    $content->write('llo!' => sub {
-      my $content = shift;
+  $content->write('He' => sub ($content) {
+    $content->write('llo!' => sub ($content) {
       $content->write('');
     });
   });
@@ -549,10 +535,8 @@ all data has been written. Calling this method without a chunk of data will fina
 dynamic content to be written later. You can write an empty chunk of data at any time to end the stream.
 
   # Make sure previous chunk of data has been written before continuing
-  $content->write_chunk('He' => sub {
-    my $content = shift;
-    $content->write_chunk('llo!' => sub {
-      my $content = shift;
+  $content->write_chunk('He' => sub ($content) {
+    $content->write_chunk('llo!' => sub ($content) {
       $content->write_chunk('');
     });
   });

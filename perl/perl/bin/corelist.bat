@@ -24,8 +24,11 @@ if %errorlevel% == 9009 echo You do not have Perl in your PATH.
 if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
 goto endofperl
 @rem ';
-#!/usr/bin/perl
+#!perl
 #line 29
+    eval 'exec C:\strawberry\perl\bin\perl.exe -S $0 ${1+"$@"}'
+	if $running_under_some_shell;
+#!/usr/bin/perl
 
 =head1 NAME
 
@@ -251,7 +254,15 @@ if ($Opts{diff}) {
     my ($old_ver, $new_ver) = @ARGV;
 
     my $old = numify_version($old_ver);
+    if ( !Module::CoreList->find_version($old) ) {
+        print "\nModule::CoreList has no info on perl $old_ver\n\n";
+        exit 1;
+    }
     my $new = numify_version($new_ver);
+    if ( !Module::CoreList->find_version($new) ) {
+        print "\nModule::CoreList has no info on perl $new_ver\n\n";
+        exit 1;
+    }
 
     my %diff = Module::CoreList::changes_between($old, $new);
 

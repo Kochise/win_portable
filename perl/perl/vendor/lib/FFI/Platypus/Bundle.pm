@@ -2,10 +2,11 @@ package FFI::Platypus::Bundle;
 
 use strict;
 use warnings;
+use 5.008004;
 use Carp ();
 
 # ABSTRACT: Bundle foreign code with your Perl module
-our $VERSION = '1.31'; # VERSION
+our $VERSION = '1.34'; # VERSION
 
 
 package FFI::Platypus;
@@ -79,7 +80,7 @@ sub _bundle
     my($output, $error) = Capture::Tiny::capture_merged(sub {
       $lib = eval {
         my $dist_name = $package;
-        $dist_name =~ s/::/-/;
+        $dist_name =~ s/::/-/g;
         my $fbmm = FFI::Build::MM->new( save => 0 );
         $fbmm->mm_args( DISTNAME => $dist_name );
         my $build = $fbmm->load_build('ffi', undef, 'ffi/_build');
@@ -149,7 +150,7 @@ FFI::Platypus::Bundle - Bundle foreign code with your Perl module
 
 =head1 VERSION
 
-version 1.31
+version 1.34
 
 =head1 SYNOPSIS
 

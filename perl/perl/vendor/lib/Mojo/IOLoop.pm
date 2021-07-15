@@ -94,10 +94,17 @@ sub remove {
 }
 
 sub reset {
-  my $self = _instance(shift)->emit('reset');
+  my ($self, $options) = (_instance(shift), shift // {});
+
+  $self->emit('reset')->stop;
+  if ($options->{freeze}) {
+    state @frozen;
+    push @frozen, {%$self};
+    delete $self->{reactor};
+  }
+  else { $self->reactor->reset }
+
   delete @$self{qw(accepting acceptors events in out stop)};
-  $self->reactor->reset;
-  $self->stop;
 }
 
 sub server {
@@ -143,7 +150,7 @@ sub stop_gracefully {
 sub stream {
   my ($self, $stream) = (_instance(shift), @_);
   return $self->_stream($stream => $self->_id) if ref $stream;
-  my $c = $self->{in}{$stream} || $self->{out}{$stream} || {};
+  my $c = $self->{in}{$stream} || $self->{out}{$stream} // {};
   return $c->{stream};
 }
 
@@ -161,7 +168,7 @@ sub _id {
   return $id;
 }
 
-sub _in { scalar keys %{shift->{in} || {}} }
+sub _in { scalar keys %{shift->{in} // {}} }
 
 sub _instance { ref $_[0] ? $_[0] : $_[0]->singleton }
 
@@ -170,18 +177,18 @@ sub _limit { $_[0]{stop} ? 1 : $_[0]->_in >= $_[0]->max_connections }
 sub _maybe_accepting {
   my $self = shift;
   return if $self->{accepting} || $self->_limit;
-  $_->start for values %{$self->{acceptors} || {}};
+  $_->start for values %{$self->{acceptors} // {}};
   $self->{accepting} = 1;
 }
 
 sub _not_accepting {
   my $self = shift;
   return $self unless delete $self->{accepting};
-  $_->stop for values %{$self->{acceptors} || {}};
+  $_->stop for values %{$self->{acceptors} // {}};
   return $self;
 }
 
-sub _out { scalar keys %{shift->{out} || {}} }
+sub _out { scalar keys %{shift->{out} // {}} }
 
 sub _remove {
   my ($self, $id) = @_;
@@ -232,12 +239,8 @@ Mojo::IOLoop - Minimalistic event loop
   use Mojo::IOLoop;
 
   # Listen on port 3000
-  Mojo::IOLoop->server({port => 3000} => sub {
-    my ($loop, $stream) = @_;
-
-    $stream->on(read => sub {
-      my ($stream, $bytes) = @_;
-
+  Mojo::IOLoop->server({port => 3000} => sub ($loop, $stream) {
+    $stream->on(read => sub ($stream, $bytes) {
       # Process input chunk
       say $bytes;
 
@@ -247,12 +250,8 @@ Mojo::IOLoop - Minimalistic event loop
   });
 
   # Connect to port 3000
-  my $id = Mojo::IOLoop->client({port => 3000} => sub {
-    my ($loop, $err, $stream) = @_;
-
-    $stream->on(read => sub {
-      my ($stream, $bytes) = @_;
-
+  my $id = Mojo::IOLoop->client({port => 3000} => sub ($loop, $err, $stream) {
+    $stream->on(read => sub ($stream, $bytes) {
       # Process input
       say "Input: $bytes";
     });
@@ -262,10 +261,7 @@ Mojo::IOLoop - Minimalistic event loop
   });
 
   # Add a timer
-  Mojo::IOLoop->timer(5 => sub {
-    my $loop = shift;
-    $loop->remove($id);
-  });
+  Mojo::IOLoop->timer(5 => sub ($loop) { $loop->remove($id) });
 
   # Start event loop if necessary
   Mojo::IOLoop->start unless Mojo::IOLoop->is_running;
@@ -302,20 +298,14 @@ L<Mojo::IOLoop> inherits all events from L<Mojo::EventEmitter> and can emit the 
 
 =head2 finish
 
-  $loop->on(finish => sub {
-    my $loop = shift;
-    ...
-  });
+  $loop->on(finish => sub ($loop) {...});
 
 Emitted when the event loop wants to shut down gracefully and is just waiting for all existing connections to be
 closed.
 
 =head2 reset
 
-  $loop->on(reset => sub {
-    my $loop = shift;
-    ...
-  });
+  $loop->on(reset => sub ($loop) {...});
 
 Emitted when the event loop is reset, this usually happens after the process is forked to clean up resources that
 cannot be shared.
@@ -351,8 +341,7 @@ Low-level event reactor, usually a L<Mojo::Reactor::Poll> or L<Mojo::Reactor::EV
 the event L<Mojo::Reactor/"error">.
 
   # Watch if handle becomes readable or writable
-  Mojo::IOLoop->singleton->reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
+  Mojo::IOLoop->singleton->reactor->io($handle => sub ($reactor, $writable) {
     say $writable ? 'Handle is writable' : 'Handle is readable';
   });
 
@@ -376,8 +365,7 @@ Get L<Mojo::IOLoop::Server> object for id or turn object into an acceptor.
 
 =head2 client
 
-  my $id
-    = Mojo::IOLoop->client(address => '127.0.0.1', port => 3000, sub {...});
+  my $id = Mojo::IOLoop->client(address => '127.0.0.1', port => 3000, sub {...});
   my $id = $loop->client(address => '127.0.0.1', port => 3000, sub {...});
   my $id = $loop->client({address => '127.0.0.1', port => 3000} => sub {...});
 
@@ -398,8 +386,7 @@ L<Mojo::IOLoop::Delay/"steps">.
   my $ua = Mojo::UserAgent->new;
   sub get {
     my $promise = Mojo::IOLoop->delay;
-    $ua->get(@_ => sub {
-      my ($ua, $tx) = @_;
+    $ua->get(@_ => sub ($ua, $tx) {
       my $err = $tx->error;
       if   (!$err || $err->{code}) { $promise->resolve($tx) }
       else                         { $promise->reject($err->{message}) }
@@ -408,7 +395,7 @@ L<Mojo::IOLoop::Delay/"steps">.
   }
   my $mojo = get('https://mojolicious.org');
   my $cpan = get('https://metacpan.org');
-  Mojo::Promise->race($mojo, $cpan)->then(sub { say shift->req->url })->wait;
+  Mojo::Promise->race($mojo, $cpan)->then(sub ($tx) { say $tx->req->url })->wait;
 
   # Synchronize multiple non-blocking operations
   my $delay = Mojo::IOLoop->delay(sub { say 'BOOM!' });
@@ -425,15 +412,13 @@ L<Mojo::IOLoop::Delay/"steps">.
   Mojo::IOLoop->delay(
 
     # First step (simple timer)
-    sub {
-      my $delay = shift;
+    sub ($delay) {
       Mojo::IOLoop->timer(2 => $delay->begin);
       say 'Second step in 2 seconds.';
     },
 
     # Second step (concurrent timers)
-    sub {
-      my $delay = shift;
+    sub ($delay) {
       Mojo::IOLoop->timer(1 => $delay->begin);
       Mojo::IOLoop->timer(3 => $delay->begin);
       say 'Third step in 3 seconds.';
@@ -452,17 +437,14 @@ Check if event loop is running.
 
 =head2 next_tick
 
-  my $undef = Mojo::IOLoop->next_tick(sub {...});
-  my $undef = $loop->next_tick(sub {...});
+  my $undef = Mojo::IOLoop->next_tick(sub ($loop) {...});
+  my $undef = $loop->next_tick(sub ($loop) {...});
 
 Execute callback as soon as possible, but not before returning or other callbacks that have been registered with this
 method, always returns C<undef>.
 
   # Perform operation on next reactor tick
-  Mojo::IOLoop->next_tick(sub {
-    my $loop = shift;
-    ...
-  });
+  Mojo::IOLoop->next_tick(sub ($loop) {...});
 
 =head2 one_tick
 
@@ -472,23 +454,20 @@ method, always returns C<undef>.
 Run event loop until an event occurs.
 
   # Don't block longer than 0.5 seconds
-  my $id = Mojo::IOLoop->timer(0.5 => sub {});
+  my $id = Mojo::IOLoop->timer(0.5 => sub ($loop) {});
   Mojo::IOLoop->one_tick;
   Mojo::IOLoop->remove($id);
 
 =head2 recurring
 
-  my $id = Mojo::IOLoop->recurring(3 => sub {...});
-  my $id = $loop->recurring(0 => sub {...});
-  my $id = $loop->recurring(0.25 => sub {...});
+  my $id = Mojo::IOLoop->recurring(3 => sub ($loop) {...});
+  my $id = $loop->recurring(0 => sub ($loop) {...});
+  my $id = $loop->recurring(0.25 => sub ($loop) {...});
 
 Create a new recurring timer, invoking the callback repeatedly after a given amount of time in seconds.
 
   # Perform operation every 5 seconds
-  Mojo::IOLoop->recurring(5 => sub {
-    my $loop = shift;
-    ...
-  });
+  Mojo::IOLoop->recurring(5 => sub ($loop) {...});
 
 =head2 remove
 
@@ -502,8 +481,23 @@ write buffers.
 
   Mojo::IOLoop->reset;
   $loop->reset;
+  $loop->reset({freeze => 1});
 
 Remove everything and stop the event loop.
+
+These options are currently available:
+
+=over 2
+
+=item freeze
+
+  freeze => 1
+
+Freeze the current state of the event loop in time before resetting it. This will prevent active connections from
+getting closed immediately, which can help with many unintended side effects when processes are forked. Note that this
+option is B<EXPERIMENTAL> and might change without warning!
+
+=back
 
 =head2 server
 
@@ -515,10 +509,7 @@ Accept TCP/IP and UNIX domain socket connections with L<Mojo::IOLoop::Server> an
 L<Mojo::IOLoop::Stream>, takes the same arguments as L<Mojo::IOLoop::Server/"listen">.
 
   # Listen on random port
-  my $id = Mojo::IOLoop->server({address => '127.0.0.1'} => sub {
-    my ($loop, $stream, $id) = @_;
-    ...
-  });
+  my $id = Mojo::IOLoop->server({address => '127.0.0.1'} => sub ($loop, $stream, $id) {...});
   my $port = Mojo::IOLoop->acceptor($id)->port;
 
 =head2 singleton
@@ -538,8 +529,7 @@ process.
 
   # Turn file descriptor into handle and watch if it becomes readable
   my $handle = IO::Handle->new_from_fd($fd, 'r');
-  Mojo::IOLoop->singleton->reactor->io($handle => sub {
-    my ($reactor, $writable) = @_;
+  Mojo::IOLoop->singleton->reactor->io($handle => sub ($reactor, $writable) {
     say $writable ? 'Handle is writable' : 'Handle is readable';
   })->watch($handle, 1, 0);
 
@@ -584,7 +574,7 @@ Get L<Mojo::IOLoop::Stream> object for id or turn object into a connection.
 
   my $subprocess = Mojo::IOLoop->subprocess;
   my $subprocess = $loop->subprocess;
-  my $subprocess = $loop->subprocess(sub {...}, sub {...});
+  my $subprocess = $loop->subprocess(sub ($subprocess) {...}, sub ($subprocess, $err, @results) {...});
 
 Build L<Mojo::IOLoop::Subprocess> object to perform computationally expensive operations in subprocesses, without
 blocking the event loop. Callbacks will be passed along to L<Mojo::IOLoop::Subprocess/"run">.
@@ -593,27 +583,22 @@ blocking the event loop. Callbacks will be passed along to L<Mojo::IOLoop::Subpr
   Mojo::IOLoop->subprocess->run_p(sub {
     sleep 5;
     return '♥', 'Mojolicious';
-  })->then(sub {
-    my @results = @_;
+  })->then(sub (@results) {
     say "I $results[0] $results[1]!";
-  })->catch(sub  {
-    my $err = shift;
+  })->catch(sub ($err) {
     say "Subprocess error: $err";
   });
 
 =head2 timer
 
-  my $id = Mojo::IOLoop->timer(3 => sub {...});
-  my $id = $loop->timer(0 => sub {...});
-  my $id = $loop->timer(0.25 => sub {...});
+  my $id = Mojo::IOLoop->timer(3 => sub ($loop) {...});
+  my $id = $loop->timer(0 => sub ($loop) {...});
+  my $id = $loop->timer(0.25 => sub ($loop) {...});
 
 Create a new timer, invoking the callback after a given amount of time in seconds.
 
   # Perform operation in 5 seconds
-  Mojo::IOLoop->timer(5 => sub {
-    my $loop = shift;
-    ...
-  });
+  Mojo::IOLoop->timer(5 => sub ($loop) {...});
 
 =head1 DEBUGGING
 

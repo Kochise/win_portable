@@ -2,11 +2,12 @@ package Alien::Build::Plugin::PkgConfig::CommandLine;
 
 use strict;
 use warnings;
+use 5.008004;
 use Alien::Build::Plugin;
 use Carp ();
 
 # ABSTRACT: Probe system and determine library or tool properties using the pkg-config command line interface
-our $VERSION = '2.26'; # VERSION
+our $VERSION = '2.38'; # VERSION
 
 
 has '+pkg_name' => sub {
@@ -71,6 +72,9 @@ sub init
 {
   my($self, $meta) = @_;
 
+  my @probe;
+  my @gather;
+
   my $pkgconf = $self->bin_name;
 
   unless(defined $meta->prop->{env}->{PKG_CONFIG})
@@ -80,7 +84,7 @@ sub init
 
   my($pkg_name, @alt_names) = (ref $self->pkg_name) ? (@{ $self->pkg_name }) : ($self->pkg_name);
 
-  my @probe = map { [$pkgconf, '--exists', $_] } ($pkg_name, @alt_names);
+  push @probe, map { [$pkgconf, '--exists', $_] } ($pkg_name, @alt_names);
 
   if(defined $self->minimum_version)
   {
@@ -112,13 +116,20 @@ sub init
   unshift @probe, sub {
     my($build) = @_;
     $build->runtime_prop->{legacy}->{name} ||= $pkg_name;
+    $build->hook_prop->{probe_class} = __PACKAGE__;
+    $build->hook_prop->{probe_instance_id} = $self->instance_id;
   };
 
   $meta->register_hook(
     probe => \@probe
   );
 
-  my @gather = map { [ $pkgconf, '--exists', $_] } ($pkg_name, @alt_names);
+  push @gather, sub {
+    my($build) = @_;
+    die 'pkg-config command line probe does not match gather' if $build->hook_prop->{name} eq 'gather_system'
+    &&                                                        ($build->install_prop->{system_probe_instance_id} || '') ne $self->instance_id;
+  };
+  push @gather, map { [ $pkgconf, '--exists', $_] } ($pkg_name, @alt_names);
 
   foreach my $prop_name (qw( cflags libs version ))
   {
@@ -154,8 +165,12 @@ sub init
   if($meta->prop->{platform}->{system_type} eq 'windows-mingw')
   {
     @gather = map {
-      my($pkgconf, @rest) = @$_;
-      [$pkgconf, '--dont-define-prefix', @rest],
+      if(ref $_ eq 'ARRAY') {
+        my($pkgconf, @rest) = @$_;
+        [$pkgconf, '--dont-define-prefix', @rest],
+      } else {
+        $_
+      }
     } @gather;
   }
 
@@ -188,7 +203,7 @@ Alien::Build::Plugin::PkgConfig::CommandLine - Probe system and determine librar
 
 =head1 VERSION
 
-version 2.26
+version 2.38
 
 =head1 SYNOPSIS
 
@@ -298,6 +313,8 @@ Shoichi Kaji (SKAJI)
 Shawn Laffan (SLAFFAN)
 
 Paul Evans (leonerd, PEVANS)
+
+Håkon Hægland (hakonhagland, HAKONH)
 
 =head1 COPYRIGHT AND LICENSE
 
