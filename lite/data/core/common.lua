@@ -60,7 +60,7 @@ end
 
 local function fuzzy_match_items(items, needle)
   local res = {}
-  for i, item in ipairs(items) do
+  for _, item in ipairs(items) do
     local score = system.fuzzy_match(tostring(item), needle)
     if score then
       table.insert(res, { text = item, score = score })
@@ -84,15 +84,14 @@ end
 
 function common.path_suggest(text)
   local path, name = text:match("^(.-)([^/\\]*)$")
-  local ok, files = pcall(system.list_dir, path == "" and "." or path)
-  if not ok then return {} end
+  local files = system.list_dir(path == "" and "." or path) or {}
   local res = {}
   for _, file in ipairs(files) do
     file = path .. file
     local info = system.get_file_info(file)
     if info then
       if info.type == "dir" then
-        file = file .. _PATHSEP
+        file = file .. PATHSEP
       end
       if file:lower():find(text:lower(), nil, true) == 1 then
         table.insert(res, file)
@@ -103,6 +102,18 @@ function common.path_suggest(text)
 end
 
 
+function common.match_pattern(text, pattern, ...)
+  if type(pattern) == "string" then
+    return text:find(pattern, ...)
+  end
+  for _, p in ipairs(pattern) do
+    local s, e = common.match_pattern(text, p, ...)
+    if s then return s, e end
+  end
+  return false
+end
+
+
 function common.draw_text(font, color, text, align, x,y,w,h)
   local tw, th = font:get_width(text), font:get_height(text)
   if align == "center" then
@@ -110,7 +121,7 @@ function common.draw_text(font, color, text, align, x,y,w,h)
   elseif align == "right" then
     x = x + (w - tw)
   end
-  y = math.ceil(y + (h - th) / 2)
+  y = common.round(y + (h - th) / 2)
   return renderer.draw_text(font, text, x, y, color), y + th
 end
 

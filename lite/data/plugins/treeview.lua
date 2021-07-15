@@ -6,9 +6,7 @@ local keymap = require "core.keymap"
 local style = require "core.style"
 local View = require "core.view"
 
-
-local TreeView = View:extend()
-
+config.treeview_size = 200 * SCALE
 
 local function get_depth(filename)
   local n = 0
@@ -19,11 +17,13 @@ local function get_depth(filename)
 end
 
 
+local TreeView = View:extend()
+
 function TreeView:new()
   TreeView.super.new(self)
   self.scrollable = true
-  self.focusable = false
   self.visible = true
+  self.init_size = true
   self.cache = {}
 end
 
@@ -34,7 +34,7 @@ function TreeView:get_cached(item)
     t = {}
     t.filename = item.filename
     t.abs_filename = system.absolute_path(item.filename)
-    t.path, t.name = t.filename:match("^(.*)[\\/](.+)$")
+    t.name = t.filename:match("[^\\/]+$")
     t.depth = get_depth(t.filename)
     t.type = item.type
     self.cache[t.filename] = t
@@ -124,11 +124,14 @@ end
 
 
 function TreeView:update()
-  self.scroll.to.y = math.max(0, self.scroll.to.y)
-
   -- update width
   local dest = self.visible and config.treeview_size or 0
-  self:move_towards(self.size, "x", dest)
+  if self.init_size then
+    self.size.x = dest
+    self.init_size = false
+  else
+    self:move_towards(self.size, "x", dest)
+  end
 
   TreeView.super.update(self)
 end
@@ -137,10 +140,8 @@ end
 function TreeView:draw()
   self:draw_background(style.background2)
 
-  local h = self:get_item_height()
   local icon_width = style.icon_font:get_width("D")
   local spacing = style.font:get_width(" ") * 2
-  local root_depth = get_depth(core.project_dir) + 1
 
   local doc = core.active_view.doc
   local active_filename = doc and system.absolute_path(doc.filename or "")
@@ -160,9 +161,9 @@ function TreeView:draw()
     end
 
     -- icons
-    x = x + (item.depth - root_depth) * style.padding.x + style.padding.x
+    x = x + item.depth * style.padding.x + style.padding.x
     if item.type == "dir" then
-      local icon1 = item.expanded and "e" or "c"
+      local icon1 = item.expanded and "-" or "+"
       local icon2 = item.expanded and "D" or "d"
       common.draw_text(style.icon_font, color, icon1, nil, x, y, 0, h)
       x = x + style.padding.x
@@ -184,7 +185,6 @@ end
 -- init
 local view = TreeView()
 local node = core.root_view:get_active_node()
-view.size.x = config.treeview_size
 node:split("left", view, true)
 
 -- register commands and keymap

@@ -1,5 +1,4 @@
 local core = require "core"
-local config = require "core.config"
 local common = require "core.common"
 local style = require "core.style"
 local Doc = require "core.doc"
@@ -71,9 +70,12 @@ function CommandView:get_text()
 end
 
 
-function CommandView:set_text(text)
+function CommandView:set_text(text, select)
   self.doc:remove(1, 1, math.huge, math.huge)
   self.doc:text_input(text)
+  if select then
+    self.doc:set_selection(math.huge, math.huge, 1, 1)
+  end
 end
 
 
@@ -109,9 +111,8 @@ function CommandView:enter(text, submit, suggest, cancel)
     submit = submit or noop,
     suggest = suggest or noop,
     cancel = cancel or noop,
-    view = core.active_view
   }
-  core.active_view = self
+  core.set_active_view(self)
   self:update_suggestions()
   self.gutter_text_brightness = 100
   self.label = text .. ": "
@@ -120,7 +121,7 @@ end
 
 function CommandView:exit(submitted, inexplicit)
   if core.active_view == self then
-    core.active_view = self.state.view
+    core.set_active_view(core.last_active_view)
   end
   local cancel = self.state.cancel
   self.state = default_state
@@ -204,11 +205,12 @@ function CommandView:draw_line_highlight()
 end
 
 
-function CommandView:draw_gutter_text(idx, x, y)
+function CommandView:draw_line_gutter(idx, x, y)
   local yoffset = self:get_line_text_y_offset()
   local pos = self.position
   local color = common.lerp(style.text, style.accent, self.gutter_text_brightness / 100)
   core.push_clip_rect(pos.x, pos.y, self:get_gutter_width(), self.size.y)
+  x = x + style.padding.x
   renderer.draw_text(self:get_font(), self.label, x, y + yoffset, color)
   core.pop_clip_rect()
 end
@@ -217,9 +219,8 @@ end
 local function draw_suggestions_box(self)
   local lh = self:get_suggestion_line_height()
   local dh = style.divider_size
-  local offsety = self:get_line_text_y_offset()
   local x, _ = self:get_line_screen_position()
-  local h = self.suggestions_height
+  local h = math.ceil(self.suggestions_height)
   local rx, ry, rw, rh = self.position.x, self.position.y - h - dh, self.size.x, h
 
   -- draw suggestions background

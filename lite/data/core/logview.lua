@@ -1,6 +1,4 @@
 local core = require "core"
-local common = require "core.common"
-local config = require "core.config"
 local style = require "core.style"
 local View = require "core.view"
 
@@ -10,7 +8,7 @@ local LogView = View:extend()
 
 function LogView:new()
   LogView.super.new(self)
-  self.last_item = 0
+  self.last_item = core.log_items[#core.log_items]
   self.scrollable = true
   self.yoffset = 0
 end
@@ -29,10 +27,21 @@ function LogView:update()
     self.yoffset = -(style.font:get_height() + style.padding.y)
   end
 
-  self.scroll.to.y = math.max(0, self.scroll.to.y)
   self:move_towards("yoffset", 0)
 
   LogView.super.update(self)
+end
+
+
+local function draw_text_multiline(font, text, x, y, color)
+  local th = font:get_height()
+  local resx, resy = x, y
+  for line in text:gmatch("[^\n]+") do
+    resy = y
+    resx = renderer.draw_text(style.font, line, x, y, color)
+    y = y + th
+  end
+  return resx, resy
 end
 
 
@@ -50,14 +59,12 @@ function LogView:draw()
     x = renderer.draw_text(style.font, time, x, y, style.dim)
     x = x + style.padding.x
     local subx = x
-    x = renderer.draw_text(style.font, item.text, x, y, style.text)
-    x = renderer.draw_text(style.font, " in " .. item.view, x, y, style.dim)
+    x, y = draw_text_multiline(style.font, item.text, x, y, style.text)
+    renderer.draw_text(style.font, " at " .. item.at, x, y, style.dim)
     y = y + th
     if item.info then
-      for line in item.info:gmatch("[^\n]+") do
-        renderer.draw_text(style.font, line, subx, y, style.dim)
-        y = y + th
-      end
+      subx, y = draw_text_multiline(style.font, item.info, subx, y, style.dim)
+      y = y + th
     end
     y = y + style.padding.y
   end

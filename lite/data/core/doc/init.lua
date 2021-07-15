@@ -1,4 +1,6 @@
 local Object = require "core.object"
+local Highlighter = require "core.doc.highlighter"
+local syntax = require "core.syntax"
 local config = require "core.config"
 local common = require "core.common"
 
@@ -19,7 +21,6 @@ local function splice(t, at, remove, insert)
   insert = insert or {}
   local offset = #insert - remove
   local old_len = #t
-  local new_len = old_len + offset
   if offset < 0 then
     for i = at - offset, old_len - offset do
       t[i + offset] = t[i]
@@ -49,6 +50,18 @@ function Doc:reset()
   self.undo_stack = { idx = 1 }
   self.redo_stack = { idx = 1 }
   self.clean_change_id = 1
+  self.highlighter = Highlighter(self)
+  self:reset_syntax()
+end
+
+
+function Doc:reset_syntax()
+  local header = self:get_text(1, 1, self:position_offset(1, 1, 128))
+  local syn = syntax.get(self.filename or "", header)
+  if self.syntax ~= syn then
+    self.syntax = syn
+    self.highlighter:reset()
+  end
 end
 
 
@@ -68,6 +81,7 @@ function Doc:load(filename)
     table.insert(self.lines, "\n")
   end
   fp:close()
+  self:reset_syntax()
 end
 
 
@@ -80,6 +94,7 @@ function Doc:save(filename)
   end
   fp:close()
   self.filename = filename or self.filename
+  self:reset_syntax()
   self:clean()
 end
 
@@ -211,11 +226,43 @@ function Doc:get_char(line, col)
 end
 
 
-local push_undo
+local function push_undo(undo_stack, time, type, ...)
+  undo_stack[undo_stack.idx] = { type = type, time = time, ... }
+  undo_stack[undo_stack.idx - config.max_undos] = nil
+  undo_stack.idx = undo_stack.idx + 1
+end
 
-local function insert(self, undo_stack, time, line, col, text)
-  line, col = self:sanitize_position(line, col)
 
+local function pop_undo(self, undo_stack, redo_stack)
+  -- pop command
+  local cmd = undo_stack[undo_stack.idx - 1]
+  if not cmd then return end
+  undo_stack.idx = undo_stack.idx - 1
+
+  -- handle command
+  if cmd.type == "insert" then
+    local line, col, text = table.unpack(cmd)
+    self:raw_insert(line, col, text, redo_stack, cmd.time)
+
+  elseif cmd.type == "remove" then
+    local line1, col1, line2, col2 = table.unpack(cmd)
+    self:raw_remove(line1, col1, line2, col2, redo_stack, cmd.time)
+
+  elseif cmd.type == "selection" then
+    self.selection.a.line, self.selection.a.col = cmd[1], cmd[2]
+    self.selection.b.line, self.selection.b.col = cmd[3], cmd[4]
+  end
+
+  -- if next undo command is within the merge timeout then treat as a single
+  -- command and continue to execute it
+  local next = undo_stack[undo_stack.idx - 1]
+  if next and math.abs(cmd.time - next.time) < config.undo_merge_timeout then
+    return pop_undo(self, undo_stack, redo_stack)
+  end
+end
+
+
+function Doc:raw_insert(line, col, text, undo_stack, time)
   -- split text into lines and merge with line at insertion point
   local lines = split_lines(text)
   local before = self.lines[line]:sub(1, col - 1)
@@ -231,20 +278,20 @@ local function insert(self, undo_stack, time, line, col, text)
 
   -- push undo
   local line2, col2 = self:position_offset(line, col, #text)
-  push_undo(self, undo_stack, time, "selection", self:get_selection())
-  push_undo(self, undo_stack, time, "remove", line, col, line2, col2)
+  push_undo(undo_stack, time, "selection", self:get_selection())
+  push_undo(undo_stack, time, "remove", line, col, line2, col2)
+
+  -- update highlighter and assure selection is in bounds
+  self.highlighter:invalidate(line)
+  self:sanitize_selection()
 end
 
 
-local function remove(self, undo_stack, time, line1, col1, line2, col2)
-  line1, col1 = self:sanitize_position(line1, col1)
-  line2, col2 = self:sanitize_position(line2, col2)
-  line1, col1, line2, col2 = sort_positions(line1, col1, line2, col2)
-
+function Doc:raw_remove(line1, col1, line2, col2, undo_stack, time)
   -- push undo
   local text = self:get_text(line1, col1, line2, col2)
-  push_undo(self, undo_stack, time, "selection", self:get_selection())
-  push_undo(self, undo_stack, time, "insert", line1, col1, text)
+  push_undo(undo_stack, time, "selection", self:get_selection())
+  push_undo(undo_stack, time, "insert", line1, col1, text)
 
   -- get line content before/after removed text
   local before = self.lines[line1]:sub(1, col1 - 1)
@@ -252,54 +299,26 @@ local function remove(self, undo_stack, time, line1, col1, line2, col2)
 
   -- splice line into line array
   splice(self.lines, line1, line2 - line1 + 1, { before .. after })
-end
 
-
-function Doc:insert(...)
-  insert(self, self.undo_stack, system.get_time(), ...)
+  -- update highlighter and assure selection is in bounds
+  self.highlighter:invalidate(line1)
   self:sanitize_selection()
+end
+
+
+function Doc:insert(line, col, text)
   self.redo_stack = { idx = 1 }
+  line, col = self:sanitize_position(line, col)
+  self:raw_insert(line, col, text, self.undo_stack, system.get_time())
 end
 
 
-function Doc:remove(...)
-  remove(self, self.undo_stack, system.get_time(), ...)
-  self:sanitize_selection()
+function Doc:remove(line1, col1, line2, col2)
   self.redo_stack = { idx = 1 }
-end
-
-
-function push_undo(self, undo_stack, time, type, ...)
-  undo_stack[undo_stack.idx] = { type = type, time = time, ... }
-  undo_stack[undo_stack.idx - config.max_undos] = nil
-  undo_stack.idx = undo_stack.idx + 1
-end
-
-
-local function pop_undo(self, undo_stack, redo_stack)
-  -- pop command
-  local cmd = undo_stack[undo_stack.idx - 1]
-  if not cmd then return end
-  undo_stack.idx = undo_stack.idx - 1
-
-  -- handle command
-  if cmd.type == "insert" then
-    insert(self, redo_stack, cmd.time, table.unpack(cmd))
-
-  elseif cmd.type == "remove" then
-    remove(self, redo_stack, cmd.time, table.unpack(cmd))
-
-  elseif cmd.type == "selection" then
-    self.selection.a.line, self.selection.a.col = cmd[1], cmd[2]
-    self.selection.b.line, self.selection.b.col = cmd[3], cmd[4]
-  end
-
-  -- if next undo command is within the merge timeout then treat as a single
-  -- command and continue to execute it
-  local next = undo_stack[undo_stack.idx - 1]
-  if next and math.abs(cmd.time - next.time) < config.undo_merge_timeout then
-    return pop_undo(self, undo_stack, redo_stack)
-  end
+  line1, col1 = self:sanitize_position(line1, col1)
+  line2, col2 = self:sanitize_position(line2, col2)
+  line1, col1, line2, col2 = sort_positions(line1, col1, line2, col2)
+  self:raw_remove(line1, col1, line2, col2, self.undo_stack, system.get_time())
 end
 
 

@@ -18,12 +18,12 @@ local function reload_doc(doc)
 
   local sel = { doc:get_selection() }
   doc:remove(1, 1, math.huge, math.huge)
-  doc:insert(1, 1, text:sub(1, -2))
+  doc:insert(1, 1, text:gsub("\r", ""):gsub("\n$", ""))
   doc:set_selection(table.unpack(sel))
 
   update_time(doc)
   doc:clean()
-  core.log_quiet("Auto-reloaded doc %q", doc.filename)
+  core.log_quiet("Auto-reloaded doc \"%s\"", doc.filename)
 end
 
 

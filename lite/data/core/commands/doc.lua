@@ -3,7 +3,6 @@ local command = require "core.command"
 local common = require "core.common"
 local config = require "core.config"
 local translate = require "core.doc.translate"
-local search = require "core.doc.search"
 local DocView = require "core.docview"
 
 
@@ -25,25 +24,29 @@ local function get_indent_string()
 end
 
 
-local function insert_at_start_of_selected_lines(text)
+local function insert_at_start_of_selected_lines(text, skip_empty)
   local line1, col1, line2, col2, swap = doc():get_selection(true)
   for line = line1, line2 do
-    doc():insert(line, 1, text)
+    local line_text = doc().lines[line]
+    if (not skip_empty or line_text:find("%S")) then
+      doc():insert(line, 1, text)
+    end
   end
   doc():set_selection(line1, col1 + #text, line2, col2 + #text, swap)
 end
 
 
-local function remove_from_start_of_selected_lines(text)
+local function remove_from_start_of_selected_lines(text, skip_empty)
   local line1, col1, line2, col2, swap = doc():get_selection(true)
   for line = line1, line2 do
-    if doc().lines[line]:sub(1, #text) == text then
+    local line_text = doc().lines[line]
+    if  line_text:sub(1, #text) == text
+    and (not skip_empty or line_text:find("%S"))
+    then
       doc():remove(line, 1, line, #text + 1)
-      if line == line1 then col1 = col1 - #text end
-      if line == line2 then col2 = col2 - #text end
     end
   end
-  doc():set_selection(line1, col1, line2, col2, swap)
+  doc():set_selection(line1, col1 - #text, line2, col2 - #text, swap)
 end
 
 
@@ -56,7 +59,7 @@ end
 
 local function save(filename)
   doc():save(filename)
-  core.log("Saved %q", doc().filename)
+  core.log("Saved \"%s\"", doc().filename)
 end
 
 
@@ -70,18 +73,22 @@ local commands = {
   end,
 
   ["doc:cut"] = function()
-    local text = doc():get_text(doc():get_selection())
-    system.set_clipboard(text)
-    doc():delete_to(0)
+    if doc():has_selection() then
+      local text = doc():get_text(doc():get_selection())
+      system.set_clipboard(text)
+      doc():delete_to(0)
+    end
   end,
 
   ["doc:copy"] = function()
-    local text = doc():get_text(doc():get_selection())
-    system.set_clipboard(text)
+    if doc():has_selection() then
+      local text = doc():get_text(doc():get_selection())
+      system.set_clipboard(text)
+    end
   end,
 
   ["doc:paste"] = function()
-    doc():text_input(system.get_clipboard())
+    doc():text_input(system.get_clipboard():gsub("\r", ""))
   end,
 
   ["doc:newline"] = function()
@@ -129,6 +136,11 @@ local commands = {
 
   ["doc:select-all"] = function()
     doc():set_selection(1, 1, math.huge, math.huge)
+  end,
+
+  ["doc:select-none"] = function()
+    local line, col = doc():get_selection()
+    doc():set_selection(line, col)
   end,
 
   ["doc:select-lines"] = function()
@@ -209,21 +221,21 @@ local commands = {
   end,
 
   ["doc:toggle-line-comments"] = function()
-    if not dv().syntax.comment then return end
-    local text = dv().syntax.comment .. " "
+    local comment = doc().syntax.comment
+    if not comment then return end
+    local comment_text = comment .. " "
     local line1, _, line2 = doc():get_selection(true)
     local uncomment = true
     for line = line1, line2 do
-      local str = doc().lines[line]:match("^[ \t]*(.*)$")
-      if str and str:sub(1, #text) ~= text then
+      local text = doc().lines[line]
+      if text:find("%S") and text:find(comment_text, 1, true) ~= 1 then
         uncomment = false
-        break
       end
     end
     if uncomment then
-      remove_from_start_of_selected_lines(text)
+      remove_from_start_of_selected_lines(comment_text, true)
     else
-      insert_at_start_of_selected_lines(text)
+      insert_at_start_of_selected_lines(comment_text, true)
     end
   end,
 
@@ -266,6 +278,10 @@ local commands = {
     end)
   end,
 
+  ["doc:toggle-line-ending"] = function()
+    doc().crlf = not doc().crlf
+  end,
+
   ["doc:save-as"] = function()
     if doc().filename then
       core.command_view:set_text(doc().filename)
@@ -283,8 +299,20 @@ local commands = {
     end
   end,
 
-  ["doc:toggle-line-ending"] = function()
-    doc().crlf = not doc().crlf
+  ["doc:rename"] = function()
+    local old_filename = doc().filename
+    if not old_filename then
+      core.error("Cannot rename unsaved doc")
+      return
+    end
+    core.command_view:set_text(old_filename)
+    core.command_view:enter("Rename", function(filename)
+      doc():save(filename)
+      core.log("Renamed \"%s\" to \"%s\"", old_filename, filename)
+      if filename ~= old_filename then
+        os.remove(old_filename)
+      end
+    end, common.path_suggest)
   end,
 }
 
@@ -292,10 +320,10 @@ local commands = {
 local translations = {
   ["previous-char"] = translate.previous_char,
   ["next-char"] = translate.next_char,
-  ["previous-word-boundary"] = translate.previous_word_boundary,
-  ["next-word-boundary"] = translate.next_word_boundary,
-  ["previous-start-of-block"] = translate.previous_start_of_block,
-  ["next-start-of-block"] = translate.next_start_of_block,
+  ["previous-word-start"] = translate.previous_word_start,
+  ["next-word-end"] = translate.next_word_end,
+  ["previous-block-start"] = translate.previous_block_start,
+  ["next-block-end"] = translate.next_block_end,
   ["start-of-doc"] = translate.start_of_doc,
   ["end-of-doc"] = translate.end_of_doc,
   ["start-of-line"] = translate.start_of_line,

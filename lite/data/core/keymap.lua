@@ -5,18 +5,16 @@ keymap.modkeys = {}
 keymap.map = {}
 keymap.reverse_map = {}
 
+local modkey_map = {
+  ["left ctrl"]   = "ctrl",
+  ["right ctrl"]  = "ctrl",
+  ["left shift"]  = "shift",
+  ["right shift"] = "shift",
+  ["left alt"]    = "alt",
+  ["right alt"]   = "altgr",
+}
 
-local modkeys = { "ctrl", "alt", "shift" }
-
-local function modkey(key)
-  for _, k in ipairs(modkeys) do
-    if key:find(k) then
-      return k
-    end
-  end
-  return false
-end
-
+local modkeys = { "ctrl", "alt", "altgr", "shift" }
 
 local function key_to_stroke(k)
   local stroke = ""
@@ -55,9 +53,13 @@ end
 
 
 function keymap.on_key_pressed(k)
-  local mk = modkey(k)
+  local mk = modkey_map[k]
   if mk then
     keymap.modkeys[mk] = true
+    -- work-around for windows where `altgr` is treated as `ctrl+alt`
+    if mk == "altgr" then
+      keymap.modkeys["ctrl"] = false
+    end
   else
     local stroke = key_to_stroke(k)
     local commands = keymap.map[stroke]
@@ -74,7 +76,7 @@ end
 
 
 function keymap.on_key_released(k)
-  local mk = modkey(k)
+  local mk = modkey_map[k]
   if mk then
     keymap.modkeys[mk] = false
   end
@@ -82,10 +84,11 @@ end
 
 
 keymap.add {
-  ["ctrl+shift+p"] = "core:do-command",
-  ["ctrl+p"] = "core:open-project-file",
+  ["ctrl+shift+p"] = "core:find-command",
+  ["ctrl+p"] = "core:find-file",
   ["ctrl+o"] = "core:open-file",
   ["ctrl+n"] = "core:new-doc",
+  ["alt+return"] = "core:toggle-fullscreen",
 
   ["alt+shift+j"] = "root:split-left",
   ["alt+shift+l"] = "root:split-right",
@@ -124,20 +127,24 @@ keymap.add {
   ["ctrl+x"] = "doc:cut",
   ["ctrl+c"] = "doc:copy",
   ["ctrl+v"] = "doc:paste",
-  ["escape"] = { "command:escape" },
+  ["escape"] = { "command:escape", "doc:select-none" },
   ["tab"] = { "command:complete", "doc:indent" },
   ["shift+tab"] = "doc:unindent",
   ["backspace"] = "doc:backspace",
   ["shift+backspace"] = "doc:backspace",
-  ["ctrl+backspace"] = "doc:delete-to-previous-word-boundary",
-  ["ctrl+shift+backspace"] = "doc:delete-to-previous-word-boundary",
+  ["ctrl+backspace"] = "doc:delete-to-previous-word-start",
+  ["ctrl+shift+backspace"] = "doc:delete-to-previous-word-start",
   ["delete"] = "doc:delete",
+  ["shift+delete"] = "doc:delete",
+  ["ctrl+delete"] = "doc:delete-to-next-word-end",
+  ["ctrl+shift+delete"] = "doc:delete-to-next-word-end",
   ["return"] = { "command:submit", "doc:newline" },
+  ["keypad enter"] = { "command:submit", "doc:newline" },
   ["ctrl+return"] = "doc:newline-below",
   ["ctrl+shift+return"] = "doc:newline-above",
   ["ctrl+j"] = "doc:join-lines",
   ["ctrl+a"] = "doc:select-all",
-  ["ctrl+d"] = "doc:select-word",
+  ["ctrl+d"] = { "find-replace:select-next", "doc:select-word" },
   ["ctrl+l"] = "doc:select-lines",
   ["ctrl+/"] = "doc:toggle-line-comments",
   ["ctrl+up"] = "doc:move-lines-up",
@@ -149,10 +156,10 @@ keymap.add {
   ["right"] = "doc:move-to-next-char",
   ["up"] = { "command:select-previous", "doc:move-to-previous-line" },
   ["down"] = { "command:select-next", "doc:move-to-next-line" },
-  ["ctrl+left"] = "doc:move-to-previous-word-boundary",
-  ["ctrl+right"] = "doc:move-to-next-word-boundary",
-  ["ctrl+["] = "doc:move-to-previous-start-of-block",
-  ["ctrl+]"] = "doc:move-to-next-start-of-block",
+  ["ctrl+left"] = "doc:move-to-previous-word-start",
+  ["ctrl+right"] = "doc:move-to-next-word-end",
+  ["ctrl+["] = "doc:move-to-previous-block-start",
+  ["ctrl+]"] = "doc:move-to-next-block-end",
   ["home"] = "doc:move-to-start-of-line",
   ["end"] = "doc:move-to-end-of-line",
   ["ctrl+home"] = "doc:move-to-start-of-doc",
@@ -164,10 +171,10 @@ keymap.add {
   ["shift+right"] = "doc:select-to-next-char",
   ["shift+up"] = "doc:select-to-previous-line",
   ["shift+down"] = "doc:select-to-next-line",
-  ["ctrl+shift+left"] = "doc:select-to-previous-word-boundary",
-  ["ctrl+shift+right"] = "doc:select-to-next-word-boundary",
-  ["ctrl+shift+["] = "doc:select-to-previous-start-of-block",
-  ["ctrl+shift+]"] = "doc:select-to-next-start-of-block",
+  ["ctrl+shift+left"] = "doc:select-to-previous-word-start",
+  ["ctrl+shift+right"] = "doc:select-to-next-word-end",
+  ["ctrl+shift+["] = "doc:select-to-previous-block-start",
+  ["ctrl+shift+]"] = "doc:select-to-next-block-end",
   ["shift+home"] = "doc:select-to-start-of-line",
   ["shift+end"] = "doc:select-to-end-of-line",
   ["ctrl+shift+home"] = "doc:select-to-start-of-doc",

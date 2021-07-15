@@ -9,22 +9,33 @@ local DocView = require "core.docview"
 
 local EmptyView = View:extend()
 
-function EmptyView:draw()
-  self:draw_background(style.background)
-  local pos = self.position
-  local x, y, w, h = pos.x, pos.y, self.size.x, self.size.y
-  local _, y = common.draw_text(style.big_font, style.dim, "empty", "center", x, y, w, h)
+local function draw_text(x, y, color)
+  local th = style.big_font:get_height()
+  local dh = th + style.padding.y * 2
+  x = renderer.draw_text(style.big_font, "lite", x, y + (dh - th) / 2, color)
+  x = x + style.padding.x
+  renderer.draw_rect(x, y, math.ceil(1 * SCALE), dh, color)
   local lines = {
-    { fmt = "%s to run a command", cmd = "core:do-command" },
-    { fmt = "%s to open a file from the project", cmd = "core:open-project-file" },
+    { fmt = "%s to run a command", cmd = "core:find-command" },
+    { fmt = "%s to open a file from the project", cmd = "core:find-file" },
   }
-  local th = style.font:get_height()
+  th = style.font:get_height()
+  y = y + (dh - th * 2 - style.padding.y) / 2
+  local w = 0
   for _, line in ipairs(lines) do
     local text = string.format(line.fmt, keymap.get_binding(line.cmd))
-    y = y + style.padding.y
-    common.draw_text(style.font, style.dim, text, "center", x, y, w, th)
-    y = y + th
+    w = math.max(w, renderer.draw_text(style.font, text, x + style.padding.x, y, color))
+    y = y + th + style.padding.y
   end
+  return w, dh
+end
+
+function EmptyView:draw()
+  self:draw_background(style.background)
+  local w, h = draw_text(0, 0, { 0, 0, 0, 0 })
+  local x = self.position.x + math.max(style.padding.x, (self.size.x - w) / 2)
+  local y = self.position.y + (self.size.y - h) / 2
+  draw_text(x, y, style.dim)
 end
 
 
@@ -77,17 +88,18 @@ end
 local type_map = { up="vsplit", down="vsplit", left="hsplit", right="hsplit" }
 
 function Node:split(dir, view, locked)
-  assert(self.type == "leaf", "tried to split non-leaf node")
-  local type = assert(type_map[dir], "invalid direction")
+  assert(self.type == "leaf", "Tried to split non-leaf node")
+  local type = assert(type_map[dir], "Invalid direction")
+  local last_active = core.active_view
   local child = Node()
   child:consume(self)
   self:consume(Node(type))
   self.a = child
   self.b = Node()
-  self.b.locked = locked
   if view then self.b:add_view(view) end
-  if not self.b.active_view.focusable then
-    self.a:set_active_view(self.a.active_view)
+  if locked then
+    self.b.locked = locked
+    core.set_active_view(last_active)
   end
   if dir == "up" or dir == "left" then
     self.a, self.b = self.b, self.a
@@ -104,22 +116,29 @@ function Node:close_active_view(root)
       self:set_active_view(self.views[idx] or self.views[#self.views])
     else
       local parent = self:get_parent_node(root)
-      local other = parent[parent.a == self and "b" or "a"]
+      local is_a = (parent.a == self)
+      local other = parent[is_a and "b" or "a"]
       if other:get_locked_size() then
         self.views = {}
         self:add_view(EmptyView())
       else
         parent:consume(other)
-        parent:set_active_view(parent.active_view)
+        local p = parent
+        while p.type ~= "leaf" do
+          p = p[is_a and "a" or "b"]
+        end
+        p:set_active_view(p.active_view)
       end
     end
+    core.last_active_view = nil
   end
   self.active_view:try_close(do_close)
 end
 
 
 function Node:add_view(view)
-  assert(self.type == "leaf", "tried to add view to non-leaf node")
+  assert(self.type == "leaf", "Tried to add view to non-leaf node")
+  assert(not self.locked, "Tried to add view to locked node")
   if self.views[1] and self.views[1]:is(EmptyView) then
     table.remove(self.views)
   end
@@ -129,8 +148,9 @@ end
 
 
 function Node:set_active_view(view)
+  assert(self.type == "leaf", "Tried to set active view on non-leaf node")
   self.active_view = view
-  core.active_view = view
+  core.set_active_view(view)
 end
 
 
@@ -235,7 +255,9 @@ function Node:get_locked_size()
     local x1, y1 = self.a:get_locked_size()
     local x2, y2 = self.b:get_locked_size()
     if x1 and x2 then
-      return x1 + x2 + style.divider_size, y1 + y2 + style.divider_size
+      local dsx = (x1 < 1 or x2 < 1) and 0 or style.divider_size
+      local dsy = (y1 < 1 or y2 < 1) and 0 or style.divider_size
+      return x1 + x2 + dsx, y1 + y2 + dsy
     end
   end
 end
@@ -251,11 +273,11 @@ end
 -- axis are swapped; this function lets us use the same code for both
 local function calc_split_sizes(self, x, y, x1, x2)
   local n
-  local ds = (x1 == 0 or x2 == 0) and 0 or style.divider_size
+  local ds = (x1 and x1 < 1 or x2 and x2 < 1) and 0 or style.divider_size
   if x1 then
-    n = math.floor(x1 + ds)
+    n = x1 + ds
   elseif x2 then
-    n = math.floor(self.size[x] - x2)
+    n = self.size[x] - x2
   else
     n = math.floor(self.size[x] * self.divider)
   end
@@ -327,7 +349,9 @@ function Node:draw_tabs()
       color = style.text
     end
     core.push_clip_rect(x, y, w, h)
-    common.draw_text(style.font, color, text, "center", x, y, w, h)
+    x, w = x + style.padding.x, w - style.padding.x * 2
+    local align = style.font:get_width(text) > w and "left" or "center"
+    common.draw_text(style.font, color, text, align, x, y, w, h)
     core.pop_clip_rect()
   end
 
@@ -341,7 +365,7 @@ function Node:draw()
       self:draw_tabs()
     end
     local pos, size = self.active_view.position, self.active_view.size
-    core.push_clip_rect(pos.x, pos.y, size.x, size.y)
+    core.push_clip_rect(pos.x, pos.y, size.x + pos.x % 1, size.y + pos.y % 1)
     self.active_view:draw()
     core.pop_clip_rect()
   else
@@ -369,13 +393,16 @@ end
 
 
 function RootView:get_active_node()
-  local node = self.root_node:get_node_for_view(core.active_view)
-  return node or self.root_node.a
+  return self.root_node:get_node_for_view(core.active_view)
 end
 
 
 function RootView:open_doc(doc)
   local node = self:get_active_node()
+  if node.locked and core.last_active_view then
+    core.set_active_view(core.last_active_view)
+    node = self:get_active_node()
+  end
   assert(not node.locked, "Cannot open doc on locked node")
   for i, view in ipairs(node.views) do
     if view.doc == doc then
@@ -405,9 +432,7 @@ function RootView:on_mouse_pressed(button, x, y, clicks)
       node:close_active_view(self.root_node)
     end
   else
-    if node.active_view.focusable then
-      core.active_view = node.active_view
-    end
+    core.set_active_view(node.active_view)
     node.active_view:on_mouse_pressed(button, x, y, clicks)
   end
 end
@@ -423,13 +448,13 @@ end
 
 function RootView:on_mouse_moved(x, y, dx, dy)
   if self.dragged_divider then
-    local div = self.dragged_divider
-    if div.type == "hsplit" then
-      div.divider = div.divider + dx / div.size.x
+    local node = self.dragged_divider
+    if node.type == "hsplit" then
+      node.divider = node.divider + dx / node.size.x
     else
-      div.divider = div.divider + dy / div.size.y
+      node.divider = node.divider + dy / node.size.y
     end
-    div.divider = common.clamp(div.divider, 0.01, 0.99)
+    node.divider = common.clamp(node.divider, 0.01, 0.99)
     return
   end
 
@@ -464,14 +489,6 @@ function RootView:update()
   copy_position_and_size(self.root_node, self)
   self.root_node:update()
   self.root_node:update_layout()
-
-  -- do `on_mouse_moved` if the scroll of the hovered view has changed
-  local x, y = self.mouse.x, self.mouse.y
-  local s = self.root_node:get_child_overlapping_point(x, y).active_view.scroll
-  if self.last_scroll_x ~= s.x or self.last_scroll_y ~= s.y then
-    self:on_mouse_moved(self.mouse.x, self.mouse.y, 0, 0)
-    self.last_scroll_x, self.last_scroll_y = s.x, s.y
-  end
 end
 
 

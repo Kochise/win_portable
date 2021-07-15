@@ -12,6 +12,7 @@ local ResultsView = View:extend()
 function ResultsView:new(text, fn)
   ResultsView.super.new(self)
   self.scrollable = true
+  self.brightness = 0
   self:begin_search(text, fn)
 end
 
@@ -40,6 +41,7 @@ end
 
 
 function ResultsView:begin_search(text, fn)
+  self.search_args = { text, fn }
   self.results = {}
   self.last_file_idx = 1
   self.query = text
@@ -54,8 +56,16 @@ function ResultsView:begin_search(text, fn)
       self.last_file_idx = i
     end
     self.searching = false
+    self.brightness = 100
     core.redraw = true
-  end, self)
+  end, self.results)
+
+  self.scroll.to.y = 0
+end
+
+
+function ResultsView:refresh()
+  self:begin_search(table.unpack(self.search_args))
 end
 
 
@@ -94,7 +104,7 @@ end
 
 
 function ResultsView:update()
-  self.scroll.to.y = math.max(0, self.scroll.to.y)
+  self:move_towards("brightness", 0, 0.1)
   ResultsView.super.update(self)
 end
 
@@ -110,7 +120,6 @@ end
 
 
 function ResultsView:get_scrollable_size()
-  local rh = style.padding.y + style.font:get_height()
   return self:get_results_yoffset() + #self.results * self:get_line_height()
 end
 
@@ -139,6 +148,14 @@ function ResultsView:each_visible_result()
 end
 
 
+function ResultsView:scroll_to_make_selected_visible()
+  local h = self:get_line_height()
+  local y = self:get_results_yoffset() + h * (self.selected_idx - 1)
+  self.scroll.to.y = math.min(self.scroll.to.y, y)
+  self.scroll.to.y = math.max(self.scroll.to.y, y + h - self.size.y)
+end
+
+
 function ResultsView:draw()
   self:draw_background(style.background)
 
@@ -155,14 +172,16 @@ function ResultsView:draw()
     text = string.format("Found %d matches for %q",
       #self.results, self.query)
   end
-  renderer.draw_text(style.font, text, x, y, style.text)
+  local color = common.lerp(style.text, style.accent, self.brightness / 100)
+  renderer.draw_text(style.font, text, x, y, color)
 
   -- horizontal line
   local yoffset = self:get_results_yoffset()
   local x = ox + style.padding.x
   local w = self.size.x - style.padding.x * 2
   local h = style.divider_size
-  renderer.draw_rect(x, oy + yoffset - style.padding.y, w, h, style.dim)
+  local color = common.lerp(style.dim, style.text, self.brightness / 100)
+  renderer.draw_rect(x, oy + yoffset - style.padding.y, w, h, color)
   if self.searching then
     renderer.draw_rect(x, oy + yoffset - style.padding.y, w * per, h, style.text)
   end
@@ -225,19 +244,26 @@ command.add(ResultsView, {
   ["project-search:select-previous"] = function()
     local view = core.active_view
     view.selected_idx = math.max(view.selected_idx - 1, 1)
+    view:scroll_to_make_selected_visible()
   end,
 
   ["project-search:select-next"] = function()
     local view = core.active_view
     view.selected_idx = math.min(view.selected_idx + 1, #view.results)
+    view:scroll_to_make_selected_visible()
   end,
 
   ["project-search:open-selected"] = function()
     core.active_view:open_selected_result()
   end,
+
+  ["project-search:refresh"] = function()
+    core.active_view:refresh()
+  end,
 })
 
 keymap.add {
+  ["f5"]           = "project-search:refresh",
   ["ctrl+shift+f"] = "project-search:find",
   ["up"]           = "project-search:select-previous",
   ["down"]         = "project-search:select-next",
