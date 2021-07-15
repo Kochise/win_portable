@@ -2,7 +2,7 @@
 
                         JoyToKey Version 6.5
 
-                      Copyright(C) 1999-2020, JTK
+                      Copyright(C) 1999-2021, JTK
 
 ======================================================================
 
@@ -50,16 +50,19 @@ and selecting "Run As Administrator".
 
 3. HOW TO INSTALL
 -----------------
-Simply unzip the archive file into some folder.
-To uninstall this software, you only need to remove that folder.
+If you downloaded the installer file (.exe), simply execute the installer.
+
+If you downloaded the zip archive file (.zip), simply unzip the archive file 
+into some folder, and launch JoyToKey.exe from there.  To uninstall this 
+software, you only need to remove that folder.
 (This software doesn't use a registry)
 
 Please make sure that the installed folder is not write 
 protected as it needs to save configuration files in the same folder.
 
 System requirement:
-  * OS: Windows 10, 8.1, 8, 7, Vista, XP
-  * DirectX 7.0 or above
+  * OS: Windows 10, 8.1, 8, 7, Vista
+  * DirectX 8.0 or above
 
 
 4. USAGE
