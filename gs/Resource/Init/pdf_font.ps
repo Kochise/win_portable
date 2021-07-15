@@ -1,4 +1,4 @@
-% Copyright (C) 2001-2020 Artifex Software, Inc.
+% Copyright (C) 2001-2021 Artifex Software, Inc.
 % All Rights Reserved.
 %
 % This software is provided AS-IS with no warranty, either express or
@@ -1234,6 +1234,23 @@ setglobal
   { /undef_proc_warning /missing-type1-procs /readonly-op-dict }
   { currentdict exch undef } forall
 
+  % Bug703454.pdf contains a number of fonts with multiple definitions
+  % of a given glyph name in the CharStrings dict - i.e. two entries
+  % for /a - the first of which is "correct" the second is "wrong".
+  % Normal Postscript behaviour replaces the first value with the second
+  % for the given key/value pair.
+  % To handle this, *only* for Type 1 fonts embedded in PDFs, we
+  % have a special definition of "def" which won't overwrite existing
+  % values in the CharStrings dict.
+  /def
+  {
+    3 index /CharStrings eq
+    currentdict 3 index known and
+    { pstack flush pop pop }
+    { systemdict /def get exec }
+    ifelse
+  } bind executeonly def
+
 end readonly def
 
 currentdict /eexec_pdf_param_dict .undef
@@ -1481,7 +1498,9 @@ currentdict /eexec_pdf_param_dict .undef
   } {
                                           % filepos fontres stream
     1 index /FontDescriptor oget
-    /Flags oget 4 and 0 ne {
+    /Flags oget dup                       % only believe the symbolic flag if the non-symbolic flag is not also set!
+    4 and 0 ne
+    exch 32 and 0 eq and {
        //true  %  symbolic
     } {
        1 index /Encoding oknown not  % no encoding => symbolic

@@ -712,12 +712,11 @@ be drawn, whilst those not listed will not be drawn.</p>
 </dl>
 
 <dl>
-    <dt><code>-dShowAcroForm</code></dt>
+    <dt><code>-dShowAcroForm=false</code></dt>
     <dd>
-    Show annotations referred from the Interactive Form Dictionary (AcroForm dictionary).
-    By default, AcroForm is not enumerated because Adobe Acrobat doesn't do this.
-    This option may be useful for debugging or recovery of incorrect PDF files
-    that don't associate all annotations with the page objects.</dd>
+    Don't show annotations from the Interactive Form Dictionary (AcroForm dictionary).
+    By default, AcroForm processing is now enabled because Adobe Acrobat does this. This option
+    is provided to restore the previous behavior which corresponded to older Acrobat.</dd>
 </dl>
 
 <dl>
@@ -793,6 +792,18 @@ is applied to each PDF file separately. So if you were to set <code>-sPageList=1
  exercise caution when using this switch, and probably should not use it at all when processing a mixture of PostScript
  and PDF files on the same command line.
 </p>
+<p>
+The XPS language like the PDF language allows random access to pages.  The XPS interpreter handles all the PageList cases
+discussed above.  It also handles cases such as:
+<blockquote><pre>
+-sPageList=1,2,1,2 indicates repeated pages.  Pages processed in order 1, 2, 1, 2.
+-sPageList=10-5 indicates pages will be processed in the order 10, 9, 8, 7, 6, 5.
+-sPageList=1-,-1 indicates first processing from page 1 to end and then from end to page 1.
+</pre></blockquote>
+In addition, the XPS interpreter allows the use of a -dLastPage < -dFirstPage.  In this
+case the pages will be processed backwards from LastPage to FirstPage.
+</p>
+
 </dd>
 </dl>
 
@@ -2618,6 +2629,15 @@ processing of PostScript source files. Note: in releases 7.30 and
     earlier, processing of DoPS was always enabled.</dd>
 </dl>
 
+<a name="BlackText"></a>
+<dl>
+    <dt><code>-dBlackText</code></dt>
+<dd>Forces text to be drawn with black.  This occurs for text fill and
+text stroke operations.  PDF output created with this setting will be
+updated to be drawn with gray values of 0.  Type 3 fonts, which are
+sometimes used for graphics, are not affected by this parameter. </dd>
+</dl>
+
 <h4><a name="Page_parameters"></a>Page parameters</h4>
 
 <dl>
@@ -2740,6 +2760,39 @@ This option sets the <code>-dEPSFitPage</code>, <code>-dPDFFitPage</code>, and
 the <code>-dFitPage</code> options.</p>
 </dd>
 </dl>
+
+<dl>
+<a name="NupControl"></a>
+    <dt><code>-sNupControl=</code><em>Nup_option_string</em></dt>
+<dd>This option specifies the N-up nesting to be performed. The pages are scaled
+and arranged on the current PageSize "master" page according the the option.
+<p>
+The only option strings are as follows:
+    <ul>
+    <li>
+        <dt><code>-sNupControl=</code><em>number1</em><code>x</code><em>number2</em></dt>
+    will fit <em>number1</em> nested pages across the master page, and <em>number2</em>
+    down the master page, from the upper left, then to the right to fill the row, moving down
+    to the leftmost place on the next row until the nest is complete.
+    <p>
+    A partially filled nest will be output when the <code>-sNupControl=</code> string is changed,
+    or when Ghostscript exits.
+    <p>
+    Pages are scaled to fit the requested number horizontally and vertically, maintaining the
+    aspect ratio. If the scaling selected for fitting the nested pages leaves space horizontally
+    on the master page, the blank area will be added to the left and right of the <b>entire</b>
+    row of nested pages. If the fit results in vertical space, the blank area will be added
+    above and below <b>all</b> of the rows.
+    </li>
+    <li>
+        <dt><code>-sNupControl=</code></dt>
+    An empty string will turn off nesting. If there are any nested pages on the master page,
+    the partially filled master page will be output.
+    </li>
+    </ul>
+</dd>
+</dl>
+
 <h4><a name="Font_related_parameters"></a>Font-related parameters</h4>
 
 <dl>
@@ -2747,14 +2800,6 @@ the <code>-dFitPage</code> options.</p>
 <dd>Causes Type 1 fonts to be loaded into the current VM -- normally local
 VM -- instead of always being loaded into global VM.  Useful only for
     compatibility with Adobe printers for loading some obsolete fonts.</dd>
-</dl>
-
-<dl>
-    <dt><code>-dNOCCFONTS</code></dt>
-<dd>Suppresses the use of fonts precompiled into the Ghostscript executable.
-See <a href="Fonts.htm#Precompiling">"Precompiling fonts"</a> in the
-documentation on fonts for details.  This is probably useful only for
-    debugging.</dd>
 </dl>
 
 <dl>
@@ -3130,7 +3175,7 @@ Separation and DeviceN colors.  For the general user this command option
 be specified within which the color blending operations are to
 take place. Some files lack this specification, in which case
 the blending occurs in the output device's native color space.  This
-dependency of blending color space on the device color model 
+dependency of blending color space on the device color model
 can be avoided by using the above command to force a specific
 color space in which to perform the blending. </dd>
 </dl>
@@ -3309,15 +3354,32 @@ are used to convert between RGB and CMYK with black generation and undercolor
 <dl>
     <dt><code>-dSimulateOverprint=</code><em>true/false</em></dt>
 <dd>
-This option enables continous tone CMYK devices (e.g. tiff32nc) the capability to
-provide a  simulation of spot color overprinting.  The default setting is true.
+This option has been replaced by <code><b>-dOverprint=</b></code>
+</dd>
+</dl>
+
+
+<dl>
+<a name="Overprint"></a>
+    <dt><code>-dOverprint=</code><em>/enable | /disable | /simulate</em></dt>
+<dd>
+This option provides control of overprinting.  The default setting is <em><b>/enable</b></em>
+which allows devices such as CMYK that can support overprint to leave planes unchanged
+under control of PostScript and PDF overprint settings.
+<p>
+The <em><b>/disable</b></em> setting ignores all overprint (and overprint mode) from the input.
+<p>
+If <em><b>/simulate</b></em> is set, then pages with overprint (or overprint mode) set for
+CMYK or Separation colors will be internally maintained and output to RGB or Gray
+devices.
+<p>
 Note that not all spot color overprint cases can be accurately simulated with a CMYK
 only device.   For example, a case where you have a spot color overprinted with CMYK
 colors will be indistiguishable from a case where you have spot color equivalent
 CMYK colorants overprinted with CMYK colors, even though they may need to show
 significantly different overprint simulations.  To obtain a full overprint simulation,
-use the psdcmyk or tiffsep device, where the spot colors are kept in their own
-    individual planes.</dd>
+use the <em><b>/simulate</b></em> setting or the psdcmyk or tiffsep device, where the spot
+colors are kept in their own individual planes.</dd>
 </dl>
 
 <dl>
@@ -3729,9 +3791,7 @@ memory. For example, to allow use of 30Mb of extra RAM use:
     <code>-c&nbsp;30000000&nbsp;setvmthreshold&nbsp;-f</code>.
 <p>This can also be useful in processing large documents when using a
 high-level (vector) output device (like pdfwrite) that maintains significant internal
-state.  In fact, the <a href="Language.htm#.setpdfwrite"><code>.setpdfwrite</code></a>
-operator used by the ps2pdf script and others sets a vmthreshold value of
-3&nbsp;MB to account for this.</p></li>
+state.</p></li>
 
 <li>
 <p>
@@ -5294,7 +5354,7 @@ PCLEOs. (see the FAPI-related source code for details).</p>
 <hr>
 
 <p>
-<small>Copyright &copy; 2000-2020 Artifex Software, Inc.  All rights reserved.</small>
+<small>Copyright &copy; 2000-2021 Artifex Software, Inc.  All rights reserved.</small>
 
 <p>
 This software is provided AS-IS with no warranty, either express or
@@ -5307,7 +5367,7 @@ or contact Artifex Software, Inc.,  1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
 
 <p>
-<small>Ghostscript version 9.53.3, 1 October 2020
+<small>Ghostscript version 9.54.0, 30 March 2021
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
@@ -5334,7 +5394,7 @@ Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
            </ul>
         </div>
         <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019 Artifex Software, Inc. <br>
+              © Copyright 2019-2021 Artifex Software, Inc. <br>
             All rights reserved.
         </div>
           </div>

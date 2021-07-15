@@ -58,10 +58,11 @@
 <li><a href="#Overview">Overview</a>
 <li><a href="#PXL">PCL-XL file output</a>
 <li><a href="#TXT">Text output</a>
+<li><a href="#DOCX">DOCX file output</a>
 <li><a href="#XPS">XPS file output</a>
 <li><a href="#PDFWRITE">PDF file output</a>
-<li><a href="#PDFWRITE">PostScript file output</a>
-<li><a href="#PDFWRITE">EPS file output</a>
+<li><a href="#PS">PostScript file output</a>
+<li><a href="#EPS">EPS file output</a>
 <li><a href="#PDFX">PDF/X-3 file output</a>
 <li><a href="#PDFA">PDF/A file output</a>
 <li><a href="#PPD">Ghostscript PDF printer description</a>
@@ -88,7 +89,8 @@
 <p>
 High level devices are Ghostscript output devices which do not render to a raster,
 in general they produce 'vector' as opposed to bitmap output. Such devices currently
-include: pdfwrite, ps2write, eps2write, txtwrite, xpswrite, pxlmono and pxlcolor.
+include: pdfwrite, ps2write, eps2write, txtwrite, xpswrite, pxlmono, pxlcolor and
+docxwrite.
 </p>
 
 <p>
@@ -174,7 +176,7 @@ document as Unicode.
 <h4>Options</h4>
 <blockquote>
 <dl>
-<dt><code>-dTextFormat=<em>0 | 1 | 2 | 3 </em></code> (default is 3)
+<dt><code>-dTextFormat=<em>0 | 1 | 2 | 3 | 4 </em></code> (default is 3)
 <p><dd>Format 0 is intended for use by developers and outputs XML-escaped Unicode
 along with information regarding the format of the text (position, font name,
 point size, etc). The XML output is the same format as the MuPDF output, but
@@ -185,7 +187,22 @@ as the MuPDF code, and so the results will not be identical.</dd></p>
 <p><dd>Format 2 outputs Unicode (UCS2) text (with a Byte Order Mark) which
 approximates the layout of the text in the original document.</dd></p>
 <p><dd>Format 3 is the same as format 2, but the text is encoded in UTF-8.</dd></p>
+<p><dd>Format 4 is internal format similar to Format 0 but with extra information.</dd></p>
 </dl></blockquote>
+
+<p>
+
+<hr>
+<h2><a name="DOCX"></a>DOCX output</h2>
+
+<p>The docxwrite device creates a DOCX file suitable for use with applications
+such as Word or LibreOffice, containing the text in the original document.
+</p>
+<p>Rotated text is placed into textboxes. Heuristics are used to group
+glyphs into words, lines and paragraphs; for some types of formatting, these
+heuristics may not be able to recover all of the original document structure.
+</p>
+<p>This device currently has no special configuration parameters.</p>
 
 <p>
 
@@ -698,7 +715,8 @@ Where pdfa.pjl contains the PJL commands to create a PDF/A-1b file (see example 
 <p>
 <h4>Example creation of a PDF/A output file</h4>
 <p>For readability the line has been bisected, when used for real this must be a single line. The 'ESC' represents
-a single byte, value 0x1B an escape character in ASCII.</p>
+a single byte, value 0x1B, an escape character in ASCII. The line must end with an ASCII newline (\n, 0x0A) and this must be the only newline following the @PJL.
+The line breaks between "" below should be replaced with space characters, the double quote charcters (") are required.</p>
 <code>
 </p>
 <pre>
@@ -983,6 +1001,61 @@ Adobe Acrobat appears to use <code>PDFDocEncoding</code> when
 displaying document's properties,
 so we recommend this value.
 </dl>
+
+<d1>
+<a name="UseOCR"></a>
+<dt><code>-sUseOCR=</code><em>string</em>
+<dd>Controls the use of OCR in pdfwrite. If enabled this will use an OCR
+engine to analyse the glyph bitmaps used to draw text in a PDF file, and
+the resulting Unicode code points are then used to construct a ToUnicode
+CMap.
+<p>
+PDF files containing ToUnicode CMaps can be searched, use copy/paste and
+extract the text, subject to the accuracy of the ToUnicode CMap. Since not all
+PDF files contain these it can be beneficial to create them.
+</p>
+<p>
+Note that, for English text, it is possible that the existing standard character
+encoding (which most PDF consumers will fall back to in the absence of Unicode
+information) is better than using OCR, as OCR is not a 100% reliable process.
+OCR processing is also comparatively slow.
+</p>
+<p>
+For the reasons above it is useful to be able to exercise some control over the
+action of pdfwrite when OCR processing is available, and the <code>UseOCR</code>
+parameter provides that control. There are three possible values:
+</p>
+<li><code>Never</code> Default - don't use OCR at all even if support is built-in.
+<li><code>AsNeeded</code> If there is no existing ToUnicode information, use OCR.
+<li><code>Always</code> Ignore any existing information and always use OCR.
+<p>
+Our experimentation with the Tesseract OCR engine has shown that the more text we
+can supply for the engine to look at, the better the result we get. We are, unfortunately,
+limited to the graphics library operations for text as follows.
+</p>
+<p>
+The code works on text 'fragments'; these are the text sequences sent to the text
+operators of the source language. Generally most input languages will try to send
+text in its simplest form, eg "Hello", but the requirements of justification, kerning
+and so on mean that sometimes each character is positioned independently on the page.
+</p>
+<p>
+So pdfwrite renders all the bitmaps for every charcter in the text document, when
+set up to use OCR. Later, if any character in the font does not have a Unicode
+value already we use the bitmaps to assemble a 'strip' of text which we then send
+to the OCR engine. If the engine returns a different number of recognised characters
+than we expected then we ignore that result. We've found that (for English text)
+constructions such as ". The" tend to ignore the full stop, presumably because the OCR
+engine thinks that it is simply noise. In contrast "text." does identify the full
+stop correctly. So by ignoring the failed result we can potentially get a better result
+later in the document.
+</p>
+<p>
+Obviously this is all heuristic and undoubtedly there is more we can do to improve the
+functionality here, but we need concrete examples to work from.
+</p>
+</dd>
+</dt>
 
 <h3><a name="PS"></a>PostScript file output</h3>
 <p>
@@ -1387,7 +1460,7 @@ not affected.
 <hr>
 
 <p>
-<small>Copyright &copy; 2000-2020 Artifex Software, Inc.  All rights reserved.</small>
+<small>Copyright &copy; 2000-2021 Artifex Software, Inc.  All rights reserved.</small>
 
 <p>
 This software is provided AS-IS with no warranty, either express or
@@ -1400,7 +1473,7 @@ or contact Artifex Software, Inc.,  1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
 
 <p>
-<small>Ghostscript version 9.53.3, 1 October 2020
+<small>Ghostscript version 9.54.0, 30 March 2021
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
@@ -1427,7 +1500,7 @@ Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
            </ul>
         </div>
         <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019 Artifex Software, Inc. <br>
+              © Copyright 2019-2021 Artifex Software, Inc. <br>
             All rights reserved.
         </div>
           </div>

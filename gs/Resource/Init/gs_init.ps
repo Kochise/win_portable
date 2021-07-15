@@ -1,4 +1,4 @@
-% Copyright (C) 2001-2020 Artifex Software, Inc.
+% Copyright (C) 2001-2021 Artifex Software, Inc.
 % All Rights Reserved.
 %
 % This software is provided AS-IS with no warranty, either express or
@@ -34,7 +34,7 @@
 % Interpreter library version number
 % NOTE: the interpreter code requires that the first non-comment token
 % in this file be an integer, and that it match the compiled-in version!
-9533
+9540
 
 % Check the interpreter revision.
 dup revision ne
@@ -144,7 +144,8 @@ currentdict /PDFNOCIDFALLBACK known /PDFNOCIDFALLBACK exch def
 
 currentdict /BATCH known   /BATCH exch def
 currentdict /DELAYBIND known   /DELAYBIND exch def
-currentdict /DOINTERPOLATE .knownget { { -1 } { 0 } ifelse /InterpolateControl exch def } if
+currentdict /DOINTERPOLATE .knownget { { -1 } { 1 } ifelse /InterpolateControl exch def } if
+currentdict /NOINTERPOLATE .knownget { { 0 } { 1 } ifelse /InterpolateControl exch def } if
 currentdict /ESTACKPRINT known   /ESTACKPRINT exch def
 currentdict /FAKEFONTS known   /FAKEFONTS exch def
 currentdict /FIXEDMEDIA known   /FIXEDMEDIA exch def
@@ -159,7 +160,6 @@ currentdict /NODISPLAY known   not /DISPLAYING exch def
 currentdict /NOFONTMAP known   /NOFONTMAP exch def
 currentdict /NOFONTPATH known   /NOFONTPATH exch def
 currentdict /NOGC known   /NOGC exch def
-currentdict /NOINTERPOLATE .knownget { /InterpolateControl 0 def } if
 currentdict /NOMEDIAATTRS known /NOMEDIAATTRS exch def
 currentdict /NOOUTERSAVE known   /NOOUTERSAVE exch def
 currentdict /NOPAGEPROMPT known   /NOPAGEPROMPT exch def
@@ -214,6 +214,13 @@ currentdict /SCANCONVERTERTYPE known
 currentdict /EPSFitPage known { /PSFitPage //true def } if
 % This is a "convenience" option that sets a combination of EPSFitPage, PDFFitPage and PSFitPage
 currentdict /FitPage known { /EPSFitPage //true def /PDFFitPage //true def /PSFitPage //true def } if
+
+currentdict /SimulateOverprint known {
+  (\n**** -dSimulateOverprint={true|false} is no longer supported.    ****\n) print
+  (**** It has been replaced by -dOverprint={enable|disable|simulate} ****\n\n) print
+  % Set the new variable appropriately.
+  /Overprint SimulateOverprint { /enable } { /disable } ifelse def
+} if
 
 % Acquire environment variables.
 currentdict /DEVICE known not
