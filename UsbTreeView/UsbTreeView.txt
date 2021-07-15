@@ -1,5 +1,5 @@
 
-UsbTreeView V3.5.0 - Shows the USB Device Tree
+UsbTreeView V3.7.3 - Shows the USB Device Tree
 Freeware by Uwe Sieber - www.uwe-sieber.de
 
 Works under Windows 2000, XP, Windows 7, 8, 10 and Server 2000 to 2019
@@ -34,9 +34,21 @@ Improvements:
 - nodes can be renamed by pressing F2 or by clicking it when already selected (needs admin privileges)
 - additional descriptors are decoded as Audio 2.0, UVC 1.5
 - write and read a report in XML format (not compatible with USBview's)
+- copy a screenshot of the tree-view to the Windows clipboard
 
 History since V2.5.0, for old history see UsbTreeView.txt in here: http://www.uwe-sieber.de/files/usbtreeview261.zip
 
+V3.7.3   - New: Some fine-tuning for smart node naming
+V3.7.2   - Bugfix: When renaming a USB dev's node the default name was always the device description from the Device Manager, even another source was selected
+V3.7.1   - Bugfix: V3.7.0 had no valid default for the new source of display names resultung in showing device IDs until a valid source was selected
+V3.7.0   - New: Tree nodes of USB devices can show now either names from the Device Manager (as USBview and UsbTreeView before V3.7)
+                or names build from USB string descriptors or (new default) a smart choice of the available strings
+         - Bugfix: V3.6.0 reported an error for a trailing NULL character in string descriptors even there is none
+V3.6.0   - New: Support for high-DPI screens - no more bitmap scaling under Windows 8 and 10
+V3.5.4   - Bugfix: String descriptor might shown wrong for multiple languages
+V3.5.3   - Bugfix: Wrong font color when highlighting selected node while not focused
+V3.5.2   - Bugfix: Port maximum speed shown wrong on pre-Win8 systems
+         - Bugfix: Comboboxs with old content after loading an XML report
 V3.5.1   - Bugfix: Minor fixes
 V3.5.0   - Bugfix: Crash on Windows 8, 8.1, Server 2008 when dealing with companion ports
          - New: Highlight for companion ports (Win8+)
@@ -193,6 +205,14 @@ Alt+Left/Right   cycle thru the search hits
 
 
 
+About maximum port speeds
+
+Requesting a USB ports maximum speed is supported by Windows 8 and higher. On older
+system there is no way to determine which ports of an xHCI root hub supports SuperSpeed,
+therefore the icons have no letter indicating the speed. Ports of High-Speed hubs are
+assumed to handle High-Speed, ports of SuperSpeed standard hubs to handle SuperSpeed.
+
+
 About SuperSpeedPlus maximum Port Speed
 
 So far the Win32 USB API does not support requesting a USB port's max supported
@@ -202,6 +222,19 @@ https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/usbioctl/ns-usbioc
 Workaround:
 If a device is running at SuperSpeedPlus then the UsbTreeView remembers that the
 used port obviously supports that speed.
+
+
+
+About the "Port Chain"
+
+Originally I introduced the port chain as "UsbPortName" criteria in USBDLM
+when users asked for a way to have drive letters depending on the USB port.
+The only uncertain part is the first digit: A SetupDi enumeration for
+GUID_DEVINTERFACE_USB_HOST_CONTROLLER is performed and the first digit is
+just the index in this enumeration starting with 1. So when a USB host
+controller is added or removed this digit might change!
+The other digits are safe, they are just the port numbers from the USB API
+as shown in the treeview of UsbTreeView.
 
 
 
@@ -240,7 +273,7 @@ get five ERROR_INVALID_FUNCTION in a row. That's not a problem, just some missin
 information.
 
 
-About ERROR_GEN_FAILURE for the (other_speed) Device Qualifier Descriptor
+About ERROR_GEN_FAILURE for the "(other_speed) Device Qualifier Descriptor"
 
 The USB 2.0 spec states that a USB version 0x200 "indicates that such devices support
 the other_speed requests". But many device which report a USB version 0x200
@@ -262,7 +295,7 @@ UsbTreeView counts 1 endpoint for the Default Control Pipe if the configuration
 descriptor can be read plus the number of open pipes to data endpoints which
 are reported by Windows in the "Connection Information".
 
-Intel xHCI controllers are known for having a limitited number of endpoints,
+Elder Intel xHCI controllers are known for having a limitited number of endpoints,
 different rumors say 64 or 96, the Windows error message is "Not Enough USB
 Controller Resources" when attaching a new device.
 Under Windows 7 x64 I was able to use some more than 70 endpoints at a Series 8
@@ -324,17 +357,6 @@ with ERROR_NOT_SUPPORTED or since Win10 version 1903 with ERROR_GEN_FAILURE,
 which both are quite missleading here since it's a privilege issue.
 
 
-About the "Port Chain"
-
-Originally I introduced the port chain as "UsbPortName" criteria in USBDLM
-when users asked for a way to have drive letters depending on the USB port.
-The only uncertain part is the first digit: A SetupDi enumeration for
-GUID_DEVINTERFACE_USB_HOST_CONTROLLER is performed and the first digit is
-just the index in this enumeration starting with 1. So when a USB host
-controller is added or removed this digit might change!
-The other digits are safe, they are just the port numbers from the USB API
-as shown in the treeview of UsbTreeView.
-
 
 About the Debug-Port
 
@@ -384,7 +406,7 @@ Hints
 A similar tool for drives is "USB Drive Info":
 https://www.uwe-sieber.de/usbdriveinfo_e.html
 
-A similar tool for COM ports is "COM Port Info":
+A similar tool for serial COM ports is "COM Port Info":
 https://www.uwe-sieber.de/comportinfo_e.html
 
 
@@ -403,7 +425,7 @@ Not allowed:
 
 
 Uwe Sieber, mail@uwe-sieber.de
-Jan 2021
+June 2021
 
 
 
