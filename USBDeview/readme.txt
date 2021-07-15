@@ -1,8 +1,8 @@
 
 
 
-USBDeview v3.01
-Copyright (c) 2006 - 2020 Nir Sofer
+USBDeview v3.02
+Copyright (c) 2006 - 2021 Nir Sofer
 Web Site: https://www.nirsoft.net
 
 
@@ -72,6 +72,14 @@ Known Issues
 Versions History
 ================
 
+
+* Version 3.02
+  o Updated to work properly in high DPI mode.
+  o Added option to change the sorting column from the menu (View ->
+    Sort By). Like the column header click sorting, if you click again
+    the same sorting menu item, it'll switch between ascending and
+    descending order. Also, if you hold down the shift key while choosing
+    the sort menu item, you'll get a secondary sorting.
 
 * Version 3.01
   o Added 'Copy Clicked Cell' option to the right-click context menu,
