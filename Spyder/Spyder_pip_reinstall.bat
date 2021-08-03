@@ -2,6 +2,10 @@
 echo Starting pip installation process...
 echo.
 
+set "PYSDL2_DLL_PATH=%cd%\lib"
+mkdir "%PYSDL2_DLL_PATH%"
+copy /y "%cd%\SDL2.dll" "%PYSDL2_DLL_PATH%" 2>nul
+
 set "PIP_PATH="
 rem set "PIP_PATH=-t ^"%cd%\pkgs^""
 set "PIP_OPTS="

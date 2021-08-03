@@ -1,8 +1,6 @@
 @echo off
 
 set "PYSDL2_DLL_PATH=%cd%\lib"
-mkdir "%PYSDL2_DLL_PATH%"
-copy /y "%cd%\SDL2.dll" "%PYSDL2_DLL_PATH%" 2>nul
 
 set "PY_HOME=%cd%\Python"
 set "PYTHONPATH=%PY_HOME%;%PY_HOME%\Lib;%PY_HOME%\Scripts"
