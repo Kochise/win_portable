@@ -5,14 +5,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Introduction &#8212; PythonScript 3.0.6.0 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <title>Introduction &#8212; PythonScript 3.0.4.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -31,7 +32,7 @@
         <li class="right" >
           <a href="usage.html" title="Plugin Installation and Usage"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PythonScript 3.0.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PythonScript 3.0.4.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
       </ul>
     </div>  
@@ -46,11 +47,11 @@
 <p>Python Script enables you to script every conceivable action you can perform in Notepad++.  If you want to run a macro 1000 times, do 15 different search and replaces in one go, then save the file under a different name, it’s all possible, and, most importantly, easy.</p>
 <p>Don’t worry if you’ve not seen, or never even heard of <a class="reference external" href="https://www.python.org/">Python</a>, it’s incredibly easy to learn, and the beauty of it is that for the majority of scripts, you hardly need to know any Python at all.</p>
 <p>To whet your appetite, here’s a quick (complete) sample script that shows some of the power of Python Script.:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">editor</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">editor</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;new&quot;</span><span class="p">)</span>
 <span class="n">editor</span><span class="o">.</span><span class="n">pyreplace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^Code: ([A-Z]{4,8})&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;The code is \1&quot;</span><span class="p">)</span>
 
 <span class="n">notepad</span><span class="o">.</span><span class="n">runMenuCommand</span><span class="p">(</span><span class="s2">&quot;TextFX Tools&quot;</span><span class="p">,</span> <span class="s2">&quot;Delete Blank Lines&quot;</span><span class="p">)</span>
@@ -96,23 +97,23 @@ be interpreted the same way.</p>
 append <code class="docutils literal notranslate"><span class="pre">.decode('utf8')</span></code> to the string. Obviously if your string is in a different format, use the name of the correct encoding.</p>
 <p>To put text back to Scintilla (so editor.something()), use .encode(‘utf8’) from a unicode string.</p>
 <p>For example:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># define a unicode variable</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1"># define a unicode variable</span>
 <span class="n">someUnicodeString</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;This häs fünny ünicode chäractêrs in it&#39;</span>
 
 <span class="c1"># append the text to the current buffer - assuming the current buffer is set to utf8</span>
@@ -144,13 +145,13 @@ append <code class="docutils literal notranslate"><span class="pre">.decode('utf
 <h2>A simple example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h2>
 <p>Let’s register a callback for the FILEBEFORESAVE event - the occurs just before the file is saved,
 and we’ll add a “saved on” log entry to the end of the file, if the filename ends in ‘.log’.:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="k">def</span> <span class="nf">addSaveStamp</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">notepad</span><span class="o">.</span><span class="n">getCurrentFilename</span><span class="p">()[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.log&#39;</span><span class="p">:</span>
@@ -168,14 +169,14 @@ and we’ll add a “saved on” log entry to the end of the file, if the filena
 <p>The <code class="docutils literal notranslate"><span class="pre">args</span></code> parameter to the function is a map (similar a dictionary in C# or a hashmap in Java), that contains the arguments for the event - many events are signalled for a <code class="docutils literal notranslate"><span class="pre">BufferID</span></code>, which is the Notepad++ internal number for a particular file or tab.  We can do things with the bufferID like get the filename, switch to it to make it active and so on.</p>
 <p>So, first we’ll change it so that we check the filename of the bufferID being saved, rather than the active document.
 Then, if the filename has a ‘.log’ extension, we’ll change to it and add our “File saved on …..” line.:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7
+8</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="k">def</span> <span class="nf">addSaveStamp</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">notepad</span><span class="o">.</span><span class="n">getBufferFilename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;bufferID&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.log&#39;</span><span class="p">:</span>
@@ -187,16 +188,16 @@ Then, if the filename has a ‘.log’ extension, we’ll change to it and add o
 </td></tr></table></div>
 <p>Great, now it works properly.  There’s a side effect though, if we do use save-all, we might change the active document,
 which might seem a bit strange when we use it.  Again, very easy to fix.:</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="k">def</span> <span class="nf">addSaveStamp</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">notepad</span><span class="o">.</span><span class="n">getBufferFilename</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="s2">&quot;bufferID&quot;</span><span class="p">])[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s1">&#39;.log&#39;</span><span class="p">:</span>
@@ -314,13 +315,13 @@ and <code class="xref py py-meth docutils literal notranslate"><span class="pre"
         <li class="right" >
           <a href="usage.html" title="Plugin Installation and Usage"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">PythonScript 3.0.6.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PythonScript 3.0.4.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2010,2014,2018 Dave Brotherstone.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

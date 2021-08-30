@@ -4,7 +4,7 @@ from idlelib import searchengine as se
 import unittest
 # from test.support import requires
 from tkinter import  BooleanVar, StringVar, TclError  # ,Tk, Text
-from tkinter import messagebox
+import tkinter.messagebox as tkMessageBox
 from idlelib.idle_test.mock_tk import Var, Mbox
 from idlelib.idle_test.mock_tk import Text as mockText
 import re
@@ -19,13 +19,13 @@ def setUpModule():
     # Replace s-e module tkinter imports other than non-gui TclError.
     se.BooleanVar = Var
     se.StringVar = Var
-    se.messagebox = Mbox
+    se.tkMessageBox = Mbox
 
 def tearDownModule():
     # Restore 'just in case', though other tests should also replace.
     se.BooleanVar = BooleanVar
     se.StringVar = StringVar
-    se.messagebox = messagebox
+    se.tkMessageBox = tkMessageBox
 
 
 class Mock:
@@ -175,13 +175,11 @@ class SearchEngineTest(unittest.TestCase):
 
         engine.setpat('')
         Equal(engine.getprog(), None)
-        Equal(Mbox.showerror.message,
-              'Error: Empty regular expression')
         engine.setpat('+')
         engine.revar.set(1)
         Equal(engine.getprog(), None)
-        Equal(Mbox.showerror.message,
-              'Error: nothing to repeat\nPattern: +\nOffset: 0')
+        self.assertEqual(Mbox.showerror.message,
+                         'Error: nothing to repeat at position 0\nPattern: +')
 
     def test_report_error(self):
         showerror = Mbox.showerror

@@ -18,8 +18,8 @@ from tkinter import (Toplevel, Listbox, Scale, Canvas,
                      HORIZONTAL, VERTICAL, ANCHOR, ACTIVE, END)
 from tkinter.ttk import (Frame, LabelFrame, Button, Checkbutton, Entry, Label,
                          OptionMenu, Notebook, Radiobutton, Scrollbar, Style)
-from tkinter import colorchooser
-import tkinter.font as tkfont
+import tkinter.colorchooser as tkColorChooser
+import tkinter.font as tkFont
 from tkinter import messagebox
 
 from idlelib.config import idleConf, ConfigChanges
@@ -67,6 +67,7 @@ class ConfigDialog(Toplevel):
         if not _utest:
             self.withdraw()
 
+        self.configure(borderwidth=5)
         self.title(title or 'IDLE Preferences')
         x = parent.winfo_rootx() + 20
         y = parent.winfo_rooty() + (30 if not _htest else 150)
@@ -96,7 +97,6 @@ class ConfigDialog(Toplevel):
         """Create and place widgets for tabbed dialog.
 
         Widgets Bound to self:
-            frame: encloses all other widgets
             note: Notebook
             highpage: HighPage
             fontpage: FontPage
@@ -109,9 +109,7 @@ class ConfigDialog(Toplevel):
             load_configs: Load pages except for extensions.
             activate_config_changes: Tell editors to reload.
         """
-        self.frame = frame = Frame(self, padding="5px")
-        self.frame.grid(sticky="nwes")
-        self.note = note = Notebook(frame)
+        self.note = note = Notebook(self)
         self.highpage = HighPage(note)
         self.fontpage = FontPage(note, self.highpage)
         self.keyspage = KeysPage(note)
@@ -150,7 +148,7 @@ class ConfigDialog(Toplevel):
             padding_args = {}
         else:
             padding_args = {'padding': (6, 3)}
-        outer = Frame(self.frame, padding=2)
+        outer = Frame(self, padding=2)
         buttons_frame = Frame(outer, padding=2)
         self.buttons = {}
         for txt, cmd in (
@@ -609,7 +607,7 @@ class FontPage(Frame):
         font_bold  = configured_font[2]=='bold'
 
         # Set sorted no-duplicate editor font selection list and font_name.
-        fonts = sorted(set(tkfont.families(self)))
+        fonts = sorted(set(tkFont.families(self)))
         for font in fonts:
             self.fontlist.insert(END, font)
         self.font_name.set(font_name)
@@ -663,7 +661,7 @@ class FontPage(Frame):
         Updates font_sample and highlight page highlight_sample.
         """
         font_name = self.font_name.get()
-        font_weight = tkfont.BOLD if self.font_bold.get() else tkfont.NORMAL
+        font_weight = tkFont.BOLD if self.font_bold.get() else tkFont.NORMAL
         new_font = (font_name, self.font_size.get(), font_weight)
         self.font_sample['font'] = new_font
         self.highlight_sample['font'] = new_font
@@ -689,7 +687,7 @@ class HighPage(Frame):
 
     def __init__(self, master):
         super().__init__(master)
-        self.cd = master.winfo_toplevel()
+        self.cd = master.master
         self.style = Style(master)
         self.create_page_highlight()
         self.load_theme_cfg()
@@ -1100,7 +1098,7 @@ class HighPage(Frame):
         target = self.highlight_target.get()
         prev_color = self.style.lookup(self.frame_color_set['style'],
                                        'background')
-        rgbTuplet, color_string = colorchooser.askcolor(
+        rgbTuplet, color_string = tkColorChooser.askcolor(
                 parent=self, title='Pick new color for : '+target,
                 initialcolor=prev_color)
         if color_string and (color_string != prev_color):
@@ -1348,7 +1346,7 @@ class KeysPage(Frame):
 
     def __init__(self, master):
         super().__init__(master)
-        self.cd = master.winfo_toplevel()
+        self.cd = master.master
         self.create_page_keys()
         self.load_key_cfg()
 
@@ -2316,15 +2314,7 @@ display when Code Context is turned on for an editor window.
 
 Shell Preferences: Auto-Squeeze Min. Lines is the minimum number of lines
 of output to automatically "squeeze".
-''',
-    'Extensions': '''
-ZzDummy: This extension is provided as an example for how to create and
-use an extension.  Enable indicates whether the extension is active or
-not; likewise enable_editor and enable_shell indicate which windows it
-will be active on.  For this extension, z-text is the text that will be
-inserted at or removed from the beginning of the lines of selected text,
-or the current line if no selection.
-''',
+'''
 }
 
 

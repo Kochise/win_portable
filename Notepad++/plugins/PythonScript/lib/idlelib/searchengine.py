@@ -2,7 +2,7 @@
 import re
 
 from tkinter import StringVar, BooleanVar, TclError
-from tkinter import messagebox
+import tkinter.messagebox as tkMessageBox
 
 def get(root):
     '''Return the singleton SearchEngine instance for the process.
@@ -84,19 +84,22 @@ class SearchEngine:
             flags = flags | re.IGNORECASE
         try:
             prog = re.compile(pat, flags)
-        except re.error as e:
-            self.report_error(pat, e.msg, e.pos)
+        except re.error as what:
+            args = what.args
+            msg = args[0]
+            col = args[1] if len(args) >= 2 else -1
+            self.report_error(pat, msg, col)
             return None
         return prog
 
-    def report_error(self, pat, msg, col=None):
+    def report_error(self, pat, msg, col=-1):
         # Derived class could override this with something fancier
         msg = "Error: " + str(msg)
         if pat:
             msg = msg + "\nPattern: " + str(pat)
-        if col is not None:
+        if col >= 0:
             msg = msg + "\nOffset: " + str(col)
-        messagebox.showerror("Regular expression error",
+        tkMessageBox.showerror("Regular expression error",
                                msg, master=self.root)
 
     def search_text(self, text, prog=None, ok=0):

@@ -197,10 +197,12 @@ def main(args=None):
                 compile(filename, doraise=True)
             except PyCompileError as error:
                 rv = 1
-                sys.stderr.write("%s\n" % error.msg)
+                if quiet < 2:
+                    sys.stderr.write("%s\n" % error.msg)
             except OSError as error:
                 rv = 1
-                sys.stderr.write("%s\n" % error)
+                if quiet < 2:
+                    sys.stderr.write("%s\n" % error)
     else:
         for filename in args:
             try:
@@ -208,7 +210,8 @@ def main(args=None):
             except PyCompileError as error:
                 # return value to indicate at least one failure
                 rv = 1
-                sys.stderr.write("%s\n" % error.msg)
+                if quiet < 2:
+                    sys.stderr.write("%s\n" % error.msg)
     return rv
 
 if __name__ == "__main__":

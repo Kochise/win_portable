@@ -12,8 +12,8 @@ import webbrowser
 from tkinter import *
 from tkinter.font import Font
 from tkinter.ttk import Scrollbar
-from tkinter import simpledialog
-from tkinter import messagebox
+import tkinter.simpledialog as tkSimpleDialog
+import tkinter.messagebox as tkMessageBox
 
 from idlelib.config import idleConf
 from idlelib import configdialog
@@ -46,7 +46,7 @@ def _sphinx_version():
     return release
 
 
-class EditorWindow:
+class EditorWindow(object):
     from idlelib.percolator import Percolator
     from idlelib.colorizer import ColorDelegator, color_config
     from idlelib.undo import UndoDelegator
@@ -295,9 +295,9 @@ class EditorWindow:
             window.register_callback(self.postwindowsmenu)
 
         # Some abstractions so IDLE extensions are cross-IDE
-        self.askinteger = simpledialog.askinteger
-        self.askyesno = messagebox.askyesno
-        self.showerror = messagebox.showerror
+        self.askyesno = tkMessageBox.askyesno
+        self.askinteger = tkSimpleDialog.askinteger
+        self.showerror = tkMessageBox.showerror
 
         # Add pseudoevents for former extension fixed keys.
         # (This probably needs to be done once in the process.)
@@ -339,7 +339,7 @@ class EditorWindow:
             text.bind("<<toggle-code-context>>",
                       self.code_context.toggle_code_context_event)
         else:
-            self.update_menu_state('options', '*ode*ontext', 'disabled')
+            self.update_menu_state('options', '*Code Context', 'disabled')
         if self.allow_line_numbers:
             self.line_numbers = self.LineNumbers(self)
             if idleConf.GetOption('main', 'EditorWindow',
@@ -347,7 +347,7 @@ class EditorWindow:
                 self.toggle_line_numbers_event()
             text.bind("<<toggle-line-numbers>>", self.toggle_line_numbers_event)
         else:
-            self.update_menu_state('options', '*ine*umbers', 'disabled')
+            self.update_menu_state('options', '*Line Numbers', 'disabled')
 
     def handle_winconfig(self, event=None):
         self.set_width()
@@ -450,9 +450,7 @@ class EditorWindow:
         self.menudict = menudict = {}
         for name, label in self.menu_specs:
             underline, label = prepstr(label)
-            postcommand = getattr(self, f'{name}_menu_postcommand', None)
-            menudict[name] = menu = Menu(mbar, name=name, tearoff=0,
-                                         postcommand=postcommand)
+            menudict[name] = menu = Menu(mbar, name=name, tearoff=0)
             mbar.add_cascade(label=label, menu=menu, underline=underline)
         if macosx.isCarbonTk():
             # Insert the application menu
@@ -598,7 +596,7 @@ class EditorWindow:
             try:
                 os.startfile(self.help_url)
             except OSError as why:
-                messagebox.showerror(title='Document Start Failure',
+                tkMessageBox.showerror(title='Document Start Failure',
                     message=str(why), parent=self.text)
         else:
             webbrowser.open(self.help_url)
@@ -929,7 +927,7 @@ class EditorWindow:
                 try:
                     os.startfile(helpfile)
                 except OSError as why:
-                    messagebox.showerror(title='Document Start Failure',
+                    tkMessageBox.showerror(title='Document Start Failure',
                         message=str(why), parent=self.text)
             else:
                 webbrowser.open(helpfile)
@@ -965,7 +963,7 @@ class EditorWindow:
             except OSError as err:
                 if not getattr(self.root, "recentfiles_message", False):
                     self.root.recentfiles_message = True
-                    messagebox.showwarning(title='IDLE Warning',
+                    tkMessageBox.showwarning(title='IDLE Warning',
                         message="Cannot save Recent Files list to disk.\n"
                                 f"  {err}\n"
                                 "Select OK to continue.",
@@ -1529,7 +1527,7 @@ class EditorWindow:
         else:
             self.line_numbers.show_sidebar()
             menu_label = "Hide"
-        self.update_menu_label(menu='options', index='*ine*umbers',
+        self.update_menu_label(menu='options', index='*Line Numbers',
                                label=f'{menu_label} Line Numbers')
 
 # "line.col" -> line, as an int
@@ -1548,7 +1546,7 @@ def get_line_indent(line, tabwidth):
     return m.end(), len(m.group().expandtabs(tabwidth))
 
 
-class IndentSearcher:
+class IndentSearcher(object):
 
     # .run() chews over the Text widget, looking for a block opener
     # and the stmt following it.  Returns a pair,

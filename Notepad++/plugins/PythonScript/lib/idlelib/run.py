@@ -16,7 +16,6 @@ import _thread as thread
 import threading
 import warnings
 
-import idlelib  # testing
 from idlelib import autocomplete  # AutoComplete, fetch_encodings
 from idlelib import calltip  # Calltip
 from idlelib import debugger_r  # start_debugger
@@ -388,21 +387,14 @@ class MyRPCServer(rpc.RPCServer):
             thread.interrupt_main()
         except:
             erf = sys.__stderr__
-            print(textwrap.dedent(f"""
-            {'-'*40}
-            Unhandled exception in user code execution server!'
-            Thread: {threading.current_thread().name}
-            IDLE Client Address: {client_address}
-            Request: {request!r}
-            """), file=erf)
-            traceback.print_exc(limit=-20, file=erf)
-            print(textwrap.dedent(f"""
-            *** Unrecoverable, server exiting!
-
-            Users should never see this message; it is likely transient.
-            If this recurs, report this with a copy of the message
-            and an explanation of how to make it repeat.
-            {'-'*40}"""), file=erf)
+            print('\n' + '-'*40, file=erf)
+            print('Unhandled server exception!', file=erf)
+            print('Thread: %s' % threading.current_thread().name, file=erf)
+            print('Client Address: ', client_address, file=erf)
+            print('Request: ', repr(request), file=erf)
+            traceback.print_exc(file=erf)
+            print('\n*** Unrecoverable, server exiting!', file=erf)
+            print('-'*40, file=erf)
             quitting = True
             thread.interrupt_main()
 
@@ -539,21 +531,18 @@ class MyHandler(rpc.RPCHandler):
         thread.interrupt_main()
 
 
-class Executive:
+class Executive(object):
 
     def __init__(self, rpchandler):
         self.rpchandler = rpchandler
-        if idlelib.testing is False:
-            self.locals = __main__.__dict__
-            self.calltip = calltip.Calltip()
-            self.autocomplete = autocomplete.AutoComplete()
-        else:
-            self.locals = {}
+        self.locals = __main__.__dict__
+        self.calltip = calltip.Calltip()
+        self.autocomplete = autocomplete.AutoComplete()
 
     def runcode(self, code):
         global interruptable
         try:
-            self.user_exc_info = None
+            self.usr_exc_info = None
             interruptable = True
             try:
                 exec(code, self.locals)
@@ -566,17 +555,10 @@ class Executive:
                     print('SystemExit: ' + str(ob), file=sys.stderr)
             # Return to the interactive prompt.
         except:
-            self.user_exc_info = sys.exc_info()  # For testing, hook, viewer.
+            self.usr_exc_info = sys.exc_info()
             if quitting:
                 exit()
-            if sys.excepthook is sys.__excepthook__:
-                print_exception()
-            else:
-                try:
-                    sys.excepthook(*self.user_exc_info)
-                except:
-                    self.user_exc_info = sys.exc_info()  # For testing.
-                    print_exception()
+            print_exception()
             jit = self.rpchandler.console.getvar("<<toggle-jit-stack-viewer>>")
             if jit:
                 self.rpchandler.interp.open_remote_stack_viewer()
@@ -601,8 +583,8 @@ class Executive:
         return self.autocomplete.fetch_completions(what, mode)
 
     def stackviewer(self, flist_oid=None):
-        if self.user_exc_info:
-            typ, val, tb = self.user_exc_info
+        if self.usr_exc_info:
+            typ, val, tb = self.usr_exc_info
         else:
             return None
         flist = None

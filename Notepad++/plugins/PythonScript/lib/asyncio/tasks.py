@@ -394,7 +394,7 @@ ALL_COMPLETED = concurrent.futures.ALL_COMPLETED
 async def wait(fs, *, loop=None, timeout=None, return_when=ALL_COMPLETED):
     """Wait for the Futures and coroutines given by fs to complete.
 
-    The fs iterable must not be empty.
+    The sequence futures must not be empty.
 
     Coroutines will be wrapped in Tasks.
 
@@ -460,13 +460,8 @@ async def wait_for(fut, timeout, *, loop=None):
         if fut.done():
             return fut.result()
 
-        await _cancel_and_wait(fut, loop=loop)
-        try:
-            fut.result()
-        except exceptions.CancelledError as exc:
-            raise exceptions.TimeoutError() from exc
-        else:
-            raise exceptions.TimeoutError()
+        fut.cancel()
+        raise exceptions.TimeoutError()
 
     waiter = loop.create_future()
     timeout_handle = loop.call_later(timeout, _release_waiter, waiter)
@@ -480,15 +475,9 @@ async def wait_for(fut, timeout, *, loop=None):
         try:
             await waiter
         except exceptions.CancelledError:
-            if fut.done():
-                return fut.result()
-            else:
-                fut.remove_done_callback(cb)
-                # We must ensure that the task is not running
-                # after wait_for() returns.
-                # See https://bugs.python.org/issue32751
-                await _cancel_and_wait(fut, loop=loop)
-                raise
+            fut.remove_done_callback(cb)
+            fut.cancel()
+            raise
 
         if fut.done():
             return fut.result()
@@ -583,7 +572,7 @@ def as_completed(fs, *, loop=None, timeout=None):
     Note: The futures 'f' are not necessarily members of fs.
     """
     if futures.isfuture(fs) or coroutines.iscoroutine(fs):
-        raise TypeError(f"expect an iterable of futures, not {type(fs).__name__}")
+        raise TypeError(f"expect a list of futures, not {type(fs).__name__}")
 
     from .queues import Queue  # Import here to avoid circular import problem.
     done = Queue(loop=loop)

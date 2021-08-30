@@ -34,7 +34,7 @@ class SymbolTableFactory:
 _newSymbolTable = SymbolTableFactory()
 
 
-class SymbolTable:
+class SymbolTable(object):
 
     def __init__(self, raw_table, filename):
         self._table = raw_table
@@ -47,7 +47,7 @@ class SymbolTable:
         else:
             kind = "%s " % self.__class__.__name__
 
-        if self._table.name == "top":
+        if self._table.name == "global":
             return "<{0}SymbolTable for module {1}>".format(kind, self._filename)
         else:
             return "<{0}SymbolTable for {1} in {2}>".format(kind,
@@ -94,9 +94,7 @@ class SymbolTable:
         if sym is None:
             flags = self._table.symbols[name]
             namespaces = self.__check_children(name)
-            module_scope = (self._table.name == "top")
-            sym = self._symbols[name] = Symbol(name, flags, namespaces,
-                                               module_scope=module_scope)
+            sym = self._symbols[name] = Symbol(name, flags, namespaces)
         return sym
 
     def get_symbols(self):
@@ -169,14 +167,13 @@ class Class(SymbolTable):
         return self.__methods
 
 
-class Symbol:
+class Symbol(object):
 
-    def __init__(self, name, flags, namespaces=None, *, module_scope=False):
+    def __init__(self, name, flags, namespaces=None):
         self.__name = name
         self.__flags = flags
         self.__scope = (flags >> SCOPE_OFF) & SCOPE_MASK # like PyST_GetScope()
         self.__namespaces = namespaces or ()
-        self.__module_scope = module_scope
 
     def __repr__(self):
         return "<symbol {0!r}>".format(self.__name)
@@ -191,10 +188,7 @@ class Symbol:
         return bool(self.__flags & DEF_PARAM)
 
     def is_global(self):
-        """Return *True* if the sysmbol is global.
-        """
-        return bool(self.__scope in (GLOBAL_IMPLICIT, GLOBAL_EXPLICIT)
-                    or (self.__module_scope and self.__flags & DEF_BOUND))
+        return bool(self.__scope in (GLOBAL_IMPLICIT, GLOBAL_EXPLICIT))
 
     def is_nonlocal(self):
         return bool(self.__flags & DEF_NONLOCAL)
@@ -203,10 +197,7 @@ class Symbol:
         return bool(self.__scope == GLOBAL_EXPLICIT)
 
     def is_local(self):
-        """Return *True* if the symbol is local.
-        """
-        return bool(self.__scope in (LOCAL, CELL)
-                    or (self.__module_scope and self.__flags & DEF_BOUND))
+        return bool(self.__scope in (LOCAL, CELL))
 
     def is_annotated(self):
         return bool(self.__flags & DEF_ANNOT)

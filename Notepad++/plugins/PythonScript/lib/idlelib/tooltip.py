@@ -7,7 +7,7 @@ This includes:
 from tkinter import *
 
 
-class TooltipBase:
+class TooltipBase(object):
     """abstract base class for tooltips"""
 
     def __init__(self, anchor_widget):

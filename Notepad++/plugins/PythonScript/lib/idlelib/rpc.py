@@ -125,7 +125,7 @@ request_queue = queue.Queue(0)
 response_queue = queue.Queue(0)
 
 
-class SocketIO:
+class SocketIO(object):
 
     nextseq = 0
 
@@ -486,7 +486,7 @@ class SocketIO:
 
 #----------------- end class SocketIO --------------------
 
-class RemoteObject:
+class RemoteObject(object):
     # Token mix-in class
     pass
 
@@ -497,7 +497,7 @@ def remoteref(obj):
     return RemoteProxy(oid)
 
 
-class RemoteProxy:
+class RemoteProxy(object):
 
     def __init__(self, oid):
         self.oid = oid
@@ -547,7 +547,7 @@ class RPCClient(SocketIO):
         return RPCProxy(self, oid)
 
 
-class RPCProxy:
+class RPCProxy(object):
 
     __methods = None
     __attributes = None
@@ -596,7 +596,7 @@ def _getattributes(obj, attributes):
             attributes[name] = 1
 
 
-class MethodProxy:
+class MethodProxy(object):
 
     def __init__(self, sockio, oid, name):
         self.sockio = sockio

@@ -408,8 +408,8 @@ class FastPath:
         names = zip_path.root.namelist()
         self.joinpath = zip_path.joinpath
 
-        return dict.fromkeys(
-            child.split(posixpath.sep, 1)[0]
+        return (
+            posixpath.split(child)[0]
             for child in names
             )
 
@@ -473,6 +473,7 @@ class MetadataPathFinder(DistributionFinder):
             path.search(Prepared(name))
             for path in map(FastPath, paths)
             )
+
 
 
 class PathDistribution(Distribution):
