@@ -44,8 +44,10 @@ Some useful Windows programs in one portable package (some with source code incl
 **NumLocker** : like **CapsUnlock** but for `Numlock` (doesn't work on `Windows 10`)<br>
 **nvm** : node.js (for `js` libraries used by **miktex** modules)<br>
 **OBS-Studio** : screen caster for streaming, can also record<br>
+**OpenSCAD** : pretty good CAD program, yet using a DSL programming language<br>
 **paint.net** : the better `Paint` or `Gimp`, with layers and stuff<br>
 **PDFtk** : `pdf` file manipulator but not generator or converter<br>
+**PellesC** : a lightweight C compiler (x86/AMD64/ARM) with integrated debugger<br>
 **perl** : `perl` interpreter (for **miktex**, used by `pdfcrop`)<br>
 **Picat** : `sat` based functional language (inspired from `B-Prolog`)<br>
 **PrivaZer** : remove trails and stuff, `CCleaner` upgraded<br>
