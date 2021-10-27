@@ -4,6 +4,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **7-Zip** : multi format un/packer, lightweight and free (no nag screen)<br>
 **Accessoires** : `Wordpad` (`XP` version, the best, with ruler and preview)<br>
 **AdwCleaner** : remove adwares and stuff, will reboot at the end<br>
+**AppBuster** : install/remove `Windows 10` bundled applications<br>
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
 **CleanTemp** : batch file to automatise disk cleanup (run the `sageset` line first)<br>
@@ -17,7 +18,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **Elm** : web based functional language (inspired from `Haskel`) <ins>EXTERNAL INSTALLER</ins><br>
 **Erlang** : distributed functional language (inspired from `Prolog`) <ins>EXTERNAL INSTALLER</ins><br>
 **FileZilla** : `ftp` client (better use **Total Commander** in passive mode)<br>
-**Firefox** : ready to use `Firefox` browser with some privacy extensions installed<br>
+**Firefox** : ready to use `Firefox` browser with some privacy extensions installed (old `Photon` based)<br>
 **flux** : screen toning utility to change color scheme at night time <ins>INSTALLER</ins><br>
 **git** : just `git-scm` (used by **TortoiseGit**) <ins>EXTERNAL INSTALLER</ins><br>
 **gs** : `GhostScript` parser/renderer (used by **IrfanView** to display `ps` files)<br>
@@ -55,6 +56,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **python** : several versions of `Python` interpreters (because you'll need them)<br>
 **qemu** : multiplatform emulator useful for OS development <ins>EXTERNAL INSTALLER</ins><br>
 **RogueKiller** : detect and remove rootkits, won't reboot at the end<br>
+**Shellbag Analyzer & Cleaner** : clean `Windows` MRU entries (Most Recently Used files)<br>
 **ShutUp10** : set predefined `Windows 10` settings (like no telemetry)<br>
 **Sourcetrail** : explore source code hierarchy (steep learning curve)<br>
 **Spyder** : the `Visual Studio` of `Python` (targeted to science/plotting) <ins>EXTERNAL INSTALLER</ins><br>
