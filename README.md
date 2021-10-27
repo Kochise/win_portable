@@ -6,6 +6,7 @@ Some useful Windows programs in one portable package (some with source code incl
 **AdwCleaner** : remove adwares and stuff, will reboot at the end<br>
 **AppBuster** : install/remove `Windows 10` bundled applications<br>
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
+**CCleaner** : quite thorough `Windows 10` cleaner (old and temp files, registry, applications)<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
 **CleanTemp** : batch file to automatise disk cleanup (run the `sageset` line first)<br>
 **CrossHair** : `Ctrl+&` to des/activate static crosshair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
