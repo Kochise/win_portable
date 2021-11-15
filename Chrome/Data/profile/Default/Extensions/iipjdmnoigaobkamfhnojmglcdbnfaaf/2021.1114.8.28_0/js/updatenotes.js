@@ -1,0 +1,1 @@
+import Premium from"./optionsPremium.js";import"./optionsCore.js";Premium.fetchPremiumState(),ls.set({updateNotesIndicator:!1,lastUpdateNotesVersion:chrome.runtime.getManifest().version});

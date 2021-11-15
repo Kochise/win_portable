@@ -1,0 +1,80 @@
+{
+   "background": {
+      "scripts": [ "js/ext/lodash.min.js", "js/constants.js", "js/ls.js", "js/utils.js", "js/settings.js", "js/ext/sha256.min.js", "js/licenseUtils.js", "js/license.js", "js/notificationConstants.js", "js/notificationManager.js", "js/listControl.js", "js/aumControl.js", "js/tabhost.js", "js/workhorse.js", "js/bgscript.js" ]
+   },
+   "browser_action": {
+      "default_icon": {
+         "16": "img/browser_action/cf16.png",
+         "24": "img/browser_action/cf24.png",
+         "32": "img/browser_action/cf32.png"
+      },
+      "default_title": "__MSG_browserButtonTitle__"
+   },
+   "commands": {
+      "_execute_browser_action": {
+         "suggested_key": {
+            "default": "Ctrl+Shift+F"
+         }
+      },
+      "kbd_cmd_1": {
+         "description": "__MSG_options_keyboard_shortcuts_item_1__",
+         "suggested_key": {
+            "default": "Alt+Shift+D"
+         }
+      },
+      "kbd_cmd_2": {
+         "description": "__MSG_options_keyboard_shortcuts_item_2__"
+      },
+      "kbd_cmd_3": {
+         "description": "__MSG_options_keyboard_shortcuts_item_3__"
+      },
+      "kbd_cmd_4": {
+         "description": "__MSG_options_keyboard_shortcuts_item_4__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+X"
+         }
+      },
+      "kbd_cmd_5": {
+         "description": "__MSG_options_keyboard_shortcuts_item_5__",
+         "suggested_key": {
+            "default": "Ctrl+Shift+L"
+         }
+      }
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "css": [ "css/cf.css" ],
+      "js": [ "js/ext/jquery-3.3.1.min.js", "js/ext/lodash.min.js", "js/constants.js", "js/ls.js", "js/utils.js", "js/settings.js", "js/listControl.js", "js/aumControl.js", "js/cf.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   }, {
+      "css": [ "css/notify.css" ],
+      "js": [ "js/notificationConstants.js", "js/notify.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_appDescription__",
+   "externally_connectable": {
+      "matches": [ "https://*.oorjalabs.com/*" ]
+   },
+   "icons": {
+      "128": "img/cf128.png",
+      "16": "img/cf16.png",
+      "32": "img/cf32.png",
+      "48": "img/cf48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4F2SzP6DZiENrpMLBLe1Iqow0IzvoPyUhTLzbHhnAgvxTFT2ENpnsw9ux32z42Gcph2RHyE7+RqCBHKhIzPRbAgO7CzGi8wezTc0N/ToTlNY2MGdS/I3UjiFZmgc49WkNpf4sM2j/Y0yK9CjdWKIKB+XR5aCsnxf9Q90sfmNmFKohi8wX9raJ0nA0hAvipwoUQk7mkZJPj0xjvxFdDLqrqH6VdwNjK6lHOFNfLKmajpI/+zcv4G15h7mLYqvt0rmzplFmgW0mcX4iBIiSL7RneVNd19cdmy/WtwNAcn9YVrRQ1LdLZH7HRx4l9kHypnI76LzZbrnaqKqitgX9vzC9QIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "49",
+   "name": "__MSG_appName__",
+   "offline_enabled": true,
+   "omnibox": {
+      "keyword": "cf"
+   },
+   "options_page": "options.html",
+   "permissions": [ "contextMenus", "notifications", "alarms", "storage", "unlimitedStorage", "tabs", "webRequest", "\u003Call_urls>", "identity", "identity.email" ],
+   "short_name": "__MSG_shortName__",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "2021.1114.8.28",
+   "version_name": "8.28.5",
+   "web_accessible_resources": [ "img/*" ]
+}

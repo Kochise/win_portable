@@ -1,0 +1,271 @@
+div#search_holder {
+    position: relative;
+    display: inline-block;
+    grid-column: 1 / 2;
+}
+
+div#tabs_count {
+    grid-column: 2 / 3;
+    font-size: 0.8rem;
+    font-weight: 300;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 18px;
+    color: var(--colour-muted);
+    margin: auto;
+    width: 4.5rem;
+    text-align: right;
+}
+
+div#copy_urls {
+  grid-column: 3/4;
+  margin: auto;
+  align-content: stretch;
+  filter: invert(0.5);
+}
+
+div#copy_urls img {
+    height: 1.25rem;
+}
+
+div#copy_urls:hover {
+  filter: var(--tab-action-icon-hover-filter);
+  cursor: pointer;
+}
+
+input#tabSearch {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--search-border-bottom);
+    display: block;
+    font-size: 1rem;
+    font-family: "Helvetica", "Arial", sans-serif;
+    margin: 0;
+    padding: 4px 0;
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    font-weight: var(--text-primary-font-weight);
+    background-color: transparent;
+}
+
+label[for="tabSearch"] {
+    bottom: 0;
+    color: var(--colour-very-muted);
+    font-size: 1rem;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    position: absolute;
+    display: block;
+    top: 3px;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: left;
+}
+
+div#tab_host {
+    row-gap: 0;
+}
+
+.tab_item_pinned {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    filter: invert(0.5);
+}
+
+.tab_item.highlighted .tab_item_pinned {
+    filter: var(--tab-pinned-highlighed);
+}
+
+.tab_item.is_pinned .tab_item_pinned {
+    background: url("../img/pin.svg") left top 0.30rem no-repeat;
+    background-size: 0.875rem;
+}
+
+.tab_item.suspended {
+    background-color: var(--tab-background-suspended);
+}
+
+
+.tab_item_icon {
+    height: 1.25rem;
+    margin: auto;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    display: block;
+    filter: opacity(0.6);
+    width: 1.25rem;
+    object-fit: contain;
+    max-height: 100%;
+}
+
+.tab_item.suspended:not(.highlighted) .tab_item_icon {
+    filter: opacity(0.6);
+}
+
+.tab_item.highlighted .tab_item_icon {
+    filter: opacity(1);
+}
+
+.tab_item.suspended.highlighted .tab_item_icon {
+    filter: opacity(1) brightness(125%);
+}
+
+
+
+.tab_item_title {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0.15rem 0 0.25rem;
+    font-size: 16px;
+    letter-spacing: .04rem;
+    color: var(--colour-primary);
+    font-weight: var(--text-primary-font-weight);
+    cursor: pointer;
+}
+
+.tab_item.is_pinned .tab_item_title {
+    padding-left: 1.25rem;
+}
+
+.tab_item_url {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 0.8rem;
+    font-weight: 300;
+    padding: 0.15rem 0 0.15rem;
+    font-size: 14px;
+    letter-spacing: 0;
+    line-height: 18px;
+    color: var(--colour-muted);
+    font-weight: var(--text-primary-font-weight);
+    cursor: pointer;
+}
+
+.highlighted .tab_item_url {
+    color: var(--colour-tab-url-highlighted);
+}
+
+.tab_item_last_activated {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    font-size: .625rem;
+    font-weight: 100;
+    padding-top: 0.15rem;
+    color: var(--colour-muted);
+    display: none;
+}
+
+.tab_item_action_delete {
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
+    filter: invert(0.5);
+    background: var(--close-tab-icon) center center no-repeat;
+    background-size: 1rem;
+    cursor: pointer;
+}
+
+.tab_item.tab_item.highlighted .tab_item_action_delete:hover {
+    filter: var(--tab-action-icon-hover-filter);
+}
+
+.tab_item_active_actions {
+    grid-row: 2 / 3;
+    grid-column: 2 / 4;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr repeat(9, fit-content(3rem));
+    transition: all 0.2s cubic-bezier(.4, 0, 1, 1);
+}
+
+.tab_item_active_action_item {
+    display: none;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 1.1rem;
+    filter: invert(0.5);
+    cursor: pointer;
+    width: 3rem;
+}
+
+.tab_item_active_action_item:not(.disabled):hover {
+    filter: var(--tab-action-icon-hover-filter);
+}
+
+.tab_item.tab_item.highlighted .tab_item_active_action_item {
+    display: inherit;
+}
+
+.tab_item.tab_item .tab_item_active_action_item.hidden {
+    display: none;
+}
+
+.tab_item.tab_item .tab_item_active_action_item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tab_item_active_action_item_padder {
+    width: 3rem;
+}
+
+.tab_item.tab_item.highlighted .tab_item_active_action_item_padder {
+    display: none;
+}
+
+.tab_item_active_action_item[data-action="duplicate"] {
+    background-image: var(--duplicate-tab-icon);
+}
+
+.tab_item_active_action_item[data-action="allow_list"] {
+    background-image: url("/img/ic_check_circle.svg");
+}
+
+.tab_item_active_action_item[data-action="allow_list_domain"] {
+    background-image: url("/img/ic_list_add_check.svg");
+}
+
+.tab_item_active_action_item[data-action="move_window"] {
+    background-image: url("/img/ic_move_to_window.svg");
+}
+
+.tab_item_active_action_item[data-action="suspend"] {
+    background-image: url("/img/tgs/tab_suspend.svg");
+}
+
+.tab_item_active_action_item[data-action="un_suspend"] {
+    background-image: url("/img/tgs/tab_un_suspend.svg");
+}
+
+.tab_item_active_action_item[data-action="pin"].is_pinned {
+    background-image: url("/img/pin.svg");
+}
+
+.tab_item_active_action_item[data-action="pin"] {
+    background-image: url("/img/ic_pin_outlined.svg");
+}
+
+.tab_item_active_action_item[data-action="move_to_first"] {
+    background-image: url("/img/ic_move_tab_first.svg");
+}
+
+.tab_item_active_action_item[data-action="move_to_last"] {
+    background-image: url("/img/ic_move_tab_last.svg");
+}
+
+.tab_item_active_action_item[data-action="list_domain_duplicates"] {
+    background-image: url("/img/ic_domain_duplicates_list.svg");
+}
+
+.tab_item_active_action_item[data-action="close_domain_duplicates"] {
+    background-image: url("/img/ic_domain_duplicates_close.svg");
+}
+

@@ -1,0 +1,53 @@
+{
+   "author": "Ghostery",
+   "background": {
+      "persistent": true,
+      "scripts": [ "dist/background.js" ]
+   },
+   "browser_action": {
+      "default_icon": {
+         "19": "app/images/icon19.png",
+         "38": "app/images/icon38.png"
+      },
+      "default_title": "Ghostery"
+   },
+   "content_scripts": [ {
+      "all_frames": false,
+      "js": [ "dist/account_pages.js" ],
+      "matches": [ "https://account.ghostery.com/*", "https://account.ghosterystage.com/*" ],
+      "run_at": "document_start"
+   }, {
+      "all_frames": false,
+      "js": [ "dist/checkout_pages.js" ],
+      "matches": [ "https://checkout.ghostery.com/*", "https://checkout.ghosterystage.com/*" ],
+      "run_at": "document_start"
+   }, {
+      "all_frames": true,
+      "exclude_matches": [ "*://*/_/chrome/newtab*", "*://ntp.msn.com/*" ],
+      "js": [ "dist/content_script_bundle.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_start"
+   } ],
+   "content_security_policy": "script-src 'self'; object-src 'self'",
+   "default_locale": "en",
+   "description": "__MSG_short_description__",
+   "icons": {
+      "128": "app/images/icon128.png",
+      "16": "app/images/icon16.png",
+      "48": "app/images/icon48.png"
+   },
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWKbhv4tbugT5f8XlKtXmjzhsWjGX+ILAnBL9AOzUA2nYu9Y2P8PAxbOHSRKeLE9zHYD2MzsGgBE4LlLKGV7p5FhrtURBMJrkN5RooOH/RkAPbAvyfJ+sku5qgg2Ijrf10cxXqED39WsTaa4ZWnnkOXl9Y7XMGbuolzBz2m+SfSwIDAQAB",
+   "manifest_version": 2,
+   "minimum_chrome_version": "69",
+   "name": "__MSG_name__",
+   "options_ui": {
+      "open_in_tab": true,
+      "page": "app/templates/hub.html"
+   },
+   "permissions": [ "webNavigation", "webRequest", "webRequestBlocking", "cookies", "tabs", "http://*/*", "https://*/*", "ws://*/*", "wss://*/*", "storage" ],
+   "short_name": "Ghostery",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "8.5.8",
+   "version_name": "8.5.8",
+   "web_accessible_resources": [ "app/images/*" ]
+}

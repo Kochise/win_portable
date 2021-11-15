@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="css/popup_theme.css" />
+        <link rel="stylesheet" type="text/css" href="css/popup_core.css" />
+        <link rel="stylesheet" type="text/css" href="css/tab_search.css" />
+        <link rel="prerender" href="popup_actions.html">
+        <link rel="prerender" href="popup_duplicates.html">
+        <title data-i18n-text="window_title_search_tabs"></title>
+    </head>
+    
+    <body class="">
+        <script src="js/popup_theme.js"></script>
+        
+        <header>
+            <a class="header_item selected" id="tabs_header" data-i18n-text="text_header_search_tabs" data-i18n-title="title_header_search_tabs"></a>
+            <a class="header_item" id="duplicates_header" data-i18n-title="title_header_duplicate_tabs" data-i18n-leading="text_header_duplicate_tabs"><span id="header_duplicate_count"></span></a>
+            <a class="header_item" id="tools_header" data-i18n-text="text_header_popup_actions" data-i18n-title="title_header_popup_actions"></a>
+        </header>
+        
+        <main>
+            
+            <div class="tab" id="action_search">
+                <div class="tabs_action">
+                    <div id="search_holder">
+                        <input id="tabSearch">
+                        <label id="label_tab_search" for="tabSearch" data-i18n-text="text_action_search_open_tabs"></label>
+                    </div>
+                    <div id="tabs_count"></div>
+                    <div id="copy_urls" data-i18n-title="title_action_copy_tabs"><img src="img/ic_copy.svg"></div>
+                </div>
+            </div>
+            
+            <div class="tab" id="tab_host">
+            </div>
+            
+        </main>
+        
+        <footer>
+            <!-- KEYBOARD SHORTCUTS -->
+            <a class="footer_item footer_link imageLink internal_link" id="keyboard_help" data-i18n-title="title_footer_kbd_shortcuts"><img src="img/ic_keyboard.svg" alt="Keyboard shortcuts" id="kbd_help_img"></a>
+            
+            <li class="footer_item"><a target="_blank" class="footer_link" data-i18n-title="title_footer_versions" id="version_span"></a></li>
+            <li class="footer_item"><a target="_blank" class="footer_link internal_link" id="support_footer" data-i18n-text="text_footer_support_clutter_free"></a></li>
+            <li class="footer_item"><a target="_blank"
+                    class="footer_link external_link" id="feedback_link"
+                    data-i18n-text="text_footer_feedback"
+                    data-i18n-title="title_footer_feedback"></a></li>
+            <li class="footer_item"><a target="_blank" class="footer_link external_link" id="c306_apps" data-href="https://c306.net/apps?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=bottombar_appslink&utm_campaign=chrome_projects" data-i18n-text="text_footer_more_apps" data-i18n-title="title_footer_more_apps"></a></li>
+        </footer>
+        
+        <div id="helpModal" class="modalOuter">
+            <div id="helpDiv" class="modalInner">
+                <div id="helpDivContents">
+                    <span id="keyboardShortcutTitle" class="helpDivTitle" data-i18n-text="text_title_popup_keyboard_shortcuts"></span>
+                    <table cellpadding="0" class="helpSectionDiv">
+                        <tbody>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_up"></span>
+                                    <span class="shortcutKeySeparator">/</span>
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_down"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_next_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_enter"></span>
+                                    <span class="shortcutKeySeparator" data-i18n-text="symbol_popup_keyboard_shortcut_comma"></span>
+                                    <span class="shortcutKeySymbol" data-i18n-html="symbol_popup_keyboard_shortcut_enter_symbol"></span>
+                                    <span class="shortcutKeySeparator" data-i18n-text="symbol_popup_keyboard_shortcut_or"></span>
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_return"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" id="enter_key_help" data-i18n-text="symbol_popup_keyboard_shortcut_switch_to_selected_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_delete"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_close_selected_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf requiresTGS">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol">s</span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-html="symbol_popup_keyboard_shortcut_suspend_selected_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf requiresTGS">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol">u</span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-html="symbol_popup_keyboard_shortcut_unsuspend_selected_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol">p</span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-html="symbol_popup_keyboard_shortcut_pin_tab"></td>
+                            </tr>
+                            
+                            <tr><td>&nbsp;</td></tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_escape"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_clear_tab_selection_filter"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol">/</span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_focus_search"></td>
+                            </tr>
+                            
+                            <tr><td>&nbsp;</td></tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_control_key"></span>
+                                    <span class="shortcutKeySeparator">+</span>
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_one_digit"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_go_to_tab_search"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_control_key"></span>
+                                    <span class="shortcutKeySeparator">+</span>
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_two_digit"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_go_to_duplicates_list"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_control_key"></span>
+                                    <span class="shortcutKeySeparator">+</span>
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_three_digit"></span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_go_to_actions_tab"></td>
+                            </tr>
+                            
+                            <tr class="cf">
+                                <td class="shortcutKey">
+                                    <span class="shortcutKeySymbol" data-i18n-text="symbol_popup_keyboard_shortcut_f1"></span>
+                                    <span class="shortcutKeySeparator" data-i18n-text="symbol_popup_keyboard_shortcut_or"></span>
+                                    <span class="shortcutKeySymbol">?</span>
+                                </td>
+                                <td class="helpDivColon">:</td>
+                                <td class="shortcutDetail" data-i18n-text="symbol_popup_keyboard_shortcut_show_shortcuts"></td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div id="toastOuter">
+            <div id="toastContent">
+                <span id="toastText"></span>
+                <a id="toastAction" class="accentedText internal_link"></a>
+            </div>
+        </div>
+        
+        
+        <script type="text/javascript" src="js/ext/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/ext/lodash.min.js"></script>
+        <script type="text/javascript" src="js/constants.js"></script>
+        <script type="text/javascript" src="js/keycodes.js"></script>
+        <script type="text/javascript" src="js/localise.js"></script>
+        <script type="text/javascript" src="js/ls.js"></script>
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
+        <script type="text/javascript" src="js/licenseUtils.js"></script>
+        <script type="text/javascript" src="js/popup_core.js"></script>
+        <script type="text/javascript" src="js/tab_search.js"></script>
+
+    </body>
+
+</html>

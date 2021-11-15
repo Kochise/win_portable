@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title data-i18n-text="options_title"></title>
+        <link rel="stylesheet" type="text/css" href="css/ext/options.css" />
+        <link rel="stylesheet" type="text/css" href="css/options_core.css" />
+        <link rel="stylesheet" type="text/css" href="css/options.css" />
+        <link rel="stylesheet" type="text/css" href="css/license.css" />
+        <script type="text/javascript" src="js/ext/options-setup.js"></script>
+    </head>
+    
+    <body>
+        <nav class="sideBar">
+            <h1 id="extShortName">&nbsp;</h1>
+            <div id="version_number">&nbsp;</div>
+            <ul id="sidebar_nav">
+                <li class="selected" data-section-id="general_title"><a href="#general_title" data-i18n-text="options_nav_general_settings"></a></li>
+                <li data-section-id="tab_search"><a href="#tab_search" data-i18n-text="options_nav_tab_search"></a></li>
+                <li data-section-id="keyboard"><a href="#keyboard" data-i18n-text="options_nav_keyboard_shortcuts"></a></li>
+                <li data-section-id="notifications"><a href="#notifications" data-i18n-text="options_nav_notifications"></a></li>
+                <li data-section-id="about"><a href="#about" data-i18n-text="options_nav_about"></a></li>
+                <li data-section-id="list_control_mode_section"><a href="#list_control_mode_section_title" data-i18n-text="options_nav_list_control_mode"></a></li>
+                <li data-section-id="advanced_url_matching"><a href="#advanced_url_matching" data-i18n-text="options_section_title_advanced_url_matching"></a></li>
+                <li data-section-id="advanced"><a href="#advanced" data-i18n-text="options_nav_advanced"></a></li>
+                <li data-section-id="support"><a id="nav_support" href="#support" data-i18n-text="options_nav_support"></a></li>
+            </ul>
+            
+            <ul id="sidebar_bottom_nav">
+                <li><a id="statsLink" class="hidden internal_links" href="stats.html" data-i18n-text="options_nav_stats"></a></li>
+                <li><a id="updateNotesLink" href="updatenotes.html" data-i18n-text="options_nav_update_notes"></a></li>
+                <li><a href="" class="external_links feedback_link" target="_blank" rel="noopener noreferrer" data-i18n-text="options_nav_feedback"></a></li>
+            </ul>
+        </nav>
+        
+        <div class="settings-sections" id="general_title">
+            
+            <div id="acsBanner">
+                <h3><b>New extension: AutoConvert Select</b></h3>
+                <p>Automatically convert <i>measurement units, time zones and currencies</i> when you select them on a page. Or use the extension window and type/paste to convert all the values in any text.</p>
+                <p>Get it here on the <a id="acs_banner_link" href="https://chrome.google.com/webstore/detail/autoconvert-select-you-se/einokpbfcmmopbfbpiofaeohhkmcbbcg?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_banner&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer">Chrome Web Store</a>.</p>
+            </div>
+            
+            <h1 class="settings-section-title" id="general_title" data-i18n-text="options_nav_general_settings"></h1>
+            
+            <section id="browserActionDiv">
+                <h3 data-i18n-text="options_title_browser_action"></h3>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_message_pin_browser_action"></div>
+                <p data-i18n-text="options_message_browser_action"></p>
+                <select id="browserAction">
+                    <option value="popup" data-i18n-text="options_browser_action_item_popup"></option>
+                    <option value="toggleState" data-i18n-text="options_browser_action_item_toggle_state"></option>
+                    <option value="duplicate" data-i18n-text="options_browser_action_item_duplicate"></option>
+                    <option value="allow_list"></option>
+                    <option value="allow_list_domain"></option>
+                    <option value="moveToLast" data-i18n-text="options_browser_action_item_move_to_last"></option>
+                </select>
+                
+                <p>&nbsp;</p>
+                
+                <label for="showCount" data-i18n-trailing="options_browser_action_label_show_count">
+                    <input type="checkbox" id="showCount" />
+                </label>
+                
+                <div class="cx-edit-help-content" id="browserActionDivHelp">
+                </div>
+            </section>
+            
+            <section id="showContextMenuDiv">
+                <h3 data-i18n-text="options_context_menu_title"></h3>
+                <h4 data-i18n-text="options_context_menu_message"></h4>
+                <div id="contextMenuItemsDiv">
+                    <label class="contextMenuItemLabels" for="contextMenuItemDuplicate" data-i18n-trailing="options_context_menu_item_duplicate"><input class="showContextCheckbox" type="checkbox" id="contextMenuItemDuplicate" value="duplicate"></label>
+                    <label class="contextMenuItemLabels" for="contextMenuItemAllowlist"><input class="showContextCheckbox" type="checkbox" id="contextMenuItemAllowlist" value="allow_list"><span id="contextMenuItemAllowlistSpan"></span></label>
+                    <label class="contextMenuItemLabels" for="contextMenuItemAllowlistDomain"><input class="showContextCheckbox" type="checkbox" id="contextMenuItemAllowlistDomain" value="allow_list_domain"><span id="contextMenuItemAllowlistDomainSpan"></span></label>
+                    <label class="contextMenuItemLabels" for="contextMenuItemMoveToLast" data-i18n-trailing="options_context_menu_item_move_to_last"><input class="showContextCheckbox" type="checkbox" id="contextMenuItemMoveToLast" value="moveToLast"></label>
+                    <label class="contextMenuItemLabels" for="contextMenuItemListDomainDuplicates" data-i18n-trailing="options_keyboard_shortcuts_item_list_domain_duplicates"><input class="showContextCheckbox" type="checkbox" id="contextMenuItemListDomainDuplicates" value="list_domain_duplicates"></label>
+                    <label class="contextMenuItemLabels supporter_only" for="contextMenuItemCloseDomainDuplicates" data-i18n-trailing="options_keyboard_shortcuts_item_close_domain_duplicates" data-i18n-title="message_supporters_only_text"><input class="showContextCheckbox supporter_feature" type="checkbox" id="contextMenuItemCloseDomainDuplicates" value="close_domain_duplicates"></label>
+                </div>
+                <div class="sub_notes">
+                    <span class="sub_notes_super">*</span><span data-i18n-html="options_keyboard_shortcuts_sub_note_floating_window"></span>
+                </div>
+                <div class="cx-edit-help-content" id="showContextMenuDivHelp"></div>
+            </section>
+            
+            <section id="linkMarkersDiv">
+                <h3 data-i18n-text="options_higlight_direct_switch_menu_title"></h3>
+                <p data-i18n-text="options_higlight_direct_switch_menu_message"></p>
+                <label for="linkMarkers" data-i18n-trailing="options_higlight_direct_switch_label">
+                    <input type="checkbox" id="linkMarkers" />
+                </label>
+            </section>
+            
+            <section id="allowDuplicatesAcrossWindowsDiv">
+                <h3 data-i18n-text="options_advanced_allow_duplicates_across_windows_title"></h3>
+                <label for="allowDuplicatesAcrossWindows" data-i18n-trailing="options_advanced_allow_duplicates_across_windows_label">
+                    <input type="checkbox" id="allowDuplicatesAcrossWindows" />
+                </label>
+                <div class="cx-edit-help-content" id="allowDuplicatesAcrossWindowsDivHelp"></div>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="support">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 id="section-title-support" 
+                class="settings-section-title" 
+                data-i18n-leading="options_nav_support">
+                <span id="support_cf_heart"></span>
+            </h1>
+            
+            <section>
+                <!-- Stripe expired -->
+                <div id="stripe_expired"
+                    class="highlightedNote highlightYellow">
+                    <p><strong data-i18n-text="options_support_title_expired"></strong></p>
+                    <p data-i18n-text="options_support_message_expired"></p>
+                    <p class="text-light" data-i18n-text="options_support_message_expired_cws_extend"></p>
+                </div>
+                
+                <!-- Non-supporter -->
+                <div id="non_supporter_message"
+                    class="highlightedNote highlightGreen donate_note">
+                    <p><strong data-i18n-text="options_support_title_non_supporter"></strong></p>
+                    <p data-i18n-text="options_support_message_non_supporter">
+                    </p>
+                </div>
+                
+                <!-- Grace period -->
+                <p id="gracePeriod" data-i18n-text="options_support_message_grace_period"></p>
+
+                <!-- Identity/email -->
+                <div id="identity_message" class="highlightBlue highlightedNote"
+                    data-i18n-html="options_identity_message"></div>
+
+                <!-- Supporter section -->
+                <div id="supporter_message" class="highlightedNote highlightGreen gift_note"></div>
+                
+                <!-- Purchasable skus -->
+                <div id="supporter_list_items"></div>
+                <p id="powered-by-stripe" data-i18n-leading="options_support_message_powered_by_stripe"><img id="stripe-logo" src="./img/stripe.svg" /></p>
+                
+                <!-- Note about purchasables and link to subscriptions. -->
+                <div id="purchasables_description" class="block">
+                    <p data-i18n-text="options_message_about_supporter_all_features"></p>
+                    <p data-i18n-html="options_message_about_supporter_read_more"></p>
+                </div>
+                
+                <!-- Existing subscriber section -->
+                <div id="find_sub" class="block">
+                    <h4 data-i18n-text="options_title_find_sub"></h4>
+                    <span data-i18n-text="options_label_find_sub" class=""></span>
+                    <span></span>
+                    <button id="button_find_sub"
+                        data-i18n-text="options_button_find_sub"
+                        class="checkout-button"></button>
+                    <span id="find_sub_input_status"></span></span>
+                </div>
+                
+                <!-- Reward code section -->
+                <div id="reward_code_input" class="block">
+                    <span data-i18n-text="options_label_reward_code" class="bolder"></span>
+                    <span></span>
+                    <span><input type="text" id="reward_code" size="36" placeholder="Paste your reward code here"> <span id="reward_code_input_status"></span></span>
+                    <button id="activate_reward_code" data-i18n-text="options_button_reward_code"></button>
+                </div>
+                
+                <div class="blank_box" id="reward_code_user">
+                    <span id="reward_code_user_message" data-i18n-text="options_message_reward_user"></span>
+                </div>
+
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="tab_search">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_nav_tab_search"></h1>
+            
+            <section id="searchAllWindowsDiv">
+                <h3 data-i18n-text="options_search_all_windows_title"></h3>
+                <label for="searchAllWindows" data-i18n-trailing="options_search_all_windows_label">
+                    <input type="checkbox" id="searchAllWindows" />
+                </label>
+            </section>
+            
+            <section id="floatingSearchWindowDiv">
+                <h3 data-i18n-text="options_floating_search_window_title"></h3>
+                <label for="floatingSearchWindow" data-i18n-trailing="options_floating_search_window_label">
+                    <input type="checkbox" id="floatingSearchWindow" />
+                </label>
+                <p data-i18n-text="options_floating_search_window_message"></p>
+            </section>
+            
+            <section id="cfWindowThemeDiv">
+                <h3 data-i18n-text="options_search_window_theme_title"></h3>
+                <label class="radioLabel" for="cf_window_theme_light" data-i18n-trailing="options_theme_light"><input type="radio" name="cfWindowTheme" id="cf_window_theme_light" value="cf_div_theme_light"></label>
+                <label class="radioLabel" for="cf_window_theme_dark" data-i18n-trailing="options_theme_dark"><input type="radio" name="cfWindowTheme" id="cf_window_theme_dark" value="cf_div_theme_dark"></label>
+                <label class="radioLabel" for="cf_window_theme_system" data-i18n-trailing="options_theme_system"><input type="radio" name="cfWindowTheme" id="cf_window_theme_system" value="cf_div_theme_system"></label>
+            </section>
+            
+            <section id="copyUrlsFormatDiv">
+                <h3 data-i18n-text="options_copy_urls_format_title"></h3>
+                <p data-i18n-html="options_copy_urls_format_message"></p>
+                <label class="radioLabel" for="copy_urls_format_text" data-i18n-trailing="options_copy_format_text"><input type="radio" name="copyUrlsFormat" id="copy_urls_format_text" value="copy_urls_format_text"></label>
+                <label class="radioLabel" for="copy_urls_format_markdown" data-i18n-trailing="options_copy_format_markdown"><input type="radio" name="copyUrlsFormat" id="copy_urls_format_markdown" value="copy_urls_format_markdown"></label>
+                <label class="radioLabel" for="copy_urls_format_urls_only" data-i18n-trailing="options_copy_format_url_only"><input type="radio" name="copyUrlsFormat" id="copy_urls_format_urls_only" value="copy_urls_format_urls_only"></label>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="keyboard">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_nav_keyboard_shortcuts"></h1>
+            
+            <section id="keyboardCommandsDiv">
+                <h2 class="supporter_only" data-i18n-text="options_customise_keyboard_shortcuts_title"></h2>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_keyboard_shortcuts_customise_info"></div>
+                <h4 data-i18n-html="options_keyboard_shortcuts_message"></h4>
+                <ul id="keyboardCommandItemsDiv">
+                    
+                    <li id="kbd_cmd_browser_action">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_browser_action">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                    <li id="kbd_cmd_item_1">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_1">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <select id="kbd_cmd_1" class="command_action supporter_feature">
+                            <option value=""></option>
+                            <option value="open_tab_search" data-i18n-text="options_keyboard_shortcuts_item_open_tab_search"></option>
+                            <option value="duplicate" data-i18n-text="options_keyboard_shortcuts_item_duplicate"></option>
+                            <option value="open_duplicate_tabs_list" data-i18n-text="options_keyboard_shortcuts_item_open_duplicate_tabs_list"></option>
+                            <option value="close_all_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_all_duplicates"></option>
+                            <option value="switch_mode" data-i18n-text="options_keyboard_shortcuts_item_switch_mode"></option>
+                            <option disabled>---</option>
+                            <option value="allow_list" data-i18n-html="options_keyboard_shortcuts_item_allow_list"></option>
+                            <option value="allow_list_domain" data-i18n-html="options_keyboard_shortcuts_item_allow_list_domain"></option>
+                            <option value="add_to_domain_blocklist" data-i18n-text="options_keyboard_shortcuts_item_add_to_domain_blocklist"></option>
+                            <option disabled>---</option>
+                            <option value="list_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_list_domain_duplicates"></option>
+                            <option value="close_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_domain_duplicates"></option>
+                            <option disabled>---</option>
+                            <option value="pin_tab" data-i18n-text="options_keyboard_shortcuts_item_pin_tab"></option>
+                            <option value="suspend_tab" data-i18n-text="options_keyboard_shortcuts_item_suspend_tab"></option>
+                            <option value="move_tab_to_end" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_end"></option>
+                            <option value="move_tab_to_first" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_first"></option>
+                            <option disabled>---</option>
+                            <option value="open_cf_settings" data-i18n-text="options_keyboard_shortcuts_item_open_cf_settings"></option>
+                            <option value="open_chrome_settings" data-i18n-text="options_keyboard_shortcuts_item_open_chrome_settings"></option>
+                        </select>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                    <li id="kbd_cmd_item_2">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_2">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <select id="kbd_cmd_2" class="command_action supporter_feature">
+                            <option value=""></option>
+                            <option value="open_tab_search" data-i18n-text="options_keyboard_shortcuts_item_open_tab_search"></option>
+                            <option value="duplicate" data-i18n-text="options_keyboard_shortcuts_item_duplicate"></option>
+                            <option value="open_duplicate_tabs_list" data-i18n-text="options_keyboard_shortcuts_item_open_duplicate_tabs_list"></option>
+                            <option value="close_all_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_all_duplicates"></option>
+                            <option value="switch_mode" data-i18n-text="options_keyboard_shortcuts_item_switch_mode"></option>
+                            <option disabled>---</option>
+                            <option value="allow_list" data-i18n-html="options_keyboard_shortcuts_item_allow_list"></option>
+                            <option value="allow_list_domain" data-i18n-html="options_keyboard_shortcuts_item_allow_list_domain"></option>
+                            <option value="add_to_domain_blocklist" data-i18n-text="options_keyboard_shortcuts_item_add_to_domain_blocklist"></option>
+                            <option disabled>---</option>
+                            <option value="list_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_list_domain_duplicates"></option>
+                            <option value="close_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_domain_duplicates"></option>
+                            <option disabled>---</option>
+                            <option value="pin_tab" data-i18n-text="options_keyboard_shortcuts_item_pin_tab"></option>
+                            <option value="suspend_tab" data-i18n-text="options_keyboard_shortcuts_item_suspend_tab"></option>
+                            <option value="move_tab_to_end" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_end"></option>
+                            <option value="move_tab_to_first" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_first"></option>
+                            <option disabled>---</option>
+                            <option value="open_cf_settings" data-i18n-text="options_keyboard_shortcuts_item_open_cf_settings"></option>
+                            <option value="open_chrome_settings" data-i18n-text="options_keyboard_shortcuts_item_open_chrome_settings"></option>
+                        </select>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                    <li id="kbd_cmd_item_3">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_3">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <select id="kbd_cmd_3" class="command_action supporter_feature">
+                            <option value=""></option>
+                            <option value="open_tab_search" data-i18n-text="options_keyboard_shortcuts_item_open_tab_search"></option>
+                            <option value="duplicate" data-i18n-text="options_keyboard_shortcuts_item_duplicate"></option>
+                            <option value="open_duplicate_tabs_list" data-i18n-text="options_keyboard_shortcuts_item_open_duplicate_tabs_list"></option>
+                            <option value="close_all_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_all_duplicates"></option>
+                            <option value="switch_mode" data-i18n-text="options_keyboard_shortcuts_item_switch_mode"></option>
+                            <option disabled>---</option>
+                            <option value="allow_list" data-i18n-html="options_keyboard_shortcuts_item_allow_list"></option>
+                            <option value="allow_list_domain" data-i18n-html="options_keyboard_shortcuts_item_allow_list_domain"></option>
+                            <option value="add_to_domain_blocklist" data-i18n-text="options_keyboard_shortcuts_item_add_to_domain_blocklist"></option>
+                            <option disabled>---</option>
+                            <option value="list_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_list_domain_duplicates"></option>
+                            <option value="close_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_domain_duplicates"></option>
+                            <option disabled>---</option>
+                            <option value="pin_tab" data-i18n-text="options_keyboard_shortcuts_item_pin_tab"></option>
+                            <option value="suspend_tab" data-i18n-text="options_keyboard_shortcuts_item_suspend_tab"></option>
+                            <option value="move_tab_to_end" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_end"></option>
+                            <option value="move_tab_to_first" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_first"></option>
+                            <option disabled>---</option>
+                            <option value="open_cf_settings" data-i18n-text="options_keyboard_shortcuts_item_open_cf_settings"></option>
+                            <option value="open_chrome_settings" data-i18n-text="options_keyboard_shortcuts_item_open_chrome_settings"></option>
+                        </select>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                    <li id="kbd_cmd_item_4">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_4">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <select id="kbd_cmd_4" class="command_action supporter_feature">
+                            <option value=""></option>
+                            <option value="open_tab_search" data-i18n-text="options_keyboard_shortcuts_item_open_tab_search"></option>
+                            <option value="duplicate" data-i18n-text="options_keyboard_shortcuts_item_duplicate"></option>
+                            <option value="open_duplicate_tabs_list" data-i18n-text="options_keyboard_shortcuts_item_open_duplicate_tabs_list"></option>
+                            <option value="close_all_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_all_duplicates"></option>
+                            <option value="switch_mode" data-i18n-text="options_keyboard_shortcuts_item_switch_mode"></option>
+                            <option disabled>---</option>
+                            <option value="allow_list" data-i18n-html="options_keyboard_shortcuts_item_allow_list"></option>
+                            <option value="allow_list_domain" data-i18n-html="options_keyboard_shortcuts_item_allow_list_domain"></option>
+                            <option value="add_to_domain_blocklist" data-i18n-text="options_keyboard_shortcuts_item_add_to_domain_blocklist"></option>
+                            <option disabled>---</option>
+                            <option value="list_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_list_domain_duplicates"></option>
+                            <option value="close_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_domain_duplicates"></option>
+                            <option disabled>---</option>
+                            <option value="pin_tab" data-i18n-text="options_keyboard_shortcuts_item_pin_tab"></option>
+                            <option value="suspend_tab" data-i18n-text="options_keyboard_shortcuts_item_suspend_tab"></option>
+                            <option value="move_tab_to_end" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_end"></option>
+                            <option value="move_tab_to_first" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_first"></option>
+                            <option disabled>---</option>
+                            <option value="open_cf_settings" data-i18n-text="options_keyboard_shortcuts_item_open_cf_settings"></option>
+                            <option value="open_chrome_settings" data-i18n-text="options_keyboard_shortcuts_item_open_chrome_settings"></option>
+                        </select>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                    <li id="kbd_cmd_item_5">
+                        <span class="command_name" data-i18n-leading="options_keyboard_shortcuts_item_5">:</span>
+                        <span class="command_label_keys" data-i18n-text="options_keyboard_shortcuts_label_keys"></span>
+                        <span class="command_keys_code offset_1"><code class="highlightedCode command_keys"></code></span>
+                        <span class="command_label_action" data-i18n-text="options_keyboard_shortcuts_label_actions"></span>
+                        <select id="kbd_cmd_5" class="command_action supporter_feature">
+                            <option value=""></option>
+                            <option value="open_tab_search" data-i18n-text="options_keyboard_shortcuts_item_open_tab_search"></option>
+                            <option value="duplicate" data-i18n-text="options_keyboard_shortcuts_item_duplicate"></option>
+                            <option value="open_duplicate_tabs_list" data-i18n-text="options_keyboard_shortcuts_item_open_duplicate_tabs_list"></option>
+                            <option value="close_all_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_all_duplicates"></option>
+                            <option value="switch_mode" data-i18n-text="options_keyboard_shortcuts_item_switch_mode"></option>
+                            <option disabled>---</option>
+                            <option value="allow_list" data-i18n-html="options_keyboard_shortcuts_item_allow_list"></option>
+                            <option value="allow_list_domain" data-i18n-html="options_keyboard_shortcuts_item_allow_list_domain"></option>
+                            <option value="add_to_domain_blocklist" data-i18n-text="options_keyboard_shortcuts_item_add_to_domain_blocklist"></option>
+                            <option disabled>---</option>
+                            <option value="list_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_list_domain_duplicates"></option>
+                            <option value="close_domain_duplicates" data-i18n-text="options_keyboard_shortcuts_item_close_domain_duplicates"></option>
+                            <option disabled>---</option>
+                            <option value="pin_tab" data-i18n-text="options_keyboard_shortcuts_item_pin_tab"></option>
+                            <option value="suspend_tab" data-i18n-text="options_keyboard_shortcuts_item_suspend_tab"></option>
+                            <option value="move_tab_to_end" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_end"></option>
+                            <option value="move_tab_to_first" data-i18n-text="options_keyboard_shortcuts_item_move_tab_to_first"></option>
+                            <option disabled>---</option>
+                            <option value="open_cf_settings" data-i18n-text="options_keyboard_shortcuts_item_open_cf_settings"></option>
+                            <option value="open_chrome_settings" data-i18n-text="options_keyboard_shortcuts_item_open_chrome_settings"></option>
+                        </select>
+                        <span class="command_action offset_1"></span>
+                    </li>
+                    
+                </ul>
+                <div class="sub_notes">
+                    <span class="sub_notes_super">*</span><span data-i18n-html="options_keyboard_shortcuts_sub_note_floating_window"></span>
+                    <sup class="sub_notes_super">+</sup><span data-i18n-html="options_keyboard_shortcuts_sub_note_great_suspender"></span>
+                </div>
+                <div class="cx-edit-help-content" id="keyboardCommandsDivHelp"></div>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="notifications">
+            
+            <!-- Notifications ID is here so notifications section is visible under the header -->
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_nav_notifications"></h1>
+            
+            <p data-i18n-text="options_notifications_message"></p>
+            <div class="highlightedNote highlightBlue" data-i18n-html="options_notifications_notice"></div>
+            
+            <section id="showNotificationsDiv">
+                <h3 data-i18n-text="options_notifications_title"></h3>
+                <div id="selectNotifications">
+                    
+                    <span class="notification_table_header" style="text-align: left" data-i18n-text="options_notifications_th_notification"></span>
+                    <span class="notification_table_header" data-i18n-text="options_notifications_th_cf"></span>
+                    <span class="notification_table_header" data-i18n-text="options_notifications_th_native"></span>
+                    <span class="notification_table_header" data-i18n-text="options_notifications_th_none"></span>
+                    
+                    <span data-i18n-text="options_notifications_item_duplicate_tab_closed"></span>
+                    <input type="radio" class="notifyType" name="notifyBackgroudDuplicatesClosed" value="in_page"/>
+                    <input type="radio" class="notifyType" name="notifyBackgroudDuplicatesClosed" value="native" disabled />
+                    <input type="radio" class="notifyType" name="notifyBackgroudDuplicatesClosed" value="off" />
+                    
+                    <span id="label_notification_control_list_updated"></span>
+                    <input type="radio" class="notifyType" name="notifyOthers" value="in_page" />
+                    <input type="radio" class="notifyType" name="notifyOthers" value="native" />
+                    <input type="radio" class="notifyType" name="notifyOthers" value="off" />
+                    
+                    <span data-i18n-text="options_notifications_item_duplicates_found"></span>
+                    <input type="radio" class="notifyType" name="notifyPreviousDuplicates" value="in_page" />
+                    <input type="radio" class="notifyType" name="notifyPreviousDuplicates" value="native" />
+                    <input type="radio" class="notifyType" name="notifyPreviousDuplicates" value="off" />
+                    
+                    <span data-i18n-text="options_notifications_item_weekly_stats"></span>
+                    <input type="radio" class="notifyType" name="notifyWeeklyStats" value="in_page" disabled />
+                    <input type="radio" class="notifyType" name="notifyWeeklyStats" value="native" />
+                    <input type="radio" class="notifyType" name="notifyWeeklyStats" value="off" />
+                    
+                </div>
+                <div class="cx-edit-help-content" id="showNotificationsDivHelp">
+                </div>
+            </section>
+            
+            <section id="in_page_notification_settings_div">
+                <h3 data-i18n-text="options_notifications_theme_title"></h3>
+                <label class="radioLabel" for="cf_div_theme_dark" data-i18n-trailing="options_theme_dark"><input type="radio" name="inPageNotificationTheme" id="cf_div_theme_dark" value="cf_div_theme_dark"></label>
+                <label class="radioLabel" for="cf_div_theme_light" data-i18n-trailing="options_theme_light"><input type="radio" name="inPageNotificationTheme" id="cf_div_theme_light" value="cf_div_theme_light"></label>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="about">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_section_title_about"></h1>
+            
+            
+            <section id="cFLinks">
+                <h3 data-i18n-text="options_about_updates_reviews_title"></h3>
+                <ul>
+                    <li data-i18n-trailing="options_about_updates_reviews_text_reviews_trailing"><a href="https://chrome.google.com/webstore/detail/iipjdmnoigaobkamfhnojmglcdbnfaaf/reviews?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=reviewsLink&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer" class="external_links" id="cws_review" data-i18n-text="options_about_updates_reviews_text_reviews"></a></li>
+                    <li data-i18n-trailing="options_about_updates_reviews_text_updates_trailing"><a href="updatenotes.html" data-i18n-text="options_about_updates_reviews_text_updates"></a></li>
+                    <li><a href="https://c306.net/apps/privacy/clutterfree/" target="_blank" rel="noopener noreferrer" class="external_links" id="privacy_policy" data-i18n-text="options_about_updates_reviews_text_privacy"></a></li>
+                </ul>
+            </section>
+            
+            <section id="feedback">
+                <h3 data-i18n-text="options_about_feedback_title"></h3>
+                <p>
+                    <span data-i18n-text="options_about_feedback_message_pre"></span>
+                    <a href="" class="external_links feedback_link" target="_blank" rel="noopener noreferrer" data-i18n-text="options_about_feedback_message_form"></a>
+                    <span data-i18n-text="options_about_feedback_message_post"></span>
+                </p>
+                <div class="cx-edit-help-content" id="feedbackHelp"></div>
+            </section>
+            
+            <section id="me">
+                <h3 data-i18n-text="options_about_my_apps_title"></h3>
+                <ul id="extList">
+                    <li><strong><a href="https://chrome.google.com/webstore/detail/autoconvert-select-you-se/einokpbfcmmopbfbpiofaeohhkmcbbcg?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_acs_CWS&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer" class="external_links" id="cws_acs" data-i18n-text="options_about_my_apps_acs"></a><span data-i18n-text="options_about_my_apps_acs_trail" ></span></strong> </li>
+                    <li><a href="https://chrome.google.com/webstore/detail/mndijfcodpjlhgjcpcbhncjakaboedbl?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_tt_CWS&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer" class="external_links" id="cws_todotxt" data-i18n-text="options_about_my_apps_tt"></a><span data-i18n-text="options_about_my_apps_tt_mid"></span><a href="http://todotxt.com?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_todotxtcom&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer" class="external_links" id="todotxtcom" data-i18n-text="options_about_my_apps_tt_end"></a></li>
+                    <li><a href="https://chrome.google.com/webstore/detail/hjheoelfkeadifffbnfalekganbennde?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_tt_CWS&utm_campaign=chrome_projects" target="_blank" rel="noopener noreferrer" class="external_links" id="cws_ntp" data-i18n-text="options_about_my_apps_ntp"></a><span data-i18n-text="options_about_my_apps_ntp_trail" ></span></li>
+                </ul>
+                <p><span data-i18n-text="options_about_my_apps_all_apps"></span><a href="https://c306.net/apps?utm_source=Clutter%20Free&utm_medium=chrome_projects&utm_content=dT_Options_appsLink&utm_campaign=chrome_projects" target="_blank">c306.net/apps</a></p>
+                <div class="cx-edit-help-content" id="meHelp"></div>
+            </section>
+            
+            <section id="ex_settings">
+                <h3 data-i18n-text="options_export_settings_title"></h3>
+                <div class="highlightedNote highlightYellow"><p data-i18n-text="options_export_settings_notice"></p></div>
+                <p><button id="exportSettings" data-i18n-text="options_export_settings_label"></button>
+            </section>
+            
+            <section id="im_settings">
+                <h3 data-i18n-text="options_import_settings_title"></h3>
+                <div class="highlightedNote highlightYellow"><p data-i18n-text="options_import_settings_notice"></p></div>
+                <p><label for="importSettings" data-i18n-leading="options_import_settings_label"><input type='file' accept='text/plain' id="importSettings"></label></p>
+                <span id="importStatus" data-i18n-text="options_import_settings_status"></span>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="list_control_mode_section">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" id="list_control_mode_section_title" data-i18n-text="options_nav_list_control_mode"></h1>
+            
+            <section>
+                <p data-i18n-text="section_message_list_control_mode"></p>
+                <div class="highlightedNote highlightBlue" data-i18n-html="section_explanation_list_control_mode"></div>
+                <h4 data-i18n-text="section_subtitle_list_control_mode"></h4>
+                <select id="list_control_mode">
+                    <option value="allow_list" data-i18n-text="option_use_allow_list"></option>
+                    <option value="block_list" data-i18n-text="option_use_block_list"></option>
+                </select>
+            </section>
+            
+            <section id="allow_list">
+                <h2 data-i18n-text="options_title_allow_list"></h2>
+                <p data-i18n-text="options_message_allow_list"></p>
+                <h4 data-i18n-text="options_allow_list_add_title"></h4>
+                <form id="allowListAddForm">
+                    <input id="allowListInput" type="text" placeholder="c306.net or chrome://apps/">&nbsp;<button type="submit" data-i18n-text="options_allow_list_add_button"></button><span id="addToAllowListError" class="errorSpan" data-i18n-text="status_setting_not_saved"></span>
+                </form>
+                <h4 data-i18n-text="options_allow_list_remove_title"></h4>
+                <form class="form-horizontal" id="allowListRemoveForm">
+                    <select multiple="multiple" id="allowListSelect" size="9">
+                    </select>
+                    <p></p>
+                    <button type="submit" data-i18n-text="options_allow_list_remove_button"></button>
+                </form>
+                <div class="cx-edit-help-content" id="allow_listHelp"></div>
+            </section>
+            
+            <section id="block_list">
+                <h2 data-i18n-text="section_title_block_list"></h2>
+                <p data-i18n-text="section_message_block_list"></p>
+                
+                <h4 data-i18n-text="section_subtitle_block_list_add"></h4>
+                <form id="blockListAddForm">
+                    <input id="blockListInput" type="text" placeholder="">&nbsp;<button type="submit" data-i18n-text="button_block_list_add"></button><span id="addToBlocklistError" class="errorSpan" data-i18n-text="status_setting_not_saved"></span>
+                </form>
+                
+                <h4 data-i18n-text="section_subtitle_block_list_remove"></h4>
+                <form class="form-horizontal" id="blockListRemoveForm">
+                    <select multiple="multiple" id="blockListSelect" size="9">
+                    </select>
+                    <p></p>
+                    <button type="submit" data-i18n-text="button_block_list_remove"></button>
+                </form>
+                <div class="cx-edit-help-content" id="block_listHelp"></div>
+            </section>
+            
+            <p>&nbsp;</p>
+            
+            <section id="domainBlockList">
+                
+                <h2 class="supporter_only" data-i18n-text="section_title_domain_block_list"></h2>
+                
+                <p class="message_supporters_only" data-i18n-html="message_supporters_only"></p>
+                
+                <label for="isDomainBlocklistEnabled" data-i18n-trailing="label_enable_domain_block_list">
+                    <input type="checkbox" id="isDomainBlocklistEnabled" />
+                </label>
+                
+                <p class="highlightedNote highlightBlue" data-i18n-html="message_explanation_domain_block_list" id="domainBlockListExplanationShort"></p>
+                
+                <div id="domainBlocklistDiv">
+                    
+                    <div class="highlightedNote highlightBlue" data-i18n-html="message_explanation_detailed_domain_block_list"></div>
+                    
+                    <h4 data-i18n-text="section_subtitle_domain_block_list_add"></h4>
+                    <form id="domainBlocklistAddForm">
+                        <input id="domainBlocklistInput" type="text" placeholder="facebook.com or amazon.com">&nbsp;<button type="submit" data-i18n-text="button_domain_block_list_add"></button><span id="addToDomainBlocklistError" class="errorSpan" data-i18n-text="status_setting_not_saved"></span>
+                    </form>
+                    
+                    <h4 data-i18n-text="section_subtitle_domain_block_list_remove"></h4>
+                    <form class="form-horizontal" id="domainBlocklistRemoveForm">
+                        <select multiple="multiple" id="domainBlocklistSelect" size="9">
+                        </select>
+                        <p></p>
+                        <button type="submit" data-i18n-text="button_domain_block_list_remove"></button>
+                    </form>
+                </div>
+                
+                <div class="cx-edit-help-content" id="domainBlockListHelp"></div>
+                
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="advanced_url_matching">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_section_title_advanced_url_matching"></h1>
+            
+            <section id="ignoreHashDiv">
+                <h3 data-i18n-text="section_title_ignore_hash"></h3>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_ignore_hash_message"></div>
+                <label for="ignoreHash" data-i18n-trailing="options_ignore_hash_label">
+                    <input type="checkbox" id="ignoreHash" />
+                </label>
+                <div class="cx-edit-help-content" id="ignoreHashDivHelp"></div>
+            </section>
+            
+            <section id="ignoreQueryDiv">
+                <h3 data-i18n-text="section_title_ignore_query"></h3>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_ignore_query_message"></div>
+                <label for="ignoreQuery" data-i18n-trailing="options_ignore_query_label">
+                    <input type="checkbox" id="ignoreQuery" />
+                </label>
+                <div class="cx-edit-help-content" id="ignoreQueryDivHelp"></div>
+            </section>
+            
+            <section id="aum_div">
+                <h3 data-i18n-html="section_title_advanced_url_matching" class="supporter_only"></h3>
+                
+                <p data-i18n-text="options_advanced_url_matching_message"></p>
+                
+                <h4 data-i18n-text="options_advanced_url_matching_list_title"></h4>
+                <div id="aum_list">
+                    <div class="aum_grid_container" id="aum_header_row">
+                        <span class="website_name_span" data-i18n-text="options_aum_list_header_website"></span>
+                        <span data-i18n-text="options_aum_list_header_ignore_hash"></span>
+                        <span data-i18n-text="options_aum_list_header_ignore_query"></span>
+                        <span data-i18n-text="options_aum_list_header_remove_site"></span>
+                    </div>
+                    <div class="aum_grid_container" id="aum_items_container">
+                        <!-- <div class="row_wrapper" data-key="${item.key}">
+                            <span class="website_name_span">${item.url}</span>
+                            <span class="faux_checkbox aum_ignore_hash" data-checked="${item.ignoreHash}" data-key="${item.key}">&nbsp;</span>
+                            <span class="faux_checkbox aum_ignore_query" data-checked="${item.ignoreQuery}" data-key="${item.key}">&nbsp;</span>
+                            <span class="aum_remove_site" title="${titleAumRemoveSite}" data-key="${item.key}">&nbsp;</span>
+                        </div> -->
+                    </div>
+                </div>
+                
+                <h4 data-i18n-text="options_advanced_url_matching_add_title"></h4>
+                
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_aum_add_url_info"></div>
+                
+                <form id="aum_add_form">
+                    <label for="aum_add_url" data-i18n-text="options_aum_add_url_label"></label>
+                    <input id="aum_add_url" type="text" placeholder="https://docs.google.com/spreadsheets">
+                    <label for="aum_add_ignore_hash" data-i18n-text="options_aum_add_ignore_hash_label"></label>
+                    <input id="aum_add_ignore_hash" type="checkbox" checked>
+                    <label for="aum_add_ignore_query" data-i18n-text="options_aum_add_ignore_query_label"></label>
+                    <input id="aum_add_ignore_query" type="checkbox" checked>
+                    <button type="submit" data-i18n-text="options_aum_add_button"></button>
+                    <span id="add_to_aum_error" class="errorSpan" data-i18n-text="status_setting_not_saved"></span>
+                </form>
+                
+                <div class="cx-edit-help-content" id="aum_divHelp"></div>
+            </section>
+            
+        </div>
+        
+        <div class="settings-sections" id="advanced">
+            
+            <div class="settings-separater"></div>
+            
+            <h1 class="settings-section-title" data-i18n-text="options_section_title_advanced"></h1>
+            
+            <section id="tabCountLimitDiv">
+                <h3 data-i18n-html="options_advanced_tab_count_limit_title" class="supporter_only"></h3>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_advanced_tab_count_limit_info"></div>
+                <div id="tab_count_limit_container">
+                    <label for="tab_count_limit_enabled" data-i18n-trailing="options_advanced_tab_count_limit_enable_label"></label>
+                    <input type="checkbox" id="tab_count_limit_enabled" />
+                    <p class="grid_row_blocker"></p>
+                    <label class="tab_count_enabled_dependant" for="tab_count_limit" data-i18n-text="options_advanced_tab_count_limit_label"></label>
+                    <div>
+                        <input class="tab_count_enabled_dependant" type="number" min="1" id="tab_count_limit" />
+                        <span id="tab_count_limit_saved" class="save_success" data-i18n-text="options_advanced_tab_count_limit_saved"></span>
+                    </div>
+                    <span id="tab_count_limit_status"></span>
+                    <span id="tab_count_limit_status_smiley">&nbsp;</span>
+                    <p class="grid_row_blocker"></p>
+                    <span id="tab_count_limit_style_label" class="tab_count_enabled_dependant" data-i18n-leading="options_advanced_tab_count_limit_style"></span>
+                    <label class="radioLabel tab_count_enabled_dependant" for="tab_limit_style_notify" data-i18n-trailing="options_advanced_tab_count_limit_style_notify"><input class="tab_count_enabled_dependant" type="radio" name="tab_limit_style" id="tab_limit_style_notify" value="tab_limit_style_notify"></label>
+                    <label class="radioLabel disabled" for="tab_limit_style_block" data-i18n-trailing="options_advanced_tab_count_limit_style_block"><input class="tab_count_enabled_dependant" type="radio" name="tab_limit_style" id="tab_limit_style_block" value="tab_limit_style_block" disabled></label>
+                </div>
+                <div class="cx-edit-help-content" id="tabCountLimitDivHelp"></div>
+            </section>
+            
+            <section id="moveOriginalTabDiv">
+                <h3 data-i18n-text="options_advanced_move_original_tab_title"></h3>
+                <h4 data-i18n-text="options_advanced_move_original_tab_message"></h4>
+                <div data-i18n-html="options_advanced_move_original_tab_info" class="highlightedNote highlightBlue"></div>
+                <select id="moveOriginalTab">
+                    <option value="to_duplicate_location" data-i18n-html="options_advanced_move_original_tab_option_to_duplicate_location"></option>
+                    <option value="to_window_end" data-i18n-text="options_advanced_move_original_tab_option_to_window_end"></option>
+                    <option value="dont_move" data-i18n-html="options_advanced_move_original_tab_option_dont_move"></option>
+                </select>
+                <div class="cx-edit-help-content" id="moveOriginalTabDivHelp"></div>
+            </section>
+            
+            <section id="startStateDiv">
+                <h3 data-i18n-text="options_advanced_start_state_title"></h3>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_advanced_start_state_info"></div>
+                <select id="startState">
+                    <option value="on" data-i18n-text="options_advanced_start_state_option_on"></option>
+                    <option value="off" data-i18n-text="options_advanced_start_state_option_off"></option>
+                </select>
+                <div class="cx-edit-help-content" id="startStateDivHelp"></div>
+            </section>
+            
+            <section id="refreshOriginalDiv">
+                <h3 data-i18n-text="options_advanced_refresh_original_tab_title"></h3>
+                <label for="refreshOriginal" data-i18n-trailing="options_advanced_refresh_original_tab_label"><input type="checkbox" id="refreshOriginal" /></label>
+                <div class="cx-edit-help-content" id="refreshOriginalDivHelp"></div>
+            </section>
+            
+            <section id="closeDuplicateOriginatorDiv">
+                <h3 data-i18n-html="options_advanced_close_duplicate_originator_title"></h3>
+                <label for="closeDuplicateOriginator" data-i18n-trailing="options_advanced_close_duplicate_originator_label"><input type="checkbox" id="closeDuplicateOriginator" /></label>
+                <div class="highlightedNote highlightBlue" data-i18n-html="options_advanced_close_duplicate_originator_info"></div>
+                <div class="cx-edit-help-content" id="closeDuplicateOriginatorDivHelp"></div>
+            </section>
+            
+        </div>
+        
+        <div id="mask"></div>
+        
+        <!-- TODO: Find and attribute all sources of code and icons -->
+        <!-- <div class="settings-sections" id="credits">
+            <ul>
+            <li>Clutter Free derived from the duplicate tab icon by The Oxygen team <a href="https://www.iconarchive.com/icons/oxygen-icons.org/oxygen/authors.txt" title="Duplicate tab icon by Oxygen Icons">Clutter Free</a></li>
+            <li>Donate box icon made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a></li>
+            <li>Gift box icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a></li>
+            </ul>
+        </div> -->
+        
+        <div id="snackbar" style="display: none"></div>
+        
+        <script type="text/javascript" src="js/ext/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="js/ext/lodash.min.js"></script>
+        <script type="text/javascript" src="js/constants.js"></script>
+        <script type="text/javascript" src="js/localise.js"></script>
+        <script type="text/javascript" src="js/ls.js"></script>
+        <script type="text/javascript" src="js/utils.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
+        <script type="text/javascript" src="js/licenseUtils.js"></script>
+        <script type="module" src="js/options.js"></script>
+    </body>
+</html>

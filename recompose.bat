@@ -94,3 +94,18 @@ rem	)
 )
 
 cd "..\..\.."
+
+rem Recompose 'Chrome' dependencies
+cd "Chrome\App\Chrome-bin\95.0.4638.69"
+
+if exist "chrome.dll.001" (
+rem	if not exist "chrome.dll" (
+		copy /y /b "chrome.dll.001"+"chrome.dll.002"+"chrome.dll.003" "chrome.dll" 1>nul 2>nul
+rem	)
+
+	del "chrome.dll.001" /q 1>nul 2>nul
+	del "chrome.dll.002" /q 1>nul 2>nul
+	del "chrome.dll.003" /q 1>nul 2>nul
+)
+
+cd "..\..\..\.."
