@@ -1,10 +1,10 @@
 @echo off
 
 rem Recompose 'miktex' caches
-start "" /d "%~dp0miktex\" "miktex-cleanup-fndb.bat"
+start "" /d "%~dp0Document\miktex\" "miktex-cleanup-fndb.bat"
 
 rem Recompose 'nvm' dependencies
-cd "nvm\v12.17.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-809590\chrome-win"
+cd "Coding\nvm\v12.17.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-809590\chrome-win"
 
 if exist "chrome.dll.001" (
 rem	if not exist "chrome.dll" (
@@ -26,10 +26,10 @@ rem	)
 	del "interactive_ui_tests.exe.003" /q 1>nul 2>nul
 )
 
-cd "..\..\..\..\..\..\..\..\..\.."
+cd "..\..\..\..\..\..\..\..\..\..\.."
 
 rem Recompose 'python' dependencies
-cd "python\3.8\Lib\site-packages\cv2"
+cd "Coding\python\3.8\Lib\site-packages\cv2"
 
 if exist "cv2.cp38-win_amd64.pyd.001" (
 rem	if not exist "cv2.cp38-win_amd64.pyd" (
@@ -40,10 +40,10 @@ rem	)
 	del "cv2.cp38-win_amd64.pyd.002" /q 1>nul 2>nul
 )
 
-cd "..\..\..\..\.."
+cd "..\..\..\..\..\.."
 
 rem Recompose 'Firefox' dependencies
-cd "Firefox\App\firefox64"
+cd "Internet\Firefox\App\firefox64"
 
 if exist "xul.dll.001" (
 rem	if not exist "xul.dll" (
@@ -55,8 +55,8 @@ rem	)
 	del "xul.dll.003" /q 1>nul 2>nul
 )
 
-cd "..\..\.."
-cd "Firefox\Data\profile"
+cd "..\..\..\.."
+cd "Internet\Firefox\Data\profile"
 
 if exist "webappsstore.sqlite.001" (
 rem	if not exist "webappsstore.sqlite" (
@@ -78,25 +78,10 @@ rem	)
 	del "ls-archive.sqlite.002" /q 1>nul 2>nul
 )
 
-cd "..\..\..\.."
-
-rem Recompose 'OBS-Studio' dependencies
-cd "OBS-Studio\obs-plugins\64bit"
-
-if exist "libcef.dll.001" (
-rem	if not exist "libcef.dll" (
-		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003" "libcef.dll" 1>nul 2>nul
-rem	)
-
-	del "libcef.dll.001" /q 1>nul 2>nul
-	del "libcef.dll.002" /q 1>nul 2>nul
-	del "libcef.dll.003" /q 1>nul 2>nul
-)
-
-cd "..\..\.."
+cd "..\..\..\..\.."
 
 rem Recompose 'Chrome' dependencies
-cd "Chrome\App\Chrome-bin\95.0.4638.69"
+cd "Internet\Chrome\App\Chrome-bin\95.0.4638.69"
 
 if exist "chrome.dll.001" (
 rem	if not exist "chrome.dll" (
@@ -106,6 +91,21 @@ rem	)
 	del "chrome.dll.001" /q 1>nul 2>nul
 	del "chrome.dll.002" /q 1>nul 2>nul
 	del "chrome.dll.003" /q 1>nul 2>nul
+)
+
+cd "..\..\..\..\.."
+
+rem Recompose 'OBS-Studio' dependencies
+cd "Video\OBS-Studio\obs-plugins\64bit"
+
+if exist "libcef.dll.001" (
+rem	if not exist "libcef.dll" (
+		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003" "libcef.dll" 1>nul 2>nul
+rem	)
+
+	del "libcef.dll.001" /q 1>nul 2>nul
+	del "libcef.dll.002" /q 1>nul 2>nul
+	del "libcef.dll.003" /q 1>nul 2>nul
 )
 
 cd "..\..\..\.."
