@@ -7,6 +7,8 @@ set "PYTHONPATH=%PYTHONHOME%;%PYTHONHOME%\Lib;%PYTHONHOME%\Scripts"
 
 set "PATH=%PATH%;%PYTHONPATH%;"
 set "PATH=%PATH:;;=;%"
+set "PATH=%PATH: ;=;%"
+set "PATH=%PATH:; =;%
 
 start "" /d "%PYTHONHOME%" "cmd" ""
 
