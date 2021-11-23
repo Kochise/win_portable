@@ -27,7 +27,7 @@
 \providecommand\DeclareCurrentRelease[2]{}
 \DeclareRelease{}{2018-12-01}{amsmath-2018-12-01.sty}
 \DeclareCurrentRelease{}{2019-04-01}
-\ProvidesPackage{amsmath}[2021/04/20 v2.17j AMS math features]
+\ProvidesPackage{amsmath}[2021/10/15 v2.17l AMS math features]
 \edef\@temp{\catcode 96=\number\catcode 96 }
 \catcode\string `\`=12
 \def\do#1{\catcode\number`#1=\number\catcode`#1}
@@ -1209,7 +1209,9 @@ ill-advised in LaTeX.%
 \fi
 \newcommand{\thetag}{\leavevmode\tagform@}
 \let\df@tag\@empty
-\def\make@df@tag{\@ifstar\make@df@tag@@\make@df@tag@@@}
+\def\make@df@tag{%
+  \def\@currentcounter{equation}%
+  \@ifstar\make@df@tag@@\make@df@tag@@@}
 \def\make@df@tag@@#1{%
   \gdef\df@tag{\maketag@@@{#1}\def\@currentlabel{#1}}}
 \def\make@df@tag@@@#1{\gdef\df@tag{\tagform@{#1}%
@@ -2901,6 +2903,7 @@ Cannot use `split' here;\MessageBreak trying to recover with `aligned'}%
 }
 \let\mathdisplay@pop\@empty
 \def\mathdisplay@@pop{\the\mathdisplay@stack}
+\if@fleqn
 \renewenvironment{equation}{%
   \incr@eqnum
   \mathdisplay@push
@@ -2911,6 +2914,18 @@ Cannot use `split' here;\MessageBreak trying to recover with `aligned'}%
   \mathdisplay@pop
   \ignorespacesafterend
 }
+\else
+\renewenvironment{equation}{%
+  \mathdisplay@push
+  \st@rredfalse \global\@eqnswtrue
+  \mathdisplay{equation}%
+  \incr@eqnum\mathopen{}%
+}{%
+  \endmathdisplay{equation}%
+  \mathdisplay@pop
+  \ignorespacesafterend
+}
+\fi
 \newenvironment{equation*}{%
   \mathdisplay@push
   \st@rredtrue \global\@eqnswfalse

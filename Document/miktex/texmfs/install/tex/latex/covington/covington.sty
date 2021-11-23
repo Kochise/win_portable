@@ -42,8 +42,8 @@
 %%% Metadata
 %%%
 
-\def\filedate{2021/05/19}
-\def\fileversion{2.6}
+\def\filedate{2021/09/01}
+\def\fileversion{2.7}
 \def\filename{covington.sty}
 
 % Force redefinition of environments?
@@ -413,6 +413,10 @@
 \def\cov@glp{}
 \newcommand*\glosspreamble[1]{\def\cov@glp{#1}}
 
+% 2021-09-01: optional trailing gloss text (non-interlinearized)
+\newcommand*\glosslinepostamble[1]{#1}
+\def\cov@glpst{}
+
 \def\gll{%                  % Introduces 2-line text-and-gloss.
   \begin{flushleft}
   \vskip\baselineskip%      % Added 1992 Nov 8 to force single spacing
@@ -473,6 +477,7 @@
 \def\glend{%
    \end{flushleft}%
    \def\cov@glp{}%
+   \def\cov@glpst{}%
 }  % Ends the gloss environment.
 
 % The following TeX code is adapted, with permission, from:
@@ -719,6 +724,11 @@
 \define@key{covington}{preamble}{\def\cov@lglp{#1}}
 \define@key{gcovington}{preamble}{\def\cov@gglp{#1}}
 %
+% 5. Gloss postamble text
+\def\cov@gglpst{}
+\define@key{covington}{postamble}{\def\cov@lglpst{#1}}
+\define@key{gcovington}{postamble}{\def\cov@gglpst{#1}}
+%
 % General setting option
 \newcommand*\setglossoptions[1]{\setkeys{gcovington}{#1}}
 %
@@ -743,13 +753,16 @@
   \@ifundefined{lglosslinethree}{}{\def\glosslinethree{\lglosslinethree}}%
   \@ifundefined{cov@lglp}{}{\def\cov@gglp{\cov@lglp}}%
   \ifx\cov@gglp\empty\else\def\cov@glp{\cov@gglp}\fi%
+  \@ifundefined{cov@lglpst}{}{\def\cov@gglpst{\cov@lglpst}}%
+  \ifx\cov@gglpst\empty\else\def\cov@glpst{\cov@gglpst}\fi%
   \xgll #2\xgle
         #3\xgle
   \ifgtright
-    \gln #4
+    \gln #4%
   \else
-    \glot{#4}
+    \glot{#4}%
   \fi
+  \ifx\cov@glpst\empty\else\glosslinepostamble{\cov@glpst}\cov@nopagebreak\fi%
   \glend
   \ifgexample
   \end{covexample}
@@ -781,14 +794,17 @@
   \@ifundefined{lglosslinethree}{}{\def\glosslinethree{\lglosslinethree}}%
   \@ifundefined{cov@lglp}{}{\def\cov@gglp{\cov@lglp}}%
   \ifx\cov@gglp\empty\else\def\cov@glp{\cov@gglp}\fi%
+  \@ifundefined{cov@lglpst}{}{\def\cov@gglpst{\cov@lglpst}}%
+  \ifx\cov@gglpst\empty\else\def\cov@glpst{\cov@gglpst}\fi%
   \xglll #2\xgle
          #3\xgle
          #4\xgle
   \ifgtright
-    \gln #5
+    \gln #5%
   \else
-    \glot{#5}
+    \glot{#5}%
   \fi
+  \ifx\cov@glpst\empty\else\glosslinepostamble{\cov@glpst}\cov@nopagebreak\fi%
   \glend
   \ifgexample
   \end{covexample}

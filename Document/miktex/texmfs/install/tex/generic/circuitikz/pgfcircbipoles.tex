@@ -728,13 +728,46 @@
 \ctikzset{bipoles/pcapacitor/width/.initial=.2}
 \ctikzset{bipoles/pcapacitor/bend width/.initial=1.1}
 \ctikzset{bipoles/ccapacitor/height/.initial=.6}
-\ctikzset{bipoles/ccapacitor/width/.initial=.12}
+\ctikzset{bipoles/ccapacitor/width/.initial=.2}
 \ctikzset{bipoles/ccapacitor/bend width/.initial=1.1}
 \ctikzset{bipoles/vcapacitor/height/.initial=.6}
-\ctikzset{bipoles/vcapacitor/width/.initial=.5}
-\ctikzset{bipoles/vcapacitor/capacitor width/.initial=.4}
+\ctikzset{bipoles/vcapacitor/width/.initial=.2}
+\ctikzset{bipoles/vcapacitor/tunable width/.initial=3}
+\ctikzset{bipoles/vcapacitor/capacitor width/.code={%
+        \pgfutil@packagewarning{circuitikz}{vcapacitor/capacitor width deprecated; ignored}%
+}}% deprecated
+% piezoelectric (double size by default)
 \ctikzset{bipoles/piezoelectric/height/.initial=.7}
-\ctikzset{bipoles/piezoelectric/width/.initial=.5}%
+\ctikzset{bipoles/piezoelectric/width/.initial=.4}%
+% constant phase element (double size by default)
+\ctikzset{bipoles/cpe/height/.initial=.6}
+\ctikzset{bipoles/cpe/width/.initial=.4}
+%
+% style settings
+%
+\ctikzset{capacitors/width/.code={%
+    \pgfmathsetmacro{\pgfcirc@@double}{2*#1}%
+    \ctikzset{bipoles/.cd,
+    capacitor/width=#1, ecapacitor/width=#1, ccapacitor/width=#1,
+    vcapacitor/width=#1,
+    piezoelectric/width=\pgfcirc@@double,
+    cpe/width=\pgfcirc@@double,
+}}}
+\ctikzset{capacitors/height/.code={%
+    \ctikzset{bipoles/.cd,
+    capacitor/height=#1, ecapacitor/height=#1, ccapacitor/height=#1,
+    vcapacitor/height=#1,
+    piezoelectric/height=#1,
+    cpe/height=#1,
+}}}
+\def\pgfcirc@maybe@fill@straight@capacitor{%
+    \pgfscope
+        \pgfpathrectanglecorners
+        {\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
+        {\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
+        \pgf@circ@maybefill
+    \endpgfscope
+}
 %>>>
 
 %% Shapes for capacitors%<<<
@@ -746,6 +779,8 @@
 {\ctikzvalof{bipoles/capacitor/height}}
 {\ctikzvalof{bipoles/capacitor/width}}
 {
+    \pgfcirc@maybe@fill@straight@capacitor
+
     \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
     \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
     \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
@@ -767,6 +802,7 @@
 {\ctikzvalof{bipoles/capacitor/height}}
 {\ctikzvalof{bipoles/capacitor/width}}
 {
+    \pgfcirc@maybe@fill@straight@capacitor
     \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
     \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
     \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
@@ -791,7 +827,10 @@
 {\ctikzvalof{bipoles/pcapacitor/height}}
 {\ctikzvalof{bipoles/pcapacitor/width}}
 {
+
     \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
+
+    \pgfutil@packagewarning{circuitikz}{polar capacitor has been deprecated; change to curved capacitor (see manual)}%
 
     \pgfscope
         \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left+ \ctikzvalof{bipoles/pcapacitor/bend width}\pgf@circ@res@left}{\pgf@circ@res@up}}
@@ -818,23 +857,36 @@
 {\ctikzvalof{bipoles/ccapacitor/height}}
 {\ctikzvalof{bipoles/ccapacitor/width}}
 {
-    \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
-
     \pgfscope
-        \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right+ \ctikzvalof{bipoles/ccapacitor/bend width}\pgf@circ@res@right}{\pgf@circ@res@up}}
-        \pgftransformrotate{-90}
-        \pgfpathsine{\pgfpoint{\pgf@circ@res@up}{-\ctikzvalof{bipoles/ccapacitor/bend width}\pgf@circ@res@right}}
-        \pgfpathcosine{\pgfpoint{\pgf@circ@res@up}{\ctikzvalof{bipoles/ccapacitor/bend width}\pgf@circ@res@right}}
+        \pgfscope
+            \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+            \pgftransformrotate{-90}
+            \pgfpathsine{\pgfpoint{\pgf@circ@res@up}{-\ctikzvalof{bipoles/ccapacitor/bend width}\pgf@circ@res@right}}
+            \pgfpathcosine{\pgfpoint{\pgf@circ@res@up}{\ctikzvalof{bipoles/pcapacitor/bend width}\pgf@circ@res@right}}
+            \pgftransformrotate{90}
+            \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
+            \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
+            \pgfpathclose{}
+            \pgf@circ@maybefill
+        \endpgfscope
+        \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
+        \pgfscope
+            % \pgfsetcolor{red}
+            \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+            \pgftransformrotate{-90}
+            \pgfpathsine{\pgfpoint{\pgf@circ@res@up}{-\ctikzvalof{bipoles/ccapacitor/bend width}\pgf@circ@res@right}}
+            \pgfpathcosine{\pgfpoint{\pgf@circ@res@up}{\ctikzvalof{bipoles/pcapacitor/bend width}\pgf@circ@res@right}}
+            \pgfusepath{draw}
+        \endpgfscope
+        \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
+        \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
         \pgfusepath{draw}
     \endpgfscope
-
-    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
-    \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
+    % extend wire to the curved capacitor
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right-\ctikzvalof{bipoles/pcapacitor/bend width}\pgf@circ@res@right}{0pt}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{0pt}}
     \pgfusepath{draw}
 }
-
-
-
 
 %% Electrolytic Capacitor
 \pgfcircdeclarebipolescaled{capacitors}
@@ -875,33 +927,30 @@
 {\ctikzvalof{bipoles/vcapacitor/height}}
 {\ctikzvalof{bipoles/vcapacitor/width}}
 {
-    \pgf@circ@res@step = \ctikzvalof{bipoles/vcapacitor/capacitor width} \pgf@circ@res@right
+    \pgfcirc@maybe@fill@straight@capacitor
+    \pgf@circ@res@step = \ctikzvalof{bipoles/vcapacitor/tunable width} \pgf@circ@res@right
 
     \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
-    \pgfpathmoveto{\pgfpoint{-\pgf@circ@res@step}{\pgf@circ@res@up}}
-    \pgfpathlineto{\pgfpoint{-\pgf@circ@res@step}{\pgf@circ@res@down}}
+    \pgfpathmoveto{\pgfpoint{-\pgf@circ@res@right}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{-\pgf@circ@res@right}{\pgf@circ@res@down}}
 
-    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@step}{\pgf@circ@res@up}}
-    \pgfpathlineto{\pgfpoint{\pgf@circ@res@step}{\pgf@circ@res@down}}
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
     \pgfusepath{draw}
 
     \pgfscope
         \pgf@circ@set@relative@thickness{modifier thickness}
         \pgfcirc@set@arrows{tunable}{}{latexslim}
         \ifpgf@circ@fixtunable@dir
-            \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
-            \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+            \pgfpathmoveto{\pgfpoint{-\pgf@circ@res@step}{\pgf@circ@res@down}}
+            \pgfpathlineto{\pgfpoint{\pgf@circ@res@step}{\pgf@circ@res@up}}
         \else
-            \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
-            \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
+            \pgfpathmoveto{\pgfpoint{-\pgf@circ@res@step}{\pgf@circ@res@up}}
+            \pgfpathlineto{\pgfpoint{\pgf@circ@res@step}{\pgf@circ@res@down}}
         \fi
         \pgfusepath{draw}
     \endpgfscope
 
-    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{0pt}}
-    \pgfpathlineto{\pgfpoint{-\pgf@circ@res@step}{0pt}}
-    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{0pt}}
-    \pgfpathlineto{\pgfpoint{\pgf@circ@res@step}{0pt}}
     \pgfsetlinewidth{\pgfstartlinewidth}
     \pgfusepath{draw}
 }
@@ -954,12 +1003,7 @@
 {\ctikzvalof{bipoles/capacitor/height}}
 {\ctikzvalof{bipoles/capacitor/width}}
 {
-    \pgfscope
-        \pgfpathrectanglecorners
-        {\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
-        {\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
-        \pgf@circ@maybefill
-    \endpgfscope
+    \pgfcirc@maybe@fill@straight@capacitor
 
     \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
     \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
@@ -977,6 +1021,39 @@
         \pgfpathlineto{\pgfpoint{1.8\pgf@circ@res@right}{\pgf@circ@res@down}}
         \pgfusepath{draw}
     \endpgfscope
+}
+
+%% Constant phase element
+\pgfcircdeclarebipolescaled{capacitors}
+{}
+{\ctikzvalof{bipoles/cpe/height}}
+{cpe}
+{\ctikzvalof{bipoles/cpe/height}}
+{\ctikzvalof{bipoles/cpe/width}}
+{
+    \pgfscope
+        \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
+        \pgfpathlineto{\pgfpointorigin}
+        \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
+        \pgfpathlineto{\pgfpoint{0pt}{\pgf@circ@res@down}}
+        \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{0pt}}
+        \pgfpathlineto{\pgfpoint{0pt}{\pgf@circ@res@up}}
+        \pgfpathclose
+        \pgf@circ@maybefill
+    \endpgfscope
+
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{0pt}}
+    \pgfpathlineto{\pgfpointorigin}
+    \pgfusepath{draw}
+    \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpointorigin}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@down}}
+
+    \pgfpathmoveto{\pgfpoint{0pt}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{0pt}}
+    \pgfpathlineto{\pgfpoint{0pt}{\pgf@circ@res@down}}
+    \pgfusepath{draw}
 }
 
 % %>>>
@@ -1000,6 +1077,7 @@
 \pgfcirc@style@to@style{capacitive sensor}{sC}
 \pgfcirc@activate@bipole@simple{l}{ferrocap}
 \pgfcirc@style@to@style{ferrocap}{feC}
+\pgfcirc@activate@bipole@simple{l}{cpe}
 % %>>>
 
 %%%%%%%%%%%%%%%
@@ -2086,7 +2164,18 @@
 
 %% Independent double oo source
 \pgfcircdeclarebipolescaled{sources}
-{}
+{
+    \anchor{centerprim}{
+        \northeast
+        \pgf@y=0pt\relax
+        \pgf@x=-\ctikzvalof{bipoles/oosource/circleoffset}\pgf@x
+    }
+    \anchor{centersec}{
+        \northeast
+        \pgf@y=0pt\relax
+        \pgf@x=\ctikzvalof{bipoles/oosource/circleoffset}\pgf@x
+    }
+}
 {\ctikzvalof{bipoles/oosource/height}}
 {oosource}
 {\ctikzvalof{bipoles/oosource/height}}
@@ -2170,7 +2259,18 @@
 
 % % % % round three-phase transformer
 \pgfcircdeclarebipolescaled{sources}
-{}
+{
+    \anchor{centerprim}{
+        \northeast
+        \pgf@y=0pt\relax
+        \pgf@x=-\ctikzvalof{bipoles/oosourcetrans/circleoffset}\pgf@x
+    }
+    \anchor{centersec}{
+        \northeast
+        \pgf@y=0pt\relax
+        \pgf@x=\ctikzvalof{bipoles/oosourcetrans/circleoffset}\pgf@x
+    }
+}
 {\ctikzvalof{bipoles/oosourcetrans/height}}
 {oosourcetrans}
 {\ctikzvalof{bipoles/oosourcetrans/height}}
@@ -2252,18 +2352,20 @@
             \pgf@y=0pt
     }
     \savedanchor{\centerprim}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@scaled@Rlen
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@res@other
             \pgf@y=0pt
-            \pgf@x=.5\pgf@circ@scaled@Rlen
+            \pgf@x=.5\pgf@circ@res@other
     }
     \anchor{centerprim}{
             \centerprim
     }
     \savedanchor{\centersec}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@scaled@Rlen
-            \pgfpointpolar{60}{.5\pgf@circ@scaled@Rlen}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@res@other
+            \pgfpointpolar{60}{.5\pgf@circ@res@other}
             \pgf@y=-\pgf@y
             \pgf@x=-\pgf@x
     }
@@ -2271,9 +2373,10 @@
             \centersec
     }
     \savedanchor{\centertert}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@scaled@Rlen
-            \pgfpointpolar{60}{.5\pgf@circ@scaled@Rlen}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=-\ctikzvalof{bipoles/ooosource/circleoffset}\pgf@circ@res@other
+            \pgfpointpolar{60}{.5\pgf@circ@res@other}
             \pgf@y=\pgf@y
             \pgf@x=-\pgf@x
     }
@@ -2283,44 +2386,52 @@
 
     % add some anchors in case the are needed :)
     \anchor{prim1}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centerprim}{\pgfpointpolar{135}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centerprim}{\pgfpointpolar{135}{.5\pgf@circ@res@other}}
     }
     \anchor{prim2}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centerprim}{\pgfpointpolar{-135}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centerprim}{\pgfpointpolar{-135}{.5\pgf@circ@res@other}}
     }
     \anchor{sec1}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centersec}{\pgfpointpolar{0}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centersec}{\pgfpointpolar{0}{.5\pgf@circ@res@other}}
     }
     \anchor{sec2}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centersec}{\pgfpointpolar{45}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centersec}{\pgfpointpolar{45}{.5\pgf@circ@res@other}}
     }
     \anchor{sec3}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centersec}{\pgfpointpolar{90}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centersec}{\pgfpointpolar{90}{.5\pgf@circ@res@other}}
     }
     \anchor{tert1}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centertert}{\pgfpointpolar{0}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centertert}{\pgfpointpolar{0}{.5\pgf@circ@res@other}}
     }
     \anchor{tert2}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centertert}{\pgfpointpolar{-45}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centertert}{\pgfpointpolar{-45}{.5\pgf@circ@res@other}}
     }
     \anchor{tert3}{
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@Rlen
-            \pgf@circ@scaled@Rlen=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@scaled@Rlen
-            \pgfpointadd{\centertert}{\pgfpointpolar{-90}{.5\pgf@circ@scaled@Rlen}}
+            \pgf@circ@scaled@Rlen=\ctikzvalof{\ctikzclass/scale}\pgf@circ@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/height}\pgf@circ@scaled@Rlen
+            \pgf@circ@res@other=\ctikzvalof{bipoles/ooosource/circlesize}\pgf@circ@res@other
+            \pgfpointadd{\centertert}{\pgfpointpolar{-90}{.5\pgf@circ@res@other}}
     }
 }
 {\ctikzvalof{bipoles/ooosource/height}}
@@ -3305,6 +3416,19 @@
         \pgfusepath{draw}
     \fi
 }
+%
+% --and laser diode arrows - contributed by Andre Alves
+%
+\def\pgf@circ@draw@laserarrows{%
+    \pgfsetlinewidth{\pgfstartlinewidth}
+    \pgfsetarrowsend{latexslim}
+    \pgfpathmoveto{\pgfpoint{-0.4\pgf@circ@res@right}{1.1\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{-0.4\pgf@circ@res@right}{2.1\pgf@circ@res@up}}
+    \pgfusepath{draw}
+    \pgfpathmoveto{\pgfpoint{0.2\pgf@circ@res@right}{1.1\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{0.2\pgf@circ@res@right}{2.1\pgf@circ@res@up}}
+    \pgfusepath{draw}
+}
 %% Black light emitting diode
 \pgfcircdeclarebipolescaled{diodes}
 {% fix the anchor border
@@ -3330,6 +3454,35 @@
     \pgfusepath{draw}
 
     \pgf@circ@draw@ledarrows
+}
+
+%% Black laser diode - contributed by Andre Alves
+\pgfcircdeclarebipolescaled{diodes}
+{% fix the anchor border
+    \pgfcirc@border@extend@updown{1.8}{1}
+}
+{\ctikzvalof{bipoles/diode/height}}
+{fulllaserdiode}
+{\ctikzvalof{bipoles/diode/height}}
+{\ctikzvalof{bipoles/diode/width}}
+{
+
+    \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
+    \pgfscope
+        \pgftransformxshift{\pgf@circ@res@left}
+        \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right-\pgf@circ@res@left}{0pt}}
+        \pgfpathlineto{\pgfpoint{0pt}{\pgf@circ@res@up}}
+        \pgfpathlineto{\pgfpoint{0pt}{\pgf@circ@res@down}}
+        \pgfpathlineto{\pgfpoint{\pgf@circ@res@right-\pgf@circ@res@left}{0pt}}
+        \pgfusepath{draw,fill}
+    \endpgfscope
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right+\pgf@circ@res@left}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right+\pgf@circ@res@left}{\pgf@circ@res@down}}
+    \pgfusepath{draw}
+
+    \pgf@circ@draw@laserarrows
 }
 
 %% Black photodiode
@@ -3526,6 +3679,30 @@
     \pgfusepath{draw}
 
     \pgf@circ@draw@ledarrows
+}
+
+%% Empty laser diode - contributed by Andre Alves
+\pgfcircdeclarebipolescaled{diodes}
+{% fix the anchor border
+    \pgfcirc@border@extend@updown{1.8}{1}
+}
+{\ctikzvalof{bipoles/diode/height}}
+{emptylaserdiode}
+{\ctikzvalof{bipoles/diode/height}}
+{\ctikzvalof{bipoles/diode/width}}
+{
+
+    \pgf@circ@setlinewidth{bipoles}{\pgfstartlinewidth}
+    \pgfscope
+        \pgf@circ@basicdiodeshape
+    \endpgfscope
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@down}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right}{\pgf@circ@res@up}}
+    \pgfpathmoveto{\pgfpoint{\pgf@circ@res@right+\pgf@circ@res@left}{\pgf@circ@res@up}}
+    \pgfpathlineto{\pgfpoint{\pgf@circ@res@right+\pgf@circ@res@left}{\pgf@circ@res@down}}
+    \pgfusepath{draw}
+
+    \pgf@circ@draw@laserarrows
 }
 
 %% Empty photodiode
@@ -3945,6 +4122,8 @@
     \pgfcirc@style@to@style{#1 tunnel diode}{tD#2}
     \pgfcirc@activate@bipole{l}{#1lediode}{#1lediode}{#1 led}
     \pgfcirc@style@to@style{#1 led}{leD#2}
+    \pgfcirc@activate@bipole{l}{#1laserdiode}{#1laserdiode}{#1 laser diode}
+    \pgfcirc@style@to@style{#1 laser diode}{lasD#2}
     \pgfcirc@activate@bipole{l}{#1pdiode}{#1pdiode}{#1 photodiode}
     \pgfcirc@style@to@style{#1 photodiode}{pD#2}
     \pgfcirc@activate@bipole{l}{#1varcap}{#1varcap}{#1 varcap}
@@ -3979,6 +4158,8 @@
     \pgfcirc@style@to@style{#1 tunnel diode}{tD#2}
     \pgfcirc@node@to@style{l}{emptylediode}{#1 led}{\circuitikzbasekey/bipole/is strokedsymbol=true}
     \pgfcirc@style@to@style{#1 led}{leD#2}
+    \pgfcirc@node@to@style{l}{emptylaserdiode}{#1 laser diode}{\circuitikzbasekey/bipole/is strokedsymbol=true}
+    \pgfcirc@style@to@style{#1 laser diode}{lasD#2}
     \pgfcirc@node@to@style{l}{emptypdiode}{#1 photodiode}{\circuitikzbasekey/bipole/is strokedsymbol=true}
     \pgfcirc@style@to@style{#1 photodiode}{pD#2}
     \pgfcirc@node@to@style{l}{emptyvarcap}{#1 varcap}{\circuitikzbasekey/bipole/is strokedsymbol=true}
@@ -4015,6 +4196,10 @@
 \pgfcirc@style@to@style{led}{leD}
 \pgfcirc@style@to@style{\pgfcircdiodestylemacro photodiode}{photodiode}
 \pgfcirc@style@to@style{photodiode}{pD}
+
+\pgfcirc@style@to@style{\pgfcircdiodestylemacro laser diode}{laser diode}
+\pgfcirc@style@to@style{laser diode}{lasD}
+
 \pgfcirc@style@to@style{\pgfcircdiodestylemacro varcap}{varcap}
 \pgfcirc@style@to@style{varcap}{VC}
 \pgfcirc@style@to@style{\pgfcircdiodestylemacro bidirectionaldiode}{bidirectionaldiode}

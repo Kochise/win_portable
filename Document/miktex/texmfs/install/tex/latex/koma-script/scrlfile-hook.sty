@@ -4,9 +4,9 @@
 %%
 %% The original source files were:
 %%
-%% scrlfile-hook.dtx  (with options: `package')
+%% scrlfile-hook.dtx  (with options: `package,current')
 %% 
-%% Copyright (c) 2002-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 2002-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -40,42 +40,53 @@
 %% 
 %%% From File: $Id: scrlfile-hook.dtx$
 \ProvidesPackage{scrlfile-hook}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   package
   (using LaTeX hooks)]
 \@ifundefined{IfFormatAtLeastTF}{%
   \PackageError{scrlfile-hook}{not recommended usage of package}{%
     It seems this package has been loaded directly using a LaTeX
     version\MessageBreak
-    prior to 2020-10-01. This is not recommend. Please always load
+    prior to 2020-10-01. This is not recommended. Please always load
     package\MessageBreak
     scrlfile instead of scrlfile-hook.\MessageBreak
     If you would continue, I will try to load scrlfile-patcholdlatex%
   }%
-  \RequirePackage{scrlfile-patcholdlatex}%
-  \endinput
+  \RequirePackage{scrlfile-patcholdlatex}\endinput
 }{%
-  \IfFormatAtLeastTF{2020/10/01}{}{%
+  \IfFormatAtLeastTF{2020/10/01}{%
+    \IfFormatAtLeastTF{2021/11/15}{%
+    }{%
+      \PackageError{scrlfile-hook}{LaTeX too old for this package}{%
+        It seems this package has been loaded directly using LaTeX
+        version\MessageBreak
+        prior to 2021-11-15. This is not recommended. Please always load
+        package\MessageBreak
+        scrlfile instead of scrlfile-hook.\MessageBreak
+        If you would continue, I will try to load scrfile-hook-3.34%
+      }%
+      \RequirePackage{scrlfile-hook-3.34}\endinput
+    }%
+  }{%
     \PackageError{scrlfile-hook}{LaTeX too old for this package}{%
       It seems this package has been loaded directly using a LaTeX
       version\MessageBreak
-      prior to 2020-10-01. This is not recommend. Please always load
+      prior to 2020-10-01. This is not recommended. Please always load
       package\MessageBreak
       scrlfile instead of scrlfile-hook.\MessageBreak
       If you would continue, I will try to load scrlfile-patcholdlatex%
     }%
-    \RequirePackage{scrlfile-patcholdlatex}%
-    \endinput
-  }{}%
+    \RequirePackage{scrlfile-patcholdlatex}\endinput
+  }%
 }
 \ExplSyntaxOn
 \NewDocumentCommand \BeforeFile { m }
   {
-    \AddToHook { file / before / #1 }
+    \AddToHook { file / #1 / before }
   }
 \NewDocumentCommand \AfterFile { m }
   {
-    \AddToHook { file / after / #1 }
+    \AddToHook { file / #1 / after }
   }
 \NewDocumentCommand \BeforeClass { m }
   {
@@ -91,9 +102,13 @@
       {
         \scrlfile_if_class_loaded:nTF { #2 }
           { #4 }
-          { \hook_gput_code:nnn { class / after / #2 } { #3 } { #4 } }
+          { \hook_gput_code:nnn { class / #2 / after } { #3 } { #4 } }
       }
-      { \hook_gput_code:nnn { class / after / #2 } { #3 } { #4 } }
+      {
+        \scrlfile_if_class_loaded:nF
+          { #2 }
+          { \hook_gput_code:nnn { class / #2 / after } { #3 } { #4 } }
+      }
   }
 \NewDocumentCommand \AfterAtEndOfPackage { s m o +m }
   {
@@ -101,9 +116,13 @@
       {
         \scrlfile_if_package_loaded:nTF { #2 }
           { #4 }
-          { \hook_gput_code:nnn { package / after / #2 } { #3 } { #4 } }
+          { \hook_gput_code:nnn { package / #2 / after } { #3 } { #4 } }
       }
-      { \hook_gput_code:nnn { package / after / #2} { #3 } { #4 } }
+      {
+        \scrlfile_if_package_loaded:nF
+          { #2 }
+          { \hook_gput_code:nnn { package / #2 / after } { #3 } { #4 } }
+      }
   }
 \seq_new:N \g__scrlfile_input_file_seq
 \hook_gput_code:nnn { file / before } { . }
@@ -176,13 +195,13 @@
           { #4 }
           {
             \hook_gput_code:nnn
-              { file / after / #2.\@clsextension }
+              { file / #2.\@clsextension / after }
               { #3 }
               { #4 }
           }
       }
       {
-        \hook_gput_code:nnn { file / after / #2.\@clsextension } { #3 } { #4 }
+        \hook_gput_code:nnn { file / #2.\@clsextension / after } { #3 } { #4 }
       }
   }
 \NewDocumentCommand \AfterClass { } { \scrlfile@AfterClass }
@@ -194,13 +213,13 @@
           { #4 }
           {
             \hook_gput_code:nnn
-              { file / after / #2.\@pkgextension }
+              { file / #2.\@pkgextension / after }
               { #3 }
               { #4 }
           }
       }
       {
-        \hook_gput_code:nnn { file / after / #2.\@pkgextension } { #3 } { #4 }
+        \hook_gput_code:nnn { file / #2.\@pkgextension / after } { #3 } { #4 }
       }
   }
 \NewDocumentCommand \AfterPackage { } { \scrlfile@AfterPackage }

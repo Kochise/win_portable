@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% microtype.dtx  (with options: `xetex-def')
+%% microtype.dtx  (with options: `xe-')
 %% 
 %% ------------------------------------------------------------------------
 %% 
@@ -18,11 +18,12 @@
 %% http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 %% of all distributions of LaTeX version 2005/12/01 or later.
 %% 
-%% This work has the LPPL maintenance status `author-maintained'.
+%% This work has the LPPL maintenance status `maintained'.
 %% 
-%% This work consists of the files microtype.dtx and microtype.ins and the
-%% derived files microtype.sty, microtype-pdftex.def, microtype-luatex.def,
-%% microtype-xetex.def, microtype.lua and letterspace.sty.
+%% This work consists of the files microtype.dtx, microtype-utf.dtx and
+%% microtype.ins and the derived files microtype.sty, microtype-pdftex.def,
+%% microtype-luatex.def, microtype-xetex.def, microtype.lua, letterspace.sty
+%% and microtype-show.sty.
 %% 
 %% ------------------------------------------------------------------------
 %%   This file contains enginge-specific definitions.
@@ -30,7 +31,7 @@
 %%
 \ProvidesFile
   {microtype-xetex.def}
-  [2021/03/14 v2.8c
+  [2021/10/31 v3.0
    Definitions specific to
    xetex
    (RS)]
@@ -128,13 +129,12 @@
       \MT@size pt
     \MT@info{Fixing zero \string\fontdimen 6 for font `\MT@@font'\MessageBreak
              (new value: \the\fontdimen6\MT@font)}%
-    \MT@glet@nc{\MT@@font-fake6}\@empty
   \fi
   \edef\MT@dimen@six{\number\fontdimen6\MT@font}%
 }
-\def\MT@protrusion{\MT@maybe@do{pr}}
-\def\MT@set@pr@codes{%
-  \MT@nofamilyfalse
+\def\MT@set@pr@codes
+  {%
+ \MT@nofamilyfalse
   \MT@if@list@exists{%
     \ifMT@nofamily
       \MT@ifdefined@n@TF{\MT@encoding-\MT@family-settings}\relax{%
@@ -153,7 +153,9 @@
     \MT@set@listname
     \MT@let@cn\@tempc{MT@pr@c@\MT@pr@c@name}%
     \expandafter\MT@set@codes\@tempc,\relax,%
-  }\MT@reset@pr@codes
+    \MT@set@pr@prefixheirs
+  }%
+  \MT@reset@pr@codes
 }
 \def\MT@set@all@pr#1#2{%
   \let\MT@temp\@empty
@@ -180,15 +182,17 @@
     \fi
   \fi
 }
-\def\MT@pr@split@val#1,#2\relax{%
-  \def\@tempb{#1}%
-  \MT@ifempty\@tempb\relax{%
-    \MT@scale@to@em
+\def\MT@pr@split@val#1,#2\relax
+  {\def\@tempb{#1}%
+  \MT@ifempty\@tempb
+    \relax
+  {\MT@scale@to@em
     \lpcode\MT@font\MT@char=\MT@the@pr@code
   }%
   \def\@tempb{#2}%
-  \MT@ifempty\@tempb\relax{%
-    \MT@scale@to@em
+  \MT@ifempty\@tempb
+    \relax
+  {\MT@scale@to@em
     \rpcode\MT@font\MT@char=\MT@the@pr@code
   }%
   \MT@ifdefined@c@T\MT@pr@inh@name{%
@@ -215,41 +219,33 @@
   \fi
   \ifnum\MT@count=\z@ \MT@info@missing@char \fi
 }
-\def\MT@set@pr@heirs#1{%
-  \lpcode\MT@font #1=\lpcode\MT@font\MT@char\relax
-  \rpcode\MT@font #1=\rpcode\MT@font\MT@char\relax
-}
-\def\MT@preset@pr{%
-  \expandafter\expandafter\expandafter\MT@preset@pr@
-    \csname MT@pr@c@\MT@pr@c@name @preset\endcsname\@nil
-}
-\def\MT@preset@pr@#1,#2\@nil{%
-  \ifx\MT@pr@unit@\@empty
-    \MT@warn@preset@towidth{pr}%
-    \let\MT@preset@aux\MT@preset@aux@factor
-  \else
-    \def\MT@preset@aux{\MT@preset@aux@space2}%
+\def\MT@set@pr@prefixes#1{\MT@set@pr@prefixes@#1}
+\def\MT@set@pr@prefixes@#1#2#3#4%
+  {%
+  \edef\@tempa{\expandafter\ifx\@car#1\@nil U\@gobble#1\else\number\XeTeXglyphindex"#1" \fi}%
+  \edef\@tempb{\expandafter\ifx\@car#2\@nil U\@gobble#2\else\number\XeTeXglyphindex"#2" \fi}%
+  \@tempcnta=\z@
+  \ifnum#3>\z@
+    \@tempcnta=\numexpr
+      (\fontcharwd\MT@font\@tempb-\fontcharwd\MT@font\@tempa)%
+      *#3/\MT@dimen@six\relax
   \fi
-  \MT@ifempty{#1}{\let\@tempa\@empty}{\MT@preset@aux{#1}\@tempa}%
-  \MT@ifempty{#2}{\let\@tempb\@empty}{\MT@preset@aux{#2}\@tempb}%
-  \MT@set@all@pr\@tempa\@tempb
+  \lpcode\MT@font #2=\numexpr\lpcode\MT@font#1+\@tempcnta\relax
+  \@tempcnta=\z@
+  \ifnum#4>\z@
+    \@tempcnta=\numexpr
+      (\fontcharwd\MT@font\@tempb-\fontcharwd\MT@font\@tempa)%
+      *#4/\MT@dimen@six\relax
+  \fi
+  \rpcode\MT@font #2=\numexpr\rpcode\MT@font#1+\@tempcnta\relax
 }
-\def\MT@preset@aux@factor#1#2{%
-  \@tempcntb=#1\relax
-  \MT@scale@factor
-  \edef#2{\number\@tempcntb}%
-}
-\def\MT@preset@aux@space#1#2#3{%
-  \def\@tempb{#2}%
-  \MT@get@space@unit#1%
-  \MT@scale@to@em
-  \edef#3{\number\@tempcntb}%
-}
-\def\MT@warn@preset@towidth#1{%
-  \MT@warning@nl{%
-    Cannot preset characters relative to their widths\MessageBreak
-    for \@nameuse{MT@abbr@#1} list `\@nameuse{MT@#1@c@name}'. Presetting them%
-    \MessageBreak relative to 1em instead}%
+\def\MT@prot@addtoken@next#1{%
+  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
+  \setbox\MT@tempbox\hbox{\the\MT@toks
+    \relax
+    \ifnum\lastnodetype=7 \aftergroup\@firstoftwo\else\aftergroup\@secondoftwo\fi}%
+      \MT@prot@get@nextchar
+      {\MT@prot@l{\the\MT@toks}}%
 }
 \DeclareRobustCommand\lsstyle{%
   \MT@error{Letterspacing currently doesn't work with xetex}
@@ -343,6 +339,7 @@
 \def\MT@inh@split#1=#2=#3\relax{%
   \def\@tempa{#1}%
   \ifx\@tempa\@empty \else
+    \expandafter\MT@has@inh@prefix\@tempa()\relax\@nil
     \MT@get@slot
     \ifx\MT@char\@empty\else
       \let\MT@val\MT@char
@@ -351,12 +348,41 @@
         \ifx\@tempa\@empty \else
           \MT@get@slot
           \ifx\MT@char\@empty\else
-            \MT@exp@cs\MT@xadd{MT@inh@\MT@listname @\MT@val @}{{\MT@char}}%
+            \ifx\MT@inh@prefix\@empty
+              \MT@exp@cs\MT@xadd{MT@inh@\MT@listname @\MT@val @}{{\MT@char}}%
+            \else
+              \MT@exp@cs\MT@xadd{MT@inh@\MT@listname @prefixes}%
+                  {{{\MT@val}{\MT@char}\MT@inh@prefix@}}%
+            \fi
           \fi
         \fi
       }%
     \fi
   \fi
+}
+\def\MT@has@inh@prefix#1(#2)#3#4\@nil{%
+  \let\MT@temp\relax
+  \ifx\relax#3%
+    \def\@tempa{#1#2}%
+    \let\MT@inh@prefix\@empty
+  \else
+    \MT@ifstreq{\MT@feat}{pr}{%
+      \MT@ifstreq{#2}{l}{\def\MT@inh@prefix@{{1000}{0}}\@firstoftwo}{%
+        \MT@ifstreq{#2}{r}{\def\MT@inh@prefix@{{0}{1000}}\@firstoftwo}{%
+          \MT@ifstreq{#2}{lr}{\def\MT@inh@prefix@{{500}{500}}\@firstoftwo}{%
+            \MT@warning@nl{`#2' is not a valid prefix in inheritance list%
+              \MessageBreak\MT@listname. Ignoring it}%
+            \@secondoftwo}}}%
+      {\def\@tempa{#3}%
+       \def\MT@inh@prefix{#2}%
+       \@gobble}%
+      {\@firstofone}%
+    }{\@firstofone}%
+   {\let\MT@char\m@ne
+    \let\MT@temp\@gobble
+   }%
+  \fi
+  \MT@temp
 }
 \MT@def@bool@opt{DVIoutput}{%
   \csname if\@tempa\endcsname

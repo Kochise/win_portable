@@ -52,7 +52,7 @@
 %% scrkernel-listsandtabulars.dtx  (with options: `class,book,body')
 %% scrlogo.dtx  (with options: `logo')
 %% 
-%% Copyright (c) 1994-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 1994-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -84,7 +84,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -106,7 +106,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -121,7 +121,7 @@
   book%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   document class (\ClassName)%
 ]
 %%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
@@ -130,7 +130,7 @@
 %%% From File: $Id: scrkernel-listsof.dtx 3477 2020-04-11 07:26:26Z kohm $
 %%%            (run: prepare)
 \RequirePackage{tocbasic}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
 ]
 \AtAddToTocList[\@currname.\@currext]{\setuptoc{\@currext}{onecolumn}}%
 \AtAddToTocList[ToC]{\setuptoc{\@currext}{onecolumn}}%
@@ -141,9 +141,9 @@
   \expandafter{\ext@toc}%
 }
 \AtAddToTocList[float]{\setuptoc{\@currext}{onecolumn}}%
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: scrkernel-sections.dtx 3594 2021-04-30 08:45:15Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
 %%%            (run: prepare)
 \newif\if@openright
 \@openrighttrue
@@ -220,7 +220,7 @@
 \newcommand*{\size@paragraph}{}
 \newcommand*{\size@subparagraph}{}
 \newcommand*{\sectfont}{\normalcolor\@gr@gsffamily\bfseries}
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -302,10 +302,11 @@
 \@namedef{scr@v@3.32}{18}
 \@namedef{scr@v@3.33}{18}
 \@namedef{scr@v@3.34}{18}
-\@namedef{scr@v@last}{18}
+\@namedef{scr@v@3.35}{19}
+\@namedef{scr@v@last}{19}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: option)
 \newif\if@scr@emulatestandardclasses
 \let\scr@emulatestandardclassestrue\relax
@@ -848,9 +849,9 @@
 }{titlepage}{\if@titlepage true\else false\fi}
 \KOMA@DeclareStandardOption%
   {notitlepage}{titlepage=false}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3594 2021-04-30 08:45:15Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
 %%%            (run: option)
 \KOMA@key{open}{%
   \KOMA@set@ncmdkey{open}{@tempa}{%
@@ -1338,7 +1339,7 @@
 \KOMA@DeclareDeprecatedOption{cleardoubleempty}{cleardoublepage=empty}
 \KOMA@DeclareDeprecatedOption{cleardoubleplain}{cleardoublepage=plain}
 \KOMA@DeclareDeprecatedOption{cleardoublestandard}{cleardoublepage=current}
-%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
 %%%            (run: option)
 \newif\if@captionabove\@captionabovefalse
 \newif\if@tablecaptionabove\@tablecaptionabovefalse
@@ -2077,7 +2078,7 @@
 \KOMA@DeclareDeprecatedOption{idxtotoc}{index=totoc}
 %%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3594 2021-04-30 08:45:15Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{headings=openright}
 \KOMAExecuteOptions{numbers=autoendperiod}
@@ -2088,7 +2089,7 @@
   headings=big%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: body)
 %%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
 %%%            (run: body)
@@ -3185,10 +3186,10 @@
 \newkomafont{dedication}{\Large}
 \newcommand*{\scr@fnt@title}{\titlefont}%
 \newcommand*{\scr@fnt@subject}{\subject@font}%
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: body)
 \let\numberline\scr@numberline
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: class,style,part)
 \CloneTOCEntryStyle{tocline}{part}
 \TOCEntryStyleStartInitCode{part}{%
@@ -3202,7 +3203,7 @@
   \expandafter\providecommand\expandafter*%
   \csname scr@tso@#1@beforeskip\endcsname{2.25em \@plus\p@}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: class,style,chapter)
 \CloneTOCEntryStyle{tocline}{chapter}
 \TOCEntryStyleStartInitCode{chapter}{%
@@ -3222,17 +3223,17 @@
   \expandafter\providecommand\expandafter*%
   \csname scr@tso@#1@beforeskip\endcsname{1.0em \@plus\p@}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: class,style,section)
 \CloneTOCEntryStyle{tocline}{section}
 \TOCEntryStyleStartInitCode{section}{%
   \expandafter\providecommand%
   \csname scr@tso@#1@linefill\endcsname{\TOCLineLeaderFill\relax}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: class,style,default)
 \CloneTOCEntryStyle{section}{default}
-%%% From File: $Id: scrkernel-sections.dtx 3594 2021-04-30 08:45:15Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
 %%%            (run: body)
 \setcounter{secnumdepth}{2}
 \providecommand*{\ifnumbered}{%
@@ -3471,22 +3472,22 @@
   \IfSectionCommandStyleIs{#3}{#2}{#1}{}%
 }
 \newcommand*{\Before@ssect}[1]{%
-  \ClassInfo{\KOMAClassName}{%
+  \ClassWarning{\KOMAClassName}{%
     Usage of deprecated command `\string\Before@ssect'
     mapped to\MessageBreak
     `\string\AddtoDoHook{heading/branch/star}%
                         {...\string\@gobble}'%
   }%
-  \AddtoDoHook{heading/branch/star}{\scr@onlyifstyleofargis{#1}{section}}%
+  \AddtoDoHook{heading/branch/star}{\scr@doonlyifstyleofargis{#1}{section}}%
 }
 \newcommand*{\Before@sect}[1]{%
-  \ClassInfo{\KOMAClassName}{%
+  \ClassWarning{\KOMAClassName}{%
     Usage of deprecated command `\string\Before@sect'
     mapped to\MessageBreak
     `\string\AddtoDoHook{heading/branch/nostar}%
                         {...\string\@gobble}'%
   }%
-  \AddtoDoHook{heading/branch/nostar}{\scr@onlyifstyleofargis{#1}{section}}%
+  \AddtoDoHook{heading/branch/nostar}{\scr@doonlyifstyleofargis{#1}{section}}%
 }
 \newcommand{\scr@section@dblarg}[1]{%
   \kernel@ifnextchar[%]
@@ -6229,7 +6230,7 @@
 \providecommand{\@mkdouble}[1]{%
   \@mkboth{#1}{#1}%
 }
-%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
 %%%            (run: body)
 \newcommand\marginline[1]{%
   \marginpar[\raggedleft{#1}]{\raggedright #1}%
@@ -6959,14 +6960,9 @@
     \else\expandafter\captionbelow\fi
   }
 ]{lof}
-\renewcommand*\thefigure{%
-  \expandafter\ifnum\scr@v@is@gt{2.97d}%
-    \if@mainmatter\thechapter.\fi
-  \else
-    \thechapter.%
-  \fi
-  \@arabic\c@figure
-}
+\expandafter\ifnum\scr@v@is@le{2.97d}%
+  \renewcommand*\thefigure{\thechapter.\@arabic\c@figure}
+\fi
 \DeclareNewTOC[%
   type=table,
   float,
@@ -6980,14 +6976,9 @@
     \else\expandafter\captionbelow\fi
   }
 ]{lot}
-\renewcommand*\thetable{%
-  \expandafter\ifnum\scr@v@is@gt{2.97d}%
-    \if@mainmatter\thechapter.\fi
-  \else
-  \thechapter.%
-  \fi
-  \@arabic\c@table
-}
+\expandafter\ifnum\scr@v@is@le{2.97d}%
+  \renewcommand*\thetable{\thechapter.\@arabic\c@table}
+\fi
 %%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
 %%%            (run: body)
 \renewcommand*\footnoterule{%

@@ -6,7 +6,7 @@
 %%
 %% scrlfile.dtx  (with options: `package')
 %% 
-%% Copyright (c) 2002-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 2002-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -38,9 +38,9 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlfile.dtx 3565 2021-02-16 10:43:38Z kohm $
+%%% From File: $Id: scrlfile.dtx 3625 2021-10-31 12:45:26Z kohm $
 \ProvidesPackage{scrlfile}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   package
   (file load hooks)]
 \@ifundefined{IfFormatAtLeastTF}{%
@@ -49,7 +49,11 @@
   \ExplSyntaxOff
 }{%
   \IfFormatAtLeastTF{2020/10/01}{%
-    \RequirePackage{scrlfile-hook}%
+    \IfFormatAtLeastTF{2021/11/15}{%
+      \RequirePackage{scrlfile-hook}%
+    }{%
+      \RequirePackage{scrlfile-hook-3.34}%
+    }%
   }{%
     \RequirePackage{scrlfile-patcholdlatex}%
     \RequirePackage{xparse}%

@@ -1,4 +1,4 @@
-% $Id: pstricks.sty 6 2020-06-10 18:50:14Z herbert $
+% $Id: pstricks.sty 263 2021-09-24 17:58:30Z herbert $
 %%
 %% This is file `pstricks.sty'.
 %%
@@ -17,7 +17,7 @@
 
 \NeedsTeXFormat{LaTeX2e}
 
-\ProvidesPackage{pstricks}[2020/06/11 v0.70 LaTeX wrapper for `PSTricks' (RN,HV)]
+\ProvidesPackage{pstricks}[2021/08/23 v0.71 LaTeX wrapper for `PSTricks' (RN,HV)]
 % 
 \def\documentclass{%
   \edef\@tempa{\jobname.tex }%
@@ -40,11 +40,13 @@
 %
 \newif\ifpst@useCalc  \pst@useCalcfalse
 \newif\ifpst@psfonts  \pst@psfontsfalse
+\newif\ifpstGSfonts  \pstGSfontsfalse
 \newif\if@check@engine  \@check@enginetrue 
 \newif\ifpst@xetex  \pst@xetexfalse
 \newif\ifpst@autopdf  \pst@autopdffalse
 
 \DeclareOption{useCalc}{\pst@useCalctrue}
+\DeclareOption{gsfonts}{\pstGSfontstrue}
 \DeclareOption{psfonts}{\pst@psfontstrue}
 \DeclareOption{noEngineCheck}{\@check@enginefalse}
 \DeclareOption{pdf}{\global\pst@autopdftrue}
@@ -82,8 +84,6 @@
 \DeclareOption*{\PassOptionsToPackage\CurrentOption{\pst@ColorPackage}}
 \ProcessOptions\relax
 
-
-%\RequirePackage{iftex}
 \ifpst@useCalc
   \RequirePackage{pst-calculate}
 \fi

@@ -75,18 +75,22 @@
 %% https://github.com/pgf-tikz/pgf/issues/861
 %%
 %% Thanks to "muzimuzhi Z" https://tex.stackexchange.com/a/547085/38080
+%% Thanks to Henri Menke for a faster approach https://github.com/circuitikz/circuitikz/commit/00966c45c42b464fab5429f89f2b7fb414e9b3f7#commitcomment-54592494
 %%
 \pgfkeysifdefined{/pgf/fpu/install only/.@cmd}{%
     \pgfqkeys{/pgf}{use fpu reciprocal/.code={\pgfkeys{/pgf/fpu/install only={reciprocal}}}}%
     }{%
-    \pgfqkeys{/pgf}{use fpu reciprocal/.code={%
-    \def\pgfmathreciprocal@##1{%
-        \begingroup
-        \pgfkeys{/pgf/fpu=true,/pgf/fpu/output format=fixed}%
-        \pgfmathparse{1/##1}%
-        \pgfmath@smuggleone\pgfmathresult
-        \endgroup
-    }}}%
+    \pgfkeysifdefined{/pgf/use fpu reciprocal/.@cmd}{% use stock one
+        }{
+        \pgfqkeys{/pgf}{use fpu reciprocal/.code={%
+                \def\pgfmathreciprocal@##1{%
+                    \begingroup
+                    \pgfmathfloatparsenumber{##1}%
+                    \pgfmathfloatreciprocal@{\pgfmathresult}%
+                    \pgfmathfloattofixed@{\pgfmathresult}%
+                    \pgfmath@smuggleone\pgfmathresult
+                    \endgroup
+    }}}}%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,7 +100,7 @@
 %% changes suggested by Jonathan P. Spratte
 %%
 \newbox\ctikz@scratchbox
-\long\def\ctikzsubcircuitdef#1#2#3{%
+\pgfutil@protected\def\ctikzsubcircuitdef#1#2#3{%
     \expandafter\gdef\csname #1@Anchor\endcsname{}%
     \expandafter\gdef\csname #1@setanchors\endcsname{%
         \setbox\ctikz@scratchbox=\hbox{%
@@ -372,4 +376,23 @@
     \fi}
 \fi
 
+%%
+%% generic tunable arrow for components that have no "variable" thing
+%%
+\def\ctikztunablearrow{\pgfutil@ifnextchar[{\ctikztunablearrow@full}{\ctikztunablearrow@simple}}%
+\def\ctikztunablearrow@simple{\ctikztunablearrow@full[]}%
+\def\ctikztunablearrow@full[#1]#2#3#4#5{%
+    % add tunable arrow to a component
+    % relative thickness, relative length, rotation from axis, name of the component
+    \begin{scope}
+    \draw
+    \pgfextra{\pgfcirc@set@arrows{tunable}{}{latexslim}
+    \pgfsetlinewidth{#2\pgflinewidth}} [#1]
+        let \p1=($(#5.north east)-(#5.south west)$), \p2=($(#5.east)-(#5.west)$),
+        \n1 = {veclen(\x1,\y1)},
+        \n2 = {atan2(\y2,\x2)} in
+        % node[above]{\n1, \n2}
+        (#5.center) ++({\n2+(#4)}:{-0.5*(\n1)*(#3)}) -- ++({\n2+(#4)}:{(\n1)*(#3)});
+    \end{scope}%
+}
 \endinput

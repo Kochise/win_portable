@@ -1,4 +1,4 @@
-%% $Id: pstricks.con 4 2020-06-09 08:32:19Z herbert $
+%% $Id: pstricks.con 170 2021-09-01 09:54:41Z herbert $
 %% BEGIN: pstricks.con (for dvips driver)
 %%
 %% Configuration file for PSTricks
@@ -39,8 +39,11 @@
 %% If you want to include your own customizations to pstricks.tex, then
 %% uncomment the \pstcustomize command, and include your modifications
 %% after \pstcustomize. These will be read in after pstricks.tex.
-%\pstcustomize
+\pstcustomize
 
+\ifPSTlualatex% luatex has another coordinate system
+  \def\pstrotate{CP CP translate 3 -1 roll rotate \tx@NET}
+\fi
 \endinput
 
 %%

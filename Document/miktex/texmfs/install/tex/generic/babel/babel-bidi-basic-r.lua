@@ -100,7 +100,7 @@ function Babel.bidi(head, ispar)
       if new_dir then
         attr_dir = 0
         for at in node.traverse(item.attr) do
-          if at.number == luatexbase.registernumber'bbl@attr@dir' then
+          if at.number == Babel.attr_dir then
             attr_dir = at.value % 3
           end
         end

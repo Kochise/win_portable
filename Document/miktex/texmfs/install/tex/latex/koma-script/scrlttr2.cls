@@ -41,7 +41,7 @@
 %% scrkernel-circularletters.dtx  (with options: `class,letter,body')
 %% scrlogo.dtx  (with options: `logo')
 %% 
-%% Copyright (c) 1994-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 1994-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -73,7 +73,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -95,7 +95,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -110,13 +110,13 @@
   letter%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   document class (\ClassName)%
 ]
 %%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -198,10 +198,11 @@
 \@namedef{scr@v@3.32}{18}
 \@namedef{scr@v@3.33}{18}
 \@namedef{scr@v@3.34}{18}
-\@namedef{scr@v@last}{18}
+\@namedef{scr@v@3.35}{19}
+\@namedef{scr@v@last}{19}
 %%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: option)
 \KOMA@key{version}[last]{%
   \scr@ifundefinedorrelax{scr@v@#1}{%
@@ -827,7 +828,7 @@
 \KOMA@DeclareDeprecatedOption{cleardoubleempty}{cleardoublepage=empty}
 \KOMA@DeclareDeprecatedOption{cleardoubleplain}{cleardoublepage=plain}
 \KOMA@DeclareDeprecatedOption{cleardoublestandard}{cleardoublepage=current}
-%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
 %%%            (run: option)
 %%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
 %%%            (run: option)
@@ -1495,7 +1496,7 @@
   parskip=false,%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3588 2021-03-22 07:53:57Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: body)
 \expandafter\ifnum \@nameuse{scr@v@2.95}>\scr@compatibility\relax
   \newcommand*{\@setif}[2][]{%
@@ -3417,7 +3418,7 @@
 }
 \pagestyle{plain}
 \pagenumbering{arabic}
-%%% From File: $Id: scrkernel-floats.dtx 3590 2021-03-22 10:30:57Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
 %%%            (run: body)
 \newcommand\marginline[1]{%
   \marginpar[\raggedleft{#1}]{\raggedright #1}%

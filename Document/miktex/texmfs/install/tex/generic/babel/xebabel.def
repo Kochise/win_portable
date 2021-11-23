@@ -87,10 +87,7 @@
         \ifx\AtBeginDocument\@notprerr
           \expandafter\@secondoftwo  % to execute right now
         \fi
-        \AtBeginDocument{%
-          \expandafter\bbl@add
-          \csname selectfont \endcsname{\bbl@ispacesize}%
-          \expandafter\bbl@toglobal\csname selectfont \endcsname}%
+        \AtBeginDocument{\bbl@patchfont{\bbl@ispacesize}}%
       \fi}%
   \fi}
 \ifx\DisableBabelHook\@undefined\endinput\fi
@@ -102,7 +99,7 @@
   \ExplSyntaxOn
   \catcode`\ =10
   \def\bbl@loadfontspec{%
-    \usepackage{fontspec}%
+    \usepackage{fontspec}%  TODO. Apply patch always
     \expandafter
     \def\csname msg~text~>~fontspec/language-not-exist\endcsname##1##2##3##4{%
       Font '\l_fontspec_fontname_tl' is using the\\%
@@ -136,9 +133,7 @@
 \newcommand\bbl@bblfont[2][]{% 1=features 2=fontname, @font=rm|sf|tt
   \bbl@ifunset{\bbl@tempb family}%
     {\bbl@providefam{\bbl@tempb}}%
-    {\bbl@exp{%
-      \\\bbl@sreplace\<\bbl@tempb family >%
-        {\@nameuse{\bbl@tempb default}}{\<\bbl@tempb default>}}}%
+    {}%
   % For the default font, just in case:
   \bbl@ifunset{bbl@lsys@\languagename}{\bbl@provide@lsys{\languagename}}{}%
   \expandafter\bbl@ifblank\expandafter{\bbl@tempa}%
@@ -155,7 +150,10 @@
     \\\bbl@add@list\\\bbl@font@fams{#1}%
     \\\DeclareRobustCommand\<#1family>{%
       \\\not@math@alphabet\<#1family>\relax
-      \\\fontfamily\<#1default>\\\selectfont}%
+      % \\\prepare@family@series@update{#1}\<#1default>% TODO. Fails
+      \\\fontfamily\<#1default>%
+      \<ifx>\\\UseHooks\\\@undefined\<else>\\\UseHook{#1family}\<fi>%
+      \\\selectfont}%
     \\\DeclareTextFontCommand{\<text#1>}{\<#1family>}}}
 \def\bbl@nostdfont#1{%
   \bbl@ifunset{bbl@WFF@\f@family}%
@@ -253,7 +251,7 @@
     \<keys_if_exist:nnF>{fontspec-opentype}{Language/\bbl@cl{lname}}%
       {\\\newfontlanguage{\bbl@cl{lname}}{\bbl@cl{lotf}}}%
     \\\renewfontfamily\\#4%
-      [\bbl@cs{lsys@\languagename},#2]}{#3}% ie \bbl@exp{..}{#3}
+      [\bbl@cl{lsys},#2]}{#3}% ie \bbl@exp{..}{#3}
   \begingroup
      #4%
      \xdef#1{\f@family}%     eg, \bbl@rmdflt@lang{FreeSerif(0)}

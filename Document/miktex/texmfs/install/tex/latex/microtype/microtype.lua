@@ -18,11 +18,12 @@
 -- http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 -- of all distributions of LaTeX version 2005/12/01 or later.
 -- 
--- This work has the LPPL maintenance status `author-maintained'.
+-- This work has the LPPL maintenance status `maintained'.
 -- 
--- This work consists of the files microtype.dtx and microtype.ins and the
--- derived files microtype.sty, microtype-pdftex.def, microtype-luatex.def,
--- microtype-xetex.def, microtype.lua and letterspace.sty.
+-- This work consists of the files microtype.dtx, microtype-utf.dtx and
+-- microtype.ins and the derived files microtype.sty, microtype-pdftex.def,
+-- microtype-luatex.def, microtype-xetex.def, microtype.lua, letterspace.sty
+-- and microtype-show.sty.
 -- 
 -- ------------------------------------------------------------------------
 --   This file contains auxiliary lua functions.
@@ -34,8 +35,8 @@ microtype        = microtype or {}
 local microtype  = microtype
 microtype.module = {
     name         = "microtype",
-    version      = "2.8c",
-    date         = "2021/03/14",
+    version      = "3.0",
+    date         = "2021/10/31",
     description  = "microtype module.",
     author       = "E. Roux, R. Schlicht and P. Gesang",
     copyright    = "E. Roux, R. Schlicht and P. Gesang",
@@ -101,13 +102,31 @@ local function do_font()
   local thefont = font.getfont(font.current())
   if thefont then
     for i,v in next,thefont.characters do
-      if v.index == nil or v.index > 0 then
+      if v.index == nil or ( v.index > 0 and i < 1114112 ) then
         microtype.sprint([[\@tempcnta=]]..i..[[\relax\MT@dofont@function]])
       end
     end
   end
 end
 microtype.do_font = do_font
+
+local function add_ls(k)
+  local f = tex.fontname(font.current())
+  local spec,size = match(f,'^(.+)( at .+)$')
+  if not spec then spec = f end
+  local a,b,c = match(spec,'^([^:]+):?([^:]*):?(.*)$')
+  local ls = "kernfactor=" .. k/1000 .. ';'
+  microtype.sprint(a..':')
+  if (a == "name" or a == "file") then
+    microtype.sprint(b..':'..ls..c)
+  else
+    microtype.sprint(ls..b)
+  end
+  if size then
+    microtype.sprint(size)
+  end
+end
+microtype.add_ls = add_ls
 
 microtype.ligs = microtype.ligs or { }
 
@@ -153,7 +172,9 @@ end
 if luaotfload and luaotfload.aux and luaotfload.aux.slot_of_name then
   local slot_of_name = luaotfload.aux.slot_of_name
   microtype.name_to_slot = function(name, unsafe)
-    return slot_of_name(font.current(), name, unsafe)
+    local n = math.tointeger(slot_of_name(font.current(), name, unsafe))
+    if n and n > 1114111 then n = -1 end
+    return n
   end
 else
   -- we dig into internal structure (should be avoided)

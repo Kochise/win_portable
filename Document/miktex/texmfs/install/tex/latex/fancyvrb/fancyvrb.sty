@@ -2,7 +2,7 @@
 %% This is file `fancyvrb.sty',
 %%
 %% COPYRIGHT 1992-1999, by Timothy Van Zandt <tvz@zandtwerk.kellogg.nwu.edu>
-%%               -2021, by Herbert Voss <hvoss@tug.org>
+%%           2000-... , by Herbert Voss <hvoss@tug.org>
 %%
 %% This package may be distributed under the terms of the LaTeX Project Public
 %% License, as described in lppl.txt in the base LaTeX distribution.
@@ -13,9 +13,9 @@
 %%   verbatim environments and commands and extensive documentation.
 %%
 \NeedsTeXFormat{LaTeX2e}
-\def\fileversion{3.7}
-\def\filedate{2021/01/20}
-\ProvidesPackage{fancyvrb}[2021/01/20 v3.7 verbatim text (tvz,hv)]
+\def\fileversion{4.0}
+\def\filedate{2021/11/19}
+\ProvidesPackage{fancyvrb}[2021/11/18 v4.0 verbatim text (tvz,hv)]
 %\message{Style option: `fancyvrb' v\fileversion \space  <\filedate> (tvz)}
 \csname fancyvrb@loaded\endcsname
 \let\fancyvrb@loaded\endinput
@@ -48,6 +48,7 @@
   \floatingpenalty \@MM
   \hsize\columnwidth
   \@parboxrestore
+  \def\@currentcounter{footnote}%
   \edef\@currentlabel{\csname p@footnote\endcsname\@thefnmark}%
   \@makefntext{}%
   \rule{\z@}{\footnotesep}%
@@ -167,6 +168,7 @@
 \def\KV@FV@firstline@default{%
   \let\FancyVerbStartNum\z@
   \let\FancyVerbStartString\relax}
+\def\FancyVerbStopNum{1}
 \define@key{FV}{lastline}{%
   \afterassignment\FV@ParseStop\@tempcnta=0#1\relax\@nil{#1}}
 \def\FV@ParseStop#1\relax\@nil#2{%
@@ -179,7 +181,7 @@
 \def\KV@FV@lastline@default{%
   \let\FancyVerbStopNum\z@
   \let\FancyVerbStopString\relax}
-\fvset{firstline,lastline}
+\fvset{firstline,lastline=\m@ne}
 \newcount\FV@CodeLineNo
 \def\FV@PreProcessLine{%
   \global\advance\FV@CodeLineNo\@ne
@@ -220,7 +222,7 @@
 %% SR modification end
 \def\FV@DefineFindStop{%
   \ifx\FancyVerbStopString\relax
-    \ifnum\FancyVerbStopNum<\@ne
+    \ifnum\FancyVerbStopNum<\z@
       \let\FV@FindStartStop\FV@@PreProcessLine
     \else
       \let\FV@FindStartStop\FV@FindStopNum
@@ -522,11 +524,12 @@
 \catcode`\^^I=\active
 \gdef\FV@DefineWhiteSpace{\def {\FV@Space}\def^^I{\FV@Tab}}%
 \endgroup
+\define@key{FV}{file_ext}[.tex]{\def\FancyVerbFileExtension{#1}}
 \define@key{FV}{defineactive}[]{\def\FancyVerbDefineActive{#1\relax}}
 \define@key{FV}{defineactive*}{%
   \expandafter\def\expandafter\FancyVerbDefineActive\expandafter{%
     \FancyVerbDefineActive#1\relax}}
-\fvset{defineactive}
+\fvset{defineactive,file_ext=.tex}
 \define@booleankey{FV}{showspaces}%
   {\def\FV@Space{{\FancyVerbSpace}}}%
   {\def\FV@Space{\ }}  
@@ -729,9 +732,11 @@
         \penalty\interlinepenalty}%
       \box\@tempboxa
     \else
-      \ifx\FV@ProcessLine\FV@ListProcessLine@i
-        \FV@Error{Empty verbatim environment}{}%
-        \FV@ProcessLine{}%
+      \ifnum\FancyVerbStopNum>\@ne
+        \ifx\FV@ProcessLine\FV@ListProcessLine@i
+          \FV@Error{Empty verbatim environment}{}%
+          \FV@ProcessLine{}%
+        \fi
       \fi
     \fi
   \fi}
@@ -1001,6 +1006,7 @@
 \newcounter{FancyVerbLine}
 \define@key{FV}{firstnumber}[auto]{%
   \def\@tempa{#1}\def\@tempb{auto}%
+  \def\FV@FirstNumber{#1}%             added 2021-08-12
   \ifx\@tempa\@tempb
     \def\FV@SetLineNo{%
       \c@FancyVerbLine\FV@CodeLineNo%
@@ -1137,9 +1143,20 @@
     \gdef\FV@TheVerbatim{}%
     \def\FV@ProcessLine##1{%
       \expandafter\gdef\expandafter\FV@TheVerbatim\expandafter{%
-        \FV@TheVerbatim\FV@ProcessLine{##1}}}%
-    \gdef\FV@TheVerbatim{}%
-    \FV@Scan}
+%        \FV@TheVerbatim\FV@ProcessLine{##1}}}%    2021-08-12
+%    \gdef\FV@TheVerbatim{}%
+         \FV@TheVerbatim\advance\c@FancyVerbLine\@ne\FV@ProcessLine{##1}}}%
+     \gdef\FV@TheVerbatim{%
+       \edef\@tempa{\FV@FirstNumber}%
+       \def\@tempb{auto}%
+       \ifx\@tempa\@tempb%
+         \c@FancyVerbLine\FV@CodeLineNo%
+       \else%
+         \c@FancyVerbLine\FV@FirstNumber%
+         \advance\c@FancyVerbLine\m@ne%
+       \fi%
+     }%    
+  \FV@Scan}
 \def\FVE@SaveVerbatim{%
   \expandafter\global\expandafter\let
   \csname FV@SV@\SaveVerbatim@Name\endcsname\FV@TheVerbatim

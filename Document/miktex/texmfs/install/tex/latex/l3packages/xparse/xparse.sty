@@ -60,7 +60,7 @@
       }
   }
 \ExplSyntaxOff
-\ProvidesExplPackage{xparse}{2021-06-18}{}
+\ProvidesExplPackage{xparse}{2021-11-12}{}
   {L3 Experimental document command parser}
 \clist_new:N \l__cmd_options_clist
 \DeclareOption* { \clist_put_right:NV \l__cmd_options_clist \CurrentOption }
@@ -74,10 +74,10 @@
       }
     \keys_set:nV {#1} \l__cmd_options_clist
     \bool_if:NF \l__cmd_log_bool
-      { \msg_redirect_module:nnn { LaTeX / #1 } { info } { none } }
+      { \msg_redirect_module:nnn {#1} { info } { none } }
     \cs_new_protected:Npn \__cmd_unknown_argument_type_error:n ##1
       {
-        \__kernel_msg_error:nnxx {#1} { unknown-argument-type }
+        \msg_error:nnxx {#1} { unknown-argument-type }
           { \__cmd_environment_or_command: } { \tl_to_str:n {##1} }
       }
   }
@@ -153,6 +153,10 @@
       { \exp_not:c  { \l__cmd_expandable_aux_name_tl } }
     \__cmd_prepare_signature:N
   }
+\cs_new_protected:Npn \__cmd_copy_grabber_u:w #1 #2 #3
+  { \__cmd_copy_grabber_D:w {#1} {#2} {#3} { } { } }
+\tl_const:Nn \c__cmd_show_type_u_tl { 3 }
+\tl_const:Nn \c__cmd_show_type_G_tl { 3 }
 \cs_new_protected:Npn \__cmd_grab_G:w #1 \__cmd_run_code:
   {
     \__cmd_grab_G_aux:nNN {#1} \cs_set_protected_nopar:Npn

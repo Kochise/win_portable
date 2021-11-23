@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}[1997/06/01]
 %
-%:
+%:ams
 % Based on Young Ryu's txfonts.sty, v.3.2.1
 % Text and math are now loaded in separate sty files---the text
 % font family need not be txtext. The text font loaded when this package
@@ -11,8 +11,8 @@
 % of glyph collisions.
 % These modifications are by Michael Sharpe, msharpe at ucsd dot edu
 
-\def\fileversion{1.655}
-\def\filedate{2021/06/01}
+\def\fileversion{1.659}
+\def\filedate{2021/10/21}
 \ProvidesPackage{newtxmath}[\filedate\space v\fileversion ]
 \@ifundefined{newtxmathLoaded}{}{\endinput}
 
@@ -176,6 +176,7 @@
 %\def\tx@sb{\the\tx@tA \the\tx@tB}\enablesbcorrection}
 %\newcommand*{\loadsupfile}[1]{\readsufile{#1}%creates toks tx@tA. tx@tB
 %\def\tx@sp{\the\tx@tA \the\tx@tB}\enablespcorrection}
+\def\tx@subs{newtx-subs.tex}
 \newread\tx@su
 
 \def\readsufile#1{%
@@ -194,6 +195,8 @@
 \tx@tA\expandafter{\the\tx@tA\next #1\mkern #2 mu\else}
 \tx@tB\expandafter{\the\tx@tB\fi}}
 
+\newif\iftx@subsfile
+\DeclareOption{subscriptcorrectionfile}{\def\tx@subs{#1}\tx@subsfiletrue}
 \DeclareOption{nosubscriptcorrection}{\tx@sbcfalse}
 \DeclareOption{subscriptcorrection}{\tx@sbctrue}
 %\DeclareOption{nosuperscriptcorrection}{\disablespcorrection}
@@ -234,7 +237,6 @@
 \DeclareOption{liby}{\tx@libytrue}
 \DeclareOption{frenchmath}{\tx@frenchmtrue}
 \DeclareOption{nonewtxmathopt}{\tx@noopttrue}
-\DeclareOption{scale}{\tx@noopttrue}
 \DeclareOption{upint}{\tx@upinttrue}
 \DeclareOption{smallerops}{\tx@smopstrue}
 \DeclareOption{useBImacros}{\tx@BItrue}
@@ -389,91 +391,91 @@ amssymbols,uprightGreek,nosubscriptcorrection}
 % Math Italic %
 %%%%%%%%%%%%%%%
 \iftx@libertine
-  \def\tx@subs{newtx-libertine-subs.tex}
+  \iftx@subsfile\else\def\tx@subs{newtx-libertine-subs.tex}\fi
   \DeclareSymbolFont{letters}{OML}{nxlmi}{m}{it}
   \SetSymbolFont{letters}{bold}{OML}{nxlmi}{b}{it}
   \DeclareFontSubstitution{OML}{nxlmi}{m}{it}
 \else
   \iftx@minion
-    \def\tx@subs{newtx-minion-subs.tex}
+    \iftx@subsfile\else\def\tx@subs{newtx-minion-subs.tex}\fi
     \DeclareSymbolFont{letters}{OML}{zmnmi}{m}{it}
     \SetSymbolFont{letters}{bold}{OML}{zmnmi}{b}{it}
     \DeclareFontSubstitution{OML}{zmnmi}{m}{it}  
   \else
     \iftx@gm
-      \def\tx@subs{newtx-garamond-subs.tex}
+      \iftx@subsfile\else\def\tx@subs{newtx-garamond-subs.tex}\fi
       \DeclareSymbolFont{letters}{OML}{zgmmi}{m}{it}
       \SetSymbolFont{letters}{bold}{OML}{zgmmi}{b}{it}
       \DeclareFontSubstitution{OML}{zgmmi}{m}{it}  
     \else
       \iftx@bv
-       \def\tx@subs{newtx-baskervald-subs.tex}
+       \iftx@subsfile\else\def\tx@subs{newtx-baskervald-subs.tex}\fi
        \DeclareSymbolFont{letters}{OML}{zbvmi}{m}{it}
         \SetSymbolFont{letters}{bold}{OML}{zbvmi}{b}{it}
         \DeclareFontSubstitution{OML}{zbvmi}{m}{it}  
       \else
         \iftx@ut
-          \def\tx@subs{newtx-utopia-subs.tex}
+          \iftx@subsfile\else\def\tx@subs{newtx-utopia-subs.tex}\fi
           \DeclareSymbolFont{letters}{OML}{zutmi}{m}{it}
           \SetSymbolFont{letters}{bold}{OML}{zutmi}{b}{it}
           \DeclareFontSubstitution{OML}{zutmi}{m}{it}          
         \else
           \iftx@ch
-            \def\tx@subs{newtx-xcharter-subs.tex}
+            \iftx@subsfile\else\def\tx@subs{newtx-xcharter-subs.tex}\fi
             \DeclareSymbolFont{letters}{OML}{zchmi}{m}{it}
             \SetSymbolFont{letters}{bold}{OML}{zchmi}{b}{it}
             \DeclareFontSubstitution{OML}{zchmi}{m}{it}          
           \else
             \iftx@coch
-              \def\tx@subs{newtx-cochineal-subs.tex}
+              \iftx@subsfile\else\def\tx@subs{newtx-cochineal-subs.tex}\fi
               \DeclareSymbolFont{letters}{OML}{zcochmi}{m}{it}
               \SetSymbolFont{letters}{bold}{OML}{zcochmi}{b}{it}
               \DeclareFontSubstitution{OML}{zcochmi}{m}{it}           
             \else
               \iftx@ba
-			    \def\tx@subs{newtx-baskervillef-subs.tex}
+			    \iftx@subsfile\else\def\tx@subs{newtx-baskervillef-subs.tex}\fi
                 \DeclareSymbolFont{letters}{OML}{zbami}{m}{it}
                 \SetSymbolFont{letters}{bold}{OML}{zbami}{b}{it}
                 \DeclareFontSubstitution{OML}{zbami}{m}{it}
               \else
                 \iftx@stxtwo
-                  \def\tx@subs{newtx-stickstoo-subs.tex}
+                  \iftx@subsfile\else\def\tx@subs{newtx-stickstoo-subs.tex}\fi
                   \DeclareSymbolFont{letters}{OML}{ntxstx2mi}{m}{it}
                   \SetSymbolFont{letters}{bold}{OML}{ntxstx2mi}{b}{it}
                   \DeclareFontSubstitution{OML}{ntxstx2mi}{m}{it}                
                 \else
                   \iftx@ebgm
-                    \def\tx@subs{newtx-ebgaramond-subs.tex}
+                    \iftx@subsfile\else\def\tx@subs{newtx-ebgaramond-subs.tex}\fi
       				\DeclareSymbolFont{letters}{OML}{ntxebgmi}{m}{it}
       				\SetSymbolFont{letters}{bold}{OML}{ntxebgmi}{b}{it}
       				\DeclareFontSubstitution{OML}{ntxebgmi}{m}{it}  
                   \else
                     \iftx@nc
                       \iftx@fourier
-                        \def\tx@subs{newtx-ncf-subs.tex}
+                        \iftx@subsfile\else\def\tx@subs{newtx-ncf-subs.tex}\fi
       				    \DeclareSymbolFont{letters}{OML}{zncfmi}{m}{it}
       				    \SetSymbolFont{letters}{bold}{OML}{zncfmi}{b}{it}
       				    \DeclareFontSubstitution{OML}{zncfmi}{m}{it}
 				      \else  
-                        \def\tx@subs{newtx-nc-subs.tex}
+                        \iftx@subsfile\else\def\tx@subs{newtx-nc-subs.tex}\fi
       				    \DeclareSymbolFont{letters}{OML}{zncmi}{m}{it}
       				    \SetSymbolFont{letters}{bold}{OML}{zncmi}{b}{it}
       				    \DeclareFontSubstitution{OML}{zncmi}{m}{it}
 				      \fi
                     \else
                       \iftx@noto
-                        \def\tx@subs{newtx-noto-subs.tex}
+                        \iftx@subsfile\else\def\tx@subs{newtx-noto-subs.tex}\fi
                         \DeclareSymbolFont{letters}{OML}{notomi}{m}{it}
                         \SetSymbolFont{letters}{bold}{OML}{notomi}{b}{it}
                         \DeclareFontSubstitution{OML}{notomi}{m}{it}
                       \else
                         \iftx@notosans
-                          \def\tx@subs{newtx-notosans-subs.tex}
+                          \iftx@subsfile\else\def\tx@subs{newtx-notosans-subs.tex}\fi
                           \DeclareSymbolFont{letters}{OML}{notosansmi}{m}{it}
                           \SetSymbolFont{letters}{bold}{OML}{notosansmi}{b}{it}
                           \DeclareFontSubstitution{OML}{notosansmi}{m}{it}
                         \else
-                          \def\tx@subs{newtx-subs.tex}
+                          %\iftx@subsfile\else\def\tx@subs{newtx-subs.tex}\fi
                           \DeclareSymbolFont{letters}{OML}{ntxmi}{m}{it}
                           \SetSymbolFont{letters}{bold}{OML}{ntxmi}{b}{it}
                           \DeclareFontSubstitution{OML}{ntxmi}{m}{it}
@@ -1924,16 +1926,22 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 \re@DeclareMathSymbol{\neq}{\mathrel}{lettersA}{60}
    \let\ne=\neq
 %Additional imath and jmath
-\DeclareMathSymbol{\imathfrak}{\mathord}{lettersA}{123}
-\DeclareMathSymbol{\jmathfrak}{\mathord}{lettersA}{124}
-\DeclareMathSymbol{\imathbb}{\mathord}{lettersA}{125}
-\DeclareMathSymbol{\jmathbb}{\mathord}{lettersA}{126}
+\DeclareMathSymbol{\frakdotlessi}{\mathord}{lettersA}{123}
+\DeclareMathSymbol{\frakdotlessj}{\mathord}{lettersA}{124}
+\iftx@stxtwo
+  \DeclareMathSymbol{\bbdotlessi}{\mathord}{lettersA}{184}
+  \DeclareMathSymbol{\bbdotlessj}{\mathord}{lettersA}{185}
+\else
+  \DeclareMathSymbol{\bbdotlessi}{\mathord}{lettersA}{125}
+  \DeclareMathSymbol{\bbdotlessj}{\mathord}{lettersA}{126}
+\fi
 \DeclareMathSymbol{\imathup}{\mathord}{lettersA}{186}
 \DeclareMathSymbol{\jmathup}{\mathord}{lettersA}{187}
-\iftx@stxtwo
-  \DeclareMathSymbol{\imathbbs}{\mathord}{lettersA}{184}
-  \DeclareMathSymbol{\jmathbbs}{\mathord}{lettersA}{185}
-\fi
+\let\imathfrak\frakdotlessi
+\let\jmathfrak\frakdotlessj
+\let\imathbb\bbdotlessi
+\let\jmathbb\bbdotlessj
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Math Italic (ntxmi) Definition % letters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2647,13 +2655,15 @@ $\hfil\displaystyle{#1}\hfil$\crcr%
 %
 \iftx@upscr
   \let\mathscr\mathuscr
-  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{248}
-  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{249}
+  \DeclareMathSymbol{\scrdotlessi}{\mathord}{letters}{248}
+  \DeclareMathSymbol{\scrdotlessj}{\mathord}{letters}{249}
 \else
   \let\mathscr\mathslscr
-  \DeclareMathSymbol{\imathscr}{\mathord}{letters}{194}
-  \DeclareMathSymbol{\jmathscr}{\mathord}{letters}{195}
+  \DeclareMathSymbol{\scrdotlessi}{\mathord}{letters}{194}
+  \DeclareMathSymbol{\scrdotlessj}{\mathord}{letters}{195}
 \fi % upscr
+\let\imathscr\scrdotlessi
+\let\jmathscr\scrdotlessj
 \fi % isenh
 
 %%%%%%

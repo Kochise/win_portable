@@ -6,7 +6,7 @@
 %%
 %% scrkernel-version.dtx  (with options: `class,letter,long')
 %% 
-%% Copyright (c) 1994-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 1994-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -38,7 +38,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3609 2021-06-25 08:18:08Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -60,7 +60,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/06/25 v3.34 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -77,7 +77,7 @@
 \newcommand*{\KOMALongClassFileName}{\KOMALongClassName.\@clsextension}
 \edef\KOMALongClassFileName{\KOMALongClassFileName}
 \ProvidesClass{\KOMALongClassName}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   document class (\ClassName)%
 ]
 \let\ClassName\relax

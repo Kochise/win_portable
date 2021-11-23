@@ -21,7 +21,7 @@
 %% tocbasic.dtx  (with options: `package,exit')
 %% scrlogo.dtx  (with options: `logo')
 %% 
-%% Copyright (c) 2008-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 2008-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -53,24 +53,24 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{tocbasic}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   package
   (handling toc-files)%
 ]
-%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: option)
 \ProcessOptions\relax
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: option)
-%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: body)
 \RequirePackage{scrbase}
 \AfterPackage*{multitoc}{%
@@ -1018,14 +1018,43 @@
     }%
     \ifx\tb@nt@counterwithin\@empty\else
       \@addtoreset{\tb@nt@type}{\tb@nt@counterwithin}%
-      \begingroup\edef\@tempa{%
-        \noexpand\endgroup
-        \noexpand\renewcommand*\expandafter\noexpand
-        \csname the\tb@nt@type\endcsname{%
-          \expandafter\noexpand\csname the\tb@nt@counterwithin\endcsname
-          .\noexpand\arabic{\tb@nt@type}%
+      \begingroup
+        \def\reserved@c{section}%
+        \@ifundefined{chapter}{}{%
+          \@ifundefined{c@chapter}{}{%
+            \@ifundefined{l@chapter}{}{%
+              \def\reserved@c{chapter}}}}%
+        \expandafter\Ifstr\expandafter{\reserved@c}{\tb@nt@counterwithin}{%
+          \edef\@tempa{%
+            \noexpand\endgroup
+            \noexpand\renewcommand*\expandafter\noexpand
+            \csname the\tb@nt@type\endcsname{%
+              \unexpanded{%
+                \expandafter\ifx\csname ifmainmatter\expandafter\endcsname
+                \csname iffalse\endcsname\else
+              }%
+                \noexpand\ifnum
+                \expandafter\noexpand\csname c@\tb@nt@counterwithin\endcsname
+                >\noexpand\z@
+                  \expandafter\noexpand\csname the\tb@nt@counterwithin\endcsname
+                  .%
+                \noexpand\fi
+              \noexpand\fi
+              \noexpand\arabic{\tb@nt@type}%
+            }%
+          }%
+        }{%
+          \edef\@tempa{%
+            \noexpand\endgroup
+            \noexpand\renewcommand*\expandafter\noexpand
+            \csname the\tb@nt@type\endcsname{%
+              \expandafter\noexpand\csname the\tb@nt@counterwithin\endcsname
+              .%
+              \noexpand\arabic{\tb@nt@type}%
+            }%
+          }%
         }%
-      }\@tempa
+      \@tempa
     \fi
     \begingroup
       \edef\@tempa{%
@@ -1066,7 +1095,7 @@
   }%
 }
 \newcommand*{\tb@nt@autofloattype}{16}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: body)
 \newcommand*{\scr@numberline}[1]{%
   \numberline@box{%
@@ -1721,10 +1750,10 @@
 \providecommand*\@pnumwidth{1.55em}
 \providecommand*\@tocrmarg {2.55em}
 \providecommand*\@dotsep   {4.5}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,gobble)
 \DeclareTOCEntryStyle{gobble}{}%
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,dottedtocline)
 \DeclareTOCEntryStyle{dottedtocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -1858,7 +1887,7 @@
                    {\@nameuse{scr@tso@#1@numwidth}}{##1}{##2}%
   }%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,undottedtocline)
 \DeclareTOCEntryStyle{undottedtocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -2018,7 +2047,7 @@
     \endgroup
   \fi
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style, largetocline)
 \DeclareTOCEntryStyle{largetocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -2131,7 +2160,7 @@
     \endgroup
   \fi
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,tocline)
 \DeclareTOCEntryStyle{tocline}[{%
   \DefineTOCEntryLengthOption{beforeskip}%
@@ -2663,7 +2692,7 @@
     \mkern \@dotsep mu\hbox{#1}\mkern \@dotsep
     mu$}\hfill
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,toctext)
 \DeclareTOCEntryStyle{toctext}[{%
   \DefineTOCEntryLengthOption{beforeskip}%
@@ -2907,10 +2936,10 @@
 \newcommand*{\scr@dte@toctext@raggedright}{}
 \newcommand*{\scr@dte@toctext@parend}{}
 \newcommand*{\scr@dte@toctext@lastend}{}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3507 2020-06-11 14:57:03Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
 %%%            (run: style,dottedtocline)
 \CloneTOCEntryStyle{dottedtocline}{default}
-%%% From File: $Id: tocbasic.dtx 3518 2020-08-25 08:26:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
 %%%            (run: exit)
 \AtBeginDocument{%
   \@ifundefined{MakeMarkcase}{%

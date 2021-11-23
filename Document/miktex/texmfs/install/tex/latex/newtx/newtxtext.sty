@@ -1,7 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 
-\def\fileversion{1.653}
-\def\filedate{2021/05/24}
+\def\fileversion{1.658}
+\def\filedate{2021/10/13}
 \ProvidesPackage{newtxtext}[\filedate\space v\fileversion]
 
 \message{`newtxtext' v\fileversion, \filedate\space Text macros taking advantage of TeX-Gyre Termes fonts (msharpe)}
@@ -104,7 +104,7 @@
 \DeclareRobustCommand{\infigures}{%
   \not@math@alphabet\infigures\relax
   \fontfamily{ntxdenoms}\selectfont}
-\DeclareTextFontCommand{\textin}{\infigures}
+\DeclareTextFontCommand{\textinf}{\infigures}
 
 \ifntx@scosf %
 \DeclareRobustCommand{\textsc}[1]{%
@@ -140,8 +140,14 @@
   {\tosfstyle #1}%
 }% to get tosf
 \DeclareRobustCommand{\textsu}[1]{%
-  {\sustyle #1}%
-}% to get sup style
+  {\sustyle #1}% to get sup style
+}
+%\DeclareRobustCommand{\textin}[1]{%
+%  {\infigures #1}% denominator style
+%}
+\DeclareRobustCommand{\textde}[1]{%
+  {\infigures #1}% denominator style
+}
 
 \newcommand{\textfrac}[3][]{% e.g., \textfrac[1]{7}{8}
   \mbox{%
@@ -174,7 +180,7 @@
     \or\kern -.05em% 6
     \or%\kern .02em% 7
     \fi%
-    \textin{#3}%       denominator [#3]
+    \textde{#3}%       denominator [#3]
   }%
 }
 %\newcommand{\textfrac}[3][]{\mbox{%
@@ -202,12 +208,11 @@
 \else 
   \edef\ntxt@denom{\ntxt@denom X}%
 \fi%
-%\show\ntxt@denom
 }
-\def\ntxt@textinf#1#2\@nil{%
-\ntxt@isdigit{#1}%
-\ifblank{#2}{\ntxt@printtrue}{\ntxt@textinf #2\@nil}%
-}    
+%\def\ntxt@textinf#1#2\@nil{%
+%\ntxt@isdigit{#1}%
+%\ifblank{#2}{\ntxt@printtrue}{\ntxt@textinf #2\@nil}%
+%}    
 
 \ifntx@thrm
 	%\RequirePackage{amsmath,amsthm} % in case of theoremfont

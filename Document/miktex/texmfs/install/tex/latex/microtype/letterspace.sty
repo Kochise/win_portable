@@ -18,11 +18,12 @@
 %% http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 %% of all distributions of LaTeX version 2005/12/01 or later.
 %% 
-%% This work has the LPPL maintenance status `author-maintained'.
+%% This work has the LPPL maintenance status `maintained'.
 %% 
-%% This work consists of the files microtype.dtx and microtype.ins and the
-%% derived files microtype.sty, microtype-pdftex.def, microtype-luatex.def,
-%% microtype-xetex.def, microtype.lua and letterspace.sty.
+%% This work consists of the files microtype.dtx, microtype-utf.dtx and
+%% microtype.ins and the derived files microtype.sty, microtype-pdftex.def,
+%% microtype-luatex.def, microtype-xetex.def, microtype.lua, letterspace.sty
+%% and microtype-show.sty.
 %% 
 %% ------------------------------------------------------------------------
 %%   This is a stand-alone version that only provides the letterspacing
@@ -33,7 +34,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {letterspace}
-  [2021/03/14 v2.8c
+  [2021/10/31 v3.0
    Robust letterspacing
    (RS)]
 \def\MT@MT
@@ -157,6 +158,10 @@
 \let\MT@tr@max\@m
 \let\MT@letterspace\m@ne
 \def\MT@letterspace@default{100}
+\MT@pdf@or@lua\relax{
+\ifx\newluafunction\@undefined \input ltluatex \fi
+\MT@lua{require("microtype")}
+}
 \def\MT@glet{\global\let}
 \def\MT@exp@cs#1#2{\expandafter#1\csname#2\endcsname}
 \def\MT@edef@n{\MT@exp@cs\edef}
@@ -229,12 +234,8 @@
 }
 \MT@pdf@or@lua{\let\MT@if@luaotf@font\@secondoftwo}{
 \def\MT@if@luaotf@font{\csname\MT@lua{%
-  local thefont = font.getfont(font.current())
-  if thefont and ( thefont.format == "opentype" or thefont.format == "truetype" )
-    then tex.write("@firstoftwo")
-    else tex.write("@secondoftwo")
-  end
- }\endcsname
+  microtype.if_luaotf_font()
+  }\endcsname
 }
 }
 \def\MT@do@font{\MT@while@num\z@\@cclvi}
@@ -274,10 +275,7 @@
     \expandafter\ifx\MT@lsfont\relax
       \MT@get@ls@basefont
       \MT@if@luaotf@font{%
-        \ifnum\MT@letterspace@<\z@\def\MT@minus{-}\else\let\MT@minus\@empty\fi
-        \global\expandafter\font\MT@lsfont=%
-          \expandafter\MT@exp@two@c\expandafter\MT@ls@fontspec@font
-            \expandafter\fontname\expandafter\font@name\space \@nil
+        \global\expandafter\font\MT@lsfont=\MT@ls@fontspec@font
       }{%
       \global\expandafter\letterspacefont\MT@lsfont\font@name\MT@letterspace@
       }%
@@ -315,14 +313,8 @@
         {MT@aftergroup@\number\currentgrouplevel}%
     }%
 }
-\def\MT@ls@fontspec@colon#1:#2:#3:#4\@nil{\ifx\\#3\\#1:#2\else#1:#2:#3\fi}
-\def\MT@ls@fontspec@font#1 #2\@nil{%
-  "\MT@ls@fontspec@colon#1:::\relax\@nil
-    kernfactor=\MT@minus \ifnum\MT@letterspace@=1000 1\else 0.%
-         \ifnum\MT@minus\MT@letterspace@<100 0\fi
-         \ifnum\MT@minus\MT@letterspace@<10  0\fi
-        \number\MT@minus\MT@letterspace@ \fi;"
-  \ifx\\#2\\ at \f@size pt\else#2\fi\relax
+\def\MT@ls@fontspec@font{%
+  \MT@lua{microtype.add_ls([[\MT@letterspace@]])}%
 }
 \MT@requires@latex2{
 \def\MT@set@lsfont{\MT@exp@two@c\let\font@name\MT@lsfont}
@@ -397,11 +389,11 @@
 \def\MT@ls@too@large#1{%
   \ifnum#1>\MT@tr@max
     \MT@warning{Maximum for option `letterspace' is \number\MT@tr@max}%
-    \let#1\MT@tr@max
+    \edef#1{\number\MT@tr@max}%
   \else
     \ifnum#1<\MT@tr@min
       \MT@warning{Minimum for option `letterspace' is \number\MT@tr@min}%
-      \let#1\MT@tr@min
+      \edef#1{\number\MT@tr@min}%
     \fi
   \fi
 }

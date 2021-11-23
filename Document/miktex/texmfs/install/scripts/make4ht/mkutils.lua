@@ -55,12 +55,30 @@ function remove_extension(path)
 end
 
 -- 
-
+-- check if file exists
 function file_exists(file)
 	local f = io.open(file, "rb")
 	if f then f:close() end
 	return f ~= nil
 end
+
+-- check if Lua module exists
+-- source: https://stackoverflow.com/a/15434737/2467963
+function isModuleAvailable(name)
+  if package.loaded[name] then
+    return true
+  else
+    for _, searcher in ipairs(package.searchers or package.loaders) do
+      local loader = searcher(name)
+      if type(loader) == 'function' then
+        package.preload[name] = loader
+        return true
+      end
+    end
+    return false
+  end
+end
+
 
 -- searching for converted images
 function parse_lg(filename)
@@ -115,6 +133,10 @@ local cp_func = os.type == "unix" and "cp" or "copy"
 -- in reality it isn't.
 -- local cp_func = os.type == "unix" and "mv" or "move"
 function cp(src,dest)
+  if not file_exists(src) then
+    -- try to find file using kpse library if it cannot be found
+    src = kpse.find_file(src) or src
+  end
 	local command = string.format('%s "%s" "%s"', cp_func, src, dest)
 	if cp_func == "copy" then command = command:gsub("/",'\\') end
 	log:info("Copy: "..command)
@@ -362,8 +384,76 @@ end, {correct_exit= 0})
 
 
 
-env.Make:add("tex4ht","tex4ht ${tex4ht_par} \"${input}.${dvi}\"", nil, 1)
+-- env.Make:add("tex4ht","tex4ht ${tex4ht_par} \"${input}.${dvi}\"", nil, 1)
+env.Make:add("tex4ht",function(par)
+  -- detect if svg output is used
+  -- if yes, we need to pass the -g.svg option to tex4ht command
+  -- to support svg images for character pictures
+  local logfile = par.input .. ".log"
+  if file_exists(logfile) then
+    for line in io.lines(logfile) do
+      local options = line:match("TeX4ht package options:(.+)")
+      if options then
+        log:info(options)
+        if options:match("svg") then
+          par.tex4ht_par = (par.tex4ht_par or "") .. " -g.svg"
+        end
+        break
+      end
+    end
+  end
+  local command = "tex4ht ${tex4ht_par} \"${input}.${dvi}\"" % par
+  log:info("executing: " .. command)
+  return execute(command)
+end
+ , nil, 1)
 env.Make:add("t4ht","t4ht ${t4ht_par} \"${input}.${ext}\"",{ext="dvi"},1)
+
+env.Make:add("clean", function(par)
+  -- remove all functions that process produced files
+  -- we will provide only one function, that remove all of them
+  Make.matches = {}
+  local main_name = par.input
+  local remove_file = function(filename)
+    if file_exists(filename) then
+      log:info("removing file: " .. filename)
+      os.remove(filename)
+    end
+  end
+  -- try to find if the last converted file was in the ODT format
+  local lg_file = parse_lg(main_name .. ".lg") 
+  local is_odt = false
+  if lg_file and lg_file.files then
+    for _, x in ipairs(lg_file.files) do
+      is_odt = x:match("odt$") or is_odt
+    end
+  end
+  if is_odt then
+    Make:match("4om$",function(filename)
+      -- math temporary file
+      local to_remove = filename:gsub("4om$", "tmp")
+      remove_file(to_remove)
+      return false
+    end)
+    Make:match("4og$", remove_file)
+  end
+  Make:match("tmp$", function()
+    -- remove temporary and auxilary files
+    for _,ext in ipairs {"aux", "xref", "tmp", "4tc", "4ct", "idv", "lg","dvi", "log"} do
+      remove_file(main_name .. "." .. ext)
+    end
+  end)
+  Make:match(".*", function(filename, par)
+    -- remove only files that start with the input file basename
+    -- this should prevent removing of images. this also means that
+    -- images shouldn't be names as <filename>-hello.png for example
+    if filename:find(main_name, 1,true) then
+      -- log:info("Matched file", filename)
+      remove_file(filename)
+    end
+  end)
+
+end)
 
 -- enable extension in the config file
 -- the following two functions must be here and not in make4ht-lib.lua

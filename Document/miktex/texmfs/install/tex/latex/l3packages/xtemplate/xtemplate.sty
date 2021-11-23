@@ -32,7 +32,7 @@
       }%
     \endinput
   }
-\ProvidesExplPackage{xtemplate}{2021-06-18}{}
+\ProvidesExplPackage{xtemplate}{2021-11-12}{}
   {L3 Experimental prototype document functions}
 \tl_const:Nn \c__xtemplate_code_root_tl      { template~code~>~ }
 \tl_const:Nn \c__xtemplate_defaults_root_tl  { template~defaults~>~ }
@@ -313,7 +313,7 @@
     \seq_put_right:No \l__xtemplate_key_order_seq \l__xtemplate_key_name_tl
     \str_if_eq:onT \l__xtemplate_keytype_tl { choice }
       {
-        \clist_if_in:NnT \l__xtemplate_keytype_arg_tl { unknown }
+        \exp_args:No \clist_if_in:nnT \l__xtemplate_keytype_arg_tl { unknown }
           { \msg_error:nn { xtemplate } { choice-unknown-reserved } }
       }
   }
@@ -413,59 +413,27 @@
 \cs_new_protected:Npn \__xtemplate_store_value_code:n #1
   { \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#1} }
 \cs_new_eq:NN \__xtemplate_store_value_choice:n    \__xtemplate_store_value_code:n
-\cs_new_eq:NN \__xtemplate_store_value_commalist:n \__xtemplate_store_value_code:n
 \cs_new_eq:NN \__xtemplate_store_value_function:n  \__xtemplate_store_value_code:n
 \cs_new_eq:NN \__xtemplate_store_value_instance:n  \__xtemplate_store_value_code:n
-\cs_new_eq:NN \__xtemplate_store_value_real:n      \__xtemplate_store_value_code:n
-\cs_new_eq:NN \__xtemplate_store_value_tokenlist:n \__xtemplate_store_value_code:n
-\cs_new_protected:Npn \__xtemplate_store_value_integer:n #1
+\cs_new_protected:Npn \__xtemplate_store_value_aux:Nn #1#2
   {
-    \__xtemplate_if_eval_now:nTF {#1}
-      {
-        \int_set:Nn \l__xtemplate_tmp_int {#1}
-        \prop_put:NVV \l__xtemplate_values_prop \l__xtemplate_key_name_int
-          \l__xtemplate_tmp_int
-      }
-      {
-        \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#1}
-      }
+    \__xtemplate_if_eval_now:nTF {#2}
+      { \prop_put:NVx \l__xtemplate_values_prop \l__xtemplate_key_name_tl { #1 {#2} } }
+      { \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#2} }
   }
-\cs_new_protected:Npn \__xtemplate_store_value_length:n #1
-  {
-    \__xtemplate_if_eval_now:nTF {#1}
-      {
-        \dim_set:Nn \l__xtemplate_tmp_dim {#1}
-        \prop_put:NVV \l__xtemplate_values_prop \l__xtemplate_key_name_tl
-          \l__xtemplate_tmp_dim
-      }
-      {
-        \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#1}
-      }
-  }
-\cs_new_protected:Npn \__xtemplate_store_value_muskip:n #1
-  {
-    \__xtemplate_if_eval_now:nTF {#1}
-      {
-        \muskip_set:Nn \l__xtemplate_tmp_muskip {#1}
-        \prop_put:NVV \l__xtemplate_values_prop \l__xtemplate_key_name_tl
-          \l__xtemplate_tmp_muskip
-      }
-      {
-        \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#1}
-      }
-  }
-\cs_new_protected:Npn \__xtemplate_store_value_skip:n #1
-  {
-    \__xtemplate_if_eval_now:nTF {#1}
-      {
-        \skip_set:Nn \l__xtemplate_tmp_skip {#1}
-        \prop_put:NVV \l__xtemplate_values_prop \l__xtemplate_key_name_tl
-          \l__xtemplate_tmp_skip
-      }
-      {
-        \prop_put:Non \l__xtemplate_values_prop \l__xtemplate_key_name_tl {#1}
-      }
-  }
+\cs_new_protected:Npn \__xtemplate_store_value_integer:n
+  { \__xtemplate_store_value_aux:Nn \int_eval:n }
+\cs_new_protected:Npn \__xtemplate_store_value_length:n
+  { \__xtemplate_store_value_aux:Nn \dim_eval:n }
+\cs_new_protected:Npn \__xtemplate_store_value_muskip:n
+  { \__xtemplate_store_value_aux:Nn \muskip_eval:n }
+\cs_new_protected:Npn \__xtemplate_store_value_real:n
+  { \__xtemplate_store_value_aux:Nn \fp_eval:n }
+\cs_new_protected:Npn \__xtemplate_store_value_skip:n
+  { \__xtemplate_store_value_aux:Nn \skip_eval:n }
+\cs_new_protected:Npn \__xtemplate_store_value_tokenlist:n
+  { \__xtemplate_store_value_aux:Nn \use:n }
+\cs_new_eq:NN \__xtemplate_store_value_commalist:n \__xtemplate_store_value_tokenlist:n
 \cs_new_protected:Npn \__xtemplate_declare_template_code:nnnnn #1#2#3#4#5
   {
     \__xtemplate_execute_if_type_exist:nT {#1}
@@ -582,7 +550,7 @@
   }
 \cs_new_protected:Npn \__xtemplate_implement_choices:n #1
   {
-    \clist_set_eq:NN \l__xtemplate_tmp_clist \l__xtemplate_keytype_arg_tl
+    \clist_set:No \l__xtemplate_tmp_clist { \l__xtemplate_keytype_arg_tl }
     \prop_put:Non \l__xtemplate_vars_prop \l__xtemplate_key_name_tl { }
     \keyval_parse:NNn
       \__xtemplate_implement_choice_elt:n \__xtemplate_implement_choice_elt:nn

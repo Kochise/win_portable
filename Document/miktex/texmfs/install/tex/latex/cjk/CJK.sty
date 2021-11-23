@@ -3,9 +3,9 @@
 %
 % created by Werner Lemberg <wl@gnu.org>
 %
-% Version 4.8.4 (18-Apr-2015)
+% Version 4.8.5 (16-Oct-2021)
 
-% Copyright (C) 1994-2015  Werner Lemberg <wl@gnu.org>
+% Copyright (C) 1994-2021  Werner Lemberg <wl@gnu.org>
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 % MA 02110-1301 USA
 
 \NeedsTeXFormat{LaTeX2e}[2001/06/01]
-\def\fileversion{4.8.4}
-\def\filedate{2015/04/18}
+\def\fileversion{4.8.5}
+\def\filedate{2021/10/16}
 \ProvidesPackage{CJK}[\filedate\space\fileversion]
 
 \RequirePackage{MULEenc}
@@ -746,28 +746,43 @@
          \csname \curr@fontshape/\f@size/\CJK@plane\endcsname}
      \fi}}
 
-% the other LaTeX2e command we must redefine is \selectfont. It will
-%     now reset \ifCJK@bold@ and calls \CJK@curr@fontshape additionally
-%     (if it exists) to execute the loading-setting parameter of
-%     \DeclareFontShape each time we switch to this font. 
+% for older versions of LaTeX2e command we must redefine \selectfont.
+%     It will now reset \ifCJK@bold@ and calls \CJK@curr@fontshape
+%     additionally (if it exists) to execute the loading-setting
+%     parameter of \DeclareFontShape each time we switch to this font.
 %     \CJK@curr@fontshape has been defined by the above size functions.
+%     For newer versions of LaTeX2e it is sufficient to set a hook for
+%     \selectfont.
+%
+% for compatibility with older versions of LaTeX2e we provide a
+%     definition of \IfFormatAtLeastTF.
 
-\DeclareRobustCommand{\selectfont}{
-  \ifx\f@linespread \baselinestretch
-  \else
-    \set@fontsize\baselinestretch\f@size\f@baselineskip
-  \fi
-  \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}
-  \pickup@font
-  \font@name
-  \expandafter%                                 % CJK extension
-   \ifx\csname CJK@\curr@fontshape\endcsname \relax
-  \else
-    \CJK@bold@false
-    \csname CJK@\curr@fontshape\endcsname
-  \fi
-  \size@update
-  \enc@update}
+\def\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
+
+\IfFormatAtLeastTF{2020-10-01}
+  {\AddToHook{selectfont}{
+     \expandafter
+      \ifx\csname CJK@\curr@fontshape\endcsname \relax
+     \else
+       \CJK@bold@false
+       \csname CJK@\curr@fontshape\endcsname
+     \fi}}
+  {\DeclareRobustCommand{\selectfont}{
+     \ifx\f@linespread \baselinestretch
+     \else
+       \set@fontsize\baselinestretch\f@size\f@baselineskip
+     \fi
+     \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}
+     \pickup@font
+     \font@name
+     \expandafter%                                 % CJK extension
+      \ifx\csname CJK@\curr@fontshape\endcsname \relax
+     \else
+       \CJK@bold@false
+       \csname CJK@\curr@fontshape\endcsname
+     \fi
+     \size@update
+     \enc@update}}
 
 
 % additional vertical and horizontal information for a font is stored in

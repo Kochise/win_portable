@@ -18,18 +18,19 @@
 %% http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 %% of all distributions of LaTeX version 2005/12/01 or later.
 %% 
-%% This work has the LPPL maintenance status `author-maintained'.
+%% This work has the LPPL maintenance status `maintained'.
 %% 
-%% This work consists of the files microtype.dtx and microtype.ins and the
-%% derived files microtype.sty, microtype-pdftex.def, microtype-luatex.def,
-%% microtype-xetex.def, microtype.lua and letterspace.sty.
+%% This work consists of the files microtype.dtx, microtype-utf.dtx and
+%% microtype.ins and the derived files microtype.sty, microtype-pdftex.def,
+%% microtype-luatex.def, microtype-xetex.def, microtype.lua, letterspace.sty
+%% and microtype-show.sty.
 %% 
 %% ------------------------------------------------------------------------
 %% 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {microtype}
-  [2021/03/14 v2.8c
+  [2021/10/31 v3.0
    Micro-typographical refinements
    (RS)]
 \def\MT@MT
@@ -93,9 +94,9 @@
 \@onlypreamble\DeclareMicrotypeBabelHook
 \expandafter\let\csname ver@letterspace.sty\endcsname\@empty
 \def\MT@old@cmd#1#2{%
-  \newcommand*#1{\MT@warning{%
+  \newcommand*#1{\MT@error{%
     \string#1 is deprecated. Please use\MessageBreak
-    \string#2 instead}%
+    \string#2 instead}{As I said}%
     \let #1#2#2}}
 \MT@old@cmd\DeclareMicroTypeAlias\DeclareMicrotypeAlias
 \MT@old@cmd\DeclareMicroTypeSet  \DeclareMicrotypeSet
@@ -149,6 +150,7 @@
   \fi
 \fi
 \RequirePackage{keyval}[1997/11/10]
+^^X\RequirePackage{etoolbox}
 \newtoks\MT@toks
 \newif\ifMT@if@
 \newif\ifMT@protrusion
@@ -157,6 +159,7 @@
 \newif\ifMT@selected
 \newif\ifMT@noligatures
 \newif\ifMT@draft
+\newif\ifMT@disable
 \newif\ifMT@spacing
 \newif\ifMT@kerning
 \newif\ifMT@tracking
@@ -431,7 +434,9 @@
 \newif\ifMT@xunicode
 \MT@with@package@T{xunicode}\MT@xunicodetrue
 \@ifl@t@r\fmtversion{2020/10/01}
-  {\AddToHook{package/after/fontspec}{\MT@fontspectrue}}\relax
+  {\IfFormatAtLeastTF{2021/11/15}
+    {\AddToHook{package/fontspec/after}{\MT@fontspectrue}}
+    {\AddToHook{package/after/fontspec}{\MT@fontspectrue}}}\relax
 \let\MT@maybe@gobble@with@tikz\@firstofone
 \def\MT@tikz@setup{%
   \def\MT@maybe@gobble@with@tikz{%
@@ -469,6 +474,8 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \MT@with@package@T{xunicode}\MT@xunicodetrue
   \MT@with@package@T{fontspec}\MT@fontspectrue
   \MT@glet\MT@setupfont@hook\@empty
+  %\gdef\MT@setupfont@hook{\tracingnone
+  %  \MT@info{Silently doing my `magic' (Mittelbach) for font\MessageBreak\MT@@font}}%
   \MT@if@false
   \MT@with@babel@and@T{spanish} \MT@if@true
   \MT@with@babel@and@T{galician}\MT@if@true
@@ -535,7 +542,121 @@ time will almost certainly lead to undesired results. Have your choice!}%
         \MT@MT@pickupfont}%
     }%
   }%
+  \MT@with@package@T{unicode-math}{%
+    \MT@let@nc{__um_sub_or_super:n}\relax
+  }%
 }
+\newif\ifMT@patch@ok
+\def\MT@patch@info#1{\MT@info{Applying patch `#1'}}
+\def\MT@patch@warn#1{\MT@warning{Unable to apply patch `#1'}}
+\def\MT@patch@undef#1{\MT@warning{Patch `#1' undefined. Cannot apply it}}
+\let\MT@patches@def\@gobble
+\def\MT@define@patch#1#2#3{%
+  \g@addto@macro\MT@patches@def{,#1}%
+  \MT@def@n{MT@patch@@#1}{#2}%
+  \MT@def@n{MT@patch@undo@@#1}{#3}%
+}
+\def\MT@append@patch#1#2{%
+  \MT@remember@patch{#1}%
+  \apptocmd#1{#2}\relax\MT@patch@okfalse
+}
+\def\MT@patch@patch#1#2#3{%
+  \MT@remember@patch{#1}%
+  \patchcmd#1{#2}{#3}\relax\MT@patch@okfalse
+}
+\def\MT@remember@patch#1{%
+  \MT@ifdefined@n@TF{MT@patch@saved@\string#1}\relax
+    {\MT@let@nc{MT@patch@saved@\string#1}#1%
+     \MT@exp@cs\g@addto@macro{MT@patch@undo@@\MT@patch@name}%
+       {\MT@let@cn#1{MT@patch@saved@\string#1}}}%
+}
+\let\MT@patches@applied\@gobble
+\def\MT@apply@patch#1{%
+  \MT@patch@oktrue
+  \MT@ifdefined@n@TF{MT@patch@@#1}
+    {\MT@in@clist{#1}\MT@patches@applied
+     \ifMT@inlist@
+       \MT@warning{Patch `#1' has already been applied,\MessageBreak
+                   cannot reapply it}%
+     \else
+       \def\MT@patch@name{#1}%
+       \g@addto@macro\MT@patches@applied{,#1}%
+       \@nameuse{MT@patch@@#1}%
+       \@nameuse{MT@patch@\ifMT@patch@ok info\else warn\fi}{#1}%
+     \fi}
+    {\MT@patch@undef{#1}}%
+}
+\def\MT@undo@patch#1{%
+  \MT@in@clist{#1}\MT@patches@applied
+  \ifMT@inlist@
+    \MT@rem@from@clist{#1}\MT@patches@applied
+    \@nameuse{MT@patch@undo@@#1}%
+  \else
+    \MT@warning{Patch `#1' hasn't been applied,\MessageBreak cannot revert it}%
+  \fi
+}
+{\catcode`\#=12
+\MT@addto@setup{%
+  \@ifclassloaded{beamer}
+    {\MT@define@patch{item}
+      {\MT@append@patch\@item\leftprotrusion
+       \MT@patch@patch\@item{\everypar{}}{\everypar{\leftprotrusion}}%
+       \MT@append@patch\beamer@@callorigitem\leftprotrusion
+       \MT@patch@patch\beamer@callorigitem{\ignorespaces}{\ignorespaces\leftprotrusion}}
+      {}}
+    {\@ifclassloaded{simplecv}
+      {\MT@define@patch{item}
+        {\MT@append@patch\@item\leftprotrusion
+         \MT@append@patch\@topic@item\leftprotrusion
+         \MT@patch@patch\@item{\everypar{}}{\everypar{\leftprotrusion}}}
+        {}}%
+      {\MT@define@patch{item}
+        {\MT@append@patch\@item\leftprotrusion
+         \MT@patch@patch\@item{\everypar{}}{\everypar{\leftprotrusion}}}
+        {}}}%
+  \@ifclassloaded{memoir}
+    {\MT@define@patch{toc}
+      {\MT@append@patch\numberline\leftprotrusion
+       \MT@append@patch\booknumberline\leftprotrusion
+       \MT@append@patch\partnumberline\leftprotrusion
+       \MT@append@patch\chapternumberline\leftprotrusion
+       \MT@append@patch\cftbookafterpnum\noprotrusion
+       \MT@append@patch\cftpartafterpnum\noprotrusion
+       \MT@append@patch\cftchapterafterpnum\noprotrusion
+       \MT@append@patch\cftsectionafterpnum\noprotrusion
+       \MT@append@patch\cftsubsectionafterpnum\noprotrusion
+       \MT@append@patch\cftsubsubsectionafterpnum\noprotrusion
+       \MT@append@patch\cftparagraphafterpnum\noprotrusion
+       \MT@append@patch\cftsubparagraphafterpnum\noprotrusion
+       \MT@append@patch\cftfigureafterpnum\noprotrusion
+       \MT@append@patch\cfttableafterpnum\noprotrusion}
+      {}}
+      {\MT@define@patch{toc}
+        {\MT@append@patch\numberline\leftprotrusion}
+        {}}%
+  \@ifpackageloaded{amsmath}
+    {\MT@define@patch{eqnum}
+      {\MT@patch@patch\tagform@{(}{\leftprotrusion{(}}%
+       \MT@patch@patch\tagform@{)}{\rightprotrusion{)}}%
+       \MT@patch@patch\eqref{\tagform@}{\@nameuse{MT@patch@saved@\string\tagform@}}}%
+      {}}
+    {\MT@define@patch{eqnum}
+      {\MT@patch@patch\@eqnnum{(}{\leftprotrusion{(}}%
+       \MT@patch@patch\@eqnnum{)}{\rightprotrusion{)}}}%
+      {}}%
+  \@ifclassloaded{memoir}
+    {\MT@define@patch{footnote}
+      {\MT@patch@patch\@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}%
+       \MT@patch@patch\@footnotetext{\foottextfont #1}{\foottextfont\leftprotrusion #1}}
+      {}}
+    {\@ifpackageloaded{scrbase}
+      {\MT@define@patch{footnote}
+        {\MT@patch@patch\scr@saved@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}
+        {}}
+      {\MT@define@patch{footnote}
+        {\MT@patch@patch\@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}
+        {}}}%
+}}
 \expandafter\ifx\the\font\nullfont\normalfont\fi
 \def\MT@split@name#1/#2/#3/#4/#5/#6\@nil{%
   \def\MT@encoding{#1}%
@@ -646,6 +767,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
   }%
 }
 \newif\ifMT@nofamily
+\def\MT@protrusion{\MT@maybe@do{pr}}
 \def\MT@get@font@dimen#1{%
   \ifnum\fontdimen#1\MT@font=\z@
     \MT@warning@nl{Font `\MT@@font' does not specify its\MessageBreak
@@ -786,6 +908,208 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \MT@cfg@catcodes
   \inputencoding{\@nameuse{\@tempa}}%
 }
+\def\MT@set@pr@heirs#1{%
+  \lpcode\MT@font #1=\lpcode\MT@font\MT@char\relax
+  \rpcode\MT@font #1=\rpcode\MT@font\MT@char\relax
+}
+\def\MT@set@pr@prefixheirs{%
+  \MT@ifdefined@c@T\MT@pr@inh@name{%
+    \MT@ifdefined@n@T{MT@inh@\MT@pr@inh@name @prefixes}{%
+      \MT@exp@cs\MT@map@tlist@c
+        {MT@inh@\MT@pr@inh@name @prefixes}%
+        \MT@set@pr@prefixes
+    }%
+  }%
+}
+\def\MT@preset@pr{%
+  \expandafter\expandafter\expandafter\MT@preset@pr@
+    \csname MT@pr@c@\MT@pr@c@name @preset\endcsname\@nil
+}
+\def\MT@preset@pr@#1,#2\@nil{%
+  \ifx\MT@pr@unit@\@empty
+    \MT@warn@preset@towidth{pr}%
+    \let\MT@preset@aux\MT@preset@aux@factor
+  \else
+    \def\MT@preset@aux{\MT@preset@aux@space2}%
+  \fi
+  \MT@ifempty{#1}{\let\@tempa\@empty}{\MT@preset@aux{#1}\@tempa}%
+  \MT@ifempty{#2}{\let\@tempb\@empty}{\MT@preset@aux{#2}\@tempb}%
+  \MT@set@all@pr\@tempa\@tempb
+}
+\def\MT@preset@aux@factor#1#2{%
+  \@tempcntb=#1\relax
+  \MT@scale@factor
+  \edef#2{\number\@tempcntb}%
+}
+\def\MT@preset@aux@space#1#2#3{%
+  \def\@tempb{#2}%
+  \MT@get@space@unit#1%
+  \MT@scale@to@em
+  \edef#3{\number\@tempcntb}%
+}
+\def\MT@warn@preset@towidth#1{%
+  \MT@warning@nl{%
+    Cannot preset characters relative to their widths\MessageBreak
+    for \@nameuse{MT@abbr@#1} list `\@nameuse{MT@#1@c@name}'.
+    Presetting them\MessageBreak relative to 1em instead}%
+}
+\MT@ifdefined@c@TF\noprotrusion\relax{
+  \DeclareRobustCommand\noprotrusion{\leavevmode\kern-\p@\kern\p@}
+}
+\newbox\MT@tempbox
+\newdimen\MT@leftmarginkern
+\newdimen\MT@rightmarginkern
+\DeclareRobustCommand\leftprotrusion{%
+  \MT@toks{}%
+  \MT@prot@get@firstchar
+}
+\long\def\MT@prot@l#1{%
+  \MT@get@prot{#1}%
+  \ifdim\MT@leftmarginkern=\z@ \else
+    \leavevmode
+    \MT@vinfo{|<< adding left margin kern for `\@tempa':\MessageBreak
+                  \the\MT@leftmarginkern \on@line}%
+    \kern\MT@leftmarginkern
+  \fi
+  #1%
+}
+\DeclareRobustCommand\rightprotrusion{\MT@prot@r}
+\long\def\MT@prot@r#1{%
+  #1%
+  \MT@get@prot{#1}%
+  \ifdim\MT@rightmarginkern=\z@ \else
+    \MT@vinfo{>>| adding right margin kern for `\@tempa':\MessageBreak
+                  \the\MT@rightmarginkern \on@line}%
+    \kern\MT@rightmarginkern
+  \fi
+}
+\long\def\MT@get@prot#1{%
+  \MT@leftmarginkern=\z@
+  \MT@rightmarginkern=\z@
+  \begingroup
+    \setbox\MT@tempbox\vbox{%
+      \everypar{}%
+      \parfillskip=\z@skip
+      \hbadness\@M
+      \@newlistfalse
+      \noindent #1}%
+    \vbadness=\@M
+    \splittopskip=\z@
+    \setbox\MT@tempbox\vbox{%
+      \global\setbox\MT@tempbox=\vsplit\MT@tempbox to \normalbaselineskip
+      \unvbox\MT@tempbox
+      \global\setbox\MT@tempbox=\lastbox
+    }%
+  \endgroup
+  \ifhbox\MT@tempbox
+    \def\@tempa{#1}%
+    \MT@leftmarginkern=\leftmarginkern\MT@tempbox\relax
+    \MT@rightmarginkern=\rightmarginkern\MT@tempbox\relax
+  \fi
+}
+\def\MT@prot@ifx#1{%
+  \ifx\MT@prot@next#1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+}
+\def\MT@prot@ifcat#1{%
+  \ifcat#1\noexpand\MT@prot@next\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+}
+^^X\def\MT@prot@ifmacro{%
+^^X  \expandafter\MT@prot@ifmacro@\meaning\MT@prot@next\@nil
+^^X}
+^^X\edef\MT@prot@ifmacro@#1\@nil{%
+^^X  \noexpand\MT@prot@ifmacro@@#1{}{}\detokenize{macro:->}\noexpand\@nil
+^^X}
+^^X\edef\MT@temp{%
+^^X  \def\noexpand\MT@prot@ifmacro@@##1\detokenize{macro:->}##2\noexpand\@nil{%
+^^X    \noexpand\ifx\relax##1\relax
+^^X    \unexpanded{\expandafter\@firstofone\else\expandafter\@gobble\fi}%
+^^X  }%
+^^X}
+^^X\MT@temp
+^^Q\let\MT@prot@ifmacro\@gobble
+\def\MT@prot@iffirstcmd#1{%
+  \ifx\relax#1\relax\expandafter\@secondoftwo\else
+    \MT@exp@two@c\ifx\@car\MT@prot@next\relax\@empty\@nil#1%
+      \expandafter\expandafter\expandafter\@firstoftwo
+    \else
+      \expandafter\expandafter\expandafter\@secondoftwo
+    \fi
+  \fi
+}
+\def\MT@getthird#1#2#3#4\@nil{#3}
+\def\MT@prot@iflicrcmd#1{%
+  \MT@exp@cs\MT@prot@iffirstcmd{#1-cmd}{%
+    \expandafter\expandafter\expandafter\let
+      \expandafter\expandafter\expandafter\@tempa
+      \expandafter\MT@getthird\MT@prot@next\relax\@nil
+    \MT@exp@two@c\ifx\@car\@tempa\relax\@nil\@text@composite
+      \def\MT@temp*##1##2{\MT@prot@l{##1##2}}%
+    \else
+      \def\MT@temp*##1{\MT@prot@l{##1}}%
+    \fi
+    \@gobble
+  }\@firstofone
+}
+\def\MT@prot@get@firstchar{\futurelet\MT@prot@next\MT@prot@get@first@char}
+\def\MT@prot@get@nextchar{\futurelet\MT@prot@next\MT@prot@get@next@char}
+\def\MT@prot@get@first@char{%
+  \def\MT@temp*##1{\MT@prot@get@firstchar}%
+  \MT@prot@ifcat\bgroup{%
+    \long\def\MT@temp*##1{{\MT@prot@l{##1}}}%
+  }{%
+    \MT@prot@ifx\ignorespaces\relax{%
+      \MT@prot@ifx\relax\relax{%
+        \MT@prot@ifx\@sptoken{%
+          \def\MT@temp* {\MT@prot@get@firstchar}%
+        }{%
+          \def\MT@temp*{\MT@prot@addtoken@first}%
+          \MT@prot@ifcat{a}\relax{%
+            \MT@prot@ifcat{!}\relax{%
+              \def\MT@temp*{}%
+              \MT@prot@ifmacro{%
+                \MT@prot@iffirstcmd\UTFviii@two@octets{%
+                  \def\MT@temp*##1##2{\MT@prot@l{##1##2}}%
+                }{%
+                  \MT@prot@iffirstcmd\UTFviii@three@octets{%
+                    \def\MT@temp*##1##2##3{\MT@prot@l{##1##2##3}}%
+                  }{%
+                    \MT@prot@iffirstcmd\UTFviii@four@octets{%
+                      \def\MT@temp*##1##2##3##4{\MT@prot@l{##1##2##3##4}}%
+                    }{%
+                      \MT@prot@iflicrcmd{T1}{%
+                        \MT@prot@iflicrcmd{TU}{%
+                          \MT@prot@iflicrcmd{LY1}{%
+                            \MT@prot@iflicrcmd{OT1}{%
+                              \MT@prot@iflicrcmd{T2A}\relax % should we add more encodings?
+                            }%
+                          }%
+                        }%
+                      }%
+                    }%
+                  }%
+                }%
+              }%
+            }%
+          }%
+        }%
+      }%
+    }%
+  }%
+  \MT@temp*%
+}
+\def\MT@prot@get@next@char{%
+  \def\MT@temp*{\MT@prot@addtoken@next}%
+  \MT@prot@ifcat{a}\relax{%
+    \MT@prot@ifcat{!}\relax{%
+      \def\MT@temp*{\MT@prot@l{\the\MT@toks}}%
+    }%
+  }%
+  \MT@temp*%
+}
+\def\MT@prot@addtoken@first#1{%
+  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
+  \MT@prot@get@nextchar
+}
 \newif\ifMT@nonselected
 \DeclareRobustCommand\textls{%
   \@ifstar{\let\MT@ls@adjust@\MT@ls@adjust@empty\MT@textls}%
@@ -815,29 +1139,31 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \def\MT@ls@too@large#1{%
   \ifnum#1>\MT@tr@max
     \MT@warning{Maximum for option `letterspace' is \number\MT@tr@max}%
-    \let#1\MT@tr@max
+    \edef#1{\number\MT@tr@max}%
   \else
     \ifnum#1<\MT@tr@min
       \MT@warning{Minimum for option `letterspace' is \number\MT@tr@min}%
-      \let#1\MT@tr@min
+      \edef#1{\number\MT@tr@min}%
     \fi
   \fi
 }
 \newdimen\MT@outer@kern
-\def\MT@load@list#1{%
-  \edef\@tempa{#1}%
+\def\MT@load@list#1%
+  {\edef\@tempa{#1}%
   \MT@let@cn\@tempb{MT@\MT@feat @c@\@tempa @load}%
   \MT@ifstreq\@tempa\@tempb{%
     \MT@error{\@nameuse{MT@abbr@\MT@feat} list `\@tempa' cannot load itself}{}%
   }{%
-    \ifx\@tempb\relax \else
+    \ifx\@tempb\relax
+    \else
       \MT@ifdefined@n@TF{MT@\MT@feat @c@\@tempb}{%
         \MT@vinfo{... : First loading \@nameuse{MT@abbr@\MT@feat} list `\@tempb'}%
         \begingroup
           \MT@load@list\@tempb
         \endgroup
-        \edef\MT@curr@list@name{\@nameuse{MT@abbr@\MT@feat} list
-          \noexpand\MessageBreak`\@tempb'}%
+        \edef\MT@curr@list@name{%
+                  \@nameuse{MT@abbr@\MT@feat} list \noexpand\MessageBreak
+                  `\@tempb'}%
         \MT@let@cn\@tempc{MT@\MT@feat @c@\@tempb}%
         \expandafter\MT@set@codes\@tempc,\relax,%
       }{%
@@ -1107,12 +1433,12 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \fi
 }
 \def\MT@is@opt@char#1\iffontchar#2\char#3\else#4\fi\relax{%
-  \ifx\\#1\\%
+  \MT@ifempty{#1}{%
     \iffontchar#2%
       \expandafter\chardef
         \csname\MT@encoding\MT@detokenize@c\@tempa\endcsname=#3\relax
     \fi
-  \fi
+  }\relax
 }
 \begingroup
   \catcode`\/=\z@
@@ -1227,7 +1553,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \MT@warning@nl{One or more slots in the configuration are unknown.\MessageBreak
                    Make sure that no text commands are used.\MessageBreak
                    See the documentation for details (the note\MessageBreak
-                   on `#1' in section 9: `Hints and caveats')}%
+                   on `#1' in section 11: `Hints and caveats')}%
     \MT@glet\MT@warn@unknown\relax}%
 }
 \let\MT@font@list\@empty
@@ -1426,16 +1752,16 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \newcommand\MT@DeclareSet[3][]{%
   \MT@ifempty{#1}{%
-    \MT@map@clist@c\MT@features{{\MT@declare@sets{##1}{#2}{#3}}}%
+    \MT@map@clist@c\MT@features{\begingroup\MT@declare@sets{##1}{#2}{#3}\endgroup}%
   }{%
-    \MT@map@clist@n{#1}{{%
+    \MT@map@clist@n{#1}{\begingroup
       \MT@ifempty{##1}\relax{%
         \MT@is@feature{##1}{set declaration `#2'}{%
           \MT@exp@one@n\MT@declare@sets
             {\csname MT@rbba@##1\endcsname}{#2}{#3}%
         }%
       }%
-    }}%
+    \endgroup}%
   }%
   \MT@end@catcodes
 }
@@ -1645,16 +1971,16 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \newcommand*\MT@UseMicrotypeSet[2][]{%
   \MT@ifempty{#1}{%
-    \MT@map@clist@c\MT@features{{\MT@use@set{##1}{#2}}}%
+    \MT@map@clist@c\MT@features{\begingroup\MT@use@set{##1}{#2}\endgroup}%
   }{%
-    \MT@map@clist@n{#1}{{%
+    \MT@map@clist@n{#1}{\begingroup
       \MT@ifempty{##1}\relax{%
         \MT@is@feature{##1}{activation of set `#2'}{%
           \MT@exp@one@n\MT@use@set
             {\csname MT@rbba@##1\endcsname}{#2}%
         }%
       }%
-    }}%
+    \endgroup}%
   }%
   \MT@end@catcodes
 }
@@ -1676,16 +2002,16 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \newcommand*\MT@DeclareMicrotypeSetDefault[2][]{%
   \MT@ifempty{#1}{%
-    \MT@map@clist@c\MT@features{{\MT@set@default@set{##1}{#2}}}%
+    \MT@map@clist@c\MT@features{\begingroup\MT@set@default@set{##1}{#2}\endgroup}%
   }{%
-    \MT@map@clist@n{#1}{{%
+    \MT@map@clist@n{#1}{\begingroup
       \MT@ifempty{##1}\relax{%
         \MT@is@feature{##1}{declaration of default set `#2'}{%
           \MT@exp@one@n\MT@set@default@set
             {\csname MT@rbba@##1\endcsname}{#2}%
         }%
       }%
-    }}%
+    \endgroup}%
   }%
   \MT@end@catcodes
 }
@@ -1871,17 +2197,17 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \def\MT@set@inh@list#1#2{%
   \MT@ifempty\MT@inh@feat{%
-    \MT@map@clist@c\MT@features{{%
+    \MT@map@clist@c\MT@features{\begingroup
       \MT@ifstreq{##1}{tr}\relax{\MT@declare@char@inh{##1}{#1}{#2}}%
-    }}%
+    \endgroup}%
   }{%
-    \MT@map@clist@c\MT@inh@feat{{%
+    \MT@map@clist@c\MT@inh@feat{\begingroup
       \KV@@sp@def\@tempa{##1}%
       \MT@ifempty\@tempa\relax{%
         \edef\@tempa{\csname MT@rbba@\@tempa\endcsname}%
         \MT@ifstreq\@tempa{tr}\relax{%
           \MT@exp@one@n\MT@declare@char@inh{\@tempa}{#1}{#2}}}%
-    }}%
+    \endgroup}%
   }%
   \MT@end@catcodes
 }
@@ -2159,12 +2485,16 @@ time will almost certainly lead to undesired results. Have your choice!}%
     }%
   \fi
 }
-\MT@def@bool@opt{final}{%
-  \csname if\@tempa\endcsname
-    \MT@draftfalse
-  \else
-    \MT@drafttrue
-  \fi
+\MT@def@bool@opt{final}{}
+\define@key{MT}{disable}[true]{%
+  \def\@tempa{#1}%
+  \MT@ifstreq\@tempa{true}\MT@disabletrue{%
+    \MT@ifstreq\@tempa{ifdraft}{\ifMT@draft\MT@disabletrue\fi}{%
+      \MT@ifstreq\@tempa{false}\relax{%
+        \MT@optwarn@admissible{#1}{disable}%
+      }%
+    }%
+  }%
 }
 \define@key{MT}{verbose}[true]{%
   \let\MT@vinfo\MT@info@nl
@@ -2209,6 +2539,40 @@ time will almost certainly lead to undesired results. Have your choice!}%
               Ignoring it and setting values relative to\MessageBreak
               character widths}}%
   }%
+}
+\let\MT@patches@list\relax
+\let\MT@nopatches@list\@empty
+\define@key{MT}{patch}[all]{%
+  \def\@tempa{#1}%
+  \MT@ifstreq\@tempa{all}
+    \relax
+    {\MT@ifstreq\@tempa{none}
+      {\let\MT@patches@list\@empty}
+      {\def\MT@patches@list{#1}}}%
+}
+\define@key{MT}{nopatch}[all]{%
+  \def\@tempa{#1}%
+  \MT@ifstreq\@tempa{all}
+    {\let\MT@nopatches@list\relax}
+    {\MT@ifstreq\@tempa{none}
+      \relax
+      {\def\MT@nopatches@list{#1}}}%
+}
+\MT@addto@setup{%
+  \ifx\MT@patches@list\relax
+    \let\MT@patches@list\MT@patches@def
+  \fi
+  \ifx\MT@nopatches@list\@empty\else
+    \ifx\MT@nopatches@list\relax
+      \let\MT@nopatches@list\MT@patches@def
+    \fi
+    \MT@map@clist@c\MT@nopatches@list{%
+      \MT@rem@from@clist{#1}\MT@patches@list}%
+  \fi
+  \ifx\MT@patches@list\@empty\else
+^^X    \MT@map@clist@c\MT@patches@list{\MT@apply@patch{#1}}%
+^^Q    \MT@warning@nl{Patches require the etex extensions. Ignoring them}%
+  \fi
 }
 \let\MT@endinput\relax
 \ifx\MT@engine\relax
@@ -2256,20 +2620,44 @@ time will almost certainly lead to undesired results. Have your choice!}%
     }%
   }%
 }
-\MT@ifdefined@c@T\MicroType@Hook{\MT@warning{%
+\MT@ifdefined@c@T\MicroType@Hook{\MT@error{%
   Command \string\MicroType@Hook\space is deprecated.\MessageBreak
-      Use \string\Microtype@Hook\space instead}\MicroType@Hook}
+  Use \string\Microtype@Hook\space instead}
+  {You might want to inform the font package authors.}\MicroType@Hook}
 \MT@ifdefined@c@T\Microtype@Hook\Microtype@Hook
 \def\microtypesetup{\setkeys{MT}}
 \MT@addto@setup{\def\microtypesetup#1{\setkeys{MTX}{#1}\selectfont}}
 \let\MT@saved@setupfont\MT@setupfont
-\define@key{MTX}{disable}[]{%
-  \MT@info{Inactivate `\MT@MT' package}%
+\define@key{MTX}{deactivate}[]{%
+  \MT@info{Deactivate `\MT@MT' package}%
   \let\MT@setupfont\relax
 }
-\define@key{MTX}{enable}[]{%
+\define@key{MTX}{reactivate}[]{%
   \MT@info{Reactivate `\MT@MT' package}%
   \let\MT@setupfont\MT@saved@setupfont
+}
+\define@key{MTX}{patch}[all]{%
+  \def\@tempa{#1}%
+  \MT@ifstreq\@tempa{all}
+    \relax
+    {\MT@ifstreq\@tempa{none}
+      {\let\@tempa\@empty}
+      \relax}%
+  \ifx\@tempa\@empty\else
+^^X    \MT@map@clist@c\@tempa{\MT@apply@patch{##1}}%
+^^Q    \MT@warning@nl{Patches require the etex extensions. Ignoring them}%
+  \fi
+}
+\define@key{MTX}{nopatch}[all]{%
+  \def\@tempa{#1}%
+  \MT@ifstreq\@tempa{all}
+    \relax
+    {\MT@ifstreq\@tempa{none}
+      {\let\@tempa\@empty}
+      \relax}%
+  \ifx\@tempa\@empty\else
+^^X    \MT@map@clist@c\@tempa{\MT@undo@patch{##1}}%
+  \fi
 }
 \def\MT@ProcessOptionsWithKV#1{%
   \let\@tempc\relax
@@ -2290,8 +2678,8 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \def\MT@getkey#1=#2\@nil{#1}
 \MT@ProcessOptionsWithKV{MT}
 \MT@addto@setup{%
-\ifMT@draft
-  \MT@warning@nl{`draft' option active.\MessageBreak
+\ifMT@disable
+  \MT@warning@nl{The `disable' option is in effect.\MessageBreak
                  Disabling all micro-typographic extensions.\MessageBreak
                  This might lead to different line and page breaks}%
   \let\MT@setupfont\relax

@@ -6,7 +6,7 @@
 %%
 %% scrlfile-patcholdlatex.dtx  (with options: `package')
 %% 
-%% Copyright (c) 2002-2019 Markus Kohm [komascript at gmx info]
+%% Copyright (c) 2002-2021 Markus Kohm [komascript at gmx info]
 %% 
 %% This file was generated from file(s) of the KOMA-Script bundle.
 %% ---------------------------------------------------------------
@@ -38,9 +38,9 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlfile-patcholdlatex.dtx 3593 2021-04-21 10:11:38Z kohm $
+%%% From File: $Id: scrlfile-patcholdlatex.dtx 3626 2021-11-01 10:57:06Z kohm $
 \ProvidesPackage{scrlfile-patcholdlatex}[%
-  2021/06/25 v3.34 KOMA-Script
+  2021/11/13 v3.35 KOMA-Script
   package
   (patching old LaTeX kernels)]
 \@ifundefined{IfFormatAtLeastTF}{}{%
@@ -48,12 +48,17 @@
     \PackageError{scrlfile-hook}{LaTeX too young for this package}{%
       It seems this package has been loaded directly using a LaTeX
       version\MessageBreak
-      2020-10-01 or newer. This is not recommend. Please always load
+      2020-10-01 or newer. This is not recommended. Please always load
       package\MessageBreak
       scrlfile instead of scrlfile-patcholdlatex.\MessageBreak
       If you would continue, I will try to load scrlfile-hook%
+      \IfFormatAtLeast{2021/11/15}{}{-3.34}%
     }%
-    \RequirePackage{scrlfile-hook}%
+    \IfFormatAtLeastTF{2021/11/15}{%
+      \RequirePackage{scrlfile-hook}%
+    }{%
+      \RequirePackage{scrlfile-hook-3.34}%
+    }%
     \endinput
   }{}%
 }

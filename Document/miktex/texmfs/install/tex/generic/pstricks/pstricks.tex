@@ -18,10 +18,11 @@
 \csname PSTricksLoaded\endcsname
 \let\PSTricksLoaded\endinput  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% !! loading additional TeX packages see line 38,39 and 72ff
-%% !! loading config file pstricks.con    line 439 
-%% !! loading pro files                   line 452ff 
-%% !! fileversion and date see            line 83 
+%% !! loading additional TeX packages see line 43,44 and 77ff
+%% !! loading config file pstricks.con    line 445 
+%% !! loading pro files                   line 458ff 
+%% !! fileversion and date see            line 84f 
+%% !! loaded arrow stuff                  line 1482
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 \edef\PstAtCode{\the\catcode`\@}
@@ -69,7 +70,7 @@
   \XKV@tempa
 }
 %
-\def\ProvidesPackageRCS#1{\typeout{Loading #1}}%
+\def\ProvidesPackageRCS#1{\typeout{Loading #1}}%  needed for the pgf packages
 %\@ifnextchar[\ProvidesPackageRCS@i{\ProvidesPackageRCS@i[] }}%$
 %\def\ProvidesPackageRCS@i[#1]#2{}
 
@@ -80,8 +81,8 @@
 \fi
 \let\pgfforeach\foreach
 %
-\def\fileversion{3.02}
-\def\filedate{2021/05/31}
+\def\fileversion{3.11}
+\def\filedate{2021/09/27}
 \pst@addfams{pstricks}
 %
 %\define@boolkey[psset]{pstricks}[Pst@]{useURWfonts}[true]{}
@@ -428,20 +429,53 @@
     \fi%
 }
 \fi
-%-------------- end old vesrion ---------------
+%-------------- end old version ---------------
 %
 \def\pst@configerr#1{\@pstrickserr{\string#1 not defined in pstricks.con}\@ehpc}
-%
-\def\pstVerb#1{\pst@configerr\pstVerb}
-\def\pstverb#1{\pst@configerr\pstverb}
-\def\pstverbscale{\pst@configerr\pstverbscale}
-\def\pstrotate{\pst@configerr\pstrotate}
-\def\pstheader#1{\pst@configerr\pstheader}
-\def\pstdriver{\pst@configerr\pstdriver}
-\@ifundefined{pstcustomize}%
-  {\def\pstcustomize{\endinput\let\pstcustomize\relax}}{}
-%
-\input pstricks.con		% local config file
+
+\newif\ifPSTlualatex
+
+\ifdefined\directlua
+  \ifdefined\app@cmd@latex % do we have auto-pst-pdf-lua loaded?
+    \PSTlualatexfalse  % 
+    \typeout{--- We are running lualatex or dvilualatex with auto-pst-pdf-lua ---}%
+  \else  
+    \ifnum\outputmode=1
+      \PSTlualatextrue  % 
+      \typeout{--- We are running lualatex with luapstricks ---}%
+    \else
+      \PSTlualatexfalse  % 
+      \typeout{--- We are running dvilualatex without luapstricks ---}%
+    \fi
+  \fi
+\else
+  \typeout{--- We are running latex or xelatex ---}%
+  \PSTlualatexfalse    
+\fi
+\ifPSTlualatex
+  \directlua{require'luapstricks'}%
+  \def\pstdriver{LuaLaTeX}%
+  \def\pstverb{\luaPST}%
+  \def\pstVerb{\luaPST direct}%
+  \def\pstunit{1bp}%
+  \def\pstverbscale{}%
+  \def\pstnodescale{}%
+  \def\pstheader{\luaPSTheader}%
+  \def\c@lor@to@ps#1\@@{\luaPSTcolor{#1}}
+%  \AltClipMode   % now done after the definition of \AltClipMode, see below
+  % Not sure if we need ``neg'' here or not
+  % \def\pstrotate{CP CP translate 3 -1 roll neg rotate \tx@NET}
+\else
+  \def\pstVerb#1{\pst@configerr\pstVerb}%
+  \def\pstverb#1{\pst@configerr\pstverb}%
+  \def\pstverbscale{\pst@configerr\pstverbscale}%
+  \def\pstrotate{\pst@configerr\pstrotate}%
+  \def\pstheader#1{\pst@configerr\pstheader}%
+  \def\pstdriver{\pst@configerr\pstdriver}%
+  \@ifundefined{pstcustomize}%
+    {\def\pstcustomize{\endinput\let\pstcustomize\relax}}{}%
+  \input pstricks.con		% local config file
+\fi
 %
 \newif\ifPSTricks
 \PSTrickstrue
@@ -455,7 +489,6 @@
 \@ifundefined{pst@ATH}{\def\pst@ATH<#1>{}}{}
 %
 \pstheader{pstricks.pro}
-%\pstheader{pstricks-fonts.pro}
 \pstheader{pst-algparser.pro}
 \pstheader{pst-tools.pro}
 %
@@ -573,46 +606,10 @@
 \gdef\psrbrace[} ]
 \endgroup
 %
-\pstVerb{
-  /pssetRGBcolor  /setrgbcolor  load def
-  /pssetCMYKcolor /setcmykcolor load def
-  /pssetGraycolor /setgray      load def
-}
-\def\@newcolor#1#2{%
-  \expandafter\edef\csname #1\endcsname{\noexpand\pst@color{#2}}%
-  %\expandafter\edef\csname color@#1\endcsname{#2}%
-  \expandafter\edef\csname\string\color@#1\endcsname{#2}%    hv 1.14 2005-12-17
-  \ignorespaces}
 %
-\def\pst@color#1{\def\pst@currentcolor{#1}\pstVerb{#1}\aftergroup\pst@endcolor}%
-\def\pst@endcolor{\pstVerb{\pst@currentcolor}}
-\def\pst@currentcolor{0 setgray}
-\def\altcolormode{%
-\def\pst@color##1{%
-  \pstVerb{gsave ##1}\aftergroup\pst@endcolor}%
-\def\pst@endcolor{\pstVerb{\pst@grestore}}}
-\def\pssetMonochrome{%
-  \pstVerb{
-    /setrgbcolor { add add 0 gt {0}{1} ifelse setgray } def 
-    /setcmykcolor{ 4 dict begin
-      /k ED /y ED /m ED /c ED 
-      1 1 k sub c mul k add sub 0.29 mul 
-      1 1 k sub m mul k add sub 0.587 mul add 
-      1 1 k sub y mul k add sub 0.114 mul add
-      end 0 gt {0}{1} ifelse setgray } def }}
-\def\pssetGrayscale{%
-  \pstVerb{
-    /setrgbcolor { 0.07 mul exch 0.71 mul add exch 0.21 mul add setgray } def 
-    /setcmykcolor{ 4 dict begin
-      /k ED /y ED /m ED /c ED 
-      1 1 k sub c mul k add sub 0.29 mul 
-      1 1 k sub m mul k add sub 0.587 mul add 
-      1 1 k sub y mul k add sub 0.114 mul add
-      end setgray } def }}
-\def\psresetColor{\pstVerb{
-    /setrgbcolor  tx@Dict begin /pssetRGBcolor  load end def 
-    /setcmykcolor tx@Dict begin /pssetCMYKcolor load end def }}
-
+\input pstricks-color
+%
+%
 \def\pst@grestore{
   currentpoint
   matrix currentmatrix
@@ -622,45 +619,6 @@
   setmatrix
   moveto
 }
-%\def\pst@usecolor#1{\csname color@#1\endcsname\space}%    hv 1.14  2005--12-17
-\def\pst@usecolor#1{\csname\string\color@#1\endcsname\space}
-%
-\def\newgray#1#2{%
-    \pst@checknum{#2}\pst@tempg
-    \@newcolor{#1}{\pst@tempg setgray}}%
-\def\newrgbcolor#1#2{%
-  \pst@expandafter\pst@getnumiii{#2} {} {} {} {}\@nil
-  \@newcolor{#1}{\pst@tempg \pst@temph \pst@tempi setrgbcolor}}
-\def\newhsbcolor#1#2{%
-  \pst@expandafter\pst@getnumiii{#2} {} {} {} {}\@nil
-  \@newcolor{#1}{\pst@tempg \pst@temph \pst@tempi sethsbcolor}}
-\def\newcmykcolor#1#2{%
-  \pst@expandafter\pst@getnumiv{#2} {} {} {} {} {}\@nil
-  \@newcolor{#1}{\pst@tempg \pst@temph \pst@tempi \pst@tempj setcmykcolor}}
-\newgray{black}{0}
-\newgray{darkgray}{.25}
-\newgray{gray}{.5}
-\newgray{lightgray}{.75}
-\newgray{white}{1}
-\newrgbcolor{red}{1 0 0}
-\newrgbcolor{green}{0 1 0}
-\newrgbcolor{blue}{0 0 1}
-\newrgbcolor{yellow}{1 1 0}
-\newrgbcolor{cyan}{0 1 1}
-\newrgbcolor{magenta}{1 0 1}
-
-\@ifundefined{xglobal}%  do we have xcolor loaded?
- {\@newcolor{randomgray}{tx@Dict begin Rand setgray end}%
-  \@newcolor{randomrgb}{tx@Dict begin Rand Rand Rand setrgbcolor end}%
-  \@newcolor{randomcmyk}{tx@Dict begin Rand Rand Rand Rand setcmykcolor end}%
-  \@newcolor{randomhsb}{tx@Dict begin Rand Rand Rand sethsbcolor end}%
- }{%
-  \definecolor[ps]{randomgray}{gray}{tx@Dict begin Rand end}%
-  \definecolor[ps]{randomrgb}{rgb}{tx@Dict begin Rand Rand Rand end}%
-  \definecolor[ps]{randomcmyk}{cmyk}{tx@Dict begin Rand Rand Rand Rand end}%
-  \definecolor[ps]{randomhsb}{hsb}{tx@Dict begin Rand Rand Rand end}%
- }
-%
 \define@boolkey[psset]{pstricks}[Pst@]{draft}[true]{}
 \define@key[psset]{pstricks}{bgcolor}{\def\pst@bgcolor{#1}}% background for pspicture
 \psset[pstricks]{bgcolor={},draft=false}% \pst@bgcolor is \@empty
@@ -692,12 +650,7 @@
 %------------ hv 1.16 end -------------------
 %
 \def\@none{none}
-\def\pst@getcolor#1#2{%
-%  \@ifundefined{color@#1}%	hv 1.14  2005-12-17
-  \@ifundefined{\string\color@#1}%
-    {\@pstrickserr{Color `#1' not defined}\@eha}%
-    {\edef#2{#1}}%
-}
+%
 \newdimen\psunit \psunit 1cm
 \newdimen\psxunit \psxunit 1cm
 \newdimen\psyunit \psyunit 1cm
@@ -810,7 +763,6 @@
 \def\radians{\def\pst@angleunit{57.2956 mul }%
   \pstVerb{tx@Dict begin startGlobal /pst@angleunit {\pst@angleunit} def endGlobal end}}%
 \def\pst@angleunit{}%
-
 %
 \def\SpecialCoor{%
   \def\pst@@getcoor##1{%
@@ -884,10 +836,6 @@
   \fi}
 %
 \def\pst@@CheckCoorType#1#2;#3;#4\@nil{%
-%\typeout{====1:#1}%
-%\typeout{====2:#2}%
-%\typeout{====3:#3}%
-%\typeout{====4:#4}%
   \ifx#1>\relax%			node with special rotation for \uput
     \global\pst@C@@rType=7
   \else
@@ -1103,6 +1051,8 @@
 \psset[pstricks]{doublesep=1.25\pslinewidth}
 \define@key[psset]{pstricks}{doublecolor}[white]{\pst@getcolor{#1}\psdoublecolor}
 \psset[pstricks]{doublecolor=white}
+
+\let\pst@setrepeatarrowsflag\relax
 %
 \define@boolkey[psset]{pstricks}[ps]{shadow}[true]{\pst@setrepeatarrowsflag}
 \psset[pstricks]{shadow=false}
@@ -1112,12 +1062,6 @@
 \psset[pstricks]{shadowangle=-45}
 \define@key[psset]{pstricks}{shadowcolor}[darkgrey]{\pst@getcolor{#1}\psshadowcolor}
 \psset[pstricks]{shadowcolor=darkgray}
-%
-\def\pst@repeatarrowsflag{\z@}
-\def\pst@setrepeatarrowsflag{%
-  \edef\pst@repeatarrowsflag{%
-    \ifdim\psk@border\p@>\z@ 1\else\ifpsdoubleline 1\else
-      \ifpsshadow 1\else \z@\fi\fi\fi}}
 %
 \def\psls@none{}
 \def\psls@solid{ \psk@linejoin\space setlinejoin \psk@linecap\space setlinecap stroke }
@@ -1410,266 +1354,65 @@
 \define@boolkey[psset]{pstricks}[Pst@]{variableColor}[true]{}
 \define@key[psset]{pstricks}{setflat}[0.1]{\pst@checknum{#1}\psk@setflat}%
 \psset[pstricks]{startLW=\pslinewidth,endLW=\pslinewidth,variableColor=false,
-  variableLW=false,startWL=380,endWL=780,setflat=0.1}
+  variableLW=false,startWL=380,endWL=770,setflat=0.1}
 %
 \def\pst@flattenpath{
-  /Coors [] def         % the array of all points
-  /lambda \psk@startWL\space def
-  %
+  20 dict begin
+  /Coors [] def
+  /Cmds [] def
+  /NoOfSteps 0 def
   /add2Values { Coors aload length 2 add array astore /Coors exch def } def
   /add6Values { Coors aload length 6 add array astore /Coors exch def } def
+  /addmoveto { -1 Cmds aload length 1 add array astore /Cmds exch def } def
+  /addlineto { 0 Cmds aload length 1 add array astore /Cmds exch def } def
+  /addcurveto { 1 Cmds aload length 1 add array astore /Cmds exch def } def
+  \psk@setflat\space setflat      % the value for the line snippets
+  flattenpath                     % flatten the existing path into line segments
+  { add2Values addmoveto}         % what to do with moveto
+  { NoOfSteps 1 add /NoOfSteps ED add2Values addlineto}         % what to do with lineto 
+  { NoOfSteps 1 add /NoOfSteps ED add6Values addcurveto}          % what to do with curveto (not needed here) 
+  { }                             % nothing for closepath
+  pathforall
 %
-  \psk@setflat\space setflat   % the value for the line snippets
-  flattenpath            % flatten the existing path into line segments
-%
-  { add2Values }         % what to do with moveto
-  { add2Values }         % what to do with lineto 
-  { add6Values }         % what to do with curveto (not needed here) 
-  { }                    % what to do with closepath
-  pathforall             % do it for the existing path
-%
+  /dLW \pst@number\psk@endLW \pst@number\psk@startLW sub NoOfSteps div def % the step for the linewidth
+  \ifPst@variableColor
+    /dColor \psk@endWL\space \psk@startWL\space sub NoOfSteps div def      % same for color
+  \fi
+%%%  
   \pst@number\psk@startLW setlinewidth
   \tx@setlinejoin
   \psk@linecap\space setlinecap
-  Coors aload length 2 sub 2 div cvi /N0 exch def % set number of points
-  /NN 0 def
-  /N N0 def
-  { N 3 gt { N 3 sub /N ED }{ N 1 sub /N ED } ifelse 
-    NN 1 add /NN ED
-    N 0 eq { exit } if
-  } loop
-  /dLW \pst@number\psk@endLW \pst@number\psk@startLW sub NN div def          % the step for the linewidth
-  \ifPst@variableColor
-    /dColor \psk@endWL\space \psk@startWL\space sub NN div def
-    lambda dColor add dup /lambda ED 
-    tx@addDict begin wavelengthToRGB Red Green Blue end setrgbcolor
-  \else
-    \pst@usecolor\pslinecolor
-  \fi
-  moveto                 % move to the first one
-  /N N0 def
-  {
-    N 3 gt {  
-%    CP 6 2 roll
-    \psk@curvature\space /c ED /b ED /a ED
-    /ArrowA {} def
-    /ArrowB {} def
-    BOC NC EOC %    curveto 
-    N 3 sub /N ED }{ lineto N 1 sub /N ED } ifelse
-    currentlinewidth dLW add setlinewidth % increase line width
+  /lambda \psk@startWL def
+  Cmds length /Ncmds ED    % number of the commands is the length of the array
+  /CoorIndex 0 def
+  Ncmds 1 sub -1 0 {
+    % on stack is the loop index 
+    Cmds exch get /cmdNo ED      % get command as nuber -1, 0, 1 | moveto, lineto, curveto
+    cmdNo 0 eq { Coors CoorIndex 2 getinterval aload pop lineto CoorIndex 2 add /CoorIndex ED }
+      { cmdNo 0 lt { Coors CoorIndex 2 getinterval aload pop moveto CoorIndex 2 add /CoorIndex ED }
+        { Coors CoorIndex 6 getinterval aload pop curveto CoorIndex 6 add /CoorIndex ED } ifelse } ifelse  % else is curveto
     \ifPst@variableColor
       lambda dColor add dup /lambda ED 
       tx@addDict begin wavelengthToRGB Red Green Blue end setrgbcolor
     \else
       \pst@usecolor\pslinecolor
     \fi
-    CP /Y ED /X ED       % put coors of current point on the stack
-%    0.4 .setopacityalpha 
+    currentlinewidth dLW add setlinewidth
+    CP /yCurr ED /xCurr ED
     stroke               % draw the line segment
-    N 0 eq { exit }{ X Y moveto } ifelse
-  } loop
-%  N {                    % repeat for the other N coords
-%    lineto               % line to next point
-%    currentlinewidth dLW add setlinewidth % increase line width
-%    lambda dColor add dup /lambda ED 
-%    tx@addDict begin wavelengthToRGB Red Green Blue end setrgbcolor
-%    currentpoint         % put coors of current point on the stack
-%    0.4 .setopacityalpha 
-%    stroke               % draw the line segment
-%    moveto
-%  } repeat
+    xCurr yCurr moveto   % go to the last point
+  } for
+  end
 }
-
 %
 %--------------------------- A R R O W S ---------------------------
-%
-\def\psk@arrowA{}
-\def\psk@arrowB{}
-\def\pst@arrowtable{,-,<->,<<->>,>-<,>>-<<,(-),[-],)-(,]-[,|>-<|,<D-D>,D>-<D,<D<D-D>D>,<T-T>} % hv --1.16
-\edef\pst@arrowtable{\pst@arrowtable,|<*->|*,|<->|}
-\begingroup
-  \catcode`\<=13
-  \catcode`\>=13
-  \catcode`\|=13
-  \gdef\pst@activearrows{\def<{\string<}\def>{\string>}\def|{\string|}}
-\endgroup
-\def\tx@BeginArrow{BeginArrow }
-\def\tx@EndArrow{EndArrow }
-%
-\def\tx@Arrow{ \tx@setStrokeTransparency Arrow }% hv 2008-01-13
-\def\tx@ArrowD{ \tx@setStrokeTransparency ArrowD }% hv 2008-01-13
-\def\tx@ArrowT{ \tx@setStrokeTransparency ArrowT }% hv 2021-05-31
-%
-\@namedef{psas@<|}{ 
-    \psk@tbarsize\space \tx@Tbar
-    0 CLW 2 div T
-    newpath
-    true 
-    \psk@arrowinset 
-    \psk@arrowlength 
-    \psk@arrowsize 
-    \tx@Arrow 
-}
-% ]-[ arrow
-\def\tx@BracketOut{BracketOut }
-\@namedef{psas@[}{%
-  /BracketOut {%
-  CLW mul add dup CLW sub 2 div
-%/x ED mul CLW add
-  /x ED mul neg
-  /y ED
-  /z CLW 2 div def
-  x neg y moveto
-  x neg CLW 2 div L x CLW 2 div L x y L stroke 0 CLW moveto } def
-  \psk@bracketlength\space \psk@tbarsize\space \tx@BracketOut
-}
-% )-( arrow
-\def\tx@RoundBracketOut{ \tx@setStrokeTransparency RoundBracketOut }% hv 2008-01-13
-\@namedef{psas@(}{%
-  /RoundBracketOut {%
-    CLW mul add dup 2 div
-%/x ED mul
-    /x ED mul neg
-    /y ED
-    /mtrx CM def
-    0 CLW
-    2 div T x y mul 0 ne { x y scale } if
-    1 1 moveto
-    .85 .5 .35 0 0 0 curveto
-    -.35 0 -.85 .5 -1 1 curveto
-    mtrx setmatrix stroke 0 CLW moveto } def
-  \psk@rbracketlength\space \psk@tbarsize\space \tx@RoundBracketOut
-}
-% end of new definitions of the missing arrows ---- hv 1.12
-\@namedef{psas@>}{ false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow }
-\@namedef{psas@>>}{%
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-  0 h T gsave newpath
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-  CP grestore CP newpath moveto 2 copy 
-  CLW \pst@arrowscale\space div SLW % set the original line width  
-  L stroke moveto
-}
-\@namedef{psas@<}{true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow}
-\@namedef{psas@<<}{
-  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-  CP newpath moveto 0 a neg 
-  gsave
-  CLW \pst@arrowscale\space div SLW % set the original line width  
-  L stroke 
-  grestore
-  0 h neg T
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-}
-\@namedef{psas@D>}{ false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD }%	hv 20071211
-\@namedef{psas@D>D>}{ %	hv 20071211
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
-  0 h Inset sub T gsave newpath
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
-  CP grestore moveto 
-}
-\@namedef{psas@<D}{ %	hv 20071211
-  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
-}
-\@namedef{psas@<D<D}{ %	hv 20071211
-  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
-  CP newpath moveto 0 a neg L stroke 0 h neg T
-  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowD
-}
-\@namedef{psas@T>}{ false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowT }%	hv 20210531
-\@namedef{psas@<T}{ %	hv 20071211
-  true \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@ArrowT
-}
 
-\define@key[psset]{pstricks}{tbarsize}[2pt 5]{%
-  \pst@expandafter\pst@getdimnum{#1} 0 {} {}\@nil
-  \edef\psk@tbarsize{\pst@number\pst@dimg \pst@tempg}}
-\psset[pstricks]{tbarsize=2pt 5}
-%
-\def\tx@Tbar{Tbar }
-\@namedef{psas@|}{\psk@tbarsize \tx@Tbar}
-\@namedef{psas@|*}{0 CLW -2 div T \psk@tbarsize \tx@Tbar}
-\@namedef{psas@>|}{%
-  \psk@tbarsize \tx@Tbar
-  0 CLW 2 div T
-  newpath
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-}
-\@namedef{psas@>|*}{%
-  0 CLW -2 div T
-  \psk@tbarsize \tx@Tbar
-  0 CLW 2 div T
-  newpath
-  false \psk@arrowinset \psk@arrowlength \psk@arrowsize \tx@Arrow
-}
-%
-\define@key[psset]{pstricks}{bracketlength}[0.15]{\pst@checknum{#1}\psk@bracketlength}
-\psset[pstricks]{bracketlength=.15}
-\def\tx@Bracket{Bracket }
-\@namedef{psas@]}{\psk@bracketlength \psk@tbarsize \tx@Bracket}
-\define@key[psset]{pstricks}{rbracketlength}[0.15]{\pst@checknum{#1}\psk@rbracketlength}
-\psset[pstricks]{rbracketlength=.15}
-\def\tx@RoundBracket{RoundBracket }
-\@namedef{psas@)}{\psk@rbracketlength \psk@tbarsize \tx@RoundBracket}
-%
-\def\psas@c{1 \psas@@c}
-\def\psas@cc{0 CLW 2 div T 1 \psas@@c}
-\def\psas@C{2 \psas@@c}
-\def\psas@@c{%
-  setlinecap
-  0 0 moveto
-  0 0.1 L % changed value from 0.5 to 0.1
-  stroke
-  0 0 moveto }
-%
-\def\psas@{}
-%
-\define@key[psset]{pstricks}{arrowLW}{\pst@getlength{#1}\psk@arrowLW}
-\psset[pstricks]{arrowLW=0}
-% arrowLW as LineWidth for the circled line ends
-%
-\def\psas@o{\psk@arrowLW\space dup 0 eq { pop }{ SLW } ifelse
-  {\pst@usecolor\psfillcolor true} false \psk@dotsize \tx@EndDot }
-\def\psas@oo{\psk@arrowLW\space dup 0 eq { pop }{ SLW } ifelse
-  {\pst@usecolor\psfillcolor true} true \psk@dotsize \tx@EndDot }
-\@namedef{psas@*}{\psk@arrowLW\space dup 0 eq { pop }{ SLW } ifelse
-  {false} false \psk@dotsize \tx@EndDot }
-\@namedef{psas@**}{\psk@arrowLW\space dup 0 eq { pop }{ SLW } ifelse
-  {false} true \psk@dotsize \tx@EndDot }
-%
-\define@key[psset]{pstricks}{arrows}[-]{%
-  \begingroup
-    \pst@activearrows
-    \xdef\pst@tempg{#1}%
-  \endgroup
-  \expandafter\psset@@arrows\pst@tempg\@empty-\@empty\@nil
-  \if@pst\else\@pstrickserr{Bad arrows specification: #1}\@ehpa\fi}
-\def\psset@@arrows#1-#2\@empty#3\@nil{%
-  \@psttrue
-  \def\ps@next##1,#1-##2,##3\@nil{\def\pst@tempg{##2}}%
-  \expandafter\ps@next\pst@arrowtable,#1-#1,\@nil
-  \@ifundefined{psas@\pst@tempg}{\@pstfalse\def\psk@arrowA{}}{\let\psk@arrowA\pst@tempg}%
-  \@ifundefined{psas@#2}{\@pstfalse\def\psk@arrowB{}}{\def\psk@arrowB{#2}}}
-\psset[pstricks]{arrows=-}
-%
-\define@key[psset]{pstricks}{arrowscale}[1]{%                                   hv --1.12
-  \pst@getscale{#1}\psk@arrowscale
-  \pst@@arrowscale@i#1 \@nil}%           hv --1.12
-\def\pst@@arrowscale@i#1 #2\@nil{\edef\pst@arrowscale{#1}}% hv --1.12
-\psset[pstricks]{arrowscale=1}
-%
-\define@key[psset]{pstricks}{arrowsize}[1.5pt 2]{%
-  \pst@expandafter\pst@getdimnum{#1} 0 {} {}\@nil
-  \edef\psk@arrowsize{\pst@number\pst@dimg \pst@tempg}%
-}
-\psset[pstricks]{arrowsize=1.5pt 2}
-\define@key[psset]{pstricks}{arrowlength}[1.4]{\pst@checknum{#1}\psk@arrowlength}
-\psset[pstricks]{arrowlength=1.4}
-\define@key[psset]{pstricks}{arrowinset}[0.4]{\pst@checknum{#1}\psk@arrowinset}%
-\psset[pstricks]{arrowinset=0.4}
+\input pstricks-arrows
+
+%% ---------------------- end arrow part ----------------------
 %
 \def\tx@SD{ \tx@setTransparency SD }
-\def\tx@EndDot{EndDot }
+\def\tx@EndDot{ EndDot }
 %
 \def\pst@par{}
 \def\addto@par#1{%
@@ -1715,20 +1458,6 @@
 \@namedef{#1}{\pst@object{#1}}%
 \@namedef{#1@i}{\addbefore@par{#3}\@nameuse{#2@i}}}%
 \ignorespaces}
-%
-\def\pst@getarrows#1{\@ifnextchar({#1}{\pst@@getarrows{#1}}}
-% ------------------------- hv 1.10 beg ------------------------
-%\def\pst@@getarrows#1#2{\addto@par{arrows=#2}#1}
-\def\pst@@getarrows#1#2{%
-  \def\pst@tempa{#2}% prevent empty arrow arguments, to allow \psline{}(...)(...)
-  \ifx\pst@tempa\@empty
-    \addto@par{arrows=-}%
-  \else
-    \addto@par{arrows=#2}%
-  \fi
-  #1%
-}
-% ------------------------- hv 1.10 end ------------------------
 %
 \def\begin@ClosedObj{%
   \leavevmode
@@ -1909,42 +1638,6 @@
       \tx@setStrokeTransparency % hv 2016-09-23
       stroke
       grestore
-}}
-%
-\def\pst@arrowtype{%
-  \ifx\psk@arrowB\@empty 0 \else -2 \fi
-  \ifx\psk@arrowA\@empty 0 \else -1 \fi
-  add }
-%
-\def\pst@addarrowdef{%
-  \addto@pscode{%
-    /ArrowA {
-      \ifx\psk@arrowA\@empty
-        \pst@oplineto
-      \else
-        \pst@arrowdef{A}
-        moveto
-      \fi
-    } def
-    /ArrowB { \ifx\psk@arrowB\@empty \else \pst@arrowdef{B} \fi } def
-}}
-%
-\def\pst@arrowdef#1{%
-  \ifnum\pst@repeatarrowsflag>\z@
-    /Arrow#1c [ 6 2 roll ] cvx def Arrow#1c
-  \fi
-  \tx@BeginArrow 
-  \psk@arrowscale
-  \@nameuse{psas@\@nameuse{psk@arrow#1}}
-  \tx@EndArrow
-}
-%
-\def\pst@repeatarrows{%
-  \addto@pscode{%
-    gsave
-    \ifx\psk@arrowA\@empty\else ArrowAc ArrowA pop pop \fi
-    \ifx\psk@arrowB\@empty\else ArrowBc ArrowB pop pop pop pop \fi
-    grestore
 }}
 %
 \def\pst@OpenShowPoints{%
@@ -2276,226 +1969,9 @@
   \end@OpenObj
 }
 %
-\define@key[psset]{pstricks}{dotsize}[2pt 2]{%
-  \pst@expandafter\pst@getdimnum{#1} 0 {} {}\@nil%
-  \edef\psk@@dotsize{\pst@number\pst@dimg}%
-  \let\psk@@@dotsize\pst@tempg%
-  \edef\psk@dotsize{ /DS \psk@@dotsize \psk@@@dotsize CLW mul add 2 div def }}
-\psset[pstricks]{dotsize=2pt 2}
-%
-\define@key[psset]{pstricks}{dotscale}[1]{%
-  \pst@getscale{#1}\psk@dotscale
-  \ifx\psk@dotscale\@empty
-    \def\psk@xdotscale{1 }%
-    \def\psk@ydotscale{1 }%
-  \else
-    \let\psk@xdotscale\pst@tempg
-    \let\psk@ydotscale\pst@temph
-  \fi}
-%
-\def\pst@Getangle#1#2{%
-  \pst@getangle{#1}\pst@tempg
-  \def\pst@temph{0. }%
-  \ifx\pst@tempg\pst@temph\def#2{}\else\edef#2{\pst@tempg\space rotate }\fi}
-%
-\define@key[psset]{pstricks}{dotangle}[0]{%
-  \pst@getangle{#1}\psk@@dotangle
-  \ifdim\psk@@dotangle\p@=\z@
-    \let\psk@dotangle\@empty
-  \else
-    \edef\psk@dotangle{\psk@@dotangle rotate }%
-  \fi}
-\psset[pstricks]{dotangle=0}
-%
-\def\pst@getdotsize{%
-\pst@dimg=\psk@@@dotsize\pslinewidth
-\advance\pst@dimg\psk@@dotsize\p@
-\pst@dimh=\psk@ydotscale\pst@dimg
-\pst@dimg=\psk@xdotscale\pst@dimg
-\divide\pst@dimh 2
-\divide\pst@dimg 2\relax}
-%
-\psset[pstricks]{dotscale=1}
-%
-\def\psdot{\pst@object{psdot}}
-\def\psdot@i{\@ifnextchar({\psdot@ii}{\psdot@ii(\z@,\z@)}}
-\def\psdot@ii(#1){%
-  \begin@SpecialObj%
-% hv modification 1.13 2005-11-28 
-  \solid@star%
-% hv modification end 
-  \pst@@getcoor{#1}%
-  \addto@pscode{
-    \psk@dotsize
-    \@nameuse{psds@\psk@dotstyle}
-    \tx@setStrokeTransparency
-    \pst@coor Dot}%
-  \end@SpecialObj}
-%
-\def\psdots{\pst@object{psdots}}
-\def\psdots@i{%
-  \begin@SpecialObj%
-  \pst@getcoors[\psdots@ii}
-\def\psdots@ii{%
-  \addto@pscode{ false \tx@NArray \psdots@iii }%
-  \end@SpecialObj}
-\def\psdots@iii{%
-  \psk@dotsize
-  \@nameuse{psds@\psk@dotstyle}
-  \tx@setStrokeTransparency
-  newpath
-  n { transform floor .5 add exch floor .5 add exch itransform Dot  } repeat }
-%
-% DG: dead code (to suppress until \psset[pstricks]{dotstyle) ? - Aug. 4, 1997
-\def\tx@SQ{SQ }
-\def\tx@ST{ST }
-\def\tx@SP{SP }
-%
-\def\pst@gdot#1{ /Dot { gsave T \psk@dotangle \psk@dotscale #1 grestore } def }
-%
-\@namedef{psds@*}{\pst@gdot{ 0 0 DS \tx@SD }}
-\@namedef{psds@o}{%
-  /r2 DS CLW sub def
-  \pst@gdot{ 0 0 DS \tx@SD \pst@usecolor\psfillcolor SLW 0 0 r2 \tx@SD }}
-\@namedef{psds@square*}{ /r1 DS .886 mul def \pst@gdot{r1 \tx@SQ }}
-\@namedef{psds@square}{%
-  /r1 DS .886 mul def /r2 r1 CLW sub def
-  \pst@gdot{r1 \tx@SQ \pst@usecolor\psfillcolor r2 \tx@SQ}}
-\@namedef{psds@triangle*}{%
-  /y1 DS .778 mul neg def /x1 y1 1.732 mul neg def
-  \pst@gdot{x1 y1 \tx@ST}}
-\@namedef{psds@triangle}{%
-  /y1 DS .778 mul neg def /x1 y1 1.732 mul neg def
-  /y2 y1 CLW add def /x2 y2 1.732 mul neg def
-  \pst@gdot{x1 y1 \tx@ST \pst@usecolor\psfillcolor x2 y2 \tx@ST}}
-\@namedef{psds@pentagon*}{%
-  /r1 DS 1.149 mul def
-  \pst@gdot{r1 \tx@SP}}
-\@namedef{psds@pentagon}{%
-  DS .93 mul dup 1.236 mul /r1 ED CLW sub 1.236 mul /r2 ED
-  \pst@gdot{r1 \tx@SP \pst@usecolor\psfillcolor r2 \tx@SP}}
-\@namedef{psds@+}{%
-  /DS DS 1.253 mul def
-  \pst@gdot{DS 0 moveto DS neg 0 L stroke 0 DS moveto 0 DS neg L stroke}}
-\@namedef{psds@|}{%
-  \psk@tbarsize CLW mul add 2 div /DS ED
-  \pst@gdot{0 DS moveto 0 DS neg L stroke}}
-% DG: end dead code?
-%
-\define@key[psset]{pstricks}{dotstyle}[*]{%
-  \@ifundefined{psds@#1}%
-    {\@pstrickserr{Dot style `#1' not defined}\@eha}%
-    {\edef\psk@dotstyle{#1}}}
-\psset[pstricks]{dotstyle=*}
-%
-\def\tx@FontDot{FontDot }
-\def\newpsfontdot#1[#2]#3#4{%
-  \@namedef{psds@#1}{%
-    /#3 \psk@@dotangle [#2] \tx@FontDot
-% DG/SR modification begin - Dec. 12, 1999 - Patch 14
-%/Dot { moveto #4 show } bind def }}
-    /Dot { moveto gsave \psk@dotscale #4 show grestore } bind def 
-}}
-% DG/SR modification end
-\def\newpsfontdotH#1[#2]#3#4#5{%	for filled objects
-  \@namedef{psds@#1}{%
-    /#3 \psk@@dotangle [#2] \tx@FontDot
-    /Dot {
-      moveto
-%      \iftrue
-% DG/SR modification begin - Dec. 23, 1999 - Patch 14
-%gsave \pst@usecolor\psfillcolor #5 show grestore
-%\fi
-%#4 show
-      gsave \psk@dotscale \pst@usecolor\psfillcolor #5 show grestore % fill first
-%      \fi					
-      gsave \psk@dotscale #4 show grestore	% show the unfilled one
-% DG/SR modification end
-    } bind def 
-}}
-%
-\pstheader{pst-dots.pro}
-\newpsfontdot{*}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(b)}
-\newpsfontdotH{o}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(c)}{(b)}
-\newpsfontdotH{Bo}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(C)}{(b)}
-\newpsfontdotH{triangle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(t)}{(u)}
-\newpsfontdotH{Btriangle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(T)}{(u)}
-\newpsfontdot{triangle*}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(u)}
-\newpsfontdotH{square}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(s)}{(r)}
-\newpsfontdotH{Bsquare}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(S)}{(r)}
-\newpsfontdot{square*}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(r)}
-\newpsfontdotH{pentagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(p)}{(q)}
-\newpsfontdotH{Bpentagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(P)}{(q)}
-\newpsfontdot{pentagon*}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(q)}
-% DG/SR modification begin - Mar. 18, 1997 and Dec. 16, 1999 - Patch 14
-%\newpsfontdot{diamond*}[1.9 0.0 0.0 1.9 -0.4598 -0.70775]{StandardSymL}{<E0>}
-%\newpsfontdot{diamond}[2.3 0.0 0.0 2.3 -0.8533 -0.5336]{StandardSymL}{<A8>}
-% D.G. modification begin - Jan. 17, 2000
-\newpsfontdotH{diamond}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(d)}{(l)}
-\newpsfontdotH{Bdiamond}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(D)}{(l)}
-\newpsfontdot{diamond*}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(l)}
-% DG/SR modification end
-\newpsfontdot{oplus}[1.44928 0.0 0.0 1.44928 -0.562319 -0.478261]{StandardSymL}{<C5>}
-\newpsfontdot{otimes}[1.44928 0.0 0.0 1.44928 -0.562319 -0.475362]{StandardSymL}{<C4>}
-\newpsfontdot{x}[1.8 0.0 0.0 1.8 -0.495 -0.4788]{StandardSymL}{<B4>}
-\newpsfontdot{+}[2.3 0.0 0.0 2.3 -0.6486 -0.5819]{NimbusRomNo9L-Regu}{<2B>}
-\newpsfontdot{asterisk}[2.43309 0.0 0.0 2.43309 -0.609489 -1.14477]{NimbusRomNo9L-Regu}{<2A>}
-\newpsfontdot{B+}[2.3 0.0 0.0 2.3 -0.6555 -0.5819]{NimbusRomNo9L-Bold}{<2B>}
-\newpsfontdot{Basterisk}[2.29358 0.0 0.0 2.29358 -0.576835 -1.08486]{NimbusRomNo9L-Bold}{<2A>}
-\newpsfontdot{|}[1.98413 0.0 0.0 1.38 -0.258929 -0.5]{NimbusSanL-Regu}{(|)}
-% DG/SR modification begin - Oct. 27, 1997 - Patch 7
-%[1.98413 0.0 0.0 1.98413 -0.258929 -0.712302]{NimbusSanL-Regu}{(|)}
-% DG/SR modification end
-\newpsfontdot{B|}[1.98413 0.0 0.0 1.38 -0.277778 -0.5]{NimbusSanL-Bold}{(|)}%
-% DG/SR modification begin - Oct. 27, 1997 - Patch 7
-%[1.98413 0.0 0.0 1.98413 -0.277778 -0.78302]{NimbusSanL-Bold}{(|)}
-
-% DG/SR modification end
-\iffalse
-\newpsfontdot{*}[2.77778 0.0 0.0 2.77778 -0.638889 -0.813889]{StandardSymL}{<B7>}
-\newpsfontdot{o}[3.33333 0.0 0.0 3.33333 -0.666667 -1.78167]{StandardSymL}{<B0>}
-\newpsfontdot{Bo}[4.69484 0.0 0.0 4.69484 -0.78169 -2.97418]{NimbusRomNo9L-Bold}{<CA>}
-\fi
-% Etienne Riga
-\newpsfontdot{Asterisk}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(k)}
-\newpsfontdot{BoldAsterisk}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(K)}
-\newpsfontdotH{SolidAsterisk}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(J)}{(b)}
-%
-\newpsfontdotH{Pentagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(p)}{(q)}
-\newpsfontdotH{BoldPentagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(P)}{(q)}
-\newpsfontdot{SolidPentagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(q)}
-\newpsfontdotH{Hexagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(h)}{(G)}
-\newpsfontdotH{BoldHexagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(H)}{(G)}
-\newpsfontdot{SolidHexagon}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(G)}
-\newpsfontdotH{Octogon}[1 0 0 1 0 0]{PSTricksDotFont}{(f)}{(g)}
-\newpsfontdotH{BoldOctogon}[1 0 0 1 0 0]{PSTricksDotFont}{(F)}{(g)}
-\newpsfontdot{SolidOctogon}[1 0 0 1 0 0]{PSTricksDotFont}{(g)}
-%
-\newpsfontdot{Bullet}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(b)}
-\newpsfontdotH{Circle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(c)}{(b)}
-\newpsfontdotH{BoldCircle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(C)}{(b)}
-%\newpsfontdot{SolidCircle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(u)}
-\newpsfontdotH{Triangle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(t)}{(u)}
-\newpsfontdotH{BoldTriangle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(T)}{(u)}
-\newpsfontdot{SolidTriangle}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(u)}
-\newpsfontdotH{Square}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(s)}{(r)}
-\newpsfontdotH{BoldSquare}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(S)}{(r)}
-\newpsfontdot{SolidSquare}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(r)}
-\newpsfontdot{Add}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(a)}
-\newpsfontdot{BoldAdd}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(A)}
-\newpsfontdot{Mul}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(x)}
-\newpsfontdot{BoldMul}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(X)}
-\newpsfontdotH{Oplus}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(m)}{(b)}
-\newpsfontdotH{BoldOplus}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(M)}{(b)}
-\newpsfontdotH{SolidOplus}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(e)}{(b)}
-\newpsfontdotH{Otimes}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(n)}{(b)}
-\newpsfontdotH{BoldOtimes}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(N)}{(b)}
-\newpsfontdotH{SolidOtimes}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(E)}{(b)}
-\newpsfontdot{Bar}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(i)}
-\newpsfontdot{BoldBar}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(I)}
-\newpsfontdotH{Diamond}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(d)}{(l)}
-\newpsfontdotH{BoldDiamond}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(D)}{(l)}
-\newpsfontdot{SolidDiamond}[1.0 0.0 0.0 1.0 0.0 0.0]{PSTricksDotFont}{(l)}
+%--------------------------- PSTricks dots -----------------------
+\input{pstricks-dots}
+%--------------------------- PSTricks dots end -------------------
 %
 \newdimen\pslinearc
 \define@key[psset]{pstricks}{linearc}[0pt]{\pssetlength\pslinearc{#1}}
@@ -2880,7 +2356,18 @@
   \pst@cntg=#1\relax\edef\psk@subgriddiv{\the\pst@cntg}}
 \psset[pstricks]{subgriddiv=5}
 %
-\define@key[psset]{pstricks}{gridfont}[NimbusSanL-Regu]{\def\psk@gridfont{/#1 }}%   hv 2007-11-13
+\define@key[psset]{pstricks}{gridfont}[NimbusSanL-Regu]{%
+  \ifPSTlualatex
+    \ifx\relax#1\relax
+       \def\psk@gridfont{\fontid\font\space .findfontid }%
+    \else
+      \def\psk@gridfont{/#1 findfont }%   hv 2007-11-13
+     \fi
+  \else
+     \def\psk@gridfont{/#1 findfont }%   hv 2007-11-13
+  \fi
+}%
+   
 \ifpst@psfonts
   \psset[pstricks]{gridfont=Helvetica}%
 \else
@@ -2923,7 +2410,7 @@
         \pst@number\psxunit abs \pst@number\psyunit abs % hv 1.11
         \psk@subgriddiv\space \psk@subgriddots\space
         {} 0 
-        \psk@gridfont findfont 0 scalefont setfont      % hv 1.16
+        \psk@gridfont 0 scalefont setfont      % hv 1.16
 	\tx@Grid 
 	grestore
       }%
@@ -2942,8 +2429,8 @@
 %      \pst@number\psxunit \pst@number\psyunit        % hv 1.11
       1 \psk@griddots\space { \pst@usecolor\psgridlabelcolor }
       \psk@gridlabels 
-      \psk@gridfont findfont \psk@gridlabels scalefont setfont  % hv 1.16
-       \tx@Grid 
+      \psk@gridfont \psk@gridlabels scalefont setfont  % hv 1.16
+      \tx@Grid 
       grestore
     }%
   \end@SpecialObj
@@ -3108,7 +2595,12 @@
 \def\AltClipMode{%
   \def\end@psclip{\pstVerb{\pst@grestore}}%
   \def\begin@psclip{\pstVerb{gsave}}}
-  \def\clipbox{\@ifnextchar[{\clipbox@}{\clipbox@[\z@]}}
+
+\ifPSTlualatex
+  \AltClipMode
+\fi
+
+\def\clipbox{\@ifnextchar[{\clipbox@}{\clipbox@[\z@]}}
 % DG modification begin - Apr. 3, 1997
 % From paulus@immd5.informatik.uni-erlangen.de (Dietrich Paulus)
 %\def\clipbox@[#1]{\pst@makebox\clipbox@@{#1}}
@@ -4126,22 +3618,39 @@ pop
 \pslongbox{Scaleboxto}{\psscaleboxto}
 %
 \def\tx@Rot{Rot }
-\def\psrotateleft{\pst@makebox{\ps@rotateleft\pst@hbox}}
+\def\psrotateleft{%
+  \ifPSTlualatex
+    \def\pst@tempA{-90 }%
+    \def\pst@tempB{90 }%
+  \else
+    \def\pst@tempA{90 }%
+    \def\pst@tempB{-90 }%
+  \fi
+  \pst@makebox{\ps@rotateleft\pst@hbox}}
 \def\ps@rotateleft#1{%
-\leavevmode\hbox{\hskip\ht#1\hskip\dp#1\vbox{\vskip\wd#1%
-\pst@Verb{90 \tx@Rot}
-\vbox to \z@{\vss\hbox to \z@{\box#1\hss}\vskip\z@}%
-\pst@Verb{-90 \tx@Rot}}}}
-\def\psrotateright{\pst@makebox{\ps@rotateright\pst@hbox}}
+  \leavevmode\hbox{\hskip\ht#1\hskip\dp#1\vbox{\vskip\wd#1%
+    \pst@Verb{\pst@tempA \tx@Rot}%
+    \vbox to \z@{\vss\hbox to \z@{\box#1\hss}\vskip\z@}%
+      \pst@Verb{\pst@tempB \tx@Rot}}}}
+%
+\def\psrotateright{%
+  \ifPSTlualatex
+    \def\pst@tempA{90 }%
+    \def\pst@tempB{-90 }%
+  \else
+    \def\pst@tempA{-90 }%
+    \def\pst@tempB{90 }%
+  \fi
+  \pst@makebox{\ps@rotateright\pst@hbox}}
 \def\ps@rotateright#1{%
 % ----------- hv begin 2004-05-07 ----------- patch 15
 %    \hbox{%
   \leavevmode\hbox{%
 % ----------- hv end 2004-05-07 ----------- patch 15
   \hskip\ht#1\hskip\dp#1\vbox{\vskip\wd#1%
-  \pst@Verb{-90 \tx@Rot}
+  \pst@Verb{\pst@tempA \tx@Rot}
   \vbox to \z@{\hbox to \z@{\hss\box#1}\vss}%
-  \pst@Verb{90 \tx@Rot}}}}
+  \pst@Verb{\pst@tempB \tx@Rot}}}}
 \def\psrotatedown{\pst@makebox{\ps@rotatedown\pst@hbox}}
 \def\ps@rotatedown#1{%
 \hbox{\hskip\wd#1\vbox{\vskip\ht#1\vskip\dp#1%
@@ -4193,7 +3702,23 @@ pop
 \def\getref@r{\def\psk@xref{1}}
 \psset[pstricks]{ref=c}
 %
-\def\pst@rotlist{ mark RAngle /ps@a ED cleartomark ps@a neg }
+%
+%  U Up 0 
+%  L Left 90 
+%  D Down 180 
+%  R Right 270
+%  
+%  N North *0 
+%  W West *90 
+%  S South *180 
+%  E East *270
+%
+\ifPSTlualatex
+  \def\pst@rotlist{ mark RAngle /ps@a ED cleartomark ps@a }%
+\else
+  \def\pst@rotlist{ mark RAngle /ps@a ED cleartomark ps@a neg }%
+\fi
+
 \def\pst@rottable{%
 @0=%
 @U=%
@@ -4229,13 +3754,23 @@ pop
 %\edef\psk@rot{\pst@rotlist \ifx\psk@rot\@empty\else\psk@rot add \fi}}
 \psset[pstricks]{rot=0}
 %
-\def\tx@RotBegin{RotBegin }
-\def\tx@RotEnd{RotEnd }
+\def\tx@RotBegin{ RotBegin }
+\def\tx@RotEnd{ RotEnd }
+
 \def\pst@rotate#1#2{%
-  \ifx#1\@empty\else
-  \setbox#2=\hbox{\pst@Verb{#1 \tx@RotBegin}\box#2\pst@Verb{\tx@RotEnd}}%
-  \fi%
-}
+  \ifx\relax#1\relax\else  
+    \setbox#2=\hbox{\pst@Verb{%  check for empty #1 
+      (#1) /strAngle ED strAngle length 0 eq { 0 }{ #1 } ifelse 
+	 %\ifPSTlualatex neg \fi 
+    \tx@RotBegin}\box#2\pst@Verb{\tx@RotEnd}}%
+  \fi
+ }%
+
+%    \setbox#2=\hbox{\pst@Verb{%  check for empty #1 
+%      (#1) /strAngle ED strAngle length 0 eq { 0 }{ #1 } ifelse 
+%	 %\ifPSTlualatex neg \fi 
+%    \tx@RotBegin}\box#2\pst@Verb{\tx@RotEnd}}%
+
 \def\psput@cartesian#1{%
 \hbox to \z@{\kern\pst@dimg{\vbox to \z@{\vss\box#1\vskip\pst@dimh}\hss}}%
 }
@@ -4275,7 +3810,7 @@ pop
     \use@par
     \if@star\pst@starbox\fi
     \pst@makesmall\pst@hbox
-    \ifx\psk@rot\@empty\else\pst@rotate{ps@rot }\pst@hbox\fi% (MJS)
+    \ifx\psk@rot\@empty\else\pst@rotate{ ps@rot \ifPSTlualatex neg \fi  }\pst@hbox\fi% (MJS)
 %    \pst@rotate\psk@rot\pst@hbox%
     \psput@{#1}\pst@hbox%
   \endgroup
@@ -4433,11 +3968,20 @@ pop
     %\show\pst@coor
   \setbox\pst@hbox=\hbox to\z@{\hss\vbox to\z@{\vss\box\pst@hbox\vss}\hss}%
   \setbox\pst@hbox=\psput@special\pst@hbox
-  \ifnum\pst@C@@rType=7
-    \ifx\psk@rot\@empty\else\pst@rotate{ps@rot }\pst@hbox\fi% CHANGED FROM \psk@rot (MJS)
+  \ifPSTlualatex
+    \ifnum\pst@C@@rType=7
+      \ifx\psk@rot\@empty\else\pst@rotate{ps@rot neg}\pst@hbox\fi% CHANGED FROM \psk@rot (MJS)
+    \else
+      \ifx\psk@rot\@empty\else\pst@rotate{\psk@rot\space neg}\pst@hbox\fi% 
+    \fi
   \else
-    \ifx\psk@rot\@empty\else\pst@rotate{\psk@rot}\pst@hbox\fi% 
-  \fi}
+    \ifnum\pst@C@@rType=7
+      \ifx\psk@rot\@empty\else\pst@rotate{ps@rot }\pst@hbox\fi% CHANGED FROM \psk@rot (MJS)
+    \else
+      \ifx\psk@rot\@empty\else\pst@rotate{\psk@rot}\pst@hbox\fi% 
+    \fi
+  \fi
+}
 %
 %
 \def\uput@viii#1#2{%
@@ -4564,6 +4108,7 @@ pop
   \ignorespaces%			% 2008-12-07
   \ifPst@pgffunctions\pstVerb{ pgffunctions }\fi% hv 2013-04-17
 }
+
 \def\pic@coor{(0,0)(0,0)(10,10)}
 \def\endpspicture{%
   \ifshowgrid\ifnum\showgridp@s>0
@@ -4602,6 +4147,8 @@ pop
 \@namedef{endpspicture*}{\endpspicture}
 %
 \ifx\pstcustomize\relax \input pstricks.con \fi
+\pstVerb{0.8 setlinewidth 0 setgray}%    default setting (needed for lualatex)
+
 \catcode`\@=\PstAtCode\relax
 %
 \endinput

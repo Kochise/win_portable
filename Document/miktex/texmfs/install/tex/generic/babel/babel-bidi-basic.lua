@@ -106,7 +106,7 @@ function Babel.bidi(head, ispar, hdir)
   local has_en = false
   local first_et = nil
 
-  local ATDIR = luatexbase.registernumber'bbl@attr@dir'
+  local ATDIR = Babel.attr_dir
 
   local save_outer
   local temp = node.get_attribute(head, ATDIR)

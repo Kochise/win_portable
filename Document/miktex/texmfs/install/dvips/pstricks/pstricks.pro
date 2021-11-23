@@ -1,7 +1,7 @@
-% $Id: pstricks.pro 68 2021-04-08 06:41:14Z herbert $
+% $Id: pstricks.pro 317 2021-11-16 20:47:25Z herbert $
 %
 %% PostScript prologue for pstricks.tex.
-%% Version 1.35, 2021/05/21
+%% Version 1.41, 2021/11/16
 %%
 %% This program can be redistributed and/or modified under the terms
 %% of the LaTeX Project Public License Distributed from CTAN archives
@@ -10,7 +10,6 @@
 %
 % Define the follwing gs-functions if not known, eg when using distiller
 %
-
 revision 952 gt 
 {
     systemdict /.setopacityalpha known not 
@@ -18,10 +17,12 @@ revision 952 gt
          (\n\n%%%% WARNING: Transparency operations ignored - need to use -dALLOWPSTRANSPARENCY\n\n) print flush
          /.setopacityalpha { pop } bind def 
          /.setshapealpha { pop } bind def 
+         /.setfillconstantalpha { pop } bind def 
+         /.setstrokeconstantalpha { pop } bind def 
       }
       {
         /.setopacityalpha /.setfillconstantalpha load def 
-        /.setblendmode { pop } def 
+%        /.setblendmode { pop } def   %% works again    hv 20210825
         /.setshapealpha {dup .setfillconstantalpha .setstrokeconstantalpha true .setalphaisshape } def  
       } ifelse
 }
@@ -33,14 +34,15 @@ revision 952 gt
     /.setshapealpha { pop } bind def 
   } if
 } ifelse
-
+%
 %%<bool> .setalphaisshape -
 %%    If true, the values set by setstrokeconstantalpha and setfillconstantalpha are interpreted as shape values. The initial value of the AIS flag is false. 
-
+%
 %
 /tx@Dict 200 dict def 				% the main PSTricks dictionary
 tx@Dict begin
 /ADict 25 dict def				% The arrow dictionary
+/fill@Dict 30 dict def				% the fill dictionary
 /CM { matrix currentmatrix } bind def
 /SLW /setlinewidth load def
 /CLW /currentlinewidth load def
@@ -121,6 +123,7 @@ tx@Dict begin
 %
 /startGlobal { true setglobal globaldict begin } bind def
 /endGlobal { end false setglobal } bind def
+%
 /pssetRGBcolor /setrgbcolor load def
 /pssetCMYKcolor /setcmykcolor load def
 /pssetGraycolor /setgray load def
@@ -129,6 +132,7 @@ tx@Dict begin
 /PathLength@ { /z z y y1 sub x x1 sub Pyth add def /y1 y def /x1 x def } def
 %
 /PathLength { 
+  10 dict begin
   flattenpath /z 0 def 
   { /y1 ED /x1 ED /y2 y1 def /x2 x1 def }
   { /y ED /x ED PathLength@ } 
@@ -136,6 +140,7 @@ tx@Dict begin
   { /y y2 def /x x2 def PathLength@ }
   /pathforall load stopped { pop pop pop pop } if 
   z 
+  end
 } def
 %
 /STP { .996264 dup scale } def			% BP/PT scaling
@@ -260,8 +265,7 @@ tx@Dict begin
   clipType   % must be defined in pstricks.tex: clip -- eoclip 
   newpath 
   2 setlinecap 
-  systemdict
-  /setstrokeadjust known { true setstrokeadjust } if 
+  systemdict /setstrokeadjust known { true setstrokeadjust } if 
   x2 x1 sub 1 add { 
     x1 a mul y1 moveto 0 y2 rlineto stroke 
     /x1 x1 1 add 
@@ -306,6 +310,7 @@ tx@Dict begin
 } def
 %
 /PenroseFill {%	 on stack: scaling factor
+  40 dict begin
   /Scale ED
 %  1 exch div round /penroseFactor ED 
 %  a 0 dtransform round exch round exch
@@ -318,20 +323,22 @@ tx@Dict begin
 %  a Div cvi /x1 ED /y2 y2 y1 sub def 
   clip 
   newpath 
-gsave
+  gsave
   220 150 translate
   Scale dup scale
   systemdict /setstrokeadjust known { true setstrokeadjust } if 
   /I/S/L/W/G/+/Z/F/E/D[/def/exch/for{E D}/add{s E get mul}
- { Z -36.2001 1 33 }{25 E S rlineto}{/q Z dup q G E q 1 + G}{Z 2 2}]{cvx def}forall
+    { Z -36.2001 1 33 }{25 E S rlineto}{/q Z dup q G E q 1 + G}{Z 2 2}]{cvx def}forall
   [0 72 1008 {dup sin E cos }F ]1 setlinejoin/s W{/a W{/b I 10{/i I 4{/m I moveto
   i m +/j I 10{/l Z b m l + G a l G sub s m get div .2 + floor .3 + 25
   mul j l + S rmoveto}F i L j L stroke }F}F}F}F 
   grestore 
 %  pop pop 
+  end % userdict
 } def
 %
 /PenroseFillA {%  on stack: scaling factor, border color, kite color, dart color
+  50 dict begin
   /Scale ED
   Scale dup scale
   /border_colour ED 
@@ -367,6 +374,7 @@ gsave
   dup f exch neg exp dup scale
   5 {kite 72 rotate } repeat stroke 
   grestore
+  end % userdict
 } def
 %
 %
@@ -701,9 +709,11 @@ gsave
 /EAC { x2 y2 x y ArrowB curveto pop pop } def
 %
 /OpenCurve { 
+%  5 dict begin
   NArray n 3 lt 
     { n { pop pop } repeat } 
     { BOC /n n 3 sub def n { NC } repeat EOC } ifelse 
+%  end
 } def
 %
 /CurvePath { 
@@ -1032,7 +1042,8 @@ gsave
   /Points [ x1 y1 xSP ySP xSP 2 mul x1 sub y1 ] def 
 } def
 %
-/Grid { 
+/Grid {
+  40 dict begin 
   newpath 
   /a 4 string def 
   /b ED % 				psk@gridlabels in pt
@@ -1110,6 +1121,7 @@ gsave
     /i i h add def 
   } repeat 
   grestore 
+  end
 } def
 %
 /ArcArrow { 
@@ -1241,13 +1253,13 @@ dup angle0 sub dup abs 180 gt { 180 add 360 div floor 360 mul sub } { pop } ifel
 } def
 %%------------------ tvz/DG/hv (2004-05-10) end -------------------%%
 %
-/Rot { CP CP translate 3 -1 roll neg rotate NET  } def
+/Rot { CP CP translate 3 -1 roll neg rotate NET } def
 %
 /RotBegin { 
   tx@Dict /TMatrix known not { /TMatrix { } def /RAngle { 0 } def } if 
   /TMatrix [ TMatrix CM ] cvx def 
-  /a ED 
-  a Rot /RAngle [ RAngle dup a add ] cvx def 
+  /RotAngle ED 
+  RotAngle Rot /RAngle [ RAngle dup RotAngle add ] cvx def 
 } def
 %
 /RotEnd { 

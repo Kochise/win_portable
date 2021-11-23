@@ -11,8 +11,23 @@
   \let\ntxmath@scaled\@empty%
 \fi
 
+\def\tx@donoopt{\newif\iftx@noopt}
+\expandafter\ifx\csname tx@nooptfalse\endcsname\relax
+  \tx@donoopt
+\fi
+
 \DeclareFontFamily{LMS}{ntxsy}{\providecommand {\setSYdimens}{}\setSYdimens\skewchar\font =120}
 
+\iftx@noopt % no optical sizes
+\DeclareFontShape{LMS}{ntxsy}{m}{n}{
+    <-> \ntxmath@scaled ntxsy
+}{}
+
+\DeclareFontShape{LMS}{ntxsy}{b}{n}{
+    <-> \ntxmath@scaled ntxbsy
+}{}
+
+\else % use optical sizes
 \DeclareFontShape{LMS}{ntxsy}{m}{n}{
      <-6.3> \ntxmath@scaled ntxsy5
      <6.3-8.6> \ntxmath@scaled ntxsy7 % from 6.3 up to, but not including, 8.6
@@ -24,6 +39,7 @@
      <6.3-8.6> \ntxmath@scaled ntxbsy7
      <8.6-> \ntxmath@scaled ntxbsy
 }{}
+\fi
 
 \DeclareFontShape{LMS}{ntxsy}{bx}{n}{<->ssub * ntxsy/b/n}{}
 

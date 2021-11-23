@@ -16,7 +16,7 @@ local function get_slug(settings)
     local f = io.open(published_name, "r")
     local readtime  = f:read("*line")
     time = tonumber(readtime)
-    log:info("Already pubslished", slug)
+    log:info("Already pubslished", os.date("%Y-%m-%d %H:%M", time))
     f:close()
   else
     -- escape 
@@ -76,6 +76,22 @@ local function insert_filter(make, pattern, fn)
   })
 end
 
+local function remove_maketitle(make)
+  -- use DOM filter to remove \maketitle block
+  local domfilter = require "make4ht-domfilter"
+  local process = domfilter {
+    function(dom)
+      local maketitles = dom:query_selector(".maketitle")
+      for _, el in ipairs(maketitles) do
+        log:debug("removing maketitle")
+        el:remove_node()
+      end
+      return dom
+    end
+  }
+  make:match("html$", process)
+end
+
 
 local function copy_files(filename, par)
   local function prepare_path(dir, subdir)
@@ -84,7 +100,7 @@ local function copy_files(filename, par)
   end
   -- get extension settings
   local site_settings = get_filter_settings "staticsite"
-  local site_root = site_settings.site_root
+  local site_root = site_settings.site_root or "./"
   local map = site_settings.map or {}
   -- default path without subdir, will be used if the file is not matched
   -- by any pattern in the map
@@ -107,6 +123,14 @@ function M.modify_build(make)
   local process = filter {
     "staticsite"
   }
+
+  -- detect if we should remove maketitle
+  local site_settings = get_filter_settings "staticsite"
+  -- \maketitle is removed by default, set `remove_maketitle=false` setting to disable that
+  if site_settings.remove_maketitle ~= false then
+    remove_maketitle(make)
+  end
+
   local settings = make.params
   -- get the published file name
   local slug = get_slug(settings)
