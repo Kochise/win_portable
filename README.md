@@ -85,6 +85,7 @@ Windows 7+ (mostly 64 bit applications now)
 **curl** : file and protocol downloader (because everyone loves it, I guess)<br>
 **FileZilla** : `ftp` client (better use **Total Commander** in passive mode)<br>
 **Firefox** : ready to use `Firefox` browser with some privacy extensions installed (old `Photon` based)<br>
+**TeamViewer** : remote supervision and control for home office or whatever else<br>
 **TTYEmulator** : the best `tty` emulator, do `ssh` as well (`Linux` session)<br>
 **wget** : file and protocol downloader (the other one everyone loves)<br>
 

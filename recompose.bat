@@ -169,12 +169,28 @@ rem	)
 
 cd "..\..\..\..\.."
 
-rem Recompose 'OBS-Studio' dependencies
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'TeamViewer' dependencies...
+cd "Internet\TeamViewer"
+
+if exist "TeamViewer.exe.001" (
+rem	if not exist "TeamViewer.exe" (
+		copy /y /b "TeamViewer.exe.001"+"TeamViewer.exe.002" "TeamViewer.exe"
+rem	)
+
+	del "TeamViewer.exe.001" /q 1>nul 2>nul
+	del "TeamViewer.exe.002" /q 1>nul 2>nul
+)
+
+cd "..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'OBS-Studio' dependencies...
 cd "Video\OBS-Studio\obs-plugins\64bit"
 
 if exist "libcef.dll.001" (
 rem	if not exist "libcef.dll" (
-		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003" "libcef.dll" 1>nul 2>nul
+		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003" "libcef.dll"
 rem	)
 
 	del "libcef.dll.001" /q 1>nul 2>nul
