@@ -58,12 +58,13 @@ rem	)
 
 cd "..\..\..\..\..\..\..\.."
 
-rem Recompose 'python' dependencies
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'python' dependencies...
 cd "Coding\python\3.8\Lib\site-packages\cv2"
 
 if exist "cv2.cp38-win_amd64.pyd.001" (
 rem	if not exist "cv2.cp38-win_amd64.pyd" (
-		copy /y /b "cv2.cp38-win_amd64.pyd.001"+"cv2.cp38-win_amd64.pyd.002" "cv2.cp38-win_amd64.pyd" 1>nul 2>nul
+		copy /y /b "cv2.cp38-win_amd64.pyd.001"+"cv2.cp38-win_amd64.pyd.002" "cv2.cp38-win_amd64.pyd"
 rem	)
 
 	del "cv2.cp38-win_amd64.pyd.001" /q 1>nul 2>nul
@@ -71,6 +72,63 @@ rem	)
 )
 
 cd "..\..\..\..\..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'Sourcetrail' dependencies...
+
+cd "Coding\Sourcetrail"
+
+if exist "Sourcetrail.exe.001" (
+rem	if not exist "Sourcetrail.exe" (
+		copy /y /b "Sourcetrail.exe.001"+"Sourcetrail.exe.002" "Sourcetrail.exe"
+rem	)
+
+	del "Sourcetrail.exe.001" /q 1>nul 2>nul
+	del "Sourcetrail.exe.002" /q 1>nul 2>nul
+)
+
+if exist "sourcetrail_indexer.exe.001" (
+rem	if not exist "sourcetrail_indexer.exe" (
+		copy /y /b "sourcetrail_indexer.exe.001"+"sourcetrail_indexer.exe.002" "sourcetrail_indexer.exe"
+rem	)
+
+	del "sourcetrail_indexer.exe.001" /q 1>nul 2>nul
+	del "sourcetrail_indexer.exe.002" /q 1>nul 2>nul
+)
+
+cd "..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'texmaker' dependencies...
+cd "Document\texmaker"
+
+if exist "Qt5WebEngineCore.dll.001" (
+rem	if not exist "Qt5WebEngineCore.dll" (
+		copy /y /b "Qt5WebEngineCore.dll.001"+"Qt5WebEngineCore.dll.002" "Qt5WebEngineCore.dll"
+rem	)
+
+	del "Qt5WebEngineCore.dll.001" /q 1>nul 2>nul
+	del "Qt5WebEngineCore.dll.002" /q 1>nul 2>nul
+)
+
+cd "..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'Chrome' dependencies...
+cd "Internet\Chrome\App\Chrome-bin\96.0.4664.45"
+
+if exist "chrome.dll.001" (
+rem	if not exist "chrome.dll" (
+		copy /y /b "chrome.dll.001"+"chrome.dll.002"+"chrome.dll.003"+"chrome.dll.004" "chrome.dll"
+rem	)
+
+	del "chrome.dll.001" /q 1>nul 2>nul
+	del "chrome.dll.002" /q 1>nul 2>nul
+	del "chrome.dll.003" /q 1>nul 2>nul
+	del "chrome.dll.004" /q 1>nul 2>nul
+)
+
+cd "..\..\..\..\.."
 
 rem Recompose 'Firefox' dependencies
 cd "Internet\Firefox\App\firefox64"
@@ -106,21 +164,6 @@ rem	)
 
 	del "ls-archive.sqlite.001" /q 1>nul 2>nul
 	del "ls-archive.sqlite.002" /q 1>nul 2>nul
-)
-
-cd "..\..\..\..\.."
-
-rem Recompose 'Chrome' dependencies
-cd "Internet\Chrome\App\Chrome-bin\95.0.4638.69"
-
-if exist "chrome.dll.001" (
-rem	if not exist "chrome.dll" (
-		copy /y /b "chrome.dll.001"+"chrome.dll.002"+"chrome.dll.003" "chrome.dll" 1>nul 2>nul
-rem	)
-
-	del "chrome.dll.001" /q 1>nul 2>nul
-	del "chrome.dll.002" /q 1>nul 2>nul
-	del "chrome.dll.003" /q 1>nul 2>nul
 )
 
 cd "..\..\..\..\.."

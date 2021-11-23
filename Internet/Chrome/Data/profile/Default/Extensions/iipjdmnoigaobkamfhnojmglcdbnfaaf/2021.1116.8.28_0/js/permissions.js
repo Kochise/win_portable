@@ -1,0 +1,1 @@
+const permissionArr=["identity","identity.email"];async function requestPermission(){return new Promise((resolve=>chrome.permissions.request({permissions:permissionArr},(function(granted){resolve(granted)}))))}export default{requestPermission:requestPermission};
