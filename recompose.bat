@@ -1,32 +1,62 @@
 @echo off
 
-rem Recompose 'miktex' caches
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'miktex' caches...
 start "" /d "%~dp0Document\miktex\" "miktex-cleanup-fndb.bat"
 
-rem Recompose 'nvm' dependencies
-cd "Coding\nvm\v12.17.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-809590\chrome-win"
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'nvm' dependencies...
+cd "Coding\nvm\v16.13.0"
+
+if exist "node.exe.001" (
+rem	if not exist "node.exe" (
+		copy /y /b "node.exe.001"+"node.exe.002" "node.exe"
+rem	)
+
+	del "node.exe.001" /q 1>nul 2>nul
+	del "node.exe.002" /q 1>nul 2>nul
+)
+
+cd "..\..\.."
+
+cd "Coding\nvm\v16.13.0\node_modules\@mermaid-js\mermaid-cli\node_modules\puppeteer\.local-chromium\win64-901912\chrome-win"
 
 if exist "chrome.dll.001" (
 rem	if not exist "chrome.dll" (
-		copy /y /b "chrome.dll.001"+"chrome.dll.002"+"chrome.dll.003" "chrome.dll" 1>nul 2>nul
+		copy /y /b "chrome.dll.001"+"chrome.dll.002"+"chrome.dll.003"+"chrome.dll.004" "chrome.dll"
 rem	)
 
 	del "chrome.dll.001" /q 1>nul 2>nul
 	del "chrome.dll.002" /q 1>nul 2>nul
 	del "chrome.dll.003" /q 1>nul 2>nul
+	del "chrome.dll.004" /q 1>nul 2>nul
 )
 
 if exist "interactive_ui_tests.exe.001" (
 rem	if not exist "interactive_ui_tests.exe" (
-		copy /y /b "interactive_ui_tests.exe.001"+"interactive_ui_tests.exe.002"+"interactive_ui_tests.exe.003" "interactive_ui_tests.exe" 1>nul 2>nul
+		copy /y /b "interactive_ui_tests.exe.001"+"interactive_ui_tests.exe.002"+"interactive_ui_tests.exe.003"+"interactive_ui_tests.exe.004" "interactive_ui_tests.exe"
 rem	)
 
 	del "interactive_ui_tests.exe.001" /q 1>nul 2>nul
 	del "interactive_ui_tests.exe.002" /q 1>nul 2>nul
 	del "interactive_ui_tests.exe.003" /q 1>nul 2>nul
+	del "interactive_ui_tests.exe.004" /q 1>nul 2>nul
 )
 
 cd "..\..\..\..\..\..\..\..\..\..\.."
+
+cd "Coding\nvm\v16.13.0\node_modules\diagrams\node_modules\electron\dist"
+
+if exist "electron.exe.001" (
+rem	if not exist "electron.exe" (
+		copy /y /b "electron.exe.001"+"electron.exe.002" "electron.exe"
+rem	)
+
+	del "electron.exe.001" /q 1>nul 2>nul
+	del "electron.exe.002" /q 1>nul 2>nul
+)
+
+cd "..\..\..\..\..\..\..\.."
 
 rem Recompose 'python' dependencies
 cd "Coding\python\3.8\Lib\site-packages\cv2"
