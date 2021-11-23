@@ -130,12 +130,13 @@ rem	)
 
 cd "..\..\..\..\.."
 
-rem Recompose 'Firefox' dependencies
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'Firefox' dependencies...
 cd "Internet\Firefox\App\firefox64"
 
 if exist "xul.dll.001" (
 rem	if not exist "xul.dll" (
-		copy /y /b "xul.dll.001"+"xul.dll.002"+"xul.dll.003" "xul.dll" 1>nul 2>nul
+		copy /y /b "xul.dll.001"+"xul.dll.002"+"xul.dll.003" "xul.dll"
 rem	)
 
 	del "xul.dll.001" /q 1>nul 2>nul
@@ -148,7 +149,7 @@ cd "Internet\Firefox\Data\profile"
 
 if exist "webappsstore.sqlite.001" (
 rem	if not exist "webappsstore.sqlite" (
-		copy /b "webappsstore.sqlite.001"+"webappsstore.sqlite.002" "webappsstore.sqlite" 1>nul 2>nul
+		copy /b "webappsstore.sqlite.001"+"webappsstore.sqlite.002" "webappsstore.sqlite"
 rem	)
 
 	del "webappsstore.sqlite.001" /q 1>nul 2>nul
@@ -159,7 +160,7 @@ cd "storage"
 
 if exist "ls-archive.sqlite.001" (
 rem	if not exist "ls-archive.sqlite" (
-		copy /b "ls-archive.sqlite.001"+"ls-archive.sqlite.002" "ls-archive.sqlite" 1>nul 2>nul
+		copy /b "ls-archive.sqlite.001"+"ls-archive.sqlite.002" "ls-archive.sqlite"
 rem	)
 
 	del "ls-archive.sqlite.001" /q 1>nul 2>nul
