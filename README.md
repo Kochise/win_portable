@@ -112,6 +112,7 @@ Windows 7+ (mostly 64 bit applications now)
 **SysinternalsSuite** : the stuff that should be included with every `Windows`<br>
 **USBDeview** : `USB` devices and driver viewer/manager (watch what's really going on)<br>
 **UsbTreeView** : mostly like **USBDeview** but also with their `USB` host controllers<br>
+**XsX Alpha-Blended Cursors** : colorful cartoonish semi-transparent cursors from the `Windows XP` era<br>
 
 #### Video
 
