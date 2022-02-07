@@ -10,10 +10,10 @@ Windows 7+ (mostly 64 bit applications now)
 
 #### Cleaner
 
-**AdwCleaner** : remove adwares and stuff, will reboot at the end<br>
+**AdwCleaner** : remove ad-wares and stuff, will reboot at the end<br>
 **AppBuster** : install/remove `Windows 10` bundled applications<br>
 **CCleaner** : quite thorough `Windows 10` cleaner (old and temp files, registry, applications)<br>
-**CleanTemp** : batch file to automatise disk cleanup (run the `sageset` line first)<br>
+**CleanTemp** : batch file to automatise disk clean-up (run the `sageset` line first)<br>
 **LastActivityView** : we know what you did last summer<br>
 **PrivaZer** : remove trails and stuff, `CCleaner` upgraded<br>
 **RogueKiller** : detect and remove rootkits, won't reboot at the end<br>
@@ -24,13 +24,13 @@ Windows 7+ (mostly 64 bit applications now)
 
 #### Coding
 
-**ctags** : source file parser and ast database generator (used by `NppTags` in **Notepad++**)<br>
+**ctags** : source file parser and AST database generator (used by `NppTags` in **Notepad++**)<br>
 **Elm** : web based functional language (inspired from `Haskel`) <ins>EXTERNAL INSTALLER</ins><br>
 **Erlang** : distributed functional language (inspired from `Prolog`) <ins>EXTERNAL INSTALLER</ins><br>
 **git** : just `git-scm` (used by **TortoiseGit**) <ins>EXTERNAL INSTALLER</ins><br>
 **lua** : simple scripting language used almost everywhere now<br>
-**mingw64** : posix compatible toolchain (lighter than Cygwin)<br>
-**msys64** : posix compatible toolchain (same-same as **mingw64**, but different)<br>
+**mingw64** : `posix` compatible toolchain (lighter than Cygwin)<br>
+**msys64** : `posix` compatible toolchain (same-same as **mingw64**, but different)<br>
 **my_basic** : little 8 bits-like `basic` language for pixel-art games<br>
 **nvm** : node.js (for `js` libraries used by **miktex** modules)<br>
 **PellesC** : a lightweight C compiler (x86/AMD64/ARM) with integrated debugger<br>
@@ -40,13 +40,13 @@ Windows 7+ (mostly 64 bit applications now)
 **qemu** : multiplatform emulator useful for OS development <ins>EXTERNAL INSTALLER</ins><br>
 **Sourcetrail** : explore source code hierarchy (steep learning curve)<br>
 **Spyder** : the `Visual Studio` of `Python` (targeted to science/plotting) <ins>EXTERNAL INSTALLER</ins><br>
-**tinycc**: little standalone `C` compiler that can help, very fast but still alpha/beta/gamma/...<br>
+**tinycc**: little stand-alone `C` compiler that can help, very fast but still alpha/beta/gamma/...<br>
 **TortoiseGit** : `git-scm` shell extension (using **git**) <ins>EXTERNAL INSTALLER</ins><br>
 **vlang** : aka `v`, is a lightweight `c`-ish self-compiling language (still maturing)<br>
 
 #### Document
 
-**ditaa** : diagram tool to convert ascii-art into `svg` (for **miktex**)<br>
+**ditaa** : diagram tool to convert ASCII-art into `svg` (for **miktex**)<br>
 **miktex** : `LaTeX` tools needed by **texmaker** (includes its own package updater)<br>
 **mscgen-0.20** : command line based `Message Sequence Charts` generator<br>
 **Msc-generator** : run `Msc-generator.exe` and select 'Signalling Chart'<br>
@@ -94,14 +94,18 @@ Windows 7+ (mostly 64 bit applications now)
 
 **Total Commander** : the stuff that should replace `Windows` (run `TOTALCMD.BAT`)<br>
 
+#### Sound
+
+**Audacity** : multiplatform sound wave player/editor, always handy<br>
+
 #### System
 
 **7-Zip** : multi format un/packer, lightweight and free (no nag screen)<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
-**CrossHair** : `Ctrl+&` to des/activate static crosshair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
+**CrossHair** : `Ctrl+&` to des/activate static cross-hair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
 **DirectShutdown** : `Windows+r` restart, Windows+s shutdown (not on `Windows 10`)<br>
-**DragLock** : `Windows+mouse` movement locked verticaly or horizontaly<br>
-**flux** : screen toning utility to change color scheme at night time <ins>INSTALLER</ins><br>
+**DragLock** : `Windows+mouse` movement locked vertically or horizontally<br>
+**flux** : screen toning utility to change colour scheme at night time <ins>INSTALLER</ins><br>
 **JoyToKey** : as the name says, transform joystick into keyboard moves<br>
 **Keyboard Status** : display the status of `Capslock` and `Numlock`<br>
 **MyDefrag** : best defragger, select 'System Disk Monthly', then your `Windows` disk<br>
@@ -109,11 +113,11 @@ Windows 7+ (mostly 64 bit applications now)
 **PureText** : `Windows+v` paste raw text without formatting<br>
 **StayFocused** : try to prevent some applications to steal focus (mostly while loading)<br>
 **SuperFastClicker** : console program, press `Capslock` for mouse fast clicking<br>
-**SysExporter** : export (almost) any listbox content as tabular data (`csv`, `Excel`)<br>
+**SysExporter** : export (almost) any list-box content as tabular data (`csv`, `Excel`)<br>
 **SysinternalsSuite** : the stuff that should be included with every `Windows`<br>
 **USBDeview** : `USB` devices and driver viewer/manager (watch what's really going on)<br>
 **UsbTreeView** : mostly like **USBDeview** but also with their `USB` host controllers<br>
-**XsX Alpha-Blended Cursors** : colorful cartoonish semi-transparent cursors from the `Windows XP` era <ins>INSTALLER</ins><br>
+**XsX Alpha-Blended Cursors** : colourful cartoonish semi-transparent cursors from the `Windows XP` era <ins>INSTALLER</ins><br>
 
 #### Video
 
