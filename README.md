@@ -47,6 +47,7 @@ Windows 7+ (mostly 64 bit applications now)
 #### Document
 
 **ditaa** : diagram tool to convert ASCII-art into `svg` (for **miktex**)<br>
+**LibreOffice** : like `Office` but `Libre`, with a few key differences though <ins>EXTERNAL INSTALLER</ins><br>
 **miktex** : `LaTeX` tools needed by **texmaker** (includes its own package updater)<br>
 **mscgen-0.20** : command line based `Message Sequence Charts` generator<br>
 **Msc-generator** : run `Msc-generator.exe` and select 'Signalling Chart'<br>
