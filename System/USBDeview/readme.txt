@@ -1,8 +1,8 @@
 
 
 
-USBDeview v3.02
-Copyright (c) 2006 - 2021 Nir Sofer
+USBDeview v3.03
+Copyright (c) 2006 - 2022 Nir Sofer
 Web Site: https://www.nirsoft.net
 
 
@@ -49,8 +49,9 @@ System Requirement
 
 
 * This utility works on Windows 2000, Windows XP, Windows 2003, Windows
-  Vista, Windows Server 2008, Windows 7, Windows 8, and Windows 10. Both
-  32-bit and 64-bit systems are supported. Windows 98/ME is not supported.
+  Vista, Windows Server 2008, Windows 7, Windows 8, Windows 10, and
+  Windows 11. Both 32-bit and 64-bit systems are supported. Windows 98/ME
+  is not supported.
 
 
 
@@ -72,6 +73,11 @@ Known Issues
 Versions History
 ================
 
+
+* Version 3.03
+  o Updated USBDeview to load the usb.ids.txt file if usb.ids doesn't
+    exist. (Because some Web browsers save it by default with .txt
+    extension)
 
 * Version 3.02
   o Updated to work properly in high DPI mode.
@@ -689,14 +695,14 @@ USBDeview Columns Description
   number is 0065.
 * Connect Time: Specifies the last time that the USB device was
   plugged. USBDeview can read this property only when you run it as
-  Administrator. This property is available only on Windows 10/8. This
+  Administrator. This property is available only on Windows 11/10/8. This
   property is stored under
   Properties\{83da6326-97a6-4088-9453-a1923f573b29} subkey, property
   number is 0066.
 * Disconnect Time: Specifies the last time that the USB device was
-  unplugged. This property is available only on Windows 10/8. USBDeview
-  can read this property only when you run it as Administrator. This
-  property is stored under
+  unplugged. This property is available only on Windows 11/10/8.
+  USBDeview can read this property only when you run it as Administrator.
+  This property is stored under
   Properties\{83da6326-97a6-4088-9453-a1923f573b29} subkey, property
   number is 0067.
 
@@ -820,9 +826,9 @@ Known Limitations/Issues
   you plugged are specified in 'Hub/Port' column.
   However, for 'Mass Storage' device, only one record is created for each
   device, even if you plug it to different USB port.
-* When a USB device is added/removed on your local computer, UDBDeview
+* When a USB device is added/removed on your local computer, USBDeview
   utility automatically updates the list of USB devices.
-  But... If you UDBDeview is connected to a remote computer, the list
+  But... If you USBDeview is connected to a remote computer, the list
   won't refresh automatically when a device is added or removed. You must
   refresh it manually, by pressing F5 key.
 
