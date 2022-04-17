@@ -1,66 +1,34 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
-<link rel="shortcut icon" type="image/png" href="../../images/favicon.png">
-<title>Ghostscript: Device Subclassing</title>
-<link href="style.css" rel="stylesheet" type="text/css">
-<link href="gs-style.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="user-scalable=yes, initial-scale=1, width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.svg">
+    <title>Ghostscript: Device Subclassing</title>
+    <link href="default.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
+    <header><div class="title"><a href="index.html"><h1 aria-label="title">Ghostscript documentation</h1><h2 aria-label="version"></h2></a></div><a href="Search.htm" aria-label="Search" id="searchSite"><div class="search"></div></a></header>
+    <main>
+        <article>
+            <div class="outer">
 
-    <div class="header">
-    <div class="row">
-        <div class="col-lt-6 logo"><a href="https://www.ghostscript.com/"><img src="images/ghostscript_logo.png" width="108" height="119" alt=""></a></div>
-        <div class="col-6"><div class="row"><div class="artifexlogo"><a href="https://artifex.com" target="_blank"><img src="images/Artifex_logo.png" width="194" height="40" alt=""></a></div>
-        <div class="col-12"><div class="button button1"><a href="https://artifex.com/contact-us/" title="Contact Us" target="_blank">Contact Us</a></div>
-        <div class="button button2 hidden-xs"><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></div></div></div>
-    </div>
-    </div>
-    </div>
-
-    <div class="banner">
-    <div class="row">
-        <div class="col-12"> Details of Ghostscript Device Subclassing</div>
-    </div>
-    </div>
-
-    <div class="main">
-    <div class="row">
-    <div id="sidebar">
-    <div class="sidebar-item"></div>
-    <div class="col-2 leftnav">
-<ul>
-            <li><a href="https://www.ghostscript.com/">Home</a></li>
-            <li><a href="https://www.ghostscript.com/license.html">Licensing</a></li>
-            <li><a href="https://www.ghostscript.com/releases.html">Releases</a></li>
-            <li><a href="https://www.ghostscript.com/documentation.html" title="Documentation">Documentation</a></li>
-            <li><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></li>
-            <li><a href="https://www.ghostscript.com/performance.html" title="Performance">Performance</a></li>
-            <li><a href="http://jbig2dec.com/" title="jbig2dec">jbig2dec</a></li>
-            <li><a href="http://git.ghostscript.com/?p=ghostpdl.git;a=summary">Source</a></li>
-            <li><a href="http://bugs.ghostscript.com/">Bugs</a></li>
-            <li><a href="https://www.ghostscript.com/faq.html" title="FAQ">FAQ</a></li>
-        </ul>
-    </div>
-    </div>
-    <div class="col-10 page">
-
+                <div class="inner">
 <!--START EDITING HERE-->
 
-<h2>Table of contents</h2>
+<h1>Ghostscript: Device Subclassing</h1>
 
-<blockquote>
-<li><a href="#Gstate">Devices in the graphcis state</a>
-<li><a href="#Chaining">Chaining devices</a>
-<li><a href="#Subclassing">Subclassing</a>
-<li><a href="#Example_uses">Example uses</a>
-<li><a href="#Observations">Observations</a>
-<li><a href="#Example">Worked example</a>
-</blockquote>
+<h2><a name="toc"></a>Table of contents</h2>
+<ul class="toc">
+    <li><a href="#Gstate">Devices in the graphcis state</a></li>
+    <li><a href="#Chaining">Chaining devices</a></li>
+    <li><a href="#Subclassing">Subclassing</a></li>
+    <li><a href="#Example_uses">Example uses</a></li>
+    <li><a href="#Observations">Observations</a></li>
+    <li><a href="#Example">Worked example</a></li>
+</ul>
 
 <!-- [1.2 end table of contents] =========================================== -->
 
@@ -511,103 +479,41 @@ Now we've got all the garbage collector machinery out of the way we can deal wit
 /* Device procedures */<br />
 static dev_proc_text_begin(black_text_text_begin);
 </code>
+<p>Then we define the procedure to initialize the device procs:
+</p>
+<code>
+void black_text_init_dev_procs(gx_device *dev)<br />
+{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;default_subclass_initialize_device_procs(dev);<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;set_dev_proc(dev, text_begin, black_text_text_begin);<br />
+}
+</code>
 <p>Then we define the actual device:
 </p>
 <code>
 const
-gx_device_black_text gs_black_text_device =
-{
-<dd>    std_device_dci_type_body(gx_device_black_text, 0, "black_text", &st_black_text_device,<br />
-                        MAX_COORD, MAX_COORD,<br />
-                        MAX_RESOLUTION, MAX_RESOLUTION,<br />
-                        1, 8, 255, 0, 256, 1),<br />
-    {default_subclass_open_device,<br />
-     default_subclass_get_initial_matrix,<br />
-     default_subclass_sync_output,            /* sync_output */<br />
-     default_subclass_output_page,<br />
-     default_subclass_close_device,<br />
-     default_subclass_map_rgb_color,<br />
-     default_subclass_map_color_rgb,<br />
-     default_subclass_fill_rectangle,<br />
-     default_subclass_tile_rectangle,            /* tile_rectangle */<br />
-     default_subclass_copy_mono,<br />
-     default_subclass_copy_color,<br />
-     default_subclass_draw_line,            /* draw_line */<br />
-     default_subclass_get_bits,            /* get_bits */<br />
-     default_subclass_get_params,<br />
-     default_subclass_put_params,<br />
-     default_subclass_map_cmyk_color,<br />
-     default_subclass_get_xfont_procs,            /* get_xfont_procs */<br />
-     default_subclass_get_xfont_device,            /* get_xfont_device */<br />
-     default_subclass_map_rgb_alpha_color,<br />
-     default_subclass_get_page_device,<br />
-     default_subclass_get_alpha_bits,            /* get_alpha_bits */<br />
-     default_subclass_copy_alpha,<br />
-     default_subclass_get_band,            /* get_band */<br />
-     default_subclass_copy_rop,            /* copy_rop */<br />
-     default_subclass_fill_path,<br />
-     default_subclass_stroke_path,<br />
-     default_subclass_fill_mask,<br />
-     default_subclass_fill_trapezoid,<br />
-     default_subclass_fill_parallelogram,<br />
-     default_subclass_fill_triangle,<br />
-     default_subclass_draw_thin_line,<br />
-     default_subclass_begin_image,<br />
-     default_subclass_image_data,            /* image_data */<br />
-     default_subclass_end_image,            /* end_image */<br />
-     default_subclass_strip_tile_rectangle,<br />
-     default_subclass_strip_copy_rop,<br />
-     default_subclass_get_clipping_box,            /* get_clipping_box */<br />
-     default_subclass_begin_typed_image,<br />
-     default_subclass_get_bits_rectangle,            /* get_bits_rectangle */<br />
-     default_subclass_map_color_rgb_alpha,<br />
-     default_subclass_create_compositor,<br />
-     default_subclass_get_hardware_params,            /* get_hardware_params */<br />
-     black_text_text_begin,<br />
-     default_subclass_finish_copydevice,            /* finish_copydevice */<br />
-     default_subclass_begin_transparency_group,            /* begin_transparency_group */<br />
-     default_subclass_end_transparency_group,            /* end_transparency_group */<br />
-     default_subclass_begin_transparency_mask,            /* begin_transparency_mask */<br />
-     default_subclass_end_transparency_mask,            /* end_transparency_mask */<br />
-     default_subclass_discard_transparency_layer,            /* discard_transparency_layer */<br />
-     default_subclass_get_color_mapping_procs,            /* get_color_mapping_procs */<br />
-     default_subclass_get_color_comp_index,            /* get_color_comp_index */<br />
-     default_subclass_encode_color,            /* encode_color */<br />
-     default_subclass_decode_color,            /* decode_color */<br />
-     default_subclass_pattern_manage,            /* pattern_manage */<br />
-     default_subclass_fill_rectangle_hl_color,            /* fill_rectangle_hl_color */<br />
-     default_subclass_include_color_space,            /* include_color_space */<br />
-     default_subclass_fill_linear_color_scanline,            /* fill_linear_color_scanline */<br />
-     default_subclass_fill_linear_color_trapezoid,            /* fill_linear_color_trapezoid */<br />
-     default_subclass_fill_linear_color_triangle,            /* fill_linear_color_triangle */<br />
-     default_subclass_update_spot_equivalent_colors,            /* update_spot_equivalent_colors */<br />
-     default_subclass_ret_devn_params,            /* ret_devn_params */<br />
-     default_subclass_fillpage,        /* fillpage */<br />
-     default_subclass_push_transparency_state,                      /* push_transparency_state */<br />
-     default_subclass_pop_transparency_state,                      /* pop_transparency_state */<br />
-     default_subclass_put_image,                      /* put_image */<br />
-     default_subclass_dev_spec_op,                      /* dev_spec_op */<br />
-     default_subclass_copy_planes,                      /* copy_planes */<br />
-     default_subclass_get_profile,                      /* get_profile */<br />
-     default_subclass_set_graphics_type_tag,                      /* set_graphics_type_tag */<br />
-     default_subclass_strip_copy_rop2,<br />
-     default_subclass_strip_tile_rect_devn,<br />
-     default_subclass_copy_alpha_hl_color,<br />
-     default_subclass_process_page
-</dd>    }
+gx_device_black_text gs_black_text_device =<br />
+{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;std_device_dci_type_body(gx_device_black_text, 0, "black_text", &st_black_text_device,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAX_COORD, MAX_COORD,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAX_RESOLUTION, MAX_RESOLUTION,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1, 8, 255, 0, 256, 1),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;black_text_initialize_device_procs<br />
 };
 </code>
-<p>Much of this is simply boilerplate, defining the device methods as being the default methods for a subclassing device. The
- exception being the text_begin method. The main body of the macro is:</p>
+<p>The call to default_subclass_initialize_device_procs assigns the
+default methods for a subclassing device. We then override the
+text_begin method to our specific one. The main body of the macro is:</p>
 <code>
 const
-gx_device_black_text gs_black_text_device =
-{
-<dd>    std_device_dci_type_body(gx_device_black_text, 0, "black_text", &st_black_text_device,<br />
-                        MAX_COORD, MAX_COORD,<br />
-                        MAX_RESOLUTION, MAX_RESOLUTION,<br />
-                        1, 8, 255, 0, 256, 1),
-</dd></code>
+gx_device_black_text gs_black_text_device =<br />
+{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;std_device_dci_type_body(gx_device_black_text, 0, "black_text", &st_black_text_device,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAX_COORD, MAX_COORD,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAX_RESOLUTION, MAX_RESOLUTION,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1, 8, 255, 0, 256, 1),
+</code>
 <p>This simply defines an instance of the 'gx_device_black_text' structure (which is simply a gx_device_s structure) initialised
  using a macro (yet another family of macros). Here we use the 'st_black_text_device' structure descriptor we created above,
  and some dummy values for the resolution, colour depth etc. Since this device doesn't do rendering these values aren't useful
@@ -785,7 +691,7 @@ int black_text_text_begin(gx_device *dev, gs_imager_state *pis, const gs_text_pa
 <hr>
 
 <p>
-<small>Copyright &copy; 2013-2021 Artifex Software, Inc.  All rights
+<small>Copyright &copy; 2013-2022 Artifex Software, Inc.  All rights
 reserved.</small>
 
 <p>
@@ -802,40 +708,15 @@ or contact Artifex Software, Inc., 1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861.
 
 <p>
-<small>Ghostscript version 9.54.0, 30 March 2021
+<small>Ghostscript version 9.56.1, 4 April 2022
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
 <!--FINISH EDITING HERE-->
-
-    </div>
-    </div>
-    </div>
-
-    <div class="footer">
-    <div class="row">
-        <div class="col-7 footleft">
-        <ul>
-            <li><a href="https://artifex.com/contact-us/" target="blank">CONTACT US</a></li>
-            <li><a href="https://artifex.com/about-us/" target="blank">ABOUT</a></li>
-            <li><a href="https://ghostscript.com/security.html">SECURITY</a></li>
-        </ul>
-        </div>
-        <div class="col-1 footcenter">
-         <ul>
-           <li><a href="https://artifex.com/support/" target="blank">SUPPORT</a></li>
-           <li><a href="https://artifex.com/blog/artifex/" target="blank">BLOG</a></li>
-           <li><a href="https://artifex.com/privacy-policy/" target="blank">PRIVACY</a></li>
-           </ul>
-        </div>
-        <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019-2021 Artifex Software, Inc. <br>
-            All rights reserved.
-        </div>
-          </div>
-    </div>
-
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="index.js"></script>
+          </div><!-- close inner -->
+        </div><!-- close outer -->
+      </article>
+    </main>
+    <script src="site.js"></script>
 </body>
 </html>

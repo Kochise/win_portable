@@ -1,172 +1,179 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
-<link rel="shortcut icon" type="image/png" href="../../images/favicon.png">
-<title>Information for Ghostscript Developers</title>
-<link href="style.css" rel="stylesheet" type="text/css">
-<link href="gs-style.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="user-scalable=yes, initial-scale=1, width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.svg">
+    <title>Information for Ghostscript Developers</title>
+    <link href="default.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
+    <header><div class="title"><a href="index.html"><h1 aria-label="title">Ghostscript documentation</h1><h2 aria-label="version"></h2></a></div><a href="Search.htm" aria-label="Search" id="searchSite"><div class="search"></div></a></header>
+    <main>
+        <article>
+            <div class="outer">
 
-    <div class="header">
-    <div class="row">
-        <div class="col-lt-6 logo"><a href="https://www.ghostscript.com/"><img src="images/ghostscript_logo.png" width="108" height="119" alt=""></a></div>
-        <div class="col-6"><div class="row"><div class="artifexlogo"><a href="https://artifex.com" target="_blank"><img src="images/Artifex_logo.png" width="194" height="40" alt=""></a></div>
-        <div class="col-12"><div class="button button1"><a href="https://artifex.com/contact-us/" title="Contact Us" target="_blank">Contact Us</a></div>
-        <div class="button button2 hidden-xs"><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></div></div></div>
-    </div>
-    </div>
-
-    <div class="banner">
-    <div class="row">
-        <div class="col-12">Information for Ghostscript Developers</div>
-    </div>
-    </div>
-
-    <div class="main">
-    <div class="row">
-    <div id="sidebar">
-    <div class="sidebar-item"></div>
-    <div class="col-2 leftnav">
-<ul>
-            <li><a href="https://www.ghostscript.com/">Home</a></li>
-            <li><a href="https://www.ghostscript.com/license.html">Licensing</a></li>
-            <li><a href="https://www.ghostscript.com/releases.html">Releases</a></li>
-            <li><a href="https://www.ghostscript.com/documentation.html" title="Documentation">Documentation</a></li>
-            <li><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></li>
-            <li><a href="https://www.ghostscript.com/performance.html" title="Performance">Performance</a></li>
-            <li><a href="http://jbig2dec.com/" title="jbig2dec">jbig2dec</a></li>
-            <li><a href="http://git.ghostscript.com/?p=ghostpdl.git;a=summary">Source</a></li>
-            <li><a href="http://bugs.ghostscript.com/">Bugs</a></li>
-            <li><a href="https://www.ghostscript.com/faq.html" title="FAQ">FAQ</a></li>
-        </ul>
-    </div>
-    </div>
-    <div class="col-10 page">
-
+                <div class="inner">
 <!--START EDITING HERE-->
 
-<h2>Table of contents</h2>
+<h1>Information for Ghostscript Developers</h1>
+<h2><a name="toc"></a>Table of contents</h2>
+<ul class="toc">
+    <li><a href="#Introduction">Introduction</a></li>
+    <li><a href="#Architecture">Architecture</a></li>
+    <li>
+        <ul>
+            <li><a href="#Design_goals">Design goals</a></li>
+            <li><a href="#Design_principles">Design principles</a></li>
+            <li><a href="#Large_scale_structure">Large-scale structure</a></li>
+            <li><a href="#Object_oriented_constructs">Object-oriented constructs</a></li>
+        </ul>
+    </li>
+    <li><a href="#File_roadmap">File roadmap</a></li>
+        <li>
+            <ul>
+                <li><a href="#Substrate">Substrate</a></li>
+                <li><a href="#Graphics_library">Graphics library</a></li>
+                    <li>
+                        <ul>
+                            <li><a href="#Library_support">Support</a>,
+                                <a href="#Paths">Paths</a>,
+                                <a href="#Text">Text</a>,
+                                <a href="#Images">Images</a>,
+                                <a href="#Paint">Paint</a>,
+                                <a href="#Clipping">Clipping</a>,
+                                <a href="#Other_graphics">Other graphics</a>,
+                                <a href="#Driver_support">Driver support</a>,
+                                <a href="#FAPI_support_gx">Font API support</a>
+                                <a href="#Visual_trace">Visual Trace</a>
+                            </li>
+                        </ul>
+                    </li>
+                <li><a href="#Device_drivers">Device drivers</a></li>
+                <li>
+                    <ul>
+                    <li><a href="#Internal_devices">Internal devices</a>,
+                        <a href="#PS_and_PDF_writers">PostScript and PDF writers</a>,
+                        <a href="#High_level_devices">Other high-level devices</a>,
+                        <a href="#Other_maintained_drivers">Other maintained drivers</a>,
+                        <a href="#Contributed_drivers">Contributed drivers</a></li>
+                    </ul>
+                </li>
+                <li><a href="#PostScript_interpreter">PostScript interpreter</a></li>
+                <li>
+                    <ul>
+                    <li><a href="#Main_program">Main program</a>,
+                        <a href="#Data_structures">Data structures</a>,
+                        <a href="#Stacks">Stacks</a>,
+                        <a href="#Interpreter_loop">Interpreter loop</a>,
+                        <a href="#Scanning_parsing">Scanning/parsing</a>,
+                        <a href="#Standard_operators">Standard operators</a>,
+                        <a href="#Non_standard_operators">Non-standard operators</a>,
+                        <a href="#Interpreter_support">Interpreter support</a>,
+                        <a href="#PostScript_code">PostScript code</a></li>
+                    </ul>
+                </li>
+                <li><a href="#PDF_interpreter">PDF interpreter</a></li>
+                <li><a href="#PPD">PostScript Printer Description</a></li>
+                <li><a href="#Build_process">Build process</a></li>
+                <li>
+                    <ul>
+                    <li><a href="#Makefile_structure">Makefile structure</a>,
+                        <a href="#dev_files">.dev files</a>,
+                        <a href="#Generators">Generators</a>,
+                        <a href="#Build_support">Support</a></li>
+                    </ul>
+                </li>
+                <li><a href="#Utilities">Utilities</a></li>
+                <li>
+                    <ul>
+                        <li><a href="#Utilities_in_PostScript">Utilities in PostScript</a></li>
+                        <li><a href="#Utility_scripts">Utility scripts</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><a href="#Memory_management">Memory management</a></li>
+            <li>
+                <ul>
+                    <li><a href="#Memory_manager_architecture">Memory manager architecture</a></li>
+                        <li>
+                            <ul>
+                                <li><a href="#Objects_vs_strings">Objects vs strings</a>,
+                                    <a href="#Structure_descriptors">Structure descriptors</a>,
+                                    <a href="#Garbage_collection">Garbage collection</a>,
+                                    <a href="#Movability">Movability</a>,
+                                    <a href="#Parent_hierarchy">Parent hierarchy</a>,
+                                    <a href="#Allocator_API">Allocator API</a>
+                                </li>
+                            </ul>
+                        </li>
+                    <li><a href="#Freeing_storage">Freeing storage</a></li>
+                        <li>
+                            <ul>
+                                <li><a href="#Explicit_freeing">Explicit freeing</a>,
+                                    <a href="#Reference_counting">Reference counting</a>,
+                                    <a href="#Real_garbage_collection">(Real) garbage collection</a>
+                                </li>
+                            </ul>
+                        </li>
+                    <li><a href="#Special_implementations">Special implementations</a></li>
+                        <li>
+                            <ul>
+                                <li><a href="#malloc">malloc</a>,
+                                    <a href="#Locking">Locking</a>,
+                                    <a href="#Retrying">Retrying</a>,
+                                    <a href="#Chunk">Chunk</a>
+                                </li>
+                            </ul>
+                        </li>
+                    <li><a href="#Standard_implementation">Standard implementation</a></li>
+                    <li><a href="#PostScript_interpreter_extensions">PostScript interpreter extensions</a></li>
+                    <li>
+                        <ul>
+                        <li><a href="#Refs">Refs (PostScript "objects")</a>,
+                            <a href="#save_forgetsave_restore">save/.forgetsave/restore</a>,
+                            <a href="#Stable_allocators">Stable allocators</a>,
+                            <a href="#Interpreter_GC">Garbage collection</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+    <li><a href="#Portability">Portability</a></li>
+        <li>
+            <ul>
+                <li><a href="#Structural">Structural</a></li>
+                <li>
+                    <ul>
+                        <li><a href="#CPU_and_compiler">CPU and compiler</a>,
+                            <a href="#Library_headers">Library headers</a>,
+                            <a href="#Cross_platform_APIs">Cross-platform APIs</a>,
+                            <a href="#Makefiles">Makefiles</a>
+                        </li>
+                    </ul>
+                </li>
+                <li><a href="#Coding">Coding</a></li>
+                <li>
+                    <ul>
+                    <li><a href="#Explicit_dependencies">Explicit dependencies</a>,
+                        <a href="#Implicit_dependencies">Implicit dependencies</a></li>
+                    </ul>
+                </li>
+                <li><a href="#Platform_specific_code">Platform-specific code</a></li>
+            </ul>
+        </li>
 
-<blockquote><ul>
-<li><a href="#Introduction">Introduction</a></li>
-<li><a href="#Architecture">Architecture</a></li>
-<ul>
-<li><a href="#Design_goals">Design goals</a></li>
-<li><a href="#Design_principles">Design principles</a></li>
-<li><a href="#Large_scale_structure">Large-scale structure</a></li>
-<li><a href="#Object_oriented_constructs">Object-oriented constructs</a></li>
+    <li><a href="#Troubleshooting">Troubleshooting and debugging</a></li>
+    <li><a href="#Profiling">Profiling</a></li>
+    <li>
+        <ul>
+            <li><a href="#ProfilingMSVC6">Profiling with Microsoft Developer Studio 6</a></li>
+        </ul>
+    </li>
 </ul>
-<li><a href="#File_roadmap">File roadmap</a></li>
-<ul>
-<li><a href="#Substrate">Substrate</a></li>
-<li><a href="#Graphics_library">Graphics library</a></li>
-<ul>
-<li><a href="#Library_support">Support</a>,
-    <a href="#Paths">Paths</a>,
-    <a href="#Text">Text</a>,
-    <a href="#Images">Images</a>,
-    <a href="#Paint">Paint</a>,
-    <a href="#Clipping">Clipping</a>,
-    <a href="#Other_graphics">Other graphics</a>,
-    <a href="#Driver_support">Driver support</a>,
-    <a href="#FAPI_support_gx">Font API support</a>
-    <a href="#Visual_trace">Visual Trace</a></li>
-</ul>
-<li><a href="#Device_drivers">Device drivers</a></li>
-<ul>
-<li><a href="#Internal_devices">Internal devices</a>,
-    <a href="#PS_and_PDF_writers">PostScript and PDF writers</a>,
-    <a href="#High_level_devices">Other high-level devices</a>,
-    <a href="#Other_maintained_drivers">Other maintained drivers</a>,
-    <a href="#Contributed_drivers">Contributed drivers</a></li>
-</ul>
-<li><a href="#PostScript_interpreter">PostScript interpreter</a></li>
-<ul>
-<li><a href="#Main_program">Main program</a>,
-    <a href="#Data_structures">Data structures</a>,
-    <a href="#Stacks">Stacks</a>,
-    <a href="#Interpreter_loop">Interpreter loop</a>,
-    <a href="#Scanning_parsing">Scanning/parsing</a>,
-    <a href="#Standard_operators">Standard operators</a>,
-    <a href="#Non_standard_operators">Non-standard operators</a>,
-    <a href="#Interpreter_support">Interpreter support</a>,
-    <a href="#PostScript_code">PostScript code</a></li>
-</ul>
-<li><a href="#PDF_interpreter">PDF interpreter</a></li>
-<li><a href="#PPD">PostScript Printer Description</a></li>
-<li><a href="#Build_process">Build process</a></li>
-<ul>
-<li><a href="#Makefile_structure">Makefile structure</a>,
-    <a href="#dev_files">.dev files</a>,
-    <a href="#Generators">Generators</a>,
-    <a href="#Build_support">Support</a></li>
-</ul>
-<li><a href="#Utilities">Utilities</a></li>
-<ul>
-<li><a href="#Utilities_in_PostScript">Utilities in PostScript</a></li>
-<li><a href="#Utility_scripts">Utility scripts</a></li>
-</ul>
-</ul>
-<li><a href="#Memory_management">Memory management</a></li>
-<ul>
-<li><a href="#Memory_manager_architecture">Memory manager architecture</a></li>
-<ul>
-<li><a href="#Objects_vs_strings">Objects vs strings</a>,
-    <a href="#Structure_descriptors">Structure descriptors</a>,
-    <a href="#Garbage_collection">Garbage collection</a>,
-    <a href="#Movability">Movability</a>,
-    <a href="#Parent_hierarchy">Parent hierarchy</a>,
-    <a href="#Allocator_API">Allocator API</a></li>
-</ul>
-<li><a href="#Freeing_storage">Freeing storage</a></li>
-<ul>
-<li><a href="#Explicit_freeing">Explicit freeing</a>,
-    <a href="#Reference_counting">Reference counting</a>,
-    <a href="#Real_garbage_collection">(Real) garbage collection</a></li>
-</ul>
-<li><a href="#Special_implementations">Special implementations</a></li>
-<ul>
-<li><a href="#malloc">malloc</a>,
-    <a href="#Locking">Locking</a>,
-    <a href="#Retrying">Retrying</a>,
-    <a href="#Chunk">Chunk</a></li>
-</ul>
-<li><a href="#Standard_implementation">Standard implementation</a></li>
-<li><a href="#PostScript_interpreter_extensions">PostScript interpreter extensions</a></li>
-<ul>
-<li><a href="#Refs">Refs (PostScript "objects")</a>,
-    <a href="#save_forgetsave_restore">save/.forgetsave/restore</a>,
-    <a href="#Stable_allocators">Stable allocators</a>,
-    <a href="#Interpreter_GC">Garbage collection</a></li>
-</ul>
-</ul>
-<li><a href="#Portability">Portability</a></li>
-<ul>
-<li><a href="#Structural">Structural</a></li>
-<ul>
-<li><a href="#CPU_and_compiler">CPU and compiler</a>,
-    <a href="#Library_headers">Library headers</a>,
-    <a href="#Cross_platform_APIs">Cross-platform APIs</a>,
-    <a href="#Makefiles">Makefiles</a></li>
-</ul>
-<li><a href="#Coding">Coding</a></li>
-<ul>
-<li><a href="#Explicit_dependencies">Explicit dependencies</a>,
-    <a href="#Implicit_dependencies">Implicit dependencies</a></li>
-</ul>
-<li><a href="#Platform_specific_code">Platform-specific code</a></li>
-</ul>
-<li><a href="#Troubleshooting">Troubleshooting and debugging</a></li>
-<li><a href="#Profiling">Profiling</a></li>
-<ul>
-<li><a href="#ProfilingMSVC6">Profiling with Microsoft Developer Studio 6</a></li>
-</ul>
-</blockquote>
+
 
 <!-- [1.2 end table of contents] =========================================== -->
 
@@ -1046,7 +1053,7 @@ virtual procedure in the device color, either <code>fill_rectangle</code>
 or <code>fill_mask</code> to actually paint pixels.  For rectangle fills,
 pure colors call the device's <code>fill_rectangle</code> procedure;
 halftones and tiled Patterns call the device's
-<code>tile_rectangle</code>; shaded Patterns, and painting operations
+<code>strip_tile_rectangle</code>; shaded Patterns, and painting operations
 that involve a RasterOp, do something more complicated.
 
 <dl>
@@ -1666,60 +1673,73 @@ Shared support:
 <dd>
 
 <dl>
-<dt>
-Writing fonts:
-<dd>
-<a href="../devices/vector/gdevpsf.h">devices/vector/gdevpsf.h</a>,
-<a href="../devices/vector/gdevpsf1.c">devices/vector/gdevpsf1.c</a>,
-<a href="../devices/vector/gdevpsf2.c">devices/vector/gdevpsf2.c</a>,
-<a href="../devices/vector/gdevpsfm.c">devices/vector/gdevpsfm.c</a>,
-<a href="../devices/vector/gdevpsft.c">devices/vector/gdevpsft.c</a>,
-<a href="../devices/vector/gdevpsfu.c">devices/vector/gdevpsfu.c</a>,
-<a href="../devices/vector/gdevpsfx.c">devices/vector/gdevpsfx.c</a>,
-<a href="../base/gscedata.c">base/gscedata.c</a>,
-<a href="../base/gscedata.h">base/gscedata.h</a>,
-<a href="../base/gscencs.c">base/gscencs.c</a>,
-<a href="../base/gscencs.h">base/gscencs.h</a>.
+    <dt>
+    Writing fonts:</dt>
+    <dd>
+    <a href="../devices/vector/gdevpsf.h">devices/vector/gdevpsf.h</a>,
+    <a href="../devices/vector/gdevpsf1.c">devices/vector/gdevpsf1.c</a>,
+    <a href="../devices/vector/gdevpsf2.c">devices/vector/gdevpsf2.c</a>,
+    <a href="../devices/vector/gdevpsfm.c">devices/vector/gdevpsfm.c</a>,
+    <a href="../devices/vector/gdevpsft.c">devices/vector/gdevpsft.c</a>,
+    <a href="../devices/vector/gdevpsfu.c">devices/vector/gdevpsfu.c</a>,
+    <a href="../devices/vector/gdevpsfx.c">devices/vector/gdevpsfx.c</a>,
+    <a href="../base/gscedata.c">base/gscedata.c</a>,
+    <a href="../base/gscedata.h">base/gscedata.h</a>,
+    <a href="../base/gscencs.c">base/gscencs.c</a>,
+    <a href="../base/gscencs.h">base/gscencs.h</a>.
 
-<dt>
-Other:
-<dd>
-<a href="../devices/vector/gdevpsdf.h">devices/vector/gdevpsdf.h</a>,
-<a href="../devices/vector/gdevpsdi.c">devices/vector/gdevpsdi.c</a>,
-<a href="../devices/vector/gdevpsdp.c">devices/vector/gdevpsdp.c</a>,
-<a href="../devices/vector/gdevpsds.c">devices/vector/gdevpsds.c</a>,
-<a href="../devices/vector/gdevpsds.h">devices/vector/gdevpsds.h</a>,
-<a href="../devices/vector/gdevpsdu.c">devices/vector/gdevpsdu.c</a>.
+    <dt>
+    Other:</dt>
+    <dd>
+    <a href="../devices/vector/gdevpsdf.h">devices/vector/gdevpsdf.h</a>,
+    <a href="../devices/vector/gdevpsdi.c">devices/vector/gdevpsdi.c</a>,
+    <a href="../devices/vector/gdevpsdp.c">devices/vector/gdevpsdp.c</a>,
+    <a href="../devices/vector/gdevpsds.c">devices/vector/gdevpsds.c</a>,
+    <a href="../devices/vector/gdevpsds.h">devices/vector/gdevpsds.h</a>,
+    <a href="../devices/vector/gdevpsdu.c">devices/vector/gdevpsdu.c</a>.
 
 </dl>
 
+<dl>
 <dt>
-Encapsulated PostScript output driver (epswrite):
+Encapsulated PostScript output driver (epswrite):</dt>
 <dd>
 <a href="../devices/vector/gdevpsu.c">devices/vector/gdevpsu.c</a>,
 <a href="../devices/vector/gdevpsu.h">devices/vector/gdevpsu.h</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-PDF output driver (pdfwrite):
-<dd>
+PDF output driver (pdfwrite):</dt>
+<dd></dd>
+</dl>
+
 <dl>
 
 <dt>
-Substrate:
+Substrate:</dt>
 <dd>
 <a href="../devices/vector/gdevpdfo.c">devices/vector/gdevpdfo.c</a>,
 <a href="../devices/vector/gdevpdfo.h">devices/vector/gdevpdfo.h</a>,
 <a href="../devices/vector/gdevpdfr.c">devices/vector/gdevpdfr.c</a>,
 <a href="../devices/vector/gdevpdfu.c">devices/vector/gdevpdfu.c</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-Old text and fonts:
+Old text and fonts:</dt>
 <dd>
 <a href="../devices/vector/gdevpdfe.c">devices/vector/gdevpdfe.c</a>,
 <a href="../devices/vector/gdevpdft.c">devices/vector/gdevpdft.c</a>.
+</dd>
+</dl>
 
+
+<dl>
 <dt>
-New text and fonts:
+New text and fonts:</dt>
 <dd>
 <a href="../devices/vector/gdevpdt.c">devices/vector/gdevpdt.c</a>,
 <a href="../devices/vector/gdevpdt.h">devices/vector/gdevpdt.h</a>,
@@ -1744,9 +1764,12 @@ New text and fonts:
 <a href="../devices/vector/gdevpdtx.h">devices/vector/gdevpdtx.h</a>.
 <a href="../base/ConvertUTF.h">base/ConvertUTF.h</a>,
 <a href="../base/ConvertUTF.c">base/ConvertUTF.c</a>,
+</dd>
+</dl>
 
+<dl>
 <dt>
-Graphics:
+Graphics:</dt>
 <dd>
 <a href="../devices/vector/gdevpdfc.c">devices/vector/gdevpdfc.c</a>,
 <a href="../devices/vector/gdevpdfc.h">devices/vector/gdevpdfc.h</a>,
@@ -1756,31 +1779,39 @@ Graphics:
 <a href="../devices/vector/gdevpdfk.c">devices/vector/gdevpdfk.c</a>,
 <a href="../devices/vector/gdevpdft.c">devices/vector/gdevpdft.c</a>.
 <a href="../devices/vector/gdevpdfv.c">devices/vector/gdevpdfv.c</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-Images:
+Images:</dt>
 <dd>
 <a href="../devices/vector/gdevpdfb.c">devices/vector/gdevpdfb.c</a>,
 <a href="../devices/vector/gdevpdfi.c">devices/vector/gdevpdfi.c</a>,
 <a href="../devices/vector/gdevpdfj.c">devices/vector/gdevpdfj.c</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-Other:
+Other:</dt>
 <dd>
 <a href="../devices/vector/gdevpdf.c">devices/vector/gdevpdf.c</a>,
 <a href="../devices/vector/gdevpdfm.c">devices/vector/gdevpdfm.c</a>,
 <a href="../devices/vector/gdevpdfp.c">devices/vector/gdevpdfp.c</a>,
 <a href="../devices/vector/gdevpdfx.h">devices/vector/gdevpdfx.h</a>.
 <a href="../devices/vector/gdevpdfb.h">devices/vector/gdevpdfb.h</a>.
+</dd>
 
 </dl>
 
-</dl>
+
 
 <h4><a name="High_level_devices"></a>Other high-level devices</h4>
 
-<p>
-PCL XL output device (pxlmono, pxlcolor):
+<dl>
+    <dt>
+PCL XL output device (pxlmono, pxlcolor):</dt>
 <dd>
 <a href="../devices/vector/gdevpx.c">devices/vector/gdevpx.c</a>,
 <a href="../base/gdevpxat.h">base/gdevpxat.h</a>,
@@ -1788,18 +1819,25 @@ PCL XL output device (pxlmono, pxlcolor):
 <a href="../base/gdevpxop.h">base/gdevpxop.h</a>,
 <a href="../devices/gdevpxut.c">devices/gdevpxut.c</a>,
 <a href="../devices/gdevpxut.h">devices/gdevpxut.h</a>.
+</dd>
+</dl>
+
+<dl>
 
 <dt>
-Text extraction:
+Text extraction:</dt>
 <dd>
 <a href="../devices/vector/gdevtxtw.c">devices/vector/gdevtxtw.c</a>.
-
+</dd>
+</dl>
+<dl>
 <dt>
-Other high-level devices:
+Other high-level devices:</dt>
 <dd>
 <a href="../devices/gdevtrac.c">devices/gdevtrac.c</a>.
-
+</dd>
 </dl>
+
 
 <h4><a name="Other_maintained_drivers"></a>Other maintained drivers</h4>
 
@@ -1811,7 +1849,7 @@ sense as the Ghostscript core code.
 <dl>
 
 <dt>
-Display drivers:
+Display drivers:</dt>
 <dd>
 <a href="../devices/gdev8bcm.c">devices/gdev8bcm.c</a>,
 <a href="../devices/gdev8bcm.h">devices/gdev8bcm.h</a>,
@@ -1826,15 +1864,19 @@ Display drivers:
 <a href="../devices/gdevsvga.c">devices/gdevsvga.c</a>,
 <a href="../devices/gdevsvga.h">devices/gdevsvga.h</a>,
 <a href="../devices/gdevvglb.c">devices/gdevvglb.c</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-Window system drivers:
-<dd>
+Window system drivers:</dt>
+<dd></dd>
+</dl>
 
 <dl>
 
 <dt>
-X Windows:
+X Windows:</dt>
 <dd>
 <a href="../devices/gdevx.c">devices/gdevx.c</a>,
 <a href="../devices/gdevx.h">devices/gdevx.h</a>,
@@ -1843,33 +1885,38 @@ X Windows:
 <a href="../devices/gdevxcmp.h">devices/gdevxcmp.h</a>,
 <a href="../devices/gdevxini.c">devices/gdevxini.c</a>,
 <a href="../devices/gdevxres.c">devices/gdevxres.c</a>.
+</dd>
+</dl>
 
+<dl>
 <dt>
-Microsoft Windows:
+Microsoft Windows:</dt>
 <dd>
 <a href="../devices/gdevmswn.c">devices/gdevmswn.c</a>,
 <a href="../devices/gdevmswn.h">devices/gdevmswn.h</a>,
 <a href="../devices/gdevmsxf.c">devices/gdevmsxf.c</a>,
 <a href="../devices/gdevwddb.c">devices/gdevwddb.c</a>,
-<a href="../devices/gdevwdib.c">devices/gdevwdib.c</a>.
+<a href="../devices/gdevwdib.c">devices/gdevwdib.c</a>.</dd>
 
 <dt>
-OS/2 Presentation Manager:
+OS/2 Presentation Manager:</dt>
 <dd>
 <a href="../devices/gdevpm.h">devices/gdevpm.h</a>,
 <a href="../base/gspmdrv.c">base/gspmdrv.c</a>,
-<a href="../base/gspmdrv.h">base/gspmdrv.h</a>.
+<a href="../base/gspmdrv.h">base/gspmdrv.h</a>.</dd>
 
 </dl>
 
+<dl>
 <dt>
-Raster file output drivers:
-<dd>
+Raster file output drivers:</dt>
+<dd></dd>
+</dl>
 
 <dl>
 
 <dt>
-Fax and TIFF:
+Fax and TIFF:</dt>
 <dd>
 <a href="../devices/gdevfax.c">devices/gdevfax.c</a>,
 <a href="../devices/gdevfax.h">devices/gdevfax.h</a>,
@@ -1880,6 +1927,8 @@ Fax and TIFF:
 <a href="../devices/gdevtfnx.c">devices/gdevtfnx.c</a>.
 <a href="../devices/gdevtsep.c">devices/gdevtsep.c</a>.
 
+</dd>
+
 <dt>
 Example DeviceN devices:
 <dd>
@@ -1888,6 +1937,8 @@ Example DeviceN devices:
 <a href="../devices/gdevxcf.c">devices/gdevxcf.c</a>,
 <a href="../devices/gdevpsd.c">devices/gdevpsd.c</a>,
 <a href="../devices/gdevperm.c">devices/gdevperm.c</a>.
+
+</dd>
 
 <dt>
 Other raster file formats:
@@ -1905,8 +1956,11 @@ Other raster file formats:
 <a href="../devices/gdevpng.c">devices/gdevpng.c</a>,
 <a href="../devices/gdevpsim.c">devices/gdevpsim.c</a>.
 
+</dd>
+
 </dl>
 
+<dl>
 <dt>
 Printer drivers:
 <dd>
@@ -4740,7 +4794,7 @@ Edit the output file name in the line 5.
 <hr>
 
 <p>
-<small>Copyright &copy; 2001-2021 Artifex Software, Inc.  All rights
+<small>Copyright &copy; 2001-2022 Artifex Software, Inc.  All rights
 reserved.</small>
 
 <p>
@@ -4754,41 +4808,16 @@ or contact Artifex Software, Inc.,  1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
 
 <p>
-<small>Ghostscript version 9.54.0, 30 March 2021
+<small>Ghostscript version 9.56.1, 4 April 2022
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
 
 <!--FINISH EDITING HERE-->
-
-    </div>
-    </div>
-    </div>
-
-    <div class="footer">
-    <div class="row">
-        <div class="col-7 footleft">
-        <ul>
-            <li><a href="https://artifex.com/contact-us/" target="blank">CONTACT US</a></li>
-            <li><a href="https://artifex.com/about-us/" target="blank">ABOUT</a></li>
-            <li><a href="https://ghostscript.com/security.html">SECURITY</a></li>
-        </ul>
-        </div>
-        <div class="col-1 footcenter">
-         <ul>
-           <li><a href="https://artifex.com/support/" target="blank">SUPPORT</a></li>
-           <li><a href="https://artifex.com/blog/artifex/" target="blank">BLOG</a></li>
-           <li><a href="https://artifex.com/privacy-policy/" target="blank">PRIVACY</a></li>
-           </ul>
-        </div>
-        <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019-2021 Artifex Software, Inc. <br>
-            All rights reserved.
-        </div>
-          </div>
-    </div>
-
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="index.js"></script>
+                </div><!-- close inner -->
+            </div><!-- close outer -->
+        </article>
+    </main>
+    <script src="site.js"></script>
 </body>
 </html>

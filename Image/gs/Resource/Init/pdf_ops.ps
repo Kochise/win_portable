@@ -1,4 +1,4 @@
-% Copyright (C) 2001-2021 Artifex Software, Inc.
+% Copyright (C) 2001-2022 Artifex Software, Inc.
 % All Rights Reserved.
 %
 % This software is provided AS-IS with no warranty, either express or
@@ -680,8 +680,8 @@ end
 } def
 /Dpop { //OPsaveDstack begin previous { def } forall end } def
 
-% colorspaces that don't require special overprint transparency handling
-/okOPcs mark /DeviceGray 0 /DeviceCMYK 1 /DeviceN 2 /Separation 3 .dicttomark def
+% colorspaces that require special overprint transparency handling
+/specialOPcs mark /DeviceGray 0 /DeviceCMYK 1 /DeviceN 2 /Separation 3 .dicttomark def
 
 % Take care of pushing a transparency group if we need it for SMask or for Overprint..
 % After pushing the group, we save the ca and CA and change them
@@ -696,11 +696,18 @@ end
   //OPsaveDstack begin
   //Dpush exec			% push the current OPsaveDstack values into 'previous'
   /SupportsDevn .special_op
-  okOPcs currentcolorspace 0 get dup /Indexed eq {
+  specialOPcs currentcolorspace 0 get dup /Indexed eq {
     pop currentcolorspace 1 get	% use the base space
   } if
   known or {
-    1 index /stroke ne { .currentfilloverprint } { .currentstrokeoverprint } ifelse
+    dup /stroke ne {
+      .currentfilloverprint
+      1 index dup /.fillstroke eq exch /.eofillstroke eq or {
+        .currentstrokeoverprint or
+      } if
+     } {
+      .currentstrokeoverprint
+    } ifelse
     % Change BM to CompatibleOverprint if this has overprint true
     dup /ChangeBM exch def
     .currentblendmode dup /Normal eq exch /Compatible eq or
@@ -709,7 +716,8 @@ end
     //false
   } ifelse
   .currentSMask //null ne or {		% push a group for OP or SMask
-    mark /Subtype /Group /Isolated .currentSMask //null ne .dicttomark
+    % It should only be isolated if there is a softmask and the blend mode is not normal (or compatible)
+    mark /Subtype /Group /Isolated .currentSMask //null ne .currentblendmode /Normal ne and .currentblendmode /Compatible ne and .dicttomark
     2 index aload pop		% pathbbox
     .begintransparencygroup
     % After group pushed, set alphas and blendmode
@@ -961,12 +969,12 @@ currentdict dup /Dpush .undef /Dpop .undef
   n
 } bind executeonly def
 /b { closepath B* } bind executeonly def
-/n { end { currentpoint } stopped not { pop pop clip } if newpath } bind executeonly def
+/n { end .currentpoint_valid { clip } if newpath } bind executeonly def
 end readonly def
 /W { //Wdict begin } bind executeonly def
 /W*dict 8 dict dup begin
 Wdict { def } forall
-/n { end { currentpoint } stopped not { pop pop eoclip } if newpath } bind executeonly def
+/n { end .currentpoint_valid { eoclip } if newpath } bind executeonly def
 end readonly def
 /W* { //W*dict begin } bind executeonly def
 % ---------------- Text control ---------------- %
@@ -1019,6 +1027,17 @@ end readonly def
    translate } if
 } bind executeonly def
 
+/unsettextmatrix {
+  .currenttextrise 0 ne {
+    0 .currenttextrise neg translate
+  } if
+  .currenttexthscaling 1 ne {
+    1 .currenttexthscaling div 1 scale
+  } if
+  matrix currentmatrix
+  matrix .currenttextmatrix matrix invertmatrix concat setmatrix
+} bind executeonly def
+
 /settextstate {
         % The text state can be set even outside BT/ET.
   currentdict /TextSaveMatrix known {
@@ -1057,7 +1076,8 @@ end readonly def
 /settextposition {
                 % Update the TextMatrix translation.
   gsave TextSaveMatrix setmatrix
-  {currentpoint} stopped not {
+  .currentpoint_valid {
+    currentpoint
     .currenttextrise
     sub
     matrix .currenttextmatrix
@@ -1105,6 +1125,9 @@ end readonly def
 } bind executeonly odef
 
 /BT {
+  % Bug 703996 has a path defined before BT, then stroked afterwards
+  .currentpoint_valid { //false upath } { //null } ifelse
+  /BT_upath gput
   //false /illegal_BT gput
   currentdict /TextSaveMatrix known {
     (   **** Error: illegal nested BT operator detected.\n)
@@ -1153,10 +1176,8 @@ end readonly def
 
 /clip_if_required {
     .currenttextrenderingmode 4 ge
-    {currentpoint} //.internalstopped exec
-    {//false}
-    {pop pop //true}
-    ifelse and
+    .currentpoint_valid
+    and
     { .currentfilladjust2 0 dup .setfilladjust2 clip .setfilladjust2} if
     newpath
 } bind def
@@ -1183,6 +1204,7 @@ end readonly def
   %% in a nested text block (inside a gsave).
   currentdict /qTextSaveMatrix known not {
     switch_to_normal_marking_ops
+    currentdict /BT_upath get dup //null eq { pop } { newpath uappend } ifelse
   } if
 } bind executeonly def
 

@@ -1,119 +1,96 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
-<link rel="shortcut icon" type="image/png" href="../../images/favicon.png">
-<title>Details of Ghostscript Output Devices</title>
-    <!-- Originally: devices.txt -->
-<link href="style.css" rel="stylesheet" type="text/css">
-<link href="gs-style.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="user-scalable=yes, initial-scale=1, width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.svg">
+    <title>Details of Ghostscript Output Devices</title>
+    <link href="default.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
+    <header><div class="title"><a href="index.html"><h1 aria-label="title">Ghostscript documentation</h1><h2 aria-label="version"></h2></a></div><a href="Search.htm" aria-label="Search" id="searchSite"><div class="search"></div></a></header>
+    <main>
+        <article>
+            <div class="outer">
 
-    <div class="header">
-    <div class="row">
-        <div class="col-lt-6 logo"><a href="https://www.ghostscript.com/"><img src="images/ghostscript_logo.png" width="108" height="119" alt=""></a></div>
-        <div class="col-6"><div class="row"><div class="artifexlogo"><a href="https://artifex.com" target="_blank"><img src="images/Artifex_logo.png" width="194" height="40" alt=""></a></div>
-        <div class="col-12"><div class="button button1"><a href="https://artifex.com/contact-us/" title="Contact Us" target="_blank">Contact Us</a></div>
-        <div class="button button2 hidden-xs"><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></div></div></div>
-    </div>
-    </div>
-    </div>
-
-    <div class="banner">
-    <div class="row">
-        <div class="col-12">Details of Ghostscript Output Devices</div>
-    </div>
-    </div>
-
-    <div class="main">
-    <div class="row">
-    <div id="sidebar">
-    <div class="sidebar-item"></div>
-    <div class="col-2 leftnav">
-<ul>
-            <li><a href="https://www.ghostscript.com/">Home</a></li>
-            <li><a href="https://www.ghostscript.com/license.html">Licensing</a></li>
-            <li><a href="https://www.ghostscript.com/releases.html">Releases</a></li>
-            <li><a href="https://www.ghostscript.com/documentation.html" title="Documentation">Documentation</a></li>
-            <li><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></li>
-            <li><a href="https://www.ghostscript.com/performance.html" title="Performance">Performance</a></li>
-            <li><a href="http://jbig2dec.com/" title="jbig2dec">jbig2dec</a></li>
-            <li><a href="http://git.ghostscript.com/?p=ghostpdl.git;a=summary">Source</a></li>
-            <li><a href="http://bugs.ghostscript.com/">Bugs</a></li>
-            <li><a href="https://www.ghostscript.com/faq.html" title="FAQ">FAQ</a></li>
-        </ul>
-    </div>
-    </div>
-    <div class="col-10 page">
-
+                <div class="inner">
 <!--START EDITING HERE-->
 
-<!-- [1.0 begin visible header] ============================================ -->
+<h1>Details of Ghostscript Output Devices</h1>
 
-<!-- [1.1 begin headline] ================================================== -->
+<h2><a name="toc"></a>Table of contents</h2>
+<ul class="toc">
+    <li><a href="#Measurements">Notes on measurements</a></li>
+    <li><a href="#File_formats">Image file formats</a></li>
+        <li>
+            <ul>
+                <li><a href="#PNG">PNG file format</a></li>
+                <li><a href="#JFIF">JPEG file format (JFIF)</a></li>
+                <li><a href="#PNM">PNM file format</a></li>
+                <li><a href="#TIFF">TIFF file formats</a></li>
+                <li><a href="#fax">fax file formats</a></li>
+                <li><a href="#BMP">BMP file format</a></li>
+                <li><a href="#PCX">PCX file format</a></li>
+                <li><a href="#PSD">PSD file format (DeviceN color model)</a></li>
+                <li><a href="#PDFimage">Bitmap PDF output, PCLm output</a></li>
+            </ul>
+        </li>
+    <li><a href="#OCR-Devices">OCR Devices</a></li>
+    <li>
+        <ul>
+            <li><a href="#OCR">OCR text output</a></li>
+            <li><a href="#PDFocr">Bitmap PDF output (with OCR text)</a></li>
+            <li><a href="#PDFwriteocr">Vector PDF output (with OCR Unicode CMaps)</a></li>
+        </ul>
+    </li>
+    <li><a href="#High-level">High level formats</a></li>
+    <li>
+        <ul>
+            <li><a href="#PDF">PDF file output</a></li>
+            <li><a href="#OCR">OCR devices</a></li>
+            <li><a href="#PS">PostScript file output</a></li>
+            <li><a href="#EPS">EPS file output</a></li>
+            <li><a href="#PXL">PCL-XL file output</a></li>
+            <li><a href="#TXT">Text output</a></li>
+        </ul>
+    </li>
+    <li><a href="#Display_devices">Display devices</a></li>
+    <li>
+        <ul>
+            <li><a href="#x11_devices">X Window System</a></li>
+            <li><a href="#display_device">display device (MS Windows, OS/2, gtk+)</a></li>
+        </ul>
+    </li>
+    <li><a href="#IJS">IJS - Inkjet and other raster devices</a></li>
+    <li><a href="#Rinkj">Rinkj - Resplendent inkjet driver</a></li>
+    <li><a href="#HP_ijs">HP Deskjet official drivers</a></li>
+    <li><a href="#gimp-print">Gimp-Print driver collection</a></li>
+    <li><a href="#Win">MS Windows printers</a></li>
+    <li><a href="#SPARCprinter">Sun SPARCprinter</a></li>
+    <li>
+        <ul>
+            <li><a href="#SPARC_install">Installation</a></li>
+            <li><a href="#SPARC_problems">Problems</a></li>
+        </ul>
+    </li>
+    <li><a href="#Apple">Apple dot matrix printer</a></li>
+    <li><a href="#Test">Special and Test devices</a></li>
+    <li>
+        <ul>
+            <li><a href="#Bit">Raw 'bit' output.</a></li>
+            <li><a href="#Bounding_box_output">Bounding Box output.</a></li>
+            <li><a href="#Ink_coverage_output">Ink coverage output.</a></li>
+            <li><a href="#Permute">Permutation (DeviceN color model)</a></li>
+            <li><a href="#SPOT">spotcmyk (DeviceN color model)</a></li>
+            <li><a href="#XCF">XCF (DeviceN color model)</a></li>
+            <li><a href="#bitraw">Raw 'bit' devices</a></li>
+        </ul>
+    </li>
+</ul>
 
-<h2>Table of contents</h2>
 
-<blockquote><ul>
-<li><a href="#Measurements">Notes on measurements</a></li>
-<li><a href="#File_formats">Image file formats</a></li>
-<ul>
-<li><a href="#PNG">PNG file format</a></li>
-<li><a href="#JFIF">JPEG file format (JFIF)</a></li>
-<li><a href="#PNM">PNM file format</a></li>
-<li><a href="#TIFF">TIFF file formats</a></li>
-<li><a href="#fax">fax file formats</a></li>
-<li><a href="#BMP">BMP file format</a></li>
-<li><a href="#PCX">PCX file format</a></li>
-<li><a href="#PSD">PSD file format (DeviceN color model)</a></li>
-<li><a href="#PDFimage">Bitmap PDF output, PCLm output</a></li>
-</ul>
-<li><a href="#OCR-Devices">OCR Devices</a></li>
-<ul>
-<li><a href="#OCR">OCR text output</a></li>
-<li><a href="#PDFocr">Bitmap PDF output (with OCR text)</a></li>
-<li><a href="#PDFwriteocr">Vector PDF output (with OCR Unicode CMaps)</a></li>
-</ul>
-<li><a href="#High-level">High level formats</a></li>
-<ul>
-<li><a href="#PDF">PDF file output</a></li>
-<li><a href="#OCR">OCR devices</a></li>
-<li><a href="#PS">PostScript file output</a></li>
-<li><a href="#EPS">EPS file output</a></li>
-<li><a href="#PXL">PCL-XL file output</a></li>
-<li><a href="#TXT">Text output</a></li>
-</ul>
-<li><a href="#Display_devices">Display devices</a></li>
-<ul>
-<li><a href="#x11_devices">X Window System</a></li>
-<li><a href="#display_device">display device (MS Windows, OS/2, gtk+)</a></li>
-</ul>
-<li><a href="#IJS">IJS - Inkjet and other raster devices</a></li>
-<li><a href="#Rinkj">Rinkj - Resplendent inkjet driver</a></li>
-<li><a href="#HP_ijs">HP Deskjet official drivers</a></li>
-<li><a href="#gimp-print">Gimp-Print driver collection</a></li>
-<li><a href="#Win">MS Windows printers</a></li>
-<li><a href="#SPARCprinter">Sun SPARCprinter</a></li>
-<ul>
-<li><a href="#SPARC_install">Installation</a></li>
-<li><a href="#SPARC_problems">Problems</a></li>
-</ul>
-<li><a href="#Apple">Apple dot matrix printer</a></li>
-<li><a href="#Test">Special and Test devices</a></li>
-<ul>
-<li><a href="#Bit">Raw 'bit' output.</a></li>
-<li><a href="#Bounding_box_output">Bounding Box output.</a></li>
-<li><a href="#Ink_coverage_output">Ink coverage output.</a></li>
-<li><a href="#Permute">Permutation (DeviceN color model)</a></li>
-<li><a href="#SPOT">spotcmyk (DeviceN color model)</a></li>
-<li><a href="#XCF">XCF (DeviceN color model)</a></li>
-<li><a href="#bitraw">Raw 'bit' devices</a></li>
-</ul>
-</ul></blockquote>
 
 <!-- [1.2 end table of contents] =========================================== -->
 
@@ -215,11 +192,12 @@ The default value if you don't specify this options is usually 72 <abbr>dpi</abb
 <dd><p>These options control the use of subsample antialiasing. Their use is highly recommended
 for producing high quality rasterizations of the input files. The size of the subsampling
 box <em>n</em> should be 4 for optimum output, but smaller values can be used for faster
-rendering. Antialiasing is enabled separately for text and graphics content.</p></dd>
+rendering. Antialiasing is enabled separately for text and graphics content.</p>
 <p>Because this feature relies upon rendering the input it is incompatible, and will generate
 an error on attempted use, with any of the vector output devices.</p>
-
-</dl></blockquote>
+</dd>
+</dl>
+</blockquote>
 
 <p>
 It is also conventional to call Ghostscript with the '<code>-dSAFER -dBATCH -dNOPAUSE</code>' trio
@@ -245,29 +223,31 @@ black-and-white for special needs. The <code>pngmonod</code> device is also a
 black-and-white device, but the output is formed from an internal 8 bit grayscale
 rendering which is then error diffused and converted down to 1bpp.</p>
 
-<p>The <code>pngalpha</code> device is 32-bit RGBA color with transparency
+<p>The <code>png16malpha</code> and <code>pngalpha</code> devices are 32-bit RGBA color with transparency
 indicating pixel coverage.  The background is transparent unless
 it has been explicitly filled.  PDF 1.4 transparent files do not
-give a transparent background with this device.  Text and graphics
-anti-aliasing are enabled by default.</p>
+give a transparent background with this device. The devices differ, in that the <code>pngalpha</code> device
+enables Text and graphics anti-aliasing by default. We now recommend that people use the <code>png16malpha</code>
+device in preference, and achieve any required antialiasing via the <code>DownScaleFactor</code> parameter,
+as this gives better results in many cases.</p>
 
 <h4>Options</h4>
 
-<p>The <code>pngmonod</code>, <code>png16m</code>, <code>pnggray</code> and
+<p>The <code>pngmonod</code>, <code>png16m</code>, <code>pnggray</code>, <code>png16malpha</code> and
 <code>pngalpha</code> devices all respond to the following:</p>
 
 <blockquote>
 <dl>
 <dt><code>-dDownScaleFactor=</code><b><em>integer</em></b></dt>
 <dd>This causes the internal rendering to be scaled down by the given (integer <= 8) factor before being output. For example, the following will produce
-a 200dpi output png from a 600dpi internal rendering:</dd>
+a 200dpi output png from a 600dpi internal rendering:
 <blockquote>
 <pre>
  <kbd>gs -sDEVICE=png16m -r600 -dDownScaleFactor=3 -o tiger.png\
       examples/tiger.eps</kbd>
 </pre>
 </blockquote>
-
+</dd>
 </dl>
 </blockquote>
 
@@ -289,12 +269,12 @@ behave as for 2.</dd>
 </dl>
 </blockquote>
 
-<p>The <code>pngalpha</code> device responds to the following option:</p>
+<p>The <code>png16malpha</code> and <code>pngalpha</code> devices respond to the following option:</p>
 
 <blockquote>
 <dl>
 <dt><code>-dBackgroundColor=</code><b><em>16#RRGGBB</em></b> (RGB color, default white = 16#ffffff)</dt>
-<dd>For the <code>pngalpha</code> device only,
+<dd>For the <code>png16malpha</code> and <code>pngalpha</code> devices only,
 set the suggested background color in the PNG bKGD chunk.
 When a program reading a PNG file does not support alpha
 transparency, the PNG library converts the image using
@@ -321,6 +301,8 @@ page.</dd>
       -sOutputFile=doc-%02d.png doc.pdf</kbd>
 </pre>
 </blockquote>
+
+<p>In commercial builds, the <code>png16m</code> device will accept a <code>-dDeskew</code> option to automatically detect/correct skew when generating output bitmaps.</p>
 
 <h3><a name="JFIF"></a>JPEG file format (JFIF)</h3>
 
@@ -430,14 +412,14 @@ drivers that produce uncompressed output:</p>
 <dd>Produces 32-bit CMYK output (8 bits per component).</dd>
 <dt><code>tiff64nc</code></dt>
 <dd>Produces 64-bit CMYK output (16 bits per component).</dd>
-<a name="tiffsep"></a><dt><code>tiffsep</code></dt>
+<dt><a name="tiffsep"></a><code>tiffsep</code></dt>
 <dd>
 The <code>tiffsep</code> device creates multiple output files: a single 32 bit
 composite CMYK file and multiple tiffgray files, one for each
 separation (unless <code>-dNoSeparationFiles</code> is specified). If separation
 files are being produced and more than one page is being generated, the output file
 specification <b>must</b> include a format specifier (e.g <code>-o outfile-%d.tif</code>)
-so that each page can have a uniquely named set of separation files.</dd>
+so that each page can have a uniquely named set of separation files.
 
 <p>The default compression is <code>lzw</code> but this may be overridden by
 the <code>-sCompression=</code> option.</p>
@@ -457,6 +439,10 @@ File names for the separations for the CMYK colorants are created by appending
 end of the file name specified via the OutputFile parameter.
 File names for the spot color separation files are created by appending the
 Spot color name in '(' and ').tif' to the filename.</p>
+<p>Note that, while the name of the ink is case-sensitive, the filename may not be
+(depending on the Operating System), so if a spot name matches one of the process
+ink names, it will have the spot number included as part of the name (eg YELLOW0).
+</p>
 
 <p>
 If desired the file names for the spot color separation files can be created
@@ -543,6 +529,9 @@ device(s) 2 additional &quot;special&quot; ratios
 are available, 32 and 34. 32 provides a 3:2 downscale (so from 300 to
 200 dpi, say). 34 produces a 3:4 upscale (so from 300 to 400 dpi, say).</p>
 
+<p>In commercial builds, with 8 bit per component output, the <code>-dDeskew</code> option
+can be used to automatically detect/correct skew when generating output bitmaps.</p>
+
 <p>The <code>tiffscaled</code> and <code>tiffscaled4</code> devices
 can optionally use Even Toned Screening, rather than simple Floyd Steinberg
 error diffusion. This patented technique gives better quality at the
@@ -551,14 +540,15 @@ options, none of these are currently exposed. Any device author
 interested in trying these options should contact Artifex for more
 information. Currently ETS can be enabled using -dDownScaleETS=1.</p>
 
-<a name="tiffsep1"></a><dt><code>tiffsep1</code></dt>
+</dd>
+<dt><a name="tiffsep1"></a><code>tiffsep1</code></dt>
 <dd>
 The <code>tiffsep1</code> device creates multiple output files, one for each component
 or separation color. The device creates multiple tiffg4 files (the compression
 can be set using -sCompression= described below). The 1 bit per component
 output is halftoned using the current screening set by  'setcolorscreen'
 or 'sethalftone' which allows for ordered dither or stochastic threshold
-    array dither to be used. This is faster than error diffusion.</dd>
+    array dither to be used. This is faster than error diffusion.
 
 <p>
 The file specified via the OutputFile command line parameter will not be
@@ -573,8 +563,9 @@ name in '(' and ').tif' to the filename.
 If the file name specified via the OutputFile parameter ends with the suffix
 '.tif', then the suffix is removed prior to adding the component name in
 '(' and ').tif'.</p>
+</dd>
 
-<a name="tiffscaled"></a><dt><code>tiffscaled</code></dt>
+<dt><a name="tiffscaled"></a><code>tiffscaled</code></dt>
 <dd>
 The <code>tiffscaled</code> device renders internally at the specified resolution to an
 8 bit greyscale image. This is then scaled down by an integer scale factor
@@ -583,7 +574,7 @@ The <code>tiffscaled</code> device renders internally at the specified resolutio
 below.</dd>
 
 
-<a name="tiffscaled4"></a><dt><code>tiffscaled4</code></dt>
+<dt><a name="tiffscaled4"></a><code>tiffscaled4</code></dt>
 <dd>
 The <code>tiffscaled4</code> device renders internally at the specified resolution to an
 8 bit cmyk image. This is then scaled down by an integer scale factor
@@ -591,28 +582,31 @@ The <code>tiffscaled4</code> device renders internally at the specified resoluti
 4bpp cmyk output. The compression can be set using -sCompression= as described
 below.</dd>
 
-<a name="tiffscaled8"></a><dt><code>tiffscaled8</code></dt>
+<dt><a name="tiffscaled8"></a><code>tiffscaled8</code></dt>
 <dd>
 The <code>tiffscaled8</code> device renders internally at the specified resolution to an
 8 bit greyscale image. This is then scaled down by an integer scale factor
 (set by <code>-dDownScaleFactor</code>= described below). The compression can be set using
 -sCompression= as described below.</dd>
 
-<a name="tiffscaled24"></a><dt><code>tiffscaled24</code></dt>
+<dt><a name="tiffscaled24"></a><code>tiffscaled24</code></dt>
 <dd>
 The <code>tiffscaled24</code> device renders internally at the specified resolution to a
 24 bit rgb image. This is then scaled down by an integer scale factor
 (set by <code>-dDownScaleFactor</code>= described below). The compression can be set using
--sCompression= as described below.</dd>
+-sCompression= as described below.
 
-
-<a name="tiffscaled32"></a><dt><code>tiffscaled32</code></dt>
+<p>In commercial builds, the <code>-dDeskew</code> option can be used to automatically detect/correct skew when generating output bitmaps.</p>
+</dd>
+<dt><a name="tiffscaled32"></a><code>tiffscaled32</code></dt>
 <dd>
 The <code>tiffscaled32</code> device renders internally at the specified resolution to a
 32 bit cmyk image. This is then scaled down by an integer scale factor
 (set by <code>-dDownScaleFactor</code>= described below). The compression can be set using
--sCompression= as described below.</dd>
+-sCompression= as described below.
 
+<p>In commercial builds, the <code>-dDeskew</code> option can be used to automatically detect/correct skew when generating output bitmaps.</p>
+</dd>
 </dl>
 </blockquote>
 
@@ -776,7 +770,7 @@ The <code>tiffscaled</code>, <code>tiffscaled4</code>, <code>tiffscaled8</code>,
 drivers also provide the following two parameters:</p>
 
 <blockquote><dl>
-<dt><code>-dDownScaleFactor=<em>factor</em></code> (small non-negative integer; default = 1)</dt>
+<dt><code>-dDownScaleFactor=<em>factor</em></code> (integer <= 8; default = 1)</dt>
 <dd>If this option set then the page is downscaled by the given factor on both
 axes before error diffusion takes place. For example rendering with
 <code>-r600</code> and then specifying <code>-dDownScaleFactor=3</code> will produce
@@ -786,11 +780,12 @@ a 200dpi image.</dd>
 <blockquote><dl>
 <dt><code>-sPostRenderProfile=<em>path</em></code> (path to an ICC profile)</dt>
 <dd>If this option set then the page will be color transformed using that
-profile <b>after</b> downscaling.</dd>
+profile <b>after</b> downscaling.
 <p>
 This is useful when the file uses overprint to separately paint to some
 subset of the C, M, Y, and K colorants, but the final CMYK is to be color
 corrected for printing or display.</p>
+</dd>
 </dl></blockquote>
 
 <p>
@@ -800,7 +795,7 @@ The <code>tiffsep</code> TIFF device also provide this parameter:</p>
 <dt><code>-dPrintSpotCMYK=<em>boolean</em></code> defaults to false. When set to true
 the device will print (to stdout) the name of each ink used on the page, and the CMYK
 values which are equivalent to 100% of that ink. The values are 16-bits ranging from 0
-to 32760.</dt>
+to 32760.</dt><dd></dd>
 </dl></blockquote>
 
 <a name="TIFF_trapping"></a>
@@ -905,6 +900,8 @@ format for the &quotOutputFile&quot (or &quot-o&quot) file name parameter (see
 to output multiple pages to a single PSD file (i.e. without the &quot%d&quot format) will
 result in an <code>ioerror</code> Postscript error.</p>
 
+<p>In commercial builds, for the <code>psdcmyk</code> and <code>psdrgb</code> devices, the <code>-dDeskew</code> option can be used to automatically detect/correct skew when generating output bitmaps.</p>
+
 <h3><a name="PDFimage"></a>PDF image output</h3>
 
 <p>
@@ -918,11 +915,13 @@ to permit production of PDF files from input where the graphics
 model differs significantly from PDF (eg PCL and RasterOPs).
 </p>
 <p>
-There are four devices named pdfimage8, pdfimage24, pdfimage32 and PCLm. These produce valid
-PDF files with a colour depth of 8 (Gray), 24 (RGB) or 32 (CMYK), the PCLm device only supports 24-bit RGB.
+There are five devices named pdfimage8, pdfimage24, pdfimage32, pclm and pclm8. These produce valid
+PDF files with a colour depth of 8 (Gray), 24 (RGB) or 32 (CMYK), the pclm device only supports 24-bit RGB
+and the pclm8 device only supports 8-bit gray.
 These are all implemented as 'downscale' devices, which means they can implement page level
 anti-aliasing using the <code>-dDownScaleFactor</code> switch.
 </p>
+
 <blockquote>
 <dl>
 <dt><code>-dDownScaleFactor=</code><b><em>integer</em></b></dt>
@@ -936,6 +935,8 @@ anti-aliasing using the <code>-dDownScaleFactor</code> switch.
 </blockquote>
 </blockquote>
 
+<p>In commercial builds, the <code>-dDeskew</code> option can be used to automatically detect/correct skew when generating the output file.</p>
+
 <p>
 The type of compression used for the image data can also be selected using the <code>-sCompression</code> switch.
 Valid compression types are <code>None</code>, <code>LZW</code>, <code>Flate</code>, <code>JPEG</code>
@@ -943,13 +944,24 @@ and <code>RLE</code>.Note that LZW is not supported on PCLm (not valid) and None
 on PCLm for debugging purposes.
 </p>
 <p>
-Finally, the PCLm device supports the <code>-dStripHeight</code> switch to set the vertical height
-of the strips of image content, as required by the specification.
-</p>
-
-<p>
 For JPEG compression the devices support both the JPEGQ and QFactor switches as documented for the <a href="#JFIF">JPEG</a> file format device.
 </p>
+<p>
+In addition, the PCLm device supports some other parameters. Firstly, the
+<code>-dStripHeight</code> switch to set the vertical height
+of the strips of image content, as required by the specification.
+</p>
+<p>Secondly, the standard postscript <code>-dDuplex</code> and
+<code>-dTumble</code>switches are supported, in that if both are
+set to true, every verso page (i.e. all even pages) will be
+rotated by 180 degrees.</p>
+
+<p>As an extension to this, a <code>-dTumble2</code> parameter is
+also supported that will add an additional X-axis flip for every
+verso page. Thus <code>-dDuplex=true -dTumble=false -dTumble2=true</code>
+will result in verso pages being flipped horizontally, and
+<code>-dDuplex=true -dTumble=true -dTumble2=true</code> will result
+in verso pages being flipped vertically.</p>
 
 <hr>
 
@@ -1081,14 +1093,14 @@ to use the existing font Encoding. For English text this may give better results
 <p>For these reasons the OCR functionality of pdfwrite can be controlled by using a new
 parameter <code>-sUseOCR</code>. This has three possible values;
 </p>
+<dl>
 <dt><code>-sUseOCR=</code><b><em>string</em></b></dt>
-<dd>
-  <dl>
-    <dt>Never<dd>Default - don't use OCR at all even if support is built-in.
-    <dt>AsNeeded<dd>If there is no existing ToUnicode information, use OCR.
-    <dt>Always<dd>Ignore any existing information and always use OCR.
-  </dl>
-</dd>
+
+    <dt>Never</dt><dd>Default - don't use OCR at all even if support is built-in.</dd>
+    <dt>AsNeeded</dt><dd>If there is no existing ToUnicode information, use OCR.</dd>
+    <dt>Always</dt><dd>Ignore any existing information and always use OCR.</dd>
+
+</dl>
 </p>
 
 <hr>
@@ -1195,8 +1207,10 @@ OS/2 and the gtk+ versions of ghostscript.
 <dt><code>-dDisplayFormat=</code><b><em>N</em></b> (integer bit-field)</dt>
 <dd>Some common values are 16#30804 for Windows RGB, 16#804 for gtk+ RGB,
 16#20101 for Windows monochrome, 16#102 for gtk+ monochrome,
-16#20802 grayscale, 16#20808 for CMYK, 16#a0800 for separations.</dd>
-The bit fields are
+16#20802 grayscale, 16#20808 for CMYK, 16#a0800 for separations.
+<p>
+The bit fields are:
+</p>
 <ul>
 <li> native (1), gray (2), RGB (4), CMYK (8), or separation (80000)
 color spaces.</li>
@@ -1208,6 +1222,7 @@ color spaces.</li>
 </ul>
 <p>For more details, see the <a href="API.htm#display">Ghostscript
 Interpreter API.</a></p>
+</dd>
 <dt><code>-dDisplayResolution=</code><b><em>DPI</em></b></dt>
 <dd>Set the initial resolution resolution for the display device.
 This is used by the Windows clients to set the display device
@@ -1324,7 +1339,7 @@ are summarized below:
 
 <dl>
 <dt><code>-r</code><em>number</em></dt>
-<br><code>-r</code><em>number1</em><code>x</code><em>number2</em>
+<dt><code>-r</code><em>number1</em><code>x</code><em>number2</em></dt>
 <dd>Sets the resolution, in dpi. If the resolution is not specified,
 Ghostscript queries the IJS server to determine the preferred resolution.
 When the resolution is specified, it overrides the value (if any)
@@ -1708,7 +1723,7 @@ the Windows printer driver; this option can produce huge print jobs).</dd>
 <dd>Sets additional options, defined in a dictionary. The following properties can
 be set:</dd>
 
-<dl>
+
 <dt><code>/DocumentName <em>string</em></code></dt>
 <dd>Defines the user friendly document name which will be displayed by the
 Windows spooler.</dd>
@@ -1732,7 +1747,7 @@ resolution of 1200/4=300 dpi. This can be very useful to reduce the memory
 requirements when printing in True Color on some high resolution ink-jet color
 printers.</dd>
 
-</dl>
+
 </dl>
 </blockquote>
 
@@ -2133,7 +2148,7 @@ spot colors.</p>
 <hr>
 
 <p>
-<small>Copyright &copy; 2000-2021 Artifex Software, Inc.  All rights reserved.</small>
+<small>Copyright &copy; 2000-2022 Artifex Software, Inc.  All rights reserved.</small>
 
 <p>
 This software is provided AS-IS with no warranty, either express or
@@ -2146,41 +2161,15 @@ or contact Artifex Software, Inc.,  1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
 
 <p>
-<small>Ghostscript version 9.54.0, 30 March 2021
+<small>Ghostscript version 9.56.1, 4 April 2022
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
-
 <!--FINISH EDITING HERE-->
-
-    </div>
-    </div>
-    </div>
-
-    <div class="footer">
-    <div class="row">
-        <div class="col-7 footleft">
-        <ul>
-            <li><a href="https://artifex.com/contact-us/" target="blank">CONTACT US</a></li>
-            <li><a href="https://artifex.com/about-us/" target="blank">ABOUT</a></li>
-            <li><a href="https://ghostscript.com/security.html">SECURITY</a></li>
-        </ul>
-        </div>
-        <div class="col-1 footcenter">
-         <ul>
-           <li><a href="https://artifex.com/support/" target="blank">SUPPORT</a></li>
-           <li><a href="https://artifex.com/blog/artifex/" target="blank">BLOG</a></li>
-           <li><a href="https://artifex.com/privacy-policy/" target="blank">PRIVACY</a></li>
-           </ul>
-        </div>
-        <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019-2021 Artifex Software, Inc. <br>
-            All rights reserved.
-        </div>
-          </div>
-    </div>
-
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="index.js"></script>
+                </div><!-- close inner -->
+            </div><!-- close outer -->
+        </article>
+    </main>
+    <script src="site.js"></script>
 </body>
 </html>

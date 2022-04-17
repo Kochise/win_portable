@@ -1,157 +1,151 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
-<link rel="shortcut icon" type="image/png" href="../../images/favicon.png">
-<title>How to Use Ghostscript</title>
-    <!-- Originally: use.txt -->
-<link href="style.css" rel="stylesheet" type="text/css">
-<link href="gs-style.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="user-scalable=yes, initial-scale=1, width=device-width">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
+    <link rel="shortcut icon" href="images/favicon.svg">
+    <title>How to Use Ghostscript</title>
+    <link href="default.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
+    <header><div class="title"><a href="index.html"><h1 aria-label="title">Ghostscript documentation</h1><h2 aria-label="version"></h2></a></div><a href="Search.htm" aria-label="Search" id="searchSite"><div class="search"></div></a></header>
+    <main>
+        <article>
+            <div class="outer">
 
-    <div class="header">
-    <div class="row">
-        <div class="col-lt-6 logo"><a href="https://www.ghostscript.com/"><img src="images/ghostscript_logo.png" width="108" height="119" alt=""></a></div>
-        <div class="col-6"><div class="row"><div class="artifexlogo"><a href="https://artifex.com" target="_blank"><img src="images/Artifex_logo.png" width="194" height="40" alt=""></a></div>
-        <div class="col-12"><div class="button button1"><a href="https://artifex.com/contact-us/" title="Contact Us" target="_blank">Contact Us</a></div>
-        <div class="button button2 hidden-xs"><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></div></div></div>
-    </div>
-    </div>
-    </div>
-
-    <div class="banner">
-    <div class="row">
-        <div class="col-12">How to Use Ghostscript</div>
-    </div>
-    </div>
-
-    <div class="main">
-    <div class="row">
-    <div id="sidebar">
-    <div class="sidebar-item"></div>
-    <div class="col-2 leftnav">
-<ul>
-            <li><a href="https://www.ghostscript.com/">Home</a></li>
-            <li><a href="https://www.ghostscript.com/license.html">Licensing</a></li>
-            <li><a href="https://www.ghostscript.com/releases.html">Releases</a></li>
-            <li><a href="https://www.ghostscript.com/documentation.html" title="Documentation">Documentation</a></li>
-            <li><a href="https://www.ghostscript.com/download.html" title="Download">Download</a></li>
-            <li><a href="https://www.ghostscript.com/performance.html" title="Performance">Performance</a></li>
-            <li><a href="http://jbig2dec.com/" title="jbig2dec">jbig2dec</a></li>
-            <li><a href="http://git.ghostscript.com/?p=ghostpdl.git;a=summary">Source</a></li>
-            <li><a href="http://bugs.ghostscript.com/">Bugs</a></li>
-            <li><a href="https://www.ghostscript.com/faq.html" title="FAQ">FAQ</a></li>
-        </ul>
-    </div>
-    </div>
-    <div class="col-10 page">
-
+                <div class="inner">
 <!--START EDITING HERE-->
 
-<h2>Table of contents</h2>
+<h1>How to Use Ghostscript</h1>
 
-<blockquote><ul>
-<li><a href="#Invoking">Invoking Ghostscript</a></li>
-<ul>
-<li><a href="#Help_command">Help at the command line: <code>gs -h</code></a></li>
-</ul>
-<li><a href="#Output_device">Selecting an output device</a></li>
-<ul>
-<li><a href="#Output_resolution">Output resolution</a></li>
-<li><a href="#File_output">Output to files</a></li>
-<ul>
-<li><a href="#One_page_per_file">One page per file</a></li>
-</ul>
-<li><a href="#Paper_size">Choosing paper size</a></li>
-<li><a href="#Change_default_size">Changing the installed default paper size</a></li>
-</ul>
-<li><a href="#Pipes">Interacting with pipes</a></li>
-<li><a href="#PDF">Using Ghostscript with PDF files</a></li>
-<ul>
-<li><a href="#PDF_switches">Switches for PDF files</a></li>
-<li><a href="#PDF_problems">Problems interpreting a PDF file</a></li>
-<li><a href="#PDF_stdin">PDF files from standard input</a></li>
-</ul>
+<h2><a name="toc"></a>Table of contents</h2>
+<ul class="toc">
+    <li><a href="#Invoking">Invoking Ghostscript</a></li>
+    <li>
+        <ul>
+            <li><a href="#Help_command">Help at the command line: <code>gs -h</code></a></li>
+        </ul>
+    </li>
+    <li><a href="#Output_device">Selecting an output device</a></li>
+    <li>
+        <ul>
+            <li><a href="#Output_resolution">Output resolution</a></li>
+            <li><a href="#File_output">Output to files</a></li>
+            <li>
+                <ul>
+                    <li><a href="#One_page_per_file">One page per file</a></li>
+                </ul>
+            </li>
+            <li><a href="#Paper_size">Choosing paper size</a></li>
+            <li><a href="#Change_default_size">Changing the installed default paper size</a></li>
+        </ul>
+    </li>
+    <li><a href="#Pipes">Interacting with pipes</a></li>
+    <li><a href="#PDF">Using Ghostscript with PDF files</a></li>
+    <li>
+        <ul>
+            <li><a href="#PDF_switches">Switches for PDF files</a></li>
+            <li><a href="#PDF_problems">Problems interpreting a PDF file</a></li>
+            <li><a href="#PDF_stdin">PDF files from standard input</a></li>
+        </ul>
+    </li>
+    <li><a href="#EPS">Using Ghostscript with EPS files</a></li>
+    <li><a href="#SPOT">Using Ghostscript with overprinting and spot colors</a></li>
+    <li><a href="#Finding_files">How Ghostscript finds files</a></li>
+    <li>
+        <ul>
+            <li><a href="#PS_resources">Finding PostScript Level 2 resources</a></li>
+            <li><a href="#Font_lookup">Font lookup</a></li>
+            <li><a href="#CIDFonts">CID fonts</a></li>
+            <li><a href="#CIDFontSubstitution">CID font substitution</a></li>
+            <li><a href="#UnicodeTT">Using Unicode True Type fonts</a></li>
+            <li><a href="#Temp_files">Temporary files</a></li>
+        </ul>
+    </li>
+    <li><a href="#Platforms">Notes on specific platforms</a></li>
+    <li>
+        <ul>
+            <li><a href="#Word size">Word size (32 or 64 bits)</a></li>
+            <li><a href="#Unix">Unix</a></li>
+            <li><a href="#VMS">VMS</a></li>
+            <li>
+                <ul>
+                    <li><a href="#VMS_X_Windows">Using X Windows on VMS</a></li>
+                </ul>
+            </li>
+            <li><a href="#MS_Windows">MS Windows</a></li>
+            <li><a href="#X_Windows">X Windows</a></li>
+            <li>
+                <ul>
+                    <li><a href="#X_resources">X resources</a></li>
+                    <li><a href="#X_server_bugs">Working around bugs in X servers</a></li>
+                    <li><a href="#X_device_parameters">X device parameters</a></li>
+                </ul>
+            </li>
+            <li><a href="#SCO_Unix">SCO Unix</a></li>
+        </ul>
+    </li>
 
-<li><a href="#EPS">Using Ghostscript with EPS files</a></li>
-<li><a href="#SPOT">Using Ghostscript with overprinting and spot colors</a></li>
-<li><a href="#Finding_files">How Ghostscript finds files</a></li>
-<ul>
-<li><a href="#PS_resources">Finding PostScript Level 2 resources</a></li>
-<li><a href="#Font_lookup">Font lookup</a></li>
-<li><a href="#CIDFonts">CID fonts</a></li>
-<li><a href="#CIDFontSubstitution">CID font substitution</a></li>
-<li><a href="#UnicodeTT">Using Unicode True Type fonts</a></li>
-<li><a href="#Temp_files">Temporary files</a></li>
-</ul>
+    <li><a href="#Options">Command line options</a></li>
+    <li>
+        <ul>
+            <li><a href="#General_switches">General switches</a></li>
+            <li>
+                <ul>
+                    <li><a href="#Input_control">Input control</a></li>
+                    <li><a href="#File_searching">File searching</a></li>
+                    <li><a href="#Parameters">Setting parameters</a></li>
+                    <li><a href="#Quiet">Suppress messages</a></li>
+                </ul>
+            </li>
+            <li><a href="#Parameter_switches">Parameter switches (<code>-d</code> and <code>-s</code>)</a></li>
+            <li>
+                <ul>
+                    <li><a href="#Rendering_parameters">Rendering parameters</a></li>
+                    <li><a href="#Page_parameters">Page parameters</a></li>
+                    <li><a href="#Font_related_parameters">Font-related parameters</a></li>
+                    <li><a href="#Resource_related_parameters">Resource-related parameters</a></li>
+                    <li><a href="#Interaction_related_parameters">Interaction-related parameters</a></li>
+                    <li><a href="#Output_selection_parameters">Device and output selection parameters</a></li>
+                    <li><a href="#EPS_parameters">EPS parameters</a></li>
+                    <li><a href="#Deferred_Page_Rendering">Deferred Page Rendering</a></li>
+                    <li><a href="#ICC_color_parameters">ICC color parameters</a></li>
+                    <li><a href="#Other_parameters">Other parameters</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li><a href="#Improving_performance">Improving performance</a></li>
+    <li><a href="#Environment_variables">Summary of environment variables</a></li>
 
-<li><a href="#Platforms">Notes on specific platforms</a></li>
-<ul>
-<li><a href="#Word size">Word size (32 or 64 bits)</a></li>
-<li><a href="#Unix">Unix</a></li>
-<li><a href="#VMS">VMS</a></li>
-<ul>
-<li><a href="#VMS_X_Windows">Using X Windows on VMS</a></li>
-</ul>
-<li><a href="#MS_Windows">MS Windows</a></li>
-<li><a href="#X_Windows">X Windows</a></li>
-<ul>
-<li><a href="#X_resources">X resources</a></li>
-<li><a href="#X_server_bugs">Working around bugs in X servers</a></li>
-<li><a href="#X_device_parameters">X device parameters</a></li>
-</ul>
-<li><a href="#SCO_Unix">SCO Unix</a></li>
-</ul>
+    <li><a href="#Debugging">Debugging</a></li>
+    <li>
+        <ul>
+            <li><a href="#Debug_switches">Debug Switches</a></li>
+            <li><a href="#Visual_trace">Visual Trace</a></li>
+        </ul>
+    </li>
+    <li><a href="#Known_paper_sizes">Appendix: Paper sizes known to Ghostscript</a></li>
+    <li><a href="#X_font_mappings">Appendix: X default font mappings</a></li>
+    <li>
+        <ul>
+            <li><a href="#Standard_X_server_fonts">Standard X servers</a></li>
+            <li>
+                <ul>
+                    <li><a href="#X_regular_fonts">Regular fonts</a></li>
+                    <li><a href="#X_symbol_fonts">Symbol fonts</a></li>
+                    <li><a href="#X_dingbat_fonts">Dingbat fonts</a></li>
+                </ul>
+            </li>
+            <li><a href="#OpenWindows_fonts">Sun OpenWindows</a></li>
+        </ul>
+    </li>
+    <li><a href="#FAPI_run">Appendix: Running Ghostscript with third-party
+    font renderers</a></li>
 
-<li><a href="#Options">Command line options</a></li>
-<ul>
-<li><a href="#General_switches">General switches</a></li>
-<ul>
-<li><a href="#Input_control">Input control</a></li>
-<li><a href="#File_searching">File searching</a></li>
-<li><a href="#Parameters">Setting parameters</a></li>
-<li><a href="#Quiet">Suppress messages</a></li>
 </ul>
-<li><a href="#Parameter_switches">Parameter switches (<code>-d</code> and <code>-s</code>)</a></li>
-<ul>
-<li><a href="#Rendering_parameters">Rendering parameters</a></li>
-<li><a href="#Page_parameters">Page parameters</a></li>
-<li><a href="#Font_related_parameters">Font-related parameters</a></li>
-<li><a href="#Resource_related_parameters">Resource-related parameters</a></li>
-<li><a href="#Interaction_related_parameters">Interaction-related parameters</a></li>
-<li><a href="#Output_selection_parameters">Device and output selection parameters</a></li>
-<li><a href="#EPS_parameters">EPS parameters</a></li>
-<li><a href="#Deferred_Page_Rendering">Deferred Page Rendering</a></li>
-<li><a href="#ICC_color_parameters">ICC color parameters</a></li>
-<li><a href="#Other_parameters">Other parameters</a></li>
-</ul>
-</ul>
-<li><a href="#Improving_performance">Improving performance</a></li>
-<li><a href="#Environment_variables">Summary of environment variables</a></li>
-
-<li><a href="#Debugging">Debugging</a></li>
-<ul>
-<li><a href="#Debug_switches">Debug Switches</a></li>
-<li><a href="#Visual_trace">Visual Trace</a></li>
-</ul>
-<li><a href="#Known_paper_sizes">Appendix: Paper sizes known to Ghostscript</a></li>
-<li><a href="#X_font_mappings">Appendix: X default font mappings</a></li>
-<ul>
-<li><a href="#Standard_X_server_fonts">Standard X servers</a></li>
-<ul>
-<li><a href="#X_regular_fonts">Regular fonts</a></li>
-<li><a href="#X_symbol_fonts">Symbol fonts</a></li>
-<li><a href="#X_dingbat_fonts">Dingbat fonts</a></li>
-</ul>
-<li><a href="#OpenWindows_fonts">Sun OpenWindows</a></li>
-</ul>
-<li><a href="#FAPI_run">Appendix: Running Ghostscript with third-party
-font renderers</a></li>
-</ul></blockquote>
 
 <!-- [1.2 end table of contents] =========================================== -->
 
@@ -261,10 +255,10 @@ On other systems the executable may have a different name:</p>
 <tr><td>VMS</td>
     <td><code>gs</code></td></tr>
 <tr><td>MS Windows 95 and later</td>
-    <td><code>gswin32.exe</code></td>
-    <td><code>gswin32c.exe</code></td>
-    <td><code>gswin64.exe</code></td>
-    <td><code>gswin64c.exe</code></td>
+    <td><code>gswin32.exe</code><br/>
+    <code>gswin32c.exe</code><br/>
+    <code>gswin64.exe</code><br/>
+    <code>gswin64c.exe</code></td>
 </tr>
 <tr><td>OS/2</td>
     <td><code>gsos2</code></td></tr>
@@ -468,16 +462,19 @@ command line:</p>
 If the desired paper size is listed in the section on <a
 href="#Known_paper_sizes">paper sizes known to Ghostscript</a> below, you
 can select it as the default paper size for a single invocation of
-Ghostscript by using the <code>-sPAPERSIZE=</code> switch, for instance</li>
+Ghostscript by using the <code>-sPAPERSIZE=</code> switch, for instance:<p>
+
 
 <blockquote><code>
 -sPAPERSIZE=a4<br>
 -sPAPERSIZE=legal
 </code></blockquote>
+</li>
 
 <li>
 Otherwise you can set the page size using the
-pair of switches</li>
+pair of switches:<p>
+
 
 <blockquote>
 <code>-dDEVICEWIDTHPOINTS=</code><em>w</em>
@@ -486,6 +483,7 @@ pair of switches</li>
 
 <p>Where <em>w</em> be the desired paper width and <em>h</em> be the
 desired paper height in <em>points</em> (units of 1/72 of an inch).</p>
+</li>
 </ul>
 
 <p>
@@ -619,6 +617,20 @@ Ghostscript is normally built to interpret both PostScript and PDF files, examin
 <p>Here are some command line options specific to PDF</p>
 
  <dl>
+<dt><code>-dNEWPDF</code></dt>
+<dd>From release 9.55.0 Ghostscript incorporates two complete PDF interpreters; the original
+long-standing interpreter is written in PostScript but there is now a new interpreter written
+in C.
+<p>At present the old PostScript-based interpreter remains the default, in future releases the
+new C-based interpreter will become the default, though we would encourage people to experiment
+with the new interpreter and send us feedback. While there are two interpreters the command-line
+switch NEWPDF will allow selection of the existing interpreter when false and the new interpreter
+when true.</p>
+
+</dd>
+</dl>
+
+ <dl>
 <dt><code>-dPDFFitPage</code></dt>
 <dd>Rather than selecting a PageSize given by the PDF MediaBox, BleedBox (see -dUseBleedBox),
 TrimBox (see -dUseTrimBox), ArtBox (see -dUseArtBox), or CropBox (see -dUseCropBox),
@@ -698,7 +710,7 @@ This option is also set by the <code>-dFitPage</code> option.</p>
     <dt><code>-dShowAnnots=false</code></dt>
     <dd>
     Don't enumerate annotations associated with the page
-    <code>Annots</code> key. Annotations are shown by default.</dd>
+    <code>Annots</code> key. Annotations are shown by default.
 <p> In addition, finer control is available by defining an array
 <code>/ShowAnnotTypes</code>. Annotation types listed in this array will
 be drawn, whilst those not listed will not be drawn.</p>
@@ -709,6 +721,7 @@ be drawn, whilst those not listed will not be drawn.</p>
 <p> For example, adding the follow to the command line:
 <code>-c "/ShowAnnotTypes [/Text /UnderLine] def" -f &ltinput file&gt</code>
     <br> would draw only annotations with the subtypes &quotText&quot and &quotUnderLine&quot</p>
+    </dd>
 </dl>
 
 <dl>
@@ -944,21 +957,21 @@ files named on the command line, and resource files, Ghostscript first tests whe
 file name specifies an absolute path.</p>
 
 <blockquote><table>
-<tr><th colspan="3">Testing a file name for an absolute path</th></tr>
+<tr><th colspan="2">Testing a file name for an absolute path</th></tr>
 <tr><th align="left">System</th>
-    <th>&nbsp;&nbsp;</th>
+
     <th align="left">Does the name ...</th></tr>
-<tr><td colspan="3"></td></tr>
+<tr><td colspan="2"></td></tr>
 <tr><td valign="top">Unix</td>
-    <td>&nbsp;</td>
+
     <td>Begin with <code><u>/</u></code> ?</td></tr>
 <tr><td valign="top">MS Windows</td>
-    <td>&nbsp;</td>
+
     <td>Have <code><u>:</u></code> as its second character, or
     begin with <code><u>/</u></code>, <code><u>\</u></code>,
         or <code><u>//servername/share/</u></code> ?</td></tr>
 <tr><td valign="top">VMS</td>
-    <td>&nbsp;</td>
+
     <td>Contain a node, device, or root specification?</td></tr>
 </table></blockquote>
 
@@ -1175,30 +1188,30 @@ from among the standard 35 fonts.</li>
 are found using a different method.</p>
 
 <blockquote><table>
-<tr><th colspan="3">Differences between search path and font path</th></tr>
+<tr><th colspan="2">Differences between search path and font path</th></tr>
 <tr><th>Search path</th>
-    <th>&nbsp;&nbsp;&nbsp;</th>
+
     <th>Font path</th></tr>
 <tr><td><code>-I</code> switch</td>
-    <td>&nbsp;</td>
+
     <td><code>-sFONTPATH=</code> switch</td></tr>
 <tr><td><code>GS_LIB</code> and <code>GS_LIB_DEFAULT</code>
             environment variables</td>
-    <td>&nbsp;</td>
+
     <td><code>GS_FONTPATH</code> environment variable</td></tr>
 <tr><td valign="top">Consulted first</td>
-    <td>&nbsp;</td>
+
     <td valign="top">Consulted only if search path and
     <code>FontResourceDir</code> don't provide the file.</td></tr>
 <tr><td valign="top">Font-name-to-file-name mapping given in Fontmap
      files; aliases are possible, and there need not be any relation
      between the font name in the Fontmap and the
     <code>FontName</code> in the file.</td>
-    <td>&nbsp;</td> <td valign="top">Font-name-to-file-name mapping is
+    <td valign="top">Font-name-to-file-name mapping is
      implicit – the <code>FontName</code> in the file is
      used. Aliases are not possible.</td></tr>
 <tr><td valign="top">Only fonts and files named in Fontmap are used.</td>
-    <td>&nbsp;</td>
+
     <td valign="top">Every Type 1 font file in each directory is
      available; if TrueType fonts are supported (the
      <code>ttfont.dev</code> feature was included when the
@@ -1213,64 +1226,64 @@ installed Type 1 (and, if supported, TrueType) fonts (but see below for
 notes on systems marked with "*"):</p>
 
 <blockquote><table>
-<tr><th colspan="5">Suggested GS_FONTPATH for different systems</th></tr>
+<tr><th colspan="3">Suggested GS_FONTPATH for different systems</th></tr>
 <tr><th>&nbsp;</th>
-    <th>&nbsp;&nbsp;</th>
+
     <th align="left">System type</th>
-    <th>&nbsp;&nbsp;</th>
+
     <th valign="bottom" align="left">GS_FONTPATH</th></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">Digital Unix</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/lib/X11/fonts/Type1Adobe</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">Ultrix</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/lib/DPS/outline/decwin</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">HP-UX 9</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/lib/X11/fonts/type1.st/typefaces</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">IBM AIX</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/lpp/DPS/fonts/outlines
     <br>/usr/lpp/X11/lib/X11/fonts/Type1
     <br>/usr/lpp/X11/lib/X11/fonts/Type1/DPS</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">NeXT</td>
-    <td>&nbsp;</td>
+
     <td><code>/NextLibrary/Fonts/outline</code></td></tr>
 <tr><td>*</td>
-    <td>&nbsp;</td>
+
     <td valign="top">SGI IRIX</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/lib/DPS/outline/base
     <br>/usr/lib/X11/fonts/Type1</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">SunOS 4.x<br>(NeWSprint only)</td>
-    <td>&nbsp;</td>
+
     <td valign="top"><code>newsprint_2.5/SUNWsteNP/reloc/&#36;BASEDIR/NeWSprint/<br>&nbsp;&nbsp;&nbsp;&nbsp;small_openwin/lib/fonts</code></td></tr>
 <tr><td>**</td>
-    <td>&nbsp;</td>
+
     <td valign="top">SunOS 4.x</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/openwin/lib/X11/fonts/Type1/outline</code></td></tr>
 <tr><td>**</td>
-    <td>&nbsp;</td>
+
     <td valign="top">Solaris 2.x</td>
-    <td>&nbsp;</td>
+
     <td><code>/usr/openwin/lib/X11/fonts/Type1/outline</code></td></tr>
 <tr><td>&nbsp;</td>
-    <td>&nbsp;</td>
+
     <td valign="top">VMS</td>
-    <td>&nbsp;</td>
+
     <td><code>SYS&#36;COMMON:[SYSFONT.XDPS.OUTLINE]</code></td></tr>
 </table>
 
@@ -1491,13 +1504,6 @@ entries is not important).</p>
 
 <p>The trailing semicolon and the space before it are both required.</p>
 
-<h4>NOTE: Environment Variables</h4>
-<p>It is also possible to influence the path using standard, or your own environment variables, using
-the custom Postscript operator <code>getenv</code>. Said operator takes a string parameter on the stack
-which is the environment variable to interrogate, and returns either a string, containing the value of
-the environment variable, and boolean <code>true</code> to indicate success, or just a boolean
-<code>false</code> to indicate failure. See below for an example of its use.</p>
-
 <p>
 Examples :</p>
 
@@ -1511,8 +1517,6 @@ Examples :</p>
 /Gulim &lt;&lt; /FileType /TrueType /Path (C:/WINDOWS/fonts/gulim.ttc) /SubfontID 0 /CSI [(Korea1) 3] &gt;&gt; ;<br>
 /Dotum &lt;&lt; /FileType /TrueType /Path (C:/WINDOWS/fonts/gulim.ttc) /SubfontID 2 /CSI [(Korea1) 3] &gt;&gt; ;<br>
 <br>
-<h5>Format 2 & environment variable:</h5>
-/SimHei &lt;&lt; /FileType /TrueType /Path (windir) getenv not {(c:/windows)}if (/fonts/simhei.ttf) concatstrings /SubfontID 0 /CSI [(GB1) 2] &gt;&gt; ;<br>
 <h5>Format 1 & 2</h5>
 /SimSun &lt;&lt; /FileType /TrueType /Path (C:/WINDOWS/fonts/simsun.ttc) /SubfontID 0 /CSI [(GB1) 2] &gt;&gt; ;<br>
 /SimHei &lt;&lt; /FileType /TrueType /Path (C:/WINDOWS/fonts/simhei.ttf) /SubfontID 0 /CSI [(GB1) 2] &gt;&gt; ;<br>
@@ -1641,27 +1645,27 @@ especially for the searchability feature
 <h3><a name="Temp_files"></a>Temporary files</h3>
 
 <blockquote><table>
-<tr><th colspan="5">Where Ghostscript puts temporary files</th></tr>
+<tr><th colspan="3">Where Ghostscript puts temporary files</th></tr>
 <tr>
     <th align="left">Platform</th>
-    <th>&nbsp;&nbsp;&nbsp;</th>
+
     <th align="left">Filename</th>
-    <th>&nbsp;&nbsp;&nbsp;</th>
+
     <th align="left">Location</th></tr>
 <tr valign="top"> <td>MS Windows and OpenVMS</td>
-    <td>&nbsp;</td>
+
     <td><code>_temp_</code>XX.XXX</td>
-    <td>&nbsp;</td>
+
     <td>Current directory</td></tr>
 <tr valign="top"> <td>OS/2</td>
-    <td>&nbsp;</td>
+
     <td><code>gs</code>XXXXXX</td>
-    <td>&nbsp;</td>
+
     <td>Current directory</td></tr>
 <tr valign="top"> <td>Unix</td>
-    <td>&nbsp;</td>
+
     <td><code>gs_</code>XXXXX</td>
-    <td>&nbsp;</td>
+
     <td><code>/tmp</code></td></tr>
 </table></blockquote>
 
@@ -1751,63 +1755,80 @@ file, not Artifex Software.</p>
 <li>To be able to specify switches and file names when invoking the
     interpreter, define <code>gs</code> as a foreign command:</li>
 
+<li>
 <blockquote>
 <code>&#36; gs == "&#36;</code><em>disk</em><code>:[</code><em>directory</em><code>]gs.exe</code>"
 </blockquote>
+</li>
 
+<li>
 <p>
 where the "<em>disk</em>" and "<em>directory</em>" specify where
     the Ghostscript executable is located.  For instance,</p>
-
+</li>
+<li>
 <blockquote><code>
 &#36; gs == "&#36;dua1:[ghostscript]gs.exe"
 </code></blockquote>
+</li>
 
 <li>On VMS systems, the last character of each "directory" name indicates
 what sort of entity the "directory" refers to.  If the "directory" name
 ends with a colon "<code>:</code>", it is taken to refer to a logical
 device, for instance</li>
 
+<li>
 <blockquote><code>
 &#36; define ghostscript_device dua1:[ghostscript_510]<br>
 &#36; define gs_lib ghostscript_device:
 </code></blockquote>
+</li>
 
+<li>
 <p>
 If the "directory" name ends with a closing square bracket
 "<code>]</code>", it is taken to refer to a real directory, for instance</p>
-
+</li>
+<li>
 <blockquote><code>
 &#36; define gs_lib dua1:[ghostscript]
 </code></blockquote>
-
+</li>
 <li>Defining the logical <code>GS_LIB</code></li>
-
+<li>
 <blockquote>
 <code>&#36; define gs_lib</code> <em>disk</em><code>:[</code><em>directory</em><code>]</code>
 </blockquote>
-
+</li>
+<li>
 <p>
 allows Ghostscript to find its initialization files in the Ghostscript
 directory even if that's not where the executable resides.</p>
+</li>
 
 <li>Although VMS DCL itself converts unquoted parameters to upper case, C
 programs such as Ghostscript receive their parameters through the C runtime
 library, which forces all unquoted command-line parameters to lower case.
 That is, with the command</li>
 
+<li>
 <blockquote><code>
 &#36; gs -Isys&#36;login:
 </code></blockquote>
+</li>
 
+<li>
 <p>
 Ghostscript sees the switch as <code>-isys&#36;login</code>,
 which doesn't work.  To preserve the case of switches, quote them like
 this:</p>
+</li>
 
+<li>
 <blockquote><code>
 &#36; gs "-Isys&#36;login:"
 </code></blockquote>
+</li>
 
 <li>If you write printer output to a file with
 <code>-sOutputFile=</code> and then want to print the file later, use
@@ -1822,32 +1843,39 @@ if Ghostscript was compiled with DEC C; we are not sure of the situation if
 you use <code>gcc</code>.)  Because of this, if you transfer files by
 FTP, you probably need to do one of these two things after the transfer:</li>
 
-<ol>
-<li>If the FTP transfer was in text (ASCII) mode:</li>
+<li>
+    <ol>
+    <li>If the FTP transfer was in text (ASCII) mode:</li>
 
-<blockquote>
-<code>&#36; convert/fdl=streamlf.fdl</code> input-file output-file
-</blockquote>
+    <li>
+    <blockquote>
+    <code>&#36; convert/fdl=streamlf.fdl</code> input-file output-file
+    </blockquote>
 
-<p>
-where the contents of the file <code>STREAMLF.FDL</code> are</p>
 
-<blockquote>
-<pre>FILE
-        ORGANIZATION            sequential
+    <p>
+    where the contents of the file <code>STREAMLF.FDL</code> are</p>
 
-RECORD
-        BLOCK_SPAN              yes
-        CARRIAGE_CONTROL        carriage_return
-        FORMAT                  stream_lf
-</pre></blockquote>
+    <blockquote>
+    <pre>FILE
+            ORGANIZATION            sequential
 
-<li>If the FTP transfer was in binary mode:</li>
+    RECORD
+            BLOCK_SPAN              yes
+            CARRIAGE_CONTROL        carriage_return
+            FORMAT                  stream_lf
+    </pre></blockquote>
+    </li>
 
-<blockquote><code>
-     &#36; set file/attribute=(rfm:stmlf)
-</code></blockquote>
-</ol>
+    <li>If the FTP transfer was in binary mode:</li>
+
+    <li>
+    <blockquote><code>
+         &#36; set file/attribute=(rfm:stmlf)
+    </code></blockquote>
+    </li>
+    </ol>
+</li>
 </ul>
 
 <h4><a name="VMS_X_Windows"></a>Using X Windows on VMS</h4>
@@ -1924,101 +1952,101 @@ Ghostscript looks for the following resources under the program name
 calculated from display metrics:</p>
 
 <blockquote><table>
-<tr><th colspan="5">X Windows resources</th></tr>
+<tr><th colspan="3">X Windows resources</th></tr>
 <tr><th align="left">Name</th>
-    <th>&nbsp;&nbsp;</th>
+
     <th align="left">Class</th>
-    <th>&nbsp;&nbsp;</th>
+
     <th align="left">Default</th></tr>
 <tr><td><code>background</code></td>
-    <td>&nbsp;</td>
+
     <td><code>Background</code></td>
-    <td>&nbsp;</td>
+
     <td><code>white</code></td></tr>
 <tr><td><code>foreground</code></td>
-    <td>&nbsp;</td>
+
     <td><code>Foreground</code></td>
-    <td>&nbsp;</td>
+
     <td><code>black</code></td></tr>
 <tr><td><code>borderColor</code></td>
-    <td>&nbsp;</td>
+
     <td><code>BorderColor</code></td>
-    <td>&nbsp;</td>
+
     <td><code>black</code></td></tr>
 <tr><td><code>borderWidth</code></td>
-    <td>&nbsp;</td>
+
     <td><code>BorderWidth</code></td>
-    <td>&nbsp;</td>
+
     <td><code>1</code></td></tr>
 <tr><td><code>geometry</code></td>
-    <td>&nbsp;</td>
+
     <td><code>Geometry</code></td>
-    <td>&nbsp;</td>
+
     <td><code>NULL</code></td></tr>
 <tr><td><code>xResolution</code></td>
-    <td>&nbsp;</td>
+
     <td><code>Resolution</code></td>
-    <td>&nbsp;</td>
+
     <td>**</td></tr>
 <tr><td><code>yResolution</code></td>
-        <td>&nbsp;</td>
+
         <td><code>Resolution</code></td>
-        <td>&nbsp;</td>
+
         <td>**</td></tr>
 <tr><td><code>useExternalFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>UseExternalFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>true</code></td></tr>
 <tr><td><code>useScalableFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>UseScalableFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>true</code></td></tr>
 <tr><td><code>logExternalFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>LogExternalFonts</code></td>
-        <td>&nbsp;</td>
+
         <td><code>false</code></td></tr>
 <tr><td><code>externalFontTolerance</code></td>
-        <td>&nbsp;</td>
+
         <td><code>ExternalFontTolerance</code></td>
-        <td>&nbsp;</td>
+
         <td><code>10.0</code></td></tr>
 <tr><td><code>palette</code></td>
-        <td>&nbsp;</td>
+
         <td><code>Palette</code></td>
-        <td>&nbsp;</td>
+
         <td><code>Color</code></td></tr>
 <tr><td><code>maxGrayRamp</code></td>
-        <td>&nbsp;</td>
+
         <td><code>MaxGrayRamp</code></td>
-        <td>&nbsp;</td>
+
         <td><code>128</code></td></tr>
 <tr><td><code>maxRGBRamp</code></td>
-        <td>&nbsp;</td>
+
         <td><code>MaxRGBRamp</code></td>
-        <td>&nbsp;</td>
+
         <td><code>5</code></td></tr>
 <tr>    <td><code>maxDynamicColors</code></td>
-        <td>&nbsp;</td>
+
         <td><code>MaxDynamicColors</code></td>
-        <td>&nbsp;</td>
+
         <td><code>256</code></td></tr>
 <tr><td><code>useBackingPixmap</code></td>
-        <td>&nbsp;</td>
+
         <td><code>UseBackingPixmap</code></td>
-        <td>&nbsp;</td>
+
         <td><code>true</code></td></tr>
 <tr><td><code>useXPutImage</code></td>
-        <td>&nbsp;</td>
+
         <td><code>UseXPutImage</code></td>
-        <td>&nbsp;</td>
+
         <td><code>true</code></td></tr>
 <tr><td><code>useXSetTile</code></td>
-        <td>&nbsp;</td>
+
         <td><code>UseXSetTile</code></td>
-        <td>&nbsp;</td>
+
         <td><code>true</code></td></tr>
 </table></blockquote>
 
@@ -2029,10 +2057,11 @@ calculated from display metrics:</p>
 To set X resources, put them in a file (such as
 <code>~/.Xdefaults</code> on Unix) in a form like this:</li>
 
+<li>
 <blockquote><table>
-    <tr><td><code>Ghostscript*geometry:</code></td><td><code>&nbsp;&nbsp;</code></td><td><code>595x842-0+0</code></td></tr>
-    <tr><td><code>Ghostscript*xResolution:</code></td><td><code>&nbsp;</code></td><td><code>72</code></td></tr>
-    <tr><td><code>Ghostscript*yResolution:</code></td><td><code>&nbsp;</code></td><td><code>72</code></td></tr>
+    <tr><td><code>Ghostscript*geometry:</code></td><td><code>595x842-0+0</code></td></tr>
+    <tr><td><code>Ghostscript*xResolution:</code></td><td><code>72</code></td></tr>
+    <tr><td><code>Ghostscript*yResolution:</code></td><td><code>72</code></td></tr>
 </table></blockquote>
 
 <p>
@@ -2041,6 +2070,8 @@ To set X resources, put them in a file (such as
 <blockquote><code>
         xrdb -merge ~/.Xdefaults
 </code></blockquote>
+
+</li>
 
 <li>
 Ghostscript doesn't look at the default system background and foreground
@@ -2291,7 +2322,7 @@ systemdict will be replaced by the normal definition during the
     <br><code>-s</code><em>name</em><code>=</code><em>string</em></dt>
 <dd>Define a name in systemdict with a given string as value.  This is
 different from <code>-d</code>.  For example, <code>-dXYZ=35</code>
-    on the command line is equivalent to the program fragment</dd>
+    on the command line is equivalent to the program fragment
 
 <blockquote><code>
 /XYZ 35 def
@@ -2303,6 +2334,7 @@ whereas <code>-sXYZ=35</code> is equivalent to</p>
 <blockquote><code>
 /XYZ (35) def
 </code></blockquote>
+</dd>
 </dl>
 
 <dl>
@@ -2762,7 +2794,7 @@ the <code>-dFitPage</code> options.</p>
 </dl>
 
 <dl>
-<a name="NupControl"></a>
+<dt><a name="NupControl"></a></dt>
     <dt><code>-sNupControl=</code><em>Nup_option_string</em></dt>
 <dd>This option specifies the N-up nesting to be performed. The pages are scaled
 and arranged on the current PageSize "master" page according the the option.
@@ -2770,13 +2802,13 @@ and arranged on the current PageSize "master" page according the the option.
 The only option strings are as follows:
     <ul>
     <li>
-        <dt><code>-sNupControl=</code><em>number1</em><code>x</code><em>number2</em></dt>
+        <dl><dt></dt><dd><code>-sNupControl=</code><em>number1</em><code>x</code><em>number2</em></dd></dl>
     will fit <em>number1</em> nested pages across the master page, and <em>number2</em>
     down the master page, from the upper left, then to the right to fill the row, moving down
     to the leftmost place on the next row until the nest is complete.
     <p>
     A partially filled nest will be output when the <code>-sNupControl=</code> string is changed,
-    or when Ghostscript exits.
+    when Ghostscript exits, or when the page size changes.
     <p>
     Pages are scaled to fit the requested number horizontally and vertically, maintaining the
     aspect ratio. If the scaling selected for fitting the nested pages leaves space horizontally
@@ -2785,11 +2817,19 @@ The only option strings are as follows:
     above and below <b>all</b> of the rows.
     </li>
     <li>
-        <dt><code>-sNupControl=</code></dt>
+        <dl><dt></dt><dd><code>-sNupControl=</code></dd></dl>
     An empty string will turn off nesting. If there are any nested pages on the master page,
     the partially filled master page will be output.
     </li>
     </ul>
+<p>Printer devices typically reallocate their memory whenever the transparency use
+of a page changes (from one page having transparency, to the next page not having
+transparency, or vice versa). This would cause problems with Nup, possibly leading
+to lost or corrupt pages in the output. To avoid this, the Nup device changes
+the parameters of the page to always set the PageUsesTransparency flag. While this
+should be entirely transparent for the user and not cause extra transparency blending
+operations during the standard rendering processes for most devices, it may cause
+devices to use the clist rather than PageMode.
 </dd>
 </dl>
 
@@ -3010,6 +3050,7 @@ ignore a request to print multiple copies, giving more consistent
 
 <h4><a name="Deferred_Page_Rendering"></a>Deferred Page Rendering</h4>
 <dl>
+    <dt></dt>
 <dd>Raster printers and image formats that can use the "command list" (clist)
 to store a representation of the page prior to rendering can use the
 <code>--saved-pages=</code><em>string</em> on the command line for
@@ -3056,10 +3097,13 @@ This is useful when EPS files have incorrect Document
 
 <h4><a name="ICC_color_parameters"></a>ICC color parameters</h4>
 
+<dl>
+<dt></dt>
 <dd>
 For details about the ICC controls see the document
 <a href="GS9_Color_Management.pdf">GS9 Color Management</a>.
 </dd>
+</dl>
 
 <dl>
     <dt><code>-sDefaultGrayProfile=</code><em>filename</em></dt>
@@ -3116,18 +3160,38 @@ device supports those colorants.  It is also possible for these devices to
     <dt><code>-sICCOutputColors=</code><em>"Cyan, Magenta, Yellow, Black, Orange, Violet"</em></dt>
 <dd>For the psdcmyk and tiffsep separation devices, the device ICC profile can
 be an NCLR profile, which means something that includes non-traditional inks
-like Orange, Violet, etc.   In this case, the list of the colorant names in the
+like Orange, Violet, etc.   In this case, the list of the color names in the
 order that they exist in the profile must be provided with this command line
-option.   Note that if a colorant name that is specified for the profile occurs also within
-the document (e.g. "Orange" above), then these colorants will be associated with
-the same separation.  It is possible through a compile time option LIMIT_TO_ICC
-defined in gdevdevn.h to restrict the output colorants of the psdcmyk and tiffsep
-device to the colorants of the ICC profile or to allow additional spot colorants
-in the document to be created as different separations.  If restricted, the other
-spot colorants will go through the alternate tint transform and then be mapped to
-the color space defined by the NCLR profile.   If an NCLR ICC profile is specified
+option.   Note that if a color name that is specified for the profile occurs also within
+the document (e.g. "Orange" above), then these color names will be associated with
+the same separation.  Additional names beyond those of the ICC profile component count
+can be included.  In this case, those components will be installed into the tiffsep
+or psdcmyk device list of colors, following the ICC profile colors.
+The number of spot colors (those that go beyond the standard CMYK colors)
+allowed by tiffsep or psdcmyk can be set using -dMaxSpots=#.  The default
+value for this is currently set to 10 (GS_SOFT_MAX_SPOTS).
+As an example consider the case where we wish to use a 6CLR ICC profile that
+includes Orange and Violet, but
+need the device to include a specialty color component such as
+Varnish, which does not appear in the document and is not handled by the 6CLR ICC
+profile.  In addition, we desire
+to allow one more spot color of the document to come through to our device.  For
+this case using
+ <code>-sICCOutputColors=</code><em>"Cyan, Magenta, Yellow, Black, Orange, Violet, Varnish"</em>
+  <code>-dMaxSpots=</code><em>4</em>
+   <code>-sOutputICCProfile=</code><em>My_6CLR_Profile.icc</em>
+would provide the desired outcome.  Note that it is up to the device or
+through the use of -sNamedProfile (see below) to involve the setting
+of any values in the Varnish channel.  However, if an All color value is encountered
+in the document, the Varnish component will have its value
+set as will the Orange and Violet values (Likewise if a spot color named Varnish is
+encountered in the document the Varnish component will be used for the values).
+The All value is typically used
+for placing registration targets on separations.
+Finally, note that if an NCLR ICC profile is specified
 and ICCOutputColors is not used, then a set of default names will be used for
-    the extra colorants (non-CMYK) in the profile.</dd>
+the extra colorants (non-CMYK) in the profile.  These names are given as ICC_COLOR_N for
+the Nth non-CMYK channel.</dd>
 </dl>
 
 <dl>
@@ -3213,7 +3277,7 @@ PRESERVE_K_PLANE approach.   This is only valid when using littleCMS for
 </dl>
 
 <dl>
-    <dt><code>-sGraphicICCProfile=</code><em>filename</em></dt>
+    <dt><code>-sVectorICCProfile=</code><em>filename</em></dt>
 <dd>Set the ICC profile that will be associated with
 the output device for vector-based graphics (e.g. Fill,
 Stroke operations).
@@ -3224,20 +3288,20 @@ as the profile.  This can be used to obtain more saturated
 </dl>
 
 <dl>
-    <dt><code>-dGraphicIntent=</code><em>0/1/2/3</em></dt>
-<dd>Set the rendering intent that should be used with graphic objects.  The
+    <dt><code>-dVectorIntent=</code><em>0/1/2/3</em></dt>
+<dd>Set the rendering intent that should be used with vector-based graphic objects.  The
     options are the same as specified for -dRenderIntent.</dd>
 </dl>
 
 <dl>
-    <dt><code>-dGraphicBlackPt=</code><em>0/1</em></dt>
-    <dd>Specify if black point compensation should be used for graphic objects.</dd>
+    <dt><code>-dVectorBlackPt=</code><em>0/1</em></dt>
+    <dd>Specify if black point compensation should be used for vector-based graphic objects.</dd>
 </dl>
 
 <dl>
-    <dt><code>-dGraphicKPreserve=</code><em>0/1/2</em></dt>
+    <dt><code>-dVectorKPreserve=</code><em>0/1/2</em></dt>
 <dd>Specify if black preservation should be used when mapping
-from CMYK to CMYK for graphic objects.   The
+from CMYK to CMYK for vector-based graphic objects.   The
     options are the same as specified for -dKPreserve.</dd>
 </dl>
 
@@ -3312,7 +3376,7 @@ control in the specification of source colors see
 <dd>
 This option provides an extreme level of override control to
 specify the source color spaces and rendering intents to use
-with graphics, images and text for both RGB and CMYK source
+with vector-based graphics, images and text for both RGB and CMYK source
 objects.  The specification is made through a file that contains
 on a line a key name to specify the object type (e.g. Image_CMYK)
 followed by an ICC profile file name, a rendering intent
@@ -3360,8 +3424,8 @@ This option has been replaced by <code><b>-dOverprint=</b></code>
 
 
 <dl>
-<a name="Overprint"></a>
-    <dt><code>-dOverprint=</code><em>/enable | /disable | /simulate</em></dt>
+
+    <dt><a name="Overprint"></a><code>-dOverprint=</code><em>/enable | /disable | /simulate</em></dt>
 <dd>
 This option provides control of overprinting.  The default setting is <em><b>/enable</b></em>
 which allows devices such as CMYK that can support overprint to leave planes unchanged
@@ -3556,9 +3620,11 @@ procedure is run. This is intended for clients or scripts that cannot
 operate in SAFER mode. If Ghostscript is started with <code>-dNOSAFER</code>
 or <code>-dDELAYSAFER</code>, PostScript programs are allowed to read, write,
 rename or delete any files in the system that are not protected by operating
-system permissions.</dd>
+system permissions.
 <p><b>This mode should be used with caution, and <code>.setsafe</code> should be
     run prior to running any PostScript file with unknown contents.</b></p>
+
+    </dd>
 </dl>
 <a name="Safer"></a>
 <dl>
@@ -3626,15 +3692,15 @@ directly, or through an alternative symlink - again, the matching will fail.
 The following cases are handled:
 <ul>
 <li>
-<dt><code>&quot;&sol;path&sol;to&sol;file&quot;</code></dt>
+<dl><dt></dt><dd><code>&quot;&sol;path&sol;to&sol;file&quot;</code></dd></dl>
 <p>Permits access only to the file: &quot;&sol;path&sol;to&sol;file&quot;
 </li>
 <li>
-<dt><code>&quot;&sol;path&sol;to&sol;directory&sol;&quot;</code></dt>
+<dl><dt></dt><dd><code>&quot;&sol;path&sol;to&sol;directory&sol;&quot;</code></dd></dl>
 <p>Permits access to any file in, and only in, the directory: &quot;&sol;path&sol;to&sol;directory&quot;
 </li>
 <li>
-<dt><code>&quot;&sol;path&sol;to&sol;directory&sol;*&quot;</code></dt>
+<dl><dt></dt><dd><code>&quot;&sol;path&sol;to&sol;directory&sol;*&quot;</code></dd></dl>
 <p>Permits access to any file in the directory: &quot;&sol;path&sol;to&sol;directory&quot; and
 any child of that directory.
 </li>
@@ -3649,25 +3715,25 @@ in that it now supports (although does not enforce) case sensitivity.
 Four command line parameters permit explicit control of the paths included in
 the access control lists:
 <ul>
-<li><dt><code>--permit-file-read=<code><em>pathlist</em></dt>
+<li><dl><dt></dt><dd><code>--permit-file-read=<em>pathlist</em></code></dd></dl>
 <p> Adds a path, or list of paths, to the "permit read" list. A list
 of paths is a series of paths separated by the appropriate path list separator
 for your platform (for example, on Unix-like systems it is &quot;&colon;&quot;
 and on MS Windows it is &quot;;&quot;).
 </li>
-<li><dt><code>--permit-file-write=<code><em>pathlist</em></dt>
+<li><dl><dt></dt><dd><code>--permit-file-write=<em>pathlist</em></code></dd></dl>
 <p> Adds a path, or list of paths, to the "permit write" list. A list
 of paths is a series of paths separated by the appropriate path list separator
 for your platform (for example, on Unix-like systems it is &quot;&colon;&quot;
 and on MS Windows it is &quot;;&quot;).
 </li>
-<li><dt><code>--permit-file-control=<code><em>pathlist</em></dt>
+<li><dl><dt></dt><dd><code>--permit-file-control=<em>pathlist</em></code></dd></dl>
 <p> Adds a path, or list of paths, to the "permit control" list. A list
 of paths is a series of paths separated by the appropriate path list separator
 for your platform (for example, on Unix-like systems it is &quot;&colon;&quot;
 and on MS Windows it is &quot;;&quot;).
 </li>
-<li><dt><code>--permit-file-all=<code><em>pathlist</em></dt>
+<li><dl><dt></dt><dd><code>--permit-file-all=<em>pathlist</em></code></dd></dl>
 <p> Adds a path, or list of paths, to the all the above lists. A list
 of paths is a series of paths separated by the appropriate path list separator
 for your platform (for example, on Unix-like systems it is &quot;&colon;&quot;
@@ -3757,6 +3823,7 @@ For raster printers and image format (jpeg*, tiff*, png* ...) devices,
 performance can be 'tuned' by adjusting some of the parameters related
 to banding (clist) options (refer to: <a href="Language.htm#Banding_parameters">
 Banding Parameters</a>).</li>
+<li>
 <p>
 All devices may use a display list ("clist") and use banding when rendering
 PDF 1.4 transparency. This prevents allocation of excessively large amounts of
@@ -3776,7 +3843,7 @@ generally be set to the number of available processor cores for best throughput.
 
 <p>In general, larger <code>-dBufferSpace=#</code> values provide
 slightly higher performance since the per-band overhead is reduced.</p>
-
+</li>
 <li>
 If you are using X Windows, setting the <code>-dMaxBitmap=</code>
 parameter described <a href="#X_device_parameters">above</a> may
@@ -3858,7 +3925,7 @@ of <code>GS_OPTIONS</code> are not limited to switches; they may include
 <p>
 The information here describing is probably interesting only to developers.</p>
 
-<h4><a name="Debug_switches"></a>Debug switches</h4>
+<h3><a name="Debug_switches"></a>Debug switches</h3>
 
 <p>There are several debugging switches that are detected by the interpreter.
 These switches are available whether or not Ghostscript was built with the
@@ -3872,20 +3939,20 @@ needed to investigate particular areas. For backward compatibilty, the
 <code>-dDEBUG</code> option will set all of the subset switches.</p>
 
 <table>
-  <tr><td><code>-dCCFONTDEBUG</code></td><td></td><td>Compiled Fonts</td></tr>
-  <tr><td><code>-dCFFDEBUG</code></td><td></td><td>CFF Fonts</td></tr>
-  <tr><td><code>-dCMAPDEBUG</code></td><td></td><td>CMAP</td></tr>
-  <tr><td><code>-dDOCIEDEBUG</code></td><td></td><td>CIE color</td></tr>
-  <tr><td><code>-dEPSDEBUG</code></td><td></td><td>EPS handling</td></tr>
-  <tr><td><code>-dFAPIDEBUG</code></td><td></td><td>Font API</td></tr>
-  <tr><td><code>-dINITDEBUG</code></td><td></td><td>Initialization</td></tr>
-  <tr><td><code>-dPDFDEBUG</code></td><td></td><td>PDF Interpreter</td></tr>
-  <tr><td><code>-dPDFWRDEBUG</code></td><td></td><td>PDF Writer</td></tr>
-  <tr><td><code>-dSETPDDEBUG</code></td><td></td><td>setpagedevice</td></tr>
-  <tr><td><code>-dSTRESDEBUG</code></td><td></td><td>Static Resources</td></tr>
-  <tr><td><code>-dTTFDEBUG</code></td><td></td><td>TTF Fonts</td></tr>
-  <tr><td><code>-dVGIFDEBUG</code></td><td></td><td>ViewGIF</td></tr>
-  <tr><td><code>-dVJPGDEBUG</code></td><td></td><td>ViewJPEG</td></tr>
+  <tr><td><code>-dCCFONTDEBUG</code></td><td>Compiled Fonts</td></tr>
+  <tr><td><code>-dCFFDEBUG</code></td><td>CFF Fonts</td></tr>
+  <tr><td><code>-dCMAPDEBUG</code></td><td>CMAP</td></tr>
+  <tr><td><code>-dDOCIEDEBUG</code></td><td>CIE color</td></tr>
+  <tr><td><code>-dEPSDEBUG</code></td><td>EPS handling</td></tr>
+  <tr><td><code>-dFAPIDEBUG</code></td><td>Font API</td></tr>
+  <tr><td><code>-dINITDEBUG</code></td><td>Initialization</td></tr>
+  <tr><td><code>-dPDFDEBUG</code></td><td>PDF Interpreter</td></tr>
+  <tr><td><code>-dPDFWRDEBUG</code></td><td>PDF Writer</td></tr>
+  <tr><td><code>-dSETPDDEBUG</code></td><td>setpagedevice</td></tr>
+  <tr><td><code>-dSTRESDEBUG</code></td><td>Static Resources</td></tr>
+  <tr><td><code>-dTTFDEBUG</code></td><td>TTF Fonts</td></tr>
+  <tr><td><code>-dVGIFDEBUG</code></td><td>ViewGIF</td></tr>
+  <tr><td><code>-dVJPGDEBUG</code></td><td>ViewJPEG</td></tr>
 </table>
 
 <p>
@@ -3893,9 +3960,9 @@ The PDF interpreter normally tries to repair, or ignore, all problems encountere
 Setting <code>-dPDFSTOPONERROR</code> instead causes the interpreter to signal an error and
 stop processing the PDF file, instead of printing a warning.
 </p><p>
-The <code>-dPDFSTOPONWARNING</code> switch behves the same, but will stop if a condition
+The <code>-dPDFSTOPONWARNING</code> switch behaves the same, but will stop if a condition
 which would normally merit a warning (instead of an error) is encountered. Note that
-setting <code>-dPDFSTOPONWARNING</code> also sets <code>-dPDFSTOPONERROR</code>
+setting <code>-dPDFSTOPONWARNING</code> also sets <code>-dPDFSTOPONERROR</code>.
 </p>
 
 <p>
@@ -3905,61 +3972,49 @@ configuration</a>.  In the table below, the first column is a debugging
 switch, the second is an equivalent switch (if any) and the third is its
 usage.</p>
 
+<blockquote>
 <table>
-    <tr><th colspan="5">Switches used in debugging</th></tr>
+    <tr><th colspan="2">Switches used in debugging</th></tr>
     <tr>    <th align="left">Switch</th>
-        <th>&nbsp;&nbsp;</th>
-        <th align="left">&nbsp;&nbsp;</th>
-        <th>&nbsp;&nbsp;</th>
+
+
+
         <th align="left">&nbsp;Description</th></tr>
     <tr>    <td valign="top"><code>-B</code><em>size</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Run all subsequent files named on the command line (except for
             <code>-F</code>) through the run_string interface, using a
             buffer of <em>size</em> bytes</td></tr>
     <tr>    <td valign="top"><code>-B-</code></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Turn off <code>-B</code>: run subsequent files (except for
             <code>-F</code>) directly in the normal way</td></tr>
     <tr>    <td valign="top"><code>-F</code><em>file</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Execute the file with <code>-B1</code> temporarily in effect</td></tr>
     <tr>    <td valign="top"><code>-K</code><em>n</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Limit the total amount of memory that the interpreter can have
             allocated at any one time to <b><em>n</em></b>K bytes.
             <b><em>n</em></b> is a positive decimal integer.</td></tr>
     <tr>    <td valign="top"><code>-M</code><em>n</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Force the interpreter's allocator to acquire additional memory
             in units of <b><em>n</em></b>K bytes, rather than the default
             20K. <b><em>n</em></b> is a positive decimal integer, on
             16-bit systems no greater than 63.</td></tr>
 <tr>    <td valign="top"><code>-N</code><em>n</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Allocate space for <b><em>n</em></b>K names, rather than the
             default (normally 64K).  <b><em>n</em></b> may be greater than
             64 only if <code>EXTEND_NAMES</code> was defined (in
             inameidx.h) when the interpreter was compiled .</td></tr>
 <tr>    <td valign="top"><code>-Z</code><em>xxx</em><br><code>-Z-</code><em>xxx</em></td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+
         <td>Turn debugging printout on (off). Each of the <em>xxx</em>
             characters selects an option.  Case is significant: "a" and
             "A" have different meanings.</td></tr>
+</table>
 
 <dl compact>
 <dt><code>0</code><dd>garbage collector, minimal detail</dd></dt>
@@ -4064,7 +4119,7 @@ storage with a marker (a1, c1, and f1 respectively)</dd></dt>
 <dt><code>s</code><dd>the shading algorithm</dd></dt>
 <dt><code>S</code><dd>the stroking algorithm</dd></dt>
 </dl>
-</table>
+</blockquote>
 
 <p>In addition, calling ghostscript with <code>--debug</code> will list all the currently
 defined (non visual trace) debugging flags, both in their short form (as listed
@@ -4943,7 +4998,8 @@ e.g., <code>b0</code> becomes the same as <code>jisb0</code>.</p>
 
 <h4><a name="X_regular_fonts"></a>Regular fonts</h4>
 
-<pre>AvantGarde-Book:              -Adobe-ITC Avant Garde Gothic-Book-R-Normal--\n\
+<pre>
+    AvantGarde-Book:              -Adobe-ITC Avant Garde Gothic-Book-R-Normal--\n\
     AvantGarde-BookOblique:       -Adobe-ITC Avant Garde Gothic-Book-O-Normal--\n\
     AvantGarde-Demi:              -Adobe-ITC Avant Garde Gothic-Demi-R-Normal--\n\
     AvantGarde-DemiOblique:       -Adobe-ITC Avant Garde Gothic-Demi-O-Normal--\n\
@@ -5155,7 +5211,7 @@ The second element is a dictionary with entries :</p>
         <td>Absolute path to font file, or relative path to font file from the FontPath value,
             being specified in <code>FAPIconfig</code>.</td></tr>
 <tr>    <td>FontType</td>
-        <td>interger</td>
+        <td>integer</td>
         <td>PostScript type for this font. Only 1 and 42 are currently allowed.
             Note that this is unrelated to the real type of the font file -
             the bridge will perform a format conversion.</td></tr>
@@ -5223,7 +5279,7 @@ The format is similar to <code>FAPIfontmap</code>,
         <td>Absolute path to font file, or relative path to font file from the CIDFontPath value,
             being specified in <code>FAPIconfig</code>.</td></tr>
 <tr>    <td>CIDFontType</td>
-        <td>interger</td>
+        <td>integer</td>
         <td>PostScript type for this CID font. Only 0, 1 and 2 are currently allowed.
             Note that this is unrelated to the real type of the font file -
             the bridge will perform format conversion.</td></tr>
@@ -5354,7 +5410,7 @@ PCLEOs. (see the FAPI-related source code for details).</p>
 <hr>
 
 <p>
-<small>Copyright &copy; 2000-2021 Artifex Software, Inc.  All rights reserved.</small>
+<small>Copyright &copy; 2000-2022 Artifex Software, Inc.  All rights reserved.</small>
 
 <p>
 This software is provided AS-IS with no warranty, either express or
@@ -5367,40 +5423,15 @@ or contact Artifex Software, Inc.,  1305 Grant Avenue - Suite 200,
 Novato, CA 94945, U.S.A., +1(415)492-9861, for further information.
 
 <p>
-<small>Ghostscript version 9.54.0, 30 March 2021
+<small>Ghostscript version 9.56.1, 4 April 2022
 
 <!-- [3.0 end visible trailer] ============================================= -->
 
 <!--FINISH EDITING HERE-->
-
-    </div>
-    </div>
-    </div>
-
-    <div class="footer">
-    <div class="row">
-        <div class="col-7 footleft">
-        <ul>
-            <li><a href="https://artifex.com/contact-us/" target="blank">CONTACT US</a></li>
-            <li><a href="https://artifex.com/about-us/" target="blank">ABOUT</a></li>
-            <li><a href="https://ghostscript.com/security.html">SECURITY</a></li>
-        </ul>
-        </div>
-        <div class="col-1 footcenter">
-         <ul>
-           <li><a href="https://artifex.com/support/" target="blank">SUPPORT</a></li>
-           <li><a href="https://artifex.com/blog/artifex/" target="blank">BLOG</a></li>
-           <li><a href="https://artifex.com/privacy-policy/" target="blank">PRIVACY</a></li>
-           </ul>
-        </div>
-        <div class="col-ft-3 footright"><img src="images/Artifex_logo.png" width="194" height="40" alt=""/> <br>
-              © Copyright 2019-2021 Artifex Software, Inc. <br>
-            All rights reserved.
-        </div>
-          </div>
-    </div>
-
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="index.js"></script>
+          </div><!-- close inner -->
+        </div><!-- close outer -->
+      </article>
+    </main>
+    <script src="site.js"></script>
 </body>
 </html>
