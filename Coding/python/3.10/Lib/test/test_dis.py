@@ -180,6 +180,23 @@ dis_bug42562 = """\
           2 RETURN_VALUE
 """
 
+# Extended arg followed by NOP
+code_bug_45757 = bytes([
+        0x90, 0x01,  # EXTENDED_ARG 0x01
+        0x09, 0xFF,  # NOP 0xFF
+        0x90, 0x01,  # EXTENDED_ARG 0x01
+        0x64, 0x29,  # LOAD_CONST 0x29
+        0x53, 0x00,  # RETURN_VALUE 0x00
+    ])
+
+dis_bug_45757 = """\
+          0 EXTENDED_ARG             1
+          2 NOP
+          4 EXTENDED_ARG             1
+          6 LOAD_CONST             297 (297)
+          8 RETURN_VALUE
+"""
+
 _BIG_LINENO_FORMAT = """\
 %3d           0 LOAD_GLOBAL              0 (spam)
               2 POP_TOP
@@ -534,6 +551,10 @@ class DisTests(unittest.TestCase):
     def test_bug_42562(self):
         self.do_disassembly_test(bug42562, dis_bug42562)
 
+    def test_bug_45757(self):
+        # Extended arg followed by NOP
+        self.do_disassembly_test(code_bug_45757, dis_bug_45757)
+
     def test_big_linenos(self):
         def func(count):
             namespace = {}
@@ -689,10 +710,7 @@ class DisWithFileTests(DisTests):
 if sys.flags.optimize:
     code_info_consts = "0: None"
 else:
-    code_info_consts = (
-    """0: 'Formatted details of methods, functions, or code.'
-   1: None"""
-)
+    code_info_consts = "0: 'Formatted details of methods, functions, or code.'"
 
 code_info_code_info = f"""\
 Name:              code_info
@@ -816,7 +834,6 @@ Flags:             NOFREE
 Constants:
    0: 0
    1: 1
-   2: None
 Names:
    0: x"""
 
@@ -1027,7 +1044,7 @@ expected_opinfo_jumpy = [
   Instruction(opname='COMPARE_OP', opcode=107, arg=4, argval='>', argrepr='>', offset=34, starts_line=None, is_jump_target=False),
   Instruction(opname='POP_JUMP_IF_FALSE', opcode=114, arg=21, argval=42, argrepr='to 42', offset=36, starts_line=None, is_jump_target=False),
   Instruction(opname='POP_TOP', opcode=1, arg=None, argval=None, argrepr='', offset=38, starts_line=8, is_jump_target=False),
-  Instruction(opname='JUMP_ABSOLUTE', opcode=113, arg=26, argval=52, argrepr='to 52', offset=40, starts_line=None, is_jump_target=False),
+  Instruction(opname='JUMP_FORWARD', opcode=110, arg=5, argval=52, argrepr='to 52', offset=40, starts_line=None, is_jump_target=False),
   Instruction(opname='JUMP_ABSOLUTE', opcode=113, arg=4, argval=8, argrepr='to 8', offset=42, starts_line=7, is_jump_target=True),
   Instruction(opname='LOAD_GLOBAL', opcode=116, arg=1, argval='print', argrepr='print', offset=44, starts_line=10, is_jump_target=True),
   Instruction(opname='LOAD_CONST', opcode=100, arg=4, argval='I can haz else clause?', argrepr="'I can haz else clause?'", offset=46, starts_line=None, is_jump_target=False),
@@ -1052,7 +1069,7 @@ expected_opinfo_jumpy = [
   Instruction(opname='LOAD_CONST', opcode=100, arg=2, argval=4, argrepr='4', offset=84, starts_line=None, is_jump_target=False),
   Instruction(opname='COMPARE_OP', opcode=107, arg=0, argval='<', argrepr='<', offset=86, starts_line=None, is_jump_target=False),
   Instruction(opname='POP_JUMP_IF_FALSE', opcode=114, arg=46, argval=92, argrepr='to 92', offset=88, starts_line=None, is_jump_target=False),
-  Instruction(opname='JUMP_ABSOLUTE', opcode=113, arg=52, argval=104, argrepr='to 104', offset=90, starts_line=17, is_jump_target=False),
+  Instruction(opname='JUMP_FORWARD', opcode=110, arg=6, argval=104, argrepr='to 104', offset=90, starts_line=17, is_jump_target=False),
   Instruction(opname='LOAD_FAST', opcode=124, arg=0, argval='i', argrepr='i', offset=92, starts_line=11, is_jump_target=True),
   Instruction(opname='POP_JUMP_IF_TRUE', opcode=115, arg=28, argval=56, argrepr='to 56', offset=94, starts_line=None, is_jump_target=False),
   Instruction(opname='LOAD_GLOBAL', opcode=116, arg=1, argval='print', argrepr='print', offset=96, starts_line=19, is_jump_target=True),
@@ -1247,6 +1264,47 @@ class TestBytecodeTestCase(BytecodeTestCase):
         code = compile("a = 1", "<string>", "exec")
         with self.assertRaises(AssertionError):
             self.assertNotInBytecode(code, "LOAD_CONST", 1)
+
+
+class TestDisTraceback(unittest.TestCase):
+    def setUp(self) -> None:
+        try:  # We need to clean up existing tracebacks
+            del sys.last_traceback
+        except AttributeError:
+            pass
+        return super().setUp()
+
+    def get_disassembly(self, tb):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            dis.distb(tb)
+        return output.getvalue()
+
+    def test_distb_empty(self):
+        with self.assertRaises(RuntimeError):
+            dis.distb()
+
+    def test_distb_last_traceback(self):
+        # We need to have an existing last traceback in `sys`:
+        tb = get_tb()
+        sys.last_traceback = tb
+
+        self.assertEqual(self.get_disassembly(None), dis_traceback)
+
+    def test_distb_explicit_arg(self):
+        tb = get_tb()
+
+        self.assertEqual(self.get_disassembly(tb), dis_traceback)
+
+
+class TestDisTracebackWithFile(TestDisTraceback):
+    # Run the `distb` tests again, using the file arg instead of print
+    def get_disassembly(self, tb):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            dis.distb(tb, file=output)
+        return output.getvalue()
+
 
 if __name__ == "__main__":
     unittest.main()

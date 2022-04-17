@@ -502,6 +502,7 @@ if 1:
         self.compile_single("if x:\n   f(x)")
         self.compile_single("if x:\n   f(x)\nelse:\n   g(x)")
         self.compile_single("class T:\n   pass")
+        self.compile_single("c = '''\na=1\nb=2\nc=3\n'''")
 
     def test_bad_single_statement(self):
         self.assertInvalidSingle('1\n2')
@@ -512,6 +513,7 @@ if 1:
         self.assertInvalidSingle('f()\n# blah\nblah()')
         self.assertInvalidSingle('f()\nxy # blah\nblah()')
         self.assertInvalidSingle('x = 5 # comment\nx = 6\n')
+        self.assertInvalidSingle("c = '''\nd=1\n'''\na = 1\n\nb = 2\n")
 
     def test_particularly_evil_undecodable(self):
         # Issue 24022
@@ -647,6 +649,17 @@ if 1:
 
         self.assertIs(f1.__code__.co_linetable, f2.__code__.co_linetable)
         self.assertIs(f1.__code__.co_code, f2.__code__.co_code)
+
+    # Stripping unused constants is not a strict requirement for the
+    # Python semantics, it's a more an implementation detail.
+    @support.cpython_only
+    def test_strip_unused_consts(self):
+        # Python 3.10rc1 appended None to co_consts when None is not used
+        # at all. See bpo-45056.
+        def f1():
+            "docstring"
+            return 42
+        self.assertEqual(f1.__code__.co_consts, ("docstring", 42))
 
     # This is a regression test for a CPython specific peephole optimizer
     # implementation bug present in a few releases.  It's assertion verifies
@@ -1010,7 +1023,7 @@ class TestExpressionStackSize(unittest.TestCase):
         kwargs = (f'a{i}=x' for i in range(self.N))
         self.check_stack_size("f(" +  ", ".join(kwargs) + ")")
 
-    def test_func_args(self):
+    def test_meth_args(self):
         self.check_stack_size("o.m(" + "x, " * self.N + ")")
 
     def test_meth_kwargs(self):

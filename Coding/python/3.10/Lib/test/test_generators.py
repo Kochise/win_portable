@@ -161,6 +161,14 @@ class GeneratorTest(unittest.TestCase):
             with self.assertRaises((TypeError, pickle.PicklingError)):
                 pickle.dumps(g, proto)
 
+    def test_send_non_none_to_new_gen(self):
+        def f():
+            yield 1
+        g = f()
+        with self.assertRaises(TypeError):
+            g.send(0)
+        self.assertEqual(next(g), 1)
+
 
 class ExceptionTest(unittest.TestCase):
     # Tests for the issue #23353: check that the currently handled exception
@@ -1966,6 +1974,8 @@ True
 """
 
 coroutine_tests = """\
+>>> from test.support import gc_collect
+
 Sending a value into a started generator:
 
 >>> def f():
@@ -2189,7 +2199,7 @@ And finalization:
 
 >>> g = f()
 >>> next(g)
->>> del g
+>>> del g; gc_collect()  # For PyPy or other GCs.
 exiting
 
 
@@ -2204,7 +2214,7 @@ GeneratorExit is not caught by except Exception:
 
 >>> g = f()
 >>> next(g)
->>> del g
+>>> del g; gc_collect()  # For PyPy or other GCs.
 finally
 
 

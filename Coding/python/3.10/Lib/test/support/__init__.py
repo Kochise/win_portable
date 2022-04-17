@@ -41,7 +41,7 @@ __all__ = [
     "requires_IEEE_754", "requires_zlib",
     "anticipate_failure", "load_package_tests", "detect_api_mismatch",
     "check__all__", "skip_if_buggy_ucrt_strfptime",
-    "check_disallow_instantiation",
+    "check_disallow_instantiation", "check_sanitizer", "skip_if_sanitizer",
     # sys
     "is_jython", "is_android", "check_impl_detail", "unix_shell",
     "setswitchinterval",
@@ -367,6 +367,41 @@ def requires_mac_ver(*min_version):
     return decorator
 
 
+def check_sanitizer(*, address=False, memory=False, ub=False):
+    """Returns True if Python is compiled with sanitizer support"""
+    if not (address or memory or ub):
+        raise ValueError('At least one of address, memory, or ub must be True')
+
+
+    _cflags = sysconfig.get_config_var('CFLAGS') or ''
+    _config_args = sysconfig.get_config_var('CONFIG_ARGS') or ''
+    memory_sanitizer = (
+        '-fsanitize=memory' in _cflags or
+        '--with-memory-sanitizer' in _config_args
+    )
+    address_sanitizer = (
+        '-fsanitize=address' in _cflags or
+        '--with-memory-sanitizer' in _config_args
+    )
+    ub_sanitizer = (
+        '-fsanitize=undefined' in _cflags or
+        '--with-undefined-behavior-sanitizer' in _config_args
+    )
+    return (
+        (memory and memory_sanitizer) or
+        (address and address_sanitizer) or
+        (ub and ub_sanitizer)
+    )
+
+
+def skip_if_sanitizer(reason=None, *, address=False, memory=False, ub=False):
+    """Decorator raising SkipTest if running with a sanitizer active."""
+    if not reason:
+        reason = 'not working with sanitizers active'
+    skip = check_sanitizer(address=address, memory=memory, ub=ub)
+    return unittest.skipIf(skip, reason)
+
+
 def system_must_validate_cert(f):
     """Skip the test on TLS certificate validation failures."""
     @functools.wraps(f)
@@ -687,9 +722,8 @@ def check_sizeof(test, o, size):
 # Decorator for running a function in a different locale, correctly resetting
 # it afterwards.
 
+@contextlib.contextmanager
 def run_with_locale(catstr, *locales):
-    def decorator(func):
-        def inner(*args, **kwds):
             try:
                 import locale
                 category = getattr(locale, catstr)
@@ -708,16 +742,11 @@ def run_with_locale(catstr, *locales):
                     except:
                         pass
 
-            # now run the function, resetting the locale on exceptions
             try:
-                return func(*args, **kwds)
+                yield
             finally:
                 if locale and orig_locale:
                     locale.setlocale(category, orig_locale)
-        inner.__name__ = func.__name__
-        inner.__doc__ = func.__doc__
-        return inner
-    return decorator
 
 #=======================================================================
 # Decorator for running a function in a specific timezone, correctly
@@ -1352,9 +1381,6 @@ class PythonSymlink:
 
         self._platform_specific()
 
-    def _platform_specific(self):
-        pass
-
     if sys.platform == "win32":
         def _platform_specific(self):
             import glob
@@ -1382,6 +1408,9 @@ class PythonSymlink:
             self._env["PYTHONHOME"] = os.path.dirname(self.real)
             if sysconfig.is_python_build(True):
                 self._env["PYTHONPATH"] = os.path.dirname(os.__file__)
+    else:
+        def _platform_specific(self):
+            pass
 
     def __enter__(self):
         os.symlink(self.real, self.link)
