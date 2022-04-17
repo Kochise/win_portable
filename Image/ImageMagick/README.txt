@@ -10,7 +10,7 @@ Introduction to ImageMagick
   The functionality of ImageMagick is typically utilized from the command
   line or you can use the features from programs written in your favorite
   language. Choose from these interfaces: G2F (Ada), MagickCore (C),
-  MagickWand (C), ChMagick (Ch), ImageMagickObject (COM+), Magick++ (C++),
+  MagickWand (C), ChMagick (Ch), Magick++ (C++),
   JMagick (Java), L-Magick (Lisp), Lua, NMagick (Neko/haXe), Magick.NET
   (.NET), PascalMagick (Pascal), PerlMagick (Perl), MagickWand for PHP
   (PHP), IMagick (PHP), PythonMagick (Python), RMagick (Ruby), or TclMagick
@@ -55,7 +55,7 @@ Features and Capabilities
       * Animation: create a GIF animation sequence from a group of images.
       * Text & comments: insert descriptive or artistic text in an image.
       * Image gradients: create a gradual blend of one color whose shape is 
-        horizontal, vertical, circular, or ellipical.
+        horizontal, vertical, circular, or elliptical.
       * Image identification: describe the format and attributes of an image.
       * Composite: overlap one image over another.
       * Montage: juxtapose image thumbnails on an image canvas.
