@@ -8,7 +8,7 @@ Windows 7+ (mostly 64 bit applications now)
 
 * List of programs
 
-#### Cleaner
+### Cleaner
 
 **AdwCleaner** : remove ad-wares and stuff, will reboot at the end<br>
 **AppBuster** : install/remove `Windows 10` bundled applications<br>
@@ -22,7 +22,7 @@ Windows 7+ (mostly 64 bit applications now)
 **UCheck** : installed softwares' version checker/updater (doesn't work on portable version)<br>
 **WinaeroTweaker** : `Windows`' parameters tweaker, like the good ol' `Tweak UI`<br>
 
-#### Coding
+### Coding
 
 **ctags** : source file parser and AST database generator (used by `NppTags` in **Notepad++**)<br>
 **Elm** : web based functional language (inspired from `Haskel`) <ins>EXTERNAL INSTALLER</ins><br>
@@ -44,7 +44,7 @@ Windows 7+ (mostly 64 bit applications now)
 **TortoiseGit** : `git-scm` shell extension (using **git**) <ins>EXTERNAL INSTALLER</ins><br>
 **vlang** : aka `v`, is a lightweight `c`-ish self-compiling language (still maturing)<br>
 
-#### Document
+### Document
 
 **ditaa** : diagram tool to convert ASCII-art into `svg` (for **miktex**)<br>
 **LibreOffice** : like `Office` but `Libre`, with a few key differences though <ins>EXTERNAL INSTALLER</ins><br>
@@ -56,7 +56,7 @@ Windows 7+ (mostly 64 bit applications now)
 **texmaker** : `LaTeX` Editor that needs **miktex** (run `texmaker.bat` to setup the path)<br>
 **XpdfReader** : `pdf` file viewer, manipulation and conversion tools<br>
 
-#### Editor
+### Editor
 
 **Accessoires** : `Wordpad` (`XP` version, the best, with ruler and preview)<br>
 **lite** : lightweight source code editor coded in/for **lua**<br>
@@ -66,7 +66,7 @@ Windows 7+ (mostly 64 bit applications now)
 **TreeSheets** : strange hierarchical notepad (inspired by `Inception`)<br>
 **WinMerge** : the file comparator and merger, as good as `kdiff3`<br>
 
-#### Game
+### Game
 
 **Castle of the Winds** : old `Windows 3.1` era (1993) rogue-like game with random maze generation<br>
 **MMCE** : `Marble Marcher Community Edition`, mind blowing utility<br>
@@ -81,30 +81,30 @@ Windows 7+ (mostly 64 bit applications now)
 **OpenSCAD** : pretty good CAD program, yet using a DSL programming language<br>
 **paint.net** : the better `Paint` or `Gimp`, with layers and stuff<br>
 
-#### Internet
+### Internet
 
 **Chrome** : `Google`'s browser because sometimes **Firefox** cannot do `Google Apps` properly<br>
 **curl** : file and protocol downloader (because everyone loves it, I guess)<br>
 **FileZilla** : `ftp` client (better use **Total Commander** in passive mode)<br>
 **Firefox** : ready to use `Firefox` browser with some privacy extensions installed (old `Photon` based)<br>
-**TeamViewer** : remote supervision and control for home office or whatever else<br>
+**TightVNC** : fast VNC client/server (you'll need to open up your firewall)<br>
 **TTYEmulator** : the best `tty` emulator, do `ssh` as well (`Linux` session)<br>
 **wget** : file and protocol downloader (the other one everyone loves)<br>
 
-#### Manager
+### Manager
 
 **Total Commander** : the stuff that should replace `Windows` (run `TOTALCMD.BAT`)<br>
 
-#### Sound
+### Sound
 
 **Audacity** : multiplatform sound wave player/editor, always handy<br>
 
-#### System
+### System
 
 **7-Zip** : multi format un/packer, lightweight and free (no nag screen)<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
 **CrossHair** : `Ctrl+&` to des/activate static cross-hair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
-**DirectShutdown** : `Windows+r` restart, Windows+s shutdown (not on `Windows 10`)<br>
+**DirectShutdown** : `Windows+r` restart, `Windows+s` shutdown (not on `Windows 10`)<br>
 **DragLock** : `Windows+mouse` movement locked vertically or horizontally<br>
 **flux** : screen toning utility to change colour scheme at night time <ins>INSTALLER</ins><br>
 **JoyToKey** : as the name says, transform joystick into keyboard moves<br>
@@ -120,7 +120,7 @@ Windows 7+ (mostly 64 bit applications now)
 **UsbTreeView** : mostly like **USBDeview** but also with their `USB` host controllers<br>
 **XsX Alpha-Blended Cursors** : colourful cartoonish semi-transparent cursors from the `Windows XP` era <ins>INSTALLER</ins><br>
 
-#### Video
+### Video
 
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
 **K-Lite Codec Pack** : the codecs everyone should install, don't mess with `vlc` <ins>EXTERNAL INSTALLER</ins><br>
