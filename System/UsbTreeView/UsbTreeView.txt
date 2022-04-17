@@ -1,8 +1,8 @@
 
-UsbTreeView V3.7.3 - Shows the USB Device Tree
+UsbTreeView V3.7.8 - Shows the USB Device Tree
 Freeware by Uwe Sieber - www.uwe-sieber.de
 
-Works under Windows 2000, XP, Windows 7, 8, 10 and Server 2000 to 2019
+Works under Windows 2000, XP, Windows 7, 8, 10, 11 and Server 2000 to 2022
 
 Usage:
 Without parameters it starts with a GUI.
@@ -14,7 +14,7 @@ UsbTreeView [/R=filename] [/X=filename] [/O=filename] [/L[n]=logfile]
 /X=filename    write (silently) an XML report to filename
 /O=filename    open an XML report from filename
 /L[n]=logfile  write a logfile for debugging, helpful in case of crash or hang (causes slowdown);
-               n is the optional loglevel, default is 3, max is 5; sample: /L4=C:\temp\UsbTreeView.log
+               n is the optional loglevel, 0..5, default is 3; sample: /L4=C:\temp\UsbTreeView.log
 
 
 UsbTreeView is based upon the USBView sample from the Microsoft Windows Driver Kit for Windows Server 2003.
@@ -38,6 +38,22 @@ Improvements:
 
 History since V2.5.0, for old history see UsbTreeView.txt in here: http://www.uwe-sieber.de/files/usbtreeview261.zip
 
+V3.7.8   - Bugfix: V3.7.7 did no show a Window when started under XP thru the Windows Explorer
+         - Bugfix: V3.7.7 crashed when a hub did not deliver its USB_HUB_INFORMATION
+V3.7.7   - Workaround: Some ASMedia host controllers fail to deliver their root-hub's symlink by means of IOCTL_USB_GET_ROOT_HUB_NAME.
+                       Same problem when requesting the symlink of a standard hub (IOCTL_USB_GET_NODE_CONNECTION_NAME). Both calls
+                       may fail with ERROR_NOT_SUPPORTED when the ASMedia drivers asmtxhci.sys and asmthub3.sys are used.
+                       Both cases are resolved now by devices' parent-child relation.
+         - New: For /R and /X a 'magic' file name of "stdout" makes it write the text- or XML-report to stdout instead of an actual file.
+                If not redirected it attaches to parent process' console or creates a new one.
+V3.7.6   - Bugfix: wChannelConfig of Audio 1.0 descriptors decoded wrong, possible crash
+         - Bugfix: Other Speed Configuration Descriptor not shown since V3.4
+V3.7.5   - Bugfix: USB 3.2 Gen2 devices running at 20 GBits/s shown as 10 GBits/s
+         - Bugfix: x64 Release did not save settings when it has no write access to the INI file because Windows does VirtualStore redirection for 32 bit apps only.
+                   Without write access the INI is now saved to %ALLUSERSPROFILE%\Uwe Sieber (under Windows 2000, XP and 2003 to %APPDATA%)
+V3.7.4   - Bugfix: Option "Read Msft String Descriptor 0xEE" was read inverted from INI since V3.4.0, so it switched between on and off every start
+         - Bugfix: bInterval of endpoint descriptors decoded wrong
+         - New: Drop-down lists as wide as the longest item
 V3.7.3   - New: Some fine-tuning for smart node naming
 V3.7.2   - Bugfix: When renaming a USB dev's node the default name was always the device description from the Device Manager, even another source was selected
 V3.7.1   - Bugfix: V3.7.0 had no valid default for the new source of display names resultung in showing device IDs until a valid source was selected
@@ -68,9 +84,7 @@ V3.4.0   - Bugfix: Crash with failed USB hub
          - New: UVC 1.5 H.264 descriptors are decoded
          - New: More device class and device interface GUIDs are resolved
          - New: Reporting a USB version of 2.0 is blamed as an error if the device does not deliver an
-                "other_speed" device_qualifier descriptor because USB 2.0 spec says 9.2.6.6:
-                "Devices that are high-speed capable must set the version number in the bcdUSB field of their descriptors to
-                0200H. This indicates that such devices support the other_speed requests defined by USB 2.0."
+                "other_speed" device_qualifier descriptor, see below
 V3.3.8   - New: USB vendor names from https://cms.usb.org/usb/api/usbif.json which seems to contain all vendors ever
                 registered at usb.org (about 12000). The former used 'usb.if' contained current members only (about 1000).
                 This results in a 70 KB larger exe file.
@@ -224,6 +238,18 @@ If a device is running at SuperSpeedPlus then the UsbTreeView remembers that the
 used port obviously supports that speed.
 
 
+About SuperSpeedPlus > 10 GBits/s
+
+The Win32 USB API does not provide any more information than "SuperSpeedPlus capable or higher"
+and "operating at SuperSpeedPlus or higher", so UsbTreeView cannot show more than that.
+The only data struct which seem to support to report more than 10 GBits/s is the
+"SuperSpeedPlus USB Device Capability Descriptor" (see USB 3.2 spec 9.6.2.5).
+But so far this descriptor looks identical for all ever seen devices, including those
+which are running at 20 GBits/s speed: Length of 20 Bytes, reporting exactly one RX and TX
+sub-link at a speed of 10 GBits/s. No idea if this is a limitation of the Windows USB API
+or if this really comes from the devices. But even this would report as expeced, it still
+is the device's capability only, not the actual connection speed.
+
 
 About the "Port Chain"
 
@@ -236,6 +262,21 @@ controller is added or removed this digit might change!
 The other digits are safe, they are just the port numbers from the USB API
 as shown in the treeview of UsbTreeView.
 
+
+About the "Device Qualifier Descriptor"
+
+USB 2.0 devices must support High- and Full-Speed. In the "Device Qualifier Descriptor"
+they report their capabilities for the other speed which for instance is different
+for web-cams which support lower resolutions and frame-rates at Full-Speed.
+For marketing purposes many non-high-speed devices report a USB version of 2.0 but that
+is wrong because USB 2.0 spec says 9.2.6.6:
+"Devices that are high-speed capable must set the version number in the bcdUSB field of
+their descriptors to 0200H. This indicates that such devices support the other_speed
+requests defined by USB 2.0."
+So, for USB 2.0 devices UsbTreeView request the "Device Qualifier Descriptor". If this
+causes trouble it can be skipped for Low-Speed devices by setting
+SkipDeviceQualiDescForLowSpeedDevs=1
+in the UsbTreeView.ini (while it is not running).
 
 
 About Unknown Descriptors
@@ -284,7 +325,7 @@ is full-speed only.
 
 
 
-About Endpoints
+About Endpoints / USB Controller Resources
 
 Each USB device uses a bidirectional control endpoint 0 to which the
 "Default Control Pipe" is attached thru which the device is controlled.
@@ -295,27 +336,20 @@ UsbTreeView counts 1 endpoint for the Default Control Pipe if the configuration
 descriptor can be read plus the number of open pipes to data endpoints which
 are reported by Windows in the "Connection Information".
 
-Elder Intel xHCI controllers are known for having a limitited number of endpoints,
-different rumors say 64 or 96, the Windows error message is "Not Enough USB
-Controller Resources" when attaching a new device.
-Under Windows 7 x64 I was able to use some more than 70 endpoints at a Series 8
-xHCI controller (device id 8C31).
-Further devices failed to start with code 10 when the configuration descriptor
-could be read (probably when at least the control endpoint was available) or
-code 29 if not.
-On a Texas Instrumens TUSB73x0 xHCI controller the limit seems to be the
-same but the devices fail with code 1.
-Under Windows 10 with the build-in USB drivers problems started too at some more
-than 70 used endpoints but several further devices got code 10 and their
-descriptors could be read. At about 80 used endpoints further devices got
-code 43 and their descriptors could not be read. On a Renesas controller
-I ran out of hubs at 110 used endpoints...
-On a Cannon Lake xHCI controller I ran out of hubs and devs at 137 endpoints,
-so newer Intel chipsets seem to have more of these resources.
-BTW: To save used endpoints it does not help to disable a USB devices's
+Intel Series 8 xHCI (USB3) controllers are known for having a limitited number of
+64 endpoints. The Windows error message is "Not Enough USB Controller Resources"
+when attaching a new device.
+
+To save used endpoints it does not help to disable a USB devices's
 child device. Only deactivating (or safely removing) the USB device itself
 does the trick (even the USB API still reports the endpoints as open when
 the device is safely removed - UsbTreeView counts 1 endpoint then).
+If a USB2 host controller is availlable then moving non-SuperSpeed devices
+there helps safing endpoints on the xHCI controller. Last resort is disabling
+xHCI in the BIOS setup which doubles the number of allocatable endpoints
+according to Intel's guy Adolfo her:
+https://community.intel.com/t5/Embedded-Intel-Core-Processors/Hardware-limitations-on-USB-endpoints-XHCI/td-p/264556
+UsbTreeView can show the used andpoionts in the tree-view: Options -> Endpoints in Tree.
 
 
 
@@ -409,6 +443,8 @@ https://www.uwe-sieber.de/usbdriveinfo_e.html
 A similar tool for serial COM ports is "COM Port Info":
 https://www.uwe-sieber.de/comportinfo_e.html
 
+A command-line tool to reset a USB port is "RestartUsbPort":
+https://www.uwe-sieber.de/misc_tools_e.html#restartusbport
 
 
 UsbTreeView is Freeware.
@@ -425,7 +461,7 @@ Not allowed:
 
 
 Uwe Sieber, mail@uwe-sieber.de
-June 2021
+Feb 2022
 
 
 
