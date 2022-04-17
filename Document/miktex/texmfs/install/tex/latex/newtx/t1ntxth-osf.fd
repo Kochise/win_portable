@@ -1,5 +1,8 @@
 \ProvidesFile{t1ntxth-osf.fd}[2021/05/07 v1.0 font definition file for T1/ntxth/osf]
 
+\ifdefined\ntx@thmshape\else\def\ntx@thmshape{i}\fi
+\if i\ntx@thmshape \gdef\ntx@thrmshape{Italic}\else%
+  \gdef\ntx@thrmshape{Slanted}\fi
 \expandafter\ifx\csname ntx@scaled\endcsname\relax
   \let\ntx@scaled\@empty%
 \fi
@@ -7,7 +10,7 @@
 \ifdefined\ntx@spacing \else\global\let\ntx@spacing\@empty\fi
 %\traceon
 \DeclareFontFamily{T1}{ntxth-osf}{\ntx@spacing}
-\DeclareFontShape{T1}{ntxth-osf}{m}{it}{<-> \ntx@scaled ntxth-Italic-osf-t1}{}
+\DeclareFontShape{T1}{ntxth-osf}{m}{it}{<-> \ntx@scaled ntxth-\ntx@thrmshape-osf-t1}{}
 \DeclareFontShape{T1}{ntxth-osf}{m}{n}{<->ssub * ntxth-osf/m/it}{}
 \DeclareFontShape{T1}{ntxth-osf}{m}{sc}{<->ssub * ntxth-osf/m/it}{}
 \DeclareFontShape{T1}{ntxth-osf}{m}{scit}{<-> ssub * ntxth-osf/m/it}{}

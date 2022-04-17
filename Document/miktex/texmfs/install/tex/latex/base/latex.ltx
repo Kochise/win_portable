@@ -692,7 +692,7 @@
 \def\fmtname{LaTeX2e}
 \edef\fmtversion
    {2021-11-15}
-\def\patch@level{0}
+\def\patch@level{1}
 \edef\development@branch@name{}
 \iffalse
 \def\reserved@a#1/#2/#3\@nil{%
@@ -1681,8 +1681,8 @@
     \xdef#1{\the\toks@}%
   \endgroup}
 %%% From File: ltcmd.dtx
-\def\ltcmdversion{v1.0h}
-\def\ltcmddate{2021-08-30}
+\def\ltcmdversion{v1.0i}
+\def\ltcmddate{2021-12-02}
 \message{document commands,}
 \ExplSyntaxOn
 \tl_new:N \l__cmd_arg_spec_tl
@@ -1917,8 +1917,6 @@
     \tl_set:Nn \l__cmd_defaults_tl {#5}
     \tl_set:Nn \l__cmd_process_all_tl {#6}
     #4
-    \bool_if:NT \l__cmd_environment_bool
-      { \exp_args:No \__cmd_set_environment_end:n \l__cmd_environment_str }
     \__cmd_run_code:
   }
 \cs_generate_variant:Nn \__cmd_start_aux:NNnnnn { cc }
@@ -1926,6 +1924,8 @@
   {
     \tl_if_empty:NF \l__cmd_defaults_tl { \__cmd_defaults: }
     \tl_if_empty:NF \l__cmd_process_all_tl { \__cmd_args_process: }
+    \bool_if:NT \l__cmd_environment_bool
+      { \exp_args:No \__cmd_set_environment_end:n \l__cmd_environment_str }
     \group_align_safe_end:
     \conditionally@traceon
     \exp_after:wN \l__cmd_fn_code_tl \l__cmd_args_tl

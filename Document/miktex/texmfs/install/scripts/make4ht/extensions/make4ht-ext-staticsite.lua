@@ -22,6 +22,7 @@ local function get_slug(settings)
     -- escape 
     -- slug must contain the unescaped input name
     local f = io.open(published_name, "w")
+    log:info("Publishing article", os.date("%Y-%m-%d %H:%M", time))
     f:write(time)
     f:close()
   end
@@ -79,7 +80,7 @@ end
 local function remove_maketitle(make)
   -- use DOM filter to remove \maketitle block
   local domfilter = require "make4ht-domfilter"
-  local process = domfilter {
+  local process = domfilter({
     function(dom)
       local maketitles = dom:query_selector(".maketitle")
       for _, el in ipairs(maketitles) do
@@ -88,7 +89,7 @@ local function remove_maketitle(make)
       end
       return dom
     end
-  }
+  }, "staticsite")
   make:match("html$", process)
 end
 
@@ -120,9 +121,9 @@ function M.modify_build(make)
   -- we use an bogus match which will be executed only once as the very first one to insert
   -- the filters
   -- I should make filter from this
-  local process = filter {
+  local process = filter({
     "staticsite"
-  }
+  }, "staticsite")
 
   -- detect if we should remove maketitle
   local site_settings = get_filter_settings "staticsite"

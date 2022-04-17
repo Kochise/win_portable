@@ -30,7 +30,7 @@
 % ProvidesPackage declaration in LaTeX
 \begingroup\expandafter\expandafter\expandafter\endgroup
 \expandafter\ifx\csname ProvidesPackage\endcsname\relax\else
-  \ProvidesPackage{iftex}[2020/03/06 v1.0d TeX engine tests]
+  \ProvidesPackage{iftex}[2022/02/03 v1.0f TeX engine tests]
 \fi
 
 % Save @ catcode, to restore at end, not needed in LaTeX.
@@ -88,7 +88,10 @@
 \IFTEX@protected\def\RequireAlephTeX{\IFTEX@Require\ifalephtex{Aleph}\fi}
 % tutex == has \Umathchardef == XeTeX or Lua(HB)TeX currently
 \IFTEX@protected\def\RequireTUTeX{\IFTEX@Require\iftutex{LuaTeX or XeTeX}\fi}
-
+% TeXpad TeX
+\IFTEX@protected\def\RequireTexpadTeX{\IFTEX@Require\iftexpadtex{TexpadTeX}\fi}
+% HiTeX/HINT
+\IFTEX@protected\def\RequireHINT{\IFTEX@Require\ifhint{HINT}\fi}
 
 % As a matter of policy over-write any existing \if*tex macro and set
 % by the tests here.
@@ -210,7 +213,32 @@
 \fi
 \IFTEX@let{TUTeX}{tutex}
 
-% Output mode 
+
+% texpadtex
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname TexpadTeXMode\endcsname\relax
+  \IFTEX@let{texpadtex}{false}
+\else
+  \IFTEX@let{texpadtex}{true}
+  \ifcase\TexpadTeXMode\relax
+    % This is 8 bit mode
+  \or
+    \IFTEX@let{tutex}{true}
+  \fi
+\fi
+\IFTEX@let{TexpadTeX}{texpadtex}
+
+% HiTeX
+\begingroup\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname HINTversion\endcsname\relax
+  \IFTEX@let{hint}{false}
+\else
+  \IFTEX@let{hint}{true}
+\fi
+\IFTEX@let{HINT}{hint}
+
+
+% Output mode
 % declare as if with \newif
 \def\pdftrue{\let\ifpdf\iftrue}
 \def\pdffalse{\let\ifpdf\iffalse}
@@ -226,6 +254,10 @@ end
 \expandafter\ifx\csname pdfoutput\endcsname\relax
 \ifvtex
   \ifnum\OpMode=3 %
+    \pdftrue
+  \fi
+\else
+  \iftexpadtex
     \pdftrue
   \fi
 \fi

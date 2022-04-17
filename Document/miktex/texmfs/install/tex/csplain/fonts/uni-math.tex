@@ -1,8 +1,9 @@
 % uni-math.tex
 %%%%%%%%%%%%%%%%%%%%%%%%
 % Petr Olsak  2016, 2019
+% Benjamin Barenblat  2022
 
-\def\unimathversion{Mar. 2019} % Warning: this is at beta testing state
+\def\unimathversion{Jan. 2022} % Warning: this is at beta testing state
 
 % Macros for loading Unicode math fonts in XeTeX or LuaTeX 
 
@@ -148,7 +149,7 @@
    \lccode`A="0391 \lccode`Z="03A9
    \lowercase{\endgroup\umathrange{A-Z}}}
 \def\umathrangegreek{\begingroup
-   \lccode`A="03B1 \lccode`Z="03D6
+   \lccode`A="03B1 \lccode`Z="03D0
    \lowercase{\endgroup\umathrange{A-Z}}}
 \def\greekdef#1{\ifx#1\relax \else
    \begingroup \lccode`X=\umathnumB \lowercase{\endgroup \def#1{X}}%
@@ -163,7 +164,53 @@
 \umathnumB="03B1
 \greekdef \alpha \beta \gamma \delta \epsilon \zeta \eta \theta \iota \kappa
    \lambda \mu \nu \xi \omicron \pi \rho \varsigma \sigma \tau \upsilon
-   \varphi \chi \psi \omega \varbeta \vartheta \phi \varpi \relax
+   \varphi \chi \psi \omega \vardelta \varepsilon \vartheta \varkappa \phi \varrho
+   \varpi \relax
+
+% Unfortunately, this order of Greek letters only holds for the Mathematical
+% Alphanumeric Symbols block; a couple of symbols are different in the Greek and
+% Coptic block. In particular,
+%
+%   - GREEK CAPITAL THETA SYMBOL (\varTheta) is U+03F4 rather than U+03A2.
+%     U+03A2 is unassigned.
+%
+%   - PARTIAL DIFFERENTIAL (which is assigned to \varbeta here) is U+2202 rather
+%     than U+03CA. U+03CA is GREEK SMALL LETTER IOTA WITH DIALYTIKA.
+%
+%   - GREEK LUNATE EPSILON SYMBOL (which is assigned to \varepsilon here) is
+%     U+03F5 rather than U+03CB. U+03CB is GREEK SMALL LETTER UPSILON WITH
+%     DIALYTIKA.
+%
+%   - GREEK THETA SYMBOL (\vartheta) is U+03D1 rather than U+03CC. U+03CC is
+%     GREEK SMALL LETTER OMICRON WITH TONOS.
+%
+%   - GREEK KAPPA SYMBOL (\varkappa) is U+03F0 rather than U+03CD. U+03CD is
+%     GREEK SMALL LETTER UPSILON WITH TONOS.
+%
+%   - GREEK PHI SYMBOL (the non-squiggly \phi) is U+03D5 rather than U+03CE.
+%     U+03CE is GREEK SMALL LETTER OMEGA WITH TONOS.
+%
+%   - GREEK RHO SYMBOL (\varrho) is U+03F1 rather than U+03CF. U+03CF is GREEK
+%     CAPITAL KAI SYMBOL.
+%
+%   - GREEK PI SYMBOL (\varpi) is U+03D6 rather than U+03D0. U+03D0 is GREEK
+%     BETA SYMBOL.
+%
+% These macros apply these corrections. Fortunately, the characters they make
+% inaccessible are seldom used in mathematics typesetting. (They're also still
+% accessible in \textfont2 and \textfont3.)
+\def\umathfixgreekromanuppercase{%
+   \Umathcode "03A2 = 7 1 "03F4 % \varTheta
+}
+\def\umathfixgreekromanlowercase{%
+   \Umathcode "03CA = 7 1 "2202 % \varbeta
+   \Umathcode "03CB = 7 1 "03F5 % \varepsilon
+   \Umathcode "03CC = 7 1 "03D1 % \vartheta
+   \Umathcode "03CD = 7 1 "03F0 % \varkappa
+   \Umathcode "03CE = 7 1 "03D5 % \phi
+   \Umathcode "03CF = 7 1 "03F1 % \varrho
+   \Umathcode "03D0 = 7 1 "03D6 % \varpi
+}
 
 \chardef\ncharrmA=`A       \chardef\ncharrma=`a
 \chardef\ncharbfA="1D400   \chardef\ncharbfa="1D41A
@@ -202,8 +249,14 @@
 \chardef\greeksnA="1D756  \chardef\greeksna="1D770
 \chardef\greeksiA="1D790  \chardef\greeksia="1D7AA
 
-\protected\def\nitgreek   {\umathrangeGREEK\greekrmA \umathrangegreek\greekita}
-\protected\def\rmgreek    {\umathrangeGREEK\greekrmA \umathrangegreek\greekrma}
+\protected\def\nitgreek{%
+   \umathrangeGREEK\greekrmA \umathfixgreekromanuppercase
+   \umathrangegreek\greekita
+}
+\protected\def\rmgreek{%
+   \umathrangeGREEK\greekrmA \umathfixgreekromanuppercase
+   \umathrangegreek\greekrma \umathfixgreekromanlowercase
+}
 \protected\def\bfgreek    {\umathrangeGREEK\greekbfA \umathrangegreek\greekbfa}
 \protected\def\bigreek    {\umathrangeGREEK\greekbfA \umathrangegreek\greekbia}
 \protected\def\sansgreek  {\umathrangeGREEK\greeksnA \umathrangegreek\greeksna}
@@ -211,7 +264,10 @@
 
 % Another possibility (slanted capitals in \nitgreek, \bigreek, \isansgreek):
 %\protected\def\nitgreek   {\umathrangeGREEK\greekitA \umathrangegreek\greekita}
-%\protected\def\rmgreek    {\umathrangeGREEK\greekrmA \umathrangegreek\greekrma}
+%\protected\def\rmgreek{%
+%   \umathrangeGREEK\greekrmA \fixgreekromanuppercase
+%   \umathrangegreek\greekrma \fixgreekromanlowercase
+%}
 %\protected\def\bfgreek    {\umathrangeGREEK\greekbfA \umathrangegreek\greekbfa}
 %\protected\def\bigreek    {\umathrangeGREEK\greekbiA \umathrangegreek\greekbia}
 %\protected\def\sansgreek  {\umathrangeGREEK\greeksnA \umathrangegreek\greeksna}
@@ -287,6 +343,7 @@
 \nitgreek \nitvariables \rmdigits   % default setting
 
 \Umathcode `- = 2 1 "2212
+\Umathcode `\/ = 0 1 "2215
 \let\{=\lbrace \let\}=\rbrace
 
 \def\sqrt       {\Uradical 1 "0221A }

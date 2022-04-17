@@ -1,0 +1,110 @@
+%%
+%% This is file `footnotebackref-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,footnotebackref-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%%   tex-persian@vafa.ac
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{50574}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{footnotebackref-xetex-bidi.def}[2022/02/18 v0.1 bidi adaptations for footnotebackref package for XeTeX engine]
+\LetLtxMacro{\BHFN@OldLTRFootnote}{\LTRfootnote}
+\LetLtxMacro{\BHFN@OldRTLFootnote}{\RTLfootnote}
+
+\renewcommand*\LTRfootnote{%
+    \refstepcounter{BackrefHyperFootnoteCounter}%
+    \edef\BackrefFootnoteTag{bhfn:\theBackrefHyperFootnoteCounter}%
+    \label{\BackrefFootnoteTag}%
+    \@ifnextchar[\Backref@OptLTRHyperFootnote\Backref@HyperLTRFootnote}
+
+\renewcommand*\RTLfootnote{%
+    \refstepcounter{BackrefHyperFootnoteCounter}%
+    \edef\BackrefFootnoteTag{bhfn:\theBackrefHyperFootnoteCounter}%
+    \label{\BackrefFootnoteTag}%
+    \@ifnextchar[\Backref@OptRTLHyperFootnote\Backref@HyperRTLFootnote}
+\newcommand\Backref@HyperLTRFootnote[1]{%
+    \BHFN@OldLTRFootnote{\Backref@HyperSymbol#1}}
+
+\newcommand\Backref@HyperRTLFootnote[1]{%
+    \BHFN@OldRTLFootnote{\Backref@HyperSymbol#1}}
+
+\newcommand\Backref@OptHyperLTRFootnote[2][\empty]{%
+    \BHFN@OldLTRFootnote[#1]{\Backref@HyperSymbol#2}}
+
+\newcommand\Backref@OptHyperRTLFootnote[2][\empty]{%
+    \BHFN@OldRTLFootnote[#1]{\Backref@HyperSymbol#2}}
+
+\bidi@AfterFile{extrafootnotefeatures-xetex-bidi.def}{%
+\ifFootnoteBackref@numberlinked
+\renewcommand{\footfootmark}{%
+  \ifdim\footmarkwidth < \z@
+    \llap{\hb@xt@ -\footmarkwidth{%
+            \hss\normalfont\footscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+          \hspace*{-\footmarkwidth}}%
+  \else
+    \ifdim\footmarkwidth = \z@
+      {\normalfont\footscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \else
+      \hb@xt@\footmarkwidth{\hss\normalfont\footscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \fi
+  \fi}
+\renewcommand{\LTRfootfootmark}{%
+  \ifdim\footmarkwidth < \z@
+    \llap{\hb@xt@ -\footmarkwidth{%
+            \hss\normalfont\LTRfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+          \hspace*{-\footmarkwidth}}%
+  \else
+    \ifdim\footmarkwidth = \z@
+      {\normalfont\LTRfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \else
+      \hb@xt@\footmarkwidth{\hss\normalfont\LTRfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \fi
+  \fi}
+\renewcommand{\RTLfootfootmark}{%
+  \ifdim\footmarkwidth < \z@
+    \llap{\hb@xt@ -\footmarkwidth{%
+            \hss\normalfont\RTLfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+          \hspace*{-\footmarkwidth}}%
+  \else
+    \ifdim\footmarkwidth = \z@
+      {\normalfont\RTLfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \else
+      \hb@xt@\footmarkwidth{\hss\normalfont\RTLfootscript{\hyperref[\BackrefFootnoteTag]{\@thefnmark}}}%
+    \fi
+  \fi}
+\fi
+}
+\endinput
+%%
+%% End of file `footnotebackref-xetex-bidi.def'.

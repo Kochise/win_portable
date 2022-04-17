@@ -1,4 +1,4 @@
-% $Id: pst-node.pro 395 2017-03-21 09:24:38Z herbert $
+% $Id: pst-node.pro 438 2022-01-31 17:45:26Z herbert $
 %%
 %% PostScript prologue for pst-node.tex.
 %% Version 1.15, 2014/01/27.

@@ -1,5 +1,5 @@
-% ooffice.4ht (2021-04-16-13:27), generated from tex4ht-ooffice.tex
-% Copyright 2009-2021 TeX Users Group
+% ooffice.4ht (2022-02-06-13:26), generated from tex4ht-ooffice.tex
+% Copyright 2009-2022 TeX Users Group
 % Copyright 2001-2009 Maarten Wisse, James Naughton, Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-04-16-13:27}
+\immediate\write-1{version 2022-02-06-13:26}
 
   \exit:ifnot{Preamble,% 
 algorithmicx,% 
@@ -43,6 +43,7 @@ fancyvrb,%
 foils,% 
 fontmath,% 
 footmisc,% 
+framed,% 
 frenchb,% 
 g-brief,% 
 german,% 
@@ -199,10 +200,10 @@ xmlns:xlink="http://www.w3.org/1999/xlink"\Hnewline
 }
 \def\:DefineParagraph#1#2{%
 \Configure{#1}
-   {\IgnorePar\EndP \HCode{<!--start of #1 -->}}
-   {\IgnorePar\EndP \HCode{<!--start of #1 -->}}
-   {\bgroup\HTML:PAR{#1-p}{#1-p}\par\HCode{<text:span text:style-name="#2" >}}
-   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\egroup}
+   {\ifvmode\IgnorePar\fi\EndP \HCode{<!--start of #1 -->}}
+   {\ifvmode\IgnorePar\fi\EndP \HCode{<!--start of #1 -->}}
+   {\bgroup\HTML:PAR{#1-p}{#1-p}\ifvmode\IgnorePar\fi\EndP\par\ShowPar\HCode{<text:span text:style-name="#2" >}}
+   {\HCode{</text:span><text:s/><text:s/>\Hnewline}\egroup\IgnorePar}
 \:ParagraphStyle{#1-p}
 }
 \def\:BoldStyle#1{%
@@ -500,25 +501,36 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 \def:image:mime:type{.gif}{image/gif}
 \def:image:mime:type{.svg}{image/svg+xml}
 \def\svg:width{0.0pt}\def\svg:height{0.0pt}
+% this is defined in graphicx.4ht, but we should it define here too, for cases
+% when graphicx is not used
+\NewConfigure{GraphicsAlt}{1}
 \Configure{IMG}
-  {% \ht:special{t4ht>\PictureFile.4og}%
-\ht:special{t4ht>\Gin@base\Gin@ext.4og}%
+  {% parse the image extension, will be used later
+\expandafter\filename@parse\expandafter{\PictureFile}%
+\ifx\Gin@base\@undefined
+\let\graphics:filename\PictureFile
+\else
+\def\graphics:filename{\Gin@base\Gin@ext}
+\fi
+% \ht:special{t4ht>\PictureFile.4og}%
+\ht:special{t4ht>\graphics:filename.4og}%
 \ht:special{t4ht*>}%
 % \ht:special{t4ht<\PictureFile.4og}%
-\ht:special{t4ht<\Gin@base\Gin@ext.4og}%
+\ht:special{t4ht<\graphics:filename.4og}%
 \OOmanifest{<manifest:file-entry
-    manifest:full-path="Pictures/\PictureFile" manifest:media-type="\get:image:mime:type\Gin@ext"/>\Hnewline
+   manifest:full-path="Pictures/\PictureFile" manifest:media-type="\get:image:mime:type\filename@ext"/>\Hnewline
 }%
 %
    \ht:special{t4ht=<draw:frame
       draw:name="\PictureFile"
       text:anchor-type="as-char"  % "paragraph"
-%      svg:width="...pt"
-%      svg:height="...pt"
-        % \ifx\noBoundingBox\UnDefined
+        % insert image dimension only if they really exist
+        \ifx\noBoundingBox\UnDefined
+         \ifx\Gin@req@width\undefined\else
+         \ifdim\Gin@req@width>0pt
          \string svg:width="\the\Gin@req@width"
           svg:height="\the\Gin@req@height"
-        % \fi
+        \fi\fi\fi
       draw:z-index="0"
     >%
       <draw:image\Hnewline
@@ -530,7 +542,12 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
         /><!--draw:name="}}
   {" }
   {\ht:special{t4ht=" }}
-  {\ht:special{t4ht=--></draw:frame>}}
+  {%
+    \ifx\a:GraphicsAlt\relax%
+      \Configure{GraphicsAlt}{ALT}%
+    \fi%
+    \ht:special{t4ht=--><svg:title>\a:GraphicsAlt</svg:title></draw:frame>}%
+  }
 \Configure{PictureAlt*+[]}
    {\ht:special{t4ht>\jobname .tmp}}
    {\ht:special{t4ht<\jobname .tmp}}
@@ -988,8 +1005,11 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
            text:style-name="Inside-enumerate\if@rl-rtl\fi
 "
              >}}
-      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}}
-   {\EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
+      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}
+      \gHAdvance\BegEnd:D by 1%
+    }
+   {\gHAdvance\BegEnd:D by -1%
+     \EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
      </\text:orderedlist>\Hnewline}\ShowPar}
    {\EndP\end@Item  \let\sv:DeleteMark\DeleteMark
      \let\DeleteMark\DeleteMark: \DeleteMark}
@@ -1084,8 +1104,10 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
            text:style-name="Inside-enumerate\if@rl-rtl\fi
 "
              >}}
-      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}}
-   {\EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
+      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}
+      \gHAdvance\BegEnd:D by 1%
+    }
+   {\gHAdvance\BegEnd:D by -1\EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
      </\text:orderedlist>\Hnewline}\ShowPar}
    {\EndP\end@Item\DeleteMark}
    {\HCode{<text:list-item>}\par\ShowPar
@@ -1409,9 +1431,8 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 </style:style>
 }
 \Configure{cite}
-   {\HCode{<text:bibliography-mark
-                 text:bibliography-type="custom1">}}
-   {\HCode{</text:bibliography-mark>}}
+   {}
+   {}
    {\Link}         {\EndLink}
 \let\lat:cite\@cite
 \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
@@ -1514,6 +1535,16 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 }
 \HAssign\BegEnd:N=0
 \HAssign\BegEnd:D=0
+\HAssign\BegEnd:X=0
+\def\:DisableSections{\gHAdvance\BegEnd:X by 1}
+\def\:EnableSections{\gHAdvance\BegEnd:X by -1}
+\:CheckOption{NoSections}\if:Option
+\HAssign\BegEnd:X=9999% use some really high number
+\else
+\Log:Note{To disable use of sections for text
+  alignment environemnts, use the "NoSections"
+  option}
+\fi
 \NewConfigureOO{begin-end-env}
 \ConfigureOO{begin-end-env}{\Hnewline
 <style:style style:name="begin-env-p" style:family="paragraph">\Hnewline
@@ -1802,7 +1833,7 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 \ShowPar
    \Configure{noalign}{}{}%
 %
-   \ShowPar
+   \par\ShowPar
 %
   }{}{}
 \Configure{tabular}
@@ -2211,6 +2242,7 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 }
 \ConfigureEnv{verse}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -2235,6 +2267,7 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 %
     \HCode{<!--start verse-->}%
     \bgroup  \Configure{HtmlPar}
@@ -2248,6 +2281,7 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
    {\egroup \ifvmode \IgnorePar\fi \EndP
     \HCode{<!--end verse-->}\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -2255,6 +2289,8 @@ xmlns:presentation="urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"\Hnew
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar}
    {}{}
@@ -3080,6 +3116,7 @@ style:display-name="Footnote anchor" style:family="text">
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -3104,9 +3141,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -3115,7 +3154,9 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -3135,6 +3176,7 @@ style:display-name="Footnote anchor" style:family="text">
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -3159,9 +3201,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -3169,6 +3213,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -3212,6 +3258,7 @@ style:display-name="Footnote anchor" style:family="text">
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -3236,9 +3283,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -3247,8 +3296,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -3275,6 +3326,7 @@ style:display-name="Footnote anchor" style:family="text">
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -3299,9 +3351,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -3309,6 +3363,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -3335,6 +3391,7 @@ style:display-name="Footnote anchor" style:family="text">
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -3359,9 +3416,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -3370,8 +3429,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -4493,6 +4554,7 @@ style:display-name="Footnote anchor" style:family="text">
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -4517,9 +4579,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -4528,7 +4592,9 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -4548,6 +4614,7 @@ style:display-name="Footnote anchor" style:family="text">
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -4572,9 +4639,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -4582,6 +4651,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -4625,6 +4696,7 @@ style:display-name="Footnote anchor" style:family="text">
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -4649,9 +4721,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -4660,8 +4734,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -4688,6 +4764,7 @@ style:display-name="Footnote anchor" style:family="text">
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -4712,9 +4789,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -4722,6 +4801,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -4748,6 +4829,7 @@ style:display-name="Footnote anchor" style:family="text">
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -4772,9 +4854,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -4783,8 +4867,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -5874,6 +5960,7 @@ style:display-name="Footnote anchor" style:family="text">
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -5898,9 +5985,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -5909,7 +5998,9 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -5929,6 +6020,7 @@ style:display-name="Footnote anchor" style:family="text">
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -5953,9 +6045,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -5963,6 +6057,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -6006,6 +6102,7 @@ style:display-name="Footnote anchor" style:family="text">
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -6030,9 +6127,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -6041,8 +6140,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -6069,6 +6170,7 @@ style:display-name="Footnote anchor" style:family="text">
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -6093,9 +6195,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -6103,6 +6207,8 @@ style:display-name="Footnote anchor" style:family="text">
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -6129,6 +6235,7 @@ style:display-name="Footnote anchor" style:family="text">
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -6153,9 +6260,11 @@ style:display-name="Footnote anchor" style:family="text">
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -6164,8 +6273,10 @@ style:display-name="Footnote anchor" style:family="text">
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -6946,7 +7057,6 @@ style:display-name="Footnote anchor" style:family="text">
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{graphics}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6962,41 +7072,51 @@ style:display-name="Footnote anchor" style:family="text">
       \Hnewline -->}%
     \egroup}
 \def\getImgFileParser#1/{%
-  \ifx\relax#1\relax
-    \let\next\relax
-  \else
-    \do{#1}\let\next\getImgFileParser
-  \fi\next
+  \edef\:tmpa{#1}%
+  \ifx\:tmpa\:null%
+  \let\next\relax%
+  \else%
+  \ifx\relax#1\relax\else%
+    \do{#1}%
+  \fi%
+  \let\next\getImgFileParser%
+  \fi\next%
 }
 \newcommand\getImgFile[2]{%
-  \def\do##1{\def\imgBaseName{##1#2}\def\imgBase{##1}}
-  \def\imgFullName{#1#2}
-  \getImgFileParser#1//
+  \def\do##1{\def\imgBaseName{##1#2}\def\imgBase{##1}}%
+  \def\imgFullName{#1#2}%
+  \def\:null{xxx}%
+  \getImgFileParser#1/\:null/%
 }
 
 \Configure{graphics*}
    {gif}
    {\expandafter\getImgFile\expandafter{\Gin@base}{\Gin@ext}
-\Picture[IMG]{\imgBase.gif \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
+\Picture[IMG]{{\imgBase.gif} \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
  }}
 \Configure{graphics*}
    {png}
    {\expandafter\getImgFile\expandafter{\Gin@base}{\Gin@ext}
-\Picture[IMG]{\imgBase.png \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
+\Picture[IMG]{{\imgBase.png} \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
  }}
 \Configure{graphics*}
    {jpg}
    {\expandafter\getImgFile\expandafter{\Gin@base}{\Gin@ext}
-\Picture[IMG]{\imgBase.jpg  \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
+\Picture[IMG]{{\imgBase.jpg}  \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
  }}
 \Configure{graphics*}
    {jpeg}
    {\expandafter\getImgFile\expandafter{\Gin@base}{\Gin@ext}
-\Picture[IMG]{\imgBase.jpeg \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
+\Picture[IMG]{{\imgBase.jpeg} \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
+ }}
+\Configure{graphics*}
+   {svg}
+   {\expandafter\getImgFile\expandafter{\Gin@base}{\Gin@ext}
+\Picture[IMG]{{\imgBase.svg} \if:boundingbox{svg:width="\the\Gin@req@width" svg:height="\the\Gin@req@height"}{}
  }}
 
 
-\DeclareGraphicsExtensions{.png,.jpg,.eps,.pdf}
+\DeclareGraphicsExtensions{.png,.jpg,.eps,.pdf,.svg}
 
 
 \NewConfigure{Ghostscript}{1}
@@ -7040,7 +7160,6 @@ style:display-name="Footnote anchor" style:family="text">
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -8070,7 +8189,6 @@ style:display-name="Footnote anchor" style:family="text">
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsmath}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8081,6 +8199,7 @@ style:display-name="Footnote anchor" style:family="text">
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -8105,6 +8224,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ngerman}
@@ -8310,7 +8430,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{biblatex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8377,8 +8496,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -8468,6 +8585,8 @@ Y{0178}\i{00EF}%
 
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{longtable}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8519,7 +8638,7 @@ Y{0178}\i{00EF}%
 \ShowPar
    \Configure{noalign}{}{}%
 %
-   \ShowPar
+   \par\ShowPar
 %
   }{}{}
 
@@ -8527,6 +8646,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8953,6 +9073,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -8977,9 +9098,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -8988,7 +9111,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -9008,6 +9133,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -9032,9 +9158,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -9042,6 +9170,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -9085,6 +9215,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -9109,9 +9240,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -9120,8 +9253,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -9148,6 +9283,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -9172,9 +9308,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -9182,6 +9320,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -9208,6 +9348,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -9232,9 +9373,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -9243,8 +9386,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -10338,6 +10483,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -10362,9 +10508,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -10373,7 +10521,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -10393,6 +10543,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -10417,9 +10568,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -10427,6 +10580,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -10470,6 +10625,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -10494,9 +10650,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -10505,8 +10663,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -10533,6 +10693,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -10557,9 +10718,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -10567,6 +10730,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -10593,6 +10758,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -10617,9 +10783,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -10628,8 +10796,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -11279,6 +11449,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mwbk}
@@ -11723,6 +11894,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -11747,9 +11919,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -11758,7 +11932,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -11778,6 +11954,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -11802,9 +11979,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -11812,6 +11991,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -11855,6 +12036,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -11879,9 +12061,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -11890,8 +12074,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -11918,6 +12104,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -11942,9 +12129,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -11952,6 +12141,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -11978,6 +12169,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -12002,9 +12194,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -12013,8 +12207,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -12666,7 +12862,6 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{csquotes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12706,6 +12901,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{fancyvrb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12730,6 +12926,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -12927,11 +13124,13 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{verse}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \ConfigureEnv{verse}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -12956,6 +13155,7 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 %
     \HCode{<!--start verse-->}%
     \bgroup
@@ -12971,6 +13171,7 @@ Y{0178}\i{00EF}%
    {\egroup
    \ifvmode \IgnorePar\fi \EndP\HCode{<!--end verse-->}\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -12978,6 +13179,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 
    \par\ShowPar}
@@ -13094,8 +13297,6 @@ Y{0178}\i{00EF}%
 
 
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{wrapfig}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -13136,6 +13337,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -13349,6 +13551,45 @@ Y{0178}\i{00EF}%
                   style:justify-single-word="false"/>\Hnewline
 </style:style>\Hnewline
 }
+
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<text:p text:style-name="Subtitle\if@rl-rtl\fi
+">}}{\HCode{</text:p>}}
+
+\NewConfigureOO{subtitle}
+\ConfigureOO{subtitle}{%
+<style:style style:name="Subtitle"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Subtitle-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
 
 \NewConfigureOO{Contents 1}
 \ConfigureOO{Contents 1}{\Hnewline
@@ -13636,6 +13877,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -13660,9 +13902,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -13671,7 +13915,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -13691,6 +13937,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -13715,9 +13962,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -13725,6 +13974,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -13768,6 +14019,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -13792,9 +14044,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -13803,8 +14057,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -13831,6 +14087,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -13855,9 +14112,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -13865,6 +14124,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -13891,6 +14152,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -13915,9 +14177,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -13926,8 +14190,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -14594,6 +14860,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrartcl}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14762,6 +15029,65 @@ Y{0178}\i{00EF}%
                   style:justify-single-word="false"/>\Hnewline
 </style:style>\Hnewline
 }
+
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<text:p text:style-name="Subtitle\if@rl-rtl\fi
+">}}{\HCode{</text:p>}}
+
+\NewConfigureOO{subtitle}
+\ConfigureOO{subtitle}{%
+<style:style style:name="Subtitle"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Subtitle-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
+
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP \bgroup
+      \Configure{HtmlPar}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\HCode{</text:p>}}
+         {\HCode{</text:p>}}%
+      \par \ShowPar
+   }
+   {\ifvmode \IgnorePar\fi \EndP \egroup \ShowPar\par \IgnoreIndent }
+   {
+     \pend:def\abstractname{\ifvmode \IgnorePar\fi\EndP\HCode{<text:p text:style-name="abstract-title">}}
+     \append:def\abstractname{\HCode{</text:p>}}
+   }
+   {}
 
 \NewConfigureOO{Contents 1}
 \ConfigureOO{Contents 1}{\Hnewline
@@ -14969,6 +15295,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -14993,9 +15320,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -15004,7 +15333,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -15024,6 +15355,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -15048,9 +15380,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -15058,6 +15392,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -15101,6 +15437,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -15125,9 +15462,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -15136,8 +15475,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -15164,6 +15505,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -15188,9 +15530,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -15198,6 +15542,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -15224,6 +15570,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -15248,9 +15595,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -15259,8 +15608,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -16032,6 +16383,65 @@ Y{0178}\i{00EF}%
 </style:style>\Hnewline
 }
 
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<text:p text:style-name="Subtitle\if@rl-rtl\fi
+">}}{\HCode{</text:p>}}
+
+\NewConfigureOO{subtitle}
+\ConfigureOO{subtitle}{%
+<style:style style:name="Subtitle"
+             style:family="paragraph"
+             style:parent-style-name="Heading"
+             style:next-style-name="author"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"/>
+</style:style> \Hnewline <style:style style:name="Subtitle-rtl"
+             style:family="paragraph"
+             style:parent-style-name="Heading-rtl"
+             style:next-style-name="author-rtl"
+             style:class="chapter">\Hnewline
+<style:paragraph-properties  fo:margin-top="0.42cm"
+                  fo:margin-bottom="0.51cm"
+                  fo:font-size="20pt"
+                  fo:font-weight="normal"
+                  style:font-size-asian="18pt"
+                  style:font-weight-asian="bold"
+                  style:font-size-complex="18pt"
+                  style:font-weight-complex="bold"
+                  fo:text-align="center"
+                  style:justify-single-word="false"
+                  style:writing-mode="rl-tb" />
+</style:style> \Hnewline
+ }
+
+\ConfigureEnv{abstract}
+   {\IgnorePar\EndP \bgroup
+      \Configure{HtmlPar}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\EndP \HCode{<text:p
+                    text:style-name="abstract\if@rl-rtl\fi
+">}}
+         {\HCode{</text:p>}}
+         {\HCode{</text:p>}}%
+      \par \ShowPar
+   }
+   {\ifvmode \IgnorePar\fi \EndP \egroup \ShowPar\par \IgnoreIndent }
+   {
+     \pend:def\abstractname{\ifvmode \IgnorePar\fi\EndP\HCode{<text:p text:style-name="abstract-title">}}
+     \append:def\abstractname{\HCode{</text:p>}}
+   }
+   {}
+
 \NewConfigureOO{Contents 1}
 \ConfigureOO{Contents 1}{\Hnewline
    <style:style style:name="Contents-1"
@@ -16318,6 +16728,7 @@ Y{0178}\i{00EF}%
 
 \ConfigureEnv{quote}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -16342,9 +16753,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -16353,7 +16766,9 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
-\par\ShowPar}
+\else\par%
+\fi
+\par\noindent}
    {\EndP \ifvmode \IgnorePar\fi
     \bgroup \Configure{HtmlPar}
    {\EndP \HCode{<!--l. \the\inputlineno-->%
@@ -16373,6 +16788,7 @@ Y{0178}\i{00EF}%
    {\IgnorePar\EndP \egroup \ShowPar \ShowIndent}
 \ConfigureEnv{quotation}
    {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -16397,9 +16813,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 }
    {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -16407,6 +16825,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 \par\ShowPar \noindent}
    {\IgnorePar\EndP \bgroup  \Configure{HtmlPar}
@@ -16450,6 +16870,7 @@ Y{0178}\i{00EF}%
    }
 \ConfigureEnv{flushright}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -16474,9 +16895,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushright-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -16485,8 +16908,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end flushright-->}\ShowPar
+   \HCode{<!--end flushright-->}\par\ShowPar
 }
   {} {}
 \ConfigureList{flushright}
@@ -16513,6 +16938,7 @@ Y{0178}\i{00EF}%
   }
 \ConfigureEnv{flushleft}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -16537,9 +16963,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin flushleft-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -16547,6 +16975,8 @@ Y{0178}\i{00EF}%
    \hbox{\HCode{</draw:text-box>
 </draw:frame></text:p> }}%
 %
+\fi
+\else\par%
 \fi
 %
    \HCode{<!--end flushleft-->}\par\ShowPar}
@@ -16573,6 +17003,7 @@ Y{0178}\i{00EF}%
   \Hnewline}
 \ConfigureEnv{center}
   {\ifvmode \IgnorePar\fi \EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \gHAdvance\BegEnd:N by 1
 \HCode{<text:section
@@ -16597,9 +17028,11 @@ Y{0178}\i{00EF}%
 %
 \fi
 \gHAdvance\BegEnd:D by 1
+\fi
 \HCode{<!--begin center-->}}
   {\gHAdvance\BegEnd:D by -1
 \ifvmode \IgnorePar\fi\EndP
+\ifnum\BegEnd:X=0%
 \ifnum \BegEnd:D=0
    \HCode{<text:p text:style-name="end-env-p" ></text:p></text:section>}%
 %
@@ -16608,8 +17041,10 @@ Y{0178}\i{00EF}%
 </draw:frame></text:p> }}%
 %
 \fi
+\else\par%
+\fi
 %
-   \HCode{<!--end center-->}\par\ShowPar
+   \HCode{<!--end center-->}\par\par\ShowPar
 }
   {} {}
 \ConfigureList{center}
@@ -17370,6 +17805,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{apa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -17814,7 +18250,6 @@ Y{0178}\i{00EF}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{jurabib}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18199,6 +18634,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{curve}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18474,8 +18910,11 @@ Y{0178}\i{00EF}%
            text:style-name="Inside-enumerate\if@rl-rtl\fi
 "
              >}}
-      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}}
-   {\EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
+      {\HCode{</text:p>\Hnewline}}     {\HCode{</text:p>\Hnewline}}
+      \gHAdvance\BegEnd:D by 1%
+    }
+   {\gHAdvance\BegEnd:D by -1%
+     \EndP\IgnorePar \egroup \HCode{</text:list-item>\Hnewline
      </\text:orderedlist>\Hnewline}\ShowPar}
    {\EndP\end@Item  \let\sv:DeleteMark\DeleteMark
      \let\DeleteMark\DeleteMark: \DeleteMark}
@@ -18562,7 +19001,6 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{linguex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18591,6 +19029,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cgloss4e}
@@ -18761,13 +19200,20 @@ Y{0178}\i{00EF}%
     \Configure{jtree}
   {\bgroup
       \Configure{IMG}
-        {% \ht:special{t4ht>\PictureFile.4og}%
-\ht:special{t4ht>\Gin@base\Gin@ext.4og}%
+        {% parse the image extension, will be used later
+\expandafter\filename@parse\expandafter{\PictureFile}%
+\ifx\Gin@base\@undefined
+\let\graphics:filename\PictureFile
+\else
+\def\graphics:filename{\Gin@base\Gin@ext}
+\fi
+% \ht:special{t4ht>\PictureFile.4og}%
+\ht:special{t4ht>\graphics:filename.4og}%
 \ht:special{t4ht*>}%
 % \ht:special{t4ht<\PictureFile.4og}%
-\ht:special{t4ht<\Gin@base\Gin@ext.4og}%
+\ht:special{t4ht<\graphics:filename.4og}%
 \OOmanifest{<manifest:file-entry
-    manifest:full-path="Pictures/\PictureFile" manifest:media-type="\get:image:mime:type\Gin@ext"/>\Hnewline
+   manifest:full-path="Pictures/\PictureFile" manifest:media-type="\get:image:mime:type\filename@ext"/>\Hnewline
 }%
 %
          \ht:special{t4ht=<draw:frame
@@ -18812,6 +19258,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -19294,34 +19741,45 @@ Y{0178}\i{00EF}%
 \ConfigureEnv{lstlisting}
    {\ifvmode \IgnorePar\fi \EndP
     \HCode{<!--l. \the\inputlineno lstlisting-->}%
-    \HCode{<text:p\Hnewline text:style-name="Preformatted-Text">}%
-    \bgroup \special{t4ht@(}%
+    % \HCode{}%
+    \bgroup %
+    \gdef\start:LstLn{%
+       \ifvmode\IgnorePar\fi\EndP\HCode{<text:p\Hnewline text:style-name="Preformatted-Text">}%
+       \ht:special{t4ht@(}\ttfamily%
+       \gdef\start:LstLn{\HCode{<text:s/><text:line-break/>}}}
+    \pend:def\lst@DeInit{\ifvmode\IgnorePar\fi\EndP\HCode{</text:p>}}%
        \Configure{listings}
          {{\everypar{}\leavevmode}}
          {{\everypar{}\leavevmode}}
-         {\HCode{<text:s/><text:line-break/>}}{}%
+         {\start:LstLn}{}%
    }
-   {\special{t4ht@)}\egroup
-    \ifvmode \IgnorePar\fi \EndP   \HCode{</text:p>}\par}
+   {\ht:special{t4ht@)}\egroup
+    % \ifvmode \IgnorePar\fi \EndP   \HCode{</text:p>}\par}
+    \par}
    {} {}
 \Configure{lstinputlisting}
    {\ifvmode \IgnorePar\fi \EndP
     \HCode{<!--l. \the\inputlineno lstinputlisting-->}%
-    \HCode{<text:p\Hnewline text:style-name="Preformatted-Text">}%
-    \bgroup \tt \special{t4ht@(}%
+    % \HCode{<text:p\Hnewline text:style-name="Preformatted-Text">}%
+    \bgroup%
+    \gdef\start:LstLn{%
+       \ifvmode\IgnorePar\fi\EndP\HCode{<text:p\Hnewline text:style-name="Preformatted-Text">}%
+       \ht:special{t4ht@(}\ttfamily%
+       \gdef\start:LstLn{\HCode{<text:s/><text:line-break/>}}}
+    \pend:def\lst@DeInit{\ifvmode\IgnorePar\fi\EndP\HCode{</text:p>}}%
        \Configure{listings}
          {{\everypar{}\leavevmode}}
          {{\everypar{}\leavevmode}}
-         {\HCode{<text:s/><text:line-break/>}}
+         {\start:LstLn}
          {\HCode{<text:line-break/>}}%
    }
-   {\special{t4ht@)}\egroup
-    \ifvmode \IgnorePar\fi \EndP   \HCode{</text:p>}\par}
+   {\special{t4ht@)}\egroup\par}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19440,6 +19898,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{footmisc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19478,6 +19937,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19683,6 +20143,35 @@ Y{0178}\i{00EF}%
 
 
 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{framed}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{makeframed}
+{\ifvmode\IgnorePar\fi\EndP%
+  \HCode{<text:p><draw:frame draw:style-name="framebox" text:anchor-type="as-char" svg:width="100\%">\Hnewline
+  <draw:text-box>}\par\ShowPar%
+}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</draw:text-box></draw:frame></text:p>}\par\ShowPar}
+
+\NewConfigureOO{framebox}
+\ConfigureOO{framebox}
+{<style:style style:name="framebox" style:family="graphic" style:class="text">\Hnewline
+  <style:graphic-properties style:vertical-pos="from-top" style:vertical-rel="paragraph"
+  style:horizontal-pos="from-left" style:horizontal-rel="paragraph" fo:padding="0.25cm"
+  fo:border="0.06pt solid \#000000"/>
+  </style:style>
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

@@ -1,5 +1,5 @@
 %% dvipdfmx.def
-%% Copyright (C) 2005-2021 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
+%% Copyright (C) 2005-2022 LaTeX3 Project, Jin-Hwan Cho, Shunsaku Hirata
 %%                         (with contributions from many others)
 %%
 %% This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %% https://github.com/latex3/graphics-def/issues
 %%
 \ProvidesFile{dvipdfmx.def}
-  [2021/03/18 v5.0j Graphics/color driver for dvipdfmx]
+  [2022/04/12 v5.0k Graphics/color driver for dvipdfmx]
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
   \dimen@#1\p@
@@ -328,36 +328,6 @@
 \fi
 }
 \fi
-\fi
-% Disable use of new multiple stacks pending further testing
-\endinput
-% Updates for newer dvipdfmx versions
-% Loaded last as we can then bail-out if not required
-\begingroup
-  \ifcsname\detokenize{c__kernel_sys_dvipdfmx_version_int}\endcsname
-    \edef\extractbbversion{%
-      \number\csname\detokenize{c__kernel_sys_dvipdfmx_version_int}\endcsname}%
-  \else
-    \immediate\openin 0 = |"extractbb --version"
-    \ifeof0 %
-      \def\extractbbversion{0}%
-    \else
-      \read0 to \extractbbversion % \par
-      \ifeof0 %
-        \def\extractbbversion{0}%
-      \else
-        \read0 to \extractbbversion
-          \long\def\getextractbbversion#1Version #2 #3\stop{%
-            \def\extractbbversion{#2}}%
-          \expandafter\getextractbbversion\extractbbversion Version 0 \stop
-      \fi
-    \fi
-  \fi
-\ifnum\extractbbversion<20201111 %
-  \endgroup
-  \expandafter\endinput
-\else
-  \endgroup
 \fi
 % Conversion functions so the internal representation stays unchanged
 \let\init@current@color\current@color

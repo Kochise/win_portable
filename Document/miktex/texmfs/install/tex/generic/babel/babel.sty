@@ -7,7 +7,7 @@
 %% babel.dtx  (with options: `package')
 %% 
 %%
-%% Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+%% Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 %% Copyright (C) 1989-2012 Johannes L. Braams and
 %%           any individual authors listed elsewhere in this file.
 %% All rights reserved.
@@ -34,7 +34,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2021/11/08 3.66 The Babel package]
+\ProvidesPackage{babel}[2022/02/26 3.73 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
    \let\bbl@debug\@firstofone
@@ -441,11 +441,6 @@
 \ifx\bbl@opt@safe\@undefined
   \def\bbl@opt@safe{BR}
 \fi
-\ifx\bbl@opt@main\@nnil\else
-  \edef\bbl@language@opts{%
-    \ifx\bbl@language@opts\@empty\else\bbl@language@opts,\fi
-      \bbl@opt@main}
-\fi
 \bbl@trace{Defining IfBabelLayout}
 \ifx\bbl@opt@layout\@nnil
   \newcommand\IfBabelLayout[3]{#3}%
@@ -458,8 +453,8 @@
       \expandafter\@secondoftwo
     \fi}
 \fi
-\def\bbl@version{3.66}
-\def\bbl@date{2021/11/08}
+\def\bbl@version{3.73}
+\def\bbl@date{2022/02/26}
 \ifx\language\@undefined
   \csname newcount\endcsname\language
 \fi
@@ -672,7 +667,10 @@
 \newif\ifbbl@bcpallowed
 \bbl@bcpallowedfalse
 \def\select@language#1{% from set@, babel@aux
+  \ifx\bbl@selectorname\@empty
+    \def\bbl@selectorname{select}%
   % set hymap
+  \fi
   \ifnum\bbl@hymapsel=\@cclv\chardef\bbl@hymapsel4\relax\fi
   % set name
   \edef\languagename{#1}%
@@ -782,8 +780,10 @@
   \else
     \expandafter\expandafter\expandafter\set@hyphenmins
       \csname #1hyphenmins\endcsname\relax
-  \fi}
+  \fi
+  \let\bbl@selectorname\@empty}
 \long\def\otherlanguage#1{%
+  \def\bbl@selectorname{other}%
   \ifnum\bbl@hymapsel=\@cclv\let\bbl@hymapsel\thr@@\fi
   \csname selectlanguage \endcsname{#1}%
   \ignorespaces}
@@ -792,6 +792,7 @@
 \expandafter\def\csname otherlanguage*\endcsname{%
   \@ifnextchar[\bbl@otherlanguage@s{\bbl@otherlanguage@s[]}}
 \def\bbl@otherlanguage@s[#1]#2{%
+  \def\bbl@selectorname{other*}%
   \ifnum\bbl@hymapsel=\@cclv\chardef\bbl@hymapsel4\relax\fi
   \def\bbl@select@opts{#1}%
   \foreign@language{#2}}
@@ -804,6 +805,7 @@
   \@ifstar\bbl@foreign@s\bbl@foreign@x}
 \providecommand\bbl@foreign@x[3][]{%
   \begingroup
+    \def\bbl@selectorname{foreign}%
     \def\bbl@select@opts{#1}%
     \let\BabelText\@firstofone
     \bbl@beforeforeign
@@ -814,6 +816,7 @@
 \def\bbl@foreign@s#1#2{% TODO - \shapemode, \@setpar, ?\@@par
   \begingroup
     {\par}%
+    \def\bbl@selectorname{foreign*}%
     \let\bbl@select@opts\@empty
     \let\BabelText\@firstofone
     \foreign@language{#1}%
@@ -846,6 +849,13 @@
     % set type
     \let\bbl@select@type\@ne
     \expandafter\bbl@switch\expandafter{\languagename}}}
+\def\IfBabelSelectorTF#1{%
+  \bbl@xin@{,\bbl@selectorname,}{,\zap@space#1 \@empty,}%
+  \ifin@
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
 \let\bbl@hyphlist\@empty
 \let\bbl@hyphenation@\relax
 \let\bbl@pttnlist\@empty
@@ -921,7 +931,6 @@
 \let\uselocale\setlocale
 \let\locale\setlocale
 \let\selectlocale\setlocale
-\let\localename\setlocale
 \let\textlocale\setlocale
 \let\textlanguage\setlocale
 \let\languagetext\setlocale
@@ -2562,6 +2571,8 @@
    % == onchar ==
   \ifx\bbl@KVP@onchar\@nil\else
     \bbl@luahyphenate
+    \bbl@exp{%
+      \\\AddToHook{env/document/before}{{\\\select@language{#2}{}}}}%
     \directlua{
       if Babel.locale_mapped == nil then
         Babel.locale_mapped = true
@@ -2965,8 +2976,8 @@
   \ifeof\bbl@readstream
     \bbl@error
       {There is no ini file for the requested language\\%
-       (#1). Perhaps you misspelled it or your installation\\%
-       is not complete.}%
+       (#1: \languagename). Perhaps you misspelled it or your\\%
+       installation is not complete.}%
       {Fix the name or reinstall babel.}%
   \else
     % == Store ini data in \bbl@inidata ==
@@ -3397,14 +3408,15 @@
   \bbl@transforms\babelprehyphenation}
 \@namedef{bbl@inikv@transforms.posthyphenation}{%
   \bbl@transforms\babelposthyphenation}
-\def\bbl@transforms@aux#1#2#3,#4\relax{#1{#2}{#3}{#4}}
+\def\bbl@transforms@aux#1#2#3#4,#5\relax{%
+  #1[#2]{#3}{#4}{#5}}
 \begingroup %  A hack. TODO. Don't require an specific order
   \catcode`\%=12
   \catcode`\&=14
   \gdef\bbl@transforms#1#2#3{&%
     \ifx\bbl@KVP@transforms\@nil\else
       \directlua{
-         str = [==[#2]==]
+         local str = [==[#2]==]
          str = str:gsub('%.%d+%.%d+$', '')
          tex.print([[\def\string\babeltempa{]] .. str .. [[}]])
       }&%
@@ -3412,10 +3424,23 @@
       \ifin@
         \in@{.0$}{#2$}&%
         \ifin@
-           \g@addto@macro\bbl@release@transforms{&%
-              \relax\bbl@transforms@aux#1{\languagename}{#3}}&%
+          \directlua{
+            local str = string.match([[\bbl@KVP@transforms]],
+                          '%(([^%(]-)%)[^%)]-\babeltempa')
+            if str == nil then
+              tex.print([[\def\string\babeltempb{}]])
+            else
+              tex.print([[\def\string\babeltempb{,attribute=]] .. str .. [[}]])
+            end
+          }
+          \toks@{#3}&%
+          \bbl@exp{&%
+            \\\g@addto@macro\\\bbl@release@transforms{&%
+              \relax  &% Closes previous \bbl@transforms@aux
+              \\\bbl@transforms@aux
+                \\#1{label=\babeltempa\babeltempb}{\languagename}{\the\toks@}}}&%
         \else
-           \g@addto@macro\bbl@release@transforms{, {#3}}&%
+          \g@addto@macro\bbl@release@transforms{, {#3}}&%
         \fi
       \fi
     \fi}
@@ -4174,79 +4199,61 @@
        Local config file '\bbl@opt@config.cfg' not found}{%
        Perhaps you misspelled it.}}%
 \fi
-\let\bbl@tempc\relax
-\bbl@foreach\bbl@language@opts{%
-  \ifcase\bbl@iniflag  % Default
-    \bbl@ifunset{ds@#1}%
-      {\DeclareOption{#1}{\bbl@load@language{#1}}}%
-      {}%
-  \or    % provide=*
-    \@gobble % case 2 same as 1
-  \or    % provide+=*
-    \bbl@ifunset{ds@#1}%
-      {\IfFileExists{#1.ldf}{}%
-        {\IfFileExists{babel-#1.tex}{}{\@namedef{ds@#1}{}}}}%
-      {}%
-    \bbl@ifunset{ds@#1}%
-      {\def\bbl@tempc{#1}%
-       \DeclareOption{#1}{%
-         \ifnum\bbl@iniflag>\@ne
-           \bbl@ldfinit
-           \babelprovide[import]{#1}%
-           \bbl@afterldf{}%
-         \else
-           \bbl@load@language{#1}%
-         \fi}}%
-      {}%
-  \or    % provide*=*
-    \def\bbl@tempc{#1}%
-    \bbl@ifunset{ds@#1}%
-      {\DeclareOption{#1}{%
-         \bbl@ldfinit
-         \babelprovide[import]{#1}%
-         \bbl@afterldf{}}}%
-      {}%
-  \fi}
-\let\bbl@tempb\@nnil
-\let\bbl@clsoptlst\@classoptionslist
-\bbl@foreach\@classoptionslist{%
-  \bbl@ifunset{ds@#1}%
-    {\IfFileExists{#1.ldf}%
-      {\def\bbl@tempb{#1}%
-       \DeclareOption{#1}{%
-         \ifnum\bbl@iniflag>\@ne
-           \bbl@ldfinit
-           \babelprovide[import]{#1}%
-           \bbl@afterldf{}%
-         \else
-           \bbl@load@language{#1}%
-         \fi}}%
-      {\IfFileExists{babel-#1.tex}%
-        {\def\bbl@tempb{#1}%
-         \ifnum\bbl@iniflag>\z@
-           \DeclareOption{#1}{%
-             \ifnum\bbl@iniflag>\@ne
-               \bbl@ldfinit
-               \babelprovide[import]{#1}%
-               \bbl@afterldf{}%
-             \fi}%
-         \fi}%
-         {}}}%
-    {}}
-\ifnum\bbl@iniflag=\z@\else
-  \ifx\bbl@opt@main\@nnil
-    \ifx\bbl@tempc\relax
-      \let\bbl@opt@main\bbl@tempb
-    \else
-      \let\bbl@opt@main\bbl@tempc
-    \fi
+\ifx\bbl@opt@main\@nnil
+  \ifnum\bbl@iniflag>\z@  % if all ldf's: set implicitly, no main pass
+    \let\bbl@tempb\@empty
+    \edef\bbl@tempa{\@classoptionslist,\bbl@language@opts}%
+    \bbl@foreach\bbl@tempa{\edef\bbl@tempb{#1,\bbl@tempb}}%
+    \bbl@foreach\bbl@tempb{%    \bbl@tempb is a reversed list
+      \ifx\bbl@opt@main\@nnil % ie, if not yet assigned
+        \ifodd\bbl@iniflag % = *=
+          \IfFileExists{babel-#1.tex}{\def\bbl@opt@main{#1}}{}%
+        \else % n +=
+          \IfFileExists{#1.ldf}{\def\bbl@opt@main{#1}}{}%
+        \fi
+      \fi}%
   \fi
+\else
+  \bbl@info{Main language set with 'main='. Except if you have\\%
+            problems, prefer the default mechanism for setting\\%
+            the main language. Reported}
 \fi
 \ifx\bbl@opt@main\@nnil\else
-  \expandafter
-  \let\expandafter\bbl@loadmain\csname ds@\bbl@opt@main\endcsname
-  \expandafter\let\csname ds@\bbl@opt@main\endcsname\@empty
+  \bbl@csarg\let{loadmain\expandafter}\csname ds@\bbl@opt@main\endcsname
+  \expandafter\let\csname ds@\bbl@opt@main\endcsname\relax
 \fi
+\bbl@foreach\bbl@language@opts{%
+  \def\bbl@tempa{#1}%
+  \ifx\bbl@tempa\bbl@opt@main\else
+    \ifnum\bbl@iniflag<\tw@    % 0 ø (other = ldf)
+      \bbl@ifunset{ds@#1}%
+        {\DeclareOption{#1}{\bbl@load@language{#1}}}%
+        {}%
+    \else                      % + * (other = ini)
+      \DeclareOption{#1}{%
+        \bbl@ldfinit
+        \babelprovide[import]{#1}%
+        \bbl@afterldf{}}%
+    \fi
+  \fi}
+\bbl@foreach\@classoptionslist{%
+  \def\bbl@tempa{#1}%
+  \ifx\bbl@tempa\bbl@opt@main\else
+    \ifnum\bbl@iniflag<\tw@    % 0 ø (other = ldf)
+      \bbl@ifunset{ds@#1}%
+        {\IfFileExists{#1.ldf}%
+          {\DeclareOption{#1}{\bbl@load@language{#1}}}%
+          {}}%
+        {}%
+     \else                      % + * (other = ini)
+       \IfFileExists{babel-#1.tex}%
+         {\DeclareOption{#1}{%
+            \bbl@ldfinit
+            \babelprovide[import]{#1}%
+            \bbl@afterldf{}}}%
+         {}%
+     \fi
+  \fi}
 \def\AfterBabelLanguage#1{%
   \bbl@ifsamestring\CurrentOption{#1}{\global\bbl@add\bbl@afterlang}{}}
 \DeclareOption*{}
@@ -4266,32 +4273,27 @@
       but the last processed one was '\bbl@tempb'.\\%
       The main language can't be set as both a global\\%
       and a package option. Use 'main=\bbl@tempc' as\\%
-      option. Reported}%
+      option. Reported}
   \fi
 \else
-  \ifodd\bbl@iniflag  % case 1,3
+  \ifodd\bbl@iniflag  % case 1,3 (main is ini)
     \bbl@ldfinit
     \let\CurrentOption\bbl@opt@main
-    \ifx\bbl@opt@provide\@nnil
-      \bbl@exp{\\\babelprovide[import,main]{\bbl@opt@main}}%
+    \bbl@exp{%  \bbl@opt@provide = empty if *
+       \\\babelprovide[\bbl@opt@provide,import,main]{\bbl@opt@main}}%
+    \bbl@afterldf{}
+    \DeclareOption{\bbl@opt@main}{}
+  \else % case 0,2 (main is ldf)
+    \ifx\bbl@loadmain\relax
+      \DeclareOption{\bbl@opt@main}{\bbl@load@language{\bbl@opt@main}}
     \else
-      \bbl@exp{\\\bbl@forkv{\@nameuse{@raw@opt@babel.sty}}}{%
-        \bbl@xin@{,provide,}{,#1,}%
-        \ifin@
-          \def\bbl@opt@provide{#2}%
-          \bbl@replace\bbl@opt@provide{;}{,}%
-        \fi}%
-      \bbl@exp{%
-        \\\babelprovide[\bbl@opt@provide,import,main]{\bbl@opt@main}}%
+      \DeclareOption{\bbl@opt@main}{\bbl@loadmain}
     \fi
-    \bbl@afterldf{}%
-  \else % case 0,2
-    \chardef\bbl@iniflag\z@  % Force ldf
-    \expandafter\let\csname ds@\bbl@opt@main\endcsname\bbl@loadmain
     \ExecuteOptions{\bbl@opt@main}
-    \DeclareOption*{}%
-    \ProcessOptions*
+    \@namedef{ds@\bbl@opt@main}{}%
   \fi
+  \DeclareOption*{}
+  \ProcessOptions*
 \fi
 \def\AfterBabelLanguage{%
   \bbl@error

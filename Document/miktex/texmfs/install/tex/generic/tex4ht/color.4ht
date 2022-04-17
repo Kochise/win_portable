@@ -1,6 +1,6 @@
-% color.4ht (2021-05-23-15:14), generated from tex4ht-4ht.tex
+% color.4ht (2022-02-01-14:27), generated from tex4ht-4ht.tex
 % Copyright 1997-2009 Eitan M. Gurari
-% Copyright 2009-2021 TeX Users Group
+% Copyright 2009-2022 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-05-23-15:14}
+\immediate\write-1{version 2022-02-01-14:27}
 
 \expandafter\ifx \csname color:def\endcsname\relax
     \let\color:def\def
@@ -56,12 +56,8 @@
       \let\set@color\set@page@color
       \color}
 \NewConfigure{pagecolor}{1}
-\def\@undeclaredcolor[#1]#2{\a:color{#1 #2}%
-  \@ifundefined{color@#1}%
-    {\@latex@error{Undefined color model `#1'}\@ehd}%
-    {\csname color@#1\endcsname\current@color{#2}%
-     \set@color}%
-  \ignorespaces}
+\def\:tempa[#1]#2{\a:color{#1 #2}\o:@undeclaredcolor:[#1]{#2}}
+\HLet\@undeclaredcolor\:tempa
 \pend:defI\@declaredcolor{\a:color{##1}}
 \NewConfigure{SetHColor}[2]{{%
    \expandafter\let\expandafter\:temp \csname CLR:#2\endcsname

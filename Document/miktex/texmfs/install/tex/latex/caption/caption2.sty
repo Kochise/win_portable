@@ -6,7 +6,7 @@
 %%
 %% caption2.dtx  (with options: `package')
 %% 
-%% Copyright (C) 1994-2020 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
+%% Copyright (C) 1994-2022 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
 %% 
 %% https://gitlab.com/axelsommerfeldt/caption
 %% 
@@ -33,29 +33,22 @@
 %%   caption.sty, caption-light.sty, caption2.sty, caption3.sty,
 %%   caption-ams-smf.sto, caption-beamer.sto, caption-elsarticle.sto,
 %%   caption-koma.sto, caption-memoir.sto, caption-ntg.sto,
-%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty,
-%% and the user manuals
-%%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
+%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption2}[2020/09/28 v2.2f Customising captions (AR)]
-\PackageWarning{caption2}{%
-  ****************************************************\MessageBreak
-  THIS PACKAGE IS OBSOLETE:\MessageBreak
-  This package attempts to provide an `caption2'\MessageBreak
-  package v2.0/2.1 author environment so that OLD\MessageBreak
-  documents can be successfully processed. It should\MessageBreak
-  NOT be used for NEW documents! New documents should\MessageBreak
-  use the regular `caption' package v3.x instead.\MessageBreak
-  ****************************************************\@gobbletwo}%
-\RequirePackage{caption3}[2020/09/28] % needs v2.2a or newer
-\let\captionsetup\@undefined
-\let\clearcaptionsetup\@undefined
-\let\showcaptionsetup\@undefined
-\let\DeclareCaptionType\@undefined
-\let\DeclareCaptionSubType\@undefined
+\providecommand\DeclareRelease[3]{}
+\providecommand\DeclareCurrentRelease[2]{}
+\DeclareRelease{v2.0}{1995-10-09}{caption2_1995-10-09.sty}
+\DeclareRelease{v2.1}{2002-08-03}{caption2_2005-10-03.sty}
+\DeclareCurrentRelease{v2.2}{2007-04-09} % 1st version using caption3
+\ProvidesPackage{caption2}[2021/01/20 v2.2i Customising captions (AR)]
+\RequirePackage{caption3}[2007/03/04]
 \newcommand*\captiontwo@Error[2][]{%
   \PackageError{caption2}{#2}{#1\caption@@eh{caption2}}}
+\providecommand*\caption@@eh[1]{%
+  If you do not understand this error, please take a closer look\MessageBreak
+  at the documentation of the `#1' package, especially the\MessageBreak
+  section about errors.\MessageBreak\@ehc}
 \@ifpackageloaded{caption}{%
   \captiontwo@Error{%
     You can't use both, the (current) caption *and*\MessageBreak
@@ -64,8 +57,13 @@
 }{}
 \newcommand*\captionlabeldelim{}
 \newcommand*\captionlabelsep{}
+\@ifundefined{captionwidth}
+  {\let\captionwidth\caption@width}
+  {}
 \newcommand*\ifcaptionwidth{\ifdim\captionwidth>\z@}
-\let\captionindent\caption@indent
+\@ifundefined{captionindent}
+  {\let\captionindent\caption@indent}
+  {}
 \def\ifcaptionlabel{%
   \ifcaption@star
     \@tempswafalse
@@ -81,6 +79,12 @@
 \def\onelinecaptionstrue{\caption@setbool{slc}{1}}
 \def\onelinecaptionsfalse{\caption@setbool{slc}{0}}
 \newif\ifignoreLTcapwidth
+\providecommand*\setcaptionmargin{%
+  \setlength\captionwidth\z@
+  \setlength\captionmargin}
+\providecommand*\setcaptionwidth{%
+  \setlength\captionmargin\z@
+  \setlength\captionwidth}
 \newcommand*\normalcaptionparams{%
   \let\captionsize\@empty
   \renewcommand*\captionfont{\captionsize}%
@@ -202,13 +206,15 @@
 \DeclareOption{oneline}{\onelinecaptionstrue}
 \DeclareOption{nooneline}{\onelinecaptionsfalse}
 \newcommand*\caption@setpackage[1]{\@namedef{caption@pkt@#1}}
+\@onlypreamble\caption@setpackage
 \DeclareOption{float}{%
   \caption@twozerofalse\caption@setpackage{float}{1}}
 \DeclareOption{longtable}{%
   \caption@twozerofalse\caption@setpackage{longtable}{1}}
 \DeclareOption{subfigure}{%
   \caption@twozerofalse\caption@setpackage{subfigure}{1}}
-\DeclareOption{none}{\caption@twozerofalse
+\DeclareOption{none}{%
+  \caption@twozerofalse
   \caption@setpackage{float}{0}\caption@setpackage{longtable}{0}%
   \caption@setpackage{subfigure}{0}}
 \DeclareOption{all}{\ExecuteOptions{float,longtable,subfigure}}
@@ -216,7 +222,6 @@
 \DeclareOption{ruled}{\caption@ruledtrue}
 \DeclareOption{boxed}{}
 \DeclareOption{ignoreLTcapwidth}{\ignoreLTcapwidthtrue}
-\DeclareOption{debug}{\caption@setup{debug}}
 \newif\ifcaption@twozero
 \normalcaptionparams
 \ExecuteOptions{none,normal}
@@ -227,9 +232,9 @@
 \fi
 \def\captionof{\@ifstar{\caption@of{\caption*}}{\caption@of\caption}}
 \newcommand*\caption@of[2]{\def\@captype{#2}#1}
-\caption@ifundefined\abovecaptionskip{%
+\@ifundefined{abovecaptionskip}{%
   \newlength\abovecaptionskip\setlength\abovecaptionskip{10\p@}}{}
-\caption@ifundefined\belowcaptionskip{%
+\@ifundefined{belowcaptionskip}{%
   \newlength\belowcaptionskip\setlength\belowcaptionskip{0\p@}}{}
 \newdimen\captionlinewidth
 \newdimen\realcaptionwidth
@@ -256,7 +261,7 @@
     \fi
   \fi\next}
 \newcommand*\usecaptionstyle[1]{%
-  \caption@ifundefined\captiontext{%
+  \@ifundefined{captiontext}{%
     \captiontwo@Error
       [The usage of \protect#1 is only
        allowed inside code declared with\MessageBreak \protect\defcaptionstyle,
@@ -276,88 +281,76 @@
   \def\captiontext{#2}%
   \usecaptionstyle\caption@style
   \vskip\belowcaptionskip}
-\newcommand*\caption@ifpackage[3]{%
-  \if1\@nameuse{caption@pkt@#1}%
-    \@ifundefined{#2}%
-      {\let\next\AtBeginDocument}%
-      {\let\next\@firstofone}%
-  \else\ifcaption@twozero
-    \@ifundefined{#2}%
-      {#3\let\next\@gobble}%
-      {\let\next\@firstofone}%
+\newcommand\caption@ifpackage[3]{%
+  \ifcaption@twozero
+    \let\next\@firstofone
+  \else\if1\@nameuse{caption@pkt@#1}%
+    \def\next{\@ifpackageloaded{#1}\@firstofone\AtBeginDocument}%
   \else
-    #3\let\next\@gobble
+    \PackageInfo{caption2}{#1 package is disabled}%
+    #3%
+    \let\next\@gobble
   \fi\fi
-  \expandafter\let\csname caption@pkt@#1\endcsname\undefined
-  \caption@ifdebug{%
-    \ifx\next\@gobble\PackageInfo{caption2}{#1 => gobble}%
-    \else\ifx\next\@firstofone\PackageInfo{caption2}{#1 => firstofone}%
-    \else\ifx\next\AtBeginDocument\PackageInfo{caption2}{#1 => AtBeginDocument}%
-    \fi\fi\fi}{}%
-  \next}
-\caption@ifpackage{float}{floatc@plain}{}{%
-  \ifx\floatc@plain\relax
-    \PackageWarning{caption2}{%
-      Option `float' was set but there is no float package loaded}
+  \@nameundef{caption@pkt@#1}%
+  \next{%
+    \@ifpackageloaded{#1}{%
+      \PackageInfo{caption2}{#1 package is loaded}%
+      #2}{%
+      \PackageInfo{caption2}{#1 package is not loaded}%
+      #3}}}
+\@onlypreamble\caption@ifpackage
+\caption@ifpackage{float}{%
+  \newcommand\caption@floatc[3]{%
+    \ifx\captionlabelfont\@empty
+      \let\captionlabelfont\@fs@cfont
+    \fi
+    \captionlinewidth\hsize
+    \realcaptionwidth\hsize
+    \def\captionlabel{#2}%
+    \def\captiontext{#3}%
+    \usecaptionstyle{#1}}%
+  \renewcommand*\floatc@plain{\caption@floatc{\caption@style}}%
+  \ifcaption@ruled
+    \dummycaptionstyle{ruled}{\onelinecaptionsfalse\setcaptionmargin{\z@}}%
   \else
-    \PackageInfo{caption2}{float package v1.2 (or newer) detected}
-    \newcommand\caption@floatc[3]{%
-      \ifx\captionlabelfont\@empty
-        \let\captionlabelfont\@fs@cfont
+    \newcaptionstyle{ruled}{%
+      \ifcaptionlabel
+        {\@fs@cfont\captionlabel}\space%
+      \fi\captiontext\par}%
+  \fi
+  \renewcommand*\floatc@ruled{\caption@floatc{ruled}}%
+  \renewcommand*\caption@of[2]{%
+    \def\@captype{#2}%
+    \@ifundefined{fst@#2}{}{%
+      \@nameuse{fst@#2}%
+      \@ifundefined{@float@setevery}{}{\@float@setevery{#2}}%
+      \let\caption@fs@capt\@fs@capt
+      \let\@fs@capt\caption@of@float}%
+    #1}%
+  \newcommand\caption@of@float[2]{\egroup
+    \vskip\abovecaptionskip
+    \normalsize\caption@fs@capt{#1}{#2}%
+    \vskip\belowcaptionskip
+    \bgroup}%
+}{}
+\caption@ifpackage{longtable}{%
+  \dummycaptionstyle{longtable}{}%
+  \renewcommand\LT@makecaption[3]{%
+    \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\hsize{%
+      \ifignoreLTcapwidth
+      \else
+        \setcaptionwidth\LTcapwidth
       \fi
       \captionlinewidth\hsize
       \realcaptionwidth\hsize
+      \captionlabelfalse#1\captionlabeltrue
       \def\captionlabel{#2}%
       \def\captiontext{#3}%
-      \usecaptionstyle{#1}}
-    \renewcommand*\floatc@plain{\caption@floatc{\caption@style}}
-    \ifcaption@ruled
-      \dummycaptionstyle{ruled}{\onelinecaptionsfalse\setcaptionmargin{\z@}}%
-    \else
-      \newcaptionstyle{ruled}{%
-        \ifcaptionlabel
-          {\@fs@cfont\captionlabel}\space%
-        \fi\captiontext\par}%
-    \fi
-    \renewcommand*\floatc@ruled{\caption@floatc{ruled}}
-    \renewcommand*\caption@of[2]{\def\@captype{#2}%
-      \@ifundefined{fst@#2}{}{%
-        \@nameuse{fst@#2}%
-        \caption@ifundefined\@float@setevery{}{\@float@setevery{#2}}%
-        \let\caption@fs@capt\@fs@capt
-        \let\@fs@capt\caption@of@float}%
-      #1}
-    \newcommand\caption@of@float[2]{\egroup
-      \vskip\abovecaptionskip
-      \normalsize\caption@fs@capt{#1}{#2}%
-      \vskip\belowcaptionskip
-      \bgroup}%
-  \fi}
-\caption@ifpackage{longtable}{LT@makecaption}{}{%
-  \ifx\LT@makecaption\relax
-    \PackageWarning{caption2}{%
-      Option `longtable' was set but there is no longtable package loaded}
-  \else
-    \PackageInfo{caption2}{longtable package v3.15 (or newer) detected}
-    \dummycaptionstyle{longtable}{}
-    \renewcommand\LT@makecaption[3]{%
-      \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\hsize{%
-        \ifignoreLTcapwidth
-        \else
-          \setcaptionwidth\LTcapwidth
-        \fi
-        \captionlinewidth\hsize
-        \realcaptionwidth\hsize
-        \captionlabelfalse#1\captionlabeltrue
-        \def\captionlabel{#2}%
-        \def\captiontext{#3}%
-        \usecaptionstyle{longtable}%
-        \endgraf\vskip\baselineskip}%
-      \hss}}}
-  \fi}
+      \usecaptionstyle{longtable}%
+      \endgraf\vskip\baselineskip}%
+    \hss}}}%
+}{}
 \newcommand*\setsubcapstyle{%
-  \caption@ifundefined\subcapraggedrightfalse{%
-    \newif\ifsubcapraggedright}{}%
   \ifsubcaphang
     \ifsubcapcenter
       \subcapstyle{hang+center}%
@@ -377,6 +370,9 @@
   \else
     \subcapstyle{normal}%
   \fi\fi\fi\fi}
+\AtBeginDocument{%
+  \@ifundefined{subcapraggedrightfalse}{%
+    \newif\ifsubcapraggedright}{}}
 \newcommand\caption@makesubcaption[2]{%
   \renewcommand*\captionfont{\subcapsize\subcapfont}%
   \renewcommand*\captionlabelfont{\normalfont\subcapsize\subcaplabelfont}%
@@ -404,55 +400,49 @@
       \def\captiontext{\ignorespaces #2}%
       \usecaptionstyle\caption@substyle}%
     \caption@subfig@hss}}
-\caption@ifpackage{subfigure}{@makesubfigurecaption}{%
-  \let\setsubcapstyle\undefined
-  \let\caption@makesubcaption\undefined}{%
-  \ifx\@makesubfigurecaption\relax
-    \PackageWarning{caption2}{%
-      Option `subfigure' was set but there is no subfigure package loaded}
-    \let\setsubcapstyle\undefined
-    \let\caption@makesubcaption\undefined
+\caption@ifpackage{subfigure}{%
+  \ifx\subcapfont\@undefined
+    \PackageInfo{caption2}{subfigure package v2.0 detected}%
+    \let\subcapfont\@empty
+    \newcommand*\subfigcapwidth{\z@}%
+    \newcommand*\setsubcapmargin{%
+      \subfigcapwidthfalse
+      \renewcommand*\subfigcapmargin}%
+    \newcommand*\setsubcapwidth{%
+      \subfigcapwidthtrue
+      \renewcommand*\subfigcapwidth}%
+    \newcommand*\subcaplabelsep{\space}%
+    \let\caption@subfig@hss\hfil
   \else
-    \ifx\subcapfont\undefined
-      \PackageInfo{caption2}{subfigure package v2.0 detected}
-      \let\subcapfont\@empty
-      \newcommand*\subfigcapwidth{\z@}
-      \newcommand*\setsubcapmargin{%
-        \subfigcapwidthfalse
-        \renewcommand*\subfigcapmargin}
-      \newcommand*\setsubcapwidth{%
-        \subfigcapwidthtrue
-        \renewcommand*\subfigcapwidth}
-      \newcommand*\subcaplabelsep{\space}
-      \let\caption@subfig@hss\hfil
+    \PackageInfo{caption2}{subfigure package v2.1 (or newer) detected}%
+    \newdimen\subfigcapwidth
+    \newcommand*\setsubcapmargin{%
+      \subfigcapwidthfalse
+      \setlength\subfigcapmargin}%
+    \newcommand*\setsubcapwidth{%
+      \subfigcapwidthtrue
+      \setlength\subfigcapwidth}%
+    \newcommand*\subcaplabelsep{\hskip\subfiglabelskip}%
+    \let\caption@subfig@hss\hss
+  \fi
+  \newif\ifsubfigcapwidth
+  \newdimen\subcapindent
+  \newcommand*\subcaplabeldelim{}%
+  \newcommand*\subcapstyle[1]{%
+    \expandafter\ifx\csname caption@@#1\endcsname\relax
+      \captiontwo@Error{Undefined caption style `#1'}%
     \else
-      \PackageInfo{caption2}{subfigure package v2.1 (or newer) detected}
-      \newdimen\subfigcapwidth
-      \newcommand*\setsubcapmargin{%
-        \subfigcapwidthfalse
-        \setlength\subfigcapmargin}
-      \newcommand*\setsubcapwidth{%
-        \subfigcapwidthtrue
-        \setlength\subfigcapwidth}
-      \newcommand*\subcaplabelsep{\hskip\subfiglabelskip}
-      \let\caption@subfig@hss\hss
-    \fi
-    \newif\ifsubfigcapwidth
-    \newdimen\subcapindent
-    \newcommand*\subcaplabeldelim{}
-    \newcommand*\subcapstyle[1]{%
-      \expandafter\ifx\csname caption@@#1\endcsname\relax
-        \captiontwo@Error{Undefined caption style `#1'}%
-      \else
-        \def\caption@substyle{#1}%
-      \fi}
-    \setsubcapstyle
-    \renewcommand*\@thesubfigure{\thesubfigure}
-    \renewcommand*\@thesubtable{\thesubtable}
-    \let\@makesubfigurecaption\caption@makesubcaption
-    \let\@makesubtablecaption\caption@makesubcaption
-  \fi}
-\let\caption@ifpackage\undefined
+      \def\caption@substyle{#1}%
+    \fi}%
+  \setsubcapstyle
+  \renewcommand*\@thesubfigure{\thesubfigure}%
+  \renewcommand*\@thesubtable{\thesubtable}%
+  \let\@makesubfigurecaption\caption@makesubcaption
+  \let\@makesubtablecaption\caption@makesubcaption
+}{%
+  \let\setsubcapstyle\@undefined
+  \let\caption@makesubcaption\@undefined
+}
 \endinput
 %%
 %% End of file `caption2.sty'.

@@ -1,5 +1,5 @@
-% html4.4ht (2021-06-03-14:10), generated from tex4ht-html4.tex
-% Copyright 2009-2021 TeX Users Group
+% html4.4ht (2022-03-08-13:51), generated from tex4ht-html4.tex
+% Copyright 2009-2022 TeX Users Group
 % Copyright 1997-2009 Eitan M. Gurari
 %
 % This work may be distributed and/or modified under the
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-06-03-14:10}
+\immediate\write-1{version 2022-03-08-13:51}
 
 \exit:ifnot{8859-6,% 
 CJK,% 
@@ -209,6 +209,7 @@ sectionbreak,%
 seminar,% 
 seslideb,% 
 sistyle,% 
+siunitx,% 
 skak,% 
 slides,% 
 slidesec,% 
@@ -227,12 +228,15 @@ syntax,%
 t2benc,% 
 tabularx,% 
 tabulary,% 
+tasks,% 
 tcilatex,% 
 tcolorbox,% 
 tex4ht,% 
 tex4ht2,% 
 texinfo,% 
+texmate,% 
 th4,% 
+threeparttable,% 
 titlesec,% 
 tugboat,% 
 turkish,% 
@@ -1190,6 +1194,7 @@ switches of tex4ht.c)
 \Configure{pic-halign}{}
 \Configure{halignTB<>}{halign}{\HCode{id="TBL-\TableNo" class="halign"\Hnewline }<>}
 \HAssign\Next:TableNo0 \global\let\TableNo=\Next:TableNo
+\Css{table.tabular{border-collapse: collapse; border-spacing: 0;}}
 \Configure{halignTD} {}{}
    {<}{\HCode{ style="white-space:nowrap; text-align:left;"}}
    {-}{\HCode{ style="white-space:nowrap; text-align:center;"}}
@@ -1385,6 +1390,8 @@ switches of tex4ht.c)
 \Css{li p.indent { text-indent: 0em }}
 \Css{li p:first-child{ margin-top:0em; }}
 \Css{li p:last-child, li div:last-child { margin-bottom:0.5em; }}
+% fix for <li> with only one paragraph
+\Css{li p:first-child{ margin-bottom:0; }}
 \Css{li p\string ~ul:last-child,
      li p\string ~ol:last-child{ margin-bottom:0.5em; }}
 \ConfigureEnv{trivlist}
@@ -1548,6 +1555,7 @@ switches of tex4ht.c)
    {\HCode{</span>}}
    {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par\indent\ShowPar}
 \Css{div.newtheorem { margin-bottom: 2em; margin-top: 2em;}}
+\Css{div.newtheorem .head{font-weight: bold;}}
 \Configure{ }{\:nbsp}
 
 \def\end:TTT{\ifvmode\IgnorePar\fi \EndP\HCode{</td></tr></table>}}
@@ -2930,10 +2938,10 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \Css{td p:first-child{ margin-top:0em; }}
 \Css{td p:last-child{ margin-bottom:0em; }}
 \Configure{multicolumn}
-   {\let\col:Css\empty
+   {\global\let\col:Css\empty
     \Configure{VBorder}
        {}
-       {\edef\col:Css{\col:Css
+       {\xdef\col:Css{\col:Css
                      border-\ifnum \ar:cnt=0 left\else right\fi
                      :solid black 0.4pt;}%
        }{}{}%
@@ -3039,8 +3047,15 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
     \gHAdvance\Next:TableNo by 1 \global\let\TableNo=\Next:TableNo }
    {\xdef\VBorder{\VBorder\ifnum \NewGroup> 0 </colgroup>\fi}
     \HAssign\NewGroup = 0 % \gdef\GROUPS{rules="groups"}}
-    \Css{\#TBL-\TableNo\space colgroup{border-left: 1px solid black;border-right:1px solid black;}}
-  \Css{\#TBL-\TableNo{border-collapse:collapse;}}}
+    % put vertical border for a column
+    \ifnum\ar:cnt > 0%
+      % in all other cases, we should put right border
+      \Css{\#TBL-\TableNo-\ar:cnt {border-right:1px solid black;}}%
+    \else%
+      % columns are numbered from 1. if \ar:cnt == 0 then it is the left border
+      \Css{\#TBL-\TableNo-1{border-left: 1px solid black;}}%
+    \fi%
+   }
    {\Advance:\NewGroup by 1
     \ifnum \NewGroup=1 \xdef\VBorder{\VBorder<colgroup
         id="TBL-\TableNo-\ar:cnt g">}\fi
@@ -3059,6 +3074,7 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \Css{.hline hr, .cline hr{  height : 0px; margin:0px; }}
 \Css{.hline td, .cline td{ padding: 0; }}
 \Css{.hline hr, .cline hr{border:none;border-top:1px solid black;}}
+\Css{.hline {border-top: 1px solid black;}}
 \def\putVBorder{\expandafter\put:VBorder\VBorder</>!*?: }
 \def\put:VBorder#1</#2>#3!*?: {\def\:temp{#2}\ifx\:temp\empty
      \HCode{\VBorder}%
@@ -3359,10 +3375,12 @@ j{01F0}H{021E}h{021F}\i{01D0}\j{01F0}%
 \edef\ten:Em{\expandafter\ten:Em \the\tmp:dim//}
 
   \Configure{HColWidth}
-     {\tmp:dim=\HColWidth \divide\tmp:dim by \ten:Em\relax
+     {\ifnum\HRow=1% output CSS only on the first row, to prevent duplication
+      \tmp:dim=\HColWidth \divide\tmp:dim by \ten:Em\relax
       \tmp:dim=10\tmp:dim
-      \Css{\#TBL-\TableNo-\HRow-\HCol
-                   {width:\expandafter\x:Em \the\tmp:dim em;}}}
+      \Css{\#TBL-\TableNo-\HCol% CSS selects ID of the current table column
+          {width:\expandafter\x:Em \the\tmp:dim em;}}
+     \fi}
 \else
    \Log:Note{for width specifications of tabular p entries, use
        the `p-width' command line option or a configuration similar
@@ -11505,6 +11523,7 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{graphicx}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11515,7 +11534,6 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11788,11 +11806,13 @@ height="\expandafter\int:pt\the\Gin@req@height!*?: "
 
 \ifx \deferred@thm@head\:UnDef\else
    \Configure{proof}
-   {\ifvmode \IgnorePar \fi \EndP
-       \HCode{<div class="proof">}\par\ShowPar
-       \HCode{<span class="head">}\IgnorePar}
-   {\HCode{</span>}\ShowPar}
-   {\ifvmode \IgnorePar \fi \EndP \HCode{</div>}\par}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{<div class="proof">}\par\ShowPar
+       \HCode{<span class="head">}\HtmlParOff}
+   {\HCode{</span>}\HtmlParOn}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+% it seems that paragraphs are not started after the proof environment
+% this configuration helps
+\ConfigureEnv{proof}{}{\par\ShowPar}{}{}
 
    \Configure{qed}
      {\HCode{<span class="qed">}} {\HCode{</span>}}
@@ -14364,11 +14384,13 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
 
 \ifx \deferred@thm@head\:UnDef\else
    \Configure{proof}
-   {\ifvmode \IgnorePar \fi \EndP
-       \HCode{<div class="proof">}\par\ShowPar
-       \HCode{<span class="head">}\IgnorePar}
-   {\HCode{</span>}\ShowPar}
-   {\ifvmode \IgnorePar \fi \EndP \HCode{</div>}\par}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{<div class="proof">}\par\ShowPar
+       \HCode{<span class="head">}\HtmlParOff}
+   {\HCode{</span>}\HtmlParOn}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+% it seems that paragraphs are not started after the proof environment
+% this configuration helps
+\ConfigureEnv{proof}{}{\par\ShowPar}{}{}
 
    \Configure{qed}
      {\HCode{<span class="qed">}} {\HCode{</span>}}
@@ -16625,12 +16647,12 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
     \TitleMark\space \HtmlParOff}
    {\HCode{</h5>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
 \Configure{paragraph}{}{}
-  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
+  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup}
   {\endgroup\HCode{</span>}\IgnorePar}
 \ConfigureMark{subparagraph}{\thesubparagraph}
 \Css{.paragraphHead  { margin-top:2em; font-weight: bold;}}
 \Configure{subparagraph}{}{}
-  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup\bf
+  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup
    \TitleMark\space}
   {\endgroup\HCode{</span>}\IgnorePar}
 \Css{.subparagraphHead { font-weight: bold;}}
@@ -16734,6 +16756,7 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsproc}
@@ -16988,11 +17011,13 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
 
 \ifx \deferred@thm@head\:UnDef\else
    \Configure{proof}
-   {\ifvmode \IgnorePar \fi \EndP
-       \HCode{<div class="proof">}\par\ShowPar
-       \HCode{<span class="head">}\IgnorePar}
-   {\HCode{</span>}\ShowPar}
-   {\ifvmode \IgnorePar \fi \EndP \HCode{</div>}\par}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{<div class="proof">}\par\ShowPar
+       \HCode{<span class="head">}\HtmlParOff}
+   {\HCode{</span>}\HtmlParOn}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+% it seems that paragraphs are not started after the proof environment
+% this configuration helps
+\ConfigureEnv{proof}{}{\par\ShowPar}{}{}
 
    \Configure{qed}
      {\HCode{<span class="qed">}} {\HCode{</span>}}
@@ -19249,12 +19274,12 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
     \TitleMark\space \HtmlParOff}
    {\HCode{</h5>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
 \Configure{paragraph}{}{}
-  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
+  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup}
   {\endgroup\HCode{</span>}\IgnorePar}
 \ConfigureMark{subparagraph}{\thesubparagraph}
 \Css{.paragraphHead  { margin-top:2em; font-weight: bold;}}
 \Configure{subparagraph}{}{}
-  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup\bf
+  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup
    \TitleMark\space}
   {\endgroup\HCode{</span>}\IgnorePar}
 \Css{.subparagraphHead { font-weight: bold;}}
@@ -19313,17 +19338,18 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amsthm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \ConfigureEnv{proof}{\par\leavevmode}{\par\ShowPar}{}{}
 \Configure{proof}
-   {\ifvmode \IgnorePar \fi \EndP
-       \HCode{<div class="proof">}\par\ShowPar
-       \HCode{<span class="head">}\IgnorePar}
-   {\HCode{</span>}\ShowPar}
-   {\ifvmode \IgnorePar \fi \EndP \HCode{</div>}\par}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{<div class="proof">}\par\ShowPar
+       \HCode{<span class="head">}\HtmlParOff}
+   {\HCode{</span>}\HtmlParOn}
+   {\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par}
+% it seems that paragraphs are not started after the proof environment
+% this configuration helps
+\ConfigureEnv{proof}{}{\par\ShowPar}{}{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19349,7 +19375,6 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{amstex1}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19360,7 +19385,7 @@ s{015B}u{00FA}y{00FD}z{017A}j{FFFD}J{FFDD}\i{00ED}\j{FFFD}%
    \Css{div.center-#1{text-align: center;}}
  }
 \def\endm:env{\:xhtml{\IgnorePar\EndP}%
-   \HCode{</td></tr></table></center>}\IgnorePar
+   \HCode{</td></tr></table></div>}\IgnorePar
    \ifmmode\else\par\fi}
 
 
@@ -20380,6 +20405,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{reading}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20402,7 +20428,6 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{glossary}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20415,6 +20440,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{letter}
@@ -20516,7 +20542,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{latin2}
@@ -20645,6 +20670,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{hyperref}
@@ -20831,6 +20857,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{array}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20859,10 +20886,10 @@ Y{0178}\i{00EF}%
 \Css{td p:first-child{ margin-top:0em; }}
 \Css{td p:last-child{ margin-bottom:0em; }}
 \Configure{multicolumn}
-   {\let\col:Css\empty
+   {\global\let\col:Css\empty
     \Configure{VBorder}
        {}
-       {\edef\col:Css{\col:Css
+       {\xdef\col:Css{\col:Css
                      border-\ifnum \ar:cnt=0 left\else right\fi
                      :solid black 0.4pt;}%
        }{}{}%
@@ -20968,8 +20995,15 @@ Y{0178}\i{00EF}%
     \gHAdvance\Next:TableNo by 1 \global\let\TableNo=\Next:TableNo }
    {\xdef\VBorder{\VBorder\ifnum \NewGroup> 0 </colgroup>\fi}
     \HAssign\NewGroup = 0 % \gdef\GROUPS{rules="groups"}}
-    \Css{\#TBL-\TableNo\space colgroup{border-left: 1px solid black;border-right:1px solid black;}}
-  \Css{\#TBL-\TableNo{border-collapse:collapse;}}}
+    % put vertical border for a column
+    \ifnum\ar:cnt > 0%
+      % in all other cases, we should put right border
+      \Css{\#TBL-\TableNo-\ar:cnt {border-right:1px solid black;}}%
+    \else%
+      % columns are numbered from 1. if \ar:cnt == 0 then it is the left border
+      \Css{\#TBL-\TableNo-1{border-left: 1px solid black;}}%
+    \fi%
+   }
    {\Advance:\NewGroup by 1
     \ifnum \NewGroup=1 \xdef\VBorder{\VBorder<colgroup
         id="TBL-\TableNo-\ar:cnt g">}\fi
@@ -20988,6 +21022,7 @@ Y{0178}\i{00EF}%
 \Css{.hline hr, .cline hr{  height : 0px; margin:0px; }}
 \Css{.hline td, .cline td{ padding: 0; }}
 \Css{.hline hr, .cline hr{border:none;border-top:1px solid black;}}
+\Css{.hline {border-top: 1px solid black;}}
 \def\putVBorder{\expandafter\put:VBorder\VBorder</>!*?: }
 \def\put:VBorder#1</#2>#3!*?: {\def\:temp{#2}\ifx\:temp\empty
      \HCode{\VBorder}%
@@ -21018,6 +21053,7 @@ Y{0178}\i{00EF}%
    }<>\HAlign}
 \Css{table[rules] {border-left:solid black 0.4pt;
                    border-right:solid black 0.4pt; }}
+\Css{table.longtable{border-collapse: collapse; border-spacing: 0;}}
 \Configure{longtable}
    {\IgnorePar\EndP
      \HCode{<!--l. \the\inputlineno-->%
@@ -21062,6 +21098,7 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{tabularx}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21071,6 +21108,8 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28509,7 +28548,6 @@ Y{0178}\i{00EF}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{csquotes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28557,6 +28595,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{german}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28577,6 +28616,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -28655,6 +28695,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{epsf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28666,7 +28707,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{psfig}
@@ -28815,6 +28855,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{xcolor}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28834,7 +28875,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -28875,6 +28915,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{minitoc}
@@ -28940,6 +28981,7 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{index}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28997,6 +29039,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29084,7 +29127,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{adjustbox}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29105,6 +29147,7 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{awesomebox}
@@ -30150,7 +30193,6 @@ Y{0178}\i{00EF}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{t2benc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30253,6 +30295,7 @@ Y{0178}\i{00EF}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{arabicore}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30269,8 +30312,6 @@ Y{0178}\i{00EF}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 
 
@@ -30431,7 +30472,6 @@ font-size:70\%;
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{powerdot}
@@ -30695,6 +30735,22 @@ description">}%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{threeparttable}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \ConfigureList{tablenotes}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="tablenotes">}\par\ShowPar}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}}{\par\ShowPar}{}
+
+\ConfigureEnv{threeparttable}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="threeparttable">}}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par\ShowPar}{}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mdwtab}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \Configure{smarray}
@@ -30743,7 +30799,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{wrapfig}
@@ -30809,6 +30864,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{subscript}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30842,7 +30898,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{subcaption}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30860,6 +30915,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 
@@ -30924,7 +30980,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{picins}
@@ -32233,6 +32288,7 @@ description">}%
 
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{scrbook}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32321,6 +32377,7 @@ description">}%
    {\ifvmode \IgnorePar\fi\EndP \HCode{<div class="dedication" >}}
    {\ifvmode \IgnorePar\fi\EndP \HCode{</div>}}
 \Css{div.dedication {text-align:center;}}
+\Css{div.titlepage{ margin-bottom: 2em; text-align:center; }}
 
 %  \Css{span.footnote-mark{ vertical-align: super }}
 \Css{span.footnote-mark   sup.textsuperscript,
@@ -32331,6 +32388,7 @@ description">}%
     \bgroup \IgnorePar\HCode{<h5 class="minisecHead"\a:LRdir>}%
     \TitleMark\space \HtmlParOff}
    {\HCode{</h5>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="subtitle">}}{\HCode{</div>}}
 
 \ConfigureMark{subsection}
    {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
@@ -32821,21 +32879,21 @@ description">}%
 
 
 \Configure{paragraph}{}{}
-  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup\bf}
-  {\endgroup\HCode{</span>}}
+  {\ShowPar\IgnoreIndent\HCode{<span class="paragraphHead"\a:LRdir>}\begingroup}
+  {\endgroup\HCode{</span>}\IgnorePar}
 \Configure{likeparagraph}{}{}
   {\ShowPar\IgnoreIndent\HCode{<span class="likeparagraphHead"\a:LRdir>}}
-  {\HCode{</span>}}
+  {\HCode{</span>}\IgnorePar}
 \Css{.paragraphHead, .likeparagraphHead
    { margin-top:2em; font-weight: bold;}}
 
-\ConfigureMark{subparagraph}{\thesubparagraph}
+\ConfigureMark{subparagraph}{}
 \Configure{subparagraph}{}{}
-  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup\bf
+  {\ShowPar\HCode{<span class="subparagraphHead"\a:LRdir>}\begingroup
    \TitleMark\space}
   {\endgroup\HCode{</span>}\IgnorePar}
 \Configure{likesubparagraph}{}{}
-  {\ShowPar\HCode{<span class="likesubparagraphHead"\a:LRdir>}\begingroup\bf}
+  {\ShowPar\HCode{<span class="likesubparagraphHead"\a:LRdir>}\begingroup}
   {\endgroup\HCode{</span>}\IgnorePar}
 \Css{.subparagraphHead, .likesubparagraphHead
    { font-weight: bold;}}
@@ -33007,6 +33065,7 @@ description">}%
     \bgroup \IgnorePar\HCode{<h5 class="minisecHead"\a:LRdir>}%
     \TitleMark\space \HtmlParOff}
    {\HCode{</h5>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="subtitle">}}{\HCode{</div>}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33098,6 +33157,7 @@ description">}%
    {\ifvmode \IgnorePar\fi\EndP \HCode{<div class="dedication" >}}
    {\ifvmode \IgnorePar\fi\EndP \HCode{</div>}}
 \Css{div.dedication {text-align:center;}}
+\Css{div.titlepage{ margin-bottom: 2em; text-align:center; }}
 
 \ConfigureMark{chapter}
    {\HCode{<span class="titlemark">}\thechapter\HCode{</span>}\ \ }
@@ -33643,6 +33703,7 @@ description">}%
     \bgroup \IgnorePar\HCode{<h5 class="minisecHead"\a:LRdir>}%
     \TitleMark\space \HtmlParOff}
    {\HCode{</h5>}\HtmlParOn \IgnoreIndent\egroup\par\ShowPar}
+\Configure{subtitle}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="subtitle">}}{\HCode{</div>}}
 
 \ConfigureMark{subsection}
    {\ifnum \c:secnumdepth>\c@secnumdepth  \expandafter\:gobble
@@ -33792,6 +33853,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{elsart}
@@ -33953,6 +34015,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34274,7 +34337,6 @@ description">}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{g-brief}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34467,6 +34529,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ltxguide}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34478,7 +34541,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -34679,6 +34741,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{cp1256}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34699,6 +34762,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{germanb}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34710,6 +34774,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ngermanb}
@@ -34723,7 +34788,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{manju}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34733,7 +34797,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34763,7 +34826,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pythontex}
@@ -34932,6 +34994,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35414,6 +35477,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{foils}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35505,7 +35569,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{slidesec}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35535,6 +35598,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pictex}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35547,7 +35611,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{diagrams}
@@ -35605,6 +35668,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{endfloat}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35631,6 +35695,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pb-diagram}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35642,7 +35707,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pgf}
@@ -35685,6 +35749,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{europecv}
@@ -35774,7 +35839,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{resume}
@@ -35885,6 +35949,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{enumitem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35897,14 +35962,12 @@ description">}%
    {\end:itm \global\def\end:itm{\EndP\Tg</dd>}\HCode{<dt
         class="enumerate-enumitem">}\bgroup \bf}
    {\egroup\EndP\HCode{</dt><dd\Hnewline class="enumerate-enumitem">}}
-\Css{dt.enumerate-enumitem{float:left; clear:left;
-                           margin-left:1em; margin-right:1em;}}
+\Css{dl.enumerate-enumitem{display:grid; grid-template-columns: 3ch 1fr;}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36304,6 +36367,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{SIunits}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36314,6 +36378,31 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{siunitx}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \ExplSyntaxOn
+\ifdefined\fixmathjaxtoc
+\AtBeginDocument{%
+\cs_gset_protected:Npn \__siunitx_print_math_auxii:n #1
+  {
+    \tl_set:Nn \l__siunitx_print_tmp_tl {#1}
+    \exp_args:NNnx \tl_replace_all:Nnn \l__siunitx_print_tmp_tl
+      { ^ } { \token_to_str:N ^ }
+    % escape special HTML characters
+    \regex_replace_all:nnN { \x{26} } { &amp; } \l__siunitx_print_tmp_tl
+    \regex_replace_all:nnN { \x{3C} } { &lt; } \l__siunitx_print_tmp_tl
+    \regex_replace_all:nnN { \x{3E} } { &gt; } \l__siunitx_print_tmp_tl
+    \HCode{\detokenize{\(} \tl_to_str:N \l__siunitx_print_tmp_tl \detokenize{\)}}
+}
+}
+\fi
+\ExplSyntaxOff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{sistyle}
@@ -36334,6 +36423,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36363,7 +36453,6 @@ description">}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{appendix}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36373,6 +36462,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{res}
@@ -36446,7 +36536,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36538,6 +36627,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36561,34 +36651,38 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{booktabs}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \Configure{toprule}
+    
+\def\hline:color{000}
+
+
+\Configure{toprule}
    {\@thisrulewidth=\csname a:rule-mag\endcsname\@thisrulewidth
 %
     \Css{tr\#TBL-\TableNo-\ifnum \HRow=0
-          1- td{border-top:\expandafter\x:Em \the\@thisrulewidth em
- solid}
+          1- {border-top:\expandafter\x:Em \the\@thisrulewidth em
+ solid \#\hline:color;}
      \else
-          \HRow- td{border-bottom:\expandafter\x:Em \the\@thisrulewidth em
- solid}
+          \HRow- {border-bottom:\expandafter\x:Em \the\@thisrulewidth em
+ solid \#\hline:color;}
      \fi
    }}
 \Configure{bottomrule}
    {\@thisrulewidth=\csname a:rule-mag\endcsname\@thisrulewidth
 %
     \Css{tr\#TBL-\TableNo-\HRow-
-            td{border-bottom:\expandafter\x:Em \the\@thisrulewidth em
- solid}}}
+            {border-bottom:\expandafter\x:Em \the\@thisrulewidth em
+ solid  \#\hline:color}}}
 \Configure{midrule}
    {\@thisrulewidth=\csname a:rule-mag\endcsname\@thisrulewidth
 %
     \Css{tr\#TBL-\TableNo-\HRow-
-            td{border-bottom:\expandafter\x:Em \the\@thisrulewidth em
- solid}}}
+            {border-bottom:\expandafter\x:Em \the\@thisrulewidth em
+ solid \#\hline:color}}}
 \Configure{cmidrule}
    {\@thisrulewidth=\csname a:rule-mag\endcsname\@thisrulewidth
 %
     \Css{td\#TBL-\TableNo-\HRow-\HCol{border-bottom:\expandafter\x:Em \the\@thisrulewidth em
- solid}}%
+ solid \#\hline:color}}%
     \HCode{<span class="cmidrule"><!-- enable post-processing of cmidrule--></span>}}
 \NewConfigure{rule-mag}{1}
 \Configure{rule-mag}{0.14}
@@ -36604,7 +36698,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36690,7 +36783,6 @@ description">}%
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{longdiv}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36718,7 +36810,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{tugboat}
@@ -36819,7 +36910,6 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ltugboat}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36912,6 +37002,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{ltugproc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36967,7 +37058,6 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{mls}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36989,6 +37079,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{boxedminipage}
@@ -37038,7 +37129,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{go}
@@ -37215,6 +37305,7 @@ description">}%
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{pifont}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37284,50 +37375,72 @@ description">}%
     \gHAdvance\listingN by 1
     \HCode{<!--l. \the\inputlineno-->}%
     \gdef\start:LstLn{%
-       \HCode{<div class="lstlisting" id="listing-\listingN">}%
+       \HCode{<pre class="lstlisting" id="listing-\listingN">}%
        \gdef\start:LstLn{\:nbsp%
 \HCode{<br />\Hnewline}}}
-    \bgroup
+    \bgroup%
+    % we put the closing </div> here in order to support floating listings
+    % https://tex.stackexchange.com/a/615703/2891
+    \pend:def\lst@DeInit{\ifvmode\IgnorePar\fi\EndP\HCode{</pre>}}%
        \Configure{listings}
          {{\everypar{}\leavevmode}}
          {{\everypar{}\leavevmode}}
          {\start:LstLn \HCode{<span class="label">}}
          {\HCode{</span>}}%
    }
-   {\egroup
-    \ifvmode \IgnorePar\fi \EndP \HCode{</div>}\par}
+   {\egroup\par}
    {} {}
 \Css{.lstlisting .label{margin-right:0.5em; }}
-\Css{div.lstlisting{font-family: monospace,monospace; white-space: nowrap;
+\Css{pre.lstlisting{font-family: monospace,monospace; white-space: nowrap;
                     margin-top:0.5em; margin-bottom:0.5em;
                    }}
 \Configure{lstinputlisting}
    {\ifvmode \IgnorePar\fi \EndP
     \HCode{<!--l. \the\inputlineno-->}%
-    \HCode{<div class="lstinputlisting">}%
+    \HCode{<pre class="lstinputlisting">}%
     \bgroup \tt %\special{t4ht@(}%
        \Configure{listings}
          {{\everypar{}\leavevmode}}
          {{\everypar{}\leavevmode}}
          {\:nbsp%
 %
-             \HCode{<br /><span class="label">}}
+             \HCode{<br />\Hnewline<span class="label">}}
          {\HCode{</span>}}%
    }
    {%\special{t4ht@)}
     \egroup
-    \ifvmode \IgnorePar\fi \EndP  \HCode{</div>}\par}
-\Css{div.lstinputlisting{
+    \ifvmode \IgnorePar\fi \EndP  \HCode{</pre>}\par}
+\Css{pre.lstinputlisting{
    font-family: monospace,monospace;
    white-space: nowrap;
 }}
 \Css{.lstinputlisting .label{margin-right:0.5em;}}
+\lst@AddToHook{PostOutput}{\HCode{</span>}}%
+
+\lst@AddToHook{OutputBox}{%
+  % get current color in the CSS form
+  \extractcolorspec{.}\html@color%
+  \expandafter\convertcolorspec\html@color{HTML}\html@color%
+  \HCode{<span style="color:\#\html@color">}}% init
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{tasks}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \ConfigureList{tasks}
+{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="tasks">}\def\end:task{}}
+{\ifvmode\IgnorePar\fi\EndP\end:task\HCode{</div>}}
+{\end:task\HCode{<div class="task"><span class="label">}\def\end:task{\HCode{</div>}}}
+{\HCode{</span>}\noindent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{alphanum}
@@ -37388,6 +37501,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{lineno}
@@ -37466,7 +37580,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 
@@ -37787,6 +37900,7 @@ description">}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{endnotes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37799,7 +37913,6 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37827,6 +37940,7 @@ description">}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{exerquiz}
@@ -37923,6 +38037,7 @@ emailing the fix to gurari@cse.ohio-state.edu. Thanks\Hnewline
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 \ConfigureHinput{nicefrac}
@@ -40084,6 +40199,18 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                \ConfigureHinput{texmate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \Configure{makediagramsfix}{\PictureOff}{\PictureOn}
+\Configure{makediagrams}{\ifvmode\IgnorePar\fi\EndP\HCode{<div class="makediagrams">}}
+{\ifvmode\IgnorePar\fi\EndP\HCode{</div>}\par\leavevmode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  
+\endinput\empty\empty\empty\empty\empty\empty
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40117,6 +40244,7 @@ y{\ht:special{t4ht@+\string&{35}x00FD{59}}y}%
   
 \endinput\empty\empty\empty\empty\empty\empty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 

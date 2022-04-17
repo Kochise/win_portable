@@ -7,7 +7,10 @@
 %% bidi.dtx  (with options: `table,bidi-media9.sty')
 %% 
 %%   __________________________________________________
-%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Vafa Khalighi
+%%   tex-persian@vafa.ac
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
 %% 
 %%   It may be distributed and/or modified under the LaTeX Project Public License,
@@ -18,7 +21,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50426}
+%% \CheckSum{50574}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -35,7 +38,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesExplPackage{bidi-media9}{2017/08/27}{0.3}
+\ProvidesExplPackage{bidi-media9}{2022/02/18}{0.4}
 {bidi fixes for media9 package for the XeTeX engine}
 
 \keys_define:nn{media9/mbtn}{
@@ -66,7 +69,7 @@
     \regex_replace_once:nnN{([^:]+):??.*}{\1}\l_tmpa_tl
     \tl_trim_spaces:N\l_tmpa_tl
     \tl_if_exist:cTF{ann@\l_tmpa_tl}{
-      \str_if_eq_x:nnF{\tl_use:c{ann@\l_tmpa_tl}}{draft}{
+      \str_if_eq:eeF{\tl_use:c{ann@\l_tmpa_tl}}{draft}{
         \tl_set:Nx\l_tmpb_tl{#1}          %extract idx
         \regex_replace_once:nnN{[^:]+:?}{}\l_tmpb_tl
         \tl_trim_spaces:N\l_tmpb_tl
@@ -117,7 +120,7 @@
     \regex_replace_once:nnN{([^:]+):??.*}{\1}\l_tmpa_tl %extract ref
     \tl_trim_spaces:N\l_tmpa_tl
     \tl_if_exist:cTF{ann@\l_tmpa_tl}{
-      \str_if_eq_x:nnF{\tl_use:c{ann@\l_tmpa_tl}}{draft}{
+      \str_if_eq:eeF{\tl_use:c{ann@\l_tmpa_tl}}{draft}{
         \tl_set:Nx\l_tmpb_tl{#1}
         \regex_replace_once:nnN{[^:]+\:?}{}\l_tmpb_tl
         \tl_trim_spaces:N\l_tmpb_tl
@@ -189,7 +192,7 @@
     \bool_lazy_and:nnT{
       \tl_if_exist_p:c{ann@\l_tmpa_tl}
     }{
-      !\str_if_eq_x_p:nn{\tl_use:c{ann@\l_tmpa_tl}}{draft}
+      !\str_if_eq_p:ee{\tl_use:c{ann@\l_tmpa_tl}}{draft}
     }{
       \mix_pdfobj:nnn{}{dict}{
         /S/JavaScript/JS~(
@@ -207,7 +210,7 @@
       \bool_lazy_and_p:nn{
         \tl_if_exist_p:c{ann@\l_tmpa_tl}
       }{
-        !\str_if_eq_x_p:nn{\tl_use:c{ann@\l_tmpa_tl}}{draft}
+        !\str_if_eq_p:ee{\tl_use:c{ann@\l_tmpa_tl}}{draft}
       }
       || !\tl_if_blank_p:V\l_tmpb_tl
     }{
@@ -225,7 +228,7 @@
   \mix_uriend:
   \group_begin:
   \mix_beginLTR:
-  \leavevmode
+  \mode_leave_vertical:
   %empty stream as appearance dummy
   \cs_if_exist:NF\g_mix_appearance_tl{
     \hbox_set:Nn\l_mix_poster_box{\phantom{\rule{1pt}{1pt}}}
@@ -298,7 +301,7 @@
       \bool_gset_true:N\g_mix_iiid_bool
       \tl_gset:Nn\g_mix_mainassetsub_tl{3D}
     }{
-      \str_case_x:nnF{\l_mix_base_tl}{
+      \str_case_e:nnF{\l_mix_base_tl}{
         {APlayer}{\tl_gset:Nn\g_mix_mainassetsub_tl{Sound}}
         {AudioPlayer}{\tl_gset:Nn\g_mix_mainassetsub_tl{Sound}}
         {VPlayer}{\tl_gset:Nn\g_mix_mainassetsub_tl{Video}}
@@ -321,7 +324,7 @@
     }
     %create 3D views from file (option 3Dviews)
     \bool_if:nT{\g_mix_iiid_bool && !(\tl_if_blank_p:V\g_mix_vfile_tl)}{
-      \tl_set:Nn\l_mix_level_tl{\c_minus_one}
+      \tl_set:Nn\l_mix_level_tl{-1}
       \int_zero:N\l_mix_viewcnt_int
       \int_zero:N\l_mix_lineno_int
 
@@ -438,7 +441,7 @@
               /Height~<</Default~\tl_mix_fltht>>
               /Position~<<
                 /HOffset~0/VOffset~0
-                \str_case_x:nnF{\g_mix_winpos_tl}{
+                \str_case_e:nnF{\g_mix_winpos_tl}{
                   {tl}{/VAlign/Near/HAlign/Near}
                   {cl}{/VAlign/Center/HAlign/Near}
                   {bl}{/VAlign/Far/HAlign/Near}
@@ -492,7 +495,7 @@
             annotRM['\g_mix_label_tl']=
               this.getAnnotRichMedia(this.pageNum,'\g_mix_label_tl');
           }
-          \str_if_eq_x:nnF{\g_mix_usrpbtn_tl}{none}{
+          \str_if_eq:eeF{\g_mix_usrpbtn_tl}{none}{
             if(typeof(ocgBtn\int_use:N\g_mix_rmcnt_int)=='undefined'){
               var~ocgs=this.getOCGs(this.pageNum);
               for(var~i=0;i<ocgs.length;i++){
@@ -524,7 +527,7 @@
     }
     \mix_appendtofields:n{\mix_pdflastann:}
     \hbox_overlap_right:n{\box_use:N\l_mix_poster_box}
-    \str_if_eq_x:nnTF{\g_mix_usrpbtn_tl}{none}{
+    \str_if_eq:eeTF{\g_mix_usrpbtn_tl}{none}{
       \hbox_to_wd:nn{\g_mix_wd_tl}{
         \vrule~width~\c_zero_dim~height~\g_mix_ht_tl~depth~\g_mix_dp_tl\hss
       }
@@ -558,7 +561,7 @@
   \mix_uriend:
   \group_begin:
   \mix_beginLTR:
-  \leavevmode
+  \mode_leave_vertical:
   %reset various variables
   \tl_gclear:N\g_mix_overbtn_tl
   \tl_gclear:N\g_mix_downbtn_tl

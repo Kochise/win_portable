@@ -1,7 +1,7 @@
-% Copyright 2018-2021 by Romano Giannetti
-% Copyright 2015-2021 by Stefan Lindner
-% Copyright 2013-2021 by Stefan Erhardt
-% Copyright 2007-2021 by Massimo Redaelli
+% Copyright 2018-2022 by Romano Giannetti
+% Copyright 2015-2022 by Stefan Lindner
+% Copyright 2013-2022 by Stefan Erhardt
+% Copyright 2007-2022 by Massimo Redaelli
 %
 % This file may be distributed and/or modified
 %
@@ -57,9 +57,14 @@
     \def\ctikztextnot#1{$\overline{\hbox{#1}}\m@th$}
 \else\ifpgfutil@format@is@plain
     % text mode overbar
+    % but really circuitikz will not work in plain...
     % Thanks to @egreg https://tex.stackexchange.com/a/24133/38080
     \def\ctikztextnot#1{$\overline{\hbox{#1}}$}
 \else\ifpgfutil@format@is@context
+    %% flipping text
+    \def\ctikzflipx#1{\mirror{#1}}
+    \def\ctikzflipy#1{\mirror{\rotate[rotation=180]{#1}}}
+    \def\ctikzflipxy#1{\rotate[rotation=180]{#1}}
     % text mode overbar
     % Thanks to @egreg https://tex.stackexchange.com/a/24133/38080
     \def\ctikztextnot#1{$\overline{\hbox{#1}}$}
@@ -104,13 +109,13 @@
     \expandafter\gdef\csname #1@Anchor\endcsname{}%
     \expandafter\gdef\csname #1@setanchors\endcsname{%
         \setbox\ctikz@scratchbox=\hbox{%
-        \begin{circuitikz}
+        \tikzpicture
         \draw (0,0) \csname#1\endcsname{T-#1}{};
         \foreach [count=\i] \anchor in {#2}
         % reference anchor is -center
         \draw (0,{2-\i/2}) let \p1 = ($(T-#1-subckt@reference)-(T-#1-\anchor)$) in
             node[right]{\anchor: \x1,\y1 \expandafter\xdef\csname #1@Anchor\anchor\endcsname{++(\x1,\y1)}};
-        \end{circuitikz}%
+        \endtikzpicture
         }%
     }%
     \expandafter\gdef\csname#1\endcsname##1##2{%
@@ -384,7 +389,7 @@
 \def\ctikztunablearrow@full[#1]#2#3#4#5{%
     % add tunable arrow to a component
     % relative thickness, relative length, rotation from axis, name of the component
-    \begin{scope}
+    \scope
     \draw
     \pgfextra{\pgfcirc@set@arrows{tunable}{}{latexslim}
     \pgfsetlinewidth{#2\pgflinewidth}} [#1]
@@ -393,6 +398,6 @@
         \n2 = {atan2(\y2,\x2)} in
         % node[above]{\n1, \n2}
         (#5.center) ++({\n2+(#4)}:{-0.5*(\n1)*(#3)}) -- ++({\n2+(#4)}:{(\n1)*(#3)});
-    \end{scope}%
+    \endscope
 }
 \endinput

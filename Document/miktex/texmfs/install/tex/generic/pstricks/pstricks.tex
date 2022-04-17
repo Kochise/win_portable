@@ -81,8 +81,8 @@
 \fi
 \let\pgfforeach\foreach
 %
-\def\fileversion{3.11}
-\def\filedate{2021/09/27}
+\def\fileversion{3.13}
+\def\filedate{2022/01/09}
 \pst@addfams{pstricks}
 %
 %\define@boolkey[psset]{pstricks}[Pst@]{useURWfonts}[true]{}
@@ -184,7 +184,7 @@
 % end bugfix
 \typeout{`PSTricks' v\fileversion\space\space <\filedate> (tvz,hv)}
 \def\@pstrickserr#1#2{%
-  \begingroup
+  \beging	roup
   \newlinechar`\^^J
   \edef\pst@tempc{#2}%
   \expandafter\errhelp\expandafter{\pst@tempc}%
@@ -1520,12 +1520,14 @@
   \ignorespaces}
 %
 \def\pst@code{}%
+%
 \def\init@pscode{%
   \addto@pscode{%
     \pst@number\pslinewidth SLW
     \pst@usecolor\pslinecolor}%
 }
 \def\addto@pscode#1{\xdef\pst@code{\pst@code#1\space}}
+%
 \def\use@pscode{%
   \pstverb{
     \pst@dict
@@ -3358,7 +3360,7 @@ pop
 \def\pscircle@do(#1)#2{%
   \if@star{\use@par\qdisk(#1){#2}}%   	qdisk does not allow
   \else%				to use opacity option
-    \addbefore@par{dimen=middle}%
+%    \addbefore@par{dimen=middle}%     20220109 hv
     \begin@ClosedObj
     \pst@@getcoor{#1}%
     \pssetlength\pst@dimc{#2}%
@@ -3380,7 +3382,7 @@ pop
 %
 \def\pscircleOA{\def\pst@par{}\pst@object{pscircleOA}}%	hv 2008-04-14
 \def\pscircleOA@i(#1)(#2){%
-  \addbefore@par{dimen=middle}%
+%  \addbefore@par{dimen=middle}%     20220109  hv
   \begin@ClosedObj
   \pst@getcoor{#1}\pst@tempA
   \pst@@getcoor{#2}%
@@ -4052,7 +4054,9 @@ pop
 }
 
 \define@key[psset]{pstricks}{showgrid}[b]{\expandafter\pst@@showgrid#1!!\@nil}
-\psset[pstricks]{showgrid=f}
+\define@boolkey[psset]{pstricks}[Pst@]{showframe}[true]{}
+\define@boolkey[psset]{pstricks}[Pst@]{calcframe}[true]{}
+\psset[pstricks]{showgrid=f,showframe=false,calcframe=false}
 
 \define@boolkey[psset]{pstricks}[Pst@]{pgffunctions}[true]{}
 \psset[pstricks]{pgffunctions=false}
@@ -4072,9 +4076,51 @@ pop
 %
 %------------------------------- pspicture ------------------------------
 %
+\def\ps@readmargin#1,#2,#3,#4,#5\@nil{%
+  \ifx\\#2\\
+%    \typeout{>>> Case 1 para}%
+    \pst@getlength{#1}\ps@margin@left
+    \let\ps@margin@right\ps@margin@left
+    \let\ps@margin@top\ps@margin@left
+    \let\ps@margin@bottom\ps@margin@left
+  \else
+    \ifx\\#3\\%
+%        \typeout{>>> Case 2 para: #1,#2}%
+        \pst@getlength{#1}\ps@margin@left
+        \def\ps@margin@right{0}%        
+        \pst@getlength{#2}\ps@margin@bottom
+        \def\ps@margin@top{0}
+    \else
+%        \typeout{>>> Case 4 para: #1,#2,#3,#4}%
+        \pst@getlength{#1}\ps@margin@left
+        \pst@getlength{#2}\ps@margin@bottom
+        \pst@getlength{#3}\ps@margin@right
+        \pst@getlength{#4}\ps@margin@top
+    \fi\fi
+%\typeout{>>>>>>>>>\ps@margin@left,\ps@margin@bottom,\ps@margin@right,\ps@margin@top}%
+}%
+\define@key[psset]{pstricks}{margin}[0pt]{\ps@readmargin#1,,,,\@nil}
+\psset[pstricks]{margin=0pt}
+%
+\newcount\ps@imagectr
+\ps@imagectr=0
+%\newif\ifPst@findcoor
+%\Pst@findcoorfalse
+%
+
 \def\pspicture{\begingroup\pst@ifstar\pst@picture}
 \def\pst@picture{\@ifnextchar[{\pst@@picture}{\pst@@picture[]}}
-\def\pst@@picture[#1]{\@ifnextchar({\pst@@picture@i[#1]}{\pst@@picture@i[#1](10,10)}}%
+\def\pst@@picture[#1]{\@ifnextchar({\pst@@picture@i[#1]}{\pst@@picture@@i[#1]}}%
+\def\pst@@picture@@i[#1]{%
+  \gdef\pscoor{(10,10)}%
+  \ifPst@calcframe
+    \typeout{>>>Check for file \jobname-\the\numexpr\ps@imagectr+1.psaux}%
+    \IfFileExists{\jobname-\the\numexpr\ps@imagectr+1.psaux}{\input{\jobname-\the\numexpr\ps@imagectr+1.psaux}}{}%
+    %  \typeout{>>>\pscoor}%
+  \fi
+  \edef\@temp{[\noexpand#1]\pscoor}%
+  \expandafter\pst@@picture@i\@temp}
+%
 \def\pst@@picture@i[#1]#2(#3,#4){\@ifnextchar(%   ignore anything between [] and ()
   {\pst@@@picture[#1](#3,#4)}%
   {\pst@@@picture[#1](0,0)(#3,#4)}}
@@ -4106,11 +4152,57 @@ pop
   \ifshowgrid\ifnum\showgridp@s=0\psgrid[style=gridstyle]\fi\fi
 % ----------- 1.10/12 end hv -------------------
   \ignorespaces%			% 2008-12-07
+  \ifPst@calcframe\pstVerb{ .trackbbox }\global\advance\ps@imagectr by 1 \fi
   \ifPst@pgffunctions\pstVerb{ pgffunctions }\fi% hv 2013-04-17
 }
 
 \def\pic@coor{(0,0)(0,0)(10,10)}
 \def\endpspicture{%
+  \ifPst@calcframe
+    \ifPSTlualatex   
+     \pstVerb{
+     .trackedbbox        % xmin ymin xmax ymax
+     % Die Koordinaten sind relativ zur Seite, also verschieben wir sie
+     % zum aktuellen Punkt.
+     currentpoint matrix translate dup invertmatrix dup 4 1 roll
+     transform
+     /YMAX exch def /XMAX exch def
+     transform
+     /YMIN exch def /XMIN exch def
+     % Now we have all absolute coordinates
+     \ifPst@showframe
+       % Um jetzt an diesen Koordinaten zu zeichnen, ist das natürlich
+       % ungünstig und wir müssen zurück schieben... (Oder den Code
+       % umordnen, aber warum einfach wenns auch kompliziert geht ;P)
+       XMIN YMIN XMAX XMIN sub YMAX YMIN sub    % lower left, width, height
+       4 copy
+       gsave 
+       currentpoint translate newpath rectstroke 
+       newpath 0 0 moveto                                            % x0 y0 x1 y1
+       \ps@margin@top\space add \ps@margin@bottom\space add 4 1 roll % y1 x0 y0 x1 
+       \ps@margin@right\space add \ps@margin@left\space add 4 1 roll % x1 y1 x0 y0
+       \ps@margin@bottom\space sub 4 1 roll                          % y0 x1 y1 x0 
+       \ps@margin@left\space sub   4 1 roll                          % x0 y0 x1 y1
+       [3 3] 0 setdash rectstroke 
+       grestore 
+     \fi
+     (\jobname-\the\ps@imagectr.psaux) (w) file /CoorFile exch def
+     (\\gdef\\pscoor{\string\() CoorFile exch writestring
+     XMIN \ps@margin@left\space sub 20 string cvs CoorFile exch writestring
+     (pt, ) CoorFile exch writestring
+     YMIN \ps@margin@bottom\space sub 20 string cvs CoorFile exch writestring
+     (pt\string\)\string\() CoorFile exch writestring
+     XMAX \ps@margin@right\space add 20 string cvs CoorFile exch writestring
+     (pt, ) CoorFile exch writestring
+     YMAX \ps@margin@top\space add 20 string cvs CoorFile exch writestring
+     (pt\string\)}\% ) CoorFile exch writestring
+     CoorFile closefile
+     }%  
+  \else
+    \global\Pst@calcframefalse
+    \PackageError{PSTricks}{You need to run lualatex for calculating the bounding box or set calcframe=false}{}%\@ehpa
+  \fi
+  \fi
   \ifshowgrid\ifnum\showgridp@s>0
     \psgrid[xunit=\sh@wgridXunit,yunit=\sh@wgridYunit,style=gridstyle]\fi\fi
   \pst@killglue

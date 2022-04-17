@@ -1,4 +1,4 @@
-% $Id: pst-node.tex 1164 2020-04-01 09:12:28Z herbert $
+% $Id: pst-node.tex 438 2022-01-31 17:45:26Z herbert $
 %%
 %% BEGIN pst-node.tex
 %%
@@ -18,8 +18,8 @@
 \ifx\PSTricksLoaded\endinput\else\input pstricks.tex \fi\relax
 \ifx\PSTXKeyLoaded\endinput\else \input pst-xkey \fi
 %
-\def\fileversion{1.42a}
-\def\filedate{2020/04/01}
+\def\fileversion{1.43}
+\def\filedate{2022/01/31}
 \message{ v\fileversion, \filedate}
 %
 \edef\TheAtCode{\the\catcode`\@}
@@ -838,11 +838,17 @@ tx@Dict begin \psline@iii pop end
 \def\ncput{\pst@object{ncput}}
 \def\ncput@i{\pst@killglue\pst@makebox{\ncput@ii}}
 \def\ncput@ii{%
-  \begingroup%
-  \use@par%
+  \begingroup
+  \use@par
   \if@star\pst@starbox\fi%
   \pst@makesmall\pst@hbox%
-  \pst@rotate\psk@nrot\pst@hbox%
+  \expandafter\ifx\expandafter\relax\psk@nrot\relax\else% prevent empty value for \psk@rot
+    \ifPSTlualatex
+      \pst@rotate{\psk@nrot\space neg }\pst@hbox
+    \else
+      \pst@rotate{\psk@nrot}\pst@hbox
+    \fi
+  \fi
   \ncput@iii%
   \endgroup%
   \pst@shortput}

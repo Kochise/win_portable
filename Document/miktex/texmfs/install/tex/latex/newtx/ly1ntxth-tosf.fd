@@ -1,5 +1,8 @@
 \ProvidesFile{ly1ntxth-tosf.fd}[2021/05/07 v1.0 font definition file for LY1/ntxth/tosf]
 
+\ifdefined\ntx@thmshape\else\def\ntx@thmshape{i}\fi
+\if i\ntx@thmshape \gdef\ntx@thrmshape{Italic}\else%
+  \gdef\ntx@thrmshape{Slanted}\fi
 \expandafter\ifx\csname ntx@scaled\endcsname\relax
   \let\ntx@scaled\@empty%
 \fi
@@ -7,7 +10,7 @@
 \ifdefined\ntx@spacing \else\global\let\ntx@spacing\@empty\fi
 %\traceon
 \DeclareFontFamily{LY1}{ntxth-tosf}{\ntx@spacing}
-\DeclareFontShape{LY1}{ntxth-tosf}{m}{it}{<-> \ntx@scaled ntxth-Italic-osf-ly1}{}
+\DeclareFontShape{LY1}{ntxth-tosf}{m}{it}{<-> \ntx@scaled ntxth-\ntx@thrmshape-osf-ly1}{}
 \DeclareFontShape{LY1}{ntxth-tosf}{m}{n}{<->ssub * ntxth-tosf/m/it}{}
 \DeclareFontShape{LY1}{ntxth-tosf}{m}{sc}{<->ssub * ntxth-tosf/m/it}{}
 \DeclareFontShape{LY1}{ntxth-tosf}{m}{scit}{<-> ssub * ntxth-tosf/m/it}{}

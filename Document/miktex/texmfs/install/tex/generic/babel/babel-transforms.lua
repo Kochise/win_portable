@@ -7,7 +7,7 @@
 -- babel.dtx  (with options: `transforms')
 -- 
 --
--- Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+-- Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 -- Copyright (C) 1989-2012 Johannes L. Braams and
 --           any individual authors listed elsewhere in this file.
 -- All rights reserved.
@@ -209,6 +209,7 @@ function Babel.hyphenate_replace(head, mode)
     for k=1, #lbkr[lang] do
       local p = lbkr[lang][k].pattern
       local r = lbkr[lang][k].replace
+      local attr = lbkr[lang][k].attr or -1
 
       if Babel.debug then
         print('*****', p, mode)
@@ -253,8 +254,15 @@ function Babel.hyphenate_replace(head, mode)
         local sc = first-1           -- Used below, too
         local data_nodes = {}
 
+        local enabled = true
         for q = 1, last-first+1 do
           data_nodes[q] = w_nodes[sc+q]
+          if enabled
+              and attr > -1
+              and not node.has_attribute(data_nodes[q], attr)
+            then
+            enabled = false
+          end
         end
 
         -- This loop traverses the matched substring and takes the
@@ -298,7 +306,7 @@ function Babel.hyphenate_replace(head, mode)
             step = crep.step or 0
           end
 
-          if crep and next(crep) == nil then -- = {}
+          if (not enabled) or (crep and next(crep) == nil) then -- = {}
             last_match = save_last    -- Optimization
             goto next
 

@@ -1,5 +1,5 @@
-% adjustbox.4ht (2019-05-21-14:50), generated from tex4ht-4ht.tex
-% Copyright 2019 TeX Users Group
+% adjustbox.4ht (2022-01-09-07:36), generated from tex4ht-4ht.tex
+% Copyright 2019-2022 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -16,7 +16,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2019-05-21-14:50}
+\immediate\write-1{version 2022-01-09-07:36}
 
 \NewConfigure{AdjustboxValignTop}{1}
 \NewConfigure{AdjustboxValignMiddle}{1}
@@ -36,22 +36,38 @@
 \def\update:adjustbox:id{\stepcounter{adjustbox@4ht}\def\AdjustboxId{adjustbox-\arabic{adjustbox@4ht}}}
 
 \NewConfigure{Adjustbox}{2}
-\def\:tempa#1#2#3#4{\update:adjustbox:id\a:Adjustbox\o:adjbox@@frame:{#1}{#2}{#3}{#4}\b:Adjustbox}
+
+\def\:tempa#1#2#3#4{\update:adjustbox:id\a:Adjustbox\o:adjbox@@frame:{#1}{#2}{#3}{#4}\b:Adjustbox
+}
 \HLet\adjbox@@frame\:tempa
 
 % suppress trying to draw the frame
 \def\adjbox@boxframe#1#2#3{}
 
-% we should redefine all adjustbox environments, they may produce unvanted artifacts, math mode, etc.
+% patch macro that collects adjustbox contents and draw box. we disable this functionality, as all
+% of this should be handled by CSS
 % keys are set, so it should be possible to extract  colors or frame size in theory
-% I just haven't found a working solution yet
-\renewenvironment{adjustbox}[1]{\update:adjustbox:id\adjbox@setkeys{#1}\a:Adjustbox}{\b:Adjustbox}
+\long\def\:temp#1#2{%
+  % copy of definitions from \@adjustbox, to prevent compilation errors
+  \edef\adjbox@line{\the\inputlineno}%
+  \let\collectbox@mode\relax
+  \let\collectbox@noindent\relax
+  \let\adjbox@collectbox\@collectbox
+  \let\adjbox@begininnercode\@empty
+  \let\adjbox@endinnercode\@empty
+  \chardef\adjbox@innerlevel\z@
+  \update:adjustbox:id\adjbox@setkeys{#1}\a:Adjustbox #2\b:Adjustbox\endgroup}
+\HLet\@adjustbox\:temp
+
 
 % definitions for macros
 % we don't save any colors and just use one configuration for all box types.
-\def\@bgcolorbox#1{\update:adjustbox:id\a:Adjustbox\BOXCONTENT\b:Adjustbox}
-\def\@foregroundbox#1#2#3{\update:adjustbox:id\leavevmode\a:Adjustbox\BOXCONTENT\b:Adjustbox}
-\def\@backgroundbox#1#2#3{\update:adjustbox:id\leavevmode\a:Adjustbox\BOXCONTENT\b:Adjustbox}
+\def\:tempa#1{\update:adjustbox:id\a:Adjustbox\BOXCONTENT\b:Adjustbox}
+\HLet\@bgcolorbox\:tempa
+\def\:tempa#1#2#3{\update:adjustbox:id\leavevmode\a:Adjustbox\BOXCONTENT\b:Adjustbox}
+\HLet\@foregroundbox\:tempa
+\def\:tempa#1#2#3{\update:adjustbox:id\leavevmode\a:Adjustbox\BOXCONTENT\b:Adjustbox}
+\HLet\@backgroundbox\:tempa
 
 \Hinput{adjustbox}
 \endinput

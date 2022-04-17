@@ -33,7 +33,7 @@
 %% given in the file `manifest.txt'.
 %%
 \ProvidesFile{pdfmark.def}
-  [2021-06-07 v7.00m %
+  [2022-02-21 v7.00n %
   Hyperref definitions for pdfmark specials]
 \Hy@VersionCheck{pdfmark.def}
 \begingroup
@@ -1297,8 +1297,8 @@
   \endgroup
 }
 \providecommand*{\Fld@pageobjref}{}
-\begingroup\expandafter\expandafter\expandafter\endgroup
-\expandafter\ifx\csname pdf@escapestring\endcsname\relax
+\@ifundefined{pdf@escapestring}
+ {%
   \let\Hy@escapestring\@firstofone
   \def\Hy@escapeform#1{%
     \ifHy@pdfescapeform
@@ -1329,7 +1329,7 @@
       }%
     \fi
   }%
-\else
+ }{%
   \def\Hy@escapeform#1{%
     \ifHy@pdfescapeform
       \let\Hy@escapestring\pdfescapestring
@@ -1338,7 +1338,7 @@
     \fi
   }%
   \Hy@escapeform{}%
-\fi
+ }
 \def\PDFForm@Name{%
   \PDFForm@@Name\Fld@name
   \ifx\Fld@altname\relax
@@ -1940,12 +1940,9 @@
   }%
 }
 \let\H@old@part\@part
-\begingroup\expandafter\expandafter\expandafter\endgroup
-\expandafter\ifx\csname chapter\endcsname\relax
-  \let\Hy@secnum@part\z@
-\else
-  \let\Hy@secnum@part\m@ne
-\fi
+\@ifundefined{chapter}
+  {\let\Hy@secnum@part\z@}
+  {\let\Hy@secnum@part\m@ne}
 \def\@part{%
   \ifnum\Hy@secnum@part>\c@secnumdepth
     \phantomsection

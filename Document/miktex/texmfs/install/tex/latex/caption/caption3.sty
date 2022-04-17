@@ -6,7 +6,7 @@
 %%
 %% caption3.dtx  (with options: `package')
 %% 
-%% Copyright (C) 1994-2020 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
+%% Copyright (C) 1994-2022 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
 %% 
 %% https://gitlab.com/axelsommerfeldt/caption
 %% 
@@ -33,12 +33,19 @@
 %%   caption.sty, caption-light.sty, caption2.sty, caption3.sty,
 %%   caption-ams-smf.sto, caption-beamer.sto, caption-elsarticle.sto,
 %%   caption-koma.sto, caption-memoir.sto, caption-ntg.sto,
-%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty,
-%% and the user manuals
-%%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
+%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption3}[2020/10/21 v2.2e caption3 kernel (AR)]
+\providecommand\DeclareRelease[3]{}
+\providecommand\DeclareCurrentRelease[2]{}
+\DeclareRelease{v1.0} {2003-12-20}{caption3_2007-04-11.sty} % for caption v3.0
+\DeclareRelease{v1.1} {2007-09-01}{caption3_2010-01-14.sty} % for caption v3.1
+\DeclareRelease{v1.3} {2011-08-06}{caption3_2011-11-01.sty} % for caption v3.2
+\DeclareRelease{v1.8} {2013-01-10}{caption3_2019-09-01.sty} % for caption v3.3
+\DeclareRelease{v1.13}{2019-11-24}{caption3_2020-07-29.sty} % for caption v3.4
+\DeclareRelease{v2.0} {2020-08-30}{caption3_2020-10-26.sty} % for caption v3.5
+\DeclareCurrentRelease{v2.3}{2022-02-20}                    % for caption v3.6
+\ProvidesPackage{caption3}[2022/03/17 v2.3b caption3 kernel (AR)]
 \providecommand*\@nameundef[1]{%
   \expandafter\let\csname #1\endcsname\@undefined}
 \providecommand\l@addto@macro[2]{%
@@ -234,15 +241,15 @@
   \captionsetup@startrue#1\captionsetup@starfalse
   \@ifnextchar[%]
     \caption@setup@options\caption@setup}
-\newcommand*\caption@setup{\caption@setkeys{caption}}
+\newcommand*\caption@setup{%
+  \caption@setkeys{caption}}
 \def\caption@setup@options[#1]{%
   \@ifnextchar[%]
     {\caption@stepthecounter
-     \caption@withoptargs{\@expandtwoargs
-       \caption@setup@options@i{#1}{@\caption@thecounter}}}%
+     \@expandtwoargs\caption@setup@options@@{#1}{@\caption@thecounter}}%
     {\caption@setup@options@{#1}}}
-\newcommand*\caption@setup@options@i[4]{%
-  \caption@declare@option{#2}[]{\captionsetup#3{#4}}%
+\def\caption@setup@options@@#1#2[#3]#4{%
+  \caption@declare@option{#2}[]{\caption@setup@options@{#3}{#4}}%
   \caption@setup@options@{#1}{#2}}
 \newcommand*\caption@setup@options@[2]{%
   \@bsphack
@@ -491,26 +498,31 @@
     {\caption@requirepackage\caption@tempa{#1=#2}}%
     {}}
 \newcommand*\DeclareCaptionLength[1]{%
-  \expandafter\newdimen\csname caption#1\endcsname
-  \@namedef{caption@setdefault@#1}##1{%
-    \caption@setdefault@length{##1}}%
+  \expandafter\newdimen\csname caption@#1\endcsname
+  \@namedef{caption@setdefault@#1}{\caption@setdefault@length}%
   \SetCaptionDefault*{#1}}
 \@onlypreamble\DeclareCaptionLength
 \newcommand*\caption@setdefault@length[3]{%
-  \expandafter#1\csname caption#2@default\endcsname{#3}}
+  \expandafter#1\csname caption@#2@default\endcsname{#3}}
 \newcommand*\caption@setlength[2]{%
   \caption@ifdefault{#2}%
-    {\expandafter\let\expandafter\caption@tempa\csname caption#1@default\endcsname}%
+    {\expandafter\let\expandafter\caption@tempa\csname caption@#1@default\endcsname}%
     {\def\caption@tempa{#2}}%
-  \expandafter\setlength\csname caption#1\endcsname\caption@tempa}
-\DeclareCaptionLength{margin}{0pt}
-\DeclareCaptionLength{margin@}{\the\captionmargin}
-\DeclareCaptionLength{width}{0pt}
+  \expandafter\setlength\csname caption@#1\endcsname\caption@tempa}
 \newdimen\caption@tempdima
-\DeclareCaptionOption{margin}{\setcaptionmargin{#1}}
-\DeclareCaptionOption{margin*}{\setcaptionmargin*{#1}}
-\DeclareCaptionOption{width}{\setcaptionwidth{#1}}
-\DeclareCaptionOption{width*}{\setcaptionwidth*{#1}}
+\newdimen\captionmargin
+\setlength\captionmargin{0pt}
+\newcommand\caption@setdefault@margin[3]{%
+  \caption@setdefault@length{#1}{left#2}{#3}%
+  \caption@setdefault@length{#1}{right#2}{#3}}
+\DeclareCaptionLength{leftmargin}{0pt}
+\DeclareCaptionLength{rightmargin}{0pt}
+\newdimen\caption@width
+\setlength\caption@width{0pt}
+\DeclareCaptionOption{margin}{\caption@setmargin{#1}}
+\DeclareCaptionOption{margin*}{\caption@setmargin*{#1}}
+\DeclareCaptionOption{width}{\caption@setwidth{#1}}
+\DeclareCaptionOption{width*}{\caption@setwidth*{#1}}
 \DeclareCaptionOption{calcmargin}{\caption@setcalcmargin{#1}}
 \DeclareCaptionOption{calcmargin*}{\caption@setcalcmargin*{#1}}
 \DeclareCaptionOption{calcwidth}{\caption@setcalcwidth{#1}}
@@ -520,28 +532,37 @@
 \caption@set@bool\caption@iftwoside{\if@twoside 1\else 0\fi}
 \DeclareCaptionOption{minmargin}{\caption@setoptcmd\caption@minmargin{#1}}
 \DeclareCaptionOption{maxmargin}{\caption@setoptcmd\caption@maxmargin{#1}}
-\newcommand*\setcaptionmargin{%
-  \caption@resetcalcmargin
-  \caption@setmargin}
 \newcommand*\caption@setmargin{%
-  \caption@teststar\caption@@setmargin\@gobble\@firstofone}
-\newcommand*\caption@@setmargin[2]{%
-  #1{\captionwidth\z@}%
-  \caption@@@setmargin#2,#2,\@nil}
-\def\caption@@@setmargin#1,#2,#3\@nil{%
-  \caption@setlength{margin}{#1}%
-  \caption@setlength{margin@}{#2}%
-  \addtolength\captionmargin@{-\captionmargin}}
-\newcommand*\setcaptionwidth{%
   \caption@resetcalcmargin
-  \caption@setwidth}
+  \caption@@setmargin}
+\newcommand*\caption@@setmargin{%
+  \caption@teststar\caption@@@setmargin\@gobble\@firstofone}
+\newcommand*\caption@@@setmargin[2]{%
+  #1{\caption@width\z@}%
+  \caption@@@@setmargin#2,#2,\@nil}
+\def\caption@@@@setmargin#1,#2,#3\@nil{%
+  \def\caption@tempa{#1#2}%
+  \ifx\caption@tempa\@empty
+    \caption@Error{Missing number}%
+  \else
+    \caption@@@@@setmargin{left}{#1}%
+    \caption@@@@@setmargin{right}{#2}%
+  \fi}
+\newcommand*\caption@@@@@setmargin[2]{%
+  \def\caption@tempa{#2}%
+  \ifx\caption@tempa\@empty \else
+    \caption@setlength{#1margin}{#2}%
+  \fi}
 \newcommand*\caption@setwidth{%
-  \caption@teststar\caption@@setwidth\@gobble\@firstofone}
-\newcommand*\caption@@setwidth[2]{%
-  #1{\captionmargin\z@\captionmargin@\z@}%
-  \caption@setlength{width}{#2}}%
+  \caption@resetcalcmargin
+  \caption@@setwidth}
+\newcommand*\caption@@setwidth{%
+  \caption@teststar\caption@@@setwidth\@gobble\@firstofone}
+\newcommand*\caption@@@setwidth[2]{%
+  #1{\caption@leftmargin\z@\caption@rightmargin\z@}%
+  \setlength\caption@width{#2}}
 \newcommand*\caption@setcalcmargin{%
-  \caption@teststar{\caption@@setcalcmargin\caption@setmargin}%
+  \caption@teststar{\caption@@setcalcmargin\caption@@setmargin}%
     \@secondoftwo\@firstoftwo}
 \newcommand*\caption@@setcalcmargin[3]{%
   #2{\caption@resetcalcmargin
@@ -550,7 +571,7 @@
 \newcommand*\caption@resetcalcmargin{%
   \let\caption@calcmargin@hook\@empty}
 \newcommand*\caption@setcalcwidth{%
-  \caption@teststar{\caption@@setcalcmargin\caption@setwidth}%
+  \caption@teststar{\caption@@setcalcmargin\caption@@setwidth}%
     \@secondoftwo\@firstoftwo}
 \newcommand*\caption@thecounter{0}
 \newcommand*\caption@stepthecounter{%
@@ -587,17 +608,17 @@
   \caption@ifoddpage}
 \newcommand*\caption@setoptcmd[2]{%
   \caption@ifinlist{#2}{0,false,no,off}{\let#1\@undefined}{\def#1{#2}}}
-\DeclareCaptionLength{@indent}{0pt}
-\DeclareCaptionLength{@parindent}{0pt}
-\DeclareCaptionLength{@hangindent}{0pt}
+\DeclareCaptionLength{indent}{0pt}
+\DeclareCaptionLength{parindent}{0pt}
+\DeclareCaptionLength{hangindent}{0pt}
 \DeclareCaptionOption{indent}[\leftmargini]{% obsolete
-  \caption@setlength{@indent}{#1}}
+  \caption@setlength{indent}{#1}}
 \DeclareCaptionOption{indention}[\leftmargini]{%
-  \caption@setlength{@indent}{#1}}
+  \caption@setlength{indent}{#1}}
 \DeclareCaptionOption{parindent}{%
-  \caption@setlength{@parindent}{#1}}
+  \caption@setlength{parindent}{#1}}
 \DeclareCaptionOption{hangindent}{%
-  \caption@setlength{@hangindent}{#1}}
+  \caption@setlength{hangindent}{#1}}
 \DeclareCaptionOption{parskip}{%
   \l@addto@macro\caption@@par{\setlength\parskip{#1}}}
 \newcommand*\DeclareCaptionStyle[1]{%
@@ -653,7 +674,7 @@
   \caption@ifdecl{singlelinecheck}{#1}%
     {\caption@set{singlelinecheck}{#1}}%
     {\caption@set@bool\caption@singlelinecheck{#1}}}
-\newcommand*\DeclareCaptionBox[2]{%
+\newcommand\DeclareCaptionBox[2]{%
   \caption@decl{box}{#1}##1##2{#2}}
 \@onlypreamble\DeclareCaptionBox
 \DeclareCaptionOption{box}{\caption@set{box}{#1}}
@@ -759,14 +780,13 @@
 \DeclareCaptionLabelSeparator{gobbletwo}{}
 \newcommand*\captionnewline{\\\relax}
 \SetCaptionDefault{labelseparator}{colon}
-\newcommand*\DeclareCaptionTextFormat[2]{%
+\newcommand\DeclareCaptionTextFormat[2]{%
   \caption@decl{textformat}{#1}##1{#2}}
 \@onlypreamble\DeclareCaptionTextFormat
 \DeclareCaptionOption{textformat}{\caption@set{textformat}{#1}}
 \DeclareCaptionTextFormat{empty}{%
   \caption@get@label#1\caption@makeanchor{}\@nil
-  \caption@thelabel
-  \global\let\caption@thelabel\relax}
+  \caption@thelabel\caption@clrlabel}
 \long\def\caption@get@label#1\caption@makeanchor#2#3\@nil{%
   \def\caption@tempa{#2}%
   \ifx\caption@tempa\@empty
@@ -804,7 +824,8 @@
 \long\def\caption@@@@getlabel[#1]#2\@nil{%
   \l@addto@macro\caption@thelabel{[{#1}]}%
   \caption@@@getlabel#2\@nil}
-\let\caption@thelabel\relax
+\newcommand*\caption@clrlabel{\let\caption@thelabel\relax}
+\caption@clrlabel
 \DeclareCaptionOption{strut}[1]{\caption@set@bool\caption@ifstrut{#1}}
 \newcommand*\DeclareCaptionFont{%
   \caption@decl@package{font}{\caption@declarefont}}
@@ -973,41 +994,57 @@
 \newcommand*\caption@rule{\caption@ifrule\caption@hrule\relax}
 \newcommand*\caption@hrule{\hrule\@height\z@}
 \DeclareCaptionOption{rule}[1]{\caption@set@bool\caption@ifrule{#1}}
-\newcommand*\caption@declare@position[2]{%
-  \caption@decl{position}{#1}{#2}}
-\@onlypreamble\caption@declare@position
+\newcommand*\DeclareCaptionPosition[3]{%
+  \caption@decl[\edef]{position}{#1}{%
+    \unexpanded{\def\caption@fallback@position}####1####2\unexpanded{{#2}}%
+    \unexpanded{\def\caption@regular@position}####1####2\unexpanded{{#3}}}}
+\@onlypreamble\DeclareCaptionPosition
 \DeclareCaptionOption{position}{\caption@setposition{#1}}
 \DeclareCaptionOption{figureposition}{\captionsetup*[figure]{position=#1}}
 \@onlypreamble@key{caption}{figureposition}
 \DeclareCaptionOption{tableposition}{\captionsetup*[table]{position=#1}}
 \@onlypreamble@key{caption}{tableposition}
-\newcommand*\caption@setposition{\caption@set{position}}
-\caption@declare@position{t}{\@firstoftwo}
-\caption@declare@position{top}{\@firstoftwo}
-\caption@declare@position{above}{\@firstoftwo}
-\caption@declare@position{b}{\@secondoftwo}
-\caption@declare@position{bottom}{\@secondoftwo}
-\caption@declare@position{below}{\@secondoftwo}
-\caption@declare@position{a}{\caption@autoposition}% needed by floatrow package, \flrow@cappos
-\caption@declare@position{auto}{\caption@autoposition}
+\newcommand*\caption@setposition{%
+  \caption@initposition
+  \caption@set{position}}
+\DeclareCaptionPosition{top}{#1}{#1}
+\def\caption@position@t{\caption@position@top}
+\def\caption@position@above{\caption@position@top}
+\DeclareCaptionPosition{bottom}{#2}{#2}
+\def\caption@position@b{\caption@position@bottom}
+\def\caption@position@below{\caption@position@bottom}
+\DeclareCaptionPosition{auto}{#2}{\caption@autoposition{#1}{#2}}
+\def\caption@position@a{\caption@position@auto} % needed by floatrow package, \flrow@cappos
 \SetCaptionDefault{position}{auto}
-\let\caption@autoposition\@secondoftwo
-\newcommand*\caption@iftop{\caption@position}
+\newcommand*\caption@initposition{%
+  \let\caption@@iftop\@undefined}
+\newcommand*\caption@iftop{%
+  \caption@@fixposition\caption@fallback@position
+  \caption@@iftop}
 \newcommand*\caption@fixposition{%
-  \ifvmode
-    \edef\caption@tempa{\the\prevdepth}%
-    \caption@Debug{\protect\prevdepth=\caption@tempa}%
-    \ifdim\prevdepth>-\p@
-      \let\caption@autoposition\@secondoftwo % position=below
-    \else
-      \let\caption@autoposition\@firstoftwo  % position=above
-    \fi
-  \else
-    \caption@Debug{no \protect\prevdepth}%
-    \let\caption@autoposition\@secondoftwo   % position=below
+  \caption@@fixposition\caption@regular@position}
+\newcommand*\caption@@fixposition[1]{%
+  \ifx\caption@@iftop\@undefined
+    \caption@position % defines \caption@fallback@position and \caption@regular@position
+    #1{\let\caption@@iftop\@firstoftwo}{\let\caption@@iftop\@secondoftwo}%
   \fi}
 \newcommand*\caption@setautoposition[1]{%
-  \def\caption@fixposition{\caption@@set{position}{autoposition}{#1}}}
+  \renewcommand*\caption@position@auto{%
+    \@nameuse{caption@position@#1}}}
+\newcommand*\caption@autoposition[2]{%
+  \ifvmode
+    \edef\caption@tempa{\the\prevdepth}%
+    \caption@Debug{\string\prevdepth=\caption@tempa}%
+    \ifdim\prevdepth>-\p@
+      #2% position=bottom
+    \else
+      #1% position=top
+    \fi
+  \else
+    #2% position=bottom
+  \fi}
+\newcommand*\DeclareCaptionAutoPosition{%
+  \renewcommand*\caption@autoposition[2]}%
 \newcommand*\caption@beginhook{}
 \newcommand*\caption@endhook{}
 \newcommand*\AtBeginCaption{\l@addto@macro\caption@beginhook}
@@ -1319,11 +1356,15 @@
 \DeclareCaptionJustification[ragged2e]{RaggedRight}{\RaggedRight}
 \DeclareCaptionFont[sansmath]{sansmath}{\sansmath}
 \DeclareCaptionFont{singlespacing}{%
-  \caption@ifdefined\setspace@singlespace{%
-    \setstretch\setspace@singlespace}{}}% normally 1
+  \caption@ifdefined\setspace@singlespace
+    {\setstretch\setspace@singlespace}% usually 1, could be changed by \SetSinglespace
+    {}}
+\DeclareCaptionFont{stretch}{%
+  \caption@ifdefined\setstretch
+    {\setstretch{#1}}%
+    {\def\baselinestretch{#1}\selectfont}}
 \DeclareCaptionFont[setspace]{onehalfspacing}{\onehalfspacing}
 \DeclareCaptionFont[setspace]{doublespacing}{\doublespacing}
-\DeclareCaptionFont[setspace]{stretch}{\setstretch{#1}}
 \caption@AtBeginDocument{%
   \def\@tempa{2005/06/28 ver: 1.3 subfig package}%
   \expandafter\ifx\csname ver@subfig.sty\endcsname\@tempa
@@ -1332,7 +1373,7 @@
     \let\caption@setfloattype\@gobble
     \let\@dottedxxxline\sf@NEW@dottedxxxline
     \let\sf@subfloat\sf@NEW@subfloat
-    \let\sf@ifpositiontop\caption@iftop
+    \def\sf@ifpositiontop{\caption@iftop}%
   \fi
   \let\sf@NEW@dottedxxxline\@undefined
   \let\sf@NEW@subfloat\@undefined}
@@ -1381,7 +1422,7 @@
         {}%
       \@tempa
         {\caption@Debug{addcontentsline: #1 => \caption@listtype}%
-         \@namedef{the\caption@listtype}{\@nameuse{the#1}}}%
+         \@namedef{the\caption@listtype}{\caption@the{#1}}}%
       \expandafter\caption@@addcontentsline\expandafter{\caption@listtype}{#2}%
     \endgroup}%
     \caption@addsubcontentslines{#1}}
@@ -1393,7 +1434,7 @@
       \caption@add@contentsline
         {\csname ext@#1\endcsname}%
         {#1}%
-        {\caption@listformat{\@nameuse{p@#1}}{\@nameuse{the#1}}}%
+        {\caption@listformat{\caption@p{#1}}{\caption@the{#1}}}%
         {\ignorespaces #2}%
       \caption@chkfloat{#1}{#2}}}}
 \newcommand*\caption@add@contentsline{%
@@ -1417,9 +1458,25 @@
 \newcommand*\caption@belowskip{%
   \vskip\belowcaptionskip}
 \newcommand*\caption@fnum[1]{%
+  \caption@@fnum{#1}{\@nameuse{#1name}}{\caption@the{#1}}}
+\newcommand*\caption@@fnum[1]{%
   \expandafter\let\expandafter\caption@original@fnum\csname caption@fnum@#1\endcsname % for label format `original'
-  \caption@labelformat{\@nameuse{#1name}}{\@nameuse{the#1}}}
-\newcommand\caption@make[2]{\caption@@make{\caption@labelformat{#1}{#2}}}
+  \caption@labelformat}
+\newcommand*\caption@setfnum[1]{%
+  \@ifundefined{caption@fnum@#1}%
+    {\expandafter\let\csname caption@fnum@#1\expandafter\endcsname\csname fnum@#1\endcsname
+     \@namedef{fnum@#1}{\caption@fnum{#1}}}%
+    {}}
+\newcommand*\caption@p[1]{\@nameuse{p@#1}}
+\newcommand*\caption@the[1]{\@nameuse{the#1}}
+\newcommand*\caption@make{%
+  \kernel@ifnextchar[%]
+    \caption@make@
+    {\caption@make@@\caption@labelformat}}
+\def\caption@make@[#1]{%
+  \caption@make@@{\caption@@fnum{#1}}}
+\newcommand\caption@make@@[3]{%
+  \caption@@make{#1{#2}{#3}}}
 \newcommand\caption@@make[2]{%
   \begingroup
     \caption@@make@{#1}{#2}%
@@ -1431,69 +1488,85 @@
   \caption@box\hsize{%
     \caption@singlelinecheck{\caption@slc{#1}{#2}\caption@singleline\caption@multiline}{\caption@multiline}%
     \caption@calcmargin
-    \caption@tempdima\captionmargin
-    \ifdim\captionmargin@=\z@ \else
-      \caption@ifoddpage{}{\advance\caption@tempdima\captionmargin@\relax}%
-    \fi
-    \caption@ifhmode{\advance\caption@tempdima\caption@indent\relax}%
-    \hspace\caption@tempdima
-    \caption@tempdima\captionwidth
-    \caption@ifhmode{\advance\caption@tempdima-\caption@indent\relax}%
-    \caption@parbox\caption@tempdima{%
-      \caption@ifhmode{%
-        \ifdim\caption@indent=\z@
-          \leavevmode
-        \else
-          \hskip-\caption@indent
-        \fi}%
+    \caption@make@leftmargin
+    \caption@make@parbox{%
+      \caption@make@indention
       \caption@@@make{#1}{#2}}%
-    \caption@tempdima\captionmargin
-    \ifdim\captionmargin@=\z@ \else
-      \caption@ifoddpage{\advance\caption@tempdima\captionmargin@\relax}{}%
-    \fi
-    \hspace\caption@tempdima
+    \caption@make@rightmargin
   }%
   \caption@endhook}
-\newcommand\caption@@make@epilogue{%
+\newcommand*\caption@make@leftmargin{%
+  \caption@tempdima\caption@leftmargin
+  \caption@ifhmode{\advance\caption@tempdima\caption@indent\relax}%
+  \hspace\caption@tempdima}
+\newcommand*\caption@make@parbox{%
+  \caption@tempdima\caption@width
+  \caption@ifhmode{\advance\caption@tempdima-\caption@indent\relax}%
+  \caption@parbox\caption@tempdima}
+\newcommand*\caption@make@indention{%
+  \caption@ifhmode{%
+    \ifdim\caption@indent=\z@
+      \leavevmode
+    \else
+      \hskip-\caption@indent
+    \fi}}
+\newcommand*\caption@make@rightmargin{%
+  \hspace\caption@rightmargin}
+\newcommand*\caption@@make@epilogue{%
   \global\caption@starfalse}
 \newcommand*\caption@calcmargin{%
   \caption@calcmargin@hook
-  \ifx\caption@maxmargin\@undefined \else
-    \ifdim\captionmargin>\caption@maxmargin\relax
-      \captionmargin\caption@maxmargin\relax
+  \ifdim\caption@width=\z@
+    \ifdim\captionmargin=\z@ \else
+      \caption@leftmargin\captionmargin
+      \caption@rightmargin\captionmargin
     \fi
-  \fi
-  \ifx\caption@minmargin\@undefined \else
-    \ifdim\captionmargin<\caption@minmargin\relax
-      \captionmargin\caption@minmargin\relax
+    \ifx\caption@maxmargin\@undefined \else
+      \ifdim\caption@leftmargin>\caption@maxmargin
+        \caption@leftmargin\caption@maxmargin
+      \fi
+      \ifdim\caption@rightmargin>\caption@maxmargin
+        \caption@rightmargin\caption@maxmargin
+      \fi
     \fi
-  \fi
-  \ifdim\captionwidth=\z@
-    \captionwidth\hsize\relax
-    \advance\captionwidth by -2\captionmargin\relax
-    \advance\captionwidth by -\captionmargin@\relax
+    \ifx\caption@minmargin\@undefined \else
+      \ifdim\caption@leftmargin<\caption@minmargin
+        \caption@leftmargin\caption@minmargin
+      \fi
+      \ifdim\caption@rightmargin<\caption@minmargin
+        \caption@rightmargin\caption@minmargin
+      \fi
+    \fi
+    \ifdim\caption@leftmargin=\caption@rightmargin \else
+      \caption@ifoddpage{}{%
+        \caption@tempdima\caption@leftmargin
+        \caption@leftmargin\caption@rightmargin
+        \caption@rightmargin\caption@tempdima}%
+    \fi
+    \caption@width\hsize
+    \advance\caption@width by -\caption@leftmargin\relax
+    \advance\caption@width by -\caption@rightmargin\relax
   \else
-    \captionmargin\hsize\relax
-    \advance\captionmargin by -\captionwidth\relax
-    \divide\captionmargin by 2\relax
-    \captionmargin@\z@\relax
+    \caption@leftmargin\hsize
+    \advance\caption@leftmargin by -\caption@width\relax
+    \divide\caption@leftmargin by 2\relax
+    \caption@rightmargin\caption@leftmargin
   \fi
   \caption@Debug{%
-    \string\hsize=\the\hsize,
-    \string\captionwidth=\the\captionwidth,\MessageBreak
-    \string\captionmargin=\the\captionmargin,
-    \string\captionmargin@=\the\captionmargin@}%
-}
+    hsize=\the\hsize,
+    width=\the\caption@width,\MessageBreak
+    leftmargin=\the\caption@leftmargin,
+    rightmargin=\the\caption@rightmargin}}
 \newcommand\caption@slc[4]{%
   \caption@Debug{Begin SLC}%
   \singlelinecaptiontrue
   \begingroup
   \caption@singleline
   \let\caption@justification\relax
-  \caption@calcmargin % calculate \captionwidth
+  \caption@calcmargin % calculate \caption@width
   \caption@prepareslc
   \sbox\@tempboxa{\caption@@@make{#1}{#2}}%
-  \ifdim\wd\@tempboxa>\captionwidth
+  \ifdim\wd\@tempboxa>\caption@width
     \endgroup
     \singlelinecaptionfalse
     #4%
@@ -1509,40 +1582,64 @@
   \let\caption@fmt\caption@slfmt}
 \newcommand*\caption@multiline{%
   \caption@format}              % defines \caption@ifhmode, \caption@slfmt, and \caption@fmt
+\newcommand*\AtCaptionSingleLineCheck{%
+  \g@addto@macro\caption@prepareslc}
 \providecommand*\caption@prepareslc{}
-\g@addto@macro\caption@prepareslc{%
+\AtCaptionSingleLineCheck{%
   \let\label\caption@gobble
   \let\hypertarget\@gobbletwo
-  \let\caption@footnote@ORI\footnote
-  \def\footnote{\caption@withoptargs\caption@footnote}%
-  \let\caption@footnotemark@ORI\footnotemark
-  \def\footnotemark{\caption@withoptargs\caption@footnotemark}%
-  \let\caption@footnotetext@ORI\@footnotetext
-  \let\@footnotetext\caption@gobble
-  \let\caption@endnote@ORI\endnote
-  \def\endnote{\caption@withoptargs\caption@endnote}%
-  \let\caption@endnotemark@ORI\endnotemark
-  \def\endnotemark{\caption@withoptargs\caption@endnotemark}%
-  \let\caption@endnotetext@ORI\@endnotetext
-  \let\@endnotetext\caption@gobble
+  \let\footnote\caption@footnote
+  \let\footnotemark\caption@footnotemark
+  \let\footnotetext\caption@footnotetext
+  \let\@footnotetext\@gobble
+  \let\H@@footnotetext\@gobble
+  \let\H@@mpfootnotetext\@gobble
+  \caption@ifdefined\H@@footnotemark
+    {\let\@footnotemark\H@@footnotemark}%
+    {}%
+  \let\tablefootnote\caption@footnote
+  \let\endnote\caption@endnote
+  \let\endnotemark\caption@endnotemark
+  \let\endnotetext\caption@endnotetext
+  \let\@endnotetext\@gobble
   \let\acused\@gobble
   \let\AC@placelabel\@gobble
   \let\glsunset\@gobble
 }
-\newcommand\caption@footnote[2]{%
-  \caption@footnotemark{#1}}
-\newcommand\caption@footnotemark[1]{%
-  \begingroup
-    \let\stepcounter\caption@l@stepcounter
-    \caption@footnotemark@ORI#1\relax
-  \endgroup}
-\newcommand\caption@endnote[2]{%
-  \caption@endnotemark{#1}}
-\newcommand\caption@endnotemark[1]{%
-  \begingroup
-    \let\stepcounter\caption@l@stepcounter
-    \caption@endnotemark@ORI#1\relax
-  \endgroup}
+\newcommand*\caption@footnote{%
+  \@ifnextchar[%]
+    \@xfootnote
+    {\caption@l@stepcounter\@mpfn
+     \protected@xdef\@thefnmark{\thempfn}%
+     \@footnotemark\@footnotetext}}
+\newcommand*\caption@footnotemark{%
+  \@ifnextchar[%]
+    \@xfootnotemark
+    {\caption@l@stepcounter{footnote}%
+     \protected@xdef\@thefnmark{\thefootnote}%
+     \@footnotemark}}
+\newcommand*\caption@footnotetext{%
+  \@ifnextchar[%]
+    \@xfootnotenext
+    {\protected@xdef\@thefnmark{\thempfn}%
+     \@footnotetext}}
+\newcommand*\caption@endnote{%
+  \@ifnextchar[%]
+    \@xendnote
+    {\caption@l@stepcounter{endnote}%
+     \protected@xdef\@theenmark{\theendnote}%
+     \@endnotemark\@endnotetext}}
+\newcommand*\caption@endnotemark{%
+  \@ifnextchar[%]
+    \@xendnotemark
+    {\caption@l@stepcounter{endnote}%
+     \protected@xdef\@theenmark{\theendnote}%
+     \@endnotemark}}
+\newcommand*\caption@endnotetext{%
+  \@ifnextchar[%]
+    \@xendnotenext
+    {\protected@xdef\@theenmark{\theendnote}%
+     \@endnotetext}}
 \newcommand*\caption@l@stepcounter[1]{%
   \advance\csname c@#1\endcsname\@ne\relax}
 \newcommand*\caption@applyfont{%
@@ -1672,7 +1769,7 @@
     {\caption@@@declaresubtype{#1}{#2}{#3}{sub#3}}}
 \@onlypreamble\caption@@declaresubtype
 \newcommand*\caption@@@declaresubtype[4]{%
-  \caption@ifsubtype{#4}%
+  \caption@ifdefined@subtype{#4}%
     {\caption@Debug{Modify subtype `#4'}}%
     {\caption@Debug{New subtype `#4'}%
      \newcounter{#4}[{#3}]%
@@ -1734,7 +1831,7 @@
   \fi}
 \@onlypreamble\caption@@@@@@declaresublistentry
 \newcommand*\caption@subtypelist{}
-\newcommand*\caption@ifsubtype{%
+\newcommand*\caption@ifdefined@subtype{%
   \caption@ifin@list\caption@subtypelist}
 \newcommand*\ForEachCaptionSubType{%
   \@ifstar
@@ -1751,7 +1848,7 @@
 \caption@ifdefined\@memresetsubcounter
   {\let\caption@memresetsubcounter\@memresetsubcounter
    \renewcommand*\@memresetsubcounter[1]{%
-     \caption@ifsubtype{sub#1}\@gobble\caption@memresetsubcounter{#1}}}%
+     \caption@ifdefined@subtype{sub#1}\@gobble\caption@memresetsubcounter{#1}}}%
   {}
 \ifx\caption@documentclass\@empty\else
   \@pushfilename

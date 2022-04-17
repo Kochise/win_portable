@@ -7,7 +7,7 @@
 -- babel.dtx  (with options: `basic')
 -- 
 --
--- Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+-- Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 -- Copyright (C) 1989-2012 Johannes L. Braams and
 --           any individual authors listed elsewhere in this file.
 -- All rights reserved.
@@ -209,7 +209,7 @@ function Babel.bidi(head, ispar, hdir)
 
     elseif item.id == DIR then
       d = nil
-      new_d = true
+      if head ~= item then new_d = true end
 
     elseif item.id == node.id'glue' and item.subtype == 13 then
       glue_d = d
@@ -341,7 +341,10 @@ function Babel.bidi(head, ispar, hdir)
         item = nodes[r][1]    -- MIRRORING
         if Babel.mirroring_enabled and item.id == GLYPH
              and temp == 'r' and characters[item.char] then
-          local font_mode = font.fonts[item.font].properties.mode
+          local font_mode = ''
+          if font.fonts[item.font].properties then
+            font_mode = font.fonts[item.font].properties.mode
+          end
           if font_mode ~= 'harf' and font_mode ~= 'plug' then
             item.char = characters[item.char].m or item.char
           end

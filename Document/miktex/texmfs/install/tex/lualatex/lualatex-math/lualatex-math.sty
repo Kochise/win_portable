@@ -22,7 +22,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2020/02/02]
 \RequirePackage{expl3}[2018/06/18]
-\ProvidesExplPackage{lualatex-math}{2021/07/05}{1.11}%
+\ProvidesExplPackage{lualatex-math}{2022/01/01}{1.12}%
   {Patches for mathematics typesetting with LuaLaTeX}
 \RequirePackage { etoolbox } [ 2007/10/08 ]
 \cs_if_exist:NF \newluabytecode
@@ -87,20 +87,29 @@
   }
   \scan_stop:
 }
-\@ifl@t@r \fmtversion { 2020/10/01 } {
+\@ifl@t@r \fmtversion { 2021/11/15 } {
   \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
-    \AddToHook { package/before/#1 } { #2 }
+    \AddToHook { package/#1/before } { #2 }
   }
   \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
-    \AddToHook { package/after/#1 } { #2 }
+    \AddToHook { package/#1/after } { #2 }
   }
-} {
-  \RequirePackage { filehook } [ 2011/03/09 ]
-  \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
-    \AtBeginOfPackageFile { #1 } { #2 }
-  }
-  \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
-    \AtEndOfPackageFile { #1 } { #2 }
+}{
+  \@ifl@t@r \fmtversion { 2020/10/01 } {
+    \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
+      \AddToHook { package/before/#1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
+      \AddToHook { package/after/#1 } { #2 }
+    }
+  } {
+    \RequirePackage { filehook } [ 2011/03/09 ]
+    \cs_new_protected_nopar:Npn \__lltxmath_before_package:nn #1 #2 {
+      \AtBeginOfPackageFile { #1 } { #2 }
+    }
+    \cs_new_protected_nopar:Npn \__lltxmath_after_package:nn #1 #2 {
+      \AtEndOfPackageFile { #1 } { #2 }
+    }
   }
 }
 \cs_new_protected_nopar:Npn \__lltxmath_after_package_or_now:nn #1 #2 {

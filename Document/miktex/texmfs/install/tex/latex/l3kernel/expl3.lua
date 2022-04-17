@@ -8,8 +8,9 @@
 -- l3names.dtx  (with options: `package,lua')
 -- l3sys.dtx  (with options: `package,lua')
 -- l3token.dtx  (with options: `package,lua')
+-- l3intarray.dtx  (with options: `package,lua')
 -- 
--- Copyright (C) 1990-2021 The LaTeX Project
+-- Copyright (C) 1990-2022 The LaTeX Project
 -- 
 -- It may be distributed and/or modified under the conditions of
 -- the LaTeX Project Public License (LPPL), either version 1.3c of
@@ -22,8 +23,6 @@
 -- and all files in that bundle must be distributed together.
 -- 
 -- File: l3luatex.dtx
-l3kernel = l3kernel or { }
-local l3kernel = l3kernel
 ltx = ltx or {utils={}}
 ltx.utils = ltx.utils or { }
 local ltxutils = ltx.utils
@@ -56,14 +55,36 @@ local scan_int     = token.scan_int or token.scan_integer
 local scan_string  = token.scan_string
 local scan_keyword = token.scan_keyword
 local put_next     = token.put_next
+local token_create = token.create
+local token_new    = token.new
+local token_create_safe
+do
+  local is_defined = token.is_defined
+  local set_char   = token.set_char
+  local runtoks    = tex.runtoks
+  local let_token  = token_create'let'
 
-local true_tok     = token.create'prg_return_true:'
-local false_tok    = token.create'prg_return_false:'
-local function deprecated(table, name, func)
-  table[name] = function(...)
-    write_nl(format("Calling deprecated Lua function %s", name))
-    table[name] = func
-    return func(...)
+  function token_create_safe(s)
+    local orig_token = token_create(s)
+    if is_defined(s, true) then
+      return orig_token
+    end
+    set_char(s, 0)
+    local new_token = token_create(s)
+    runtoks(function()
+      put_next(let_token, new_token, orig_token)
+    end)
+    return new_token
+  end
+end
+
+local true_tok     = token_create_safe'prg_return_true:'
+local false_tok    = token_create_safe'prg_return_false:'
+local command_id   = token.command_id
+if not command_id and tokens and tokens.commands then
+  local id_map = tokens.commands
+  function command_id(name)
+    return id_map[name]
   end
 end
 local kpse_find = (resolvers and resolvers.findfile) or kpse.find_file
@@ -71,23 +92,6 @@ local function escapehex(str)
   return (gsub(str, ".",
     function (ch) return format("%02X", byte(ch)) end))
 end
-deprecated(l3kernel, 'charcat', function(charcode, catcode)
-  cprint(catcode, utf8_char(charcode))
-end)
-local os_clock   = os.clock
-local base_clock_time = 0
-local function elapsedtime()
-  local val = (os_clock() - base_clock_time) * 65536 + 0.5
-  if val > 2147483647 then
-    val = 2147483647
-  end
-  write(format("%d",floor(val)))
-end
-l3kernel.elapsedtime = elapsedtime
-local function resettimer()
-  base_clock_time = os_clock()
-end
-l3kernel.resettimer = resettimer
 local function filedump(name,offset,length)
   local file = kpse_find(name,"tex",true)
   if not file then return end
@@ -101,12 +105,6 @@ local function filedump(name,offset,length)
   return escapehex(data)
 end
 ltxutils.filedump = filedump
-deprecated(l3kernel, "filedump", function(name, offset, length)
-  local dump = filedump(name, tonumber(offset), tonumber(length))
-  if dump then
-    write(dump)
-  end
-end)
 local md5_HEX = md5.HEX
 if not md5_HEX then
   local md5_sum = md5.sum
@@ -124,12 +122,6 @@ local function filemd5sum(name)
   return md5_HEX(data)
 end
 ltxutils.filemd5sum = filemd5sum
-deprecated(l3kernel, "filemdfivesum", function(name)
-  local hash = filemd5sum(name)
-  if hash then
-    write(hash)
-  end
-end)
 local filemoddate
 if os_date'%z':match'^[+-]%d%d%d%d$' then
   local pattern = lpeg.Cs(16 *
@@ -183,12 +175,6 @@ else
   end
 end
 ltxutils.filemoddate = filemoddate
-deprecated(l3kernel, "filemoddate", function(name)
-  local hash = filemoddate(name)
-  if hash then
-    write(hash)
-  end
-end)
 local function filesize(name)
   local file = kpse_find(name, "tex", true)
   if file then
@@ -199,36 +185,9 @@ local function filesize(name)
   end
 end
 ltxutils.filesize = filesize
-deprecated(l3kernel, "filesize", function(name)
-  local size = filesize(name)
-  if size then
-    write(size)
-  end
-end)
-deprecated(l3kernel, "strcmp", function (A, B)
-  if A == B then
-    write("0")
-  elseif A < B then
-    write("-1")
-  else
-    write("1")
-  end
-end)
-local os_exec    = os.execute
-deprecated(l3kernel, "shellescape", function(cmd)
-  local status,msg = os_exec(cmd)
-  if status == nil then
-    write_nl("log","runsystem(" .. cmd .. ")...(" .. msg .. ")\n")
-  elseif status == 0 then
-    write_nl("log","runsystem(" .. cmd .. ")...executed\n")
-  else
-    write_nl("log","runsystem(" .. cmd .. ")...failed " .. (msg or "") .. "\n")
-  end
-end)
 local luacmd do
-  local token_create = token.create
   local set_lua = token.set_lua
-  local undefined_cs = token.command_id'undefined_cs'
+  local undefined_cs = command_id'undefined_cs'
 
   if not context and not luatexbase then require'ltluatex' end
   if luatexbase then
@@ -249,7 +208,7 @@ local luacmd do
     local register = context.functions.register
     local functions = context.functions.known
     function luacmd(name, func, ...)
-      local tok = token.create(name)
+      local tok = token_create(name)
       if tok.command == undefined_cs then
         token.set_lua(name, register(func), ...)
       else
@@ -258,10 +217,48 @@ local luacmd do
     end
   end
 end
+local register_luadata, get_luadata
+
+if luatexbase then
+  local register = token_create'@expl@luadata@bytecode'.index
+  if status.ini_version then
+    local luadata, luadata_order = {}, {}
+
+    function register_luadata(name, func)
+      if luadata[name] then
+        error(format("LaTeX error: data name %q already in use", name))
+      end
+      luadata[name] = func
+      luadata_order[#luadata_order + 1] = func and name
+    end
+    luatexbase.add_to_callback("pre_dump", function()
+      if next(luadata) then
+        local str = "return {"
+        for i=1, #luadata_order do
+          local name = luadata_order[i]
+          str = format('%s[%q]=%s,', str, name, luadata[name]())
+        end
+        lua.bytecode[register] = assert(load(str .. "}"))
+      end
+    end, "ltx.luadata")
+  else
+    local luadata = lua.bytecode[register]
+    if luadata then
+      lua.bytecode[register] = nil
+      luadata = luadata()
+    end
+    function get_luadata(name)
+      if not luadata then return end
+      local data = luadata[name]
+      luadata[name] = nil
+      return data
+    end
+  end
+end
 -- File: l3names.dtx
-local minus_tok = token.new(string.byte'-', 12)
-local zero_tok = token.new(string.byte'0', 12)
-local one_tok = token.new(string.byte'1', 12)
+local minus_tok = token_new(string.byte'-', 12)
+local zero_tok = token_new(string.byte'0', 12)
+local one_tok = token_new(string.byte'1', 12)
 luacmd('tex_strcmp:D', function()
   local first = scan_string()
   local second = scan_string()
@@ -271,11 +268,16 @@ luacmd('tex_strcmp:D', function()
     put_next(first == second and zero_tok or one_tok)
   end
 end, 'global')
+local sprint = tex.sprint
 local cprint = tex.cprint
 luacmd('tex_Ucharcat:D', function()
   local charcode = scan_int()
   local catcode = scan_int()
-  cprint(catcode, utf8_char(charcode))
+  if catcode == 10 then
+    sprint(token_new(charcode, 10))
+  else
+    cprint(catcode, utf8_char(charcode))
+  end
 end, 'global')
 luacmd('tex_filesize:D', function()
   local size = filesize(scan_string())
@@ -318,17 +320,22 @@ do
   luacmd("__sys_shell_now:e", function()
     shellescape(scan_string())
   end, "global", "protected")
-  local whatsit_id = node.id'whatsit'
-  local latelua_sub = node.subtype'late_lua'
-  local node_new = node.direct.new
-  local setfield = node.direct.setwhatsitfield or node.direct.setfield
+  local new_latelua = nodes and nodes.nuts and nodes.nuts.pool and nodes.nuts.pool.latelua or (function()
+    local whatsit_id = node.id'whatsit'
+    local latelua_sub = node.subtype'late_lua'
+    local node_new = node.direct.new
+    local setfield = node.direct.setwhatsitfield or node.direct.setfield
+    return function(f)
+      local n = node_new(whatsit_id, latelua_sub)
+      setfield(n, 'data', f)
+      return n
+    end
+  end)()
   local node_write = node.direct.write
 
   luacmd("__sys_shell_shipout:e", function()
     local cmd = scan_string()
-    local n = node_new(whatsit_id, latelua_sub)
-    setfield(n, 'data', function() shellescape(cmd) end)
-    node_write(n)
+    node_write(new_latelua(function() shellescape(cmd) end))
   end, "global", "protected")
 end
   local gettimeofday = os.gettimeofday
@@ -344,9 +351,10 @@ do
   local get_command = token.get_command
   local get_index = token.get_index
   local get_mode = token.get_mode or token.get_index
-  local cmd = token.command_id
+  local cmd = command_id
   local set_font = cmd'get_font'
-  local biggest_char = token.biggest_char()
+  local biggest_char = token.biggest_char and token.biggest_char()
+                    or status.getconstants().max_character_code
 
   local mode_below_biggest_char = {}
   local index_not_nil = {}
@@ -355,29 +363,29 @@ do
     [cmd'left_brace'] = true,
     [cmd'right_brace'] = true,
     [cmd'math_shift'] = true,
-    [cmd'mac_param'] = mode_below_biggest_char,
-    [cmd'sup_mark'] = true,
-    [cmd'sub_mark'] = true,
-    [cmd'endv'] = true,
+    [cmd'mac_param' or cmd'parameter'] = mode_below_biggest_char,
+    [cmd'sup_mark' or cmd'superscript'] = true,
+    [cmd'sub_mark' or cmd'subscript'] = true,
+    [cmd'endv' or cmd'ignore'] = true,
     [cmd'spacer'] = true,
     [cmd'letter'] = true,
     [cmd'other_char'] = true,
-    [cmd'tab_mark'] = mode_below_biggest_char,
+    [cmd'tab_mark' or cmd'alignment_tab'] = mode_below_biggest_char,
     [cmd'char_given'] = true,
-    [cmd'math_given'] = true,
-    [cmd'xmath_given'] = true,
+    [cmd'math_given' or 'math_char_given'] = true,
+    [cmd'xmath_given' or 'math_char_xgiven'] = true,
     [cmd'set_font'] = mode_not_null,
     [cmd'undefined_cs'] = true,
     [cmd'call'] = true,
-    [cmd'long_call'] = true,
-    [cmd'outer_call'] = true,
-    [cmd'long_outer_call'] = true,
-    [cmd'assign_glue'] = index_not_nil,
-    [cmd'assign_mu_glue'] = index_not_nil,
-    [cmd'assign_toks'] = index_not_nil,
-    [cmd'assign_int'] = index_not_nil,
-    [cmd'assign_attr'] = true,
-    [cmd'assign_dimen'] = index_not_nil,
+    [cmd'long_call' or cmd'protected_call'] = true,
+    [cmd'outer_call' or cmd'tolerant_call'] = true,
+    [cmd'long_outer_call' or cmd'tolerant_protected_call'] = true,
+    [cmd'assign_glue' or cmd'register_glue'] = index_not_nil,
+    [cmd'assign_mu_glue' or cmd'register_mu_glue'] = index_not_nil,
+    [cmd'assign_toks' or cmd'register_toks'] = index_not_nil,
+    [cmd'assign_int' or cmd'register_int'] = index_not_nil,
+    [cmd'assign_attr' or cmd'register_attribute'] = true,
+    [cmd'assign_dimen' or cmd'register_dimen'] = index_not_nil,
   }
 
   luacmd("__token_if_primitive_lua:N", function()
@@ -396,3 +404,131 @@ do
              and (get_mode(tok) > biggest_char and true_tok or false_tok))
   end, "global")
 end
+-- File: l3intarray.dtx
+luacmd('__intarray:w', function()
+  scan_int()
+  tex.error'LaTeX Error: Isolated intarray ignored'
+end, 'protected', 'global')
+
+local scan_token = token.scan_token
+local put_next = token.put_next
+local intarray_marker = token_create_safe'__intarray:w'
+local use_none = token_create_safe'use_none:n'
+local use_i = token_create_safe'use:n'
+local expand_after_scan_stop = {token_create_safe'exp_after:wN',
+                                token_create_safe'scan_stop:'}
+local comma = token_create(string.byte',')
+local __intarray_table do
+  local tables = get_luadata and get_luadata'__intarray' or {[0] = {}}
+  function __intarray_table()
+    local t = scan_token()
+    if t ~= intarray_marker then
+      put_next(t)
+      tex.error'LaTeX Error: intarray expected'
+      return tables[0]
+    end
+    local i = scan_int()
+    local current_table = tables[i]
+    if current_table then return current_table end
+    current_table = {}
+    tables[i] = current_table
+    return current_table
+  end
+  if register_luadata then
+    register_luadata('__intarray', function()
+      local t = "{[0]={},"
+      for i=1, #tables do
+        t = string.format("%s{%s},", t, table.concat(tables[i], ','))
+      end
+      return t .. "}"
+    end)
+  end
+end
+
+local sprint = tex.sprint
+
+luacmd('__intarray_gset_count:Nw', function()
+  local t = __intarray_table()
+  local n = scan_int()
+  for i=#t+1, n do t[i] = 0 end
+end, 'protected', 'global')
+
+luacmd('intarray_count:N', function()
+  sprint(-2, #__intarray_table())
+end, 'global')
+luacmd('__intarray_gset:wF', function()
+  local i = scan_int()
+  local t = __intarray_table()
+  if t[i] then
+    t[i] = scan_int()
+    put_next(use_none)
+  else
+    tex.count.l__intarray_bad_index_int = i
+    scan_int()
+    put_next(use_i)
+  end
+end, 'protected', 'global')
+
+luacmd('__intarray_gset:w', function()
+  local i = scan_int()
+  local t = __intarray_table()
+  t[i] = scan_int()
+end, 'protected', 'global')
+luacmd('intarray_gzero:N', function()
+  local t = __intarray_table()
+  for i=1, #t do
+    t[i] = 0
+  end
+end, 'global', 'protected')
+luacmd('__intarray_item:wF', function()
+  local i = scan_int()
+  local t = __intarray_table()
+  local item = t[i]
+  if item then
+    put_next(use_none)
+  else
+    tex.l__intarray_bad_index_int = i
+    put_next(use_i)
+  end
+  put_next(expand_after_scan_stop)
+  scan_token()
+  if item then
+    sprint(-2, item)
+  end
+end, 'global')
+
+luacmd('__intarray_item:w', function()
+  local i = scan_int()
+  local t = __intarray_table()
+  sprint(-2, t[i])
+end, 'global')
+local concat = table.concat
+luacmd('__intarray_to_clist:Nn', function()
+  local t = __intarray_table()
+  local sep = token.scan_string()
+  sprint(-2, concat(t, sep))
+end, 'global')
+luacmd('__intarray_range_to_clist:w', function()
+  local t = __intarray_table()
+  local from = scan_int()
+  local to = scan_int()
+  sprint(-2, concat(t, ',', from, to))
+end, 'global')
+luacmd('__intarray_gset_range:w', function()
+  local from = scan_int()
+  local t = __intarray_table()
+  while true do
+    local tok = scan_token()
+    if tok == comma then
+      repeat
+        tok = scan_token()
+      until tok ~= comma
+      break
+    else
+      put_next(tok)
+    end
+    t[from] = scan_int()
+    scan_token()
+    from = from + 1
+  end
+  end, 'global', 'protected')

@@ -6,7 +6,7 @@
 %%
 %% caption-beamer.dtx  (with options: `package')
 %% 
-%% Copyright (C) 1994-2020 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
+%% Copyright (C) 1994-2022 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
 %% 
 %% https://gitlab.com/axelsommerfeldt/caption
 %% 
@@ -33,12 +33,10 @@
 %%   caption.sty, caption-light.sty, caption2.sty, caption3.sty,
 %%   caption-ams-smf.sto, caption-beamer.sto, caption-elsarticle.sto,
 %%   caption-koma.sto, caption-memoir.sto, caption-ntg.sto,
-%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty,
-%% and the user manuals
-%%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
+%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesFile{caption-beamer.sto}[2020/08/22 v2.0 Adaption of the caption package to the beamer document classes (AR)]
+\ProvidesFile{caption-beamer.sto}[2022/01/06 v2.0c Adaption of the caption package to the beamer document classes (AR)]
 \newcommand*\caption@ifbeamertemplate[1]{%
   \begingroup
     \let\beamer@@tmpl@caption@ORI\beamer@@tmpl@caption
@@ -52,7 +50,9 @@
   \caption@ifbeamertemplate{caption name own line}%
     \@secondoftwo % \@secondoftwo -> singlelinecheck=off
     \@firstoftwo} % \@firstoftwo  -> singlelinecheck=on
-\g@addto@macro\caption@prepareslc{%
+\providecommand*\AtCaptionSingleLineCheck{\g@addto@macro\caption@prepareslc} % for caption v3.5
+\let\caption@footnote@ORI\footnote
+\AtCaptionSingleLineCheck{%
   \def\footnote{%
     \begingroup
     \let\stepcounter\caption@l@stepcounter
@@ -90,7 +90,7 @@
 \SetCaptionDefault{textfont}{beamer@textfont}
 \SetCaptionDefault{justification}{raggedright}
 \captionsetup{list=off}
-\AtCaptionPackage{%
+\AfterCaptionPackage{%
   \expandafter\let\expandafter\caption@beamer@figure
     \csname\string\figure\endcsname
   \@namedef{\string\figure}[#1]{%
@@ -101,6 +101,7 @@
   \@namedef{\string\table}[#1]{%
     \caption@beamer@table[#1]% use original beamer code first
     \caption@settype{table}} % set "type=table" afterwards
+  \def\caption@nobreak{\nobreak}
 }
 \endinput
 %%

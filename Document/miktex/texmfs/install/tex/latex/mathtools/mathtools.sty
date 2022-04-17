@@ -31,15 +31,15 @@
 %%    mathtools.sty, mathtools.pdf, mathtools.ins, mathtools.drv.
 %% 
 \ProvidesPackage{mathtools}%
-  [2021/04/12 v1.27 mathematical typesetting tools]
+  [2022/02/07 v1.28a mathematical typesetting tools]
 \RequirePackage{keyval,calc}
 \RequirePackage{mhsetup}[2021/03/18]
 \MHInternalSyntaxOn
  % borrowed from fixltx2e
 \def\EQ_MakeRobust#1{%
   \@ifundefined{\expandafter\@gobble\string#1}{%
-    \@latex@error{The control sequence `\string#1' is undefined!%
-      \MessageBreak There is nothing here to make robust}%
+    \@latex@error{The~control~sequence~`\string#1'~is~undefined!%
+      \MessageBreak There~is~nothing~here~to~make~robust}%
     \@eha
   }%
   {%
@@ -57,13 +57,13 @@
         \noexpand\protect\expandafter\noexpand
         \csname\expandafter\@gobble\string#1\space\endcsname}%
     }%
-    {\@latex@info{The control sequence `\string#1' is already robust}}%
+    {\@latex@info{The~control~sequence~`\string#1'~is~already~robust}}%
    }%
 }
 \def\forced_EQ_MakeRobust#1{%
   \@ifundefined{\expandafter\@gobble\string#1}{%
-    \@latex@error{The control sequence `\string#1' is undefined!%
-      \MessageBreak There is nothing here to make robust}%
+    \@latex@error{The~control~sequence~`\string#1'~is~undefined!%
+      \MessageBreak There~is~nothing~here~to~make~robust}%
     \@eha
   }%
   {%
@@ -121,12 +121,6 @@
   \PackageError{mathtools}
     {You~ have~ to~ select~ either~ `true'~ or~ `false'}
     {I'll~ assume~ you~ chose~ `false'~ for~ now.}
-}
-\MH_if_boolean:nT {robustify}{
-  \EQ_MakeRobust\(
-  \EQ_MakeRobust\)
-  \EQ_MakeRobust\[
-  \EQ_MakeRobust\]
 }
 \def\MT_define_tagform:nwnn #1[#2]#3#4{
   \@namedef{MT_tagform_#1:n}##1
@@ -334,6 +328,10 @@
   \arrowfill@\leftharpoondown\relbar\relbar}
 \def\MT_leftharpoonup_fill:{%
   \arrowfill@\leftharpoonup\relbar\relbar}
+\def\MT_longrightarrow_fill:{%
+  \arrowfill@\relbar\relbar\longrightarrow}
+\def\MT_longleftarrow_fill:{%
+  \arrowfill@\longleftarrow\relbar\relbar}
 \providecommand*\xrightharpoondown[2][]{%
   \ext@arrow 0359\MT_rightharpoondown_fill:{#1}{#2}}
 \providecommand*\xrightharpoonup[2][]{%
@@ -354,6 +352,10 @@
   \setbox0=\hbox{%
     $\ext@arrow 3095\MT_leftharpoondown_fill:{#1}{\phantom{#2}}$}%
   \kern-\wd0 \lower.22ex\box0}}
+\providecommand*\xlongrightarrow[2][]{%
+  \ext@arrow 0359\MT_longrightarrow_fill:{#1}{#2}}
+\providecommand*\xlongleftarrow[2][]{%
+  \ext@arrow 3095\MT_longleftarrow_fill:{#1}{#2}}
 \providecommand*\xhookleftarrow[2][]{%
   \ext@arrow 3095\MT_hookleft_fill:{#1}{#2}}
 \def\MT_hookleft_fill:{%
@@ -1201,9 +1203,25 @@
 \def\@Aboxed#1&#2&#3\ENDDNE{%
   \ifnum0=`{}\fi \setbox \z@
     \hbox{$\displaystyle#1{}\m@th$\kern\fboxsep \kern\fboxrule }%
-    \edef\@tempa {\kern  \wd\z@ &\kern -\the\wd\z@ \fboxsep
-        \the\fboxsep \fboxrule \the\fboxrule }\@tempa \boxed {#1#2}%
+    \edef\@tempa {\kern  \wd\z@ &\kern -\the\wd\z@
+     \fboxsep\the\fboxsep \fboxrule \the\fboxrule }\@tempa \boxed {#1#2}%
 }
+\newcommand\MakeAboxedCommand[2]{
+  % #1: command to create
+  % #2: box command to use
+  \newcommand#1[1]{\let\bgroup{\romannumeral-`}%
+    \@nameuse{@@\MH_cs_to_str:N #1}##1&&\ENDDNE}
+  \@namedef{@@\MH_cs_to_str:N #1}##1&##2&##3\ENDDNE{%
+    \settowidth\@tempdimc{#2{}}%
+    \ifnum0=`{}\fi \setbox \z@
+    \hbox{$\displaystyle##1{}\m@th$\kern0.5\@tempdimc}%
+    \edef\@tempa{\kern\wd\z@&\kern-\the\wd\z@%
+       \fboxsep\the\fboxsep \fboxrule \the\fboxrule}%
+    \@tempa%
+    #2{\m@th$\displaystyle ##1##2$}%
+  }
+}
+
 \MHInternalSyntaxOff
 \def\ArrowBetweenLines{\relax
   \iffalse{\fi\ifnum0=`}\fi

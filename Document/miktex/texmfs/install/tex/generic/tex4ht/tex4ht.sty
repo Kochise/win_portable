@@ -1,7 +1,7 @@
 \ifnum\the\catcode`\%=14\else\expandafter\edef\csname
   \string:RestoreCatcodes\endcsname{\catcode`\%\the
   \catcode`\%}\catcode`\%14\fi
-% tex4ht.sty (2021-03-06-13:30), generated from tex4ht-sty.tex
+% tex4ht.sty (2021-09-14-14:11), generated from tex4ht-sty.tex
 % Copyright 2009-2021 TeX Users Group
 % Copyright 1996-2009 Eitan M. Gurari
 %
@@ -20,7 +20,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-03-06-13:30}
+\immediate\write-1{version 2021-09-14-14:11}
 
 
 \ifx  \Preamble\UnDef  \else
@@ -3581,7 +3581,9 @@
           \expand:after{\expandafter\let\csname NoCut:#1\endcsname=}%
              \csname Cut:#1\endcsname
       \fi
-      \expandafter\let\csname Cut:#1\endcsname=\null
+      \expandafter\let\csname OToc:#1\expandafter\endcsname\csname Toc:#1\endcsname
+\expandafter\let\csname Toc:#1\endcsname=\relax
+\expandafter\let\csname Cut:#1\endcsname=\null
 \expandafter\def\csname Cut:#1\endcsname{%
    \gHAdvance \TitleCount  1
    \null \:gobble
@@ -3592,6 +3594,7 @@
    \expandafter\ifx  \csname NoCut:#1\endcsname\relax\else
        \expand:after{\expandafter\let\csname Cut:#1\endcsname=}%
           \csname NoCut:#1\endcsname
+      \expandafter\let\csname Toc:#1\expandafter\endcsname\csname OToc:#1\endcsname
    \fi}
 \def\:CutAt#1#2,#3//{%
    \csname ltx:like\endcsname

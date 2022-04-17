@@ -1,6 +1,6 @@
 %% dvisvgm.def
 %% Copyright 2015 by Till Tantau
-%% Copyright 2016-2020 by Till Tantau and LaTeX3 Project
+%% Copyright 2016-2022 by Till Tantau and LaTeX3 Project
 %
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3c
@@ -16,7 +16,7 @@
 %%
 %% https://github.com/latex3/graphics-def/issues
 %
-\ProvidesFile{dvisvgm.def}[2020/03/22 v1.2 dvisvgm graphics driver for latex]
+\ProvidesFile{dvisvgm.def}[2022/02/19 v1.5 dvisvgm graphics driver for latex]
 % The following is copied from dvips.def:
 \def\GPT@space{ }
 \def\c@lor@arg#1{%
@@ -68,6 +68,13 @@
     {\PackageError{color}{Undefined color `#1'}\@ehd}%
   {\edef#4{ #1}}%
   }
+% Mapping to literal Postscript, matching dvips.def, used by PSTricks
+\def\c@lor@to@ps#1 #2\@@{\csname c@lor@ps@#1\endcsname#2 \@@}
+\def\c@lor@ps@#1 #2\@@{TeXDict begin #1 end}
+\def\c@lor@ps@rgb#1\@@{#1 setrgbcolor}
+\def\c@lor@ps@hsb#1\@@{#1 sethsbcolor}
+\def\c@lor@ps@cmyk#1\@@{#1 setcmykcolor}
+\def\c@lor@ps@gray#1\@@{#1 setgray}
 \def\current@color{ Black}
 \def\set@color{\special{color push  \current@color}\aftergroup\reset@color}
 \def\reset@color{\special{color pop}}
@@ -89,7 +96,7 @@
   \special{dvisvgm:bbox lock}%
 }
 \let\Gscale@end\Grot@end
-\def\Gin@extensions{.svg,.eps,.png,.jpg,.jpeg}
+\def\Gin@extensions{.svg,.eps,.pdf,.png,.jpg,.jpeg}
 \def\Ginclude@pdf#1{\Ginclude@psorpdf{#1}{pdffile}}
 \def\Ginclude@eps#1{\let\Gin@page\@empty\Ginclude@psorpdf{#1}{PSfile}}
 \def\Ginclude@psorpdf#1#2{%
@@ -162,16 +169,16 @@
   \dimen@\Gin@svg@real@height@bp pt%
   \advance\dimen@ by-\Gin@ury pt%
   \edef\Gin@svg@view@base{\strip@pt\dimen@}%
+  \special{dvisvgm:bbox \strip@pt\Gin@req@width pt \strip@pt\Gin@req@height pt transform}%
   \Gin@req@width0.99626\Gin@req@width%
   \Gin@req@height0.99626\Gin@req@height%
   \raise\strip@pt\Gin@req@height bp\hbox{%
     \special{dvisvgm: raw
-      <g transform="translate({?x},{?y})">
+      <g transform="translate({?x},{?y})">%
         <svg overflow="\ifGin@clip hidden\else visible\fi" width="\strip@pt\Gin@req@width" height="\strip@pt\Gin@req@height"
-             viewBox="\Gin@llx\GPT@space\Gin@svg@view@base\GPT@space\Gin@svg@view@width\GPT@space\Gin@svg@view@height">
-          <image width="\Gin@svg@real@width@bp" height="\Gin@svg@real@height@bp"
-                 xlink:href="#1"/>
-        </svg>
+             viewBox="\Gin@llx\GPT@space\Gin@svg@view@base\GPT@space\Gin@svg@view@width\GPT@space\Gin@svg@view@height">%
+          <image width="\Gin@svg@real@width@bp" height="\Gin@svg@real@height@bp" xlink:href="#1"/>%
+        </svg>%
       </g>}%
   }%
 }

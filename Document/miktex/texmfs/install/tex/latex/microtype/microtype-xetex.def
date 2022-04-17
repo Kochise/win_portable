@@ -10,12 +10,12 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2022 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
 %% your option) any later version. The latest version of this license is in:
-%% http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
+%% https://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 %% of all distributions of LaTeX version 2005/12/01 or later.
 %% 
 %% This work has the LPPL maintenance status `maintained'.
@@ -31,26 +31,10 @@
 %%
 \ProvidesFile
   {microtype-xetex.def}
-  [2021/10/31 v3.0
+  [2022/03/14 v3.0d
    Definitions specific to
    xetex
    (RS)]
-\ifdim 0\XeTeXrevision pt < 0.9997pt
-  \def\MT@xetex@no{1}
-\else
-  \def\MT@xetex@no{2}
-\fi
-\ifnum
-  \csname MT@\MT@engine tex@no\endcsname < 2
-  \MT@warning@nl{You
-      are using a \MT@engine tex version older than
-      0.9997%
-      .\MessageBreak
-      `\MT@MT' does not work with this version.\MessageBreak
-      Please install a newer version of \MT@engine tex%
-      .\MessageBreak I will quit now}
-  \MT@clear@options
-\endinput\fi
 \def\MT@ifint#1{%
   \if!\ifnum9<1#1!\else?\fi
     \expandafter\@firstoftwo
@@ -69,7 +53,9 @@
   }%
 }
 \def\MT@ifstreq#1#2{%
-  \ifnum\strcmp{#1}{#2}=\z@
+  \ifnum
+      \strcmp
+      {#1}{#2}=\z@
     \expandafter\@firstoftwo
   \else
     \expandafter\@secondoftwo
@@ -127,7 +113,7 @@
   \ifnum\fontdimen6\MT@font=\z@
     \fontdimen6\MT@font=%
       \MT@size pt
-    \MT@info{Fixing zero \string\fontdimen 6 for font `\MT@@font'\MessageBreak
+    \MT@info{Fixing zero \@backslashchar fontdimen 6 for font `\MT@@font'\MessageBreak
              (new value: \the\fontdimen6\MT@font)}%
   \fi
   \edef\MT@dimen@six{\number\fontdimen6\MT@font}%
@@ -304,22 +290,9 @@
 \renewcommand*\DisableLigatures[2][]{%
   \MT@error{Disabling ligatures of a font is only possible\MessageBreak
     with pdftex version 1.30 or newer.\MessageBreak
-    Ignoring \string\DisableLigatures}{%
+    Ignoring \@backslashchar DisableLigatures}{%
     Use
     pdftex.}%
-}
-\def\SetProtrusion{%
-  \MT@begin@catcodes
-  \MT@SetProtrusion
-}
-\newcommand*\MT@SetProtrusion[3][]{%
-  \let\MT@extra@context\@empty
-  \MT@set@named@keys{MT@pr@c}{#1}%
-  \def\MT@permutelist{pr@c}%
-  \setkeys{MT@cfg}{#2}%
-  \MT@permute
-  \MT@gdef@n{MT@pr@c@\MT@pr@c@name}{#3}%
-  \MT@end@catcodes
 }
   \define@key{MT@pr@c}{context}[]{%
     \MT@error{Protrusion contexts only work with pdftex
@@ -327,15 +300,6 @@
         Ignoring `context' key\on@line}%
       {Use pdftex or luatex.}%
   }
-\define@key{MT@pr@c}{unit}[character]{%
-  \MT@glet@nc{MT@pr@c@\MT@curr@set@name @unit}\@empty
-  \def\@tempa{#1}%
-  \MT@ifstreq\@tempa{character}\relax{%
-    \MT@ifdimen\@tempa
-      {\MT@glet@nc{MT@pr@c@\MT@curr@set@name @unit}\@tempa}%
-      {\MT@warn@nodim{character widths}}%
-  }%
-}
 \def\MT@inh@split#1=#2=#3\relax{%
   \def\@tempa{#1}%
   \ifx\@tempa\@empty \else
@@ -359,30 +323,6 @@
       }%
     \fi
   \fi
-}
-\def\MT@has@inh@prefix#1(#2)#3#4\@nil{%
-  \let\MT@temp\relax
-  \ifx\relax#3%
-    \def\@tempa{#1#2}%
-    \let\MT@inh@prefix\@empty
-  \else
-    \MT@ifstreq{\MT@feat}{pr}{%
-      \MT@ifstreq{#2}{l}{\def\MT@inh@prefix@{{1000}{0}}\@firstoftwo}{%
-        \MT@ifstreq{#2}{r}{\def\MT@inh@prefix@{{0}{1000}}\@firstoftwo}{%
-          \MT@ifstreq{#2}{lr}{\def\MT@inh@prefix@{{500}{500}}\@firstoftwo}{%
-            \MT@warning@nl{`#2' is not a valid prefix in inheritance list%
-              \MessageBreak\MT@listname. Ignoring it}%
-            \@secondoftwo}}}%
-      {\def\@tempa{#3}%
-       \def\MT@inh@prefix{#2}%
-       \@gobble}%
-      {\@firstofone}%
-    }{\@firstofone}%
-   {\let\MT@char\m@ne
-    \let\MT@temp\@gobble
-   }%
-  \fi
-  \MT@temp
 }
 \MT@def@bool@opt{DVIoutput}{%
   \csname if\@tempa\endcsname

@@ -1,4 +1,4 @@
-% mathjax-latex-4ht.sty (2021-04-16-13:28), generated from tex4ht-mathjax.tex
+% mathjax-latex-4ht.sty (2021-12-02-14:01), generated from tex4ht-mathjax.tex
 % Copyright 2018-2021 TeX Users Group
 %
 % This work may be distributed and/or modified under the
@@ -16,9 +16,8 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2021-04-16-13:28}
+\immediate\write-1{version 2021-12-02-14:01}
 
-\RequirePackage{etoolbox,expl3,environ}
 
 \ExplSyntaxOn
 \cs_new_protected:Npn \alteqtoks #1
@@ -28,6 +27,8 @@
   \regex_replace_all:nnN { \x{26} } { &amp; } \l_tmpa_tl
   \regex_replace_all:nnN { \x{3C} } { &lt; } \l_tmpa_tl
   \regex_replace_all:nnN { \x{3E} } { &gt; } \l_tmpa_tl
+  % replace \par command with blank lines
+  \regex_replace_all:nnN { \x{5C}par\b } {\x{A}\x{A}} \l_tmpa_tl
   \tl_set:Nx \l_tmpb_tl{ \l_tmpa_tl }
   \HCode{\l_tmpb_tl}
 }
@@ -47,13 +48,15 @@
     #1
   \end{#2}}%
 }
+\ExplSyntaxOn
 \newcommand\VerbMath[1]{%
-\ifcsdef{#1}{%
-  \RenewEnviron{#1}{%
-  \NoFonts\expandafter\VerbMathToks\expandafter{\BODY}{#1}\EndNoFonts%
-  }
-}{}%
+  \cs_if_exist:cTF{#1}{
+    \RenewDocumentEnvironment{#1}{+!b}{%
+      \NoFonts\expandafter\VerbMathToks\expandafter{##1}{#1}\EndNoFonts%
+    }{}
+  }{}%
 }
+\ExplSyntaxOff
 \def\fixmathjaxtoc#1{\Configure{writetoc}{\def#1{\detokenize{#1}}}}
 \def\fixmathjaxsec#1{\def#1{\detokenize{#1}}}
 
@@ -117,9 +120,20 @@
 \fixmathjaxtoc\sum
 \fixmathjaxtoc\(
 \fixmathjaxtoc\)
+\fixmathjaxtoc\begin
+\fixmathjaxtoc\end
+\fixmathjaxtoc\\
+\fixmathjaxtoc\exp
 
 }
 \endinput
+
+
+
+
+
+
+
 
 
 

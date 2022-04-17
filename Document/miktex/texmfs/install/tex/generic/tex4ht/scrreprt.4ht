@@ -1,6 +1,6 @@
-% scrreprt.4ht (2020-07-16-14:47), generated from tex4ht-4ht.tex
+% scrreprt.4ht (2022-02-22-13:25), generated from tex4ht-4ht.tex
 % Copyright (C) 1999-2009 Eitan M. Gurari
-% Copyright 2009-2020 TeX Users Group
+% Copyright 2009-2022 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -17,7 +17,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-07-16-14:47}
+\immediate\write-1{version 2022-02-22-13:25}
 
 \let\o:maketitle:\maketitle
 \def\maketitle{\bgroup
@@ -66,6 +66,9 @@
       \pend:def\@dedication{\a:dedication}%
       \append:def\@dedication{\b:dedication}%
    \fi
+     \pend:def\@subtitle{\a:subtitle}
+  \append:def\@subtitle{\b:subtitle}
+
 }
 \NewConfigure{dedication}{2}
 
@@ -202,10 +205,9 @@ A script of the form
    \ifnum \c@tocdepth >\m@ne chapter,appendix,addchap,\fi
    \ifnum \c@tocdepth>0 section,\fi
    \ifnum \c@tocdepth>1 subsection,\fi
-\ifnum \c@tocdepth>2 subsection,\fi
-\ifnum \c@tocdepth>3 subsubsection,\fi
-\ifnum \c@tocdepth>4 paragraph,\fi
-\ifnum \c@tocdepth>5 subparagraph,\fi
+\ifnum \c@tocdepth>2 subsubsection,\fi
+\ifnum \c@tocdepth>3 paragraph,\fi
+\ifnum \c@tocdepth>4 subparagraph,\fi
 UnDFexyz}%
    \noexpand\fi}
 \def\:tableofcontents{\futurelet\:temp\:TOC}
@@ -377,7 +379,9 @@ UnDFexyz}%
 \Def:Section\minisec{}{#1}
 \let\:minisec=\minisec
 \def\minisec#1{\:minisec{#1}\@afterheading}
+\NewConfigure{subtitle}{2}
 \pend:defI\@makefntext{\IgnorePar}
+\let\scr@defineobsoletefonts\thr@@
 
 \Hinput{scrreprt}
 \endinput

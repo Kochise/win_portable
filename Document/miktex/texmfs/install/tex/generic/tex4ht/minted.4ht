@@ -1,5 +1,5 @@
-% minted.4ht (2020-09-28-13:52), generated from tex4ht-4ht.tex
-% Copyright 2020 TeX Users Group
+% minted.4ht (2021-12-26-09:03), generated from tex4ht-4ht.tex
+% Copyright 2020-2021 TeX Users Group
 %
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either
@@ -16,7 +16,7 @@
 %
 % If you modify this program, changing the
 % version identification would be appreciated.
-\immediate\write-1{version 2020-09-28-13:52}
+\immediate\write-1{version 2021-12-26-09:03}
 
 \NewConfigure{InlineCode}{2}
 
@@ -41,6 +41,16 @@
   \a:MintedColorbg%
   }
   {\b:MintedColorbg\medskip\noindent}
+
+\NewConfigure{mintedfixes}[1]{\concat:config\a:mintedfixes{#1}}
+\let\a:mintedfixes\empty
+
+\def\:tempa#1{\a:mintedfixes\o:minted@input:{#1}}
+
+\Configure{mintedfixes}{\def\PYGZlt{\textless}\def\PYGZgt{\textgreater}}
+
+\HLet\minted@input\:tempa
+
 
 
 \Hinput{minted}

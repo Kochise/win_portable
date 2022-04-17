@@ -1,5 +1,5 @@
 %!
-% $Id: pst-node97.pro 68 2014-08-07 10:16:26Z herbert $
+% $Id: pst-node97.pro 438 2022-01-31 17:45:26Z herbert $
 % PostScript prologue for pst-node.tex.
 % Created 1993/3/12. Source file was pst-node.doc
 % Version 0.93a, 93/03/12.

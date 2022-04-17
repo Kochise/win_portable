@@ -6,7 +6,7 @@
 %%
 %% caption-light.dtx  (with options: `package')
 %% 
-%% Copyright (C) 1994-2020 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
+%% Copyright (C) 1994-2022 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
 %% 
 %% https://gitlab.com/axelsommerfeldt/caption
 %% 
@@ -33,13 +33,11 @@
 %%   caption.sty, caption-light.sty, caption2.sty, caption3.sty,
 %%   caption-ams-smf.sto, caption-beamer.sto, caption-elsarticle.sto,
 %%   caption-koma.sto, caption-memoir.sto, caption-ntg.sto,
-%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty,
-%% and the user manuals
-%%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
+%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{caption-light}[2020/08/24 v1.0 Customizing captions (AR)]
-\RequirePackage{caption3}[2020/08/23] % needs v2.0 or newer
+\ProvidesPackage{caption-light}[2021/03/21 v1.0a Customizing captions (AR)]
+\RequirePackage{caption3}[2020/08/30] % needs v2.0 or newer
 \caption@ifbool{documentclass}{}{%
   \caption@WarningNoLine{%
     Unknown document class (or package),\MessageBreak
@@ -67,13 +65,24 @@
     \global \@minipagefalse
     \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
   \fi
-  \caption@iftop\caption@aboveskip\caption@belowskip}
+  \caption@iftop\caption@aboveskip\caption@belowskip
+  \caption@@make@epilogue}
 \newcommand\caption@@makecaption[2]{%
   \caption@applyfont
-  {\captionlabelfont #1}%
-  {\caption@iflabelfont\captionlabelfont
-   \relax\caption@labelsep}%
-  {\captiontextfont #2}}
+  \ifcaption@star\else
+    \begingroup
+      \captionlabelfont #1\relax\relax
+    \endgroup
+  \fi
+  \ifcaption@star\else
+    \begingroup
+      \caption@iflabelfont\captionlabelfont
+      \relax\caption@labelsep
+    \endgroup
+  \fi
+  \begingroup
+    \captiontextfont #2%
+  \endgroup}
 \let\@makecaption\caption@makecaption
 \caption@AtBeginDocument{%
   \DeclareCaptionOption{type}{\setcaptiontype{#1}}%

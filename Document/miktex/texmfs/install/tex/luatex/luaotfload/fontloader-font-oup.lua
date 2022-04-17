@@ -37,12 +37,15 @@ local f_index              = formatters["I%05X"]
 local f_character_y        = formatters["%C"]
 local f_character_n        = formatters["[ %C ]"]
 
-local check_duplicates     = true -- can become an option (pseudo feature) / aways needed anyway
-local check_soft_hyphen    = true -- can become an option (pseudo feature) / needed for tagging
+local check_duplicates     = true    -- can become an option (pseudo feature) / always needed anyway
+local check_soft_hyphen    = context -- only in context
 
 directives.register("otf.checksofthyphen",function(v)
-    check_soft_hyphen = v
+    check_soft_hyphen = v -- only for testing
 end)
+
+-- After (!) the unicodes have been resolved we compact ligature tables so before that happens
+-- we don't need to check for numbers.
 
 local function replaced(list,index,replacement)
     if type(list) == "number" then
@@ -453,31 +456,48 @@ local function copyduplicates(fontdata)
         local resources    = fontdata.resources
         local duplicates   = resources.duplicates
         if check_soft_hyphen then
-            -- ebgaramond has a zero width empty soft hyphen
-            -- antykwatorunsks lacks a soft hyphen
-            local ds = descriptions[0xAD]
-            if not ds or ds.width == 0 then
-                if ds then
+         -- ebgaramond has a zero width empty soft hyphen
+         -- antykwatorunska lacks a soft hyphen
+         -- lucidaot has a halfwidth soft hyphen
+
+         -- local dh = descriptions[0x2D]
+         -- if dh then
+         --     descriptions[0xAD] = nil
+         --     local d = duplicates[0x2D]
+         --     if d then
+         --         d[#d+1] = { [0xAD] = true }
+         --     else
+         --         duplicates[0x2D] = { [0xAD] = true }
+         --     end
+         -- end
+
+            local dh = descriptions[0x2D]
+            if dh then
+                local ds = descriptions[0xAD]
+                if not ds or ds.width ~= dh.width then
                     descriptions[0xAD] = nil
-                    if trace_unicodes then
-                        report_unicodes("patching soft hyphen")
+                    if ds then
+                        if trace_unicodes then
+                            report_unicodes("patching soft hyphen")
+                        end
+                    else
+                        if trace_unicodes then
+                            report_unicodes("adding soft hyphen")
+                        end
                     end
-                else
-                    if trace_unicodes then
-                        report_unicodes("adding soft hyphen")
+                    if not duplicates then
+                        duplicates = { }
+                        resources.duplicates = duplicates
                     end
-                end
-                if not duplicates then
-                    duplicates = { }
-                    resources.duplicates = duplicates
-                end
-                local dh = duplicates[0x2D]
-                if dh then
-                    dh[#dh+1] = { [0xAD] = true }
-                else
-                    duplicates[0x2D] = { [0xAD] = true }
+                    local d = duplicates[0x2D]
+                    if d then
+                        d[0xAD] = true
+                    else
+                        duplicates[0x2D] = { [0xAD] = true }
+                    end
                 end
             end
+
         end
         if duplicates then
            for u, d in next, duplicates do
@@ -759,6 +779,7 @@ local function unifyglyphs(fontdata,usenames)
     local resources    = fontdata.resources
     local zero         = glyphs[0]
     local zerocode     = zero.unicode
+    local nofglyphs    = #glyphs
     if not zerocode then
         zerocode       = private
         zero.unicode   = zerocode
@@ -775,7 +796,7 @@ local function unifyglyphs(fontdata,usenames)
     --
     if names then
         -- seldom uses, we don't issue message ... this branch might even go away
-        for index=1,#glyphs do
+        for index=1,nofglyphs do
             local glyph   = glyphs[index]
             local unicode = glyph.unicode -- this is the primary one
             if not unicode then
@@ -808,7 +829,7 @@ local function unifyglyphs(fontdata,usenames)
             descriptions[unicode] = glyph
         end
     elseif trace_unicodes then
-        for index=1,#glyphs do
+        for index=1,nofglyphs do
             local glyph   = glyphs[index]
             local unicode = glyph.unicode -- this is the primary one
             if not unicode then
@@ -849,7 +870,7 @@ local function unifyglyphs(fontdata,usenames)
             descriptions[unicode] = glyph
         end
     else
-        for index=1,#glyphs do
+        for index=1,nofglyphs do
             local glyph   = glyphs[index]
             local unicode = glyph.unicode -- this is the primary one
             if not unicode then
@@ -876,8 +897,8 @@ local function unifyglyphs(fontdata,usenames)
         end
     end
     --
-    for index=1,#glyphs do
-        local math  = glyphs[index].math
+    for index=1,nofglyphs do
+        local math = glyphs[index].math
         if math then
             local list = math.vparts
             if list then
@@ -902,7 +923,7 @@ local function unifyglyphs(fontdata,usenames)
     --
     local colorpalettes = resources.colorpalettes
     if colorpalettes then
-        for index=1,#glyphs do
+        for index=1,nofglyphs do
             local colors = glyphs[index].colors
             if colors then
                 for i=1,#colors do
@@ -918,6 +939,7 @@ local function unifyglyphs(fontdata,usenames)
     fontdata.names        = names
     fontdata.descriptions = descriptions
     fontdata.hashmethod   = hashmethod
+    fontdata.nofglyphs    = nofglyphs
     --
     return indices, names
 end
@@ -1024,6 +1046,10 @@ function readers.getcomponents(fontdata) -- handy for resolving ligatures when n
                         local function traverse(p,k,v)
                             if k == "ligature" then
                                 collected[v] = { unpack(l) }
+                            elseif tonumber(v) then
+                                insert(l,k)
+                                collected[v] = { unpack(l) }
+                                remove(l)
                             else
                                 insert(l,k)
                                 for k, vv in next, v do
@@ -1211,7 +1237,6 @@ local function tabstr_flat(t)
 end
 
 local function tabstr_mixed(t) -- indexed
-    local s = { }
     local n = #t
     if n == 0 then
         return ""
@@ -1225,6 +1250,7 @@ local function tabstr_mixed(t) -- indexed
             return tostring(k) -- number or string
         end
     else
+        local s = { }
         for i=1,n do
             local k = t[i]
             if k == true then
@@ -1333,6 +1359,21 @@ function readers.pack(data)
                 return nt
             end
         end
+
+     -- local function pack_indexed(v) -- less code
+     --     local tag = concat(v," ")
+     --     local ht = h[tag]
+     --     if ht then
+     --         c[ht] = c[ht] + 1
+     --     else
+     --         ht = nt + 1
+     --         t[ht] = v
+     --         c[ht] = 1
+     --         h[tag] = ht
+     --         nt = ht
+     --     end
+     --     return ht
+     -- end
 
         local function pack_mixed(v)
             local tag = tabstr_mixed(v)
@@ -2782,6 +2823,91 @@ function readers.compact(data)
     end
 end
 
+if CONTEXTLMTXMODE and CONTEXTLMTXMODE > 0 then
+
+    local done = 0
+
+    local function condense_1(k,v,t)
+        if type(v) == "table" then
+            local u = false
+            local l = false
+            for k, v in next, v do
+                if k == "ligature" then
+                    l = v
+                    if u then
+                        break
+                    end
+                elseif u then
+                    break
+                else
+                    u = true
+                end
+            end
+            if l and not u then
+                t[k] = l
+                done = done + 1
+            end
+            if u then
+                for k, vv in next, v do
+                    if k ~= "ligature" then
+                        condense_1(k,vv,v)
+                    end
+                end
+            end
+        end
+    end
+
+    local function condensesteps_1(lookup)
+        done = 0
+        if lookup.type == "gsub_ligature" then
+            local steps = lookup.steps
+            if steps then
+                for i=1,#steps do
+                    local step     = steps[i]
+                    local coverage = step.coverage
+                    if coverage then
+                        for k, v in next, coverage do
+                            if condense_1(k,v,coverage) then
+                                coverage[k] = v.ligature
+                                done = done + 1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        return done
+    end
+
+    function readers.condense(data)
+        if not data or data.condensed then
+            return
+        else
+            data.condensed = true
+        end
+        local resources = data.resources
+        local condensed = 0
+        local function condense(what)
+            local lookups = resources[what]
+            if lookups then
+                for i=1,#lookups do
+                    condensed = condensed + condensesteps_1(lookups[i])
+                end
+            elseif trace_optimizations then
+                report_optimizations("no lookups in %a",what)
+            end
+        end
+        condense("sequences")
+        condense("sublookups")
+        if trace_optimizations then
+            if condensed > 0 then
+                report_optimizations("%i ligatures condensed",condensed)
+            end
+        end
+    end
+
+end
+
 local function mergesteps(t,k)
     if k == "merged" then
         local merged = { }
@@ -2901,7 +3027,7 @@ function readers.expand(data)
     -- about 15% on arabtype .. then moving the a test also saves a bit (even when
     -- often a is not set at all so that one is a bit debatable
 
-    local function expandlookups(sequences)
+    local function expandlookups(sequences,whatever)
         if sequences then
             -- we also need to do sublookups
             for i=1,#sequences do
@@ -2977,6 +3103,9 @@ function readers.expand(data)
                                         if lookups then
                                             for k, v in next, lookups do -- actually this one is indexed
                                                 local lookup = sublookups[v]
+if not lookup and whatever then
+    lookup = whatever[v]
+end
                                                 if lookup then
                                                     lookups[k] = lookup
                                                     if not subtype then
@@ -3057,5 +3186,5 @@ function readers.expand(data)
     end
 
     expandlookups(sequences)
-    expandlookups(sublookups)
+    expandlookups(sublookups,sequences)
 end

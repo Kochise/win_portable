@@ -10,12 +10,12 @@
 %% 
 %%                       The `microtype' package
 %%         Subliminal refinements towards typographical perfection
-%%           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
+%%           Copyright (c) 2004--2022 R Schlicht <w.m.l@gmx.net>
 %% 
 %% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3c of this license or (at
 %% your option) any later version. The latest version of this license is in:
-%% http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
+%% https://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 %% of all distributions of LaTeX version 2005/12/01 or later.
 %% 
 %% This work has the LPPL maintenance status `maintained'.
@@ -34,7 +34,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {letterspace}
-  [2021/10/31 v3.0
+  [2022/03/14 v3.0d
    Robust letterspacing
    (RS)]
 \def\MT@MT
@@ -112,21 +112,25 @@
   \let\pdfoutput     \normalpdfoutput
 \fi
 \let\MT@engine\relax
-\def\MT@engine@tooold{0}
+\newif\ifMT@engine@unfit
+\MT@engine@unfittrue
 \ifx\pdftexversion\@undefined \else
   \ifx\pdftexversion\relax \else
     \def\MT@engine{pdf}
     \let\MT@pdf@or@lua\@firstoftwo
-    \ifnum\pdftexversion > 139 \def\MT@engine@tooold{1}\fi
+    \ifnum\pdftexversion
+        > 139
+      \MT@engine@unfitfalse
+    \fi
   \fi
 \fi
 \ifx\directlua\@undefined \else
   \ifx\directlua\relax \else
     \def\MT@engine{lua}
+    \MT@engine@unfitfalse
     \let\MT@pdf@or@lua\@secondoftwo
-    \ifnum\luatexversion < 62 \def\MT@engine@tooold{0}
+    \ifnum\luatexversion < 62 \MT@engine@unfittrue
     \else
-      \def\MT@engine@tooold{1}
       \let\MT@lua\directlua
       \ifnum\luatexversion > 84
         \let\pdfoutput\outputmode
@@ -136,21 +140,19 @@
     \fi
   \fi
 \fi
-\ifnum
-  \MT@engine@tooold=\z@
+\ifMT@engine@unfit
   \MT@warning@nl{You
     \ifx\MT@engine\relax
-      don't seem to be using pdftex or luatex.\MessageBreak
-      Try running `pdftex' or `luatex' instead of\MessageBreak
-        `\ifx\XeTeXversion\@undefined\else xe\fi tex'%
+      don't seem to be using pdftex%
+      \space or luatex%
+     .\MessageBreak `\MT@MT' only works with these engines.%
     \else
       are using a \MT@engine tex version older than
-        \MT@pdf@or@lua{1.40}{0.62}%
-      .\MessageBreak
-      `\MT@MT' does not work with this version.\MessageBreak
-      Please install a newer version of \MT@engine tex%
+      \MT@pdf@or@lua{1.40}{0.62}%
+     .\MessageBreak `\MT@MT' does not work with this version.%
+      \MessageBreak Please install a newer version of \MT@engine tex.%
     \fi
-      .\MessageBreak I will quit now}
+    \MessageBreak I will quit now}
   \MT@clear@options
 \endinput\fi
 \RequirePackage{keyval}[1997/11/10]
@@ -339,6 +341,9 @@
 \DeclareRobustCommand\lslig[1]{%
   {\MT@ifdefined@c@TF\MT@curr@ls{%
      \escapechar\m@ne
+    \MT@requires@latex2{%
+     \xdef\font@name{\csname\curr@fontshape/\f@size\endcsname}%
+    }\relax%
      \MT@get@ls@basefont
      \MT@outer@kern=\dimexpr\MT@curr@ls sp * \fontdimen6\font@name/2000\relax
      \kern\MT@outer@kern
@@ -351,7 +356,7 @@
   \expandafter\ifx\MT@ls@basefont\relax
     \MT@exp@two@c\MT@glet\MT@ls@basefont\font@name
   \else
-    \MT@exp@two@c\let\font@name\MT@ls@basefont
+    \MT@set@lsbasefont
   \fi
 }
 \def\MT@set@lsbasefont{\MT@exp@two@c\let\font@name\MT@ls@basefont}

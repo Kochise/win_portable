@@ -7,7 +7,10 @@
 %% bidi.dtx  (with options: `table,biditools.sty')
 %% 
 %%   __________________________________________________
-%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Vafa Khalighi
+%%   tex-persian@vafa.ac
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
 %% 
 %%   It may be distributed and/or modified under the LaTeX Project Public License,
@@ -18,7 +21,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50426}
+%% \CheckSum{50574}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -36,7 +39,7 @@
 %%   Right brace   \}     Tilde         \~}
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{biditools}[2020/05/13 v2 Programming tools for bidi package]
+\ProvidesPackage{biditools}[2022/02/01 v2.1 Programming tools for bidi package]
 \providecommand{\@bidi@saveprimitive}[2]{\begingroup\escapechar`\\\relax
   \edef\@tempa{\string#1}\edef\@tempb{\meaning#1}%
   \ifx\@tempa\@tempb \global\let#2#1%
@@ -856,8 +859,8 @@ ill-advised in the old versions of bidi package.%
 \long\def\bidi@append#1#2{#1#2}
 \long\def\bidi@prepend#1#2{#2#1}
 
-\bidi@newrobustcmd*{\bidi@AtEndPreamble}{\bidi@gappto\bidi@endpreamblehook}
-\newcommand*{\bidi@endpreamblehook}{}
+
+\bidi@newrobustcmd*{\bidi@AtEndPreamble}{\AddToHook{begindocument/before}}%
 
 \bidi@newrobustcmd*{\bidi@BeforeOutputPageShipOut}{\bidi@gappto\bidi@beforeoutputpageshipouthook}
 \newcommand*{\bidi@beforeoutputpageshipouthook}{}
@@ -883,35 +886,22 @@ ill-advised in the old versions of bidi package.%
 \bidi@newrobustcmd*{\bidi@AtEndOutputPage}{\bidi@gappto\bidi@atendoutputpagehook}
 \newcommand*{\bidi@atendoutputpagehook}{}
 
-\bidi@preto\document{%
-  \endgroup
-  \let\bidi@AtEndPreamble\@firstofone
-  \bidi@endpreamblehook
-  \protected\def\bidi@AtEndPreamble{\@notprerr\@gobble}%
-  \bidi@undef\bidi@endpreamblehook
-  \begingroup}
 
 \bidi@newrobustcmd*{\bidi@AfterPreamble}{\AtBeginDocument}
 \bidi@AtEndPreamble{\let\bidi@AfterPreamble\@firstofone}
 
-\bidi@newrobustcmd*{\bidi@AfterEndPreamble}{\bidi@gappto\bidi@afterendpreamblehook}
-\newcommand*{\bidi@afterendpreamblehook}{}
 
-\bidi@appto\document{%
-  \let\bidi@AfterEndPreamble\@firstofone
-  \bidi@afterendpreamblehook
-  \protected\def\bidi@AfterEndPreamble{\@notprerr\@gobble}%
-  \bidi@undef\bidi@afterendpreamblehook
-  \ignorespaces}
+\bidi@newrobustcmd*{\bidi@AfterEndPreamble}{\AddToHook{begindocument/end}}%
+
 
 \bidi@newrobustcmd*{\bidi@AfterEndDocumentCheckLabelsRerun}{\bidi@gappto\bidi@afterenddocumentchecklabelsrerunhook}
 \newcommand*{\bidi@afterenddocumentchecklabelsrerunhook}{}
 
 \bidi@patchcmd\enddocument
-  {\fi\endgroup}
+  {\fi}
   {\let\bidi@AfterEndDocumentCheckLabelsRerun\@firstofone
    \bidi@afterenddocumentchecklabelsrerunhook
-   \fi\endgroup}
+   \fi}
    {}
    {\PackageWarning{biditools}{Patching `\string\enddocument' failed}}
 
@@ -932,20 +922,9 @@ ill-advised in the old versions of bidi package.%
      \let\bidi@AfterLastShipout\@firstofone
      \bidi@afterlastshipouthook}}
 
-\bidi@newrobustcmd*{\bidi@AfterEndDocument}{\bidi@gappto\bidi@afterenddocumenthook}
-\newcommand*{\bidi@afterenddocumenthook}{}
 
-\bidi@patchcmd\enddocument
-  {\deadcycles}
-  {\let\bidi@AfterEndDocument\@firstofone
-   \bidi@afterenddocumenthook
-   \deadcycles}
-  {}
-  {\let\bidi@@end\@@end
-   \def\@@end{%
-     \let\bidi@AfterEndDocument\@firstofone
-     \bidi@afterenddocumenthook
-     \bidi@@end}}
+\bidi@newrobustcmd*{\bidi@AfterEndDocument}{\AddToHook{enddocument/end}}%
+
 
 \bidi@newrobustcmd{\bidi@AtBeginEnvironment}[1]{%
   \bidi@csgappto{@bidi@begin@#1@hook}}

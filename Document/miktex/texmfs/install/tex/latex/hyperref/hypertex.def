@@ -33,7 +33,7 @@
 %% given in the file `manifest.txt'.
 %%
 \ProvidesFile{hypertex.def}
-  [2021-06-07 v7.00m %
+  [2022-02-21 v7.00n %
   Hyperref driver for HyperTeX specials]
 \Hy@VersionCheck{hypertex.def}
 \providecommand*{\XR@ext}{dvi}
@@ -223,12 +223,9 @@
   }%
 }
 \let\H@old@part\@part
-\begingroup\expandafter\expandafter\expandafter\endgroup
-\expandafter\ifx\csname chapter\endcsname\relax
-  \let\Hy@secnum@part\z@
-\else
-  \let\Hy@secnum@part\m@ne
-\fi
+\@ifundefined{chapter}
+  {\let\Hy@secnum@part\z@}
+  {\let\Hy@secnum@part\m@ne}
 \def\@part{%
   \ifnum\Hy@secnum@part>\c@secnumdepth
     \phantomsection

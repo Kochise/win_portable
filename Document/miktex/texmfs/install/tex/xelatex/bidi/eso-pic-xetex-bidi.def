@@ -7,7 +7,10 @@
 %% bidi.dtx  (with options: `table,eso-pic-xetex-bidi.def')
 %% 
 %%   __________________________________________________
-%%   Copyright (c) 2007--2020  Vafa Khalighi
+%%   Vafa Khalighi
+%%   tex-persian@vafa.ac
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
 %% 
 %%   It may be distributed and/or modified under the LaTeX Project Public License,
@@ -18,7 +21,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50426}
+%% \CheckSum{50574}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -35,41 +38,63 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesFile{eso-pic-xetex-bidi.def}[2013/04/10 v0.2 bidi adaptations for eso-pic package for XeTeX engine]
+\ProvidesFile{eso-pic-xetex-bidi.def}[2022/02/18 v0.4 bidi adaptations for eso-pic package for XeTeX engine]
 \renewcommand\AtPageLowerLeft[1]{\AtPageUpperLeft{%
-  \put(\LenToUnit{\if@RTLmain\paperwidth\else0pt\fi},\LenToUnit{-\paperheight}){#1}}}
+  \put(\if@RTLmain\paperwidth\else 0\fi,-\paperheight){#1}}}
 
 \ESO@isMEMOIR{%
   \renewcommand\AtTextUpperLeft[1]{%
     \begingroup
       \ifodd\c@page
-        \@tempdima=\spinemargin
+        \if@RTLmain
+          \ESO@tempdima=\paperwidth
+          \advance\ESO@tempdima-\textwidth
+          \advance\ESO@tempdima-\spinemargin
+        \else
+          \ESO@tempdima=\spinemargin
+        \fi
       \else
-        \@tempdima=\paperwidth
-        \advance\@tempdima-\textwidth
-        \advance\@tempdima-\spinemargin
+        \if@RTLmain
+          \ESO@tempdima=\spinemargin
+        \else
+          \ESO@tempdima=\paperwidth
+          \advance\ESO@tempdima-\textwidth
+          \advance\ESO@tempdima-\spinemargin
+        \fi
       \fi
-      \@tempdimb=-\uppermargin
+      \ESO@tempdimb=-\uppermargin
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\if@RTLmain-\fi\@tempdima},\LenToUnit{\@tempdimb}){#1}%
+        \put(\if@RTLmain-\textwidth-\fi\ESO@tempdima,\ESO@tempdimb){#1}%
       }%
     \endgroup
   }
 }{%
   \renewcommand\AtTextUpperLeft[1]{%
     \begingroup
-      \@tempdima=1in\relax
-      \ifodd\c@page
-        \advance\@tempdima\oddsidemargin
+      \ESO@tempdima=1in\relax
+      \if@twoside
+        \ifodd\c@page
+          \if@RTLmain
+            \advance\ESO@tempdima\evensidemargin
+          \else
+            \advance\ESO@tempdima\oddsidemargin
+          \fi
+        \else
+          \if@RTLmain
+            \advance\ESO@tempdima\oddsidemargin
+          \else
+            \advance\ESO@tempdima\evensidemargin
+          \fi
+        \fi
       \else
-        \advance\@tempdima\evensidemargin
+        \advance\ESO@tempdima\oddsidemargin
       \fi
-      \@tempdimb=-1in\relax
-      \advance\@tempdimb-\topmargin
-      \advance\@tempdimb-\headheight
-      \advance\@tempdimb-\headsep
+      \ESO@tempdimb=-1in\relax
+      \advance\ESO@tempdimb-\topmargin
+      \advance\ESO@tempdimb-\headheight
+      \advance\ESO@tempdimb-\headsep
       \AtPageUpperLeft{%
-        \put(\LenToUnit{\if@RTLmain-\fi\@tempdima},\LenToUnit{\@tempdimb}){#1}%
+        \put(\if@RTLmain-\textwidth-\fi\ESO@tempdima,\ESO@tempdimb){#1}%
       }%
     \endgroup
   }

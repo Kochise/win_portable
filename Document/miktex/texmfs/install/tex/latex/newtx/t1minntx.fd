@@ -1,0 +1,45 @@
+\ProvidesFile{t1minntx.fd}[2022/01/20 v1.1 font definition file for T1/minntx]
+%\show\ntxmath@scaled
+\@ifundefined{ifntx@sl}{\let\ifntx@sl\iftrue}{}
+\@ifundefined{ifntx@largesc}{\let\ifntx@largesc\iftrue}{}
+
+\expandafter\ifx\csname ntxmath@scaled\endcsname\relax
+  \let\ntxmath@scaled\@empty%
+\fi
+\def\ntx@asfx{}
+\def\ntx@lsfx{}
+\def\ntx@makelsfx{\ifntx@largesc\def\ntx@lsfx{l}\fi}
+\def\ntx@makeadobesc{\ifntx@adobesc\def\ntx@lsfx{l}\def\ntx@adobesc{a}\else\ntx@makelsfx\fi}
+\ntx@makelsfx
+\ifdefined\ntx@adobescfalse\ntx@makeadobesc\fi
+\ifdefined\ntx@spacing \else\global\let\ntx@spacing\@empty\fi
+
+\DeclareFontFamily{T1}{minntx}{\ntx@spacing}
+\DeclareFontShape{T1}{minntx}{b}{sc}{<-> \ntxmath@scaled ntx-Bold-tlf-sc\ntx@lsfx-t1}{}
+\DeclareFontShape{T1}{minntx}{b}{n}{<-> \ntxmath@scaled ntx-Bold-tlf-t1}{}
+\DeclareFontShape{T1}{minntx}{b}{scit}{<-> \ntxmath@scaled ntx-BoldItalic-tlf-sc\ntx@lsfx-t1}{}
+\DeclareFontShape{T1}{minntx}{b}{it}{<-> \ntxmath@scaled ntx-BoldItalic-tlf-t1}{}
+\DeclareFontShape{T1}{minntx}{m}{sc}{<-> \ntxmath@scaled ntx-Regular-tlf-sc\ntx@lsfx-t1}{}
+\DeclareFontShape{T1}{minntx}{m}{n}{<-> \ntxmath@scaled ntx-Regular-tlf-t1}{}
+\DeclareFontShape{T1}{minntx}{m}{scit}{<-> \ntxmath@scaled ntx-Italic-tlf-sc\ntx@lsfx-t1}{}
+\DeclareFontShape{T1}{minntx}{m}{it}{<-> \ntxmath@scaled ntx-Italic-tlf-t1}{}
+\DeclareFontShape{T1}{minntx}{bx}{sc}{<->ssub * minntx/b/sc}{}
+\DeclareFontShape{T1}{minntx}{bx}{n}{<->ssub * minntx/b/n}{}
+\DeclareFontShape{T1}{minntx}{bx}{scit}{<->ssub * minntx/b/scit}{}
+\DeclareFontShape{T1}{minntx}{bx}{it}{<->ssub * minntx/b/it}{}
+\ifntx@sl % point to real slanted fonts
+  \DeclareFontShape{T1}{minntx}{m}{sl}{<-> \ntxmath@scaled t1xsl}{}
+  \DeclareFontShape{T1}{minntx}{b}{sl}{<-> \ntxmath@scaled ztmbsl-tlf-t1}{}
+  \DeclareFontShape{T1}{minntx}{bx}{sl}{<->ssub * minntx/b/sl}{}
+
+\else %point to theorem font
+  \DeclareFontShape{T1}{minntx}{m}{sl}{<-> \ntxmath@scaled ntxth-Italic-tlf-t1}{}
+  \DeclareFontShape{T1}{minntx}{b}{sl}{<->ssub * minntx/m/sl}{}
+  \DeclareFontShape{T1}{minntx}{bx}{sl}{<->ssub * minntx/m/sl}{}
+
+\fi
+
+\DeclareFontShape{T1}{minntx}{b}{scsl}{<->ssub * minntx/b/scit}{}
+\DeclareFontShape{T1}{minntx}{bx}{scsl}{<->ssub * minntx/b/scit}{}
+\DeclareFontShape{T1}{minntx}{m}{scsl}{<->ssub * minntx/m/scit}{}
+\endinput

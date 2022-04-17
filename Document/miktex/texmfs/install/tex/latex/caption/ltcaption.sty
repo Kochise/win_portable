@@ -6,7 +6,7 @@
 %%
 %% ltcaption.dtx  (with options: `package')
 %% 
-%% Copyright (C) 1994-2020 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
+%% Copyright (C) 1994-2022 Axel Sommerfeldt (axel.sommerfeldt@f-m.fm)
 %% 
 %% https://gitlab.com/axelsommerfeldt/caption
 %% 
@@ -33,12 +33,13 @@
 %%   caption.sty, caption-light.sty, caption2.sty, caption3.sty,
 %%   caption-ams-smf.sto, caption-beamer.sto, caption-elsarticle.sto,
 %%   caption-koma.sto, caption-memoir.sto, caption-ntg.sto,
-%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty,
-%% and the user manuals
-%%   caption-deu.tex, caption-eng.tex, caption-rus.tex.
+%%   caption-thesis.sto, bicaption.sty, ltcaption.sty, subcaption.sty.
 %% 
 \NeedsTeXFormat{LaTeX2e}[1994/12/01]
-\ProvidesPackage{ltcaption}[2020/05/30 v1.4b longtable captions (AR)]
+\providecommand\DeclareRelease[3]{}
+\providecommand\DeclareCurrentRelease[2]{}
+\DeclareCurrentRelease{v1}{2007-04-15}
+\ProvidesPackage{ltcaption}[2021/01/08 v1.4c longtable captions (AR)]
 \@ifpackageloaded{longtable}{}{%
   \PackageError{ltcaption}{longtable package not loaded, aborting}{RTFM}}
 \providecommand*\LTcaptype{table}
@@ -171,7 +172,7 @@
    \def\LT@c@ption##1[##2]##3{%
      \ifx##1\@firstofone
        \PackageError{ltcaption}%
-         {Not allowed in longtable* environment}%
+         {\noexpand\caption is not available in longtable* environment}%
          {If you do not understand this error, please take a closer
           look\MessageBreak at the documentation of the `ltcaption'
           package.\MessageBreak \@ehc}%

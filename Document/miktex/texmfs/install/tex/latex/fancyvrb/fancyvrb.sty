@@ -2,7 +2,7 @@
 %% This is file `fancyvrb.sty',
 %%
 %% COPYRIGHT 1992-1999, by Timothy Van Zandt <tvz@zandtwerk.kellogg.nwu.edu>
-%%           2000-... , by Herbert Voss <hvoss@tug.org>
+%%           2000-2022 ... , by Herbert Voss <hvoss@tug.org>
 %%
 %% This package may be distributed under the terms of the LaTeX Project Public
 %% License, as described in lppl.txt in the base LaTeX distribution.
@@ -13,9 +13,9 @@
 %%   verbatim environments and commands and extensive documentation.
 %%
 \NeedsTeXFormat{LaTeX2e}
-\def\fileversion{4.0}
-\def\filedate{2021/11/19}
-\ProvidesPackage{fancyvrb}[2021/11/18 v4.0 verbatim text (tvz,hv)]
+\def\fileversion{4.2}
+\def\filedate{2022/04/12}
+\ProvidesPackage{fancyvrb}[\filedate\space \fileversion\space verbatim text (tvz,hv)]
 %\message{Style option: `fancyvrb' v\fileversion \space  <\filedate> (tvz)}
 \csname fancyvrb@loaded\endcsname
 \let\fancyvrb@loaded\endinput
@@ -168,7 +168,9 @@
 \def\KV@FV@firstline@default{%
   \let\FancyVerbStartNum\z@
   \let\FancyVerbStartString\relax}
+%
 \def\FancyVerbStopNum{1}
+%
 \define@key{FV}{lastline}{%
   \afterassignment\FV@ParseStop\@tempcnta=0#1\relax\@nil{#1}}
 \def\FV@ParseStop#1\relax\@nil#2{%
@@ -178,10 +180,16 @@
   \else
     \edef\FancyVerbStopString{#2}%
   \fi}
+%\def\KV@FV@lastline@default{%
+%  \let\FancyVerbStopNum\z@
+%  \let\FancyVerbStopString\relax}
 \def\KV@FV@lastline@default{%
-  \let\FancyVerbStopNum\z@
-  \let\FancyVerbStopString\relax}
-\fvset{firstline,lastline=\m@ne}
+  \let\FancyVerbStopNum\m@ne
+  \let\FancyVerbStopString\relax
+}
+\KV@FV@firstline@default
+\KV@FV@lastline@default
+\fvset{firstline,lastline}
 \newcount\FV@CodeLineNo
 \def\FV@PreProcessLine{%
   \global\advance\FV@CodeLineNo\@ne
@@ -524,12 +532,12 @@
 \catcode`\^^I=\active
 \gdef\FV@DefineWhiteSpace{\def {\FV@Space}\def^^I{\FV@Tab}}%
 \endgroup
-\define@key{FV}{file_ext}[.tex]{\def\FancyVerbFileExtension{#1}}
+\define@key{FV}{fileext}[.tex]{\def\FancyVerbFileExtension{#1}}
 \define@key{FV}{defineactive}[]{\def\FancyVerbDefineActive{#1\relax}}
 \define@key{FV}{defineactive*}{%
   \expandafter\def\expandafter\FancyVerbDefineActive\expandafter{%
     \FancyVerbDefineActive#1\relax}}
-\fvset{defineactive,file_ext=.tex}
+\fvset{defineactive,fileext=.tex}
 \define@booleankey{FV}{showspaces}%
   {\def\FV@Space{{\FancyVerbSpace}}}%
   {\def\FV@Space{\ }}  

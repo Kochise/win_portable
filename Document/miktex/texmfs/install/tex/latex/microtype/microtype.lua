@@ -10,12 +10,12 @@
 -- 
 --                       The `microtype' package
 --         Subliminal refinements towards typographical perfection
---           Copyright (c) 2004--2021 R Schlicht <w.m.l@gmx.net>
+--           Copyright (c) 2004--2022 R Schlicht <w.m.l@gmx.net>
 -- 
 -- This work may be distributed and/or modified under the conditions of the
 -- LaTeX Project Public License, either version 1.3c of this license or (at
 -- your option) any later version. The latest version of this license is in:
--- http://www.latex-project.org/lppl.txt, and version 1.3c or later is part
+-- https://www.latex-project.org/lppl.txt, and version 1.3c or later is part
 -- of all distributions of LaTeX version 2005/12/01 or later.
 -- 
 -- This work has the LPPL maintenance status `maintained'.
@@ -35,13 +35,14 @@ microtype        = microtype or {}
 local microtype  = microtype
 microtype.module = {
     name         = "microtype",
-    version      = "3.0",
-    date         = "2021/10/31",
+    version      = "3.0d",
+    date         = "2022/03/14",
     description  = "microtype module.",
     author       = "E. Roux, R. Schlicht and P. Gesang",
     copyright    = "E. Roux, R. Schlicht and P. Gesang",
     license      = "LPPL",
 }
+luatexbase.provides_module(microtype.module)
 
 function microtype.info(...)
   luatexbase.module_info("microtype",...)
@@ -59,6 +60,16 @@ else
 end
 function microtype.sprint (...)
   tex.sprint(catpackage, ...)
+end
+
+if not math.tointeger or not pcall(math.tointeger,0) then
+  math.mininteger=-0x4FFFFFFFFFFF
+  math.maxinteger=0x4FFFFFFFFFFF
+  local floor=math.floor
+  function math.tointeger(n)
+    local f=floor(n)
+    return f==n and f or nil
+  end
 end
 
 local function if_int(s)
@@ -172,9 +183,10 @@ end
 if luaotfload and luaotfload.aux and luaotfload.aux.slot_of_name then
   local slot_of_name = luaotfload.aux.slot_of_name
   microtype.name_to_slot = function(name, unsafe)
-    local n = math.tointeger(slot_of_name(font.current(), name, unsafe))
-    if n and n > 1114111 then n = -1 end
-    return n
+    local n = slot_of_name(font.current(), name, unsafe)
+    if not n then return -1 end
+    if n > 1114111 then return -1 end
+    return math.tointeger(n)
   end
 else
   -- we dig into internal structure (should be avoided)

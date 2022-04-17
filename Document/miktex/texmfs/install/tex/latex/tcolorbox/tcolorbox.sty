@@ -1,4 +1,4 @@
-%% The LaTeX package tcolorbox - version 4.51 (2021/06/14)
+%% The LaTeX package tcolorbox - version 5.0.2 (2022/01/07)
 %% tcolorbox.sty: Text color boxes
 %%
 %% -------------------------------------------------------------------------------------------
@@ -18,8 +18,8 @@
 %% This work consists of all files listed in README
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{tcolorbox}[2021/06/14 version 4.51 text color boxes]
-\def\tcb@version{4.51}
+\ProvidesPackage{tcolorbox}[2022/01/07 version 5.0.2 text color boxes]
+\def\tcb@version{5.0.2}
 
 \RequirePackage{pgf}[2008/01/15]
 \RequirePackage{verbatim}[2003/08/22]
@@ -42,6 +42,8 @@
 \newif\iftcb@ignorenobreak
 \newif\iftcb@checkpage
 \newif\iftcb@resetcounteronoverlays
+\newif\iftcb@wrap@environment
+\newif\iftcb@isbreakable
 
 \newbox\tcb@titlebox
 \newbox\tcb@upperbox
@@ -90,7 +92,7 @@
   \tcbset{autoparskip}%
 }
 
-\def\tcb@hack@currenvir{\edef\tcb@temp{\noexpand\def\noexpand\@currenvir{\kvtcb@savedelimiter}}\tcb@temp}
+\def\tcb@hack@currenvir{\edef\@currenvir{\kvtcb@savedelimiter}}
 
 \def\tcb@sbs@quota@leftwidth{%
   \tcbdimto\tcb@w@upper{\kvtcb@sbs@ratio}%
@@ -131,6 +133,13 @@
 
 \pgfkeys{/handlers/.dimstore in/.code=\pgfkeysalso{\pgfkeyscurrentpath/.code=\def#1{\the\dimexpr##1\relax}}}
 \pgfkeys{/handlers/.colorlet/.code=\pgfkeysalso{\pgfkeyscurrentpath/.code=\colorlet{#1}{##1}}}
+
+\ExplSyntaxOn
+
+\pgfkeys{/handlers/.tl_set:N/.code=\pgfkeysalso{\pgfkeyscurrentpath/.code=\tl_set:Nn#1{##1}}}
+
+\ExplSyntaxOff
+
 
 \newcommand\tcbtitle{\ifx\tcbtitletext\@empty\else%
   \leavevmode{\color{tcbcoltitle}\kvtcb@fonttitle\kvtcb@haligntitle\kvtcb@before@title\tcbtitletext\kvtcb@after@title}\fi}
@@ -694,7 +703,12 @@
   extrude top by/.code={\tcbdimto\kvtcb@top{\kvtcb@top+#1}\tcbdimto\kvtcb@bbtop@stand{\kvtcb@bbtop@stand-(#1)}},%
   extrude bottom by/.code={\tcbdimto\kvtcb@bottom{\kvtcb@bottom+#1}\tcbdimto\kvtcb@bbbottom@stand{\kvtcb@bbbottom@stand-(#1)}},%
   extrude by/.style={extrude left by=#1,extrude right by=#1,extrude top by=#1,extrude bottom by=#1},%
-  sidebyside/.is if=tcb@sidebyside,%
+  sidebyside@true/.code={%
+    \tcb@sidebysidetrue%
+    \tcb@isbreakablefalse},%
+  sidebyside@false/.code={\tcb@sidebysidefalse},%
+  sidebyside/.style={sidebyside@#1},%
+  sidebyside/.default=true,%
   sidebyside align/.is choice,%
   sidebyside align/top/.code={\def\kvtcb@sbs@align{top}\def\tcb@box@align##1{}},%
   sidebyside align/center/.code={\def\kvtcb@sbs@align{center}\def\tcb@box@align##1{}},%
@@ -708,15 +722,17 @@
   lefthand ratio/.code={\def\kvtcb@sbs@ratio{#1}\let\tcb@sbs@quota=\tcb@sbs@quota@leftratio},
   righthand ratio/.code={\def\kvtcb@sbs@ratio{#1}\let\tcb@sbs@quota=\tcb@sbs@quota@rightratio},
   breakable@false/.code={%
-    \let\tcb@savebox=\tcb@lrbox%
-    \let\endtcb@savebox=\endtcb@lrbox%
+    \tcb@isbreakablefalse%
     \let\tcb@defToTotalHeight=\tcb@defToTotalHeightStandard%
-    \let\tcb@drawcolorbox=\tcb@drawcolorbox@standalone%
-    \def\tcb@upperdraw@begin@hook{\color{tcbcolupper}}%
-    \def\tcb@lowerdraw@begin@hook{\color{tcbcollower}}%
   },
   code/.code={#1},
-  capture/.store in=\kvtcb@capture,%
+  capture/.code={%
+    \def\kvtcb@capture{#1}%
+    \ifcsname tcb@@capture@\kvtcb@capture\endcsname\else%
+      \tcb@error{Unknown capture mode `\kvtcb@capture'. Use `minipage', `hbox', or `fitbox'}{}%
+      \def\kvtcb@capture{minipage}%
+    \fi%
+  },%
   hbox/.style={capture=hbox},%
   minipage/.style={capture=minipage},%
   void/.style={capture=v@@d,capture/.code=,options@for/.code=,code={\def\tcbinputlisting@core{}}},
@@ -808,15 +824,11 @@
   verbatim ignore percent/true/.code={\def\tcb@verbatim@change@percent{\catcode`\^^e=9}},
   verbatim ignore percent/false/.code={\let\tcb@verbatim@change@percent\@empty},
   verbatim ignore percent/.default=true,
+  wrap@environment/.is if=tcb@wrap@environment,
 }
 
 \def\kvtcb@beforebox{}
 \def\kvtcb@afterbox{}
-
-\tcbset{%
-  autoparskip,minipage,savedelimiter=tcolorbox,%
-  set@extensions@preframe=,set@extensions@postframe=,set@extensions@final=,%
-}%
 
 \def\tcb@set@label#1{%
   \ifx\kvtcb@label@type\@empty%
@@ -963,7 +975,6 @@
 
 \def\tcb@set@@sidebyside{%
   \iftcb@sidebyside%
-    \tcbset{breakable@false}%
     \def\tcb@minipage{\csname tcb@minipage@\kvtcb@sbs@align\endcsname}%
     \tcbdimto\tcb@w@upper@real{\tcb@w@upper}%
     \tcbdimto\kvtcb@sbs@gap{\kvtcb@sbs@gap}%
@@ -1031,8 +1042,29 @@
 }
 
 \def\tcb@@capture@hbox{%
-  \let\endtcolorbox=\relax%
-  \Collect@Body\tcbox@inner@hbox@collected%
+  \let\endtcolorbox\relax%
+  \iftcb@wrap@environment%
+    \expandafter\@firstoftwo%
+  \else%
+    \expandafter\@secondoftwo%
+  \fi%
+  {\begingroup\tcb@hack@currenvir%
+   \Collect@Body\tcbox@inner@hbox@collected@for@wrapping}%
+  {\Collect@Body\tcbox@inner@hbox@collected}%
+}
+
+\long\def\tcbox@inner@hbox@collected@for@wrapping#1\end#2{%
+  \endgroup%
+  \let\tcb@end@tcolorboxenvironment\relax%
+  \tcbox@inner@hbox@collected{#1\end{#2}}%
+  \end{tcolorbox}%
+}
+
+% will be overwritten in `fitting` library
+\def\tcb@@capture@fitbox{%
+  \tcb@error{You need to load `fitting' library to use capture mode `fitbox'}{}%
+  % fallback
+  \tcb@@capture@minipage%
 }
 
 % save 'comment' from 'verbatim'
@@ -1055,7 +1087,7 @@
 }
 
 \def\tcb@count@boxes{%
-  \global\advance\c@tcolorbox@number by 1\relax%
+  \global\advance\c@tcolorbox@number 1\relax%
   \edef\thetcolorboxnumber{\number\c@tcolorbox@number}%
   \expandafter\ifx\csname tcolorboxpage@\thetcolorboxnumber\endcsname\relax%
     \edef\thetcolorboxpage{\number\c@page}%
@@ -1097,10 +1129,10 @@
 
 \def\tcb@managed@layers@max{0}
 \def\tcbsetmanagedlayers#1{%
-  \setcounter{tcblayer}{\tcb@managed@layers@max}%
+  \global\c@tcblayer\tcb@managed@layers@max\relax%
   \ifnum\c@tcblayer<#1\relax%
     \loop
-      \stepcounter{tcblayer}%
+      \global\advance\c@tcblayer 1\relax%
       \newbox\tcb@temp%
       \cslet{tcb@footnote@\romannumeral\c@tcblayer}{\tcb@temp}%
       \tcbset{every box on layer \number\c@tcblayer/.style={reset,every box}}
@@ -1108,7 +1140,7 @@
   \else%
   \fi%
   \xdef\tcb@managed@layers@max{#1}%
-  \setcounter{tcblayer}{0}%
+  \global\c@tcblayer 0\relax%
 }
 \@onlypreamble\tcbsetmanagedlayers
 \tcbsetmanagedlayers{4}%
@@ -1121,7 +1153,7 @@
 
 \def\tcb@layer@inc{%
   \tcb@count@boxes%
-  \stepcounter{tcblayer}%
+  \global\advance\c@tcblayer 1\relax%
   \ifnum\c@tcblayer>1\relax%
     \tcbset{breakable@true/.code=}%
   \else%
@@ -1138,8 +1170,8 @@
 
 \def\tcb@layer@pushup{%
   \tcb@count@boxes%
-  \global\advance\c@tcolorbox@number by -1\relax%
-  \stepcounter{tcblayer}%
+  \global\advance\c@tcolorbox@number -1\relax%
+  \global\advance\c@tcblayer 1\relax%
   \ifnum\c@tcblayer>1\relax%
     \tcbset{breakable@true/.code=}%
   \else%
@@ -1152,7 +1184,7 @@
     \tcbset{every box on layer \number\c@tcblayer}%
     \tcbset{every box on layer \number\c@tcblayer/.code=}%
   \fi%
-  \addtocounter{tcblayer}{-1}%
+  \global\advance\c@tcblayer -1\relax%
 }
 
 \def\tcb@layer@dec{%
@@ -1161,17 +1193,34 @@
     \expandafter\global\setbox\@mpfootins\box\csname tcb@footnote@\romannumeral\c@tcblayer\endcsname%
     \setcounter{mpfootnote}{\csname tcb@footnote@cnt@\romannumeral\c@tcblayer\endcsname}%
   \fi%
-  \addtocounter{tcblayer}{-1}%
+  \global\advance\c@tcblayer -1\relax%
 }
 
 \let\tcbtextheight\tcb@zpt%
+
+\def\tcb@init@breakable{}
+
+\def\tcb@init@unbreakable{%
+  \let\tcb@savebox=\tcb@lrbox%
+  \let\endtcb@savebox=\endtcb@lrbox%
+  \let\tcb@drawcolorbox=\tcb@drawcolorbox@standalone%
+  \def\tcb@upperdraw@begin@hook{\color{tcbcolupper}}%
+  \def\tcb@lowerdraw@begin@hook{\color{tcbcollower}}%
+}%
 
 \long\def\tcb@apply@box@options#1{%
   \let\tcb@space\tcb@zpt%
   \let\tcb@outer@textheight\tcbtextheight%
   \let\tcbtextheight\tcb@zpt%
   \let\tcbtextwidth\tcb@zpt%
-  \tcbset{#1}\tcb@lateoptions@hook\tcb@afteroptions@hook%
+  \tcbset{#1}%
+  \tcb@lateoptions@hook\let\tcb@lateoptions@hook\@empty%
+  \tcb@afteroptions@hook%
+  \iftcb@isbreakable%
+    \tcb@init@breakable%
+  \else%
+    \tcb@init@unbreakable%
+  \fi%
   \let\iftcb@minipage\if@minipage%
   \let\iftcb@nobreak\if@nobreak%
 }
@@ -1823,7 +1872,6 @@
 \def\tcb@draw@border#1{}
 
 \long\def\tcbox@inner@hbox#1{%
-  \tcbset{breakable@false,sidebyside=false}%
   \tcb@set@@phantom%
   \colorlet{tcbcol@origin}{.}%
   \tcb@set@color{tcbcolupper}%
@@ -1841,7 +1889,6 @@
 }
 
 \long\def\tcbox@inner@minipage#1{%
-  \tcbset{breakable@false,sidebyside=false}%
   \let\tcb@val@raisebase=\tcb@zpt%
   \tcb@set@@phantom%
   \tcb@set@@title%
@@ -1859,7 +1906,7 @@
 \long\def\tcb@ox#1#2{%
   \begingroup%
   \tcb@layer@inc%
-  \tcb@apply@box@options{#1}\tcb@height@adjust%
+  \tcb@apply@box@options{#1,breakable@false,sidebyside@false}\tcb@height@adjust%
   \csname tcbox@inner@\kvtcb@capture\endcsname{#2}%
   \tcb@layer@dec%
   \endgroup%
@@ -2041,8 +2088,13 @@
   \tcb@process@newenvironment}
 
 \newcommand{\tcolorboxenvironment}[2]{%
-  \BeforeBeginEnvironment{#1}{\begin{tcolorbox}[savedelimiter={#1},#2]}%
-  \AfterEndEnvironment{#1}{\end{tcolorbox}}%
+  \AddToHook{env/#1/before}{%
+    \begin{tcolorbox}[savedelimiter={#1},#2,wrap@environment,%
+      code={\def\tcb@end@tcolorboxenvironment{\end{tcolorbox}}}]%
+  }%
+  \AddToHook{env/#1/after}{%
+    \tcb@end@tcolorboxenvironment%
+  }%
 }
 
 % auxiliary code to remove a leading backspace
@@ -2299,11 +2351,16 @@
     list entry=,no label type,
     opacityupper=1.0,opacitylower=1.0,opacitytitle=1.0,opacityframe=1.0,opacityback=1.0,@opacitybacktitle=1.0,
     subtitle style=,title filled=false,every float=,ignore nobreak=false,before nobreak=\noindent,
-    tcbox width=auto,
+    tcbox width=auto,wrap@environment=false,
   },
   initialize@reset=reset@core,
   shield externalize=false,
 }
+
+\tcbset{%
+  autoparskip,minipage,savedelimiter=tcolorbox,%
+  set@extensions@preframe=,set@extensions@postframe=,set@extensions@final=,%
+}%
 
 \def\tcbsetforeverylayer#1{\tcbset{initialize@reset={#1}}}
 

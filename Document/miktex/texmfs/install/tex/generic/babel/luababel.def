@@ -7,7 +7,7 @@
 %% babel.dtx  (with options: `luatex')
 %% 
 %%
-%% Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+%% Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 %% Copyright (C) 1989-2012 Johannes L. Braams and
 %%           any individual authors listed elsewhere in this file.
 %% All rights reserved.
@@ -247,6 +247,30 @@
       end
     end
     lang.patterns(lg, pats)
+  end
+  function Babel.hlist_has_bidi(head)
+    local has_bidi = false
+    for item in node.traverse(head) do
+      if item.id == node.id'glyph' then
+        local itemchar = item.char
+        local chardata = Babel.characters[itemchar]
+        local dir = chardata and chardata.d or nil
+        if not dir then
+          for nn, et in ipairs(Babel.ranges) do
+            if itemchar < et[1] then
+              break
+            elseif itemchar <= et[2] then
+              dir = et[3]
+              break
+            end
+          end
+        end
+        if dir and (dir == 'al' or dir == 'r') then
+          has_bidi = true
+        end
+      end
+    end
+    return has_bidi
   end
 }
 \endgroup
@@ -1138,13 +1162,21 @@ end
 \catcode`\~=12
 \catcode`\%=12
 \catcode`\&=14
-\gdef\babelposthyphenation#1#2#3{&%
-  \bbl@activateposthyphen
+\gdef\babelprehyphenation{&%
+  \@ifnextchar[{\bbl@settransform{0}}{\bbl@settransform{0}[]}}
+\gdef\babelposthyphenation{&%
+  \@ifnextchar[{\bbl@settransform{1}}{\bbl@settransform{1}[]}}
+\gdef\bbl@settransform#1[#2]#3#4#5{&%
+  \ifcase#1
+    \bbl@activateprehyphen
+  \else
+    \bbl@activateposthyphen
+  \fi
   \begingroup
     \def\babeltempa{\bbl@add@list\babeltempb}&%
     \let\babeltempb\@empty
-    \def\bbl@tempa{#3}&% TODO. Ugly trick to preserve {}:
-    \bbl@replace\bbl@tempa{,}{ ,}&%
+    \def\bbl@tempa{#5}&%
+    \bbl@replace\bbl@tempa{,}{ ,}&% TODO. Ugly trick to preserve {}
     \expandafter\bbl@foreach\expandafter{\bbl@tempa}{&%
       \bbl@ifsamestring{##1}{remove}&%
         {\bbl@add@list\babeltempb{nil}}&%
@@ -1152,23 +1184,55 @@ end
            local rep = [=[##1]=]
            rep = rep:gsub('^%s*(remove)%s*$', 'remove = true')
            rep = rep:gsub('^%s*(insert)%s*,', 'insert = true, ')
-           rep = rep:gsub(    '(no)%s*=%s*([^%s,]*)', Babel.capture_func)
-           rep = rep:gsub(   '(pre)%s*=%s*([^%s,]*)', Babel.capture_func)
-           rep = rep:gsub(  '(post)%s*=%s*([^%s,]*)', Babel.capture_func)
            rep = rep:gsub('(string)%s*=%s*([^%s,]*)', Babel.capture_func)
+           if #1 == 0 then
+             rep = rep:gsub('(space)%s*=%s*([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)',
+               'space = {' .. '%2, %3, %4' .. '}')
+             rep = rep:gsub('(spacefactor)%s*=%s*([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)',
+               'spacefactor = {' .. '%2, %3, %4' .. '}')
+             rep = rep:gsub('(kashida)%s*=%s*([^%s,]*)', Babel.capture_kashida)
+           else
+             rep = rep:gsub(    '(no)%s*=%s*([^%s,]*)', Babel.capture_func)
+             rep = rep:gsub(   '(pre)%s*=%s*([^%s,]*)', Babel.capture_func)
+             rep = rep:gsub(  '(post)%s*=%s*([^%s,]*)', Babel.capture_func)
+           end
            tex.print([[\string\babeltempa{{]] .. rep .. [[}}]])
          }}}&%
+    \let\bbl@kv@attribute\relax
+    \let\bbl@kv@label\relax
+    \bbl@forkv{#2}{\bbl@csarg\edef{kv@##1}{##2}}&%
+    \ifx\bbl@kv@attribute\relax\else
+      \edef\bbl@kv@attribute{\expandafter\bbl@stripslash\bbl@kv@attribute}&%
+    \fi
     \directlua{
-      local lbkr = Babel.linebreaking.replacements[1]
+      local lbkr = Babel.linebreaking.replacements[#1]
       local u = unicode.utf8
-      local id = \the\csname l@#1\endcsname
+      local id, attr, label
+      if #1 == 0 then
+        id = \the\csname bbl@id@@#3\endcsname\space
+      else
+        id = \the\csname l@#3\endcsname\space
+      end
+      \ifx\bbl@kv@attribute\relax
+        attr = -1
+      \else
+        attr = luatexbase.registernumber'\bbl@kv@attribute'
+      \fi
+      \ifx\bbl@kv@label\relax\else  &% Same refs:
+        label = [==[\bbl@kv@label]==]
+      \fi
       &% Convert pattern:
-      local patt = string.gsub([==[#2]==], '%s', '')
+      local patt = string.gsub([==[#4]==], '%s', '')
+      if #1 == 0 then
+        patt = string.gsub(patt, '|', ' ')
+      end
       if not u.find(patt, '()', nil, true) then
         patt = '()' .. patt .. '()'
       end
-      patt = string.gsub(patt, '%(%)%^', '^()')
-      patt = string.gsub(patt, '%$%(%)', '()$')
+      if #1 == 1 then
+        patt = string.gsub(patt, '%(%)%^', '^()')
+        patt = string.gsub(patt, '%$%(%)', '()$')
+      end
       patt = u.gsub(patt, '{(.)}',
              function (n)
                return '%' .. (tonumber(n) and (tonumber(n)+1) or n)
@@ -1178,53 +1242,8 @@ end
                return u.gsub(u.char(tonumber(n, 16)), '(%p)', '%%%1')
              end)
       lbkr[id] = lbkr[id] or {}
-      table.insert(lbkr[id], { pattern = patt, replace = { \babeltempb } })
-    }&%
-  \endgroup}
-\gdef\babelprehyphenation#1#2#3{&%
-  \bbl@activateprehyphen
-  \begingroup
-    \def\babeltempa{\bbl@add@list\babeltempb}&%
-    \let\babeltempb\@empty
-    \def\bbl@tempa{#3}&% TODO. Ugly trick to preserve {}:
-    \bbl@replace\bbl@tempa{,}{ ,}&%
-    \expandafter\bbl@foreach\expandafter{\bbl@tempa}{&%
-      \bbl@ifsamestring{##1}{remove}&%
-        {\bbl@add@list\babeltempb{nil}}&%
-        {\directlua{
-           local rep = [=[##1]=]
-           rep = rep:gsub('^%s*(remove)%s*$', 'remove = true')
-           rep = rep:gsub('^%s*(insert)%s*,', 'insert = true, ')
-           rep = rep:gsub('(string)%s*=%s*([^%s,]*)', Babel.capture_func)
-           rep = rep:gsub('(space)%s*=%s*([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)',
-             'space = {' .. '%2, %3, %4' .. '}')
-           rep = rep:gsub('(spacefactor)%s*=%s*([%d%.]+)%s+([%d%.]+)%s+([%d%.]+)',
-             'spacefactor = {' .. '%2, %3, %4' .. '}')
-           rep = rep:gsub('(kashida)%s*=%s*([^%s,]*)', Babel.capture_kashida)
-           tex.print([[\string\babeltempa{{]] .. rep .. [[}}]])
-         }}}&%
-    \directlua{
-      local lbkr = Babel.linebreaking.replacements[0]
-      local u = unicode.utf8
-      local id = \the\csname bbl@id@@#1\endcsname
-      &% Convert pattern:
-      local patt = string.gsub([==[#2]==], '%s', '')
-      local patt = string.gsub(patt, '|', ' ')
-      if not u.find(patt, '()', nil, true) then
-        patt = '()' .. patt .. '()'
-      end
-      &% patt = string.gsub(patt, '%(%)%^', '^()')
-      &% patt = string.gsub(patt, '([^%%])%$%(%)', '%1()$')
-      patt = u.gsub(patt, '{(.)}',
-             function (n)
-               return '%' .. (tonumber(n) and (tonumber(n)+1) or n)
-             end)
-      patt = u.gsub(patt, '{(%x%x%x%x+)}',
-             function (n)
-               return u.gsub(u.char(tonumber(n, 16)), '(%p)', '%%%1')
-             end)
-      lbkr[id] = lbkr[id] or {}
-      table.insert(lbkr[id], { pattern = patt, replace = { \babeltempb } })
+      table.insert(lbkr[id],
+        { label=label, attr=attr, pattern=patt, replace={\babeltempb} })
     }&%
   \endgroup}
 \endgroup
@@ -1315,9 +1334,11 @@ end
       #2 TRT\relax
     \fi
   \fi}
+\def\bbl@thedir{0}
 \def\bbl@textdir#1{%
   \bbl@setluadir{text}\textdir{#1}%
   \chardef\bbl@thetextdir#1\relax
+  \edef\bbl@thedir{\the\numexpr\bbl@thepardir*3+#1}%
   \setattribute\bbl@attr@dir{\numexpr\bbl@thepardir*3+#1}}
 \def\bbl@pardir#1{%
   \bbl@setluadir{par}\pardir{#1}%
@@ -1326,31 +1347,119 @@ end
 \def\bbl@pagedir{\bbl@setluadir{page}\pagedir}
 \def\bbl@dirparastext{\pardir\the\textdir\relax}%   %%%%
 \ifnum\bbl@bidimode>\z@
-  \def\bbl@mathboxdir{%
-    \ifcase\bbl@thetextdir\relax
-      \everyhbox{\bbl@mathboxdir@aux L}%
-    \else
-      \everyhbox{\bbl@mathboxdir@aux R}%
-     \fi}
-  \def\bbl@mathboxdir@aux#1{%
-    \@ifnextchar\egroup{}{\textdir T#1T\relax}}
+  \def\bbl@insidemath{0}%
+  \def\bbl@everymath{\def\bbl@insidemath{1}}
+  \def\bbl@everydisplay{\def\bbl@insidemath{2}}
   \frozen@everymath\expandafter{%
-    \expandafter\bbl@mathboxdir\the\frozen@everymath}
+    \expandafter\bbl@everymath\the\frozen@everymath}
   \frozen@everydisplay\expandafter{%
-    \expandafter\bbl@mathboxdir\the\frozen@everydisplay}
+    \expandafter\bbl@everydisplay\the\frozen@everydisplay}
+  \AtBeginDocument{
+    \directlua{
+      function Babel.math_box_dir(head)
+        if not (token.get_macro('bbl@insidemath') == '0') then
+          if Babel.hlist_has_bidi(head) then
+            local d = node.new(node.id'dir')
+            d.dir = '+TRT'
+            node.insert_before(head, node.has_glyph(head), d)
+            for item in node.traverse(head) do
+              node.set_attribute(item,
+                Babel.attr_dir, token.get_macro('bbl@thedir'))
+            end
+          end
+        end
+        return head
+      end
+      luatexbase.add_to_callback("hpack_filter", Babel.math_box_dir,
+        "Babel.math_box_dir", 0)
+  }}%
 \fi
 \bbl@trace{Redefinitions for bidi layout}
-\ifx\@eqnnum\@undefined\else
-  \ifx\bbl@attr@dir\@undefined\else
-    \edef\@eqnnum{{%
-      \unexpanded{\ifcase\bbl@attr@dir\else\bbl@textdir\@ne\fi}%
-      \unexpanded\expandafter{\@eqnnum}}}
-  \fi
+\def\BabelNoAMSMath{\let\bbl@noamsmath\relax}
+\ifnum\bbl@bidimode>\z@
+  \let\bbl@eqnodir\relax
+  \AtBeginDocument{%
+    \ifx\maketag@@@\@undefined % Normal equation, eqnarray
+      \AddToHook{env/eqnarray/begin}{%
+        \ifnum\bbl@thetextdir>\z@
+          \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
+          \chardef\bbl@thetextdir\z@
+          \bbl@add\normalfont{\bbl@eqnodir}%
+        \fi}%
+      \AddToHook{env/equation/begin}{%
+        \ifnum\bbl@thetextdir>\z@
+          \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
+          \chardef\bbl@thetextdir\z@
+          \bbl@add\normalfont{\bbl@eqnodir}%
+          \pardir TLT % dir for \eqno is \pardir!
+        \fi}%
+      \bbl@xin@{,leqno,}{,\@classoptionslist,}%
+      \ifin@
+        \def\@eqnnum{%
+          \setbox\z@\hbox{\normalfont\normalcolor(\theequation)}%
+          \hbox to0.01pt{\hss\hbox to\displaywidth{\box\z@\hss}}}%
+      \fi
+    \else % amstex
+      \ifx\bbl@noamsmath\@undefined
+        \@ifpackagewith{amsmath}{leqno}%
+          {\let\bbl@ams@lap\hbox}% = leqno
+          {\let\bbl@ams@lap\llap}% = default
+        \ExplSyntaxOn
+        \bbl@sreplace\intertext@{\normalbaselines}%
+          {\normalbaselines
+           \ifx\bbl@eqnodir\relax\else\bbl@pardir\@ne\bbl@eqnodir\fi}%
+        \ExplSyntaxOff
+        \def\bbl@ams@tagbox#1#2{#1{\bbl@eqnodir#2}}% #1=hbox|@lap|flip
+        \ifx\bbl@ams@lap\hbox % leqno
+          \def\bbl@ams@flip#1{%
+            \hbox to 0.01pt{\hss\hbox to\displaywidth{{#1}\hss}}}%
+        \else % eqno
+          \def\bbl@ams@flip#1{%
+            \hbox to 0.01pt{\hbox to\displaywidth{\hss{#1}}\hss}}%
+        \fi
+        \def\bbl@ams@preset#1{%
+          \ifnum\bbl@thetextdir>\z@
+            \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
+            \bbl@sreplace\textdef@{\hbox}{\bbl@ams@tagbox\hbox}%
+            \bbl@sreplace\maketag@@@{\hbox}{\bbl@ams@tagbox#1}%
+          \fi}%
+        \AddToHook{env/equation/begin}{%
+          \ifnum\bbl@thetextdir>\z@
+            \ifx\bbl@ams@lap\llap\hrule\@height\z@\fi
+            \bbl@ams@preset\bbl@ams@flip
+          \fi}%
+        \AddToHook{env/equation*/begin}{\bbl@ams@preset\bbl@ams@flip}%
+        \AddToHook{env/cases/begin}{\bbl@ams@preset\bbl@ams@lap}%
+        \AddToHook{env/multline/begin}{\bbl@ams@preset\hbox}%
+        \AddToHook{env/gather/begin}{\bbl@ams@preset\bbl@ams@lap}%
+        \AddToHook{env/gather*/begin}{\bbl@ams@preset\bbl@ams@lap}%
+        \AddToHook{env/align/begin}{\bbl@ams@preset\bbl@ams@lap}%
+        \AddToHook{env/align*/begin}{\bbl@ams@preset\bbl@ams@lap}%
+        \AddToHook{env/eqnalign/begin}{\bbl@ams@preset\hbox}%
+        % Hackish, for proper alignment. Don’t ask me why it works!:
+        \bbl@exp{% Avoid a 'visible' conditional
+          \\\AddToHook{env/align*/end}{\<iftag@>\<else>\\\tag*{}\<fi>}}%
+        \AddToHook{env/flalign/begin}{\bbl@ams@preset\hbox}%
+        \AddToHook{env/split/before}{%
+          \ifnum\bbl@thetextdir>\z@
+            \bbl@ifsamestring\@currenvir{equation}%
+              {\ifx\bbl@ams@lap\hbox % leqno
+                 \def\bbl@ams@flip#1{%
+                   \hbox to 0.01pt{\hbox to\displaywidth{{#1}\hss}\hss}}%
+               \else
+                 \def\bbl@ams@flip#1{%
+                   \hbox to 0.01pt{\hss\hbox to\displaywidth{\hss{#1}}}}%
+               \fi}%
+             {}%
+          \fi}%
+      \fi
+    \fi}
 \fi
 \ifx\bbl@opt@layout\@nnil\endinput\fi  % if no layout
 \ifnum\bbl@bidimode>\z@
   \def\bbl@nextfake#1{%  non-local changes, use always inside a group!
     \bbl@exp{%
+      \def\\\bbl@insidemath{0}%
       \mathdir\the\bodydir
       #1%              Once entered in math, set boxes to restore values
       \<ifmmode>%
@@ -1413,28 +1522,11 @@ end
      \directlua{
        Babel.get_picture_dir = true
        Babel.picture_has_bidi = 0
+       %
        function Babel.picture_dir (head)
          if not Babel.get_picture_dir then return head end
-         for item in node.traverse(head) do
-           if item.id == node.id'glyph' then
-             local itemchar = item.char
-             % TODO. Copypaste pattern from Babel.bidi (-r)
-             local chardata = Babel.characters[itemchar]
-             local dir = chardata and chardata.d or nil
-             if not dir then
-               for nn, et in ipairs(Babel.ranges) do
-                 if itemchar < et[1] then
-                   break
-                 elseif itemchar <= et[2] then
-                   dir = et[3]
-                   break
-                 end
-               end
-             end
-             if dir and (dir == 'al' or dir == 'r') then
-               Babel.picture_has_bidi = 1
-             end
-           end
+         if Babel.hlist_has_bidi(head) then
+           Babel.picture_has_bidi = 1
          end
          return head
        end

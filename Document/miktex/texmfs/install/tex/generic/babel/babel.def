@@ -7,7 +7,7 @@
 %% babel.dtx  (with options: `core')
 %% 
 %%
-%% Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+%% Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 %% Copyright (C) 1989-2012 Johannes L. Braams and
 %%           any individual authors listed elsewhere in this file.
 %% All rights reserved.
@@ -40,7 +40,7 @@
     \wlog{File: #1 #4 #3 <#2>}%
     \let\ProvidesFile\@undefined}
 \fi
-\ProvidesFile{babel.def}[2021/11/08 3.66 Babel common definitions]
+\ProvidesFile{babel.def}[2022/02/26 3.73 Babel common definitions]
 \ifx\AtBeginDocument\@undefined  % TODO. change test.
   \def\@empty{}
 \def\loadlocalcfg#1{%
@@ -406,8 +406,8 @@
 \expandafter\newif\csname ifbbl@single\endcsname
 \chardef\bbl@bidimode\z@
 \fi
-\def\bbl@version{3.66}
-\def\bbl@date{2021/11/08}
+\def\bbl@version{3.73}
+\def\bbl@date{2022/02/26}
 \ifx\language\@undefined
   \csname newcount\endcsname\language
 \fi
@@ -620,7 +620,10 @@
 \newif\ifbbl@bcpallowed
 \bbl@bcpallowedfalse
 \def\select@language#1{% from set@, babel@aux
+  \ifx\bbl@selectorname\@empty
+    \def\bbl@selectorname{select}%
   % set hymap
+  \fi
   \ifnum\bbl@hymapsel=\@cclv\chardef\bbl@hymapsel4\relax\fi
   % set name
   \edef\languagename{#1}%
@@ -730,8 +733,10 @@
   \else
     \expandafter\expandafter\expandafter\set@hyphenmins
       \csname #1hyphenmins\endcsname\relax
-  \fi}
+  \fi
+  \let\bbl@selectorname\@empty}
 \long\def\otherlanguage#1{%
+  \def\bbl@selectorname{other}%
   \ifnum\bbl@hymapsel=\@cclv\let\bbl@hymapsel\thr@@\fi
   \csname selectlanguage \endcsname{#1}%
   \ignorespaces}
@@ -740,6 +745,7 @@
 \expandafter\def\csname otherlanguage*\endcsname{%
   \@ifnextchar[\bbl@otherlanguage@s{\bbl@otherlanguage@s[]}}
 \def\bbl@otherlanguage@s[#1]#2{%
+  \def\bbl@selectorname{other*}%
   \ifnum\bbl@hymapsel=\@cclv\chardef\bbl@hymapsel4\relax\fi
   \def\bbl@select@opts{#1}%
   \foreign@language{#2}}
@@ -752,6 +758,7 @@
   \@ifstar\bbl@foreign@s\bbl@foreign@x}
 \providecommand\bbl@foreign@x[3][]{%
   \begingroup
+    \def\bbl@selectorname{foreign}%
     \def\bbl@select@opts{#1}%
     \let\BabelText\@firstofone
     \bbl@beforeforeign
@@ -762,6 +769,7 @@
 \def\bbl@foreign@s#1#2{% TODO - \shapemode, \@setpar, ?\@@par
   \begingroup
     {\par}%
+    \def\bbl@selectorname{foreign*}%
     \let\bbl@select@opts\@empty
     \let\BabelText\@firstofone
     \foreign@language{#1}%
@@ -794,6 +802,13 @@
     % set type
     \let\bbl@select@type\@ne
     \expandafter\bbl@switch\expandafter{\languagename}}}
+\def\IfBabelSelectorTF#1{%
+  \bbl@xin@{,\bbl@selectorname,}{,\zap@space#1 \@empty,}%
+  \ifin@
+    \expandafter\@firstoftwo
+  \else
+    \expandafter\@secondoftwo
+  \fi}
 \let\bbl@hyphlist\@empty
 \let\bbl@hyphenation@\relax
 \let\bbl@pttnlist\@empty
@@ -869,7 +884,6 @@
 \let\uselocale\setlocale
 \let\locale\setlocale
 \let\selectlocale\setlocale
-\let\localename\setlocale
 \let\textlocale\setlocale
 \let\textlanguage\setlocale
 \let\languagetext\setlocale
@@ -2510,6 +2524,8 @@
    % == onchar ==
   \ifx\bbl@KVP@onchar\@nil\else
     \bbl@luahyphenate
+    \bbl@exp{%
+      \\\AddToHook{env/document/before}{{\\\select@language{#2}{}}}}%
     \directlua{
       if Babel.locale_mapped == nil then
         Babel.locale_mapped = true
@@ -2913,8 +2929,8 @@
   \ifeof\bbl@readstream
     \bbl@error
       {There is no ini file for the requested language\\%
-       (#1). Perhaps you misspelled it or your installation\\%
-       is not complete.}%
+       (#1: \languagename). Perhaps you misspelled it or your\\%
+       installation is not complete.}%
       {Fix the name or reinstall babel.}%
   \else
     % == Store ini data in \bbl@inidata ==
@@ -3345,14 +3361,15 @@
   \bbl@transforms\babelprehyphenation}
 \@namedef{bbl@inikv@transforms.posthyphenation}{%
   \bbl@transforms\babelposthyphenation}
-\def\bbl@transforms@aux#1#2#3,#4\relax{#1{#2}{#3}{#4}}
+\def\bbl@transforms@aux#1#2#3#4,#5\relax{%
+  #1[#2]{#3}{#4}{#5}}
 \begingroup %  A hack. TODO. Don't require an specific order
   \catcode`\%=12
   \catcode`\&=14
   \gdef\bbl@transforms#1#2#3{&%
     \ifx\bbl@KVP@transforms\@nil\else
       \directlua{
-         str = [==[#2]==]
+         local str = [==[#2]==]
          str = str:gsub('%.%d+%.%d+$', '')
          tex.print([[\def\string\babeltempa{]] .. str .. [[}]])
       }&%
@@ -3360,10 +3377,23 @@
       \ifin@
         \in@{.0$}{#2$}&%
         \ifin@
-           \g@addto@macro\bbl@release@transforms{&%
-              \relax\bbl@transforms@aux#1{\languagename}{#3}}&%
+          \directlua{
+            local str = string.match([[\bbl@KVP@transforms]],
+                          '%(([^%(]-)%)[^%)]-\babeltempa')
+            if str == nil then
+              tex.print([[\def\string\babeltempb{}]])
+            else
+              tex.print([[\def\string\babeltempb{,attribute=]] .. str .. [[}]])
+            end
+          }
+          \toks@{#3}&%
+          \bbl@exp{&%
+            \\\g@addto@macro\\\bbl@release@transforms{&%
+              \relax  &% Closes previous \bbl@transforms@aux
+              \\\bbl@transforms@aux
+                \\#1{label=\babeltempa\babeltempb}{\languagename}{\the\toks@}}}&%
         \else
-           \g@addto@macro\bbl@release@transforms{, {#3}}&%
+          \g@addto@macro\bbl@release@transforms{, {#3}}&%
         \fi
       \fi
     \fi}

@@ -7,7 +7,7 @@
 -- babel.dtx  (with options: `basic-r')
 -- 
 --
--- Copyright (C) 2012-2021 Javier Bezos and Johannes L. Braams.
+-- Copyright (C) 2012-2022 Javier Bezos and Johannes L. Braams.
 -- Copyright (C) 1989-2012 Johannes L. Braams and
 --           any individual authors listed elsewhere in this file.
 -- All rights reserved.

@@ -682,15 +682,15 @@ local weights = {
 }
 
 local widths = {
-    [1] = "ultracondensed",
-    [2] = "extracondensed",
-    [3] = "condensed",
-    [4] = "semicondensed",
-    [5] = "normal",
-    [6] = "semiexpanded",
-    [7] = "expanded",
-    [8] = "extraexpanded",
-    [9] = "ultraexpanded",
+    "ultracondensed",
+    "extracondensed",
+    "condensed",
+    "semicondensed",
+    "normal",
+    "semiexpanded",
+    "expanded",
+    "extraexpanded",
+    "ultraexpanded",
 }
 
 setmetatableindex(weights, function(t,k)
@@ -703,31 +703,31 @@ setmetatableindex(widths,function(t,k)
     return "normal"
 end)
 
-local panoseweights = {
-    [ 0] = "normal",
-    [ 1] = "normal",
-    [ 2] = "verylight",
-    [ 3] = "light",
-    [ 4] = "thin",
-    [ 5] = "book",
-    [ 6] = "medium",
-    [ 7] = "demi",
-    [ 8] = "bold",
-    [ 9] = "heavy",
-    [10] = "black",
+local panoseweights = { [0] =
+    "normal",
+    "normal",
+    "verylight",
+    "light",
+    "thin",
+    "book",
+    "medium",
+    "demi",
+    "bold",
+    "heavy",
+    "black",
 }
 
-local panosewidths = {
-    [ 0] = "normal",
-    [ 1] = "normal",
-    [ 2] = "normal",
-    [ 3] = "normal",
-    [ 4] = "normal",
-    [ 5] = "expanded",
-    [ 6] = "condensed",
-    [ 7] = "veryexpanded",
-    [ 8] = "verycondensed",
-    [ 9] = "monospaced",
+local panosewidths = { [0] =
+    "normal",
+    "normal",
+    "normal",
+    "normal",
+    "normal",
+    "expanded",
+    "condensed",
+    "veryexpanded",
+    "verycondensed",
+    "monospaced",
 }
 
 -- We implement a reader per table.
@@ -1250,7 +1250,7 @@ readers.post = function(f,fontdata,specification)
         local version = readulong(f)
         fontdata.postscript = {
             version            = version,
-            italicangle        = round(1000*readfixed(f))/1000,
+            italicangle        = readfixed(f),
             underlineposition  = readfword(f),
             underlinethickness = readfword(f),
             monospaced         = readulong(f),
@@ -1962,9 +1962,10 @@ local function getinfo(maindata,sub,platformnames,rawfamilynames,metricstoo,inst
             weight         = weight and lower(weight),
             width          = width and lower(width),
             pfmweight      = metrics.weightclass or 400, -- will become weightclass
-            pfmwidth       = metrics.widthclass or 5,    -- will become widthclass
+            pfmwidth       = metrics.widthclass or 5, -- will become widthclass
             panosewidth    = metrics.panosewidth,
             panoseweight   = metrics.panoseweight,
+            fstype         = metrics.fstype or 0, -- embedding, subsetting and editing
             italicangle    = postscript.italicangle or 0,
             units          = fontheader.units or 0,
             designsize     = fontdata.designsize,
@@ -2520,6 +2521,10 @@ end
 
 function readers.compact(fontdata)
     report("the %a helper is not yet implemented","compact")
+end
+
+function readers.condense(fontdata)
+    report("the %a helper is not yet implemented","condense")
 end
 
 -- plug in
