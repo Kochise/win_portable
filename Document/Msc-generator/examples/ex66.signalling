@@ -1,0 +1,13 @@
+##Multi-segment tunnels
+##multi segment tunnel pipe
+C: Client;  R1: Router;
+R2: Router; R3: Router;
+R4: Router; S: Server;
+
+pipe R1--R2: Tunnel 1 [color=red]
+     R2==R3: Tunnel 2 [color=green]
+     R3==R4: Tunnel 3 [color=blue, line.type=triple]
+{
+    C->S: \plRequest;
+    C<-S: \prResponse;
+};

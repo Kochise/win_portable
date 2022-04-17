@@ -1,0 +1,11 @@
+##Ports
+##arrow port direction
+##You can govern where arrows end via "ports", similar to graphviz. These should be specified after the block name and the @ symbol. Boxes have one port on each side and vertex. You can also use a "compass point" as port, like 'e' for east or 'sw' for southwest. Each of these also influence the direction in which the arrow shall leave or arrive at the block. With the "distance" attribute you can govern, how wide a certain block (or all blocks) are routed around or - in case of starting and ending blocks - how wide an arc the arrow makes at its start or end. The default is 5 pixels for the former and 10 pixels for the latter.
+box A [size=40]; 
+space 60;
+box B [size=40];
+
+A@top->B@top: top [color=red, distance=20];
+A->B@topleft;
+A@bottom->B@bottom: bottom [color=green, 
+   distance=B@20, text.bgcolor=none];

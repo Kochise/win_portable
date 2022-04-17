@@ -1,0 +1,23 @@
+##Numbering
+##numbering
+##You can manually assign a number to any element using the 'number=<num>' attribute. 'number=yes' will automatically assign the next number. The 'numbering=yes' chart option turns on auto-numbering for all subsequent element (can individually turned off by 'number=no' on selected elements).##The format of the numbers are the same as the initial formatting of the label (including all formatting escapes at the beginning of the label up until the first non-formatting character or '\|').##The '\N' escape can be used to place the number to a place different from the front of the label (with formatting used at the place of insertion.)##The 'numbering.pre' and 'numbering.post' chart options specify what to prepend and append to the number if at the front of the label, respectively. They may contain formatting escapes, too. ('\N' will not have these prepended and appended.)
+hscale=auto;
+
+a->b: Not numbered;
+a->b: Numbered [number=yes];
+a->b: Numbered [number=10];
+a->b: Not numbered;
+numbering=yes;
+a->b: \bNumber is bold;
+a->b: \|\bNumber is not bold;
+a->b: Our number is: \N;
+a->b: (\N) This may be optional;
+numbering.pre="Step #";
+numbering.post=" is: ";
+a->b: Some action;
+a->b: Some action;
+numbering.pre="\c(red)\b";
+numbering.post=": \s()";
+a->b: Some action;
+a->b: \c(blue)\uSome action;
+a->b: \|\c(blue)\uSome action;

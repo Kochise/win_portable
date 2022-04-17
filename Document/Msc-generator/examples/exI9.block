@@ -1,0 +1,20 @@
+##More arrow de-overlap
+##arrow deoverlap
+##After shifting the endpoints, arrows may still overlap, for example if they go around the same block they will follow the contour of that block. By setting 'routing.block_others=yes' (the default) on the arrow drawn earlier will prevent any later arrows that had overlapping ends with it from crossing it or getting closer to it than 'routing.arrow_distance'. You can specify a number via 'routing.order} to govern in which the arrows in overlapping by their end are re-laid out after their endpoints have been shifted. Note that arrows never block other arrows that have no overlapping ending with them.
+cell a {
+    use bottom=first;
+    box A;
+    box B[size=40];
+    box C,D;
+    A->C;
+    A->D [color=red];
+}
+below cell b {
+    use bottom=first;
+    box A;
+    box B[size=40];
+    box C, D;
+    use routing.block_others=no;
+    A->C;
+    A->D [color=red];
+}

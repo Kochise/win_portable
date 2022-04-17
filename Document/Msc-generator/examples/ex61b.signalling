@@ -1,0 +1,27 @@
+##Redefining box styles
+##redefine -- .. == ++ box symbol line style
+##Redefine the '--', '==', '++', '..' styles (called box refinement styles) to impact how boxes using these box symbols look. Redefine the 'box' and 'emptybox' and 'box_collapsed' styles to govern how boxes, empty boxes and collapsed boxes look in general. Note that whatever is in the box refinement styles will overwrite the settings of 'box' and 'emptybox' and 'box_collapsed'. Thus you can not set the line style, since the refinement styles overwrite that. For pipes use the 'pipe--', 'pipe==', etc. pipe refinement styles and the 'pipe' style.
+a--a;
+defstyle "--" [line.color=red];
+a--b;
+defstyle -- [line.color=red];
+a--b;
+defstyle -- [line.color=red, line.type=dash_dotted];
+a--b;
+
+a==b: double line;
+defstyle emptybox [line.color=blue];
+a==b: blue with double line;
+defstyle emptybox [line.type=long_dashed];
+a==b: still with double line;
+defstyle == [line.type=]; #remove line type setting
+a==b: now long dashed; #because of 'emptybox'
+a--b: still dash-dotted; #because of '--'
+
+pipe a--b;
+pipe a==b;
+defstyle -- [line.type=dash_dotted], pipe [line.color=red];
+pipe a--b; #red because of pipe, dash-dot because of --
+pipe a==b; #red because of pipe, double because of ==
+
+

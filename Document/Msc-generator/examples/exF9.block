@@ -1,0 +1,16 @@
+##Joining around blocks
+##around no label use join
+##You can use the 'around' modifier before a block definition. In this case the new block will be sized and placed to contain the blocks listed. You can then use 'join' on these blocks too.##With the 'use' command you can define a set of attributes applying to all subsequent elements (until the next closing brace). 'arrows use' and 'blocks use' limit the impact to arrows and blocks, respectively.
+use label="";
+col x {box a, b, c, d;}
+col y {box a, b, c, d;}
+col z {box a, b, c, d;}
+col v {box a, b, c, d;}
+
+use line.radius=5, line.type=dotted;
+around x.a+v.a box A1;
+around z.a+z.c box A2 [imargin=10];
+around x.c+x.d *oval A3;
+
+join A1+A2+A3 [fill.color=lgray+50,
+              draw_before=x];

@@ -1,0 +1,39 @@
+##Arrow routing
+##arrow routing manhattan straight polygon procedure defproc replay curvy
+##This example shows how you can select an arrow routing algorithm.##It also shows how to define and replay procedures.
+defproc Blocks($num, $label) {
+    col {
+        row {space 30; *oval A~$num: A;}
+        row {
+            box {
+                if $num=="1" then
+                    *oval B~$num: B [];
+                else
+                    *oval B~$num: B [ycenter=B1];
+
+            }
+            box {
+                *oval C, D;
+            }
+        }
+        space;
+        row {space 60; *oval E~$num: E;}
+        text [label=$label];
+    }
+}
+replay Blocks(0, Vertical);
+replay Blocks(1, Straight);
+replay Blocks(2, Manhattan);
+replay Blocks(3, Polygon);
+replay Blocks(4, "Polygon\nwith radius");
+replay Blocks(5, Curvy);
+
+use line.color=red;
+use line.width=2;
+A0->E0 [routing=vertical];
+A1->E1 [routing=straight];
+A2->E2 [routing=manhattan];
+A3->E3 [routing=polygon];
+A4->E4 [routing=polygon, line.corner=round];
+A5->E5 [routing=curvy];
+

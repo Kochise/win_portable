@@ -1,0 +1,14 @@
+##Absolute coordinates 
+##absolute coordinates tick mark
+##With the '(' syntax it is possible to specify arbitrary coordinates for lines and arrows.##If you only specify a number it will be measured from the top-left corner of the enclosing block's content area.##In this example we specify two lines inside a box. Then we add labels with no actual text, just a marker ('mark') on fixed pixel positions. We also add two labels with actual text. 'label.pos' governs where the label is in relation to the line.##The 'imargin.left' attribute on the enclosing box creates some space left of the Y axis so that the label is inside the box. Note that the arrows and their labels do not impact block layout.
+box [imargin.left=45] {
+    (0,190)->(200,); 
+    mark 30; mark 50; mark 70; mark 90; 
+    mark 110; mark 130; mark 150; mark 170;
+    180:time [label.pos=below, text.bgcolor=none];
+
+    (10, 0)<-(, 200);
+    mark 30; mark 50; mark 70; mark 90; 
+    mark 110; mark 130; mark 150; mark 170; 
+    180:effort [label.pos=left, text.bgcolor=none];
+}

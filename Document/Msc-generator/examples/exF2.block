@@ -1,0 +1,14 @@
+##Precise alignment and coordinates
+##alignment multiple @ margin imargin
+##When using the 'left', 'right', 'top', 'bottom', 'middle' and 'center'  attributes to align a block (or 'mleft', 'mright', 'mtop' or 'mbottom to adjust side with margin), use a percentage of the target block if you want alignment to something different than its sides or midpoint.##If you want an arrow or line start or end somewhere other than a block, you can use the '(' syntax to specify the x and y coordinate independently (but still in relation to boxes laid out. Just mentioning a block will mean its midpoint, but you can also use the @ syntax to specify some other place. If you omit a coordinate (such as the Y coordinate after 'D,') it will be the same as on the other end of the arrow/line resulting in horizontal/vertical lines.
+box A;
+box B [bottom=A@40%];
+box C [bottom=A@20%];
+box D [bottom=A@0%];
+rightof A box E [top=A@60%];
+box F [top=A@80%];
+box G [top=A@100%];
+
+arrows use draw_before=A;
+(A, A@top)..(D,);
+(A, A@bottom)..(D,);

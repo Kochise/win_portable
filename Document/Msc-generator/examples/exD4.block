@@ -1,0 +1,8 @@
+##Alignment with margin
+##alignment left right top bottom mleft mright mtop mbottom xpos ypos
+##In addition to the 'left', 'right', 'top', 'bottom' attributes which make the specified edge of the block to align to something else, you can also use the 'mleft', 'mright', 'mtop', 'mbottom' attributes which make the specified edge _plus a margin_ to align to something else. (By default blocks have a 10-pixel margin on each side.)##Similarly, in additon to the '@left', '@right', '@top', '@bottom' modifiers you can also use '@mleft', '@mright', '@mtop', '@mbottom' to make another block align to the edge+margin.##Use the 'xpos' and 'ypos' attributes to make the block span exactly the same range as another block (or a group of blocks).
+box A: A\nA;
+box B [mbottom=A@mtop, left=A@right];
+box C [center=A, mbottom=B@mtop];
+box D: DDDD [middle=C, mleft=B@mright];
+box E [xpos=D, ypos=A+B];

@@ -1,0 +1,14 @@
+##Parallel elements
+##parallel element side-by-side
+##Use the 'parallel' keyword in front of an element to allow subsequent elements be laid out besides it. By default (without 'parallel') subsequent elements have to be at least a bit lower than prior ones.
+C: Client;
+S: Server;
+B: Backend;
+
+parallel B--B: State;
+C->S: Remove Req;
+S->B: Remove Req;
+S<-B: Ack;
+parallel B--B: No State;
+C<-S: Ack;
+C--C: Now we\nhave it;

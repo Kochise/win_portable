@@ -1,0 +1,15 @@
+##Multi blocks
+##multi sheets block
+##Prepending a block with the 'multi' keyword will result in an effect as if the block existed in multiple copies. You can specify the number of copies, which defaults to 3. Then later you can use '<blockname>.front' or '<blockname>.back' (or '.1' and similar) to start arrows from individual copies.
+multi 2 box A: From;
+multi box B: To {
+    use margin=5;
+    *oval o: My;
+    box: Yours;
+    below prev+first *oval: Hers;
+}
+rightof box C: Beyond;
+A.front->B;
+A->B.o;
+B.1, B.back -> C; 
+B->C [color=red];

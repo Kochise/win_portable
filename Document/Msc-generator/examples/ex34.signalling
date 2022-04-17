@@ -1,0 +1,22 @@
+##Apply a chart design
+##chart design apply msc
+##Use the 'msc=' chart option to apply a chart design. Can be used later in the chart to take effect only from there.
+msc=round_green;
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit [strong];
+box C==C: Generate\nrequest;
+C=>S: Request;
+box S--S: Check cache;
+box S--B: cache miss [tag="Alt\#1"]
+{
+    S->B: Query;
+    S<-B: Response;
+}
+..: cache hit [tag="Alt\#2"]
+{
+    S->S: Read\ncache [weak];
+};
+C<=S: Reply;
+---: All done;

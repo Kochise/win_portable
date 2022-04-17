@@ -1,0 +1,20 @@
+##Entity group variants
+##entity group large full long
+##Use 'large=yes' on an entity group to draw the group not only in the heading but through the entire length of the chart.
+hscale=auto;
+CI: Client Infra {
+    T: Terminal;
+    C: Client;
+};
+SI: Server Infra [large=yes] {
+    S: Server;
+    B: Backend;
+};
+->T: Hit;
+T->C: Internal Req;
+C=>S: Request to Server;
+S>>B: Internal Query;
+S<<B: Internal Response;
+C<=S: Reply from Server;
+T<-C: Internal Reply;
+

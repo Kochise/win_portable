@@ -1,0 +1,16 @@
+##Symbol positioning
+##symbol position rectangle arc ... text shape left right center middle
+##Use 'symbol <type>' to draw onto the chart. <type> can be 'rectangle', 'arc', '...', 'text', 'cross' or 'shape' the latter drawing an arbitrary shape.##Continue with the vertical position: use two markers separated by a dash. You can use only one and specify the height with the 'ysize' attribute.##Then specify the horizontal place by using one or two of 'left', 'right', 'center' followed by 'at <entity>'. You can continue by '--', '-', '+', '++' or '+-<offset>' to specify a position left or right of the entity. If you use only one designator, you can specify width using the 'xsize=<pixels>' attribute.
+a, b, c, d;
+a->b: Message 1
+      goes here;
+mark m1;
+b->c: Message 2
+      goes here;
+mark m2;
+c->d: Messgae 3
+      goes here;
+defstyle symbol [fill.color="yellow,200"];
+symbol rectangle m1-m2 left at a  [xsize=30];
+symbol rectangle   -m2 left at b- [xsize=30, ysize=30];
+symbol rectangle m1-   left at c+ [xsize=30, ysize=30];

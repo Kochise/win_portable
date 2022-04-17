@@ -1,0 +1,27 @@
+##Redefining arrow styles
+##redefine -> => > >> arrow symbol line style
+##Redefine the '->', '=>', '>>', '>', '=>>', '==>' styles (called arrow refinement styles) to impact how arrows using these arrow symbols look. The same style is used for reverse and bi-directional arrows. (That is, there is no '<-' or '<=>' style. Use '->' and '=>' instead.) Redefine the 'arrow' and 'arrow_self' styles to govern how arrows in general look. Note that whatever is in the arrow refinement styles will overwrite the settings of 'arrow' and 'arrow_self'. Thus you can not set the line style, since the arrow refinement styles overwrite that. For block arrows use the 'block->', 'block=>', etc. block arrow refinement styles and the 'blockarrow' and 'box_collapsed_arrow' styles (latter for boxes collapsed to an arrow).
+a->b;
+defstyle "->" [arrow.size=tiny];
+a->b;
+defstyle -> [arrow.size=huge];
+a->b;
+defstyle -> [arrow.size=small, line.type=dash_dot];
+a->b;
+
+a=>b: double line;
+defstyle arrow [line.color=red, arrow.color=red];
+a=>b: red with double line;
+defstyle arrow [line.type=long_dashed];
+a=>b: still with double line;
+defstyle => [line.type=]; #remove line type setting
+a=>b: now long dashed; #because of 'arrow'
+a->b: still dash-dotted; #because of '->'
+
+block a->b;
+block a=>b;
+defstyle -> [line.type=dash_dot], blockarrow [line.color=red];
+block a->b;
+block a=>b;
+
+

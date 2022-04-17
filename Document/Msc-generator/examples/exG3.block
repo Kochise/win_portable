@@ -1,0 +1,34 @@
+##Join blocks
+##join block combine merge
+##Use the 'join' keyword followed by a list of blocks to combine the surface of the specified blocks into a single one. Especially good if the blocks are side-by-side or overlap. No name, label or content can be specified. Join blocks can have only line, fill and shadow attributes (not even alignment as their position is fully determined by the joined blocks). If they have any of the above three attribute set, the corresponding attribute in the joined blocks is removed. Thus, for example, if the join block has line attributes (the default), the joined blocks do not draw a line: as a result, only the outline is visible.##On the example below, we created three blocks (original), then joined them with leaving only the line attribute of the join set (Line); or unsetting line and setting fill attributes (Fill); or unsetting line and setting shadow attributes (Shadow). Note that the second is useful to apply a smooth gradient fill to the entire joined area and that in this case the joined area must be drawn before the blocks joined (so that the fill is behind them). In the last example the join only draws the shadow.
+col {
+    cell a {
+        box main: Application\nComponent
+          [text.gap.left=10, imargin=5];
+        box sm1: [width=20, height=main@20%, center=main@left, top=main@20%, fill.color=blue+80];
+        box sm2: [width=20, height=main@20%, center=main@left, top=main@60%, fill.color=blue+80];
+    }
+    space;
+    text: Original;
+}
+space 30;
+col x{
+    copy a as A;
+    join A.main+A.sm1+A.sm2;
+    space;
+    text: Join: Line;
+}
+space 30;
+col y{
+    join A.main+A.sm1+A.sm2 [line.type=, fill.color=green, fill.gradient=down];
+    copy a as A;
+    space;
+    text: Join: Fill;
+}
+space 30;
+col z{
+    copy a as A;
+    join A.main+A.sm1+A.sm2 [line.type=, shadow.offset=5, shadow.color=lgray, shadow.blur=2];
+    space;
+    text: Join: Shadow;
+}

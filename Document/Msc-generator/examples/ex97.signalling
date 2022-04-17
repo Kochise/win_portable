@@ -1,0 +1,37 @@
+##Vertical types
+##vertical brace range bracket pointer 
+##This chart shows all line-like verticals: brace, bracket, range and pointer with some formatting tips and loss indicator.
+C: Client;
+S: Server;
+B: Backend;
+{
+    ->C: Hit;
+    {
+        box C==C: Generate\nrequest;
+        vertical range -- [side=end]:
+            Default\nrange;
+        mark top2;
+        C=>S: Request;
+        note: This must\nbe very fast;
+        mark q_top;
+        box S..B: Server gets info
+        {
+            S>>B: Query;
+            mark middle;
+            S<<B: Response;
+        };
+        vertical brace at S-: \-Default brace;
+        vertical brace at S-: \-Radius=3 brace
+            [line.radius=3];
+        mark bottom;
+        C<=S: Reply;
+    };
+    vertical bracket top2=> at C-:
+        Round, dbl bracket [line.corner=round];
+    vertical bracket at C-: Default bracket;
+    vertical pointer top2->*middle:
+        Lost Pointer [lost.line.type=dashed];
+    vertical pointer: Pointer [line.corner=round];
+};
+vertical range <>: Dotted arrow range
+    [arrow.endtype = empty_sharp];

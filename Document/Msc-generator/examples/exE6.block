@@ -1,0 +1,11 @@
+##Change default block alignment
+##block alignment left right top bottom default diagonal
+##Left-to-right default layout achieved by assigning 'mleft=prev@mright' and 'middle=prev@middle' with a lower priority than attributes specified directly. Top-to-bottom uses 'mtop=prev@mbottom' and 'center=prev@center' - essentially the content of the 'col' style. Setting 'mleft' (or 'left' to exclude margins) in a column setting will have higher priority than the default and will override the 'center=prev@center' and result in diagonal layout.
+box: A;
+box: B;   #follows in a row
+use col;
+box: C;   #follows in a col
+box: D;   #follows in a col
+use mleft=prev@mright;
+box: E;   #follows diagonally
+box: F;   #follows diagonally

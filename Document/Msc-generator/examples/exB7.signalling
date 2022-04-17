@@ -1,0 +1,31 @@
+##Complex example
+##slant angle arrow vertical brace bracket self text pointer loop centerline mark
+##When using 'mark' after a slanted arrow use the 'centerline' attribute to specify which end of the arrow you mean.##After boxes you can just say 'centerline=yes' to mark the middle of the box as opposed to its bottom.
+hscale=auto;
+compress=yes;
+angle = 5;
+a, b, c;
+
+mark top1;
+a->b: Message 1;
+b->c: Message 2;
+mark src2 [centerline=source];
+mark dst2 [centerline=destination];
+box c--c: Processing;
+mark center_box [centerline=yes];
+vspace 5;
+c->c: Msg 3 [side=left];
+mark src3 [centerline=source];
+b<-c: Message 4;
+mark dst3 [offset=+5];
+parallel symbol arc at b 
+    [fill.color=aqua, draw_time=after_default];
+text at b+ +6: exit condition;
+a<-b: Message 5;
+
+vertical pointer dst2>>src3:cause 
+     [line.radius=5, arrow.endType=empty];
+vertical pointer dst3>src2 at b-:repeat 
+     [line.radius=5, arrow.endType=empty];
+vertical range top1->center_box at c+:First part;
+

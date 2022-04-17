@@ -1,0 +1,16 @@
+##Collapsing boxes
+##collapse expand boxes
+##You can hide the details of boxes, by using 'collapsed=yes' or 'collapsed=arrow'. The latter turns the content into a block arrow. These are also available from the GUI. The collapsed box will include a small indicator to show hidden content.
+a, group [collapsed=yes] {
+    b, c, d;
+}, e;
+a->b: Message;
+box b--d: Box {
+    b->c->d: Message;
+};
+d->e: Message;
+d<-e: Message \#2;
+box group--group: Box {
+    b<-c-d: Message \#2;
+};
+a<-b: Message \#2;

@@ -1,0 +1,29 @@
+##Unspecified, external entities
+##unspecified external entities message outside from
+##When an arrow has no source or destination entity specified it appears to come from outside the chart.##If you use the pipe symbol '|' then the unspecified entity is just besides the target.##If you really want to be specific about the location use the 'end after' or 'start before' clauses.
+a: Client;
+b: Server;
+c: Backend;
+->a: Hit;
+a->b: Request;
+b->c: Query;
+c->c: Lookup;
+a<-b<-c: Reply;
+a<->c: Direct Query;
+<-a:Back;
+---;
+a->b-|: Goes to out there;
+|->c-d: Comes from out there;
+->d start before b: 
+    Start further before
+    [arrow.starttype=dot];
+---;
+a->b: Trigger Msg;
+b-> end after b;
+b-> end after b +10;
+b-> end after b +20;
+---;
+b<- start before b;
+b<- start before b +10;
+b<- start before b +20;
+b->a: We got them all;

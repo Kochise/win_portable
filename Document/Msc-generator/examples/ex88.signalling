@@ -1,0 +1,14 @@
+##Activate entities
+##activate deactivate entity line function start stop
+##Use 'activate <entity>' to turn the entity line into a rectangle. You can also use the 'active' attribute of entities to turn this on or off.
+hscale=auto;
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+C=>S: Request to Server;
+activate S;
+S>>B: Internal Query;
+S<<B: Internal Response;
+C<=S: Reply from Server;
+deactivate S;

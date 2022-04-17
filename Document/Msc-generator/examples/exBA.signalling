@@ -1,0 +1,49 @@
+##Complex arrowheads
+##arrow head gvtype type
+##Using the 'gvtype' family of attributes you can specify complex, colored arrowheads following the graphviz syntax. See the doc for more.
+hscale=auto;
+{
+    compress=yes;
+    defstyle arrow [arrow.color=purple];
+    a->b [arrow.gvtype=vee]: normal;
+    b->c [arrow.gvtype=inv]: inv;
+    a->b [arrow.gvtype=sharp]: sharp;
+    b->c [arrow.gvtype=vee]: vee;
+    a->b [arrow.gvtype=crow]: crow;
+    b->c [arrow.gvtype=tee]: tee;
+    a->b [arrow.gvtype=curve]: curve;
+    b->c [arrow.gvtype=icurve]: icurve;
+    a->b [arrow.gvtype=box]: box;
+    b->c [arrow.gvtype=sbox]: sbox;
+    a->b [arrow.gvtype=diamond]: diamond;
+    b->c [arrow.gvtype=sdiamond]: sdiamond;
+    a->b [arrow.gvtype=dot]: dot;
+    b->c [arrow.gvtype=sdot]: sdot;
+    nudge;
+    block a->b [arrow.gvtype=vee]: vee;
+    block b->c [arrow.gvtype=tee]: tee;
+    block a->b [arrow.gvtype=inv]: inv;
+    block b->c [arrow.gvtype=sbox]: sbox;
+    block a->b [arrow.gvtype=diamond]: 
+         gv: diamond;
+    block b->c [arrow.gvtype="xmul=0.5|odot"]:  
+         gv: odot, xmul=0.5;
+};
+
+
+---;
+
+
+defcolor brown=139,69,19;
+a<->b-c [arrow.gvtype=tinyreddotsizenormalbluenormal];
+a<->b-c [arrow.gvtype="smallredlwidth=0.5|osdot|lwidth=1|sizenormalbluenormal"];
+a<-b-c [arrow.gvtype=smallnormalbigredicurveredicurve,
+        arrow.gvstarttype=graytee];
+a<->b [arrow.gvendtype="tiny|color=0,192,0|linesizenormalbrownnormal"];
+join b->c [arrow.size=normal, arrow.gvstarttype="xmul=0.5|tee"]; 
+a->b-c [arrow.size=normal, arrow.gvtype=onormaltee];
+a<->b-c [arrow.gvtype=bluetinynormalgreensmallteeredsizenormaltee];
+a->b-c [arrow.gvendtype=llinegrayllinelgraylline,
+        arrow.gvmidtype="lwidth=3|llinelline",
+        arrow.size=normal];
+a<->b-c [arrow.size=normal, arrow.gvendtype=orsharp];

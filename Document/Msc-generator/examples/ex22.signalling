@@ -1,0 +1,16 @@
+##Box with content
+##box content inside
+##Specify the content of a box between curly-braces. End with a semicolon.
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box C==C: Generate\nrequest;
+C=>S: Request;
+box S..B: Server gets info
+{
+    S>>B: Query;
+    S<<B: Response;
+};
+C<=S: Reply;
+

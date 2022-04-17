@@ -1,0 +1,28 @@
+##Notes and comments
+##note comment
+##Use 'note' to add a balloon referring to a previous element.##Use 'comment' to make a comment at the side of the chart.##The 'note' and 'comment' built-in styles govern how these look.
+defstyle note, comment [text.color=red];
+defstyle note [line.color=red];
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box ..: Server query
+{
+    box C==C: Generate\nrequest;
+    C=>S: Request;
+    note: This must\nbe very fast;
+    box S..B: Server gets info
+    {
+       S>>B: Query;
+       S<<B: Response;
+    };
+    comment:
+       An important part of this
+       process is that it runs
+       entirely inside the Backend
+       infrastructure and hence
+       does not impact the client.;
+    C<=S: Reply;
+};
+

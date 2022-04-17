@@ -1,0 +1,18 @@
+##Symbols
+##ellipsis ellipsys symbol rectangle draw marker shape arc
+##Use 'symbol <type>' to draw onto the chart. <type> can be 'rectangle', 'arc', '...', 'text', 'cross' or 'shape' the latter drawing an arbitrary shape.##Continue with the vertical position: use two markers separated by a dash.##Then specify the horizontal place by using one or two of 'left', 'right', 'center' followed by 'at <entity>+-<offset>'. If you use only one, you can specify 'xsize=<pixels>' attribute.
+source ,middle1, middle2, destination;
+vspace 10;
+source->destination: \plmessage \#1;
+source->destination: \plmessage \#2;
+mark a_top;
+source->destination: \plmessage \#3;
+mark a_bottom [offset=10];
+symbol ... center at source-middle1;
+source->destination: \plmessage \#n;
+symbol rectangle chart.top-chart.bottom left at middle1 -40 right at middle2 +40
+    [fill.color=lgray, line.type=none,
+    draw_time=before_entity_lines];
+symbol arc a_top-a_bottom center at destination
+    [xsize=60, line.color=red, line.width=3,
+    fill.color=none];

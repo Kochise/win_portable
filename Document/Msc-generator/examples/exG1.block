@@ -1,0 +1,35 @@
+##Lines and arrows
+##coordinate arrow line alignment use size cell mark
+##The 'size' attribute sets both height and width to that of the target block or to a given number of pixels.##The 'cell' command creates an invisible block around its content.##The 'space' command inserts the given number of pixels between two blocks.##The '(' syntax allows to specify coordinates for arrows and lines.##You can specify each coordinate by taking 1) a list of blocks; 2) the @ symbol followed by a side or percentage; 3) followed by a pixel offset.##The 'mark' command followed by a percentage or an offset allows adding multiple labels to a line/arrow.##The 'bye' command terminates chart text parsing. You can put anything after - it will be ignored.
+use size=50;
+cell a {
+    box a;
+    below rightof box b;
+    use line.width=0.5;
+    (a@80%, a@top)++(b@right+10,);
+    mark -10 [marker.type=solid, marker.ymul=0.5];
+    (b@right,b@20%)++(, a@top-10);
+    mark -10 [marker.type=solid, marker.ymul=0.5];
+    text: \-(a@top, b@right) [bottom=a@top+33, left=b@right];
+}
+space 50;
+cell b {
+    use size=50;
+    box a;
+    below rightof box b;
+    use line.width=0.5;
+    (a@80%, a@top)..(b@right+5,);
+    (b@right,b@20%)..(, a@top-5);
+    (a@180%, a@top-10)++(b@right+10,);
+    mark -5 [marker.type=solid, marker.ymul=0.5];
+    (b@right+5,b@-80%)++(, a@top-15);
+    mark -5 [marker.type=solid, marker.ymul=0.5];
+    text: \-(a@top-10, b@right+5) [bottom=a@top+23, left=b@right+5];
+}
+bye;
+box A; box B; box C;
+
+(A@middle, A@bottom)->(C@middle, C@bottom) [
+    via=(A@middle, A@bottom+10), 
+    via=(C@middle, C@bottom+10)
+];  

@@ -1,0 +1,22 @@
+##Box styles
+##box styles corner
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box ..: Server query
+    [line.corner=round]
+{
+  C==C: Generate\nrequest
+      [strong, line.corner=note];
+  C=>S: Request;
+  box S..B: Server gets info
+      [color=lgray,
+       line.corner=bevel]
+  {
+    S>>B: Query;
+    S<<B: Response;
+  };
+  C<=S: Reply;
+};
+

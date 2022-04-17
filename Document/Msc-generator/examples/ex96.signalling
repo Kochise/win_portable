@@ -1,0 +1,23 @@
+##Vertical brace, bracket and range
+##vertical brace range bracket
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+{
+    box C==C: Generate\nrequest;
+    {
+        C=>S: Request;
+        note: This must\nbe very fast;
+        box S..B: Server gets info
+        {
+            S>>B: Query;
+            S<<B: Response;
+        };
+        vertical brace at S-: Query;
+        C<=S: Reply;
+    };
+    vertical bracket: Request/Response
+        [line.corner=bevel];
+};
+vertical range: Whole process;

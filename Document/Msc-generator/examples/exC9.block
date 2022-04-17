@@ -1,0 +1,28 @@
+##Arrow styles and routing
+##arrow label mark style routing cross via avoid besides
+##This example shows the use of arrow symbols '->', '=>', '>>' and '>' to govern the line styles and the use of arrowheads, too.##Note that arrows are routed to go around other blocks (see the red arrow). You can use the 'via' attribute to specify which side of certain blocks you want the arrow to go. Using the 'cross' attribute you can make the arrow to go across another block instead of avoiding it. It will, however try to avoid the box inside (see the green arrow). If you want all content to be crossed, use the 'cross_all' attribute (blue arrow).##You can use the 'via', 'cross' and 'cross_all' attributes mixed and multiple times on the same arrow, if needed.##Another way to let an arrow (well, any arrow) cross a block is to mark the block with 'allow_arrows=yes'.##You can add a label to arrows, which will appear around the middle of the arrow. You can also add more labels by specifying the location of the label (0% is its start, 100% is its end, you can go below 0% and above 100% if needed) followed by a label. If you prepend the 'mark' keyword, then a marker is also added. You can use the marker.* attributes to influence how the marker looks.
+box A;
+boxcol Cont: Container
+    [line.corner=round] {
+    box B, C;
+}
+box D;
+A->B<<D;
+A<=>C<D [arrow.endtype=double_empty];
+A<>D [color=red, via=Cont@top]: middle;
+10%: head [color=red];
+mark 90%: tail [color=red];
+A<<>>D [color=green-30, cross=Cont];
+A<>D [color=blue, cross_all=Cont];
+
+below Cont row {
+box AA;
+boxcol Cont2: Container 2
+    [allow_arrows=yes] {
+    box BB, CC;
+}
+box DD;
+AA<>DD [color=red, via=Cont2@bottom, label.pos=below]: label;
+AA<<>>DD [color=green-30, cross=Cont];
+AA<>DD [color=blue, cross_all=Cont2];
+}

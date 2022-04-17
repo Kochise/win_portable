@@ -1,0 +1,21 @@
+##Symbol positioning 2
+##symbol position rectangle arc ... text shape left right center middle z-order above below draw_time
+##Use 'symbol <type>' to draw onto the chart. <type> can be 'rectangle', 'arc', '...', 'text', 'cross' or 'shape' the latter drawing an arbitrary shape.##Continue with the vertical position: use two markers separated by a dash. You can use only one and specify the height with the 'ysize' attribute.##Then specify the horizontal place by using one or two of 'left', 'right', 'center' followed by 'at <entity>'. You can continue by '--', '-', '+', '++' or '+-<offset>' to specify a position left or right of the entity. If you use only one designator, you can specify width using the 'xsize=<pixels>' attribute.##You can use the draw_order attribute to make the symbol be drawn before or after other chart elements.
+a, b, c, d;
+vspace 0;
+activate a, b, c;
+a->b: Message 1
+      goes here;
+mark m1;
+b->c: Message 2
+      goes here;
+mark m2;
+c->d: Messgae 3
+      goes here;
+deactivate a, b, c;
+---: end;
+defstyle symbol [fill.color="yellow,200"];
+symbol rectangle m1-m2 center at a- [xsize=30, draw_time=before_entity_lines];
+symbol rectangle   -m2 center at b  [xsize=30, ysize=30, draw_time=after_entity_lines];
+symbol rectangle m1-   center at c- [xsize=30, ysize=30, draw_time=after_default];
+

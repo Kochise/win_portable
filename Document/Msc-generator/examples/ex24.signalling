@@ -1,0 +1,19 @@
+##Box styling
+##box style strong weak color attribute
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box ..: Server query
+{
+  box C==C: Generate\nrequest [strong];
+  C=>S: Request;
+  box S..B: Server gets info
+      [color=lgray]
+  {
+    S>>B: Query;
+    S<<B: Response;
+  };
+  C<=S: Reply;
+};
+

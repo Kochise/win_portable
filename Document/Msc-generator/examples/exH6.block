@@ -1,0 +1,16 @@
+##Multiple arrow/line labels
+##arrow label line multiple mark
+##If you want more than label for an arrow or line, you can add them after in curly braces. (You can also omit the curly braces, here we have them to limit the scope of the two 'use' commands.)##Use the 'label.orient' attribute to govern from which direction shall the labels be read from.##Then you can specify a percentage or pixel offset (or a combination) to indicate where on the arrow or line you want the label. Using a negative percentage or offset means you count backwards from the end. So -10% is equivalent to 90%. You can go above 100% and below -100%.##Using the 'extend' keyword you can indicate that you want positive percentage or offset to be after the end of the line and negative ones before the start of it. Msc-generator extrapolates the line/arrow with a line (in case it is curvy).##Having the 'mark' keyword will also add a marker at the specified location, the type of which can be selected with 'marker.type' or 'marker.gvtype' same as arrowheads, it defaults to 'marker.gvtype=tick'.
+box a; space 200; box b; 
+a->b {
+    use label.orient=left;
+    use text.color=gray;
+    mark 10%: 10%;
+    mark -30%: -30%;
+    mark -30%+20: -30%+10;
+    mark -30%-20: -30%-10;
+    mark 10%+20: 10%+20;
+    mark 80: 80;
+    mark extend -20%: -20% (extend);
+    mark extend 20%: +20% (extend);
+}

@@ -1,0 +1,15 @@
+##Collapsing entity groups
+##collapse expand entity groups
+##You can hide the content of an entity group by using 'collapsed=yes'. It is also possible from the GUI. Note that some parts of the chart may disappear, these are replaced by a small indicator.
+hscale=auto;
+C: Client;
+SI: Server Infrastructure
+    [collapsed=yes] {
+    S: Server;
+    B: Backend;
+};
+->C: Hit;
+C=>S: Request to Server;
+S>>B: Internal Query;
+S<<B: Internal Response;
+C<=S: Reply from Server;

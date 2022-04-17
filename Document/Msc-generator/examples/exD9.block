@@ -1,0 +1,16 @@
+##Defining shapes
+##shape defshape
+##Defining a shape is possible with the 'defshape' command. Within it you can specify 'S'ections to be filled or line-drawn using 'M'oveto, 'L'ineto, 'C'urveto commands. You can also define a rectangle where any possible content or label will go. See the documentation for details.
+defshape tri {
+    S 2;
+    M 100 0; L 200 100; L 0 100; E;
+    S 0;
+    M 50 50; L 150 50; L 150 100; L 50 100; E;
+    T 50 50 150 100;
+}
+
+*tri [fill.color = lgray] {
+    box A: A;
+    below *oval B: B;
+    *tri C: C [middle=A];
+}

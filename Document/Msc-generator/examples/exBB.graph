@@ -1,0 +1,17 @@
+##Procedures
+##procedure concatenate
+##You can define procedures the same way as in other Msc-generator languages with input parameters (and optional defaults). Use the '~' symbol to concatenate text and variable content and the '\Q()' text escape to insert the value of a variable into a label.
+
+defproc addgroup($group_name, $target, $color=black) {
+    edge [color=$color];
+    A_~$group_name->$target:: \c($color) 1st\n(\Q($group_name));
+    B_~$group_name->$target:: \c($color) 2nd\n(\Q($group_name));
+    C_~$group_name->$target:: \c($color) 3rd\n(\Q($group_name));
+}
+
+graph {
+    composite;
+    replay addgroup(iron, composite);
+    replay addgroup(steel, composite, blue);
+    replay addgroup(gold, composite, yellow);
+};

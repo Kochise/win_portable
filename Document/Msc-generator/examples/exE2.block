@@ -1,0 +1,25 @@
+##Influence arrow route
+##via routing arrow
+##Use the 'via' attribute (multiple times if needed) to specify a block's side, where the arrow shall be routed. The arrow will be as short as possible while fulfilling the 'via' constraints.
+col c1 {
+    row {
+        box A;
+        below box B;
+        box C [top=A];
+    }
+    B->C [via=A@topleft, 
+          line.color=red];
+    use margin=0;
+    text: via A@topleft;
+}
+below 20 col c2 {
+    row {
+        box A;
+        below box B;
+        box C [top=A];
+    }
+    B->C [via=A@right, 
+          line.color=red];
+    use margin=0;
+    text: via A@right;
+}

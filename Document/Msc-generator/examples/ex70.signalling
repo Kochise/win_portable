@@ -1,0 +1,14 @@
+##Entity groups
+##entity groups
+##You can define entity groups by defining new entities after the group entity enclosed in curly braces. You can not add more entities later.
+hscale=auto;
+C: Client;
+SI: Server Infrastructure {
+    S: Server;
+    B: Backend;
+};
+->C: Hit;
+C=>S: Request to Server;
+S>>B: Internal Query;
+S<<B: Internal Response;
+C<=S: Reply from Server;

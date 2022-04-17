@@ -1,0 +1,13 @@
+##Overlap elements
+##overlap parallel layout angle slant arrow degree
+##You can prepend any element with the 'overlap' keyword. For a group of elements, you can use curly braces. This causes the specified element to be ignored when the subsequent elements are laid out - the subsequent element may be drawn on top of the one marked with 'overlap'.##This is similar to the 'parallel' keyword, but using that will still avoid overlaps.
+hscale=1.5;
+angle=10;
+H1: Host 1;
+H2: Host 2;
+overlap {
+    H1->H2: \plSYN;
+    H2->H1: \prACK;
+};
+H2->H1: \prSYN;
+H1->H2: \plACK;

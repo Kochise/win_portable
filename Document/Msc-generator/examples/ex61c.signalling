@@ -1,0 +1,21 @@
+##Redefining vertical styles
+##redefine -- .. == ++ -> => > >> ==> =>> vertical symbol line style
+##Redefine the 'vertical--', 'vertical==', 'vertical++', 'vertical..', 'vertical->', 'vertical=>', 'vertical>>', 'vertical>', 'vertical=>>', 'vertical==>',  styles (called vertical refinement styles) to impact how verticals using these box and arrow symbols look. Redefine the 'vertical', 'vertical_range', 'vertical_brace', 'vertical_pointer' and 'vertical_bracket' styles to govern how the various kinds of verticals look in general. Note that whatever is in the vertical refinement styles will overwrite the settings of the 'vertical' and 'vertical_XXX' styles. Thus you can not set the line style, since the refinement styles overwrite that.
+hscale=auto;
+a--a: very\n\nlong\n\nand\n\ntall\n\nlabel [fill.color=lgray];
+vertical --: -- standard;
+defstyle vertical-- [line.color=red];
+vertical --: -- red;
+defstyle vertical-- [line.color=red, line.type=dash_dotted];
+vertical --: -- red+dashdot;
+
+vertical brace ==: == double line;
+defstyle vertical_brace [line.color=blue];
+vertical brace ==: == blue with double line;
+defstyle emptybox [line.type=long_dashed];
+vertical brace ==: == still with double line;
+defstyle vertical== [line.type=]; #remove line type setting
+vertical brace ==: == now long dashed; #because of 'emptybox'
+vertical brace --: -- still dash-dotted; #because of '--'
+
+

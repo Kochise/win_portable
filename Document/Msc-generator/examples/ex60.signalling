@@ -1,0 +1,22 @@
+##Background
+##background
+##Use the 'background.color', 'background.gradient' and 'background.color2' chart options to set the chart background. Setting the color to 'none' will result in transparent background.
+compress=yes;
+C: Client;
+S: Server;
+B: Backend;
+background.color="blue+90";
+->C: Hit;
+C=>S: Request;
+S>>B: Query;
+S<<B: Response;
+C<=S: Reply;
+background.color=none;
+...:\iSome time elapses;
+background.color="green+90";
+->C: Hit [compress=no];
+C=>S: Request;
+S>>B: Query;
+S<<B: Error [color=red];
+C<=S: Error [color=red];
+

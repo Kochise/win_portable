@@ -1,0 +1,9 @@
+##Coordinates
+##coordinates multiple major alignment modifier
+##Using the '(' syntax you can select arbitrary coordinates to start/end a line or arrow (still in relation to the blocks placed).##The syntax for one of the coordinates is 1) one or more of blocks separated by plus sign: we take the bounding box of these; 2) optional '@<side>' or '@<percent>' to select a position in the horizontal/vertical span of the block(s) (middle if omitted), when '@m' is used the span includes the margins; 3) an optional pixel offset. You can have only a pixel offset, which is then calculated from the top-left corner of the chart (or the parent block's content area if inside a block).##That is, '(A,B)' is a point whose X coordinate is the X coordinate of the center of block 'A', while its Y coordinate is the Y coordinate of the center of 'B'. '(A+B,A+B)' is the centerpoint of the bounding box around 'A' and 'B'.
+box A;
+below rightof +30 box B;
+(A,B) -> (A+10, B@top) [color=red];
+(A+B, A+B) -> (B@m33%, A@33%);
+(A@left-5, A@top) ++ (,B@bottom);
+(A@left-7, A@top) ++ (,B@bottom);

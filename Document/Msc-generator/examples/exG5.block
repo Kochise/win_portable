@@ -1,0 +1,19 @@
+##Nested names
+##nest block name hierarchy
+##When you nest blocks, you can re-use a block name multiple times in different parent blocks. Then you can use hierarchical, dot-separated names to unambiguously refer to other blocks. You do not have to spell out the full name of a block, you can omit the parents common with the place of reference. E.g., when referring to 'A.B.C' in line 8 in the 'middle' attribute of 'A.C' the 'A' part of the name is common and can be omitted. Note also, that there are two 'C->D' arrows, each uses the block in the same scope unambiguously.##Also note that if you use a block name only once, you can use that name without any parents anywhere in the chart, see line 16: 'E' is actually called 'A.E', but Msc-generator finds it unambiguously. 'D', however is ambiguous, so we auto create a box of that name outside 'A'.##When turning 'pedantic' on, unknown blocks are not auto-created, thus in the last line 'C' is not found (ambiguous to 'A.B.C' or 'A.C'), but is not auto-defined, hence causing an error.
+box A: {
+    box B {
+        box C [color=red];
+        box D;
+        C->D;
+        C->A.D [color=green];
+    }
+    box C [middle=B.D];
+    box D, E;
+    C->D;
+    D->B.D [color=blue];
+}
+E->E;
+D->E;
+pedantic=yes;
+C->E;

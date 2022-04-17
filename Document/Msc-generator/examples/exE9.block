@@ -1,0 +1,16 @@
+##Precise block alignment
+##align block percent use col draw_before coordinate
+##Use the 'use col;' command to achieve column layout. This applies the 'col' design to all subsequent blocks. This design adjusts default alignment to be below the previous block horizontally centered. The 'use draw_before=A;' command will apply the 'draw_before=A' attribute to all subsequent blocks and arrows, which will make then be drawn in the background.##You can specify alignment in the percentage of a block's horizontal/vertical span using the @<percent> syntax. 'A@0%' means the top or left of block 'A', 'A@50%' means its middle and 'A@100%' means its bottom/right side. You can go above 100% and below 0%.##Use the '()' syntax to specify arrow coordinates. Omitting one of the coordinates will make it equal to that of the other end of the arrow.
+use col;
+box A;
+box: Aligned to left of A [left=A@0%];
+box: A Bit right [left=A@10%];
+box: Right by a quarter of A [left=A@25%];
+box: Right by a half of A [left=A@50%];
+box: Aligned to right of A [left=A@100%];
+box: Beyond the right of A [left=A@150%];
+
+use draw_before=A;
+(A@left,A)..(,A+300);
+(A@right,A)..(,A+300);
+

@@ -1,0 +1,21 @@
+##Box series to express alternatives
+##box series alternative
+##Supply multiple blocks of content enclosed in curly braces to have a box-series. Add an arrow symbol (with potentially label and attributes) to specify the style of the separator line. Use a semicolon only at the end of the series.
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box C==C: Generate\nrequest;
+C=>S: Request;
+box S--S: Check cache;
+box S--B: Alt\#1: cache miss
+    [color=lgray]
+{
+    S->B: Query;
+    S<-B: Response;
+}
+..: Alt\#2: cache hit
+{
+    S->S: Read\ncache;
+};
+C<=S: Reply;

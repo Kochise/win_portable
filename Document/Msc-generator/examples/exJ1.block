@@ -1,0 +1,27 @@
+##Complex arrow routing
+##arrow routing
+##Below we show a more complicated example, where we want all three arrows to go between blocks 'y' and 'v'. This is complicated, because if we draw the either the black or the arrow first, it will go very close both to 'y' and 'v' and will leave no room for the other arrow (red or black, respectively). So we engineer to draw the red before, but proscribe a larger distance between it and 'y' to leave room for the black arrow. The black arrow is then assigned a 'routing.order' of 1. (Which is larger than the default of 0 and will cause the black arrow to be drawn after the red.) Adding the same distance to the blue arrow will ensure its overlap with the red one (and hence the proper de-overlapping and no crossing).
+cell x {
+    box x, y, v, z;
+    y,z [ymiddle=x@top];
+    top x v;
+   #x->z [routing.order=1];
+    x->z[color=red, distance=y@10];
+   #x->v [color=blue, distance=y@10];
+}
+below cell y {
+    box x, y, v, z;
+    y,z [ymiddle=x@top];
+    top x v;
+   #x->z [routing.order=1];
+    x->z[color=red, distance=y@10];
+    x->v [color=blue, distance=y@10];
+}
+below cell z {
+    box x, y, v, z;
+    y,z [ymiddle=x@top];
+    top x v;
+    x->z [routing.order=1];
+    x->z[color=red, distance=y@10];
+    x->v [color=blue, distance=y@10];
+}

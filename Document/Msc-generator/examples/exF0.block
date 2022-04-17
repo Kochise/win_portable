@@ -1,0 +1,13 @@
+##Precise alignment and margins
+##alignment multiple @ margin imargin
+##You can use more than one block combined with a '+' sign to align to via the 'left', 'right', 'top', 'bottom', 'middle' and 'center' attributes. In that case the bounding box of all the blocks is used. Furthermore, you can use the @ symbol afterwards to select what part of the bounding box to align to. You can use all of its sides, all of its sides with margins, percents, m+percent, etc.##The 'margin' attribute sets the margin on all sides, 'margin.bottom', 'margin.left', etc. attributes impact only one side. The 'imargin' attribute likewise control the "inner margin", which is the spacing between the content of a block and its outline.
+box [imargin=0, margin=0,
+     line.type=none, fill.color=lgray] {
+    box A;
+    below rightof box B;
+}
+box C [middle=A+B, mleft=A+B@100%];
+box CC [top=A+B@-10%, mleft=A+B@m100%];
+box D [middle=A+B, mright=A+B@m0%];
+box E [center=A+B, mtop=A+B@90%];
+box F [center=A+B, mbottom=A+B@mtop];

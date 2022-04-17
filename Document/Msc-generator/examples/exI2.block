@@ -1,0 +1,12 @@
+##Update block attributes
+##update block attribute
+##If you mention a block after its definition, you can change its attributes. Using the 'box', 'row', 'col', 'cell', '*<shape>' keywords actually define a block. If you just type a name without these you mention the block. If the block is not yet defined, it will be auto-defined if 'pedantic' is off, else it is an error.
+a, b [color=red];    //a, b does not yet exist, create them
+box a;               //always defines a block. Now we have 2 blocks named 'a'
+b, c [color=aqua];   //creates 'c', but not b. Only makes 'b' blue
+box BIG {
+    use shape=oval;  //make the default shape the oval
+    c->d;            //'c' already exist (outside BIG), but 'BIG.d' is created oval
+}
+BIG.d [color=green]; //update the color of 'BIG.d'
+BIG.e [color=red];   //error, we cannot create a block with a dot in name

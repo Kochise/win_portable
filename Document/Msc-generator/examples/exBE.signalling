@@ -1,0 +1,16 @@
+##Procedures with default value
+##procedure replay defproc default value
+defproc threeway($e1, $e2, $note="")
+{
+    $e1->$e2: SYN;
+    if $note then {
+        $e1<-*$e2: SYNACK;
+        note [label=$note];
+    } else {
+        $e1<-$e2: SYNACK;
+        $e1->$e2: ACK;
+    };
+};
+
+replay threeway(a, b);
+replay threeway(b, c, "Lost, so we fail.");

@@ -1,0 +1,22 @@
+##Copy blocks with modifications
+##copy modify replace add
+##In this example we define a block ('A') and copy it three times. The first time we name the copy as 'B' and only change one attribute of the outermost block. Note that the running style is not applied to a copy ('use line.color=red;' has no effect on the copy).##The second copy is placed below 'A' and 'B' and is also modified. Inside the curly braces we replace element 'b' (which is a trapezoid in 'A') to something else (a box). We also add a new element (before 'b'). Note that the running style is applied to replaced and added elements (become red line and blue fill).##The third time we use 'move' to move a block to the end (use 'move a before X' to move someplace else), 'update' to update the attributes of content and 'drop' to remove a block form inside the copied object.##You can also use 'update blocks', 'update arrows' or 'update all' to change an attribute for all contained blocks, arrows or both.
+box A: [line.type=double] {
+    use fill.color=red+80;
+    box a: My;
+    *trapezoid b: Love;
+    *oval c: is;
+    below first+b+c *oval d: Ethernal;
+}
+use line.color=red;
+copy A as B [line.type=dashed];
+below A copy A as C {
+    use fill.color=blue+80;
+    replace b box b: Love [text.color=red];
+    add before d box: \bNOT [line.width=2];
+}
+copy A as D {
+    update a: mine;
+    move a;
+    drop d;
+ }

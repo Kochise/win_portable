@@ -1,0 +1,16 @@
+##Parallel blocks
+##parallel multiple besides side-by-side
+##You can use the 'parallel' keyword before an element to allow laying out subsequent elements in parallel of it. Use curly braces to group a set of elements. Note, that Msc-generator wants to avoid overlap, hence 'parallel' have effect only if the subsequent element is fully left or right of the one marked with 'parallel'. 
+hscale = 0.8;
+parallel {
+    a->b: first msg;
+    a<-b: second msg;
+};
+box c--d: This will
+          be besides;
+
+parallel {
+    c->d: third msg;
+    c<-d: fourth msg;
+};
+box a--c: This cannot be besides;

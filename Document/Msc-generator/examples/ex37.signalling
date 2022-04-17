@@ -1,0 +1,26 @@
+##Pipes/Tunnels
+##pipe tunnel nested series
+##Sometimes one would like to express that a set of messages go in a tunnel. Use the 'pipe' keyword instead of 'box' to turn a box into a pipe. You can create pipe series or nest pipes. (For pipe series it is common to add content to only one of the segments. The '[]' symbol to terminate the label of the first segment.) By default pipes are semi-transparent, but you can change this using the 'solid' attribute (0 is fully transparent, 255 is fully opaque).
+C: Client;
+R1: Router;
+R2: Router;
+S: Server;
+
+->C: Hit;
+C==C: Generate\nrequest;
+pipe R1--R2: Tunnel {
+    C=>S: Request;
+};
+S--S: Set up\nmore tunnels;
+pipe R1--R2: Segment 1 []
+     R2==S: Segment 2
+{
+    C<=S:Response;
+};
+pipe R1--R2: Outer
+        [solid=255, color=green] {
+    pipe C++S: \plInner
+            [color=red] {
+        C<=>: \prSome message;
+    };
+};

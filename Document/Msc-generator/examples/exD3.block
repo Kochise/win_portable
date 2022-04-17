@@ -1,0 +1,11 @@
+##Block shapes
+##block shape oval trapezoid box text
+##Using the 'shape' keyword followed by a shape name one can add non-rectangular blocks (which use the 'box' keyword). As a shorthand, you can just type an asterisk and the shape name.##Shapes can be defined by the 'defshape' command, some default shapes are part of the default design library.##The 'text' keyword defines a block without line and fill, just text.##When using two or more blocks for the alignment attriutes (like 'middle=a+b' in this example, the bounding box of the listed blocks is used.
+boxcol Cont: Container 
+    [line.corner=round] {
+    box a: box;
+    *oval b: oval;
+    shape trapezoid tr: trapezoid;
+}
+text t: \-a strange\nshape [middle=a+b];
+t->tr;

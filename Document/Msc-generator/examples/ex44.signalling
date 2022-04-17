@@ -1,0 +1,18 @@
+##Arrows to the same entity
+##arrow self same entity rounded bevel radius horizontal entity space hspace
+##The line.corner and line.radius attributes can be used to govern how a->a arrows look like. Setting just the radius implies 'line.corner=round'.##Use the 'side' attribute to specify which side of the entity you want the arrow.##You can use the hspace command to force entities further apart.
+{
+  A->A: Radius=10 [line.radius=10];
+  A->A: Radius=5 [line.radius=5];
+  A->A: Radius=0 [line.radius=0];
+} {
+  B->B: Bevel [line.corner=bevel];
+  B->B: None [line.corner=none];
+  B->B: Radius=-1 [line.radius=-1];
+} {
+  C->C: default;
+  C->C: left [side=left];
+  C->C: right [side=right];
+};
+hspace A-B 150;
+

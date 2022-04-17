@@ -1,0 +1,23 @@
+##Box tags
+##box series alternative tag page break auto_heading
+##Use the 'tag' attribute for boxes to specify a label for the box. This can be used to express alternatives more succintly.
+C: Client;
+S: Server;
+B: Backend;
+->C: Hit;
+box C==C: Generate\nrequest;
+C=>S: Request;
+box S--S: Check cache;
+box S--B: cache miss
+    [tag="Alt\#1", color=lgray]
+{
+    S->B: Query;
+#break here
+newpage [auto_heading=yes];
+    S<-B: Response;
+}
+..: cache hit [tag="Alt\#2"]
+{
+    S->S: Read\ncache;
+};
+C<=S: Reply;

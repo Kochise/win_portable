@@ -1,0 +1,28 @@
+##Pipe styles
+##tunnel pipe styles solid gradient
+msc=omegapple;
+C: Client;
+R1: Router;
+R2: Router;
+S: Server;
+
+defstyle pipe [fill.color=rose];
+defstyle pipe [fill.gradient=down];
+
+pipe R1--R2: Tunnel [solid=0] {
+    C->S: Request;
+    C<-S: Response;
+};
+pipe R1--R2: Tunnel [solid=0.5] {
+    C->S: Request;
+    C<-S: Response;
+};
+pipe R1--R2: Tunnel [solid=1] {
+    C->S: Request;
+    C<-S: Response;
+};
+pipe R1--R2: Tunnel
+     [solid=1, line.radius=10] {
+    C->S: \plRequest;
+    C<-S: \prResponse;
+};

@@ -1,0 +1,16 @@
+##Parallel blocks
+##parallel besides
+##Specify two blocks enclosed in curly braces with no semicolon in-between to lay them out side-by-side.
+Left_MN, Left_AR, Server, Right_AR, Right_MN;
+{
+    Server->Left_AR: Query;
+    Left_AR->Left_MN: Query;
+    Left_AR<-Left_MN: Response;
+    Server<-Left_AR: Response;
+} {
+    Server->Right_AR: Query;
+    Right_AR->Right_MN: Query;
+    Right_AR<-Right_MN: Response;
+    Server<-Right_AR: Response;
+};
+box Server--Server: Now I have both;

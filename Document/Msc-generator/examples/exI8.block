@@ -1,0 +1,20 @@
+##Arrow de-overlap
+##arrow deoverlap overlap
+##If you define multiple arrows between two blocks normally they would overlap. If you specify multiple arrows from a block using the same port and direction, they will start overlapping. Normally neither of these overlaps are pleasant, so Msc-generator aims to de-overlap arrow ends by shifting them apart a bit. (Arrow ends specified via coordinates, where both the X and Y coordinate uses the same, single block and the arrow endpoint is inside that block, will also get de-overlapped. This is a good way to specify a port for a block, whose shape does not have the port position, you need.)##For each arrow you can specify the 'routing.arrow_distance' attribute to specify how many pixels to set them apart. Msc-generator takes the width of the arrows into account, but not the width of their arrowhead. If you specify zero, then the given arrow will not be modified.
+cell a {
+    box A;
+    col {B, C;}
+    A@e->B,C [routing.arrow_distance = 0];
+}
+
+cell b {
+    box A;
+    col {B, C;}
+    A@e->B,C;
+}
+
+cell c {
+    box A;
+    col {B, C;}
+    A@e->B,C [routing.arrow_distance = 15];
+}

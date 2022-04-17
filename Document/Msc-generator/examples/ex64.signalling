@@ -1,0 +1,35 @@
+##Numbering format, multiple leves
+##numbering format roman arabic multi-level nest
+##You can set the types of numbers via the 'numbering.format' chart option. Use 'roman', 'abc', 'ABC' or '123' for roman numbers, letters or arabic numbers. Besides these tokens you can also append or prepend additional text. This text will be prepended and appended *before* prepending and appending the value of the 'numbering.pre' and 'numbering.post' chart options and will also be prepended and appended when you use the '\N' escape.##You can open a new level of numbering by using 'numbering.append'. The level added will only last until the next closing brace - until then only the last number will be incremented (or set by 'number=<num>').##With 'number.format' you can set the format of multiple levels at once. if you use 'roman', 'abc', 'ABC' or '123' fewer times than the number of levels currently, those will correspond to the last levels.##You can use roman numbers or letters for the 'number' attribute if that format is used currently.
+hscale=auto, numbering=yes;
+
+numbering.format = "roman";
+a->b: Lowercase roman;
+numbering.format = "ABC)";
+a->b: Uppercase letters;
+numbering.format = "123";
+a->b: Arabic numbers;
+{
+  numbering.append = ".123";
+  a->b: Two-level numbers;
+  a->b: Set last number [number=5];
+};
+a->b: Back to one level;
+box a--b: Alternative \#1 {
+  numbering.append = "abc";
+  a->b: Step \N;
+  b->a: Step \N;
+}
+a..b: Alternative \#2 {
+  numbering.append = "abc";
+  a->b: Step \N;
+  b->a: Step \N [number=c];
+  numbering.format = "roman-roman";
+  a->b: Exotic format;
+  numbering.format = "roman";
+  a->b: Only the last number;
+  numbering.format = "123abc";
+  a->b: Back to normal;
+};
+a->b: Back to one level;
+

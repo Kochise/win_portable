@@ -1,0 +1,15 @@
+##Ports and arrow direction markers
+##port compass point sw direction marker shape defshape
+##Each shape may define its own ports (besides the compass points, which are valid for all shapes). For example, the shape 'actor' has one compass point for each hand and leg, plus its head. In the below example, we also use a "direction marker" in addition to the port to explicitly govern the direction the arrow start in or ends from.##The attribute 'label.align' determines where on the arrow the label is placed with 0 being its start and 100 being its end (default is 50). 'label.pos' on the other hand specifies which side of the arrow the label is (default is above).
+*def.actor a [size=40,60];
+box b: [line.type=none, ypos=a];
+above a box c: [line.type=none, xpos=a];
+
+b-10->a@right_hand@ne: \mn(5)right_hand\nfrom north-east 
+                       [label.align=20];
+b-10->a@right_foot@e: \mn(5)right_foot\nfrom east
+                      [label.pos=below];
+c@se->a@head@n: \mn(5)head\nfrom north 
+                [label.align=20];
+c@sw->a@head: \mn(5)head\n(no specific dir) 
+              [label.align=20];

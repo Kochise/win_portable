@@ -1,0 +1,13 @@
+##Update blocks & ports
+##update block port arrow direction marker compass shape align pos col
+##If you mention a block after its definition, you can change its attributes. Using the 'box', 'row', 'col', 'cell', '*<shape>' keywords actually define a block. If you just type a name without these you mention the block. If the block is not yet defined, it will be auto-defined if 'pedantic' is off, else it is an error.##Each shape may define its own ports (besides the compass points, which are valid for all shapes) that can be used to govern where on its perimiter arrows start or end.##In addition to ports you can also specify a direction, which govern, what direction the arrow or line leaves the block. This can be any of the compass points (like 'w' for west or 'ne' for north-east, etc.), degree numbers or 'perp', which is a direction perpendicular to the contour of the block.##'label.pos' specifies on which side of the line the label is displayed. 'label.align' specifies if the label is at the start or end of the arrow/line or in-between.
+use col; 
+arrows use text.size.normal=10;
+a, b, c [width=100, margin=20]; 
+b [width=20];
+use label.pos=right;  
+b@ne->a: ne; 
+b@e->a@ne: e;
+b@170->c: 170 degrees;
+use label.pos=left;  
+b@-20->a: -20\ndegrees [label.align=30];

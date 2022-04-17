@@ -1,0 +1,14 @@
+##Graph edge styles and ports
+##edge styles directional undirected colon label port rank compass
+##Use -- == ++ .. symbols to have directionless edges. (You need to turn 'pedantic' off to be able to mix directed and undirected edges as an Msc-generator extension to graphviz.)##rankdir=LR makes the graph be laid out from left to right, instead of the default from up to down.##You can add labels to nodes with the 'label' attribute, but can also use the double-colon symbol '::'. The single colon symbol ':' can be used in the graphviz language to specify a compass point ('e' for east, 's' for south or 'sw' for southwest, etc.) to dictate the direction the edge leaves the node.##You can also use curly braces to define invisible subgraphs and to define a new scope. You can then add an edge to all members of the subgraph in one go. The scope is useful to have settings take effect only locally.##'rank=same' will make the rank of the nodes mentioned in the scope the same.
+graph {
+    rankdir = LR;
+    a; b;
+    c [label="C and c"];
+    d::D and d;
+    other [color=red];
+    {a, b} -> other -> {c, d};
+    b:sw == d;
+    {rank=same; d->e1;}
+    d->e2;
+};

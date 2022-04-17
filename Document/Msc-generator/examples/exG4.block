@@ -1,0 +1,12 @@
+##Routing lines
+##route line arrow curvy coordinate no label name scope dashed
+##The 'use label="";' makes all subsequent element have the empty label (instead of the block name)##We re-use the block names 'a', 'b', 'c' and 'd' four times inside named (invisible columns). To disambiguate references, hierarchical names can be used, such as 'x.a' or 'v.c'.##You can use the '(' syntax to specify a coordinate. If you omit one of the coordinates, the one on the other side of the line/arrow is used resulting in horizontal/vertial lines.##Use the '++' symbol to create a dashed line. You can use 'defstyle ++ [...];' to redefine the style of '++' lines.##The default routing for lines is 'straight', which does not go around blocks in the way, but just crosses them. If you set 'routing=curvy', the line will route around blocks in the way arrows do, see the red line on the example below.
+use label="";
+col x {box a; box b; box c; box d;}
+col y {box a; box b: B; box c; box d;}
+col v {box a; box b; box c: C; box d;}
+col z {box a; box b; box c; box d;}
+
+(x@left, x.b+x.c@middle) ++ (z@right,);
+(x@left, x.b+x.c@middle) ++ (z@right,) 
+  [color=red, routing=curvy];

@@ -1,0 +1,23 @@
+##Procedures
+##procedure defproc replay
+##You can define procedures with input parameters that can be replayed later.
+defproc adjust_line($color, $width, $weak_width=1) [export=yes] {
+    defstyle arrow, blockarrow, vertical, pipe, box, emptybox, divider, 
+        symbol, indicator, note, vertical_pointer, vertical_range, 
+        vertical_bracket, vertical_brace
+        [line.width=$width, line.color=$color];
+    defstyle box_collapsed, box_collapsed_arrow, entity, entitygroup, 
+        entitygroup_collapsed
+        [line.width=$width, line.color=$color];
+    defstyle box, box_collapsed, emptybox 
+        [tag.line.width=$width, tag.line.color=$color];
+    defstyle entity, entitygroup_collapsed 
+        [vline.width=$width, vline.color=$color];
+    defstyle weak [line.width=$weak_width, vline.width=$weak_width];
+};
+hscale=auto;
+a->b: before;
+replay adjust_line(black, 2);
+b->c: after black and 2;
+replay adjust_line(blue, 3);
+c->d: after blue and 3;

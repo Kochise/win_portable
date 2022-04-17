@@ -1,0 +1,23 @@
+##Copy blocks with deep modifications 
+##copy modify replace add drop update recursive 
+##In this example we define a block ('A') with 3 blocks of various nested depth inside. Then we copy it and make changes to it deeper in the nested hierarchy. To do that one has to replace elements of 'A' with copies of these elements - and during this second copy (lines 13 and 17) one can make modifications to the content of content. For 'b' we update its 'a' oval to blue line and also add a new oval. Note that the running style is different at the point of this addition: the fill.color is no longer pink (as in the original definition due to line 2), and the line is red (due to line 11).##For 'c' we make a recursive update to line and text color of all blocks contained in 'c'. You can use 'recursive update blocks/arrows/all'. But can also omit recursive to update only the elements on a single level.
+box A: [line.type=double] {
+    use fill.color=red+80;
+    box a: 1;
+    box b: 2 { *oval a, b;}
+    below a+b box c: 3 { 
+        use margin.top=0;
+        boxcol A { *oval c, d;}
+        boxcol B { *oval e, f;}
+    }
+}
+use line.color=red;
+copy A as B {
+    replace b copy A.b as b {
+        update a [text.color=blue];
+        add *oval: c;
+    }
+    replace c below a+b copy A.c as c {
+        recursive update blocks [line.color=gray, text.color=gray];
+    }
+};

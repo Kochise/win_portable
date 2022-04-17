@@ -1,0 +1,17 @@
+##Numbering and parallel blocks
+##parallel besides numbering no number
+##Use 'numbering' chart option to turn on auto numbering. Skip an arrow or box from being numbered by the 'number=no' attribute. Specify a given number with 'number=5', for example.
+numbering=yes;
+Left_MN, Left_AR, Server, Right_AR, Right_MN;
+{
+    Server->Left_AR: Query;
+    Left_AR->Left_MN: Query;
+    Left_AR<-Left_MN: Response;
+    Server<-Left_AR: Response;
+} {
+    Server->Right_AR: Query;
+    Right_AR->Right_MN: Query;
+    Right_AR<-Right_MN: Response;
+    Server<-Right_AR: Response;
+};
+Server--Server: Now I have both [number=no];

@@ -1,0 +1,38 @@
+##Parallel layout algorithms
+##parallel layout one_by_one_merge 
+hscale=0.5;
+a, c, b[pos=-0.7], d[pos=-0.7], e, f[pos=-0.7];
+
+{
+    defstyle arrow [color=red];
+    a->b; a->b; a->b; a->b;
+    a->b; a->b; a->b; a->b;
+} {
+    c->e [color=blue];
+    [layout=one_by_one_merge] {
+        defstyle arrow [color=green+20];
+        c->e; c->e; c->e;
+    } {
+        defstyle arrow [color=green-20];
+        d->f; d->f; d->f;
+    };
+    c->e[color=blue];
+};
+vertical brace: \-Layout is\n\bone_by_one_merge;
+---;
+{
+    defstyle arrow [color=red];
+    a->b; a->b; a->b; a->b;
+    a->b; a->b; a->b; a->b;
+} {
+    c->e [color=blue];
+    [layout=one_by_one] {
+        defstyle arrow [color=green+20];
+        c->e; c->e; c->e;
+    } {
+        defstyle arrow [color=green-20];
+        d->f; d->f; d->f;
+    };
+    c->e[color=blue];
+};
+vertical brace: \-Layout is\n\bone_by_one;

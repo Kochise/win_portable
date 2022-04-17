@@ -1,0 +1,14 @@
+##Block alignment details
+##block alignment left right top bottom
+##Use the 'top', 'bottom', 'left' and 'right' attributes to align a block's side to the side of another block.##The 'use col;' line applies the 'col' style to the running style, which makes blocks be laid out to-to-bottom instead of left-to-right. Left-to-right default layout achieved by assigning 'mleft=prev@mright' with a lower priority than attributes specified directly. ('mleft' is the same as 'left' but with the margin added.) If you remove the 'left' attribute from 'N', only the 'left' of 'O' remains assigned and 'N' will attach to 'O' and not to 'M'.
+use col; 
+row {
+    box A: Alpha;
+    box B: Beta;
+    box C: Gamma;
+}
+row {
+    box M [left=A];
+    box N [left=];
+    box O [right=C];
+}

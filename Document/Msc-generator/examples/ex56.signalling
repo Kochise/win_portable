@@ -1,0 +1,23 @@
+##Specifying colors
+##color lighter darker transparent opaque
+##You can use <color>+-<num> to have a color with different darkness; <color>,<num> to govern transparency. Use ++<color_spec> to overlay (mix) a color on an existing color. This can be made part of a style and then applying the style mixes the existing colors.
+a, b;
+--: Overall [fill.color = blue+50,
+             fill.gradient=up] {
+    a--b [fill.color=red]:     solid;
+    a--b [fill.color=red,128]: transparent;
+    a--b [fill.color=red-50]:  dark red;
+    a--b [fill.color=red+50]:  light red;
+    a--b [fill.color=none]:    none;
+    defstyle arrow [line.color=red, 
+                    arrow.color=green, 
+                    text.color=blue];
+    a->b: Unmodified;    
+    a->b: Yellow overcast [color=++yellow,150];
+
+    defstyle overcast [line.color=++yellow,150, 
+                       arrow.color=++yellow,150, 
+                       text.color=++yellow,150];
+    a->b: Yellow overcast [overcast];
+};
+
