@@ -1,8 +1,8 @@
 ﻿======================================================================
 
-                        JoyToKey Version 6.5
+                        JoyToKey Version 6.8
 
-                      Copyright(C) 1999-2021, JTK
+                      Copyright(C) 1999-2022, JTK
 
 ======================================================================
 
@@ -10,14 +10,14 @@
 1. OVERVIEW
 -----------
 This software enables you to control various windows applications (e.g.
-a web browser, games on the web, Photoshop shortcuts, Microsoft office,
-and even Windows itself) by using your favorite joystick.  Whenever you
-press joystick buttons and sticks, JoyToKey will convert the input into
-keyboard strokes and mouse movements so that the target application works
-as you pre-configured!
+a web browser, games without controller support, Photoshop shortcuts, 
+Microsoft office, and even Windows itself) by using your favorite joystick.  
+Whenever you press joystick buttons and sticks, JoyToKey will convert the 
+input into keyboard strokes and mouse movements so that the target 
+application can be controlled as you pre-configured!
 
-NOTE: On Windows Vista, 7, 8 or 10, you may not be able to control some
-applications due to enhanced security control.  If you encounter such
+NOTE: Due to enhanced security control in recent Windows versions, you 
+may not be able to control some applications.  If you encounter such
 problems, try to launch JoyToKey.exe by opening right-click popup menu
 and selecting "Run As Administrator".
 
@@ -96,6 +96,9 @@ System requirement:
      check game controller properties.  Please make sure your joystick
      is recognized and sticks and buttons are calibrated properly.
 
+* For general questions, please refer to FAQ page at 
+  https://joytokey.net/en/faq
+
 
 5. TIPS
 -------
@@ -121,10 +124,25 @@ System requirement:
   terminate JoyToKey and simply rename or copy the file (*.cfg) in Explorer.
 
 
-6. ABOUT JOYTOKEY
+6. SPECIAL THANKS
 -----------------
 
-Firstly, thank you very much for downloading and using JoyToKey.
+* JoyToKey can be used for free to help people with disabilities, and there 
+  are many people and organizations who provided useful feedbacks and TIPs 
+  to improve and utilize JoyToKey for that purpose.
+
+  For example, you can find more details from the following sites.
+  https://dekimouse.org/wp/
+  https://www.oneswitch.org.uk/
+
+* Special thanks to Peter (Silent_ip), who created a new high-resolution icon
+  for JoyToKey!
+
+
+7. ABOUT JOYTOKEY
+-----------------
+
+Firstly, thank you for downloading and using JoyToKey.
 
 JoyToKey is a shareware, but you can freely try it until you like it without
 much limitation in functionality.  After trial, if you find it useful, you
@@ -134,9 +152,9 @@ https://joytokey.net/en/purchase
 
 (or simply go to JoyToKey menu "Help" -> "Purchase License Key")
 
-The price is $7.00, and it can be paid through share*it! or PayPal.
-
-You can install and use JoyToKey on multiple PCs for your personal use.
+The price is $7.00, and it can be paid through PayPal or MyCommerce(share-it).
+With one license purchase, you can install and use JoyToKey on multiple PCs 
+as long as it's for your personal use.
 
 Your contribution is greatly appreciated and will be used to continue the
 development of JoyToKey.
@@ -162,4 +180,3 @@ JTK
 
 Homepage: https://joytokey.net/
 E-Mail: JoyToKey@jtksoft.net
-
