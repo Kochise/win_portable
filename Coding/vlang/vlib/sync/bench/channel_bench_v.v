@@ -7,7 +7,6 @@
 // main thread where the total sum is compare to the expected value.
 import time
 import os
-import sync
 
 fn do_rec(ch chan int, resch chan i64, n int) {
 	mut sum := i64(0)
@@ -33,7 +32,7 @@ fn main() {
 	nrec := os.args[2].int()
 	buflen := os.args[3].int()
 	nobj := os.args[4].int()
-	stopwatch := time.new_stopwatch({})
+	stopwatch := time.new_stopwatch()
 	ch := chan int{cap: buflen}
 	resch := chan i64{}
 	mut no := nobj

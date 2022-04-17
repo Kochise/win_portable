@@ -1,25 +1,20 @@
 module util
 
+import term
 import strings
 
+// Possibility is a simple pair of a string, with a similarity coefficient
+// determined by the editing distance to a wanted value.
 struct Possibility {
 	value  string
 	svalue string
 mut:
-	similarity f32
+	similarity f32 // Note: 0.0 for *equal* strings.
 }
 
-fn compare_by_similarity(a &Possibility, b &Possibility) int {
-	if a.similarity < b.similarity {
-		return -1
-	}
-	if a.similarity > b.similarity {
-		return 1
-	}
-	return 0
-}
-
-//
+// Suggestion is set of known possibilities and a wanted string.
+// It has helper methods for making educated guesses based on the possibilities,
+// on which of them match best the wanted string.
 struct Suggestion {
 mut:
 	known   []Possibility
@@ -27,6 +22,7 @@ mut:
 	swanted string
 }
 
+// new_suggestion creates a new Suggestion, given a wanted value and a list of possibilities.
 pub fn new_suggestion(wanted string, possibilities []string) Suggestion {
 	mut s := Suggestion{
 		wanted: wanted
@@ -37,6 +33,8 @@ pub fn new_suggestion(wanted string, possibilities []string) Suggestion {
 	return s
 }
 
+// add adds the `val` to the list of known possibilities of the suggestion.
+// It calculates the similarity metric towards the wanted value.
 pub fn (mut s Suggestion) add(val string) {
 	if val in [s.wanted, s.swanted] {
 		return
@@ -45,39 +43,46 @@ pub fn (mut s Suggestion) add(val string) {
 	if sval in [s.wanted, s.swanted] {
 		return
 	}
+	// round to 3 decimal places to avoid float comparison issues
+	similarity := f32(int(strings.dice_coefficient(s.swanted, sval) * 1000)) / 1000
 	s.known << Possibility{
 		value: val
 		svalue: sval
-		similarity: strings.dice_coefficient(s.swanted, sval)
+		similarity: similarity
 	}
 }
 
+// add adds all of the `many` to the list of known possibilities of the suggestion
 pub fn (mut s Suggestion) add_many(many []string) {
 	for x in many {
 		s.add(x)
 	}
 }
 
+// sort sorts the list of known possibilities, based on their similarity metric.
+// Equal strings will be first, followed by less similar ones, very distinct ones will be last.
 pub fn (mut s Suggestion) sort() {
-	s.known.sort_with_compare(compare_by_similarity)
+	s.known.sort(a.similarity < b.similarity)
 }
 
+// say produces a final suggestion message, based on the preset `wanted` and
+// `possibilities` fields, accumulated in the Suggestion.
 pub fn (s Suggestion) say(msg string) string {
 	mut res := msg
 	mut found := false
 	if s.known.len > 0 {
 		top_posibility := s.known.last()
-		if top_posibility.similarity > 0.10 {
+		if top_posibility.similarity > 0.5 {
 			val := top_posibility.value
 			if !val.starts_with('[]') {
-				res += '.\nDid you mean `$val`?'
+				res += '.\nDid you mean `${highlight_suggestion(val)}`?'
 				found = true
 			}
 		}
 	}
 	if !found {
 		if s.known.len > 0 {
-			mut values := s.known.map('`$it.svalue`')
+			mut values := s.known.map('`${highlight_suggestion(it.svalue)}`')
 			values.sort()
 			if values.len == 1 {
 				res += '.\n1 possibility: ${values[0]}.'
@@ -90,6 +95,8 @@ pub fn (s Suggestion) say(msg string) string {
 	return res
 }
 
+// short_module_name returns a shortened version of the fully qualified `name`,
+// i.e. `xyz.def.abc.symname` -> `abc.symname`
 pub fn short_module_name(name string) string {
 	if !name.contains('.') {
 		return name
@@ -101,4 +108,11 @@ pub fn short_module_name(name string) string {
 	mname := vals[vals.len - 2]
 	symname := vals[vals.len - 1]
 	return '${mname}.$symname'
+}
+
+// highlight_suggestion returns a colorfull/highlighted version of `message`,
+// but only if the standart error output allows for color messages, otherwise
+// the plain message will be returned.
+pub fn highlight_suggestion(message string) string {
+	return term.ecolorize(term.bright_blue, message)
 }

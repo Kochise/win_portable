@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 // Package md5 implements the MD5 hash algorithm as defined in RFC 1321.
@@ -35,11 +35,11 @@ mut:
 
 fn (mut d Digest) reset() {
 	d.s = []u32{len: (4)}
-	d.x = []byte{len: (block_size)}
-	d.s[0] = u32(init0)
-	d.s[1] = u32(init1)
-	d.s[2] = u32(init2)
-	d.s[3] = u32(init3)
+	d.x = []byte{len: md5.block_size}
+	d.s[0] = u32(md5.init0)
+	d.s[1] = u32(md5.init1)
+	d.s[2] = u32(md5.init2)
+	d.s[3] = u32(md5.init3)
 	d.nx = 0
 	d.len = 0
 }
@@ -51,15 +51,16 @@ pub fn new() &Digest {
 	return d
 }
 
-pub fn (mut d Digest) write(p_ []byte) int {
+// write writes the contents of `p_` to the internal hash representation.
+pub fn (mut d Digest) write(p_ []byte) ?int {
 	unsafe {
 		mut p := p_
 		nn := p.len
 		d.len += u64(nn)
 		if d.nx > 0 {
-			n := copy(d.x[d.nx..], p)
+			n := copy(mut d.x[d.nx..], p)
 			d.nx += n
-			if d.nx == block_size {
+			if d.nx == md5.block_size {
 				block(mut d, d.x)
 				d.nx = 0
 			}
@@ -69,8 +70,8 @@ pub fn (mut d Digest) write(p_ []byte) int {
 				p = p[n..]
 			}
 		}
-		if p.len >= block_size {
-			n := p.len & ~(block_size - 1)
+		if p.len >= md5.block_size {
+			n := p.len & ~(md5.block_size - 1)
 			block(mut d, p[..n])
 			if n >= p.len {
 				p = []
@@ -79,12 +80,13 @@ pub fn (mut d Digest) write(p_ []byte) int {
 			}
 		}
 		if p.len > 0 {
-			d.nx = copy(d.x, p)
+			d.nx = copy(mut d.x, p)
 		}
 		return nn
 	}
 }
 
+// sum returns the md5 sum of the bytes in `b_in`.
 pub fn (d &Digest) sum(b_in []byte) []byte {
 	// Make a copy of d so that caller can keep writing and summing.
 	mut d0 := *d
@@ -96,6 +98,7 @@ pub fn (d &Digest) sum(b_in []byte) []byte {
 	return b_out
 }
 
+// checksum returns the byte checksum of the `Digest`.
 pub fn (mut d Digest) checksum() []byte {
 	// Append 0x80 to the end of the message and then append zeros
 	// until the length is a multiple of 56 bytes. Finally append
@@ -107,13 +110,13 @@ pub fn (mut d Digest) checksum() []byte {
 	tmp[0] = 0x80
 	pad := ((55 - d.len) % 64) // calculate number of padding bytes
 	binary.little_endian_put_u64(mut tmp[1 + pad..], d.len << 3) // append length in bits
-	d.write(tmp[..1 + pad + 8])
+	d.write(tmp[..1 + pad + 8]) or { panic(err) }
 	// The previous write ensures that a whole number of
 	// blocks (i.e. a multiple of 64 bytes) have been hashed.
 	if d.nx != 0 {
 		panic('d.nx != 0')
 	}
-	mut digest := []byte{len: (size)}
+	mut digest := []byte{len: md5.size}
 	binary.little_endian_put_u32(mut digest, d.s[0])
 	binary.little_endian_put_u32(mut digest[4..], d.s[1])
 	binary.little_endian_put_u32(mut digest[8..], d.s[2])
@@ -124,7 +127,7 @@ pub fn (mut d Digest) checksum() []byte {
 // sum returns the MD5 checksum of the data.
 pub fn sum(data []byte) []byte {
 	mut d := new()
-	d.write(data)
+	d.write(data) or { panic(err) }
 	return d.checksum()
 }
 
@@ -134,14 +137,18 @@ fn block(mut dig Digest, p []byte) {
 	block_generic(mut dig, p)
 }
 
+// size returns the size of the checksum in bytes.
 pub fn (d &Digest) size() int {
-	return size
+	return md5.size
 }
 
+// block_size returns the block size of the checksum in bytes.
 pub fn (d &Digest) block_size() int {
-	return block_size
+	return md5.block_size
 }
 
+// hexhash returns a hexadecimal MD5 hash sum `string` of `s`.
+// Example: assert md5.hexhash('V') == '5206560a306a2e085a437fd258eb57ce'
 pub fn hexhash(s string) string {
 	return sum(s.bytes()).hex()
 }

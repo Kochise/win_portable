@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module pref
@@ -10,8 +10,8 @@ pub const (
 	default_module_path = os.vmodules_dir()
 )
 
-pub fn new_preferences() Preferences {
-	mut p := Preferences{}
+pub fn new_preferences() &Preferences {
+	mut p := &Preferences{}
 	p.fill_with_defaults()
 	return p
 }
@@ -37,6 +37,9 @@ fn (mut p Preferences) expand_lookup_paths() {
 }
 
 pub fn (mut p Preferences) fill_with_defaults() {
+	if p.arch == ._auto {
+		p.arch = get_host_arch()
+	}
 	p.expand_lookup_paths()
 	rpath := os.real_path(p.path)
 	if p.out_name == '' {
@@ -48,6 +51,29 @@ pub fn (mut p Preferences) fill_with_defaults() {
 		}
 		target_dir := if os.is_dir(rpath) { rpath } else { os.dir(rpath) }
 		p.out_name = os.join_path(target_dir, base)
+		// Do *NOT* be tempted to generate binaries in the current work folder,
+		// when -o is not given by default, like Go, Clang, GCC etc do.
+		//
+		// These compilers also are frequently used with an external build system,
+		// in part because of that shortcoming, to ensure that they work in a
+		// predictable work folder/environment.
+		//
+		// In comparison, with V, building an executable by default places it
+		// next to its source code, so that it can be used directly with
+		// functions like `os.resource_abs_path()` and `os.executable()` to
+		// locate resources relative to it. That enables running examples like
+		// this:
+		// `./v run examples/flappylearning/`
+		// instead of:
+		// `./v -o examples/flappylearning/flappylearning run examples/flappylearning/`
+		// This topic comes up periodically from time to time on Discord, and
+		// many CI breakages already happened, when someone decides to make V
+		// behave in this aspect similarly to the dumb behaviour of other
+		// compilers.
+		//
+		// If you do decide to break it, please *at the very least*, test it
+		// extensively, and make a PR about it, instead of commiting directly
+		// and breaking the CI, VC, and users doing `v up`.
 		if rpath == '$p.vroot/cmd/v' && os.is_dir('vlib/compiler') {
 			// Building V? Use v2, since we can't overwrite a running
 			// executable on Windows + the precompiled V is more
@@ -66,11 +92,12 @@ pub fn (mut p Preferences) fill_with_defaults() {
 	//
 	p.try_to_use_tcc_by_default()
 	if p.ccompiler == '' {
-		p.ccompiler = default_c_compiler()
+		p.default_c_compiler()
 	}
 	p.find_cc_if_cross_compiling()
 	p.ccompiler_type = cc_from_string(p.ccompiler)
-	p.is_test = p.path.ends_with('_test.v')
+	p.is_test = p.path.ends_with('_test.v') || p.path.ends_with('_test.vv')
+		|| p.path.all_before_last('.v').all_before_last('.').ends_with('_test')
 	p.is_vsh = p.path.ends_with('.vsh')
 	p.is_script = p.is_vsh || p.path.ends_with('.v') || p.path.ends_with('.vv')
 	if p.third_party_option == '' {
@@ -83,15 +110,16 @@ pub fn (mut p Preferences) fill_with_defaults() {
 	}
 	// Prepare the cache manager. All options that can affect the generated cached .c files
 	// should go into res.cache_manager.vopts, which is used as a salt for the cache hash.
+	vhash := @VHASH
 	p.cache_manager = vcache.new_cache_manager([
-		@VHASH,
-		/* ensure that different v versions use separate build artefacts */
+		vhash,
+		// ensure that different v versions use separate build artefacts
 		'$p.backend | $p.os | $p.ccompiler | $p.is_prod | $p.sanitize',
 		p.cflags.trim_space(),
 		p.third_party_option.trim_space(),
-		'$p.compile_defines_all',
-		'$p.compile_defines',
-		'$p.lookup_path',
+		p.compile_defines_all.str(),
+		p.compile_defines.str(),
+		p.lookup_path.str(),
 	])
 	// eprintln('prefs.cache_manager: $p')
 	// disable use_cache for specific cases:
@@ -106,19 +134,41 @@ pub fn (mut p Preferences) fill_with_defaults() {
 		// eprintln('-usecache and -shared flags are not compatible')
 		p.use_cache = false
 	}
+	if p.bare_builtin_dir == '' && p.os == .wasm32 {
+		p.bare_builtin_dir = os.join_path(p.vroot, 'vlib', 'builtin', 'wasm_bare')
+	} else if p.bare_builtin_dir == '' {
+		p.bare_builtin_dir = os.join_path(p.vroot, 'vlib', 'builtin', 'linux_bare')
+	}
+
+	$if prealloc {
+		if !p.no_parallel {
+			eprintln('disabling parallel cgen, since V was built with -prealloc')
+		}
+		p.no_parallel = true
+	}
 }
+
+pub const cc_to_windows = 'x86_64-w64-mingw32-gcc'
+
+pub const cc_to_linux = 'clang'
 
 fn (mut p Preferences) find_cc_if_cross_compiling() {
 	if p.os == .windows {
 		$if !windows {
-			// Cross compiling to Windows
-			p.ccompiler = 'x86_64-w64-mingw32-gcc'
+			// Allow for explicit overrides like `v -showcc -cc msvc -os windows file.v`,
+			// so that the flag passing can be debugged on other OSes too, not only
+			// on windows (building will stop later, when -showcc already could display all
+			// options).
+			if p.ccompiler != 'msvc' {
+				// Cross compiling to Windows
+				p.ccompiler = vcross_compiler_name(pref.cc_to_windows)
+			}
 		}
 	}
 	if p.os == .linux {
 		$if !linux {
 			// Cross compiling to Linux
-			p.ccompiler = 'clang'
+			p.ccompiler = vcross_compiler_name(pref.cc_to_linux)
 		}
 	}
 }
@@ -153,16 +203,35 @@ pub fn default_tcc_compiler() string {
 	return ''
 }
 
-pub fn default_c_compiler() string {
+pub fn (mut p Preferences) default_c_compiler() {
 	// fast_clang := '/usr/local/Cellar/llvm/8.0.0/bin/clang'
 	// if os.exists(fast_clang) {
 	// return fast_clang
 	// }
 	// TODO fix $if after 'string'
 	$if windows {
-		return 'gcc'
+		p.ccompiler = 'gcc'
+		return
 	}
-	return 'cc'
+	if p.os == .ios {
+		$if !ios {
+			ios_sdk := if p.is_ios_simulator { 'iphonesimulator' } else { 'iphoneos' }
+			ios_sdk_path_res := os.execute_or_exit('xcrun --sdk $ios_sdk --show-sdk-path')
+			mut isysroot := ios_sdk_path_res.output.replace('\n', '')
+			arch := if p.is_ios_simulator {
+				'-arch x86_64 -arch arm64'
+			} else {
+				'-arch armv7 -arch armv7s -arch arm64'
+			}
+			// On macOS, /usr/bin/cc is a hardlink/wrapper for xcrun. clang on darwin hosts
+			// will automatically change the build target based off of the selected sdk, making xcrun -sdk iphoneos pointless
+			p.ccompiler = '/usr/bin/cc'
+			p.cflags = '-isysroot $isysroot $arch' + p.cflags
+			return
+		}
+	}
+	p.ccompiler = 'cc'
+	return
 }
 
 pub fn vexe_path() string {
@@ -170,7 +239,27 @@ pub fn vexe_path() string {
 	if vexe != '' {
 		return vexe
 	}
-	real_vexe_path := os.real_path(os.executable())
+	myexe := os.executable()
+	mut real_vexe_path := myexe
+	for {
+		$if tinyc {
+			$if x32 {
+				// TODO: investigate why exactly tcc32 segfaults on os.real_path here,
+				// and remove this cludge.
+				break
+			}
+		}
+		real_vexe_path = os.real_path(real_vexe_path)
+		break
+	}
 	os.setenv('VEXE', real_vexe_path, true)
 	return real_vexe_path
+}
+
+pub fn vcross_compiler_name(vccname_default string) string {
+	vccname := os.getenv('VCROSS_COMPILER_NAME')
+	if vccname != '' {
+		return vccname
+	}
+	return vccname_default
 }

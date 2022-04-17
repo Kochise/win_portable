@@ -79,6 +79,19 @@ fn test_if_flag_gets_set_with_abbrev() {
 		abbrev: 'f'
 	})
 	cmd.parse(['command', '-f', 'value'])
+}
+
+fn test_if_flag_gets_set_with_long_arg() {
+	mut cmd := cli.Command{
+		name: 'command'
+		execute: flag_should_be_set
+		posix_mode: true
+	}
+	cmd.add_flag(cli.Flag{
+		flag: .string
+		name: 'flag'
+		abbrev: 'f'
+	})
 	cmd.parse(['command', '--flag', 'value'])
 }
 
@@ -101,6 +114,23 @@ fn test_if_multiple_flags_get_set() {
 	cmd.add_flag(cli.Flag{
 		flag: .int
 		name: 'value'
+	})
+	cmd.parse(['command', '-flag', 'value', '-value', '42'])
+}
+
+fn test_if_required_flags_get_set() {
+	mut cmd := cli.Command{
+		name: 'command'
+		execute: flag_should_have_value_of_42
+	}
+	cmd.add_flag(cli.Flag{
+		flag: .string
+		name: 'flag'
+	})
+	cmd.add_flag(cli.Flag{
+		flag: .int
+		name: 'value'
+		required: true
 	})
 	cmd.parse(['command', '-flag', 'value', '-value', '42'])
 }

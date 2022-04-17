@@ -16,10 +16,10 @@ pub mut:
 
 fn (e Employee) to_json() string {
 	mut mp := map[string]json2.Any{}
-	mp['name'] = e.name
-	mp['age'] = e.age
-	mp['salary'] = e.salary
-	mp['title'] = int(e.title)
+	mp['name'] = json2.Any(e.name)
+	mp['age'] = json2.Any(e.age)
+	mp['salary'] = json2.Any(e.salary)
+	mp['title'] = json2.Any(int(e.title))
 	/*
 	$for field in Employee.fields {
 		d := e.$(field.name)
@@ -36,10 +36,10 @@ fn (e Employee) to_json() string {
 
 fn (mut e Employee) from_json(any json2.Any) {
 	mp := any.as_map()
-	e.name = mp['name'].str()
-	e.age = mp['age'].int()
-	e.salary = mp['salary'].f32()
-	e.title = JobTitle(mp['title'].int())
+	e.name = mp['name'] or { json2.Any('') }.str()
+	e.age = mp['age'] or { json2.Any(0) }.int()
+	e.salary = mp['salary'] or { json2.Any(0) }.f32()
+	e.title = JobTitle(mp['title'] or { json2.Any(0) }.int())
 }
 
 fn test_simple() {
@@ -48,8 +48,9 @@ fn test_simple() {
 	eprintln('Employee x: $s')
 	assert s == '{"name":"Peter","age":28,"salary":95000.5,"title":2}'
 	y := json2.decode<Employee>(s) or {
+		println(err)
 		assert false
-		Employee{}
+		return
 	}
 	eprintln('Employee y: $y')
 	assert y.name == 'Peter'
@@ -62,32 +63,32 @@ fn test_fast_raw_decode() {
 	s := '{"name":"Peter","age":28,"salary":95000.5,"title":2}'
 	o := json2.fast_raw_decode(s) or {
 		assert false
-		json2.Any{}
+		json2.Any(json2.null)
 	}
 	str := o.str()
 	assert str == '{"name":"Peter","age":"28","salary":"95000.5","title":"2"}'
 }
 
 fn test_character_unescape() {
-	// Need to test `\r`, `\b`, `\f` ??
-	message := '{
-		"newline":"new\\nline",
-		"tab":"\\ttab",
-		"backslash": "back\\\\slash",
-		"quotes": "\\"quotes\\"",
-		"slash":"\/dev\/null"
-	}'
+	message := r'{
+	"newline": "new\nline",
+	"tab": "\ttab",
+	"backslash": "back\\slash",
+	"quotes": "\"quotes\"",
+	"slash":"\/dev\/null"
+}'
 	mut obj := json2.raw_decode(message) or {
+		println(err)
 		assert false
-		json2.Any{}
+		return
 	}
 	lines := obj.as_map()
 	eprintln('$lines')
-	assert lines['newline'].str() == 'new\nline'
-	assert lines['tab'].str() == '\ttab'
-	assert lines['backslash'].str() == 'back\\slash'
-	assert lines['quotes'].str() == '\"quotes\"'
-	assert lines['slash'].str() == '/dev/null'
+	assert lines['newline'] or { 0 }.str() == 'new\nline'
+	assert lines['tab'] or { 0 }.str() == '\ttab'
+	assert lines['backslash'] or { 0 }.str() == 'back\\slash'
+	assert lines['quotes'] or { 0 }.str() == '"quotes"'
+	assert lines['slash'] or { 0 }.str() == '/dev/null'
 }
 
 struct User2 {
@@ -108,8 +109,8 @@ fn (mut u User2) from_json(an json2.Any) {
 			}
 		}
 		match field.name {
-			'age' { u.age = mp[js_field_name].int() }
-			'nums' { u.nums = mp[js_field_name].arr().map(it.int()) }
+			'age' { u.age = mp[js_field_name] or { 0 }.int() }
+			'nums' { u.nums = mp[js_field_name] or { 0 }.arr().map(it.int()) }
 			else {}
 		}
 	}
@@ -123,7 +124,7 @@ pub mut:
 	last_name     string [json: lastName]
 	is_registered bool   [json: IsRegistered]
 	typ           int    [json: 'type']
-	pets          string [raw; json: 'pet_animals']
+	pets          string [json: 'pet_animals'; raw]
 }
 
 fn (mut u User) from_json(an json2.Any) {
@@ -139,12 +140,12 @@ fn (mut u User) from_json(an json2.Any) {
 			}
 		}
 		match field.name {
-			'age' { u.age = mp[js_field_name].int() }
-			'nums' { u.nums = mp[js_field_name].arr().map(it.int()) }
-			'last_name' { u.last_name = mp[js_field_name].str() }
-			'is_registered' { u.is_registered = mp[js_field_name].bool() }
-			'typ' { u.typ = mp[js_field_name].int() }
-			'pets' { u.pets = mp[js_field_name].str() }
+			'age' { u.age = mp[js_field_name] or { 0 }.int() }
+			'nums' { u.nums = mp[js_field_name] or { 0 }.arr().map(it.int()) }
+			'last_name' { u.last_name = mp[js_field_name] or { 0 }.str() }
+			'is_registered' { u.is_registered = mp[js_field_name] or { 0 }.bool() }
+			'typ' { u.typ = mp[js_field_name] or { 0 }.int() }
+			'pets' { u.pets = mp[js_field_name] or { 0 }.str() }
 			else {}
 		}
 	}
@@ -156,22 +157,25 @@ fn (u User) to_json() string {
 		'age': json2.Any(u.age)
 	}
 	mp['nums'] = u.nums.map(json2.Any(it))
-	mp['lastName'] = u.last_name
-	mp['IsRegistered'] = u.is_registered
-	mp['type'] = u.typ
-	mp['pet_animals'] = u.pets
+	mp['lastName'] = json2.Any(u.last_name)
+	mp['IsRegistered'] = json2.Any(u.is_registered)
+	mp['type'] = json2.Any(u.typ)
+	mp['pet_animals'] = json2.Any(u.pets)
 	return mp.str()
 }
 
 fn test_parse_user() {
 	s := '{"age": 10, "nums": [1,2,3], "type": 1, "lastName": "Johnson", "IsRegistered": true, "pet_animals": {"name": "Bob", "animal": "Dog"}}'
 	u2 := json2.decode<User2>(s) or {
+		println(err)
 		assert false
-		User2{}
+		return
 	}
+	println(u2)
 	u := json2.decode<User>(s) or {
+		println(err)
 		assert false
-		User{}
+		return
 	}
 	assert u.age == 10
 	assert u.last_name == 'Johnson'
@@ -208,8 +212,8 @@ fn (mut c Color) from_json(an json2.Any) {
 	mp := an.as_map()
 	$for field in Color.fields {
 		match field.name {
-			'space' { c.space = mp[field.name].str() }
-			'point' { c.point = mp[field.name].str() }
+			'space' { c.space = mp[field.name] or { 0 }.str() }
+			'point' { c.point = mp[field.name] or { 0 }.str() }
 			else {}
 		}
 	}
@@ -249,14 +253,15 @@ fn test_struct_in_struct() {
 fn test_encode_map() {
 	expected := '{"one":1,"two":2,"three":3,"four":4}'
 	numbers := {
-		'one': json2.Any(1)
-		'two': json2.Any(2)
+		'one':   json2.Any(1)
+		'two':   json2.Any(2)
 		'three': json2.Any(3)
-		'four': json2.Any(4)
+		'four':  json2.Any(4)
 	}
 	out := numbers.str()
 	assert out == expected
 }
+
 /*
 fn test_parse_map() {
 	expected := {

@@ -11,7 +11,7 @@ pub const (
 )
 
 // The live reloader code is implemented here.
-// NB: new_live_reload_info will be called by generated C code inside main()
+// Note: new_live_reload_info will be called by generated C code inside main()
 pub fn new_live_reload_info(original string, vexe string, vopts string, live_fn_mutex voidptr, live_linkfn live.FNLinkLiveSymbols) &live.LiveReloadInfo {
 	file_base := os.file_name(original).replace('.v', '')
 	so_dir := os.cache_dir()
@@ -34,7 +34,7 @@ pub fn new_live_reload_info(original string, vexe string, vopts string, live_fn_
 	}
 }
 
-// NB: start_reloader will be called by generated code inside main(), to start
+// Note: start_reloader will be called by generated code inside main(), to start
 // the hot code reloader thread. start_reloader is executed in the context of
 // the original main thread.
 pub fn start_reloader(mut r live.LiveReloadInfo) {
@@ -56,7 +56,7 @@ fn elog(r &live.LiveReloadInfo, s string) {
 }
 
 fn compile_and_reload_shared_lib(mut r live.LiveReloadInfo) ?bool {
-	sw := time.new_stopwatch({})
+	sw := time.new_stopwatch()
 	new_lib_path := compile_lib(mut r) or { return error('errors while compiling $r.original') }
 	elog(r, '> compile_and_reload_shared_lib compiled: $new_lib_path')
 	load_lib(mut r, new_lib_path)
@@ -66,13 +66,10 @@ fn compile_and_reload_shared_lib(mut r live.LiveReloadInfo) ?bool {
 
 fn compile_lib(mut r live.LiveReloadInfo) ?string {
 	new_lib_path, new_lib_path_with_extension := current_shared_library_path(mut r)
-	cmd := '$r.vexe $r.vopts -o $new_lib_path $r.original'
+	cmd := '${os.quoted_path(r.vexe)} $r.vopts -o ${os.quoted_path(new_lib_path)} ${os.quoted_path(r.original)}'
 	elog(r, '>       compilation cmd: $cmd')
-	cwatch := time.new_stopwatch({})
-	recompilation_result := os.exec(cmd) or {
-		eprintln('recompilation failed')
-		return none
-	}
+	cwatch := time.new_stopwatch()
+	recompilation_result := os.execute(cmd)
 	elog(r, 'compilation took: ${cwatch.elapsed().milliseconds()}ms')
 	if recompilation_result.exit_code != 0 {
 		eprintln('recompilation error:')
@@ -127,10 +124,10 @@ fn protected_load_lib(mut r live.LiveReloadInfo, new_lib_path string) {
 	elog(r, '> load_lib OK, new live_lib: $r.live_lib')
 	// removing the .so file from the filesystem after dlopen-ing
 	// it is safe, since it will still be mapped in memory
-	os.rm(new_lib_path)
+	os.rm(new_lib_path) or {}
 }
 
-// NB: r.reloader() is executed in a new, independent thread
+// Note: r.reloader() is executed in a new, independent thread
 fn reloader(mut r live.LiveReloadInfo) {
 	//	elog(r,'reloader, r: $r')
 	mut last_ts := os.file_last_mod_unix(r.original)
@@ -160,7 +157,7 @@ fn reloader(mut r live.LiveReloadInfo) {
 			}
 		}
 		if r.recheck_period_ms > 0 {
-			time.sleep_ms(r.recheck_period_ms)
+			time.sleep(r.recheck_period_ms * time.millisecond)
 		}
 	}
 }

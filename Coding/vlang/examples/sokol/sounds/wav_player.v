@@ -48,16 +48,16 @@ fn audio_player_callback(buffer &f32, num_frames int, num_channels int, mut p Pl
 		p.finished = true
 		return
 	}
-	unsafe {C.memcpy(buffer, &p.samples[p.pos], nsamples * int(sizeof(f32)))}
+	unsafe { vmemcpy(buffer, &p.samples[p.pos], nsamples * int(sizeof(f32))) }
 	p.pos += nsamples
 }
 
 fn (mut p Player) init() {
-	audio.setup({
+	audio.setup(
 		num_channels: 2
 		stream_userdata_cb: audio_player_callback
 		user_data: p
-	})
+	)
 }
 
 fn (mut p Player) stop() {
@@ -72,7 +72,7 @@ fn (mut p Player) play_wav_file(fpath string) ? {
 	p.samples << samples
 	p.finished = false
 	for !p.finished {
-		time.sleep_ms(16)
+		time.sleep(16 * time.millisecond)
 	}
 	p.free()
 }
@@ -88,7 +88,7 @@ fn (mut p Player) free() {
 // http://www.lightlink.com/tjweber/StripWav/WAVE.html
 // http://www.lightlink.com/tjweber/StripWav/Canon.html
 // https://tools.ietf.org/html/draft-ema-vpim-wav-00
-// NB: > The chunks MAY appear in any order except that the Format chunk
+// Note: > The chunks MAY appear in any order except that the Format chunk
 // > MUST be placed before the Sound data chunk (but not necessarily
 // > contiguous to the Sound data chunk).
 struct RIFFHeader {
@@ -104,15 +104,15 @@ struct RIFFChunkHeader {
 }
 
 struct RIFFFormat {
-	format_tag            u16 // PCM = 1; Values other than 1 indicate some form of compression.
-	nchannels             u16 // Nc ; 1 = mono ; 2 = stereo
-	sample_rate           u32 // F
-	avg_bytes_per_second  u32 // F * M*Nc
-	nblock_align          u16 // M*Nc
-	bits_per_sample       u16 // 8 * M
-	cbsize                u16 // Size of the extension: 22
-	valid_bits_per_sample u16 // at most 8*M
-	channel_mask          u32 // Speaker position mask
+	format_tag            u16      // PCM = 1; Values other than 1 indicate some form of compression.
+	nchannels             u16      // Nc ; 1 = mono ; 2 = stereo
+	sample_rate           u32      // F
+	avg_bytes_per_second  u32      // F * M*Nc
+	nblock_align          u16      // M*Nc
+	bits_per_sample       u16      // 8 * M
+	cbsize                u16      // Size of the extension: 22
+	valid_bits_per_sample u16      // at most 8*M
+	channel_mask          u32      // Speaker position mask
 	sub_format            [16]byte // GUID
 }
 
@@ -120,9 +120,9 @@ fn read_wav_file_samples(fpath string) ?[]f32 {
 	mut res := []f32{}
 	// eprintln('> read_wav_file_samples: $fpath -------------------------------------------------')
 	mut bytes := os.read_bytes(fpath) ?
-	mut pbytes := byteptr(bytes.data)
+	mut pbytes := &byte(bytes.data)
 	mut offset := u32(0)
-	rh := &RIFFHeader(pbytes)
+	rh := unsafe { &RIFFHeader(pbytes) }
 	// eprintln('rh: $rh')
 	if rh.riff != [byte(`R`), `I`, `F`, `F`]! {
 		return error('WAV should start with `RIFF`')
@@ -140,7 +140,7 @@ fn read_wav_file_samples(fpath string) ?[]f32 {
 			break
 		}
 		//
-		ch := &RIFFChunkHeader(unsafe {pbytes + offset})
+		ch := unsafe { &RIFFChunkHeader(pbytes + offset) }
 		offset += 8 + ch.chunk_size
 		// eprintln('ch: $ch')
 		// eprintln('p: $pbytes | offset: $offset | bytes.len: $bytes.len')
@@ -155,7 +155,7 @@ fn read_wav_file_samples(fpath string) ?[]f32 {
 		//
 		if ch.chunk_type == [byte(`f`), `m`, `t`, ` `]! {
 			// eprintln('`fmt ` chunk')
-			rf = &RIFFFormat(&ch.chunk_data)
+			rf = unsafe { &RIFFFormat(&ch.chunk_data) }
 			// eprintln('fmt riff format: $rf')
 			if rf.format_tag != 1 {
 				return error('only PCM encoded WAVs are supported')
@@ -175,20 +175,20 @@ fn read_wav_file_samples(fpath string) ?[]f32 {
 			}
 			// eprintln('`fmt ` chunk: $rf\n`data` chunk: $ch')
 			mut doffset := 0
-			mut dp := byteptr(&ch.chunk_data)
+			mut dp := unsafe { &byte(&ch.chunk_data) }
 			for doffset < ch.chunk_size {
 				for c := 0; c < rf.nchannels; c++ {
 					mut x := f32(0.0)
 					mut step := 0
-					ppos := unsafe {dp + doffset}
+					ppos := unsafe { dp + doffset }
 					if rf.bits_per_sample == 8 {
-						d8 := byteptr(ppos)
+						d8 := unsafe { &byte(ppos) }
 						x = (f32(*d8) - 128) / 128.0
 						step = 1
 						doffset++
 					}
 					if rf.bits_per_sample == 16 {
-						d16 := &i16(ppos)
+						d16 := unsafe { &i16(ppos) }
 						x = f32(*d16) / 32768.0
 						step = 2
 					}

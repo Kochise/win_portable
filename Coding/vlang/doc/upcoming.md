@@ -74,37 +74,37 @@ different capabilities:
 | structured data types     |     +     |   +   |     +    |          |
 
 ### Strengths
-#### default
+**default**
 - very fast
 - unlimited access from different coroutines
 - easy to handle
 
-#### `mut`
+**`mut`**
 - very fast
 - easy to handle
 
-#### `shared`
+**`shared`**
 - concurrent access from different coroutines
 - data type may be complex structure
 - sophisticated access possible (several statements within one `lock`
   block)
 
-#### `atomic`
+**`atomic`**
 - concurrent access from different coroutines
 - reasonably fast
 
 ### Weaknesses
-#### default
+**default**
 - read only
 
-#### `mut`
+**`mut`**
 - access only from one coroutine at a time
 
-#### `shared`
+**`shared`**
 - lock/unlock are slow
 - moderately difficult to handle (needs `lock` block)
 
-#### `atomic`
+**`atomic`**
 - limited to single (max. 64 bit) integers (and pointers)
 - only a small set of predefined operations possible
 - very difficult to handle correctly
@@ -131,12 +131,12 @@ fn i(atomic x u64) {...}
 a := St{...}
 f(a)
 
-mut b := &St{...} // reference since transferred to coroutine
+mut b := St{...}
 f(b)
 go g(mut b)
 // `b` should not be accessed here any more
 
-shared c := &St{...}
+shared c := St{...}
 h(shared c)
 
 atomic d &u64
@@ -146,7 +146,7 @@ i(atomic d)
 Inside a `lock c {...}` block `c` behaves like a `mut`,
 inside an `rlock c {...}` block like an immutable:
 ```v ignore
-shared c := &St{...}
+shared c := St{...}
 lock c {
     g(mut c)
     f(c)
@@ -166,14 +166,14 @@ block. However in simple and obvious cases the necessary lock/unlock
 can be generated automatically for `array`/`map` operations:
 
 ```v ignore
-shared a []int{...}
+shared a := []int{cap: 5}
 go h2(shared a)
 a << 3
 // keep in mind that `h2()` could change `a` between these statements
 a << 4
 x := a[1] // not necessarily `4`
 
-shared b map[string]int
+shared b := map[string]int{}
 go h3(shared b)
 b['apple'] = 3
 c['plume'] = 7
@@ -191,3 +191,5 @@ are sometimes surprising. Each statement should be seen as a single
 transaction that is unrelated to the previous or following
 statement. Therefore - but also for performance reasons - it's often
 better to group consecutive coherent statements in an explicit `lock` block.
+
+### Channels

@@ -1,6 +1,6 @@
 <div align="center">
 <p>
-    <img width="80" src="https://raw.githubusercontent.com/donnisnoni95/v-logo/master/dist/v-logo.svg?sanitize=true">
+    <img width="80" src="https://raw.githubusercontent.com/vlang/v-logo/master/dist/v-logo.svg?sanitize=true">
 </p>
 <h1>The V Programming Language</h1>
 
@@ -26,21 +26,22 @@
 ## Key Features of V
 
 - Simplicity: the language can be learned in less than an hour
-- Fast compilation: ≈80k loc/s with a Clang backend,
-    ≈1 million loc/s with x64 and tcc backends *(Intel i5-7500, SSD, no optimization)*
+- Fast compilation: ≈110k loc/s with a Clang backend,
+    ≈1 million loc/s with native and tcc backends *(Intel i5-7500, SSD, no optimization)* ([demo video](https://www.youtube.com/watch?v=pvP6wmcl_Sc))
 - Easy to develop: V compiles itself in less than a second
-- Performance: as fast as C (V's main backend compiles to human readable C)
+- Performance: as fast as C (V's main backend compiles to human-readable C)
 - Safety: no null, no globals, no undefined behavior, immutability by default
 - C to V translation
 - Hot code reloading
-- [Innovative memory management](https://vlang.io/#memory)
+- [Innovative memory management](https://vlang.io/#memory) ([demo video](https://www.youtube.com/watch?v=gmB8ea8uLsM))
 - [Cross-platform UI library](https://github.com/vlang/ui)
 - Built-in graphics library
-- Easy cross compilation
+- Easy cross-compilation
 - REPL
 - [Built-in ORM](https://github.com/vlang/v/blob/master/doc/docs.md#orm)
 - [Built-in web framework](https://github.com/vlang/v/blob/master/vlib/vweb/README.md)
 - C and JavaScript backends
+- Great for writing low-level software ([Vinix OS](https://github.com/vlang/vinix))
 
 ## Stability guarantee and future changes
 
@@ -52,29 +53,46 @@ There still may be minor syntax changes before the 1.0 release, but they will be
 automatically via `vfmt`, as has been done in the past.
 
 The V core APIs (primarily the `os` module) will still have minor changes until
-they are stabilized in 2020. Of course the APIs will grow after that, but without breaking
+they are stabilized in V 1.0. Of course the APIs will grow after that, but without breaking
 existing code.
 
 Unlike many other languages, V is not going to be always changing, with new features
 being introduced and old features modified. It is always going to be a small and simple
 language, very similar to the way it is right now.
 
-## Installing V from source
+## Installing V - from source *(preferred method)*
 
-### Linux, macOS, Windows, *BSD, Solaris, WSL, Android, Raspbian
+### Linux, macOS, Windows, *BSD, Solaris, WSL, Android, etc.
 
+Usually installing V is quite simple if you have an environment that already has a 
+functional `git` installation. 
+
+* *(* ***PLEASE NOTE:*** *If you run into any trouble or you have a different operating
+system or Linux distribution that doesn't install or work immediately, please see 
+[Installation Issues](https://github.com/vlang/v/discussions/categories/installation-issues)
+and search for your OS and problem. If you can't find your problem, please add it to an
+existing discussion if one exists for your OS, or create a new one if a main discussion
+doesn't yet exist for your OS.)*
+
+
+To get started, simply try to execute the following in your terminal/shell:
 ```bash
 git clone https://github.com/vlang/v
 cd v
 make
+# HINT: Using Windows?: run make.bat in the cmd.exe shell
 ```
 
-That's it! Now you have a V executable at `[path to V repo]/v`.
+That should be it and you should find your V executable at `[path to V repo]/v`.
 `[path to V repo]` can be anywhere.
 
-(On Windows `make` means running `make.bat`, so make sure you use `cmd.exe`)
+(As in the hint above, on Windows `make` means running `make.bat`, so make sure you use
+the `cmd.exe` terminal.)
 
 Now you can try `./v run examples/hello_world.v` (`v.exe` on Windows).
+
+* *Trouble? Please see the note above and link to
+[Installation Issues](https://github.com/vlang/v/discussions/categories/installation-issues) for help.*
 
 V is constantly being updated. To update V, simply run:
 
@@ -111,7 +129,7 @@ sudo ./v symlink
 ```
 
 On Windows, start a new shell with administrative privileges, for
-example by <kbd>Windows Key</kbd>, then type `cmd.exe`, right click on its menu
+example by <kbd>Windows Key</kbd>, then type `cmd.exe`, right-click on its menu
 entry, and choose `Run as administrator`. In the new administrative
 shell, cd to the path, where you have compiled v.exe, then type:
 
@@ -124,7 +142,7 @@ Please restart your shell/editor after that, so that it can pick
 the new PATH variable.
 
 NB: there is no need to run `v symlink` more than once - v will
-continue to be available, even after `v up`, restarts and so on.
+continue to be available, even after `v up`, restarts, and so on.
 You only need to run it again, if you decide to move the V repo
 folder somewhere else.
 
@@ -137,7 +155,6 @@ git clone https://github.com/vlang/v
 cd v
 docker build -t vlang .
 docker run --rm -it vlang:latest
-v
 ```
 
 ### Docker with Alpine/musl
@@ -147,7 +164,6 @@ git clone https://github.com/vlang/v
 cd v
 docker build -t vlang --file=Dockerfile.alpine .
 docker run --rm -it vlang:latest
-/usr/local/v/v
 ```
 
 </details>
@@ -175,7 +191,7 @@ cd examples
 v hello_world.v && ./hello_world    # or simply
 v run hello_world.v                 # this builds the program and runs it right away
 
-v word_counter.v && ./word_counter cinderella.txt
+v run word_counter/word_counter.v word_counter/cinderella.txt
 v run news_fetcher.v
 v run tetris/tetris.v
 ```
@@ -185,7 +201,9 @@ v run tetris/tetris.v
 NB: In order to build Tetris or 2048 (or anything else using `sokol` or  `gg` graphics modules)
 on some Linux systems, you need to install `libxi-dev` and `libxcursor-dev` .
 
-If you plan to use the http package, you also need to install OpenSSL on non-Windows systems.
+## V net.http, net.websocket, `v install`
+If you plan to use the net.http module, or the net.websocket module, you also need to install
+OpenSSL on non-Windows systems:
 
 ```bash
 macOS:
@@ -244,14 +262,35 @@ Hello from V.js
 ```
 -->
 
+## Android graphical apps
+
+With V's `vab` tool, building V UI and graphical apps for Android can become as easy as:
+
+```
+./vab /path/to/v/examples/2048
+```
+
+[https://github.com/vlang/vab](https://github.com/vlang/vab).
+
+<img src="https://user-images.githubusercontent.com/768942/107622846-c13f3900-6c58-11eb-8a66-55db12979b73.png">
+
 ## Developing web applications
 
-Check out the [Building a simple web blog](https://github.com/vlang/v/blob/master/tutorials/building-a-simple-web-blog-with-vweb.md)
+Check out the [Building a simple web blog](https://github.com/vlang/v/blob/master/tutorials/building_a_simple_web_blog_with_vweb/README.md)
 tutorial and Gitly, a light and fast alternative to GitHub/GitLab:
 
 https://github.com/vlang/gitly
 
 <img src="https://user-images.githubusercontent.com/687996/85933714-b195fe80-b8da-11ea-9ddd-09cadc2103e4.png">
+
+## Vinix, an OS/kernel written in V
+
+V is great for writing low-level software like drivers and kernels.
+Vinix is an OS/kernel that already runs bash, GCC, V, and nano.
+
+https://github.com/vlang/vinix
+
+<img src="https://github.com/vlang/vinix/raw/main/screenshot.png?raw=true">
 
 ## Troubleshooting
 

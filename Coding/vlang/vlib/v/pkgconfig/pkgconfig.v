@@ -10,11 +10,14 @@ const (
 		'/usr/local/lib/pkgconfig',
 		'/usr/local/share/pkgconfig',
 		'/usr/lib/x86_64-linux-gnu/pkgconfig',
+		'/usr/lib/aarch64-linux-gnu/pkgconfig',
 		'/usr/lib64/pkgconfig',
 		'/usr/lib/pkgconfig',
 		'/usr/share/pkgconfig',
+		'/opt/homebrew/lib/pkgconfig', // Brew on macOS
+		'/usr/local/libdata/pkgconfig', // FreeBSD
 	]
-	version       = '0.3.0'
+	version       = '0.3.2'
 )
 
 pub struct Options {
@@ -136,20 +139,26 @@ fn (mut pc PkgConfig) parse(file string) bool {
 }
 
 fn (mut pc PkgConfig) resolve(pkgname string) ?string {
-	if pc.paths.len == 0 {
-		pc.paths << '.'
-	}
-	for path in pc.paths {
-		file := '$path/${pkgname}.pc'
-		if os.exists(file) {
-			return file
+	if pkgname.ends_with('.pc') {
+		if os.exists(pkgname) {
+			return pkgname
+		}
+	} else {
+		if pc.paths.len == 0 {
+			pc.paths << '.'
+		}
+		for path in pc.paths {
+			file := '$path/${pkgname}.pc'
+			if os.exists(file) {
+				return file
+			}
 		}
 	}
 	return error('Cannot find "$pkgname" pkgconfig file')
 }
 
 pub fn atleast(v string) bool {
-	v0 := semver.from(version) or { return false }
+	v0 := semver.from(pkgconfig.version) or { return false }
 	v1 := semver.from(v) or { return false }
 	return v0.gt(v1)
 }
@@ -201,8 +210,8 @@ fn (mut pc PkgConfig) load_require(dep string) ? {
 	if !pcdep.parse(depfile) {
 		return error('required file "$depfile" could not be parsed')
 	}
-	pcdep.load_requires() or { return error(err) }
-	pc.extend(pcdep)
+	pcdep.load_requires() ?
+	pc.extend(pcdep) ?
 }
 
 fn (mut pc PkgConfig) add_path(path string) {
@@ -217,7 +226,7 @@ fn (mut pc PkgConfig) add_path(path string) {
 
 fn (mut pc PkgConfig) load_paths() {
 	if pc.options.use_default_paths {
-		for path in default_paths {
+		for path in pkgconfig.default_paths {
 			pc.add_path(path)
 		}
 	}
@@ -239,7 +248,7 @@ pub fn load(pkgname string, options Options) ?&PkgConfig {
 		options: options
 	}
 	pc.load_paths()
-	file := pc.resolve(pkgname) or { return error(err) }
+	file := pc.resolve(pkgname) or { return err }
 	if !pc.parse(file) {
 		return error('file "$file" could not be parsed')
 	}

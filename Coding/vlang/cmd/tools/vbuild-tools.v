@@ -4,14 +4,14 @@ import os
 import testing
 import v.util
 
-// NB: tools like vdoc are compiled in their own subfolder
+// Note: tools like vdoc are compiled in their own subfolder
 // => cmd/tools/vdoc/vdoc.exe
 // Usually, they have several top level .v files in the subfolder,
 // that cannot be compiled separately, but instead, the whole folder,
 // should be compiled (v folder).
 // To implement that, these folders are initially skipped, then added
 // as a whole *after the testing.prepare_test_session call*.
-const tools_in_subfolders = ['vdoc', 'vvet']
+const tools_in_subfolders = ['vdoc', 'vvet', 'vast']
 
 // non_packaged_tools are tools that should not be packaged with
 // prebuild versions of V, to keep the size smaller.
@@ -23,8 +23,8 @@ fn main() {
 	args_string := os.args[1..].join(' ')
 	vexe := os.getenv('VEXE')
 	vroot := os.dir(vexe)
-	os.chdir(vroot)
-	folder := 'cmd/tools'
+	os.chdir(vroot) ?
+	folder := os.join_path('cmd', 'tools')
 	tfolder := os.join_path(vroot, 'cmd', 'tools')
 	main_label := 'Building $folder ...'
 	finish_label := 'building $folder'
@@ -39,6 +39,8 @@ fn main() {
 	for stool in tools_in_subfolders {
 		session.add(os.join_path(tfolder, stool))
 	}
+	// eprintln('> session.files: $session.files')
+	// eprintln('> session.skip_files: $session.skip_files')
 	session.test()
 	eprintln(session.benchmark.total_message(finish_label))
 	if session.failed {
@@ -54,10 +56,21 @@ fn main() {
 		}
 		//
 		tpath := os.join_path(session.vtmp_dir, texe)
-		if tname in tools_in_subfolders {
-			os.mv_by_cp(tpath, os.join_path(tfolder, tname, texe))
+		if texe.ends_with('_builder') || texe.ends_with('_builder.exe') {
+			os.mv_by_cp(tpath, os.join_path(tfolder, 'builders', texe)) or { panic(err) }
 			continue
 		}
-		os.mv_by_cp(tpath, os.join_path(tfolder, texe))
+		if tname in tools_in_subfolders {
+			os.mv_by_cp(tpath, os.join_path(tfolder, tname, texe)) or { panic(err) }
+			continue
+		}
+		target_path := os.join_path(tfolder, texe)
+		os.mv_by_cp(tpath, target_path) or {
+			emsg := err.msg()
+			if !emsg.contains('vbuild-tools') && !emsg.contains('vtest-all') {
+				eprintln('error while moving $tpath to $target_path: $emsg')
+			}
+			continue
+		}
 	}
 }

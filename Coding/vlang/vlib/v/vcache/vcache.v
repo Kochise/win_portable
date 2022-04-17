@@ -8,7 +8,7 @@ import hash
 // Most filesystems can not handle performantly such folders, and slow down.
 // The first level will contain a max of 256 folders, named from 00/ to ff/.
 // Each of them will contain many entries, but hopefully < 1000.
-// NB: using a hash here, makes the cache storage immune to special
+// Note: using a hash here, makes the cache storage immune to special
 // characters in the keys, like quotes, spaces and so on.
 // Cleanup of the cache is simple: just delete the $VCACHE folder.
 // The cache tree will look like this:
@@ -30,8 +30,8 @@ pub:
 	basepath       string
 	original_vopts string
 pub mut:
-	vopts          string
-	k2cpath        map[string]string // key -> filesystem cache path for the object
+	vopts   string
+	k2cpath map[string]string // key -> filesystem cache path for the object
 }
 
 pub fn new_cache_manager(opts []string) CacheManager {
@@ -39,14 +39,20 @@ pub fn new_cache_manager(opts []string) CacheManager {
 	if vcache_basepath == '' {
 		vcache_basepath = os.join_path(os.vmodules_dir(), 'cache')
 	}
+	dlog(@FN, 'vcache_basepath: $vcache_basepath | opts:\n     $opts')
 	if !os.is_dir(vcache_basepath) {
-		os.mkdir_all(vcache_basepath)
+		os.mkdir_all(vcache_basepath) or { panic(err) }
+		dlog(@FN, 'created folder:\n    $vcache_basepath')
+	}
+	readme_file := os.join_path(vcache_basepath, 'README.md')
+	if !os.is_file(readme_file) {
 		readme_content := 'This folder contains cached build artifacts from the V build system.
 		|You can safely delete it, if it is getting too large.
 		|It will be recreated the next time you compile something with V.
 		|You can change its location with the VCACHE environment variable.
 		'.strip_margin()
-		os.write_file(os.join_path(vcache_basepath, 'README.md'), readme_content)
+		os.write_file(readme_file, readme_content) or { panic(err) }
+		dlog(@FN, 'created readme_file:\n    $readme_file')
 	}
 	original_vopts := opts.join('|')
 	return CacheManager{
@@ -57,14 +63,15 @@ pub fn new_cache_manager(opts []string) CacheManager {
 }
 
 // set_temporary_options can be used to add temporary options to the hash salt
-// NB: these can be changed easily with another .set_temporary_options call
+// Note: these can be changed easily with another .set_temporary_options call
 // without affecting the .original_vopts
 pub fn (mut cm CacheManager) set_temporary_options(new_opts []string) {
 	cm.vopts = cm.original_vopts + '#' + new_opts.join('|')
+	dlog(@FN, 'cm.vopts:\n     $cm.vopts')
 }
 
 pub fn (mut cm CacheManager) key2cpath(key string) string {
-	mut cpath := cm.k2cpath[key]
+	mut cpath := cm.k2cpath[key] or { '' }
 	if cpath == '' {
 		hk := cm.vopts + key
 		a := hash.sum64_string(hk, 5).hex_full()
@@ -74,20 +81,28 @@ pub fn (mut cm CacheManager) key2cpath(key string) string {
 		cprefix_folder := os.join_path(cm.basepath, prefix)
 		cpath = os.join_path(cprefix_folder, khash)
 		if !os.is_dir(cprefix_folder) {
-			os.mkdir_all(cprefix_folder)
-			os.chmod(cprefix_folder, 0o777)
+			os.mkdir_all(cprefix_folder) or { panic(err) }
+			os.chmod(cprefix_folder, 0o777) or { panic(err) }
 		}
+		dlog(@FN, 'new hk')
+		dlog(@FN, '       key: $key')
+		dlog(@FN, '     cpath: $cpath')
+		dlog(@FN, '  cm.vopts:\n     $cm.vopts')
 		cm.k2cpath[key] = cpath
 	}
+	dlog(@FN, 'key: ${key:-30} => cpath: $cpath')
 	return cpath
 }
 
 pub fn (mut cm CacheManager) postfix_with_key2cpath(postfix string, key string) string {
-	return cm.key2cpath(key) + postfix
+	prefix := cm.key2cpath(key)
+	res := prefix + postfix
+	return res
 }
 
 pub fn (mut cm CacheManager) exists(postfix string, key string) ?string {
 	fpath := cm.postfix_with_key2cpath(postfix, key)
+	dlog(@FN, 'postfix: $postfix | key: $key | fpath: $fpath')
 	if !os.exists(fpath) {
 		return error('does not exist yet')
 	}
@@ -97,11 +112,32 @@ pub fn (mut cm CacheManager) exists(postfix string, key string) ?string {
 pub fn (mut cm CacheManager) save(postfix string, key string, content string) ?string {
 	fpath := cm.postfix_with_key2cpath(postfix, key)
 	os.write_file(fpath, content) ?
+	dlog(@FN, 'postfix: $postfix | key: $key | fpath: $fpath')
 	return fpath
 }
 
 pub fn (mut cm CacheManager) load(postfix string, key string) ?string {
 	fpath := cm.exists(postfix, key) ?
 	content := os.read_file(fpath) ?
+	dlog(@FN, 'postfix: $postfix | key: $key | fpath: $fpath')
 	return content
+}
+
+[if trace_usecache ?]
+pub fn dlog(fname string, s string) {
+	pid := unsafe { mypid() }
+	if fname[0] != `|` {
+		eprintln('> VCache | pid: $pid | CacheManager.$fname $s')
+	} else {
+		eprintln('> VCache | pid: $pid $fname $s')
+	}
+}
+
+[unsafe]
+fn mypid() int {
+	mut static pid := 0
+	if pid == 0 {
+		pid = os.getpid()
+	}
+	return pid
 }

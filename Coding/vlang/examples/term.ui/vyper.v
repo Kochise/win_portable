@@ -53,19 +53,19 @@ fn (v Vec) facing() Orientation {
 
 // generate a random vector with x in [min_x, max_x] and y in [min_y, max_y]
 fn (mut v Vec) randomize(min_x int, min_y int, max_x int, max_y int) {
-	v.x = rand.int_in_range(min_x, max_x)
-	v.y = rand.int_in_range(min_y, max_y)
+	v.x = rand.int_in_range(min_x, max_x) or { min_x }
+	v.y = rand.int_in_range(min_y, max_y) or { min_y }
 }
 
 // part of snake's body representation
 struct BodyPart {
 mut:
-	pos    Vec = {
-	x: block_size
-	y: block_size
-}
+	pos Vec = Vec{
+		x: block_size
+		y: block_size
+	}
 	color  termui.Color = green
-	facing Orientation = .top
+	facing Orientation  = .top
 }
 
 // snake representation
@@ -75,9 +75,9 @@ mut:
 	direction Orientation
 	body      []BodyPart
 	velocity  Vec = Vec{
-	x: 0
-	y: 0
-}
+		x: 0
+		y: 0
+	}
 }
 
 // length returns the snake's current length
@@ -125,8 +125,16 @@ fn (mut s Snake) move() {
 			piece.facing = s.direction
 			new_x := piece.pos.x + s.velocity.x
 			new_y := piece.pos.y + s.velocity.y
-			piece.pos.x += if new_x > block_size && new_x < width - block_size { s.velocity.x } else { 0 }
-			piece.pos.y += if new_y > block_size && new_y < height - block_size { s.velocity.y } else { 0 }
+			piece.pos.x += if new_x > block_size && new_x < width - block_size {
+				s.velocity.x
+			} else {
+				0
+			}
+			piece.pos.y += if new_y > block_size && new_y < height - block_size {
+				s.velocity.y
+			} else {
+				0
+			}
 		}
 		s.body[i] = piece
 	}
@@ -184,8 +192,8 @@ fn (mut s Snake) randomize() {
 	for pos.x % 2 != 0 || (pos.x < buffer && pos.x > s.app.width - buffer) {
 		pos.randomize(buffer, buffer, s.app.width - buffer, s.app.height - buffer)
 	}
-	s.velocity.y = rand.int_in_range(-1 * block_size, block_size)
-	s.velocity.x = speeds[rand.intn(speeds.len)]
+	s.velocity.y = rand.int_in_range(-1 * block_size, block_size) or { 0 }
+	s.velocity.x = speeds[rand.intn(speeds.len) or { 0 }]
 	s.direction = s.velocity.facing()
 	s.body[0].pos = pos
 }
@@ -205,10 +213,10 @@ fn (s Snake) check_overlap() bool {
 
 fn (s Snake) check_out_of_bounds() bool {
 	h := s.get_head()
-	return h.pos.x + s.velocity.x <= block_size ||
-		h.pos.x + s.velocity.x > s.app.width - s.velocity.x || h.pos.y + s.velocity.y <= block_size ||
-		h.pos.y + s.velocity.y >
-		s.app.height - block_size - s.velocity.y
+	return h.pos.x + s.velocity.x <= block_size
+		|| h.pos.x + s.velocity.x > s.app.width - s.velocity.x
+		|| h.pos.y + s.velocity.y <= block_size
+		|| h.pos.y + s.velocity.y > s.app.height - block_size - s.velocity.y
 }
 
 // draw draws the parts of the snake
@@ -233,10 +241,10 @@ fn (s Snake) draw() {
 // rat representation
 struct Rat {
 mut:
-	pos      Vec = {
-	x: block_size
-	y: block_size
-}
+	pos Vec = Vec{
+		x: block_size
+		y: block_size
+	}
 	captured bool
 	color    termui.Color = grey
 	app      &App
@@ -244,10 +252,11 @@ mut:
 
 // randomize spawn the rat in a new spot within the playable field
 fn (mut r Rat) randomize() {
-	r.pos.randomize(2 * block_size + buffer, 2 * block_size + buffer, r.app.width - block_size -
-		buffer, r.app.height - block_size - buffer)
+	r.pos.randomize(2 * block_size + buffer, 2 * block_size + buffer, r.app.width - block_size - buffer,
+		r.app.height - block_size - buffer)
 }
 
+[heap]
 struct App {
 mut:
 	termui &termui.Context = 0
@@ -255,7 +264,7 @@ mut:
 	rat    Rat
 	width  int
 	height int
-	redraw bool = true
+	redraw bool      = true
 	state  GameState = .game
 }
 
@@ -387,9 +396,8 @@ fn (mut a App) move_snake(direction Orientation) {
 fn (a App) check_capture() bool {
 	snake_pos := a.snake.get_head().pos
 	rat_pos := a.rat.pos
-	return snake_pos.x <= rat_pos.x + block_size &&
-		snake_pos.x + block_size >= rat_pos.x && snake_pos.y <= rat_pos.y + block_size && snake_pos.y +
-		block_size >= rat_pos.y
+	return snake_pos.x <= rat_pos.x + block_size && snake_pos.x + block_size >= rat_pos.x
+		&& snake_pos.y <= rat_pos.y + block_size && snake_pos.y + block_size >= rat_pos.y
 }
 
 fn (mut a App) draw_snake() {
@@ -453,13 +461,15 @@ fn (mut a App) draw_gameover() {
 	a.termui.draw_text(start_x, (a.height / 2) + 3 * block_size, '   #####  #    # #    # ######   #######   ##   ###### #    #  ')
 }
 
-mut app := &App{}
-app.termui = termui.init({
-	user_data: app
-	event_fn: event
-	frame_fn: frame
-	init_fn: init
-	hide_cursor: true
-	frame_rate: 10
-})
-app.termui.run()
+fn main() {
+	mut app := &App{}
+	app.termui = termui.init(
+		user_data: app
+		event_fn: event
+		frame_fn: frame
+		init_fn: init
+		hide_cursor: true
+		frame_rate: 10
+	)
+	app.termui.run() ?
+}

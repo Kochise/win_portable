@@ -1,16 +1,19 @@
 module os
 
+fn C.setpgid(pid int, pgid int) int
+
 fn (mut p Process) unix_spawn_process() int {
 	mut pipeset := [6]int{}
 	if p.use_stdio_ctl {
-		C.pipe(&pipeset[0]) // pipe read end 0 <- 1 pipe write end
-		C.pipe(&pipeset[2]) // pipe read end 2 <- 3 pipe write end
-		C.pipe(&pipeset[4]) // pipe read end 4 <- 5 pipe write end
+		mut dont_care := C.pipe(&pipeset[0]) // pipe read end 0 <- 1 pipe write end
+		dont_care = C.pipe(&pipeset[2]) // pipe read end 2 <- 3 pipe write end
+		dont_care = C.pipe(&pipeset[4]) // pipe read end 4 <- 5 pipe write end
+		_ = dont_care // using `_` directly on each above `pipe` fails to avoid C compiler generate an `-Wunused-result` warning
 	}
 	pid := fork()
 	if pid != 0 {
 		// This is the parent process after the fork.
-		// NB: pid contains the process ID of the child process
+		// Note: pid contains the process ID of the child process
 		if p.use_stdio_ctl {
 			p.stdio_fd[0] = pipeset[1] // store the write end of child's in
 			p.stdio_fd[1] = pipeset[2] // store the read end of child's out
@@ -27,6 +30,10 @@ fn (mut p Process) unix_spawn_process() int {
 	// It still shares file descriptors with the parent process,
 	// but it is otherwise independant and can do stuff *without*
 	// affecting the parent process.
+	//
+	if p.use_pgroup {
+		C.setpgid(0, 0)
+	}
 	if p.use_stdio_ctl {
 		// Redirect the child standart in/out/err to the pipes that
 		// were created in the parent.
@@ -60,6 +67,10 @@ fn (mut p Process) unix_resume_process() {
 
 fn (mut p Process) unix_kill_process() {
 	C.kill(p.pid, C.SIGKILL)
+}
+
+fn (mut p Process) unix_kill_pgroup() {
+	C.kill(-p.pid, C.SIGKILL)
 }
 
 fn (mut p Process) unix_wait() {
@@ -114,9 +125,23 @@ fn (mut p Process) win_resume_process() {
 fn (mut p Process) win_kill_process() {
 }
 
+fn (mut p Process) win_kill_pgroup() {
+}
+
 fn (mut p Process) win_wait() {
 }
 
 fn (mut p Process) win_is_alive() bool {
 	return false
+}
+
+fn (mut p Process) win_write_string(idx int, s string) {
+}
+
+fn (mut p Process) win_read_string(idx int, maxbytes int) (string, int) {
+	return '', 0
+}
+
+fn (mut p Process) win_slurp(idx int) string {
+	return ''
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module main
@@ -8,10 +8,10 @@ import rand
 import time
 import gx
 import gg
-import sokol.sapp
+// import sokol.sapp
 
 const (
-	block_size      = 20 // pixels
+	block_size      = 20 // virtual pixels
 	field_height    = 20 // # of blocks
 	field_width     = 10
 	tetro_size      = 4
@@ -61,7 +61,7 @@ const (
 		gx.rgb(255, 180, 31), /* orange long topleft */
 		gx.rgb(33, 66, 255), /* blue long topright */
 		gx.rgb(74, 198, 255), /* lightblue longest */
-		gx.rgb(0, 170, 170), /* unused ? */
+		gx.rgb(0, 170, 170),
 	]
 	background_color = gx.white
 	ui_color         = gx.rgba(255, 0, 0, 210)
@@ -88,6 +88,10 @@ mut:
 	lines int
 	// State of the current game
 	state GameState
+	// Block size in screen dimensions
+	block_size int = block_size
+	// Field margin
+	margin int
 	// Position of the current tetro
 	pos_x int
 	pos_y int
@@ -111,15 +115,19 @@ mut:
 	// gg context for drawing
 	gg          &gg.Context = voidptr(0)
 	font_loaded bool
-	show_ghost  bool
+	show_ghost  bool = true
 	// frame/time counters:
 	frame     int
 	frame_old int
-	frame_sw  time.StopWatch = time.new_stopwatch({})
-	second_sw time.StopWatch = time.new_stopwatch({})
+	frame_sw  time.StopWatch = time.new_stopwatch()
+	second_sw time.StopWatch = time.new_stopwatch()
 }
 
-[if showfps]
+fn remap(v f32, min f32, max f32, new_min f32, new_max f32) f32 {
+	return (((v - min) * (new_max - new_min)) / (max - min)) + new_min
+}
+
+[if showfps ?]
 fn (mut game Game) showfps() {
 	game.frame++
 	last_frame_ms := f64(game.frame_sw.elapsed().microseconds()) / 1000.0
@@ -135,6 +143,14 @@ fn (mut game Game) showfps() {
 }
 
 fn frame(mut game Game) {
+	if game.gg.frame & 15 == 0 {
+		game.update_game_state()
+	}
+	ws := gg.window_size()
+	bs := remap(block_size, 0, win_height, 0, ws.height)
+	m := (f32(ws.width) - bs * field_width) * 0.5
+	game.block_size = int(bs)
+	game.margin = int(m)
 	game.frame_sw.restart()
 	game.gg.begin()
 	game.draw_scene()
@@ -154,7 +170,6 @@ fn main() {
 		bg_color: gx.white
 		width: win_width
 		height: win_height
-		use_ortho: true // This is needed for 2D drawing
 		create_window: true
 		window_title: 'V Tetris' //
 		user_data: game
@@ -163,13 +178,12 @@ fn main() {
 		font_path: fpath // wait_events: true
 	)
 	game.init_game()
-	go game.run() // Run the game loop in a new thread
 	game.gg.run() // Run the render loop in the main thread
 }
 
 fn (mut g Game) init_game() {
 	g.parse_tetros()
-	g.next_tetro_idx = rand.intn(b_tetros.len) // generate initial "next"
+	g.next_tetro_idx = rand.intn(b_tetros.len) or { 0 } // generate initial "next"
 	g.generate_tetro()
 	g.field = []
 	// Generate the field, fill it with 0's, add -1's on each edge
@@ -198,14 +212,10 @@ fn (mut g Game) parse_tetros() {
 	}
 }
 
-fn (mut g Game) run() {
-	for {
-		if g.state == .running {
-			g.move_tetro()
-			g.delete_completed_lines()
-		}
-		// glfw.post_empty_event() // force window redraw
-		time.sleep_ms(timer_period)
+fn (mut g Game) update_game_state() {
+	if g.state == .running {
+		g.move_tetro()
+		g.delete_completed_lines()
 	}
 }
 
@@ -214,7 +224,8 @@ fn (g &Game) draw_ghost() {
 		pos_y := g.move_ghost()
 		for i in 0 .. tetro_size {
 			tetro := g.tetro[i]
-			g.draw_block_color(pos_y + tetro.y, g.pos_x + tetro.x, gx.gray)
+			g.draw_block_color(pos_y + tetro.y, g.pos_x + tetro.x, gx.rgba(125, 125, 225,
+				40))
 		}
 	}
 }
@@ -300,7 +311,7 @@ fn (mut g Game) generate_tetro() {
 	g.pos_y = 0
 	g.pos_x = field_width / 2 - tetro_size / 2
 	g.tetro_idx = g.next_tetro_idx
-	g.next_tetro_idx = rand.intn(b_tetros.len)
+	g.next_tetro_idx = rand.intn(b_tetros.len) or { 0 }
 	g.rotation_idx = 0
 	g.get_tetro()
 }
@@ -308,7 +319,7 @@ fn (mut g Game) generate_tetro() {
 // Get the right tetro from cache
 fn (mut g Game) get_tetro() {
 	idx := g.tetro_idx * tetro_size * tetro_size + g.rotation_idx * tetro_size
-	g.tetro = g.tetros_cache[idx..idx + tetro_size]
+	g.tetro = g.tetros_cache[idx..idx + tetro_size].clone()
 }
 
 // TODO mut
@@ -343,8 +354,8 @@ fn (g &Game) draw_next_tetro() {
 }
 
 fn (g &Game) draw_block_color(i int, j int, color gx.Color) {
-	g.gg.draw_rect(f32((j - 1) * block_size), f32((i - 1) * block_size), f32(block_size - 1),
-		f32(block_size - 1), color)
+	g.gg.draw_rect_filled(f32((j - 1) * g.block_size) + g.margin, f32((i - 1) * g.block_size),
+		f32(g.block_size - 1), f32(g.block_size - 1), color)
 }
 
 fn (g &Game) draw_block(i int, j int, color_idx int) {
@@ -363,17 +374,19 @@ fn (g &Game) draw_field() {
 }
 
 fn (mut g Game) draw_ui() {
+	ws := gg.window_size()
+	textsize := int(remap(text_size, 0, win_width, 0, ws.width))
 	g.gg.draw_text(1, 3, g.score.str(), text_cfg)
 	lines := g.lines.str()
-	g.gg.draw_text(win_width - lines.len * text_size, 3, lines, text_cfg)
+	g.gg.draw_text(ws.width - lines.len * textsize, 3, lines, text_cfg)
 	if g.state == .gameover {
-		g.gg.draw_rect(0, win_height / 2 - text_size, win_width, 5 * text_size, ui_color)
-		g.gg.draw_text(1, win_height / 2 + 0 * text_size, 'Game Over', over_cfg)
-		g.gg.draw_text(1, win_height / 2 + 2 * text_size, 'Space to restart', over_cfg)
+		g.gg.draw_rect_filled(0, ws.height / 2 - textsize, ws.width, 5 * textsize, ui_color)
+		g.gg.draw_text(1, ws.height / 2 + 0 * textsize, 'Game Over', over_cfg)
+		g.gg.draw_text(1, ws.height / 2 + 2 * textsize, 'Space to restart', over_cfg)
 	} else if g.state == .paused {
-		g.gg.draw_rect(0, win_height / 2 - text_size, win_width, 5 * text_size, ui_color)
-		g.gg.draw_text(1, win_height / 2 + 0 * text_size, 'Game Paused', text_cfg)
-		g.gg.draw_text(1, win_height / 2 + 2 * text_size, 'SPACE to resume', text_cfg)
+		g.gg.draw_rect_filled(0, ws.height / 2 - textsize, ws.width, 5 * textsize, ui_color)
+		g.gg.draw_text(1, ws.height / 2 + 0 * textsize, 'Game Paused', text_cfg)
+		g.gg.draw_text(1, ws.height / 2 + 2 * textsize, 'SPACE to resume', text_cfg)
 	}
 	// g.gg.draw_rect(0, block_size, win_width, limit_thickness, ui_color)
 }
@@ -411,18 +424,40 @@ fn parse_binary_tetro(t_ int) []Block {
 	return res
 }
 
-fn on_event(e &sapp.Event, mut game Game) {
+fn on_event(e &gg.Event, mut game Game) {
 	// println('code=$e.char_code')
 	if e.typ == .key_down {
 		game.key_down(e.key_code)
 	}
+	if e.typ == .touches_began || e.typ == .touches_moved {
+		if e.num_touches > 0 {
+			touch_point := e.touches[0]
+			game.touch_event(touch_point)
+		}
+	}
 }
 
-fn (mut game Game) key_down(key sapp.KeyCode) {
+fn (mut game Game) rotate_tetro() {
+	old_rotation_idx := game.rotation_idx
+	game.rotation_idx++
+	if game.rotation_idx == tetro_size {
+		game.rotation_idx = 0
+	}
+	game.get_tetro()
+	if !game.move_right(0) {
+		game.rotation_idx = old_rotation_idx
+		game.get_tetro()
+	}
+	if game.pos_x < 0 {
+		// game.pos_x = 1
+	}
+}
+
+fn (mut game Game) key_down(key gg.KeyCode) {
 	// global keys
 	match key {
 		.escape {
-			exit(0)
+			game.gg.quit()
 		}
 		.space {
 			if game.state == .running {
@@ -443,19 +478,7 @@ fn (mut game Game) key_down(key sapp.KeyCode) {
 	match key {
 		.up {
 			// Rotate the tetro
-			old_rotation_idx := game.rotation_idx
-			game.rotation_idx++
-			if game.rotation_idx == tetro_size {
-				game.rotation_idx = 0
-			}
-			game.get_tetro()
-			if !game.move_right(0) {
-				game.rotation_idx = old_rotation_idx
-				game.get_tetro()
-			}
-			if game.pos_x < 0 {
-				// game.pos_x = 1
-			}
+			game.rotate_tetro()
 		}
 		.left {
 			game.move_right(-1)
@@ -474,5 +497,20 @@ fn (mut game Game) key_down(key sapp.KeyCode) {
 			game.show_ghost = !game.show_ghost
 		}
 		else {}
+	}
+}
+
+fn (mut game Game) touch_event(touch_point gg.TouchPoint) {
+	ws := gg.window_size()
+	tx := touch_point.pos_x
+	ty := touch_point.pos_y
+	if ty < f32(ws.height) * 0.5 {
+		game.rotate_tetro()
+	} else {
+		if tx <= f32(ws.width) * 0.5 {
+			game.move_right(-1)
+		} else {
+			game.move_right(1)
+		}
 	}
 }

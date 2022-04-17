@@ -14,12 +14,12 @@ fn pipe_to_v_run() ? {
 	// eprintln('>>> tmp_v_file: $tmp_v_file')
 	os.write_file(tmp_v_file, 'println(1 + 3)\nprintln("hello")\n') ?
 	assert os.is_file(tmp_v_file)
-	cmd := '$cat_cmd "$tmp_v_file" | "$vexe" run -'
-	res := os.exec(cmd) ?
+	cmd := '$cat_cmd ${os.quoted_path(tmp_v_file)} | ${os.quoted_path(vexe)} run -'
+	res := os.execute(cmd)
 	// eprintln('>> cmd: $cmd | res: $res')
 	assert res.exit_code == 0
 	assert res.output.replace('\r', '').trim_space().split('\n') == ['4', 'hello']
-	os.rm(tmp_v_file)
+	os.rm(tmp_v_file) or { panic(err) }
 	assert !os.exists(tmp_v_file)
 }
 

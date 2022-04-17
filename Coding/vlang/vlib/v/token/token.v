@@ -1,17 +1,18 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module token
 
 pub struct Token {
 pub:
-	kind    Kind // the token number/enum; for quick comparisons
+	kind    Kind   // the token number/enum; for quick comparisons
 	lit     string // literal representation of the token
-	line_nr int // the line number in the source where the token occured
+	line_nr int    // the line number in the source where the token occured
+	col     int    // the column in the source where the token occured
 	// name_idx int // name table index for O(1) lookup
-	pos     int // the position of the token in scanner text
-	len     int // length of the literal
-	tidx    int // the index of the token
+	pos  int // the position of the token in scanner text
+	len  int // length of the literal
+	tidx int // the index of the token
 }
 
 pub enum Kind {
@@ -22,31 +23,32 @@ pub enum Kind {
 	string // 'foo'
 	str_inter // 'name=$user.name'
 	chartoken // `A` - rune
-	plus
-	minus
-	mul
-	div
-	mod
+	plus // +
+	minus // -
+	mul // *
+	div // /
+	mod // %
 	xor // ^
 	pipe // |
 	inc // ++
 	dec // --
 	and // &&
-	logical_or
-	not
-	bit_not
-	question
-	comma
-	semicolon
-	colon
+	logical_or // ||
+	not // !
+	bit_not // ~
+	question // ?
+	comma // ,
+	semicolon // ;
+	colon // :
 	arrow // <-
-	amp
-	hash
-	dollar
+	amp // &
+	hash // #
+	dollar // $
 	at // @
 	str_dollar
-	left_shift
-	right_shift
+	left_shift // <<
+	right_shift // >>
+	unsigned_right_shift // >>>
 	not_in // !in
 	not_is // !is
 	assign // =
@@ -58,26 +60,28 @@ pub enum Kind {
 	xor_assign // ^=
 	mod_assign // %=
 	or_assign // |=
-	and_assign
-	right_shift_assign
-	left_shift_assign // {}  () []
-	lcbr
-	rcbr
-	lpar
-	rpar
-	lsbr
-	rsbr // == != <= < >= >
-	eq
-	ne
-	gt
-	lt
-	ge
-	le
+	and_assign // &=
+	right_shift_assign // <<=
+	left_shift_assign // >>=
+	unsigned_right_shift_assign // >>>=
+	lcbr // {
+	rcbr // }
+	lpar // (
+	rpar // )
+	lsbr // [
+	nilsbr // #[
+	rsbr // ]
+	eq // ==
+	ne // !=
+	gt // >
+	lt // <
+	ge // >=
+	le // <=
 	comment
 	nl
-	dot
-	dotdot
-	ellipsis // keywords
+	dot // .
+	dotdot // ..
+	ellipsis // ...
 	keyword_beg
 	key_as
 	key_asm
@@ -99,7 +103,7 @@ pub enum Kind {
 	key_import
 	key_in
 	key_interface
-	key_is // key_it
+	key_is
 	key_match
 	key_module
 	key_mut
@@ -110,6 +114,7 @@ pub enum Kind {
 	key_return
 	key_select
 	key_sizeof
+	key_isreftype
 	key_likely
 	key_unlikely
 	key_offsetof
@@ -117,39 +122,50 @@ pub enum Kind {
 	key_true
 	key_type
 	key_typeof
+	key_dump
 	key_orelse
 	key_union
 	key_pub
 	key_static
+	key_volatile
 	key_unsafe
 	keyword_end
 	_end_
 }
 
-const (
-	assign_tokens = [Kind.assign, .plus_assign, .minus_assign, .mult_assign, .div_assign, .xor_assign,
-		.mod_assign, .or_assign, .and_assign, .right_shift_assign, .left_shift_assign]
-	nr_tokens     = int(Kind._end_)
-)
+pub const assign_tokens = [Kind.assign, .plus_assign, .minus_assign, .mult_assign, .div_assign,
+	.xor_assign, .mod_assign, .or_assign, .and_assign, .right_shift_assign, .left_shift_assign,
+	.unsigned_right_shift_assign]
+
+const nr_tokens = int(Kind._end_)
 
 // @FN => will be substituted with the name of the current V function
+// @METHOD => will be substituted with ReceiverType.MethodName
 // @MOD => will be substituted with the name of the current V module
 // @STRUCT => will be substituted with the name of the current V struct
-// @VEXE => will be substituted with the path to the V compiler
 // @FILE => will be substituted with the path of the V source file
 // @LINE => will be substituted with the V line number where it appears (as a string).
 // @COLUMN => will be substituted with the column where it appears (as a string).
 // @VHASH  => will be substituted with the shortened commit hash of the V compiler (as a string).
 // @VMOD_FILE => will be substituted with the contents of the nearest v.mod file (as a string).
-// This allows things like this:
-// println( 'file: ' + @FILE + ' | line: ' + @LINE + ' | fn: ' + @MOD + '.' + @FN)
-// ... which is useful while debugging/tracing
+// @VMODROOT => will be substituted with the *folder* where the nearest v.mod file is (as a string).
+// @VEXE => will be substituted with the path to the V compiler
+// @VEXEROOT => will be substituted with the *folder* where the V executable is (as a string).
+// @VROOT => the old name for @VMODROOT; sometimes it was used as @VEXEROOT;
+//           Note: @VROOT is now deprecated, use either @VMODROOT or @VEXEROOT instead.
+// Note: @VEXEROOT & @VMODROOT are used for compilation options like this:
+//   #include "@VMODROOT/include/abc.h"
+//   #flag -L@VEXEROOT/thirdparty/libgc
 //
-// @VROOT is special and handled in places like '#include ...'
+// The @XYZ tokens allow for code like this:
+// println( 'file: ' + @FILE + ' | line: ' + @LINE + ' | fn: ' + @MOD + '.' + @FN)
+// ... which is useful while debugging/tracing.
+//
 // @<type> is allowed for keyword variable names. E.g. 'type'
 pub enum AtKind {
 	unknown
 	fn_name
+	method_name
 	mod_name
 	struct_name
 	vexe_path
@@ -158,20 +174,20 @@ pub enum AtKind {
 	column_nr
 	vhash
 	vmod_file
+	vmodroot_path
+	vroot_path // obsolete
+	vexeroot_path
 }
 
-const (
-	valid_at_tokens = ['@FN', '@MOD', '@STRUCT', '@VEXE', '@FILE', '@LINE', '@COLUMN', '@VHASH',
-		'@VMOD_FILE',
-	]
-)
+pub const valid_at_tokens = ['@VROOT', '@VMODROOT', '@VEXEROOT', '@FN', '@METHOD', '@MOD', '@STRUCT',
+	'@VEXE', '@FILE', '@LINE', '@COLUMN', '@VHASH', '@VMOD_FILE']
 
 // build_keys genereates a map with keywords' string values:
 // Keywords['return'] == .key_return
 fn build_keys() map[string]Kind {
 	mut res := map[string]Kind{}
 	for t in int(Kind.keyword_beg) + 1 .. int(Kind.keyword_end) {
-		key := token_str[t]
+		key := token.token_str[t]
 		res[key] = Kind(t)
 	}
 	return res
@@ -179,7 +195,7 @@ fn build_keys() map[string]Kind {
 
 // TODO remove once we have `enum Kind { name('name') if('if') ... }`
 fn build_token_str() []string {
-	mut s := []string{len: nr_tokens}
+	mut s := []string{len: token.nr_tokens}
 	s[Kind.unknown] = 'unknown'
 	s[Kind.eof] = 'eof'
 	s[Kind.name] = 'name'
@@ -221,12 +237,14 @@ fn build_token_str() []string {
 	s[Kind.or_assign] = '|='
 	s[Kind.and_assign] = '&='
 	s[Kind.right_shift_assign] = '>>='
+	s[Kind.unsigned_right_shift_assign] = '>>>='
 	s[Kind.left_shift_assign] = '<<='
 	s[Kind.lcbr] = '{'
 	s[Kind.rcbr] = '}'
 	s[Kind.lpar] = '('
 	s[Kind.rpar] = ')'
 	s[Kind.lsbr] = '['
+	s[Kind.nilsbr] = '#['
 	s[Kind.rsbr] = ']'
 	s[Kind.eq] = '=='
 	s[Kind.ne] = '!='
@@ -237,6 +255,7 @@ fn build_token_str() []string {
 	s[Kind.question] = '?'
 	s[Kind.left_shift] = '<<'
 	s[Kind.right_shift] = '>>'
+	s[Kind.unsigned_right_shift] = '>>>'
 	s[Kind.comment] = 'comment'
 	s[Kind.nl] = 'NLL'
 	s[Kind.dollar] = '$'
@@ -251,6 +270,7 @@ fn build_token_str() []string {
 	s[Kind.key_return] = 'return'
 	s[Kind.key_module] = 'module'
 	s[Kind.key_sizeof] = 'sizeof'
+	s[Kind.key_isreftype] = 'isreftype'
 	s[Kind.key_likely] = '_likely_'
 	s[Kind.key_unlikely] = '_unlikely_'
 	s[Kind.key_go] = 'go'
@@ -270,6 +290,7 @@ fn build_token_str() []string {
 	s[Kind.key_import] = 'import'
 	s[Kind.key_unsafe] = 'unsafe'
 	s[Kind.key_typeof] = 'typeof'
+	s[Kind.key_dump] = 'dump'
 	s[Kind.key_enum] = 'enum'
 	s[Kind.key_interface] = 'interface'
 	s[Kind.key_pub] = 'pub'
@@ -279,6 +300,7 @@ fn build_token_str() []string {
 	s[Kind.key_global] = '__global'
 	s[Kind.key_union] = 'union'
 	s[Kind.key_static] = 'static'
+	s[Kind.key_volatile] = 'volatile'
 	s[Kind.key_as] = 'as'
 	s[Kind.key_defer] = 'defer'
 	s[Kind.key_match] = 'match'
@@ -286,45 +308,77 @@ fn build_token_str() []string {
 	s[Kind.key_none] = 'none'
 	s[Kind.key_offsetof] = '__offsetof'
 	s[Kind.key_is] = 'is'
+	// The following kinds are not for tokens returned by the V scanner.
+	// They are used just for organisation/ease of checking:
+	s[Kind.keyword_beg] = 'keyword_beg'
+	s[Kind.keyword_end] = 'keyword_end'
+	s[Kind.str_inter] = 'str_inter'
+	$if debug_build_token_str ? {
+		for k, v in s {
+			if v == '' {
+				eprintln('>>> ${@MOD}.${@METHOD} missing k: $k | .${kind_to_string(Kind(k))}')
+			}
+		}
+	}
 	return s
 }
 
-const (
-	token_str = build_token_str()
-	keywords  = build_keys()
-)
+pub const token_str = build_token_str()
 
-pub fn key_to_token(key string) Kind {
-	return Kind(keywords[key])
-}
+pub const keywords = build_keys()
 
+pub const matcher = new_keywords_matcher<Kind>(keywords)
+
+[inline]
 pub fn is_key(key string) bool {
-	return int(key_to_token(key)) > 0
+	return int(token.keywords[key]) > 0
 }
 
+[inline]
 pub fn is_decl(t Kind) bool {
-	return t in
-		[.key_enum, .key_interface, .key_fn, .key_struct, .key_type, .key_const, .key_pub, .eof]
+	return t in [.key_enum, .key_interface, .key_fn, .key_struct, .key_type, .key_const, .key_pub,
+		.eof]
 }
 
+[inline]
 pub fn (t Kind) is_assign() bool {
-	return t in assign_tokens
+	return t in token.assign_tokens
 }
 
+// note: used for some code generation, so no quoting
+[inline]
 pub fn (t Kind) str() string {
-	return token_str[int(t)]
+	return token.token_str[int(t)]
 }
 
 pub fn (t Token) str() string {
-	return '$t.kind.str() "$t.lit"'
+	mut s := t.kind.str()
+	if s.len == 0 {
+		eprintln('missing token kind string')
+	} else if !s[0].is_letter() {
+		// punctuation, operators
+		return 'token `$s`'
+	}
+	if is_key(t.lit) {
+		s = 'keyword'
+	}
+	if t.lit != '' {
+		// string contents etc
+		s += ' `$t.lit`'
+	}
+	return s
+}
+
+pub fn (t Token) debug() string {
+	ks := kind_to_string(t.kind)
+	s := if t.lit == '' { t.kind.str() } else { t.lit }
+	return 'tok: .${ks:-12} | lit: `$s`'
 }
 
 // Representation of highest and lowest precedence
 /*
-pub const (
-	lowest_prec = 0
-	highest_prec = 8
-)
+pub const lowest_prec = 0
+pub const highest_prec = 8
 */
 pub enum Precedence {
 	lowest
@@ -334,7 +388,7 @@ pub enum Precedence {
 	eq // == or !=
 	// less_greater // > or <
 	sum // + - | ^
-	product // * / << >> &
+	product // * / << >> >>> &
 	// mod // %
 	prefix // -X or !X
 	postfix // ++ or --
@@ -345,17 +399,19 @@ pub enum Precedence {
 pub fn build_precedences() []Precedence {
 	mut p := []Precedence{len: int(Kind._end_)}
 	p[Kind.lsbr] = .index
+	p[Kind.nilsbr] = .index
 	p[Kind.dot] = .call
 	// `++` | `--` | `?`
 	p[Kind.inc] = .postfix
 	p[Kind.dec] = .postfix
 	p[Kind.question] = .postfix
-	// `*` |  `/` | `%` | `<<` | `>>` | `&`
+	// `*` |  `/` | `%` | `<<` | `>>` | `>>>` | `&`
 	p[Kind.mul] = .product
 	p[Kind.div] = .product
 	p[Kind.mod] = .product
 	p[Kind.left_shift] = .product
 	p[Kind.right_shift] = .product
+	p[Kind.unsigned_right_shift] = .product
 	p[Kind.amp] = .product
 	p[Kind.arrow] = .product
 	// `+` |  `-` |  `|` | `^`
@@ -381,6 +437,7 @@ pub fn build_precedences() []Precedence {
 	// <<= | *= | ...
 	p[Kind.left_shift_assign] = .assign
 	p[Kind.right_shift_assign] = .assign
+	p[Kind.unsigned_right_shift_assign] = .assign
 	p[Kind.mult_assign] = .assign
 	p[Kind.xor_assign] = .assign
 	p[Kind.key_in] = .in_as
@@ -393,53 +450,292 @@ pub fn build_precedences() []Precedence {
 	return p
 }
 
-const (
-	precedences = build_precedences()
-)
+const precedences = build_precedences()
 
 // precedence returns a tokens precedence if defined, otherwise lowest_prec
+[inline]
 pub fn (tok Token) precedence() int {
-	return int(precedences[tok.kind])
+	return int(token.precedences[tok.kind])
 }
 
 // is_scalar returns true if the token is a scalar
+[inline]
 pub fn (tok Token) is_scalar() bool {
 	return tok.kind in [.number, .string]
 }
 
 // is_unary returns true if the token can be in a unary expression
+[inline]
 pub fn (tok Token) is_unary() bool {
-	return tok.kind in
-		[
-		/* `+` | `-` | `!` | `~` | `*` | `&` */.plus, .minus, .not, .bit_not, .mul, .amp, .arrow]
+	// `+` | `-` | `!` | `~` | `*` | `&` | `<-`
+	return tok.kind in [.plus, .minus, .not, .bit_not, .mul, .amp, .arrow]
 }
 
+[inline]
 pub fn (tok Kind) is_relational() bool {
-	return tok in [
-		/* `<` | `<=` | `>` | `>=` */.lt, .le, .gt, .ge, .eq, .ne]
+	// `<` | `<=` | `>` | `>=` | `==` | `!=`
+	return tok in [.lt, .le, .gt, .ge, .eq, .ne]
 }
 
+[inline]
 pub fn (k Kind) is_start_of_type() bool {
-	return k in [.name, .lpar, .amp, .lsbr, .question]
+	return k in [.name, .lpar, .amp, .lsbr, .question, .key_shared]
 }
 
+[inline]
 pub fn (kind Kind) is_prefix() bool {
 	return kind in [.minus, .amp, .mul, .not, .bit_not]
 }
 
+[inline]
 pub fn (kind Kind) is_infix() bool {
-	return kind in
-		[.plus, .minus, .mod, .mul, .div, .eq, .ne, .gt, .lt, .key_in, /*  */.key_as, .ge, .le, .logical_or, .xor, .not_in, .key_is, .not_is, /*  */.and, .dot, .pipe, .amp, .left_shift, .right_shift, .arrow]
+	return kind in [.plus, .minus, .mod, .mul, .div, .eq, .ne, .gt, .lt, .key_in, .key_as, .ge,
+		.le, .logical_or, .xor, .not_in, .key_is, .not_is, .and, .dot, .pipe, .amp, .left_shift,
+		.right_shift, .unsigned_right_shift, .arrow]
 }
 
-// Pass table.builtin_type_names
-// Note: can't import table here due to circular module dependency
-pub fn (tok &Token) can_start_type(builtin_type_names []string) bool {
-	match tok.kind {
-		.name { return tok.lit[0].is_capital() || tok.lit in builtin_type_names }
-		// Note: return type (T1, T2) should be handled elsewhere
-		.amp, .key_fn, .lsbr, .question { return true }
-		else {}
+[inline]
+pub fn (kind Kind) is_postfix() bool {
+	return kind in [.inc, .dec, .question]
+}
+
+pub fn kind_to_string(k Kind) string {
+	return match k {
+		.unknown { 'unknown' }
+		.eof { 'eof' }
+		.name { 'name' }
+		.number { 'number' }
+		.string { 'string' }
+		.str_inter { 'str_inter' }
+		.chartoken { 'chartoken' }
+		.plus { 'plus' }
+		.minus { 'minus' }
+		.mul { 'mul' }
+		.div { 'div' }
+		.mod { 'mod' }
+		.xor { 'xor' }
+		.pipe { 'pipe' }
+		.inc { 'inc' }
+		.dec { 'dec' }
+		.and { 'and' }
+		.logical_or { 'logical_or' }
+		.not { 'not' }
+		.bit_not { 'bit_not' }
+		.question { 'question' }
+		.comma { 'comma' }
+		.semicolon { 'semicolon' }
+		.colon { 'colon' }
+		.arrow { 'arrow' }
+		.amp { 'amp' }
+		.hash { 'hash' }
+		.dollar { 'dollar' }
+		.at { 'at' }
+		.str_dollar { 'str_dollar' }
+		.left_shift { 'left_shift' }
+		.right_shift { 'right_shift' }
+		.unsigned_right_shift { 'unsigned_right_shift' }
+		.not_in { 'not_in' }
+		.not_is { 'not_is' }
+		.assign { 'assign' }
+		.decl_assign { 'decl_assign' }
+		.plus_assign { 'plus_assign' }
+		.minus_assign { 'minus_assign' }
+		.div_assign { 'div_assign' }
+		.mult_assign { 'mult_assign' }
+		.xor_assign { 'xor_assign' }
+		.mod_assign { 'mod_assign' }
+		.or_assign { 'or_assign' }
+		.and_assign { 'and_assign' }
+		.right_shift_assign { 'right_shift_assign' }
+		.left_shift_assign { 'left_shift_assign' }
+		.unsigned_right_shift_assign { 'unsigned_right_shift_assign' }
+		.lcbr { 'lcbr' }
+		.rcbr { 'rcbr' }
+		.lpar { 'lpar' }
+		.rpar { 'rpar' }
+		.lsbr { 'lsbr' }
+		.nilsbr { 'nilsbr' }
+		.rsbr { 'rsbr' }
+		.eq { 'eq' }
+		.ne { 'ne' }
+		.gt { 'gt' }
+		.lt { 'lt' }
+		.ge { 'ge' }
+		.le { 'le' }
+		.comment { 'comment' }
+		.nl { 'nl' }
+		.dot { 'dot' }
+		.dotdot { 'dotdot' }
+		.ellipsis { 'ellipsis' }
+		.keyword_beg { 'keyword_beg' }
+		.key_as { 'key_as' }
+		.key_asm { 'key_asm' }
+		.key_assert { 'key_assert' }
+		.key_atomic { 'key_atomic' }
+		.key_break { 'key_break' }
+		.key_const { 'key_const' }
+		.key_continue { 'key_continue' }
+		.key_defer { 'key_defer' }
+		.key_else { 'key_else' }
+		.key_enum { 'key_enum' }
+		.key_false { 'key_false' }
+		.key_for { 'key_for' }
+		.key_fn { 'key_fn' }
+		.key_global { 'key_global' }
+		.key_go { 'key_go' }
+		.key_goto { 'key_goto' }
+		.key_if { 'key_if' }
+		.key_import { 'key_import' }
+		.key_in { 'key_in' }
+		.key_interface { 'key_interface' }
+		.key_is { 'key_is' }
+		.key_match { 'key_match' }
+		.key_module { 'key_module' }
+		.key_mut { 'key_mut' }
+		.key_shared { 'key_shared' }
+		.key_lock { 'key_lock' }
+		.key_rlock { 'key_rlock' }
+		.key_none { 'key_none' }
+		.key_return { 'key_return' }
+		.key_select { 'key_select' }
+		.key_sizeof { 'key_sizeof' }
+		.key_isreftype { 'key_isreftype' }
+		.key_likely { 'key_likely' }
+		.key_unlikely { 'key_unlikely' }
+		.key_offsetof { 'key_offsetof' }
+		.key_struct { 'key_struct' }
+		.key_true { 'key_true' }
+		.key_type { 'key_type' }
+		.key_typeof { 'key_typeof' }
+		.key_dump { 'key_dump' }
+		.key_orelse { 'key_orelse' }
+		.key_union { 'key_union' }
+		.key_pub { 'key_pub' }
+		.key_static { 'key_static' }
+		.key_volatile { 'key_volatile' }
+		.key_unsafe { 'key_unsafe' }
+		.keyword_end { 'keyword_end' }
+		._end_ { '_end_' }
 	}
-	return false
+}
+
+pub fn kind_from_string(s string) ?Kind {
+	match s {
+		'unknown' { return .unknown }
+		'eof' { return .eof }
+		'name' { return .name }
+		'number' { return .number }
+		'string' { return .string }
+		'str_inter' { return .str_inter }
+		'chartoken' { return .chartoken }
+		'plus' { return .plus }
+		'minus' { return .minus }
+		'mul' { return .mul }
+		'div' { return .div }
+		'mod' { return .mod }
+		'xor' { return .xor }
+		'pipe' { return .pipe }
+		'inc' { return .inc }
+		'dec' { return .dec }
+		'and' { return .and }
+		'logical_or' { return .logical_or }
+		'not' { return .not }
+		'bit_not' { return .bit_not }
+		'question' { return .question }
+		'comma' { return .comma }
+		'semicolon' { return .semicolon }
+		'colon' { return .colon }
+		'arrow' { return .arrow }
+		'amp' { return .amp }
+		'hash' { return .hash }
+		'dollar' { return .dollar }
+		'at' { return .at }
+		'str_dollar' { return .str_dollar }
+		'left_shift' { return .left_shift }
+		'right_shift' { return .right_shift }
+		'unsigned_right_shift' { return .unsigned_right_shift }
+		'not_in' { return .not_in }
+		'not_is' { return .not_is }
+		'assign' { return .assign }
+		'decl_assign' { return .decl_assign }
+		'plus_assign' { return .plus_assign }
+		'minus_assign' { return .minus_assign }
+		'div_assign' { return .div_assign }
+		'mult_assign' { return .mult_assign }
+		'xor_assign' { return .xor_assign }
+		'mod_assign' { return .mod_assign }
+		'or_assign' { return .or_assign }
+		'and_assign' { return .and_assign }
+		'right_shift_assign' { return .right_shift_assign }
+		'left_shift_assign' { return .left_shift_assign }
+		'unsigned_right_shift_assign' { return .unsigned_right_shift_assign }
+		'lcbr' { return .lcbr }
+		'rcbr' { return .rcbr }
+		'lpar' { return .lpar }
+		'rpar' { return .rpar }
+		'lsbr' { return .lsbr }
+		'nilsbr' { return .nilsbr }
+		'rsbr' { return .rsbr }
+		'eq' { return .eq }
+		'ne' { return .ne }
+		'gt' { return .gt }
+		'lt' { return .lt }
+		'ge' { return .ge }
+		'le' { return .le }
+		'comment' { return .comment }
+		'nl' { return .nl }
+		'dot' { return .dot }
+		'dotdot' { return .dotdot }
+		'ellipsis' { return .ellipsis }
+		'keyword_beg' { return .keyword_beg }
+		'key_as' { return .key_as }
+		'key_asm' { return .key_asm }
+		'key_assert' { return .key_assert }
+		'key_atomic' { return .key_atomic }
+		'key_break' { return .key_break }
+		'key_const' { return .key_const }
+		'key_continue' { return .key_continue }
+		'key_defer' { return .key_defer }
+		'key_else' { return .key_else }
+		'key_enum' { return .key_enum }
+		'key_false' { return .key_false }
+		'key_for' { return .key_for }
+		'key_fn' { return .key_fn }
+		'key_global' { return .key_global }
+		'key_go' { return .key_go }
+		'key_goto' { return .key_goto }
+		'key_if' { return .key_if }
+		'key_import' { return .key_import }
+		'key_in' { return .key_in }
+		'key_interface' { return .key_interface }
+		'key_is' { return .key_is }
+		'key_match' { return .key_match }
+		'key_module' { return .key_module }
+		'key_mut' { return .key_mut }
+		'key_shared' { return .key_shared }
+		'key_lock' { return .key_lock }
+		'key_rlock' { return .key_rlock }
+		'key_none' { return .key_none }
+		'key_return' { return .key_return }
+		'key_select' { return .key_select }
+		'key_sizeof' { return .key_sizeof }
+		'key_isreftype' { return .key_isreftype }
+		'key_likely' { return .key_likely }
+		'key_unlikely' { return .key_unlikely }
+		'key_offsetof' { return .key_offsetof }
+		'key_struct' { return .key_struct }
+		'key_true' { return .key_true }
+		'key_type' { return .key_type }
+		'key_typeof' { return .key_typeof }
+		'key_dump' { return .key_dump }
+		'key_orelse' { return .key_orelse }
+		'key_union' { return .key_union }
+		'key_pub' { return .key_pub }
+		'key_static' { return .key_static }
+		'key_volatile' { return .key_volatile }
+		'key_unsafe' { return .key_unsafe }
+		'keyword_end' { return .keyword_end }
+		'_end_' { return ._end_ }
+		else { return error('unknown') }
+	}
 }

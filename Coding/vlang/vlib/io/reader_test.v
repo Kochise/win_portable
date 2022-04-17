@@ -4,14 +4,14 @@ struct Buf {
 pub:
 	bytes []byte
 mut:
-	i     int
+	i int
 }
 
 fn (mut b Buf) read(mut buf []byte) ?int {
 	if !(b.i < b.bytes.len) {
 		return none
 	}
-	n := copy(buf, b.bytes[b.i..])
+	n := copy(mut buf, b.bytes[b.i..])
 	b.i += n
 	return n
 }
@@ -39,7 +39,7 @@ fn test_read_all_huge() {
 }
 
 struct StringReader {
-	text  string
+	text string
 mut:
 	place int
 }
@@ -48,7 +48,7 @@ fn (mut s StringReader) read(mut buf []byte) ?int {
 	if s.place >= s.text.len {
 		return none
 	}
-	read := copy(buf, s.text[s.place..].bytes())
+	read := copy(mut buf, s.text[s.place..].bytes())
 	s.place += read
 	return read
 }
@@ -58,17 +58,15 @@ const (
 )
 
 fn test_stringreader() {
-	text := '12345\n'.repeat(newline_count)
+	text := '12345\n'.repeat(io.newline_count)
 	mut s := StringReader{
 		text: text
 	}
-	mut r := new_buffered_reader({
-		reader: make_reader(s)
-	})
+	mut r := new_buffered_reader(reader: s)
 	for i := 0; true; i++ {
 		if _ := r.read_line() {
 		} else {
-			assert i == newline_count
+			assert i == io.newline_count
 			break
 		}
 	}
@@ -85,24 +83,22 @@ fn test_stringreader() {
 }
 
 fn test_stringreader2() {
-	text := '12345\r\n'.repeat(newline_count)
+	text := '12345\r\n'.repeat(io.newline_count)
 	mut s := StringReader{
 		text: text
 	}
-	mut r := new_buffered_reader({
-		reader: make_reader(s)
-	})
+	mut r := new_buffered_reader(reader: s)
 	for i := 0; true; i++ {
 		if _ := r.read_line() {
 		} else {
-			assert i == newline_count
+			assert i == io.newline_count
 			break
 		}
 	}
 	if _ := r.read_line() {
 		assert false
 	}
-	leftover := read_all(reader: io.make_reader(r)) or {
+	leftover := read_all(reader: r) or {
 		assert false
 		panic('bad')
 	}
@@ -116,9 +112,7 @@ fn test_leftover() {
 	mut s := StringReader{
 		text: text
 	}
-	mut r := new_buffered_reader({
-		reader: make_reader(s)
-	})
+	mut r := new_buffered_reader(reader: s)
 	_ := r.read_line() or {
 		assert false
 		panic('bad')

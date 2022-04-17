@@ -21,6 +21,7 @@ pub mut:
 	nfail           int
 	nskip           int
 	nexpected_steps int
+	njobs           int
 	cstep           int
 	bok             string
 	bfail           string
@@ -29,7 +30,7 @@ pub mut:
 // new_benchmark returns a `Benchmark` instance on the stack.
 pub fn new_benchmark() Benchmark {
 	return Benchmark{
-		bench_timer: time.new_stopwatch({})
+		bench_timer: time.new_stopwatch()
 		verbose: true
 	}
 }
@@ -37,7 +38,7 @@ pub fn new_benchmark() Benchmark {
 // new_benchmark_no_cstep returns a new `Benchmark` instance with step counting disabled.
 pub fn new_benchmark_no_cstep() Benchmark {
 	return Benchmark{
-		bench_timer: time.new_stopwatch({})
+		bench_timer: time.new_stopwatch()
 		verbose: true
 		no_cstep: true
 	}
@@ -47,7 +48,7 @@ pub fn new_benchmark_no_cstep() Benchmark {
 // This is useful for long-lived use of `Benchmark` instances.
 pub fn new_benchmark_pointer() &Benchmark {
 	return &Benchmark{
-		bench_timer: time.new_stopwatch({})
+		bench_timer: time.new_stopwatch()
 		verbose: true
 	}
 }
@@ -122,7 +123,7 @@ pub fn start() Benchmark {
 pub fn (mut b Benchmark) measure(label string) i64 {
 	b.ok()
 	res := b.step_timer.elapsed().microseconds()
-	println(b.step_message_with_label(b_spent, 'in $label'))
+	println(b.step_message_with_label(benchmark.b_spent, 'in $label'))
 	b.step()
 	return res
 }
@@ -174,22 +175,23 @@ pub fn (b &Benchmark) step_message(msg string) string {
 
 // step_message_ok returns a string describing the current step with an standard "OK" label.
 pub fn (b &Benchmark) step_message_ok(msg string) string {
-	return b.step_message_with_label(b_ok, msg)
+	return b.step_message_with_label(benchmark.b_ok, msg)
 }
 
 // step_message_fail returns a string describing the current step with an standard "FAIL" label.
 pub fn (b &Benchmark) step_message_fail(msg string) string {
-	return b.step_message_with_label(b_fail, msg)
+	return b.step_message_with_label(benchmark.b_fail, msg)
 }
 
 // step_message_skip returns a string describing the current step with an standard "SKIP" label.
 pub fn (b &Benchmark) step_message_skip(msg string) string {
-	return b.step_message_with_label(b_skip, msg)
+	return b.step_message_with_label(benchmark.b_skip, msg)
 }
 
 // total_message returns a string with total summary of the benchmark run.
 pub fn (b &Benchmark) total_message(msg string) string {
-	mut tmsg := '${term.colorize(term.bold, 'Summary:')} '
+	the_label := term.colorize(term.gray, msg)
+	mut tmsg := '${term.colorize(term.bold, 'Summary for $the_label:')} '
 	if b.nfail > 0 {
 		tmsg += term.colorize(term.bold, term.colorize(term.red, '$b.nfail failed')) + ', '
 	}
@@ -199,9 +201,15 @@ pub fn (b &Benchmark) total_message(msg string) string {
 	if b.nskip > 0 {
 		tmsg += term.colorize(term.bold, term.colorize(term.yellow, '$b.nskip skipped')) + ', '
 	}
-	tmsg += '$b.ntotal total. ${term.colorize(term.bold, 'Runtime:')} ${b.bench_timer.elapsed().microseconds() /
-		1000} ms.\n'
-	tmsg += term.colorize(term.gray, msg)
+	mut njobs_label := ''
+	if b.njobs > 0 {
+		if b.njobs == 1 {
+			njobs_label = ', on ${term.colorize(term.bold, 1.str())} job'
+		} else {
+			njobs_label = ', on ${term.colorize(term.bold, b.njobs.str())} parallel jobs'
+		}
+	}
+	tmsg += '$b.ntotal total. ${term.colorize(term.bold, 'Runtime:')} ${b.bench_timer.elapsed().microseconds() / 1000} ms${njobs_label}.\n'
 	return tmsg
 }
 

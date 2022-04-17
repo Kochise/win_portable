@@ -3,7 +3,8 @@ module clipboard
 import time
 
 #include <windows.h>
-#flag -lUser32
+#flag -luser32
+
 struct WndClassEx {
 	cb_size         u32
 	style           u32
@@ -19,7 +20,7 @@ struct WndClassEx {
 	h_icon_sm       &u16
 }
 
-fn C.RegisterClassEx(class WndClassEx) int
+fn C.RegisterClassEx(class &WndClassEx) int
 
 fn C.GetClipboardOwner() &C.HWND
 
@@ -34,9 +35,9 @@ fn C.GlobalAlloc(uFlag u32, size i64) C.HGLOBAL
 
 fn C.GlobalFree(buf C.HGLOBAL)
 
-fn C.GlobalLock(buf C.HGLOBAL)
+fn C.GlobalLock(buf C.HGLOBAL) voidptr
 
-fn C.GlobalUnlock(buf C.HGLOBAL)
+fn C.GlobalUnlock(buf C.HGLOBAL) bool
 
 fn C.SetClipboardData(uFormat u32, data voidptr) C.HANDLE
 
@@ -50,6 +51,9 @@ fn C.OpenClipboard(hwnd C.HWND) int
 
 fn C.DestroyWindow(hwnd C.HWND)
 
+// Clipboard represents a system clipboard.
+//
+// System "copy" and "paste" actions utilize the clipboard for temporary storage.
 struct Clipboard {
 	max_retries int
 	retry_delay int
@@ -72,7 +76,7 @@ fn (cb &Clipboard) get_clipboard_lock() bool {
 		} else if last_error != u32(C.ERROR_ACCESS_DENIED) {
 			return false
 		}
-		time.sleep(cb.retry_delay)
+		time.sleep(cb.retry_delay * time.second)
 	}
 	C.SetLastError(last_error)
 	return false
@@ -103,15 +107,19 @@ fn new_clipboard() &Clipboard {
 	return cb
 }
 
-fn (cb &Clipboard) check_availability() bool {
+// check_availability returns true if the clipboard is ready to be used.
+pub fn (cb &Clipboard) check_availability() bool {
 	return cb.hwnd != C.HWND(C.NULL)
 }
 
-fn (cb &Clipboard) has_ownership() bool {
+// has_ownership returns true if the contents of
+// the clipboard were created by this clipboard instance.
+pub fn (cb &Clipboard) has_ownership() bool {
 	return C.GetClipboardOwner() == cb.hwnd
 }
 
-fn (mut cb Clipboard) clear() {
+// clear empties the clipboard contents.
+pub fn (mut cb Clipboard) clear() {
 	if !cb.get_clipboard_lock() {
 		return
 	}
@@ -120,7 +128,9 @@ fn (mut cb Clipboard) clear() {
 	cb.foo = 0
 }
 
-fn (mut cb Clipboard) free() {
+// free releases all memory associated with the clipboard
+// instance.
+pub fn (mut cb Clipboard) free() {
 	C.DestroyWindow(cb.hwnd)
 	cb.foo = 0
 }
@@ -142,7 +152,9 @@ fn to_wide(text string) C.HGLOBAL {
 	return buf
 }
 
-fn (mut cb Clipboard) set_text(text string) bool {
+// set_text transfers `text` to the system clipboard.
+// This is often associated with a *copy* action (`Ctrl` + `C`).
+pub fn (mut cb Clipboard) set_text(text string) bool {
 	cb.foo = 0
 	buf := to_wide(text)
 	if !cb.get_clipboard_lock() {
@@ -163,7 +175,10 @@ fn (mut cb Clipboard) set_text(text string) bool {
 	return true
 }
 
-fn (mut cb Clipboard) get_text() string {
+// get_text retrieves the contents of the system clipboard
+// as a `string`.
+// This is often associated with a *paste* action (`Ctrl` + `V`).
+pub fn (mut cb Clipboard) get_text() string {
 	cb.foo = 0
 	if !cb.get_clipboard_lock() {
 		return ''
@@ -173,8 +188,8 @@ fn (mut cb Clipboard) get_text() string {
 		C.CloseClipboard()
 		return ''
 	}
-	str := string_from_wide(&u16(C.GlobalLock(h_data)))
-	C.GlobalUnlock(h_data)
+	str := unsafe { string_from_wide(&u16(C.GlobalLock(C.HGLOBAL(h_data)))) }
+	C.GlobalUnlock(C.HGLOBAL(h_data))
 	return str
 }
 

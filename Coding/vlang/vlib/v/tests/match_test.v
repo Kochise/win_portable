@@ -11,19 +11,20 @@ pub fn (c Color) str() string {
 fn test_match_integers() {
 	mut a := 3
 	mut b := 0
-	match a
-	2 {
-		println('two')
-	}
-	3 {
-		println('three')
-		b = 3
-	}
-	4 {
-		println('four')
-	}
-	else {
-		println('???')
+	match a {
+		2 {
+			println('two')
+		}
+		3 {
+			println('three')
+			b = 3
+		}
+		int(4) {
+			println('four')
+		}
+		else {
+			println('???')
+		}
 	}
 	assert b == 3
 	assert match 2 {
@@ -37,6 +38,7 @@ fn test_match_integers() {
 		else { 5 }
 	} == 5
 	assert match 1 {
+		2 { 0 }
 		else { 5 }
 	} == 5
 	a = 0
@@ -68,6 +70,7 @@ fn test_match_integers() {
 	assert a == 6
 	a = 0
 	match 1 {
+		0 {}
 		else { a = -2 }
 	}
 	assert a == -2
@@ -136,7 +139,7 @@ fn test_method_call() {
 		1 { false }
 		2 { true }
 		3 { false }
-		else { false }
+		else { true }
 	}
 }
 
@@ -190,7 +193,9 @@ fn (a Alfa) letter() rune {
 struct Bravo {
 	// A field so that Alfa and Bravo structures aren't the same
 	dummy_field int
-	char        rune = `b`
+pub mut:
+	// Note: the `char` field is not `pub` or `mut` in all sumtype variants, but using it in aggregates should still work
+	char rune = `b`
 }
 
 fn (b Bravo) letter() rune {
@@ -225,9 +230,15 @@ fn test_match_sumtype_multiple_types() {
 }
 
 fn test_sub_expression() {
-	b := false && match 1 {0 {true} else {true}}
+	b := false && match 1 {
+		0 { true }
+		else { true }
+	}
 	assert !b
-	c := true || match 1 {0 {false} else {false}}
+	c := true || match 1 {
+		0 { false }
+		else { false }
+	}
 	assert c
 }
 
@@ -270,6 +281,23 @@ fn test_sumtype_with_array() {
 }
 
 fn test_match_expression_add() {
-	a := match true { true {1} false {2} } + 3
+	a := match true {
+		true { 1 }
+		false { 2 }
+	} + 3
 	assert a == 4
+}
+
+type LeType = int | string
+
+fn test_noreturn() {
+	t := LeType(3)
+	_ := match t {
+		int {
+			'test'
+		}
+		string {
+			exit(0)
+		}
+	}
 }

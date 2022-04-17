@@ -10,8 +10,8 @@ const (
 	npad = []byte{len: 256, init: 0}
 )
 
-// Returns an HMAC byte array, depending on the hash algorithm used
-pub fn new(key []byte, data []byte, hash_func fn (bytes []byte) []byte, blocksize int) []byte {
+// new returns a HMAC byte array, depending on the hash algorithm used.
+pub fn new(key []byte, data []byte, hash_func fn ([]byte) []byte, blocksize int) []byte {
 	mut b_key := []byte{}
 	if key.len <= blocksize {
 		b_key = key.clone() // TODO: remove .clone() once https://github.com/vlang/v/issues/6604 gets fixed
@@ -19,16 +19,16 @@ pub fn new(key []byte, data []byte, hash_func fn (bytes []byte) []byte, blocksiz
 		b_key = hash_func(key)
 	}
 	if b_key.len < blocksize {
-		b_key << npad[..blocksize - b_key.len]
+		b_key << hmac.npad[..blocksize - b_key.len]
 	}
 	mut inner := []byte{}
-	for i, b in ipad[..blocksize] {
+	for i, b in hmac.ipad[..blocksize] {
 		inner << b_key[i] ^ b
 	}
 	inner << data
 	inner_hash := hash_func(inner)
 	mut outer := []byte{cap: b_key.len}
-	for i, b in opad[..blocksize] {
+	for i, b in hmac.opad[..blocksize] {
 		outer << b_key[i] ^ b
 	}
 	outer << inner_hash
@@ -36,8 +36,8 @@ pub fn new(key []byte, data []byte, hash_func fn (bytes []byte) []byte, blocksiz
 	return digest
 }
 
-// equal compares 2 MACs for equality, without leaking timing info
-// NB: if the lengths of the 2 MACs are different, probably a completely different
+// equal compares 2 MACs for equality, without leaking timing info.
+// Note: if the lengths of the 2 MACs are different, probably a completely different
 // hash function was used to generate them => no useful timing information.
 pub fn equal(mac1 []byte, mac2 []byte) bool {
 	return subtle.constant_time_compare(mac1, mac2) == 1

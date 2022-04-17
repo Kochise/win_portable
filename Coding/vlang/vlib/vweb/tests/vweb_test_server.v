@@ -10,12 +10,17 @@ const (
 
 struct App {
 	vweb.Context
-	port    int
-	timeout int
+	port          int
+	timeout       int
+	global_config shared Config
+}
+
+struct Config {
+	max_ping int
 }
 
 fn exit_after_timeout(timeout_in_ms int) {
-	time.sleep_ms(timeout_in_ms)
+	time.sleep(timeout_in_ms * time.millisecond)
 	// eprintln('webserver is exiting ...')
 	exit(0)
 }
@@ -30,21 +35,25 @@ fn main() {
 	assert timeout > 0
 	go exit_after_timeout(timeout)
 	//
-	mut app := App{
+	shared config := &Config{
+		max_ping: 50
+	}
+	app := &App{
 		port: http_port
 		timeout: timeout
+		global_config: config
 	}
-	vweb.run_app<App>(mut app, http_port)
+	eprintln('>> webserver: started on http://localhost:$app.port/ , with maximum runtime of $app.timeout milliseconds.')
+	vweb.run_at(app, host: 'localhost', port: http_port, family: .ip) ?
 }
 
-pub fn (mut app App) init() {
-}
-
-pub fn (mut app App) init_once() {
-	eprintln('>> webserver: started on http://127.0.0.1:$app.port/ , with maximum runtime of $app.timeout milliseconds.')
-}
+// pub fn (mut app App) init_server() {
+//}
 
 pub fn (mut app App) index() vweb.Result {
+	rlock app.global_config {
+		assert app.global_config.max_ping == 50
+	}
 	return app.text('Welcome to VWeb')
 }
 
@@ -54,11 +63,6 @@ pub fn (mut app App) simple() vweb.Result {
 
 pub fn (mut app App) html_page() vweb.Result {
 	return app.html('<h1>ok</h1>')
-}
-
-pub fn (mut app App) chunk() vweb.Result {
-	app.enable_chunked_transfer(20)
-	return app.html('Lorem ipsum dolor sit amet, consetetur sadipscing')
 }
 
 // the following serve custom routes
@@ -78,19 +82,24 @@ pub fn (mut app App) user_repo_settings(username string, repository string) vweb
 	return app.html('username: $username | repository: $repository')
 }
 
-[post]
-['/json_echo']
+['/json_echo'; post]
 pub fn (mut app App) json_echo() vweb.Result {
-	eprintln('>>>>> received http request at /json_echo is: $app.req')
-	app.set_content_type(app.req.headers['Content-Type'])
+	// eprintln('>>>>> received http request at /json_echo is: $app.req')
+	app.set_content_type(app.req.header.get(.content_type) or { '' })
 	return app.ok(app.req.data)
+}
+
+['/form_echo'; post]
+pub fn (mut app App) form_echo() vweb.Result {
+	app.set_content_type(app.req.header.get(.content_type) or { '' })
+	return app.ok(app.form['foo'])
 }
 
 // Make sure [post] works without the path
 [post]
 pub fn (mut app App) json() vweb.Result {
-	eprintln('>>>>> received http request at /json is: $app.req')
-	app.set_content_type(app.req.headers['Content-Type'])
+	// eprintln('>>>>> received http request at /json is: $app.req')
+	app.set_content_type(app.req.header.get(.content_type) or { '' })
 	return app.ok(app.req.data)
 }
 
@@ -105,6 +114,6 @@ pub fn (mut app App) shutdown() vweb.Result {
 
 fn (mut app App) gracefull_exit() {
 	eprintln('>> webserver: gracefull_exit')
-	time.sleep_ms(100)
+	time.sleep(100 * time.millisecond)
 	exit(0)
 }

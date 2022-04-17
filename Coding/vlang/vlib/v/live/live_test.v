@@ -1,6 +1,8 @@
 import os
 import time
 
+// vtest retry: 4
+
 /*
 The goal of this test, is to simulate a developer, that has run a program, compiled with -live flag.
 
@@ -22,7 +24,7 @@ Since this test program is sensitive to coordination (or lack of) of several pro
 it tries to sidestep the coordination issue by polling the file system for the existance
 of files, ORIGINAL.txt ... STOP.txt , which are appended to by the generated program.
 
-NB: That approach of monitoring the state of the running generated program, is clearly not ideal,
+Note: That approach of monitoring the state of the running generated program, is clearly not ideal,
 but sidesteps the issue of coordinating processes through IPC or stdin/stdout in hopefully
 not very flaky way.
 
@@ -57,11 +59,11 @@ fn edefault(name string, default string) string {
 }
 
 fn atomic_write_source(source string) {
-	// NB: here wrtiting is done in 2 steps, since os.write_file can take some time,
+	// Note: here wrtiting is done in 2 steps, since os.write_file can take some time,
 	// during which the file will be modified, but it will still be not completely written.
 	// The os.mv after that, guarantees that the reloader will see a complete valid V program.
-	os.write_file(tmp_file, source)
-	os.mv(tmp_file, source_file)
+	os.write_file(tmp_file, source) or { panic(err) }
+	os.mv(tmp_file, source_file) or { panic(err) }
 }
 
 //
@@ -72,10 +74,9 @@ fn testsuite_begin() {
 		eprintln('You can still do it by setting FORCE_LIVE_TEST=1 .')
 		exit(0)
 	}
-	for f in [tmp_file, source_file, output_file, res_original_file, res_changed_file, res_another_file,
-		res_stop_file,
-	] {
-		os.rm(f)
+	for f in [tmp_file, source_file, output_file, res_original_file, res_changed_file,
+		res_another_file, res_stop_file] {
+		os.rm(f) or {}
 	}
 	atomic_write_source(live_program_source)
 }
@@ -105,19 +106,19 @@ fn testsuite_end() {
 	assert histogram['CHANGED'] + histogram['ANOTHER'] > 0
 	// assert histogram['END'] > 0
 	for tfile in cleanup_files {
-		os.rm(tfile)
+		os.rm(tfile) or {}
 	}
 }
 
 fn change_source(new string) {
-	time.sleep_ms(100)
+	time.sleep(100 * time.millisecond)
 	vprintln('> change ORIGINAL to: $new')
 	atomic_write_source(live_program_source.replace('ORIGINAL', new))
 	wait_for_file(new)
 }
 
 fn wait_for_file(new string) {
-	time.sleep_ms(100)
+	time.sleep(100 * time.millisecond)
 	expected_file := os.join_path(os.temp_dir(), new + '.txt')
 	eprintln('waiting for $expected_file ...')
 	max_wait_cycles := edefault('WAIT_CYCLES', '1').int()
@@ -128,10 +129,10 @@ fn wait_for_file(new string) {
 		if os.exists(expected_file) {
 			assert true
 			vprintln('> done.')
-			time.sleep_ms(100)
+			time.sleep(100 * time.millisecond)
 			break
 		}
-		time.sleep_ms(5)
+		time.sleep(5 * time.millisecond)
 	}
 }
 
@@ -150,9 +151,9 @@ fn setup_cycles_environment() {
 fn test_live_program_can_be_compiled() {
 	setup_cycles_environment()
 	eprintln('Compiling...')
-	os.system('$vexe -nocolor -live -o $genexe_file $source_file')
+	os.system('${os.quoted_path(vexe)} -nocolor -live -o ${os.quoted_path(genexe_file)} ${os.quoted_path(source_file)}')
 	//
-	cmd := '$genexe_file > /dev/null &'
+	cmd := '${os.quoted_path(genexe_file)} > /dev/null &'
 	eprintln('Running with: $cmd')
 	res := os.system(cmd)
 	assert res == 0

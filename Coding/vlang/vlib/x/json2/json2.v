@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module json2
@@ -67,6 +67,15 @@ pub fn (f Any) i64() i64 {
 	match f {
 		i64 { return f }
 		int, f32, f64, bool { return i64(f) }
+		else { return 0 }
+	}
+}
+
+// u64 uses `Any` as a 64-bit unsigned integer.
+pub fn (f Any) u64() u64 {
+	match f {
+		u64 { return f }
+		int, i64, f32, f64, bool { return u64(f) }
 		else { return 0 }
 	}
 }

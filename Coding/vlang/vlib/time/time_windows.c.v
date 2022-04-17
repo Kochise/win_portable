@@ -1,10 +1,11 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module time
 
 #include <time.h>
 // #include <sysinfoapi.h>
+
 struct C.tm {
 	tm_year int
 	tm_mon  int
@@ -15,6 +16,8 @@ struct C.tm {
 }
 
 struct C._FILETIME {
+	dwLowDateTime  u32
+	dwHighDateTime u32
 }
 
 struct SystemTime {
@@ -28,11 +31,11 @@ struct SystemTime {
 	millisecond u16
 }
 
-fn C.GetSystemTimeAsFileTime(lpSystemTimeAsFileTime C._FILETIME)
+fn C.GetSystemTimeAsFileTime(lpSystemTimeAsFileTime &C._FILETIME)
 
-fn C.FileTimeToSystemTime()
+fn C.FileTimeToSystemTime(lpFileTime &C._FILETIME, lpSystemTime &SystemTime)
 
-fn C.SystemTimeToTzSpecificLocalTime()
+fn C.SystemTimeToTzSpecificLocalTime(lpTimeZoneInformation &C.TIME_ZONE_INFORMATION, lpUniversalTime &SystemTime, lpLocalTime &SystemTime)
 
 fn C.localtime_s(t &C.time_t, tm &C.tm)
 
@@ -49,14 +52,12 @@ struct C.timespec {
 	tv_nsec i64
 }
 
-fn C._mkgmtime(&C.tm) time_t
-
 fn C.QueryPerformanceCounter(&u64) C.BOOL
 
 fn C.QueryPerformanceFrequency(&u64) C.BOOL
 
-fn make_unix_time(t C.tm) int {
-	return int(C._mkgmtime(&t))
+fn make_unix_time(t C.tm) i64 {
+	return portable_timegm(&t)
 }
 
 fn init_win_time_freq() u64 {
@@ -75,10 +76,10 @@ fn init_win_time_start() u64 {
 pub fn sys_mono_now() u64 {
 	tm := u64(0)
 	C.QueryPerformanceCounter(&tm) // XP or later never fail
-	return (tm - start_time) * 1000000000 / freq_time
+	return (tm - time.start_time) * 1000000000 / time.freq_time
 }
 
-// NB: vpc_now is used by `v -profile` .
+// Note: vpc_now is used by `v -profile` .
 // It should NOT call *any other v function*, just C functions and casts.
 [inline]
 fn vpc_now() u64 {
@@ -88,7 +89,7 @@ fn vpc_now() u64 {
 }
 
 // local_as_unix_time returns the current local time as unix time
-fn local_as_unix_time() int {
+fn local_as_unix_time() i64 {
 	t := C.time(0)
 	tm := C.localtime(&t)
 	return make_unix_time(tm)
@@ -96,6 +97,9 @@ fn local_as_unix_time() int {
 
 // local - return the time `t`, converted to the currently active local timezone
 pub fn (t Time) local() Time {
+	if t.is_local {
+		return t
+	}
 	st_utc := SystemTime{
 		year: u16(t.year)
 		month: u16(t.month)
@@ -103,6 +107,7 @@ pub fn (t Time) local() Time {
 		hour: u16(t.hour)
 		minute: u16(t.minute)
 		second: u16(t.second)
+		millisecond: u16(t.microsecond / 1000)
 	}
 	st_local := SystemTime{}
 	C.SystemTimeToTzSpecificLocalTime(voidptr(0), &st_utc, &st_local)
@@ -113,8 +118,8 @@ pub fn (t Time) local() Time {
 		hour: st_local.hour
 		minute: st_local.minute
 		second: st_local.second // These are the same
-		microsecond: t.microsecond
-		unix: t.unix
+		microsecond: st_local.millisecond * 1000
+		unix: st_local.unix_time()
 	}
 	return t_local
 }
@@ -137,7 +142,8 @@ fn win_now() Time {
 		minute: st_local.minute
 		second: st_local.second
 		microsecond: st_local.millisecond * 1000
-		unix: u64(st_local.unix_time())
+		unix: st_local.unix_time()
+		is_local: true
 	}
 	return t
 }
@@ -158,13 +164,14 @@ fn win_utc() Time {
 		minute: st_utc.minute
 		second: st_utc.second
 		microsecond: st_utc.millisecond * 1000
-		unix: u64(st_utc.unix_time())
+		unix: st_utc.unix_time()
+		is_local: false
 	}
 	return t
 }
 
 // unix_time returns Unix time.
-pub fn (st SystemTime) unix_time() int {
+pub fn (st SystemTime) unix_time() i64 {
 	tt := C.tm{
 		tm_sec: st.second
 		tm_min: st.minute
@@ -210,4 +217,21 @@ pub fn solaris_utc() Time {
 pub struct C.timeval {
 	tv_sec  u64
 	tv_usec u64
+}
+
+// sleep makes the calling thread sleep for a given duration (in nanoseconds).
+pub fn sleep(duration Duration) {
+	C.Sleep(int(duration / millisecond))
+}
+
+// some Windows system functions (e.g. `C.WaitForSingleObject()`) accept an `u32`
+// value as *timeout in milliseconds* with the special value `u32(-1)` meaning "infinite"
+pub fn (d Duration) sys_milliseconds() u32 {
+	if d >= u32(-1) * millisecond { // treat 4294967295000000 .. C.INT64_MAX as "infinite"
+		return u32(-1)
+	} else if d <= 0 {
+		return 0 // treat negative timeouts as 0 - consistent with Unix behaviour
+	} else {
+		return u32(d / millisecond)
+	}
 }

@@ -1,5 +1,8 @@
 enum Colors {
-	red green blue yellow
+	red
+	green
+	blue
+	yellow
 }
 
 fn test_in_expression() {
@@ -104,22 +107,31 @@ fn test_in_expression_with_string() {
 	assert a == false
 }
 
-fn test_in_expression_in_map() {
-	m := {
-		'one': 1
-		'two': 2
+type MapAlias = map[string]int
+type ArrayAlias = []int
+
+fn test_in_expression_in_alias() {
+	arr := ArrayAlias([0, 1])
+	assert 0 in arr
+	assert 100 !in arr
+
+	m := MapAlias({
+		'one':   1
+		'two':   2
 		'three': 3
-	}
+	})
 	assert 'one' in m
 	assert 'four' !in m
 }
 
-fn test_in_expression_in_string() {
-	s := 'abcd'
-	assert 'a' in s
-	assert 'ab' in s
-	assert 'abcd' in s
-	assert 'dbca' !in s
+fn test_in_expression_in_map() {
+	m := {
+		'one':   1
+		'two':   2
+		'three': 3
+	}
+	assert 'one' in m
+	assert 'four' !in m
 }
 
 fn test_optimized_in_expression() {
@@ -251,4 +263,49 @@ fn test_in_expression_numeric() {
 	assert f32(1) !in f
 	assert 1.0625 in f2
 	assert 3.5 !in f2
+}
+
+struct Foo1 {}
+
+struct Foo2 {}
+
+struct Foo3 {}
+
+type Foo = Foo1 | Foo2 | Foo3
+
+fn test_in_sumtype_array() {
+	foo := Foo(Foo3{})
+
+	if foo in [Foo1, Foo3] {
+		println(foo)
+		assert true
+	}
+
+	// without sumtype cast
+	mut foos := []Foo{}
+	foos << Foo1{}
+	assert Foo1{} in foos
+	assert Foo2{} !in foos
+}
+
+fn test_in_struct_array() {
+	assert Foo1{} == Foo1{}
+}
+
+fn fn1() {}
+
+fn fn2() {}
+
+fn fn3() {}
+
+fn test_in_func_array() {
+	assert fn1 in [fn1, fn2, fn3]
+}
+
+type Str = string
+type Struct = Foo1
+
+fn test_in_alias_array() {
+	assert Str('') in [Str(''), Str('a')]
+	assert Struct{} == Struct{}
 }

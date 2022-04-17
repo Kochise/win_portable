@@ -1,83 +1,123 @@
-// Copyright (c) 2019-2021 Alexander Medvednikov. All rights reserved.
+// Copyright (c) 2019-2022 Alexander Medvednikov. All rights reserved.
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 module builtin
 
-/*
-struct Option2<T> {
-	ok bool
-	is_none bool
-	error string
-	ecode int
-	data T
+// IError holds information about an error instance
+pub interface IError {
+	// >> Hack to allow old style custom error implementations
+	// TODO: remove once deprecation period for `IError` methods has ended
+	msg string
+	code int // <<
+	msg() string
+	code() int
 }
-*/
-// OptionBase is the the base of V's internal optional return system.
-struct OptionBase {
-	ok      bool
-	is_none bool
-	error   string
-	ecode   int
-	// Data is trailing after ecode
+
+pub fn (err IError) str() string {
+	return match err {
+		None__ {
+			'none'
+		}
+		Error {
+			err.msg()
+		}
+		MessageError {
+			err.msg()
+		}
+		else {
+			// >> Hack to allow old style custom error implementations
+			// TODO: remove once deprecation period for `IError` methods has ended
+			// old_error_style := unsafe { voidptr(&err.msg) != voidptr(&err.code) } // if fields are not defined (new style) they don't have an offset between
+			// <<
+			'$err.type_name(): $err.msg()'
+		}
+	}
+}
+
+// Error is the empty default implementation of `IError`.
+pub struct Error {}
+
+pub fn (err Error) msg() string {
+	return ''
+}
+
+pub fn (err Error) code() int {
+	return 0
+}
+
+// MessageError is the default implementation of the `IError` interface that is returned by the `error()` function
+struct MessageError {
+pub:
+	msg  string
+	code int
+}
+
+pub fn (err MessageError) msg() string {
+	return err.msg
+}
+
+pub fn (err MessageError) code() int {
+	return err.code
+}
+
+[unsafe]
+pub fn (err &MessageError) free() {
+	unsafe { err.msg.free() }
+}
+
+const none__ = IError(&None__{})
+
+struct None__ {
+	Error
+}
+
+fn (_ None__) str() string {
+	return 'none'
+}
+
+[if trace_error ?]
+fn trace_error(x string) {
+	eprintln('> ${@FN} | $x')
+}
+
+// error returns a default error instance containing the error given in `message`.
+// Example: if ouch { return error('an error occurred') }
+[inline]
+pub fn error(message string) IError {
+	trace_error(message)
+	return &MessageError{
+		msg: message
+	}
+}
+
+// error_with_code returns a default error instance containing the given `message` and error `code`.
+// Example: if ouch { return error_with_code('an error occurred', 1) }
+[inline]
+pub fn error_with_code(message string, code int) IError {
+	trace_error('$message | code: $code')
+	return &MessageError{
+		msg: message
+		code: code
+	}
+}
+
+// Option is the base of V's internal optional return system.
+struct Option {
+	state byte
+	err   IError = none__
+	// Data is trailing after err
 	// and is not included in here but in the
 	// derived Option_xxx types
 }
 
-// `fn foo() ?Foo { return foo }` => `fn foo() ?Foo { return opt_ok(foo); }`
-fn opt_ok2(data voidptr, mut option OptionBase, size int) {
+fn opt_ok(data voidptr, mut option Option, size int) {
 	unsafe {
-		*option = OptionBase{
-			ok: true
-		}
-		// use ecode to get the end of OptionBase and then memcpy into it
-		C.memcpy(byteptr(&option.ecode) + sizeof(int), data, size)
+		*option = Option{}
+		// use err to get the end of OptionBase and then memcpy into it
+		vmemcpy(&byte(&option.err) + sizeof(IError), data, size)
 	}
 }
 
-// Option is the old option type used for bootstrapping
-struct Option {
-	ok      bool
-	is_none bool
-	error   string
-	ecode   int
-}
-
-// str returns the string representation of the Option.
-pub fn (o Option) str() string {
-	if o.ok && !o.is_none {
-		return 'Option{ ok }'
-	}
-	if o.is_none {
-		return 'Option{ none }'
-	}
-	return 'Option{ error: "$o.error" }'
-}
-
-// opt_none is used internally when returning `none`.
-fn opt_none() Option {
-	return Option{
-		ok: false
-		is_none: true
-	}
-}
-
-// error returns an optional containing the error given in `message`.
-// `if ouch { return error('an error occurred') }`
-pub fn error(message string) Option {
-	return Option{
-		ok: false
-		is_none: false
-		error: message
-	}
-}
-
-// error_with_code returns an optional containing both error `message` and error `code`.
-// `if ouch { return error_with_code('an error occurred',1) }`
-pub fn error_with_code(message string, code int) Option {
-	return Option{
-		ok: false
-		is_none: false
-		error: message
-		ecode: code
-	}
+pub fn (_ none) str() string {
+	return 'none'
 }

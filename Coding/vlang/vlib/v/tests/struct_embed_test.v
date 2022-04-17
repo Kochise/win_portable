@@ -1,5 +1,5 @@
 import flag
-import field_publicity
+import v.tests.field_publicity
 
 struct Foo {
 	x int
@@ -19,12 +19,16 @@ fn test_embed() {
 }
 
 fn test_embed_direct_access() {
-	b := Bar{Foo: Foo{}}
+	b := Bar{
+		Foo: Foo{}
+	}
 	assert b.Foo.y == 5
 }
 
 fn test_default_value() {
-	b := Bar{Foo: Foo{}}
+	b := Bar{
+		Foo: Foo{}
+	}
 	assert b.y == 5
 }
 
@@ -32,13 +36,16 @@ fn test_default_value_without_init() {
 	b := Bar{}
 	assert b.y == 5
 }
-/* TODO
+
 fn test_initialize() {
-	b := Bar{x: 1, y: 2}
+	b := Bar{
+		x: 1
+		y: 2
+	}
 	assert b.x == 1
 	assert b.y == 2
 }
-*/
+
 struct Bar3 {
 	Foo
 	y string = 'test'
@@ -57,9 +64,11 @@ struct BarGeneric<T> {
 pub:
 	foo T
 }
+
 struct BarGenericContainer {
 	BarGeneric<int>
 }
+
 fn test_generic_embed() {
 	b := BarGenericContainer{}
 	assert b.BarGeneric.foo == 0
@@ -83,7 +92,7 @@ fn test_assign() {
 
 fn test_embed_is_public() {
 	a := field_publicity.App{}
-	assert a.Context.name == ''  
+	assert a.Context.name == ''
 }
 
 struct Eggs {
@@ -147,4 +156,69 @@ fn embed_method_generic<T>(app T) bool {
 fn test_embed_method_generic() {
 	mut app := App{}
 	assert embed_method_generic(app)
+}
+
+type Piece = King | Queen
+
+struct Pos {
+	x byte
+	y byte
+}
+
+enum TeamEnum {
+	black
+	white
+}
+
+struct PieceCommonFields {
+	pos  Pos
+	team TeamEnum
+}
+
+fn (p PieceCommonFields) get_pos() Pos {
+	return p.pos
+}
+
+struct King {
+	PieceCommonFields
+}
+
+struct Queen {
+	PieceCommonFields
+}
+
+fn (piece Piece) pos() Pos {
+	mut pos := Pos{}
+	match piece {
+		King, Queen { pos = piece.pos }
+	}
+	return pos
+}
+
+fn (piece Piece) get_pos() Pos {
+	mut pos := Pos{}
+	match piece {
+		King, Queen { pos = piece.get_pos() }
+	}
+	return pos
+}
+
+fn test_match_aggregate_field() {
+	piece := Piece(King{
+		pos: Pos{1, 8}
+		team: .black
+	})
+	pos := piece.pos()
+	assert pos.x == 1
+	assert pos.y == 8
+}
+
+fn test_match_aggregate_method() {
+	piece := Piece(King{
+		pos: Pos{1, 8}
+		team: .black
+	})
+	pos := piece.get_pos()
+	assert pos.x == 1
+	assert pos.y == 8
 }

@@ -1,4 +1,5 @@
 import os
+import strings
 
 // This program is built and run via Valgrind to ensure there are no leaks with -autofree
 fn simple() {
@@ -22,6 +23,15 @@ fn simple() {
 fn return_array(array_arg []string) []int { // array argument must not be freed
 	s := [1, 2, 3] // escaping array must not be freed
 	return s
+}
+
+fn return_option(array_arg []string) ?Foo { // array argument must not be freed
+	s := get_foo() ? // escaping option must not be freed
+	return s
+}
+
+fn get_foo() ?Foo {
+	return Foo{}
 }
 
 fn handle_strings(s string, p string) int {
@@ -98,6 +108,11 @@ fn str_replace2() {
 }
 
 fn reassign_str() {
+	mut z := '1' + '2'
+	if true {
+		println('KEK')
+		z = 'foo'
+	}
 	mut x := 'a'
 	x = 'b' // nothing has to be freed here
 	//
@@ -205,11 +220,7 @@ fn if_expr() string {
 }
 
 fn return_if_expr() string {
-	return if true {
-		get_string('a' + 'b')
-	} else {
-		get_string('c' + 'd')
-	}
+	return if true { get_string('a' + 'b') } else { get_string('c' + 'd') }
 }
 
 fn loop_map() {
@@ -317,19 +328,55 @@ fn get_user() User {
 	return user
 }
 
+fn get_user2() User {
+	users := [User{'Peter', 25}, User{'Alice', 21}]
+	return users[0] // has to be cloned, since `users` are going to be freed at the end of the function
+}
+
 fn string_array_get() {
 	s := ['a', 'b', 'c']
 	x := s[0]
 	println(s)
 }
 
-fn comp_if() {
+fn comptime_if() {
 	// compif pos used to be 0, if it was the first statement in a block, vars wouldn't be freed
 	$if macos {
 		println('macos')
 	}
 	s := 'a' + 'b'
 	println(s)
+}
+
+fn anon_fn() {
+}
+
+fn return_sb_str() string {
+	mut sb := strings.new_builder(100)
+	sb.write_string('hello')
+	return sb.str() // sb should be freed, but only after .str() is called
+}
+
+fn parse_header0(s string) ?string {
+	if !s.contains(':') {
+		return error('missing colon in header')
+	}
+	words := s.split_nth(':', 2)
+	x := words[0]
+	return x
+}
+
+fn parse_header1(s string) ?string {
+	if !s.contains(':') {
+		return error('missing colon in header')
+	}
+	words := s.split_nth(':', 2)
+	return words[0]
+}
+
+fn advanced_optionals() {
+	s := parse_header0('foo:bar') or { return }
+	s2 := parse_header1('foo:bar') or { return }
 }
 
 fn main() {
@@ -342,7 +389,7 @@ fn main() {
 	str_tmp_expr_advanced_var_decl()
 	str_inter()
 	match_expr()
-	// optional_str()
+	optional_str()
 	// optional_return()
 	str_replace()
 	str_replace2()
@@ -351,13 +398,15 @@ fn main() {
 	q := if_expr()
 	s := return_if_expr()
 	free_inside_opt_block()
-	comp_if()
+	comptime_if()
 	free_before_return()
 	free_before_return_bool()
 	free_before_break()
+	s2 := return_sb_str()
 	// free_map()
 	// loop_map()
-	// free_array_except_returned_element()
+	advanced_optionals()
+	free_array_except_returned_element()
 	println('end')
 }
 

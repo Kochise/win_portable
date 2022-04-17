@@ -2,9 +2,7 @@
 // A: This is a mini "home-made" calculator. You may also regard it as a very elementary version of "interpreter".
 import os
 
-const (
-	numeric_char = [`0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `.`, `e`, `E`]
-)
+const numeric_char = [`0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `.`, `e`, `E`]
 
 // Convert expression to Reverse Polish Notation.
 fn expr_to_rev_pol(expr string) ?[]string {
@@ -113,11 +111,14 @@ fn is_num_string(str string) bool {
 
 fn main() {
 	println('Please enter the expression you want to calculate, e.g. 1e2+(3-2.5)*6/1.5 .')
-	println("Enter \'exit\' or \'EXIT\' to quit.")
+	println("Enter 'exit' or 'EXIT' to quit.")
 	mut expr_count := 0
 	for {
 		expr_count++
-		expr := os.input('[$expr_count] ').trim_space()
+		expr := os.input_opt('[$expr_count] ') or {
+			println('')
+			break
+		}.trim_space()
 		if expr in ['exit', 'EXIT'] {
 			break
 		}

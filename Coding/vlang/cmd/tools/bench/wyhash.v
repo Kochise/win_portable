@@ -16,11 +16,11 @@ fn main() {
 	mut bgenerating := benchmark.start()
 	mut bytepile := []byte{}
 	for _ in 0 .. sample_size * max_str_len {
-		bytepile << byte(rand.int_in_range(40, 125))
+		bytepile << byte(rand.int_in_range(40, 125) or { 40 })
 	}
 	mut str_lens := []int{}
 	for _ in 0 .. sample_size {
-		str_lens << rand.int_in_range(min_str_len, max_str_len)
+		str_lens << rand.int_in_range(min_str_len, max_str_len) or { min_str_len }
 	}
 	bgenerating.measure('generating strings')
 	println('Hashing each of the generated strings...')
@@ -30,7 +30,8 @@ fn main() {
 	checksum = 0
 	for len in str_lens {
 		end_pos := start_pos + len
-		checksum ^= wyhash.wyhash_c(unsafe { byteptr(bytepile.data) + start_pos }, u64(len), 1)
+		checksum ^= wyhash.wyhash_c(unsafe { &byte(bytepile.data) + start_pos }, u64(len),
+			1)
 		start_pos = end_pos
 	}
 	bhashing_1.measure('wyhash.wyhash_c  | checksum: ${checksum:22}')
