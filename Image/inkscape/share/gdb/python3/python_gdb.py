@@ -659,7 +659,10 @@ class PyCodeObjectPtr(PyObjectPtr):
             addr += ord(addr_incr)
             if addr > addrq:
                 return lineno
-            lineno += ord(line_incr)
+            line_delta = ord(line_incr)
+            if line_delta >= 128:
+                line_delta -= 256
+            lineno += line_delta
         return lineno
 
 
@@ -1566,7 +1569,7 @@ class Frame(object):
             return False
 
         if (caller.startswith('cfunction_vectorcall_') or
-            caller == 'cfunction_call_varargs'):
+            caller == 'cfunction_call'):
             arg_name = 'func'
             # Within that frame:
             #   "func" is the local containing the PyObject* of the

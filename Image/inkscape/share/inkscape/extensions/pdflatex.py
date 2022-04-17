@@ -84,6 +84,7 @@ class PdfLatex(TempDirMixin, inkex.GenerateExtension):
         stream.write("\n\\begin{document}\n")
         stream.write(self.options.formule)
         stream.write("\n\\end{document}\n")
+        stream.flush()
 
 if __name__ == '__main__':
     PdfLatex().run()

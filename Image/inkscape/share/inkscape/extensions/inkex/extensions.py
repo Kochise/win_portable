@@ -122,7 +122,7 @@ class CallExtension(TempDirMixin, InputExtension):
                 raise IOError(f"Can't find generated document: {document}")
 
             if self.output_ext == 'svg':
-                with open(document, 'r') as fhl:
+                with open(document, 'r', encoding='utf-8') as fhl:
                     document = fhl.read()
                 if '<' in document:
                     document = load_svg(document.encode('utf-8'))

@@ -199,7 +199,7 @@ class InkscapeExtension:
     def ext_path(cls):
         # type: () -> str
         """Return the folder the extension script is in"""
-        return os.path.dirname(sys.modules[cls.__module__].__file__)
+        return os.path.dirname(sys.modules[cls.__module__].__file__ or "")
 
     @classmethod
     def get_resource(cls, name, abort_on_fail=True):

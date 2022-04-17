@@ -204,12 +204,20 @@ InkWeb.moveViewbox = function (conf) {
   if ( typeof(conf.from) == "string" )
     conf.from = document.getElementById( conf.from );
   if ( ! conf.to )
-    conf.to = conf.to ;
-  if ( typeof(toEl) == "string" )
-      toEl = document.getElementById( toEl );
-  toEl = document.getElementById( conf.to );
-  document.getElementsByTagName("svg")[0].viewBox.baseVal.x = toEl.getAttribute("x");
-  document.getElementsByTagName("svg")[0].viewBox.baseVal.y = toEl.getAttribute("y");
+    conf.to = conf.from ;
+  if ( typeof(conf.to) == "string" )
+      conf.to = document.getElementById( conf.to );
+  bbox = conf.to.getBBox();
+  vbox = document.getElementsByTagName("svg")[0].viewBox;
+  document.getElementsByTagName("svg")[0].viewBox.baseVal.x=bbox.x;
+  document.getElementsByTagName("svg")[0].viewBox.baseVal.y=bbox.y;
+  document.getElementsByTagName("svg")[0].viewBox.baseVal.width=bbox.width;
+  document.getElementsByTagName("svg")[0].viewBox.baseVal.height=bbox.height;
+  document.getElementsByTagName("svg")[0].viewBox.animVal.x=bbox.x;
+  document.getElementsByTagName("svg")[0].viewBox.animVal.y=bbox.y;
+  document.getElementsByTagName("svg")[0].viewBox.animVal.width=bbox.width;
+  document.getElementsByTagName("svg")[0].viewBox.animVal.heigt=bbox.height;
+  vbox = document.getElementsByTagName("svg")[0].viewBox;
 }
 
 InkWeb.log = function () { /* requires inkweb-debug.js, not included in Inkscape */ }

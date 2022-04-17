@@ -1,6 +1,6 @@
 # coding=utf-8
 #
-# Copyright(C) 2020 -  Windell H. Oskay, www.evilmadscientist.com
+# Copyright(C) 2021 -  Windell H. Oskay, www.evilmadscientist.com
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
 #
 
 '''
-Hershey Text 3.0.4, 2020-06-01
+Hershey Text 3.0.5, 2021-05-17
 
-Copyright 2020, Windell H. Oskay, www.evilmadscientist.com
+Copyright 2021, Windell H. Oskay, www.evilmadscientist.com
 
 Major revisions in Hershey Text 3.0:
 
@@ -273,7 +273,7 @@ We recommend that you use the live preview option to achieve best results with
 this extension.
 
 
-(c) 2020 Windell H. Oskay
+(c) 2021 Windell H. Oskay
 Evil Mad Scientist Laboratories
 '''
 
@@ -1116,7 +1116,9 @@ Evil Mad Scientist Laboratories
 
             try:
                 line_spacing = node_style['line-height']
-                if "%" in line_spacing: # Handle percentage line spacing(e.g., 125%)
+                if "normal" in line_spacing:
+                    line_spacing_local = 1.25 # Inkscape default line spacing
+                elif "%" in line_spacing: # Handle percentage line spacing(e.g., 125%)
                     line_spacing_local = float(line_spacing.rstrip("%")) / 100.0
                 else:
                     line_spacing_local = self.units_to_userunits(line_spacing)
@@ -1410,7 +1412,9 @@ Evil Mad Scientist Laboratories
 
                 try:
                     line_spacing_temp = node_style['line-height']
-                    if "%" in line_spacing_temp: # Handle percentage line spacing(e.g., 125%)
+                    if "normal" in line_spacing_temp:
+                        line_spacing = 1.25 # Inkscape default line spacing
+                    elif "%" in line_spacing_temp: # Handle percentage line spacing(e.g., 125%)
                         line_spacing = float(line_spacing_temp.rstrip("%")) / 100.0
                     else:
                         line_spacing = self.units_to_userunits(line_spacing_temp)

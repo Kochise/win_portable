@@ -20,6 +20,7 @@
 """
 Greate perfect bound cover
 """
+import textwrap
 
 import inkex
 from inkex import Guide
@@ -42,11 +43,16 @@ class PerfectBoundCover(inkex.EffectExtension):
         pars.add_argument("--width", type=float, default=6.0, help="cover width (in)")
         pars.add_argument("--height", type=float, default=9.0, help="cover height (in)")
         pars.add_argument("--pages", type=int, default=64, help="number of pages")
-        pars.add_argument("--paperthicknessmeasurement", default=100.0,
-                          help="paper thickness measurement")
+        pars.add_argument("--paperthicknessmeasurement", default="ppi",
+                          help="""Measurement for determining the thickness of the spine.
+                          Options: 'ppi': pages per inch; 'caliper': caliper (inches);
+                            'points': caliper in points (1/1000 in);
+                            'bond_weight': Bond (pounds);
+                            'width': absolute width of spine (in)""")
         pars.add_argument("--paperthickness", type=float, default=0.0, help="paper thickness")
-        pars.add_argument("--coverthicknessmeasurement", default=100.0,
-                          help="cover thickness measurement")
+        pars.add_argument("--coverthicknessmeasurement", default="ppi",
+                          help="Measurement for determining the thickness of the cover. For "
+                          "available options, see --paperthicknessmeasurement")
         pars.add_argument("--coverthickness", type=float, default=0.0, help="cover thickness")
         pars.add_argument("--bleed", type=float, default=0.25, help="cover bleed (in)")
         pars.add_argument("--removeguides", type=inkex.Boolean, default=False, help="remove guide")

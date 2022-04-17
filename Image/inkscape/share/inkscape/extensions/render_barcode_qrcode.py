@@ -1005,12 +1005,14 @@ class QrCode(inkex.GenerateExtension):
             float(self.boxsize) / bbox.width,
             float(self.boxsize) / bbox.height,
         ))
+        result = Group()
         for row in range(self.draw.row_count()):
             for col in range(self.draw.col_count()):
                 if self.draw.isDark(col, row):
                     x, y = self.get_svg_pos(col, row)
                     # Inkscape doesn't support width/height on use tags
-                    return Use.new(symbol, x, y, transform=transform)
+                    result.append(Use.new(symbol, x / transform.a, y / transform.d, transform=transform))
+        return result
 
     render_pathcustom = lambda self: self.render_path(self.options.symbolid)
     render_neutral = lambda self: self.render_adv("n")

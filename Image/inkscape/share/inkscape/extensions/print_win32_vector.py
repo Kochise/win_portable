@@ -165,6 +165,12 @@ class PrintWin32Vector(inkex.EffectExtension):
         if trans:
             self.groupmat.pop()
 
+    def doc_name(self):
+        docname = self.svg.xpath('@sodipodi:docname')
+        if not docname:
+            docname = ['New document 1']
+        return ctypes.create_string_buffer(('Inkscape ' + docname[0].split('\\')[-1]).encode('ascii', 'replace'))
+
     def effect(self):
         pcchBuffer = ctypes.c_long()
         myspool.GetDefaultPrinterA(None, ctypes.byref(pcchBuffer))     # get length of printer name
@@ -185,10 +191,7 @@ class PrintWin32Vector(inkex.EffectExtension):
 
         # initiallize print document
 
-        docname = self.svg.xpath('@sodipodi:docname')
-        if not docname:
-            docname = ['New document 1']
-        lpszDocName = ctypes.create_string_buffer('Inkscape ' + docname[0].split('\\')[-1])
+        lpszDocName = self.doc_name()
         DOCINFO = ctypes.c_long * 5
         docInfo = DOCINFO(20, ctypes.addressof(lpszDocName), 0, 0, 0)
         self.hDC = mygdi.CreateDCA(None, pname, None, ctypes.byref(pDevMode))

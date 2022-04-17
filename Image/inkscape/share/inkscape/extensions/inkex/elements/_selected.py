@@ -22,6 +22,7 @@ When elements are selected, these structures provide an advanced API.
 
 from collections import OrderedDict
 from ._utils import natural_sort_key
+from ._base import BaseElement
 
 class ElementList(OrderedDict):
     """
@@ -138,7 +139,7 @@ class ElementList(OrderedDict):
                 yield elem
             for child in elem:
                 yield from _recurse(child)
-        return ElementList(self.svg, [r for e in self for r in _recurse(e)])
+        return ElementList(self.svg, [r for e in self for r in _recurse(e) if isinstance(r, (BaseElement, str))])
 
     def id_dict(self):
         """For compatibility, return regular dictionary of id -> element pairs"""

@@ -288,12 +288,13 @@ class BaseElement(etree.ElementBase):
     @property
     def root(self):
         """Get the root document element from any element descendent"""
-        if self.getparent() is not None:
-            return self.getparent().root
+        root, parent = self, self
+        while parent is not None:
+            root, parent = parent, parent.getparent()
         from ._svg import SvgDocumentElement
-        if not isinstance(self, SvgDocumentElement):
+        if not isinstance(root, SvgDocumentElement):
             raise FragmentError("Element fragment does not have a document root!")
-        return self
+        return root
 
     def get_or_create(self, xpath, nodeclass=None, prepend=False):
         """Get or create the given xpath, pre/append new node if not found."""
@@ -311,13 +312,7 @@ class BaseElement(etree.ElementBase):
     def descendants(self):
         """Walks the element tree and yields all elements, parent first"""
         from ._selected import ElementList
-        return ElementList(self.root, self._descendants())
-
-    def _descendants(self):
-        yield self
-        for child in self:
-            if hasattr(child, '_descendants'):
-                yield from child._descendants() # pylint: disable=protected-access
+        return ElementList(self.root, [element for element in self.iter() if isinstance(element, (BaseElement, str))])
 
     def ancestors(self, elem=None, stop_at=()):
         """
@@ -332,12 +327,11 @@ class BaseElement(etree.ElementBase):
     def _ancestors(self, elem, stop_at):
         if isinstance(elem, BaseElement):
             stop_at = list(elem.ancestors())
-        parent = self.getparent()
-        if parent is not None:
+        for parent in self.iterancestors():
             yield parent
-            if parent not in stop_at:
-                yield from parent._ancestors(elem=elem, stop_at=stop_at) # pylint: disable=protected-access
-
+            if parent in stop_at:
+                break
+            
     def backlinks(self, *types):
         """Get elements which link back to this element, like ancestors but via xlinks"""
         if not types or isinstance(self, types):

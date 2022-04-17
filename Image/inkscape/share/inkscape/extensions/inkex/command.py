@@ -63,10 +63,29 @@ def which(program):
     if os.path.isabs(program) and os.path.isfile(program):
         return program
 
-    from shutil import which as warlock
-    prog = warlock(program)
-    if prog:
+    # This code can be simplified using shutil.which in Python3. However, on Windows, 
+    # shutil.which("pdflatex") returns ".\pdflatex.py", i.e. the path to the extension,
+    # probably because Windows doesn't have the concept of an execute flag. In order to not break
+    # the extension on Windows, the change e8bbec5f was partially reverted.
+    try:
+        # Python2 and python3, but must have distutils and may not always
+        # work on windows versions (depending on the version)
+        from distutils.spawn import find_executable
+        prog = find_executable(program)
+        if prog:
             return prog
+    except ImportError:
+        pass
+
+    try:
+        # Python3 only version of which
+        from shutil import which as warlock
+        prog = warlock(program)
+        if prog:
+            return prog
+    except ImportError:
+        pass # python2
+
 
     # There may be other methods for doing a `which` command for other
     # operating systems; These should go here as they are discovered.

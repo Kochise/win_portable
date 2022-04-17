@@ -167,7 +167,7 @@ export_viewport = False
 export_endsec = False
 
 def re_hex2unichar(m):
-    return unichr(int(m.group(1), 16))
+    return chr(int(m.group(1), 16))
 
 
 def formatStyle(style):
@@ -304,6 +304,8 @@ def export_leader(vals):
             attribs = {'d': path, 'style': style}
             etree.SubElement(layer, 'path', attribs)
 
+def export_polyline(vals):
+    return export_lwpolyline(vals)    
 
 def export_lwpolyline(vals):
     # mandatory group codes : (10, 20, 70) (x, y, flags)
@@ -645,8 +647,6 @@ class DxfInput(inkex.InputExtension):
             line = get_line()
             if line[1] == 'ENTITIES':
                 inENTITIES = True
-            elif line[1] == 'POLYLINE':
-                polylines += 1
             if entity and vals.is_valid(line[0]):
                 seqs.append(line[0])  # list of group codes
                 if line[0] in ('1', '2', '3', '6', '8'):  # text value
@@ -707,12 +707,39 @@ class DxfInput(inkex.InputExtension):
                             exporter(vals, w)
                         else:
                             exporter(vals)
+
+                if line[1] == 'POLYLINE':
+                    inVertexs   = False
+                    entity = 'LWPOLYLINE'
+                    vals = ValueConstruct()
+                    seqs = []
+                    flag70  = 0     # default
+                    while line[0] and (line[1] != 'SEQEND'):
+                        line = get_line()
+                        if line[1] == 'VERTEX' :
+                            inVertexs   = True
+                        if inVertexs == False :
+                            if line[0]  == '6':  # 8:layer 6:line style
+                                seqs.append(line[0])
+                                vals[line[0]].append(line[1])
+                            if line[0] =='70' : # flag
+                                flg70 = int(line[1])
+                        else :
+                            if line[0] == '70' :
+                                if int(line[1]) == 16 : # control point
+                                    continue
+                            if line[0] in ('10', '20') :  # vertexs
+                                val = float(line[1])
+                                seqs.append(line[0])
+                                vals[line[0]].append(val)
+                    seqs.append('70')
+                    vals['70'].append(flag70)
+                    continue
+                
                 entity = line[1]
                 vals = ValueConstruct()
                 seqs = []
 
-        if polylines:
-            inkex.errormsg(_('%d ENTITIES of type POLYLINE encountered and ignored. Please try to convert to Release 13 format using QCad.') % polylines)
         self.document = doc
 
 def get_export(opt):

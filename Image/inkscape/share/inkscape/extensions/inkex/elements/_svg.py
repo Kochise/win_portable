@@ -27,6 +27,7 @@ Provide a way to load lxml attributes with an svg API on top.
 
 import random
 from lxml import etree
+import math
 
 from ..deprecated import DeprecatedSvgMixin
 from ..units import discover_unit
@@ -61,9 +62,11 @@ class SvgDocumentElement(DeprecatedSvgMixin, BaseElement):
             self.ids = set(self.xpath('//@id'))
         return self.ids
 
-    def get_unique_id(self, prefix, size=4):
+    def get_unique_id(self, prefix, size=None):
         """Generate a new id from an existing old_id"""
         ids = self.get_ids()
+        if size is None:
+            size = max(math.ceil(math.log10(len(ids) or 1000))+1, 4)
         new_id = None
         _from = 10 ** size - 1
         _to = 10 ** size

@@ -278,6 +278,9 @@ class Text(AbstractShape):
         return x, y
 
     def draw(self):
+        for tspan in self.node:
+            if isinstance(tspan, inkex.TextPath):
+                raise ValueError("TextPath elements are not supported")
         x, y = self.get_data()
         style = self.get_style()
         if self.has_transform():

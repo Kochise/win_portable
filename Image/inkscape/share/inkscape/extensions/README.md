@@ -35,6 +35,7 @@ Development of both the core inkex modules, tests and each of the extensions
 contained within the core inkscape extensions repository should follow these
 basic rules of quality assurance:
 
+ * Use python3.6 or later, no python2 code would be used here.
  * Use pylint to ensure code is written consistantly
  * Have tests so that each line of an extension is covered in the coverage report
  * Not cross streams between extensions, so your extension should import from

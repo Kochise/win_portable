@@ -330,7 +330,7 @@ class Export(WebSlicerMixin, inkex.OutputExtension):
         if 'dimension' in conf:
             dim = conf['dimension'].split('x')
             opts += ' -w ' + dim[0] + ' -h ' + dim[1]
-        (status, output) = self.get_cmd_output('inkscape {} -i "{}" -e "{}" "{}"'.format(opts, el.attrib['id'], img_name_png, self.tmp_svg))
+        (status, output) = self.get_cmd_output('inkscape {} -i "{}" -o "{}" "{}"'.format(opts, el.attrib['id'], img_name_png, self.tmp_svg))
         if conf['format'] != 'png':
             opts = ''
             if conf['format'] == 'jpg':

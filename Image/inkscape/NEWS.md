@@ -1,3 +1,43 @@
+
+Inkscape 1.1.2
+--------------
+
+Released on **2022-02-05**
+
+Release highlights
+------------------
+
+This is a bugfix release:
+
+ - Dependencies updated, fixing bitmap exports
+ - Graphic tablet pens erasors switch to the correct tool
+ - Fix lost styling of text converted to path
+ - Fix relative position of clones pasted to a new document
+ - Fix various crashes
+
+
+Full release notes on https://wiki.inkscape.org/wiki/index.php/Release_notes/1.1.2
+
+
+Inkscape 1.1.1
+--------------
+
+Released on **2021-09-21**
+
+Release highlights
+------------------
+
+This is a bugfix release:
+
+- Pressure sensitivity should work again in Windows
+- Stroke to path working on text again
+- Startup time improved
+- Fix various crashes
+
+
+Full release notes on https://wiki.inkscape.org/wiki/index.php/Release_notes/1.1.1
+
+
 Inkscape 1.1
 ------------
 

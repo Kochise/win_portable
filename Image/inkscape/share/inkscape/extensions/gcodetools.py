@@ -2825,7 +2825,7 @@ class Gcodetools(inkex.EffectExtension):
     # In/out paths:
     # TODO move it to the bottom
     ################################################################################
-    def plasma_prepare_path(self):
+    def tab_plasma_prepare_path(self):
         self.get_info_plus()
 
         def add_arc(sp1, sp2, end=False, l=10., r=10.):
@@ -2867,7 +2867,7 @@ class Gcodetools(inkex.EffectExtension):
              or not self.options.in_out_path and not self.options.plasma_prepare_corners)
                 and not self.options.in_out_path_do_not_add_reference_point):
             self.options.orientation_points_count = "in-out reference point"
-            self.orientation()
+            #self.orientation()
 
         if self.options.in_out_path or self.options.plasma_prepare_corners:
             self.set_markers()

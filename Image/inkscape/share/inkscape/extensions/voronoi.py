@@ -783,6 +783,7 @@ def computeVoronoiDiagram(points):
                the indices of the vetices at the end of the edge.  If
                v1 or v2 is -1, the line extends to infinity.
     """
+    Edge.EDGE_NUM = 0
     siteList = SiteList(points)
     context = Context()
     voronoi(siteList, context)
@@ -795,6 +796,7 @@ def computeDelaunayTriangulation(points):
         Returns a list of 3-tuples: the indices of the points that form a
         Delaunay triangle.
     """
+    Edge.EDGE_NUM = 0
     siteList = SiteList(points)
     context = Context()
     context.triangulate = True

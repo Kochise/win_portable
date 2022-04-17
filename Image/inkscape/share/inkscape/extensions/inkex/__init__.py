@@ -7,6 +7,8 @@ This provides the basis from which you can develop your inkscape extension.
 
 # pylint: disable=wildcard-import
 
+__version__ = "1.1.0" # Version number for inkex; may differ from Inkscape version.
+
 import sys
 MIN_VERSION = (3, 6)
 if sys.version_info < MIN_VERSION:

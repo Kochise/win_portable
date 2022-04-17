@@ -23,6 +23,7 @@ Basic common utility functions for calculated things
 import os
 import sys
 import random
+import re
 import math
 
 from itertools import tee
@@ -35,6 +36,16 @@ ABORT_STATUS = -5
 
 (X, Y) = range(2)
 PY3 = sys.version_info[0] == 3
+
+# Taken from https://www.w3.org/Graphics/SVG/1.1/paths.html#PathDataBNF
+DIGIT_REX_PART = r'[0-9]'
+DIGIT_SEQUENCE_REX_PART = fr'(?:{DIGIT_REX_PART}+)'
+INTEGER_CONSTANT_REX_PART = DIGIT_SEQUENCE_REX_PART
+SIGN_REX_PART = r'[+-]'
+EXPONENT_REX_PART = fr'(?:[eE]{SIGN_REX_PART}?{DIGIT_SEQUENCE_REX_PART})'
+FRACTIONAL_CONSTANT_REX_PART = fr'(?:{DIGIT_SEQUENCE_REX_PART}?\.{DIGIT_SEQUENCE_REX_PART}|{DIGIT_SEQUENCE_REX_PART}\.)'
+FLOATING_POINT_CONSTANT_REX_PART = fr'(?:{FRACTIONAL_CONSTANT_REX_PART}{EXPONENT_REX_PART}?|{DIGIT_SEQUENCE_REX_PART}{EXPONENT_REX_PART})'
+NUMBER_REX = re.compile(fr'(?:{SIGN_REX_PART}?{FLOATING_POINT_CONSTANT_REX_PART}|{SIGN_REX_PART}?{INTEGER_CONSTANT_REX_PART})')
 
 def _pythonpath():
     for pth in os.environ.get('PYTHONPATH', '').split(':'):
@@ -164,7 +175,7 @@ def strargs(string, kind=float):
     """Returns a list of floats from a string with commas or space separators, 
         also splits at -(minus) signs by adding a space in front of the - sign
     """
-    return [kind(val) for val in string.replace(',', ' ').replace('-', ' -').replace('e ', 'e').replace('E ','e').split()]
+    return [kind(val) for val in NUMBER_REX.findall(string)]
 
 
 class classproperty:  # pylint: disable=invalid-name, too-few-public-methods

@@ -80,7 +80,11 @@ class Html5Canvas(inkex.OutputExtension):
             if elem.has_gradient():
                 gradient = self.get_gradient_defs(elem)
             elem.start(gradient)
-            elem.draw()
+            try:
+                elem.draw()
+            except ValueError as error: # print out the reason if any element can not be exported
+                canvas.write("// " + str(error))
+                continue
             self.walk_tree(node, canvas)
             elem.end()
 
