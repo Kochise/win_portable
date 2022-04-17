@@ -1,1 +1,0 @@
-!function(){const matches=location.search.match(/cf_div_theme_(\w+)?/i);if(matches&&matches[1]){let appliedTheme="dark"==matches[1]?"apply_dark":"apply_light";"system"==matches[1]&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches&&(appliedTheme="apply_dark"),document.body.classList.add(appliedTheme)}}();

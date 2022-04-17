@@ -1,1 +1,0 @@
-const l=location.href,pageId=l.includes("stats.html")?"Stats":l.includes("updatenotes.html")?"Update notes":"Options",appName=chrome.i18n.getMessage("shortName");$("title").text(pageId+" - "+appName),$("#extShortName").text(appName),$("#version_number").text(`ver ${chrome.runtime.getManifest().version_name}`);
