@@ -89,6 +89,7 @@ Windows 7+ (mostly 64 bit applications now)
 **Firefox** : ready to use `Firefox` browser with some privacy extensions installed (old `Photon` based)<br>
 **TightVNC** : fast VNC client/server (you'll need to open up your firewall)<br>
 **TTYEmulator** : the best `tty` emulator, do `ssh` as well (`Linux` session)<br>
+**UltraVNC** : fast VNC client/server (you'll need to open up your firewall)<br>
 **wget** : file and protocol downloader (the other one everyone loves)<br>
 
 ### Manager
