@@ -9,7 +9,7 @@ Installation
 -------------
 
 1. Close Paint.NET.
-2. Place AvifFileType.dll, AvifNative_x86.dll and AvifNative_x64.dll in the Paint.NET FileTypes folder which is usually located in one the following locations depending on the Paint.NET version you have installed.
+2. Place AvifFileType.dll, AvifNative_ARM64.dll, AvifNative_x86.dll and AvifNative_x64.dll in the Paint.NET FileTypes folder which is usually located in one the following locations depending on the Paint.NET version you have installed.
 
   Classic: C:\Program Files\Paint.NET\FileTypes    
   Microsoft Store: Documents\paint.net App Files\FileTypes

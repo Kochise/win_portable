@@ -1,4 +1,4 @@
-DX10 DDS Filetype Plugin for Paint.NET
+DirectX 10 DDS Filetype Plugin for Paint.NET
 
 Description
 ------------
@@ -18,7 +18,7 @@ Installation
 -------------
 
 1. Close Paint.NET.
-2. Place DdsFileTypePlus.dll, DdsFileTypePlusIO_x86.dll and DdsFileTypePlusIO_x64.dll in the Paint.NET FileTypes folder  which is usually located in one the following locations depending on the Paint.NET version you have installed.
+2. Place DdsFileTypePlus.dll, DdsFileTypePlusIO_ARM64.dll, DdsFileTypePlusIO_x86.dll and DdsFileTypePlusIO_x64.dll in the Paint.NET FileTypes folder which is usually located in one the following locations depending on the Paint.NET version you have installed.
 
   Classic: C:\Program Files\Paint.NET\FileTypes
   Microsoft Store: Documents\paint.net App Files\FileTypes 
