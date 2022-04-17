@@ -127,6 +127,7 @@ GS_R8G8 = _obspython.GS_R8G8
 GS_RGBA_UNORM = _obspython.GS_RGBA_UNORM
 GS_BGRX_UNORM = _obspython.GS_BGRX_UNORM
 GS_BGRA_UNORM = _obspython.GS_BGRA_UNORM
+GS_RG16 = _obspython.GS_RG16
 GS_ZS_NONE = _obspython.GS_ZS_NONE
 GS_Z16 = _obspython.GS_Z16
 GS_Z24_S8 = _obspython.GS_Z24_S8
@@ -148,6 +149,11 @@ GS_BLEND_INVDSTCOLOR = _obspython.GS_BLEND_INVDSTCOLOR
 GS_BLEND_DSTALPHA = _obspython.GS_BLEND_DSTALPHA
 GS_BLEND_INVDSTALPHA = _obspython.GS_BLEND_INVDSTALPHA
 GS_BLEND_SRCALPHASAT = _obspython.GS_BLEND_SRCALPHASAT
+GS_BLEND_OP_ADD = _obspython.GS_BLEND_OP_ADD
+GS_BLEND_OP_SUBTRACT = _obspython.GS_BLEND_OP_SUBTRACT
+GS_BLEND_OP_REVERSE_SUBTRACT = _obspython.GS_BLEND_OP_REVERSE_SUBTRACT
+GS_BLEND_OP_MIN = _obspython.GS_BLEND_OP_MIN
+GS_BLEND_OP_MAX = _obspython.GS_BLEND_OP_MAX
 GS_NEVER = _obspython.GS_NEVER
 GS_LESS = _obspython.GS_LESS
 GS_LEQUAL = _obspython.GS_LEQUAL
@@ -1199,6 +1205,10 @@ def gs_blend_function_separate(src_c: 'enum gs_blend_type', dest_c: 'enum gs_ble
     return _obspython.gs_blend_function_separate(src_c, dest_c, src_a, dest_a)
 gs_blend_function_separate = _obspython.gs_blend_function_separate
 
+def gs_blend_op(op: 'enum gs_blend_op_type') -> "void":
+    return _obspython.gs_blend_op(op)
+gs_blend_op = _obspython.gs_blend_op
+
 def gs_depth_function(test: 'enum gs_depth_test') -> "void":
     return _obspython.gs_depth_function(test)
 gs_depth_function = _obspython.gs_depth_function
@@ -1439,6 +1449,10 @@ gs_is_compressed_format = _obspython.gs_is_compressed_format
 def gs_is_srgb_format(format: 'enum gs_color_format') -> "bool":
     return _obspython.gs_is_srgb_format(format)
 gs_is_srgb_format = _obspython.gs_is_srgb_format
+
+def gs_generalize_format(format: 'enum gs_color_format') -> "enum gs_color_format":
+    return _obspython.gs_generalize_format(format)
+gs_generalize_format = _obspython.gs_generalize_format
 
 def gs_get_total_levels(width: 'uint32_t', height: 'uint32_t', depth: 'uint32_t') -> "uint32_t":
     return _obspython.gs_get_total_levels(width, height, depth)
@@ -2955,6 +2969,7 @@ OBS_SOURCE_SUBMIX = _obspython.OBS_SOURCE_SUBMIX
 OBS_SOURCE_CONTROLLABLE_MEDIA = _obspython.OBS_SOURCE_CONTROLLABLE_MEDIA
 OBS_SOURCE_CEA_708 = _obspython.OBS_SOURCE_CEA_708
 OBS_SOURCE_SRGB = _obspython.OBS_SOURCE_SRGB
+OBS_SOURCE_CAP_DONT_SHOW_PROPERTIES = _obspython.OBS_SOURCE_CAP_DONT_SHOW_PROPERTIES
 class obs_source_audio_mix(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, obs_source_audio_mix, name, value)
@@ -3013,6 +3028,8 @@ OBS_NUMBER_SLIDER = _obspython.OBS_NUMBER_SLIDER
 OBS_COMBO_INVALID = _obspython.OBS_COMBO_INVALID
 OBS_GROUP_NORMAL = _obspython.OBS_GROUP_NORMAL
 OBS_GROUP_CHECKABLE = _obspython.OBS_GROUP_CHECKABLE
+OBS_BUTTON_DEFAULT = _obspython.OBS_BUTTON_DEFAULT
+OBS_BUTTON_URL = _obspython.OBS_BUTTON_URL
 OBS_FONT_BOLD = _obspython.OBS_FONT_BOLD
 OBS_FONT_ITALIC = _obspython.OBS_FONT_ITALIC
 OBS_FONT_UNDERLINE = _obspython.OBS_FONT_UNDERLINE
@@ -3226,7 +3243,7 @@ def obs_property_text_type(p: 'obs_property_t *') -> "enum obs_text_type":
     return _obspython.obs_property_text_type(p)
 obs_property_text_type = _obspython.obs_property_text_type
 
-def obs_property_text_monospace(p: 'obs_property_t *') -> "enum obs_text_type":
+def obs_property_text_monospace(p: 'obs_property_t *') -> "bool":
     return _obspython.obs_property_text_monospace(p)
 obs_property_text_monospace = _obspython.obs_property_text_monospace
 
@@ -3269,6 +3286,14 @@ obs_property_float_set_suffix = _obspython.obs_property_float_set_suffix
 def obs_property_text_set_monospace(p: 'obs_property_t *', monospace: 'bool') -> "void":
     return _obspython.obs_property_text_set_monospace(p, monospace)
 obs_property_text_set_monospace = _obspython.obs_property_text_set_monospace
+
+def obs_property_button_set_type(p: 'obs_property_t *', type: 'enum obs_button_type') -> "void":
+    return _obspython.obs_property_button_set_type(p, type)
+obs_property_button_set_type = _obspython.obs_property_button_set_type
+
+def obs_property_button_set_url(p: 'obs_property_t *', url: 'char *') -> "void":
+    return _obspython.obs_property_button_set_url(p, url)
+obs_property_button_set_url = _obspython.obs_property_button_set_url
 
 def obs_property_list_clear(p: 'obs_property_t *') -> "void":
     return _obspython.obs_property_list_clear(p)
@@ -3401,6 +3426,14 @@ obs_property_group_type = _obspython.obs_property_group_type
 def obs_property_group_content(p: 'obs_property_t *') -> "obs_properties_t *":
     return _obspython.obs_property_group_content(p)
 obs_property_group_content = _obspython.obs_property_group_content
+
+def obs_property_button_type(p: 'obs_property_t *') -> "enum obs_button_type":
+    return _obspython.obs_property_button_type(p)
+obs_property_button_type = _obspython.obs_property_button_type
+
+def obs_property_button_url(p: 'obs_property_t *') -> "char const *":
+    return _obspython.obs_property_button_url(p)
+obs_property_button_url = _obspython.obs_property_button_url
 INTERACT_NONE = _obspython.INTERACT_NONE
 INTERACT_CAPS_KEY = _obspython.INTERACT_CAPS_KEY
 INTERACT_SHIFT_KEY = _obspython.INTERACT_SHIFT_KEY
@@ -3717,6 +3750,13 @@ OBS_SCALE_BICUBIC = _obspython.OBS_SCALE_BICUBIC
 OBS_SCALE_BILINEAR = _obspython.OBS_SCALE_BILINEAR
 OBS_SCALE_LANCZOS = _obspython.OBS_SCALE_LANCZOS
 OBS_SCALE_AREA = _obspython.OBS_SCALE_AREA
+OBS_BLEND_NORMAL = _obspython.OBS_BLEND_NORMAL
+OBS_BLEND_ADDITIVE = _obspython.OBS_BLEND_ADDITIVE
+OBS_BLEND_SUBTRACT = _obspython.OBS_BLEND_SUBTRACT
+OBS_BLEND_SCREEN = _obspython.OBS_BLEND_SCREEN
+OBS_BLEND_MULTIPLY = _obspython.OBS_BLEND_MULTIPLY
+OBS_BLEND_LIGHTEN = _obspython.OBS_BLEND_LIGHTEN
+OBS_BLEND_DARKEN = _obspython.OBS_BLEND_DARKEN
 OBS_BOUNDS_NONE = _obspython.OBS_BOUNDS_NONE
 OBS_BOUNDS_STRETCH = _obspython.OBS_BOUNDS_STRETCH
 OBS_BOUNDS_SCALE_INNER = _obspython.OBS_BOUNDS_SCALE_INNER
@@ -4348,6 +4388,10 @@ def obs_enum_scenes(enum_proc: 'bool (*)(void *,obs_source_t *)', param: 'void *
     return _obspython.obs_enum_scenes(enum_proc, param)
 obs_enum_scenes = _obspython.obs_enum_scenes
 
+def obs_enum_all_sources(enum_proc: 'bool (*)(void *,obs_source_t *)', param: 'void *') -> "void":
+    return _obspython.obs_enum_all_sources(enum_proc, param)
+obs_enum_all_sources = _obspython.obs_enum_all_sources
+
 def obs_enum_outputs(enum_proc: 'bool (*)(void *,obs_output_t *)', param: 'void *') -> "void":
     return _obspython.obs_enum_outputs(enum_proc, param)
 obs_enum_outputs = _obspython.obs_enum_outputs
@@ -4363,6 +4407,10 @@ obs_enum_services = _obspython.obs_enum_services
 def obs_get_source_by_name(name: 'char const *') -> "obs_source_t *":
     return _obspython.obs_get_source_by_name(name)
 obs_get_source_by_name = _obspython.obs_get_source_by_name
+
+def obs_get_transition_by_name(name: 'char const *') -> "obs_source_t *":
+    return _obspython.obs_get_transition_by_name(name)
+obs_get_transition_by_name = _obspython.obs_get_transition_by_name
 
 def obs_get_output_by_name(name: 'char const *') -> "obs_output_t *":
     return _obspython.obs_get_output_by_name(name)
@@ -4475,6 +4523,10 @@ def obs_obj_is_private(obj: 'void *') -> "bool":
     return _obspython.obs_obj_is_private(obj)
 obs_obj_is_private = _obspython.obs_obj_is_private
 
+def obs_audio_monitoring_available() -> "bool":
+    return _obspython.obs_audio_monitoring_available()
+obs_audio_monitoring_available = _obspython.obs_audio_monitoring_available
+
 def obs_enum_audio_monitoring_devices(cb: 'obs_enum_audio_device_cb', data: 'void *') -> "void":
     return _obspython.obs_enum_audio_monitoring_devices(cb, data)
 obs_enum_audio_monitoring_devices = _obspython.obs_enum_audio_monitoring_devices
@@ -4494,6 +4546,14 @@ obs_add_raw_video_callback = _obspython.obs_add_raw_video_callback
 def obs_remove_raw_video_callback(callback: 'void (*)(void *,struct video_data *)', param: 'void *') -> "void":
     return _obspython.obs_remove_raw_video_callback(callback, param)
 obs_remove_raw_video_callback = _obspython.obs_remove_raw_video_callback
+
+def obs_add_raw_audio_callback(mix_idx: 'size_t', conversion: 'struct audio_convert_info const *', callback: 'audio_output_callback_t', param: 'void *') -> "void":
+    return _obspython.obs_add_raw_audio_callback(mix_idx, conversion, callback, param)
+obs_add_raw_audio_callback = _obspython.obs_add_raw_audio_callback
+
+def obs_remove_raw_audio_callback(mix_idx: 'size_t', callback: 'audio_output_callback_t', param: 'void *') -> "void":
+    return _obspython.obs_remove_raw_audio_callback(mix_idx, callback, param)
+obs_remove_raw_audio_callback = _obspython.obs_remove_raw_audio_callback
 
 def obs_get_video_frame_time() -> "uint64_t":
     return _obspython.obs_get_video_frame_time()
@@ -4536,14 +4596,56 @@ def obs_get_private_data() -> "obs_data_t *":
 obs_get_private_data = _obspython.obs_get_private_data
 OBS_TASK_UI = _obspython.OBS_TASK_UI
 OBS_TASK_GRAPHICS = _obspython.OBS_TASK_GRAPHICS
+OBS_TASK_AUDIO = _obspython.OBS_TASK_AUDIO
+OBS_TASK_DESTROY = _obspython.OBS_TASK_DESTROY
 
 def obs_queue_task(type: 'enum obs_task_type', task: 'obs_task_t', param: 'void *', wait: 'bool') -> "void":
     return _obspython.obs_queue_task(type, task, param, wait)
 obs_queue_task = _obspython.obs_queue_task
 
+def obs_in_task_thread(type: 'enum obs_task_type') -> "bool":
+    return _obspython.obs_in_task_thread(type)
+obs_in_task_thread = _obspython.obs_in_task_thread
+
+def obs_wait_for_destroy_queue() -> "bool":
+    return _obspython.obs_wait_for_destroy_queue()
+obs_wait_for_destroy_queue = _obspython.obs_wait_for_destroy_queue
+
 def obs_set_ui_task_handler(handler: 'obs_task_handler_t') -> "void":
     return _obspython.obs_set_ui_task_handler(handler)
 obs_set_ui_task_handler = _obspython.obs_set_ui_task_handler
+
+def obs_object_get_ref(object: 'obs_object_t *') -> "obs_object_t *":
+    return _obspython.obs_object_get_ref(object)
+obs_object_get_ref = _obspython.obs_object_get_ref
+
+def obs_object_release(object: 'obs_object_t *') -> "void":
+    return _obspython.obs_object_release(object)
+obs_object_release = _obspython.obs_object_release
+
+def obs_weak_object_addref(weak: 'obs_weak_object_t *') -> "void":
+    return _obspython.obs_weak_object_addref(weak)
+obs_weak_object_addref = _obspython.obs_weak_object_addref
+
+def obs_weak_object_release(weak: 'obs_weak_object_t *') -> "void":
+    return _obspython.obs_weak_object_release(weak)
+obs_weak_object_release = _obspython.obs_weak_object_release
+
+def obs_object_get_weak_object(object: 'obs_object_t *') -> "obs_weak_object_t *":
+    return _obspython.obs_object_get_weak_object(object)
+obs_object_get_weak_object = _obspython.obs_object_get_weak_object
+
+def obs_weak_object_get_object(weak: 'obs_weak_object_t *') -> "obs_object_t *":
+    return _obspython.obs_weak_object_get_object(weak)
+obs_weak_object_get_object = _obspython.obs_weak_object_get_object
+
+def obs_weak_object_expired(weak: 'obs_weak_object_t *') -> "bool":
+    return _obspython.obs_weak_object_expired(weak)
+obs_weak_object_expired = _obspython.obs_weak_object_expired
+
+def obs_weak_object_references_object(weak: 'obs_weak_object_t *', object: 'obs_object_t *') -> "bool":
+    return _obspython.obs_weak_object_references_object(weak, object)
+obs_weak_object_references_object = _obspython.obs_weak_object_references_object
 
 def obs_view_create() -> "obs_view_t *":
     return _obspython.obs_view_create()
@@ -4645,6 +4747,10 @@ def obs_weak_source_get_source(weak: 'obs_weak_source_t *') -> "obs_source_t *":
     return _obspython.obs_weak_source_get_source(weak)
 obs_weak_source_get_source = _obspython.obs_weak_source_get_source
 
+def obs_weak_source_expired(weak: 'obs_weak_source_t *') -> "bool":
+    return _obspython.obs_weak_source_expired(weak)
+obs_weak_source_expired = _obspython.obs_weak_source_expired
+
 def obs_weak_source_references_source(weak: 'obs_weak_source_t *', source: 'obs_source_t *') -> "bool":
     return _obspython.obs_weak_source_references_source(weak, source)
 obs_weak_source_references_source = _obspython.obs_weak_source_references_source
@@ -4720,6 +4826,10 @@ obs_source_get_width = _obspython.obs_source_get_width
 def obs_source_get_height(source: 'obs_source_t *') -> "uint32_t":
     return _obspython.obs_source_get_height(source)
 obs_source_get_height = _obspython.obs_source_get_height
+
+def obs_source_get_texcoords_centered(source: 'obs_source_t *') -> "bool":
+    return _obspython.obs_source_get_texcoords_centered(source)
+obs_source_get_texcoords_centered = _obspython.obs_source_get_texcoords_centered
 
 def obs_filter_get_parent(filter: 'obs_source_t const *') -> "obs_source_t *":
     return _obspython.obs_filter_get_parent(filter)
@@ -5316,6 +5426,10 @@ def obs_scene_release(scene: 'obs_scene_t *') -> "void":
     return _obspython.obs_scene_release(scene)
 obs_scene_release = _obspython.obs_scene_release
 
+def obs_scene_get_ref(scene: 'obs_scene_t *') -> "obs_scene_t *":
+    return _obspython.obs_scene_get_ref(scene)
+obs_scene_get_ref = _obspython.obs_scene_get_ref
+
 def obs_scene_get_source(scene: 'obs_scene_t const *') -> "obs_source_t *":
     return _obspython.obs_scene_get_source(scene)
 obs_scene_get_source = _obspython.obs_scene_get_source
@@ -5600,6 +5714,14 @@ def obs_sceneitem_get_scale_filter(item: 'obs_sceneitem_t *') -> "enum obs_scale
     return _obspython.obs_sceneitem_get_scale_filter(item)
 obs_sceneitem_get_scale_filter = _obspython.obs_sceneitem_get_scale_filter
 
+def obs_sceneitem_set_blending_mode(item: 'obs_sceneitem_t *', type: 'enum obs_blending_type') -> "void":
+    return _obspython.obs_sceneitem_set_blending_mode(item, type)
+obs_sceneitem_set_blending_mode = _obspython.obs_sceneitem_set_blending_mode
+
+def obs_sceneitem_get_blending_mode(item: 'obs_sceneitem_t *') -> "enum obs_blending_type":
+    return _obspython.obs_sceneitem_get_blending_mode(item)
+obs_sceneitem_get_blending_mode = _obspython.obs_sceneitem_get_blending_mode
+
 def obs_sceneitem_force_update_transform(item: 'obs_sceneitem_t *') -> "void":
     return _obspython.obs_sceneitem_force_update_transform(item)
 obs_sceneitem_force_update_transform = _obspython.obs_sceneitem_force_update_transform
@@ -5735,6 +5857,10 @@ obs_sceneitem_transition_load = _obspython.obs_sceneitem_transition_load
 def obs_sceneitem_transition_save(item: 'struct obs_scene_item *', show: 'bool') -> "obs_data_t *":
     return _obspython.obs_sceneitem_transition_save(item, show)
 obs_sceneitem_transition_save = _obspython.obs_sceneitem_transition_save
+
+def obs_scene_prune_sources(scene: 'obs_scene_t *') -> "void":
+    return _obspython.obs_scene_prune_sources(scene)
+obs_scene_prune_sources = _obspython.obs_scene_prune_sources
 
 def obs_output_get_display_name(id: 'char const *') -> "char const *":
     return _obspython.obs_output_get_display_name(id)
@@ -6100,6 +6226,10 @@ obs_encoder_get_height = _obspython.obs_encoder_get_height
 def obs_encoder_get_sample_rate(encoder: 'obs_encoder_t const *') -> "uint32_t":
     return _obspython.obs_encoder_get_sample_rate(encoder)
 obs_encoder_get_sample_rate = _obspython.obs_encoder_get_sample_rate
+
+def obs_encoder_get_frame_size(encoder: 'obs_encoder_t const *') -> "size_t":
+    return _obspython.obs_encoder_get_frame_size(encoder)
+obs_encoder_get_frame_size = _obspython.obs_encoder_get_frame_size
 
 def obs_encoder_set_preferred_video_format(encoder: 'obs_encoder_t *', format: 'enum video_format') -> "void":
     return _obspython.obs_encoder_set_preferred_video_format(encoder, format)
@@ -7041,6 +7171,9 @@ OBS_FRONTEND_EVENT_REPLAY_BUFFER_SAVED = _obspython.OBS_FRONTEND_EVENT_REPLAY_BU
 OBS_FRONTEND_EVENT_VIRTUALCAM_STARTED = _obspython.OBS_FRONTEND_EVENT_VIRTUALCAM_STARTED
 OBS_FRONTEND_EVENT_VIRTUALCAM_STOPPED = _obspython.OBS_FRONTEND_EVENT_VIRTUALCAM_STOPPED
 OBS_FRONTEND_EVENT_TBAR_VALUE_CHANGED = _obspython.OBS_FRONTEND_EVENT_TBAR_VALUE_CHANGED
+OBS_FRONTEND_EVENT_SCENE_COLLECTION_CHANGING = _obspython.OBS_FRONTEND_EVENT_SCENE_COLLECTION_CHANGING
+OBS_FRONTEND_EVENT_PROFILE_CHANGING = _obspython.OBS_FRONTEND_EVENT_PROFILE_CHANGING
+OBS_FRONTEND_EVENT_SCRIPTING_SHUTDOWN = _obspython.OBS_FRONTEND_EVENT_SCRIPTING_SHUTDOWN
 
 def obs_frontend_streaming_start() -> "void":
     return _obspython.obs_frontend_streaming_start()
@@ -7193,6 +7326,22 @@ obs_frontend_virtualcam_active = _obspython.obs_frontend_virtualcam_active
 def obs_frontend_reset_video() -> "void":
     return _obspython.obs_frontend_reset_video()
 obs_frontend_reset_video = _obspython.obs_frontend_reset_video
+
+def obs_frontend_open_source_properties(source: 'obs_source_t *') -> "void":
+    return _obspython.obs_frontend_open_source_properties(source)
+obs_frontend_open_source_properties = _obspython.obs_frontend_open_source_properties
+
+def obs_frontend_open_source_filters(source: 'obs_source_t *') -> "void":
+    return _obspython.obs_frontend_open_source_filters(source)
+obs_frontend_open_source_filters = _obspython.obs_frontend_open_source_filters
+
+def obs_frontend_open_source_interaction(source: 'obs_source_t *') -> "void":
+    return _obspython.obs_frontend_open_source_interaction(source)
+obs_frontend_open_source_interaction = _obspython.obs_frontend_open_source_interaction
+
+def obs_frontend_get_current_record_output_path() -> "char *":
+    return _obspython.obs_frontend_get_current_record_output_path()
+obs_frontend_get_current_record_output_path = _obspython.obs_frontend_get_current_record_output_path
 # This file is compatible with both classic and new-style classes.
 
 

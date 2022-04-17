@@ -190,12 +190,13 @@ cd "Video\OBS-Studio\obs-plugins\64bit"
 
 if exist "libcef.dll.001" (
 rem	if not exist "libcef.dll" (
-		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003" "libcef.dll"
+		copy /y /b "libcef.dll.001"+"libcef.dll.002"+"libcef.dll.003"+"libcef.dll.004" "libcef.dll"
 rem	)
 
 	del "libcef.dll.001" /q 1>nul 2>nul
 	del "libcef.dll.002" /q 1>nul 2>nul
 	del "libcef.dll.003" /q 1>nul 2>nul
+	del "libcef.dll.004" /q 1>nul 2>nul
 )
 
 cd "..\..\..\.."
