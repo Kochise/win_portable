@@ -15,6 +15,9 @@
 	<property name="PluginUnpackedFileExtension">
 		<get/>
 	</property>
+	<property name="PluginExtendedProperties">
+		<get/>
+	</property>
 	<method name="UnpackFile"/>
 	<method name="PackFile"/>
 	<method name="IsFolder"/>
@@ -48,6 +51,7 @@
 Option Explicit
 
 Const RegKeyPath = "HKCU\Software\Thingamahoochie\WinMerge\Plugins\CompareMSExcelFiles.sct\"
+Const pbGroup = 6
 Dim MsgCannotGetMacros
 MsgCannotGetMacros = "Cannot get Macros." & vbCrLf & _
 	"   To allow WinMerge to compare macros, use MS Office to alter the settings in the Macro Security for the current application." & vbCrLf & _
@@ -166,7 +170,7 @@ Sub ungroupShapes(sht)
     Do
         cnt = sht.Shapes.Count
         For Each shp In sht.Shapes
-            shp.ungroup
+            If shp.Type = pbGroup Then shp.ungroup
         Next
     Loop While cnt <> sht.Shapes.Count
 End Sub
@@ -390,12 +394,17 @@ Function get_PluginUnpackedFileExtension()
 	get_PluginUnpackedFileExtension = ".tsv"
 End Function
 
+Function get_PluginExtendedProperties()
+	get_PluginExtendedProperties = "ProcessType=Content Extraction;FileType=MS-Excel;MenuCaption=MS-Excel"
+End Function
+
 Function UnpackFile(fileSrc, fileDst, pbChanged, pSubcode)
 	Dim fo
 	Dim xl
 	Dim wbk
 	Dim sht
 	Dim cmp
+	Dim fileSrc2
 
 	Set fo = fso.CreateTextFile(fileDst, True, True)
 
@@ -403,7 +412,14 @@ Function UnpackFile(fileSrc, fileDst, pbChanged, pSubcode)
 	xl.EnableEvents = False
 	xl.DisplayAlerts = False
 
-	Set wbk = xl.Workbooks.Open(fileSrc, regRead(RegKeyPath & "UpdateLinks", 0))
+	fileSrc2 = fileSrc
+	If fso.GetExtensionName(fileSrc2) = "lnk" Then
+		fileSrc2 = wsh.CreateShortcut(fileSrc2).TargetPath
+		If Not fso.FileExists(fileSrc2) Then
+			Err.Raise 30001, "CompareMSExcelFiles.sct", fileSrc & ": Target file '" & fileSrc2 & "' not found"
+		End If 
+	End If
+	Set wbk = xl.Workbooks.Open(fileSrc2, regRead(RegKeyPath & "UpdateLinks", 0))
 
 	On Error Resume Next
 
@@ -484,7 +500,10 @@ Function UnpackFolder(fileSrc, folderDst, pbChanged, pSubcode)
 	Dim wbk
 	Dim sht
 	Dim cmp
+	Dim digit
+	Dim zf
 	Dim No
+	Dim fileSrc2
 
 	If Not fso.FolderExists(folderDst) Then fso.CreateFolder folderDst
 
@@ -496,24 +515,36 @@ Function UnpackFolder(fileSrc, folderDst, pbChanged, pSubcode)
 	backgroundChecking = xl.ErrorCheckingOptions.BackgroundChecking
 	xl.ErrorCheckingOptions.BackgroundChecking = False
     
-	Set wbk = xl.Workbooks.Open(fileSrc, regRead(RegKeyPath & "UpdateLinks", 0))
+	fileSrc2 = fileSrc
+	If fso.GetExtensionName(fileSrc2) = "lnk" Then
+		fileSrc2 = wsh.CreateShortcut(fileSrc2).TargetPath
+		If Not fso.FileExists(fileSrc2) Then
+			Err.Raise 30001, "CompareMSExcelFiles.sct", fileSrc & ": Target file '" & fileSrc2 & "' not found"
+		End If 
+	End If
+	Set wbk = xl.Workbooks.Open(fileSrc2, regRead(RegKeyPath & "UpdateLinks", 0))
 
 	On Error Resume Next
 
+	digit = Len(CStr(wbk.Worksheets.Count))
+	If digit <= 0 Then digit = 1
+	zf = String(digit, "0")
+
 	If regRead(RegKeyPath & "CompareDocumentProperties", False) Then
-		Set fo = fso.CreateTextFile(fso.BuildPath(folderDst, "(0)DocumentProperties.txt"), True, True)
+		Set fo = fso.CreateTextFile(fso.BuildPath(folderDst, "(" & zf & ")DocumentProperties.txt"), True, True)
 		writeObjectProperties fo, wbk.BuiltinDocumentProperties
 		fo.Close
 	End If
 
 	If regRead(RegKeyPath & "CompareNames", True) Then
-		Set fo = fso.CreateTextFile(fso.BuildPath(folderDst, "(0)Names.txt"), True, True)
+		Set fo = fso.CreateTextFile(fso.BuildPath(folderDst, "(" & zf & ")Names.txt"), True, True)
 		writeObjectProperties fo, wbk.Names
 		fo.Close
 	End If
 
 	No = 1
 	For Each sht In wbk.Worksheets
+		No = Right(zf & CInt(No), digit)
 		If regRead(RegKeyPath & "CompareCellValues", True) Then
 			Set fo = fso.CreateTextFile(fso.BuildPath(folderDst, "(" & No & ")" & escape(sht.Name) & ".tsv"), True, True)
 			writeCellValues fo, sht
@@ -542,7 +573,7 @@ Function UnpackFolder(fileSrc, folderDst, pbChanged, pSubcode)
 		If regRead(RegKeyPath & "CompareWorksheetsAsImage", True) Then
 			saveSheetAsImage sht, fso.BuildPath(folderDst, "(" & No & ")" & escape(sht.Name))
 		End If
-		No = No + 1
+		No = CInt(No) + 1
 	Next
 	If regRead(RegKeyPath & "CompareVBAMacros", True) Then
 		If Not isAccessibleVBAProject(wbk) Then
