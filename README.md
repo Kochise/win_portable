@@ -79,6 +79,7 @@ Windows 7+ (mostly 64 bit applications now)
 **IrfanView** : image viewer and more, lightweight image editing with `F12`<br>
 **OpenSCAD** : pretty good CAD program, yet using a DSL programming language<br>
 **paint.net** : the better `Paint` or `Gimp`, with layers and stuff<br>
+**Tesseract-OCR** : pretty effective fast and free OCR with many languages support <ins>EXTERNAL INSTALLER</ins><br>
 
 ### Internet
 
