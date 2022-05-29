@@ -20,7 +20,6 @@ Windows 7+ (mostly 64 bit applications now)
 **Shellbag Analyzer & Cleaner** : clean `Windows` MRU entries (Most Recently Used files)<br>
 **ShutUp10** : set predefined `Windows 10` settings (like no telemetry)<br>
 **UCheck** : installed softwares' version checker/updater (doesn't work on portable version)<br>
-**WinaeroTweaker** : `Windows`' parameters tweaker, like the good ol' `Tweak UI`<br>
 
 ### Coding
 
@@ -120,6 +119,7 @@ Windows 7+ (mostly 64 bit applications now)
 **USBDeview** : `USB` devices and driver viewer/manager (watch what's really going on)<br>
 **UsbTreeView** : mostly like **USBDeview** but also with their `USB` host controllers<br>
 **XsX Alpha-Blended Cursors** : colourful cartoonish semi-transparent cursors from the `Windows XP` era <ins>INSTALLER</ins><br>
+**WinaeroTweaker** : `Windows`' parameters tweaker, like the good ol' `Tweak UI`<br>
 
 ### Video
 
