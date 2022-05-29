@@ -103,6 +103,7 @@ Windows 7+ (mostly 64 bit applications now)
 ### System
 
 **7-Zip** : multi format un/packer, lightweight and free (no nag screen)<br>
+**bug.n** : tiling window manager, like on `Linux`, read the doc to know the shortcuts<br>
 **CapsUnlock** : prevent `Capslock` from locking (press also `Shift` for that)<br>
 **CrossHair** : `Ctrl+&` to des/activate static cross-hair (`Ctrl+²` for dynamic, not on `Windows 10`)<br>
 **DirectShutdown** : `Windows+r` restart, `Windows+s` shutdown (not on `Windows 10`)<br>
