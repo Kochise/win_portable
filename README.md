@@ -126,8 +126,9 @@ Windows 7+ (mostly 64 bit applications now)
 ### Video
 
 **A's Video Converter** : not the easiest video converter to use, but the fastest<br>
-**K-Lite Codec Pack** : the codecs everyone should install, don't mess with `vlc` <ins>EXTERNAL INSTALLER</ins><br>
+**K-Lite Codec Pack** : the codecs everyone should install, includes `MPC-HC` <ins>EXTERNAL INSTALLER</ins><br>
 **LICEcap** : record a part of your screen directly into animated `gif`<br>
+**mpv** : video player (with Anime4K shaders) that is "almost" as good as `MPC-HC`<br>
 **OBS-Studio** : screen caster for streaming, can also record<br>
 **Subtitle Edit** : best subtitle editor, can shift time for several lines<br>
 
