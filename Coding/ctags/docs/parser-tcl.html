@@ -1,18 +1,20 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>The new Tcl parser &#8212; Universal Ctags 0.3.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -32,7 +34,8 @@
           <a href="parser-python.html" title="The new Python parser"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="parsers.html" accesskey="U">Parsers</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="parsers.html" accesskey="U">Parsers</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The new Tcl parser</a></li> 
       </ul>
     </div>  
 
@@ -41,30 +44,30 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="the-new-tcl-parser">
-<span id="tcl"></span><h1>The new Tcl parser<a class="headerlink" href="#the-new-tcl-parser" title="Permalink to this headline">¶</a></h1>
+  <section id="the-new-tcl-parser">
+<span id="tcl"></span><h1>The new Tcl parser<a class="headerlink" href="#the-new-tcl-parser" title="Permalink to this heading">¶</a></h1>
 <dl class="field-list simple">
-<dt class="field-odd">Maintainer</dt>
+<dt class="field-odd">Maintainer<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Masatake YAMATO &lt;<a class="reference external" href="mailto:yamato&#37;&#52;&#48;redhat&#46;com">yamato<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
 <p>Tcl parser is rewritten as a token oriented parser to support
 namespace.  It was line oriented parser. Some incompatibility between
-Exuberant-ctags is introduced in the rewriting.</p>
+Exuberant Ctags is introduced in the rewriting.</p>
 <p>The line oriented parser captures <cite>class</cite>, <cite>public|protected|private
 method</cite>.  They are definitions in ITcl and TclOO. The new token oriented Tcl
 parser ignores them.  Instead ITcl and TclOO subparser running on Tcl base
 parser capture them.</p>
-<div class="section" id="known-bugs">
-<h2>Known bugs<a class="headerlink" href="#known-bugs" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="full-qualified-tags">
-<h3>Full qualified tags<a class="headerlink" href="#full-qualified-tags" title="Permalink to this headline">¶</a></h3>
+<section id="known-bugs">
+<h2>Known bugs<a class="headerlink" href="#known-bugs" title="Permalink to this heading">¶</a></h2>
+<section id="full-qualified-tags">
+<h3>Full qualified tags<a class="headerlink" href="#full-qualified-tags" title="Permalink to this heading">¶</a></h3>
 <p>The separator used in full qualified tags should be <cite>::</cite> but <cite>.</cite> is
 used.</p>
 <p>A ITcl or TclOO class <cite>C</cite> can be defined in a Tcl namespace <cite>N</cite>:</p>
-<div class="highlight-Tcl notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span> eval N <span class="k">{</span>
-    <span class="nv">oo</span><span class="o">::</span>class create C <span class="k">{</span>
-    <span class="k">}</span>
+<div class="highlight-Tcl notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>N<span class="w"> </span><span class="k">{</span><span class="w"></span>
+<span class="w">    </span><span class="nv">oo</span><span class="o">::</span>class<span class="w"> </span>create<span class="w"> </span>C<span class="w"> </span><span class="k">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">}</span>
 <span class="k">}</span>
 </pre></div>
 </div>
@@ -77,23 +80,25 @@ used.</p>
 </pre></div>
 </div>
 <p>Much work is needed to fix this.</p>
-</div>
-<div class="section" id="nested-procs">
-<h3>Nested procs<a class="headerlink" href="#nested-procs" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="nested-procs">
+<h3>Nested procs<a class="headerlink" href="#nested-procs" title="Permalink to this heading">¶</a></h3>
 <p><cite>proc</cite> defined in a <cite>proc</cite> cannot be captured well.
 This is a regression.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">The new Tcl parser</a><ul>
 <li><a class="reference internal" href="#known-bugs">Known bugs</a><ul>
 <li><a class="reference internal" href="#full-qualified-tags">Full qualified tags</a></li>
@@ -104,22 +109,27 @@ This is a regression.</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="parser-python.html"
-                        title="previous chapter">The new Python parser</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="parser-vim.html"
-                        title="next chapter">The Vim parser</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="parser-python.html"
+                          title="previous chapter">The new Python parser</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="parser-vim.html"
+                          title="next chapter">The Vim parser</a></p>
+  </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -137,13 +147,14 @@ This is a regression.</p>
           <a href="parser-python.html" title="The new Python parser"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="parsers.html" >Parsers</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="parsers.html" >Parsers</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The new Tcl parser</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015, Universal Ctags Team.
-      Last updated on 21 Sep 2020.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+        &#169; Copyright 2015-2022, Universal Ctags Team.
+      Last updated on 21 Aug 2022.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <title>ctags-incompatibilities</title>
 <style type="text/css">
 
@@ -363,14 +363,14 @@ ul.auto-toc {
 <div class="document" id="ctags-incompatibilities">
 <span id="ctags-incompatibilities-7"></span>
 <h1 class="title">ctags-incompatibilities</h1>
-<h2 class="subtitle" id="incompatibilities-between-universal-ctags-and-exuberant-ctags">Incompatibilities between Universal-ctags and Exuberant-ctags</h2>
+<h2 class="subtitle" id="incompatibilities-between-universal-ctags-and-exuberant-ctags">Incompatibilities between Universal Ctags and Exuberant Ctags</h2>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
 <tbody valign="top">
 <tr><th class="docinfo-name">Version:</th>
-<td>0.0.0</td></tr>
-<tr class="manual-group field"><th class="docinfo-name">Manual group:</th><td class="field-body">Universal-ctags</td>
+<td>5.9.0</td></tr>
+<tr class="manual-group field"><th class="docinfo-name">Manual group:</th><td class="field-body">Universal Ctags</td>
 </tr>
 <tr class="manual-section field"><th class="docinfo-name">Manual section:</th><td class="field-body">7</td>
 </tr>
@@ -386,105 +386,134 @@ ul.auto-toc {
 <div class="section" id="description">
 <h1>DESCRIPTION</h1>
 <p>This page describes major incompatible changes introduced to
-Universal-ctags forked from Exuberant-ctags.</p>
+Universal Ctags forked from Exuberant Ctags.</p>
+<div class="section" id="option-files-loading-at-starting-up-time-preload-files">
+<h2>Option files loading at starting up time (preload files)</h2>
+<p>Universal Ctags doesn't load <tt class="docutils literal"><span class="pre">~/.ctags</span></tt> at starting up time.
+File paths for preload files are changed.
+See &quot;FILES&quot; section of ctags(1).</p>
+</div>
+<div class="section" id="environment-variables-for-arranging-command-lines">
+<h2>Environment variables for arranging command lines</h2>
+<p>Universal Ctags doesn't read <tt class="docutils literal">CTAGS</tt> and/or <tt class="docutils literal">ETAGS</tt> environment
+variables.</p>
 </div>
 <div class="section" id="incompatibilities-in-command-line-interface">
-<h1>Incompatibilities in command line interface</h1>
+<h2>Incompatibilities in command line interface</h2>
+<div class="section" id="ordering-in-a-command-line">
+<h3>Ordering in a command line</h3>
+<!-- NOTE: #1889 -->
+<p>The command line format of Universal Ctags is &quot;<tt class="docutils literal">ctags [options]
+[source_file(s)]</tt>&quot; following the standard POSIX convention.</p>
+<p>Exuberant Ctags accepts a option following a source file.</p>
+<pre class="code console literal-block">
+<span class="generic prompt">$ </span>ctags -o - foo.c --list-kinds<span class="operator">=</span>Sh
+<span class="generic output">f  functions</span>
+</pre>
+<p>Universal Ctags warns and ignores the option <tt class="docutils literal"><span class="pre">--list-kinds=Sh</span></tt> as follows.</p>
+<pre class="code console literal-block">
+<span class="generic prompt">$ </span>ctags -o - foo.c --list-kinds<span class="operator">=</span>Sh
+<span class="generic output">ctags: Warning: cannot open input file &quot;--list-kinds=Sh&quot; : No such file or directory
+a       foo.c   /^void a () {}$/;&quot;      f       typeref:typename:void
+b       foo.c   /^void b () {}$/;&quot;      f       typeref:typename:void</span>
+</pre>
+</div>
 <div class="section" id="the-order-of-application-of-patterns-and-extensions-in-langmap">
-<h2>The order of application of patterns and extensions in <tt class="docutils literal"><span class="pre">--langmap</span></tt></h2>
+<h3>The order of application of patterns and extensions in <tt class="docutils literal"><span class="pre">--langmap</span></tt></h3>
 <p>When applying mappings for a name of given source file,
-Exuberant-ctags tests file name patterns AFTER file extensions
-(<strong>e-map-order</strong>). Universal-ctags does this differently; it tests file
-name patterns BEFORE file extensions (<strong>u-map-order</strong>).</p>
+Exuberant Ctags tests file name patterns <em>AFTER</em> file extensions
+(<em>e-map-order</em>). Universal Ctags does this differently; it tests file
+name patterns <em>BEFORE</em> file extensions (<em>u-map-order</em>).</p>
 <p>This incompatible change is introduced to deal with the following
 situation:</p>
 <blockquote>
 <ul class="simple">
-<li>&quot;build.xml&quot; as a source file,</li>
-<li>The &quot;Ant&quot; parser declares it handles a file name pattern &quot;build.xml&quot;, and</li>
-<li>The &quot;XML&quot; parser declares it handles a file extension &quot;xml&quot;.</li>
+<li><tt class="docutils literal">build.xml</tt> as a source file,</li>
+<li>The Ant parser declares it handles a file name pattern <tt class="docutils literal">build.xml</tt>, and</li>
+<li>The XML parser declares it handles a file extension <tt class="docutils literal">.xml</tt>.</li>
 </ul>
 </blockquote>
-<p>Which parser should be used for parsing &quot;build.xml&quot;?  The assumption
-of Universal-ctags is the user may want to use the &quot;Ant&quot; parser; the
+<p>Which parser should be used for parsing <tt class="docutils literal">build.xml</tt>?  The assumption
+of Universal Ctags is the user may want to use the Ant parser; the
 file name pattern it declares is more specific than the file extension
-that the &quot;XML&quot; parser declares. However, e-map-order chooses the &quot;XML&quot;
+that the XML parser declares. However, e-map-order chooses the XML
 parser.</p>
-<p>So Universal-ctags uses the u-map-order even though it introduces an
+<p>So Universal Ctags uses the u-map-order even though it introduces an
 incompatibility.</p>
-<p><tt class="docutils literal"><span class="pre">--list-map-extensions=language</span></tt> and <tt class="docutils literal"><span class="pre">--list-map-patterns=language</span></tt>
+<p><tt class="docutils literal"><span class="pre">--list-map-extensions=&lt;language&gt;</span></tt> and <tt class="docutils literal"><span class="pre">--list-map-patterns=&lt;language&gt;</span></tt>
 options are helpful to verify and the file extensions and the file
-name patterns of given <em>language</em>.</p>
+name patterns of given <em>&lt;language&gt;</em>.</p>
 </div>
 <div class="section" id="remove-file-tags-and-file-scope-options">
-<h2>Remove <tt class="docutils literal"><span class="pre">--file-tags</span></tt> and <tt class="docutils literal"><span class="pre">--file-scope</span></tt> options</h2>
-<p>Even in Exuberant-ctags, &quot;--file-tags&quot; is not documented in its man page.
-Instead of specifying &quot;--file-tags&quot; or &quot;--file-tags=yes&quot;, use
-&quot;--extras=+f&quot; or &quot;--extras=+{inputFile}&quot;.</p>
-<p>Instead of specifying &quot;--file-tags=no&quot;, use
-&quot;--extras=-f&quot; or &quot;--extras=-{inputFile}&quot;.</p>
-<p>Universal-ctags introduces &quot;F/fileScope&quot; extra as the replacement for
+<h3>Remove <tt class="docutils literal"><span class="pre">--file-tags</span></tt> and <tt class="docutils literal"><span class="pre">--file-scope</span></tt> options</h3>
+<p>Even in Exuberant Ctags, <tt class="docutils literal"><span class="pre">--file-tags</span></tt> is not documented in its man page.
+Instead of specifying <tt class="docutils literal"><span class="pre">--file-tags</span></tt> or <tt class="docutils literal"><span class="pre">--file-tags=yes</span></tt>, use
+<tt class="docutils literal"><span class="pre">--extras=+f</span></tt> or <tt class="docutils literal"><span class="pre">--extras=+{inputFile}</span></tt>.</p>
+<p>Instead of specifying <tt class="docutils literal"><span class="pre">--file-tags=no</span></tt>, use
+<tt class="docutils literal"><span class="pre">--extras=-f</span></tt> or <tt class="docutils literal"><span class="pre">--extras=-{inputFile}</span></tt>.</p>
+<p>Universal Ctags introduces <tt class="docutils literal">F/fileScope</tt> extra as the replacement for
 <tt class="docutils literal"><span class="pre">--file-scope</span></tt> option.</p>
-<p>Instead of specifying &quot;--file-tags&quot; or &quot;--file-tags=yes&quot;, use
-&quot;--extras=+F&quot; or &quot;--extras=+{fileScope}&quot;.</p>
-<p>Instead of specifying &quot;--file-tags=no&quot;, use
-&quot;--extras=-F&quot; or &quot;--extras=-{fileScope}&quot;.</p>
+<p>Instead of specifying <tt class="docutils literal"><span class="pre">--file-tags</span></tt> or <tt class="docutils literal"><span class="pre">--file-tags=yes</span></tt>, use
+<tt class="docutils literal"><span class="pre">--extras=+F</span></tt> or <tt class="docutils literal"><span class="pre">--extras=+{fileScope}</span></tt>.</p>
+<p>Instead of specifying <tt class="docutils literal"><span class="pre">--file-tags=no</span></tt>, use
+<tt class="docutils literal"><span class="pre">--extras=-F</span></tt> or <tt class="docutils literal"><span class="pre">--extras=-{fileScope}</span></tt>.</p>
 </div>
-<div class="section" id="language-and-kind-definitions">
-<h2>Language and kind definitions</h2>
+</div>
+<div class="section" id="incompatibilities-in-language-and-kind-definitions">
+<h2>Incompatibilities in language and kind definitions</h2>
 <div class="section" id="language-name-defined-with-langdef-name-option">
 <h3>Language name defined with <tt class="docutils literal"><span class="pre">--langdef=name</span></tt> option</h3>
-<p>The characters you can use are more restricted than Exuberant-ctags.
+<p>The characters you can use are more restricted than Exuberant Ctags.
 For more details, see the description of <tt class="docutils literal"><span class="pre">--langdef=name</span></tt> in ctags-optlib(7).</p>
 </div>
 <div class="section" id="obsoleting-lang-kinds-option">
 <h3>Obsoleting <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-kinds</span></tt> option</h3>
 <p>Some options have <em>&lt;LANG&gt;</em> as parameterized parts in their name like
 <tt class="docutils literal"><span class="pre">--foo-&lt;LANG&gt;=...</span></tt> or <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-foo=...</span></tt>. The most of all such
-options in Exuberant-ctags have the former form, <tt class="docutils literal"><span class="pre">--foo-&lt;LANG&gt;=...</span></tt>.
+options in Exuberant Ctags have the former form, <tt class="docutils literal"><span class="pre">--foo-&lt;LANG&gt;=...</span></tt>.
 The exception is <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-kinds</span></tt>.</p>
-<p>Universal-ctags uses the former form for all <em>&lt;LANG&gt;</em> parameterized
+<p>Universal Ctags uses the former form for all <em>&lt;LANG&gt;</em> parameterized
 option. Use <tt class="docutils literal"><span class="pre">--kinds-&lt;LANG&gt;</span></tt> instead of <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-kinds</span></tt> in
-Universal-ctags. <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-kinds</span></tt> still works but it will be
+Universal Ctags. <tt class="docutils literal"><span class="pre">--&lt;LANG&gt;-kinds</span></tt> still works but it will be
 removed in the future.</p>
 <p>The former form may be friendly to shell completion engines.</p>
 </div>
 <div class="section" id="disallowing-to-define-a-kind-with-file-as-name">
-<h3>Disallowing to define a kind with &quot;file&quot; as name</h3>
-<p>The kind name &quot;file&quot; is reserved.  Using it as part of kind spec in
+<h3>Disallowing to define a kind with <tt class="docutils literal">file</tt> as name</h3>
+<p>The kind name <tt class="docutils literal">file</tt> is reserved.  Using it as part of kind spec in
 <tt class="docutils literal"><span class="pre">--regex-&lt;LANG&gt;</span></tt> option is now disallowed.</p>
 </div>
 <div class="section" id="disallowing-to-define-a-kind-with-f-as-letter">
-<h3>Disallowing to define a kind with &quot;F&quot; as letter</h3>
-<p>The kind letter &quot;F&quot; is reserved.  Using it as part of a kind spec in
+<h3>Disallowing to define a kind with '<tt class="docutils literal">F</tt>' as letter</h3>
+<p>The kind letter '<tt class="docutils literal">F</tt>' is reserved.  Using it as part of a kind spec in
 <tt class="docutils literal"><span class="pre">--regex-&lt;LANG&gt;</span></tt> option is now disallowed.</p>
 </div>
 <div class="section" id="disallowing-to-use-other-than-alphabetical-character-as-kind-letter">
 <h3>Disallowing to use other than alphabetical character as kind letter</h3>
-<p>Exuberant-ctags accepts a character other than alphabetical character
-as kind letter in <tt class="docutils literal"><span class="pre">--regex-&lt;LANG&gt;=...</span></tt> option.  Universal-ctags
+<p>Exuberant Ctags accepts a character other than alphabetical character
+as kind letter in <tt class="docutils literal"><span class="pre">--regex-&lt;LANG&gt;=...</span></tt> option.  Universal Ctags
 accepts only an alphabetical character.</p>
 </div>
 <div class="section" id="acceptable-characters-as-parts-of-a-kind-name">
 <h3>Acceptable characters as parts of a kind name</h3>
-<p>Exuberant-ctags accepts any character as a part of a kind name
+<p>Exuberant Ctags accepts any character as a part of a kind name
 defined with <tt class="docutils literal"><span class="pre">--regex-&lt;LANG&gt;=/regex/replacement/kind-spec/</span></tt>.</p>
-<p>Universal-ctags accepts only an alphabetical character as
+<p>Universal Ctags accepts only an alphabetical character as
 the initial letter of a kind name.
-Universal-ctags accepts only an alphabetical character or
+Universal Ctags accepts only an alphabetical character or
 numerical character as the rest letters.</p>
 <p>An example:</p>
 <pre class="literal-block">
 --regex-Foo=/abstract +class +([a-z]+)/\1/a,abstract class/i
 </pre>
-<p>Universal-ctags rejects this because the kind name, &quot;abstract class&quot;,
+<p>Universal Ctags rejects this because the kind name, <tt class="docutils literal">abstract class</tt>,
 includes a whitespace character.</p>
-<p>This requirement is for making the output of Universal-ctags follow
+<p>This requirement is for making the output of Universal Ctags follow
 the tags file format.</p>
 </div>
 <div class="section" id="a-combination-of-a-kind-letter-and-a-kind-name">
 <h3>A combination of a kind letter and a kind name</h3>
-<p>In Universal-ctags, the combination of
+<p>In Universal Ctags, the combination of
 a kind letter and a kind name must be unique in a language.</p>
 <p>You cannot define more than one kind reusing a kind letter with
 different kind names. You cannot define more than one kind reusing a
@@ -494,50 +523,44 @@ kind name with different kind letters.</p>
 --regex-Foo=/abstract +class +([a-z]+)/\1/a,abstractClass/i
 --regex-Foo=/attribute +([a-z]+)/\1/a,attribute/i
 </pre>
-<p>Universal-ctags rejects this because the kind letter, &quot;a&quot;, used twice
-for defining a kind &quot;abstractClass&quot; and &quot;attribute&quot;.</p>
-</div>
+<p>Universal Ctags rejects this because the kind letter, '<tt class="docutils literal">a</tt>', used twice
+for defining a kind <tt class="docutils literal">abstractClass</tt> and <tt class="docutils literal">attribute</tt>.</p>
 </div>
 </div>
 <div class="section" id="incompatibilities-in-tags-file-format">
-<h1>Incompatibilities in tags file format</h1>
+<h2>Incompatibilities in tags file format</h2>
 <div class="section" id="using-numerical-character-in-the-name-part-of-tag-tagfield">
-<h2>Using numerical character in the name part of tag tagfield</h2>
+<h3>Using numerical character in the name part of tag tagfield</h3>
 <p>The version 2 tags file format, the default output format of
-Exuberant-ctags, accepts only alphabetical characters in the name part
+Exuberant Ctags, accepts only alphabetical characters in the name part
 of tag tagfield.</p>
-<p>Universal-ctags introduces an exception to this specification; it may
+<p>Universal Ctags introduces an exception to this specification; it may
 use numerical characters in addition to alphabetical characters as the
 letters other than initial letter of the name part.</p>
-<p>The kinds &quot;heading1&quot;, &quot;heading2&quot;, and &quot;heading3&quot; in the HTML parser
+<p>The kinds <tt class="docutils literal">heading1</tt>, <tt class="docutils literal">heading2</tt>, and <tt class="docutils literal">heading3</tt> in the HTML parser
 are the examples.</p>
 </div>
 <div class="section" id="truncating-the-pattern-for-long-input-lines">
-<h2>Truncating the pattern for long input lines</h2>
+<h3>Truncating the pattern for long input lines</h3>
 <p>To prevent generating overly large tags files, a pattern field is
 truncated, by default, when its size exceeds 96 bytes. A different
 limit can be specified with <tt class="docutils literal"><span class="pre">--pattern-length-limit=N</span></tt>. Specifying
-0 as <em>N</em> results no truncation as Exuberant-ctags does not.</p>
-</div>
-</div>
-<div class="section" id="option-files-loading-at-starting-up-time-preload-files">
-<h1>Option files loading at starting up time (preload files)</h1>
-<p>File paths for preload files are changed.
-Universal-ctags doesn't load &quot;~/.ctags&quot; at starting up time.
-See &quot;FILES&quot; section of ctags(1).</p>
+0 as <em>N</em> results no truncation as Exuberant Ctags does not.</p>
 </div>
 <div class="section" id="kind-letters-and-names">
-<h1>Kind letters and names</h1>
-<p>A kind letter &quot;F&quot; and a kind name &quot;file&quot; are reserved in the
+<h3>Kind letters and names</h3>
+<p>A kind letter '<tt class="docutils literal">F</tt>' and a kind name <tt class="docutils literal">file</tt> are reserved in the
 main part. A parser cannot have a kind conflicting with
 these reserved ones. Some incompatible changes are introduced
 to follow the above rule.</p>
 <ul class="simple">
-<li>Cobol's &quot;file&quot; kind is renamed to &quot;fileDesc&quot; because the
-kind name &quot;file&quot; is reserved.</li>
-<li>Ruby's &quot;F&quot; (singletonMethod) is changed to &quot;S&quot;.</li>
-<li>SQL's &quot;F&quot; (field) is changed to &quot;E&quot;.</li>
+<li>Cobol's <tt class="docutils literal">file</tt> kind is renamed to <tt class="docutils literal">fileDesc</tt> because the
+kind name <tt class="docutils literal">file</tt> is reserved.</li>
+<li>Ruby's '<tt class="docutils literal">F</tt>' (singletonMethod) is changed to '<tt class="docutils literal">S</tt>'.</li>
+<li>SQL's '<tt class="docutils literal">F</tt>' (field) is changed to '<tt class="docutils literal">E</tt>'.</li>
 </ul>
+</div>
+</div>
 </div>
 <div class="section" id="see-also">
 <h1>SEE ALSO</h1>

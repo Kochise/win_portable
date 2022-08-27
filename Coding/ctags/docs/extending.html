@@ -1,23 +1,25 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Extending ctags &#8212; Universal Ctags 0.3.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Extending ctags with a parser written in C &#8212; Universal Ctags 0.3.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Extending ctags with Regex parser (optlib)" href="optlib.html" />
-    <link rel="prev" title="Input validation for Units" href="input-validation.html" /> 
+    <link rel="next" title="Writing a parser in C" href="parser-in-c.html" />
+    <link rel="prev" title="Optscript, a programming language for extending optlib parsers" href="optscript.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,12 +28,13 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="optlib.html" title="Extending ctags with Regex parser (optlib)"
+          <a href="parser-in-c.html" title="Writing a parser in C"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="input-validation.html" title="Input validation for Units"
+          <a href="optscript.html" title="Optscript, a programming language for extending optlib parsers"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Extending ctags with a parser written in C</a></li> 
       </ul>
     </div>  
 
@@ -40,69 +43,97 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="extending-ctags">
-<h1>Extending ctags<a class="headerlink" href="#extending-ctags" title="Permalink to this headline">¶</a></h1>
-<p>Exuberant-ctags allows a user to add a new parser to ctags with <code class="docutils literal notranslate"><span class="pre">--langdef=&lt;LANG&gt;</span></code>
-and <code class="docutils literal notranslate"><span class="pre">--regex-&lt;LANG&gt;=...</span></code> options.</p>
-<p>Universal-ctags follows and extends the design of Exuberant-ctags in more
-powerful ways, as described in the following chapters.</p>
-<p>Universal-ctags encourages users to share the new parsers defined by
-their options. See <a class="reference internal" href="optlib.html#optlib"><span class="std std-ref">optlib</span></a> to know how you can share your
-parser definition with others.</p>
-<p>Note that some of the new features are experimental, and will be marked as such
-in the documentation.</p>
+  <section id="extending-ctags-with-a-parser-written-in-c">
+<span id="extending-ctags-in-c"></span><h1>Extending ctags with a parser written in C<a class="headerlink" href="#extending-ctags-with-a-parser-written-in-c" title="Permalink to this heading">¶</a></h1>
+<p>This chapter describes how to add a parser in C and the internal API of
+Universal Ctags.</p>
+<p>Before you start writing a parser in C, consider using <em>optlib parser</em>.
+Universal Ctags extends the functionality so extensively that it can implement
+most of functionality for the parser.
+See <a class="reference internal" href="man/ctags-optlib.7.html#ctags-optlib-7"><span class="std std-ref">ctags-optlib(7)</span></a> and <a class="reference internal" href="optlib.html#optlib"><span class="std std-ref">Extending ctags with Regex parser (optlib)</span></a> for details.</p>
+<p><em>optlib parser</em> is also suitable for prototyping of a parser in C.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="optlib.html">Extending ctags with Regex parser (<em>optlib</em>)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#option-files">Option files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#regular-expression-regex-engine">Regular expression (regex) engine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#regex-option-argument-flags">Regex option argument flags</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#scope-tracking-in-a-regex-parser">Scope tracking in a regex parser</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#overriding-the-letter-for-file-kind">Overriding the letter for file kind</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#generating-fully-qualified-tags-automatically-from-scope-information">Generating fully qualified tags automatically from scope information</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#multi-line-pattern-match">Multi-line pattern match</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#advanced-pattern-matching-with-multiple-regex-tables">Advanced pattern matching with multiple regex tables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#conditional-tagging-with-extras">Conditional tagging with extras</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#adding-custom-fields-to-the-tag-output">Adding custom fields to the tag output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#capturing-reference-tags">Capturing reference tags</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#running-a-guest-parser-with-guest-regex-flag">Running a guest parser with <cite>_guest</cite> regex flag</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optlib.html#submitting-an-optlib-file-to-the-universal-ctags-project">Submitting an optlib file to the Universal-ctags project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parser-in-c.html">Writing a parser in C</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#registering-a-parser">Registering a parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#reading-input-file-stream">Reading input file stream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#parsing">Parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#adding-a-tag-to-the-tag-file">Adding a tag to the tag file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#adding-the-parser-to-ctags">Adding the parser to <code class="docutils literal notranslate"><span class="pre">ctags</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="parser-in-c.html#misc">Misc.</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="internal.html">ctags Internal API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="internal.html#input-text-stream">Input text stream</a></li>
-<li class="toctree-l2"><a class="reference internal" href="internal.html#automatic-parser-guessing">Automatic parser guessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="internal.html#managing-regular-expression-parsers">Managing regular expression parsers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="internal.html#parser-written-in-c">Parser written in C</a></li>
-<li class="toctree-l2"><a class="reference internal" href="internal.html#output-tag-stream">Output tag stream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html">Input text stream</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#inputfile-type-and-the-functions-of-input-group"><cite>inputFile</cite> type and the functions of input group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#the-functions-of-bypass-group">The functions of bypass group</a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#the-functions-of-raw-group">The functions of raw group</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#output-tag-stream">Output tag stream</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#cork-api">cork API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#background-and-idea">Background and Idea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#how-to-use">How to use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#automatic-full-qualified-tag-generation">Automatic full qualified tag generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#symbol-table-api">symbol table API</a></li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#tokeninfo-api">tokenInfo API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#multiple-parsers">Multiple parsers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#guest-parser-promise-api">Guest parser (promise API)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#id3">Background and Idea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#internal-design">Internal design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="internal.html#api-for-subparser">API for subparser</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#outline">Outline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#fields-of-subparser-type">Fields of <code class="docutils literal notranslate"><span class="pre">subparser</span></code> type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#extending-subparser-type">Extending <code class="docutils literal notranslate"><span class="pre">subparser</span></code> type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#making-a-tag-in-a-subparser">Making a tag in a subparser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#calling-methods-of-subparsers-from-a-base-parser">Calling methods of subparsers from a base parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#registering-a-subparser-to-its-base-parser">Registering a subparser to its base parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="internal.html#scheduling-running-the-base-parser">Scheduling running the base parser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#packcc-compiler-compiler">PackCC compiler-compiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#automatic-parser-guessing-tbw">Automatic parser guessing (TBW)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#managing-regular-expression-parsers-tbw">Managing regular expression parsers (TBW)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal.html#ghost-kind-in-regex-parser-tbw">Ghost kind in regex parser (TBW)</a></li>
+</ul>
 </div>
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="input-validation.html"
-                        title="previous chapter">Input validation for <em>Units</em></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="optlib.html"
-                        title="next chapter">Extending ctags with Regex parser (<em>optlib</em>)</a></p>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="optscript.html"
+                          title="previous chapter">Optscript, a programming language for extending optlib parsers</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="parser-in-c.html"
+                          title="next chapter">Writing a parser in C</a></p>
+  </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -114,18 +145,19 @@ in the documentation.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="optlib.html" title="Extending ctags with Regex parser (optlib)"
+          <a href="parser-in-c.html" title="Writing a parser in C"
              >next</a> |</li>
         <li class="right" >
-          <a href="input-validation.html" title="Input validation for Units"
+          <a href="optscript.html" title="Optscript, a programming language for extending optlib parsers"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Extending ctags with a parser written in C</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015, Universal Ctags Team.
-      Last updated on 21 Sep 2020.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+        &#169; Copyright 2015-2022, Universal Ctags Team.
+      Last updated on 21 Aug 2022.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>

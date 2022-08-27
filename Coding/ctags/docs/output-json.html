@@ -1,23 +1,25 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>JSON output &#8212; Universal Ctags 0.3.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Xref output" href="output-xref.html" />
-    <link rel="prev" title="Output formats" href="output-format.html" /> 
+    <link rel="next" title="Running multiple parsers on an input file" href="running-multi-parsers.html" />
+    <link rel="prev" title="Xref output" href="output-xref.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -26,13 +28,14 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="output-xref.html" title="Xref output"
+          <a href="running-multi-parsers.html" title="Running multiple parsers on an input file"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="output-format.html" title="Output formats"
+          <a href="output-xref.html" title="Xref output"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="output-format.html" accesskey="U">Output formats</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="output-format.html" accesskey="U">Output formats</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">JSON output</a></li> 
       </ul>
     </div>  
 
@@ -41,105 +44,38 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="json-output">
-<span id="output-json"></span><h1>JSON output<a class="headerlink" href="#json-output" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="format">
-<h2>Format<a class="headerlink" href="#format" title="Permalink to this headline">¶</a></h2>
-<p>JSON output goes to standard output by default.
-Each generated tag line is represented as an object.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>./ctags --output-format<span class="o">=</span>json /tmp/foo.py
-<span class="go">{&quot;_type&quot;: &quot;tag&quot;, &quot;name&quot;: &quot;Foo&quot;, &quot;path&quot;: &quot;/tmp/foo.py&quot;, &quot;pattern&quot;: &quot;/^class Foo:$/&quot;, &quot;kind&quot;: &quot;class&quot;}</span>
-</pre></div>
-</div>
-<p>Object keys which do not start with <cite>_</cite> are normal fields and map
-directly to the fields of the default tags file format.</p>
-<p>Keys that have names starting with <cite>_</cite> are a JSON format meta field.
-Currently only <cite>_type</cite> is used and it can have the values <cite>tag</cite> for a
-normal tag or <cite>ptag</cite> for a pseudo-tag.</p>
-<p>JSON output is still under development and it is expected the format
-will change in the future. To give applications a chance to handle
-these changes ctags uses a pseudo-tag, <cite>JSON_OUTPUT_VERSION</cite>, for
-specifying the format version.
-See <a class="reference internal" href="man/ctags-client-tools.7.html#ctags-client-tools-7"><span class="std std-ref">ctags-client-tools(7)</span></a> about the
-concept of the pseudo-tags.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./ctags --extras<span class="o">=</span><span class="s1">&#39;p&#39;</span> --pseudo-tags<span class="o">=</span>JSON_OUTPUT_VERSION  --output-format<span class="o">=</span>json /tmp/foo.py
-<span class="go">{&quot;_type&quot;: &quot;ptag&quot;, &quot;name&quot;: &quot;JSON_OUTPUT_VERSION&quot;, &quot;path&quot;: &quot;0.0&quot;, &quot;pattern&quot;: &quot;in development&quot;}</span>
-<span class="go">{&quot;_type&quot;: &quot;tag&quot;, &quot;name&quot;: &quot;Foo&quot;, &quot;path&quot;: &quot;/tmp/foo.py&quot;, &quot;pattern&quot;: &quot;/^class Foo:$/&quot;, &quot;kind&quot;: &quot;class&quot;}</span>
-<span class="go">...</span>
-</pre></div>
-</div>
-<p>The JSON output format is newly designed and does not need to support
-the historical quirks of the default tags file format.</p>
-<p>Kind long names are always used instead of kind letters. Enabling the
-<cite>k</cite> and/or <cite>K</cite> fields enables the <cite>z</cite> {kind} field internally.</p>
-<p>Scope information is always split into scope kinds and scope names.
-Enabling the <cite>s</cite> field enables the <cite>Z</cite> {kind} and <cite>p</cite> {scopeKind}
-fields internally. As for all kinds, long names are used for printing
-; kind letters are never used.</p>
-<p>If you need kind letters, open an issue at the GitHub site of
-Universal-ctags.</p>
-</div>
-<div class="section" id="field-introspection">
-<h2>Field introspection<a class="headerlink" href="#field-introspection" title="Permalink to this headline">¶</a></h2>
-<p>Values for the most of all fields are represented in JSON string type.
-However, some of them are represented in integer type and/or boolean type.
-What kind of JSON data types used in a field can be known with the output
-of <code class="docutils literal notranslate"><span class="pre">--list-fields</span></code> option:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./ctags --list-fields
-<span class="gp">#</span>LETTER NAME            ENABLED LANGUAGE         XFMT   JSTYPE DESCRIPTION
-<span class="go">N       name            on      NONE             TRUE   s--    tag name (fixed field)</span>
-<span class="go">..</span>
-<span class="go">f       file            on      NONE             TRUE   --b    File-restricted scoping</span>
-<span class="go">i       inherits        off     NONE             TRUE   s-b    Inheritance information</span>
-<span class="go">...</span>
-<span class="go">n       line            off     NONE             TRUE   -i-    Line number of tag definition</span>
-<span class="go">...</span>
-</pre></div>
-</div>
-<p><cite>JSTYPE</cite> column tells the data type of fields.</p>
-<dl class="simple">
-<dt>s</dt><dd><p>string</p>
-</dd>
-<dt>i</dt><dd><p>integer</p>
-</dd>
-<dt>b</dt><dd><p>boolean</p>
-</dd>
-</dl>
-<p>For example, The value for “inherits” field is represented in the string or boolean type.</p>
-</div>
-</div>
+  <section id="json-output">
+<span id="output-json"></span><h1>JSON output<a class="headerlink" href="#json-output" title="Permalink to this heading">¶</a></h1>
+<p>See <a class="reference internal" href="man/ctags-client-tools.7.html#ctags-client-tools-7"><span class="std std-ref">ctags-client-tools(7)</span></a>.</p>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">JSON output</a><ul>
-<li><a class="reference internal" href="#format">Format</a></li>
-<li><a class="reference internal" href="#field-introspection">Field introspection</a></li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="output-format.html"
-                        title="previous chapter">Output formats</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="output-xref.html"
-                        title="next chapter">Xref output</a></p>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="output-xref.html"
+                          title="previous chapter">Xref output</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="running-multi-parsers.html"
+                          title="next chapter">Running multiple parsers on an input file</a></p>
+  </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -151,19 +87,20 @@ of <code class="docutils literal notranslate"><span class="pre">--list-fields</s
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="output-xref.html" title="Xref output"
+          <a href="running-multi-parsers.html" title="Running multiple parsers on an input file"
              >next</a> |</li>
         <li class="right" >
-          <a href="output-format.html" title="Output formats"
+          <a href="output-xref.html" title="Xref output"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="output-format.html" >Output formats</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="output-format.html" >Output formats</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">JSON output</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015, Universal Ctags Team.
-      Last updated on 21 Sep 2020.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+        &#169; Copyright 2015-2022, Universal Ctags Team.
+      Last updated on 21 Aug 2022.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>

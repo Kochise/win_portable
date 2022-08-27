@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <title>ctags-lang-python</title>
 <style type="text/css">
 
@@ -363,14 +363,14 @@ ul.auto-toc {
 <div class="document" id="ctags-lang-python">
 <span id="ctags-lang-python-7"></span>
 <h1 class="title">ctags-lang-python</h1>
-<h2 class="subtitle" id="random-notes-about-tagging-python-source-code-with-universal-ctags">Random notes about tagging python source code with Universal-ctags</h2>
+<h2 class="subtitle" id="random-notes-about-tagging-python-source-code-with-universal-ctags">Random notes about tagging python source code with Universal Ctags</h2>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
 <tbody valign="top">
 <tr><th class="docinfo-name">Version:</th>
-<td>0.0.0</td></tr>
-<tr class="manual-group field"><th class="docinfo-name">Manual group:</th><td class="field-body">Universal-ctags</td>
+<td>5.9.0</td></tr>
+<tr class="manual-group field"><th class="docinfo-name">Manual group:</th><td class="field-body">Universal Ctags</td>
 </tr>
 <tr class="manual-section field"><th class="docinfo-name">Manual section:</th><td class="field-body">7</td>
 </tr>
@@ -532,7 +532,7 @@ ul.auto-toc {
 <tr><td><cite>Z</cite></td>
 <td>unknown</td>
 <td>definition</td>
-<td>nameref:unknown:<cite>X</cite></td>
+<td>nameref:unknown:<cite>Y</cite></td>
 </tr>
 </tbody>
 </table>
@@ -548,7 +548,7 @@ from X import Y       X    module     namespace
 from X import Y       Y    unknown    imported           scope:module:X
 from X import Y as Z  X    module     namespace
 from X import Y as Z  Y    unknown    indirectlyImported scope:module:X
-from X import Y as Z  Z    unknown    definition         nameref:unknown:X
+from X import Y as Z  Z    unknown    definition         nameref:unknown:Y
 ===================== ==== ========== ================== =================== -->
 <!-- a table having merged cells cannot be converted to man page -->
 <!-- +- - - - - - - - - - - - - - - - - - - -+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -+
@@ -577,30 +577,44 @@ from X import Y as Z  Z    unknown    definition         nameref:unknown:X
 </div>
 <div class="section" id="examples">
 <h2>Examples</h2>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-import X0</blockquote>
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">import</span> <span class="name namespace">X0</span>
+</pre>
 <p>&quot;output.tags&quot;
-with &quot;--options=NONE -o - --extras=+r --fields=+rzK input.py&quot;
-.. code-block:: tags</p>
-<blockquote>
-X0      input.py        /^import X0$/;&quot; kind:module     roles:imported</blockquote>
+with &quot;--options=NONE -o - --extras=+r --fields=+rzK input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 125)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
+<pre class="literal-block">
+.. code-block:: tags
+
+        X0      input.py        /^import X0$/;&quot; kind:module     roles:imported
+
+</pre>
+</div>
 <p>A tag for an imported module has <tt class="docutils literal">module</tt> kind with <tt class="docutils literal">imported</tt> role.  The
 module is not defined here; it is defined in another file. So the tag for the
 imported module is a reference tag; specify <tt class="docutils literal"><span class="pre">--extras=+r</span></tt> (or
 <tt class="docutils literal"><span class="pre">--extras=+{reference}</span></tt>) option for tagging it.  &quot;roles:&quot; field enabled with
 <tt class="docutils literal"><span class="pre">--fields=+r</span></tt> is for recording the module is &quot;imported&quot; to the tag file.</p>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-import X1 as Y1</blockquote>
-<p>&quot;output.tags&quot;
-with &quot;--options=NONE -o - --extras=+r --fields=+rzK --fields-Python='+{nameref}' input.py&quot;</p>
-<pre class="literal-block">
-X1      input.py        /^import X1 as Y1$/;&quot;   kind:module     roles:indirectlyImported
-Y1      input.py        /^import X1 as Y1$/;&quot;   kind:namespace  roles:def       nameref:module:X1
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">import</span> <span class="name namespace">X1</span> <span class="keyword">as</span> <span class="name namespace">Y1</span>
 </pre>
+<p>&quot;output.tags&quot;
+with &quot;--options=NONE -o - --extras=+r --fields=+rzK --fields-Python=+{nameref} input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 144)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
+<pre class="literal-block">
+.. code-block:: tags
+
+        X1      input.py        /^import X1 as Y1$/;&quot;   kind:module     roles:indirectlyImported
+        Y1      input.py        /^import X1 as Y1$/;&quot;   kind:namespace  roles:def       nameref:module:X1
+
+</pre>
+</div>
 <p>&quot;Y1&quot; introduces a new name and is defined here. So &quot;Y1&quot; is tagged as a
 definition tag.  &quot;X1&quot; is imported in a way that its name cannot be used
 in this source file. For letting client tools know that the name cannot be used,
@@ -609,44 +623,65 @@ accessing objects defined in the module imported via &quot;X1&quot;.  For record
 relationship, <tt class="docutils literal">nameref:</tt> field is attached to the tag of &quot;Y1&quot;.  Instead of
 <tt class="docutils literal">module</tt> kind, <tt class="docutils literal">namespace</tt> kind is assigned to &quot;Y1&quot; because &quot;Y1&quot; itself
 isn't a module.</p>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-from X2 import *</blockquote>
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">X2</span> <span class="keyword namespace">import</span> <span class="operator">*</span>
+</pre>
 <p>&quot;output.tags&quot;
 with &quot;--options=NONE -o - --extras=+r --fields=+rzK input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 167)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
 <pre class="literal-block">
-X2      input.py        /^from X2 import \*$/;&quot; kind:module     roles:namespace
+.. code-block:: tags
+
+        X2      input.py        /^from X2 import *$/;&quot;  kind:module     roles:namespace
+
 </pre>
+</div>
 <p>The module is not defined here; it is defined in another file. So the tag for
 the imported module is a reference tag. Unlike &quot;X0&quot; in &quot;import X0&quot;, &quot;X2&quot; may not
 be used because the names defined in &quot;X2&quot; can be used in this source file. To represent
 the difference <tt class="docutils literal">namespace</tt> role is attached to &quot;X2&quot; instead of <tt class="docutils literal">imported</tt>.</p>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-from X3 import Y3</blockquote>
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">X3</span> <span class="keyword namespace">import</span> <span class="name">Y3</span>
+</pre>
 <p>&quot;output.tags&quot;
 with &quot;--options=NONE -o - --extras=+r --fields=+rzKZ input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 185)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
 <pre class="literal-block">
-X3      input.py        /^from X3 import Y3$/;&quot; kind:module     roles:namespace
-Y3      input.py        /^from X3 import Y3$/;&quot; kind:unknown    scope:module:X3 roles:imported
+.. code-block:: tags
+
+        X3      input.py        /^from X3 import Y3$/;&quot; kind:module     roles:namespace
+        Y3      input.py        /^from X3 import Y3$/;&quot; kind:unknown    scope:module:X3 roles:imported
+
 </pre>
+</div>
 <p>&quot;Y3&quot; is a name for a language object defined in &quot;X3&quot; module. &quot;scope:module:X3&quot;
 attached to &quot;Y3&quot; represents this relation between &quot;Y3&quot; and &quot;X3&quot;. ctags
 assigns <tt class="docutils literal">unknown</tt> kind to &quot;Y3&quot; because ctags cannot know whether &quot;Y3&quot; is a
 class, a variable, or a function from the input file.</p>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-from X4 import Y4 as Z4</blockquote>
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">X4</span> <span class="keyword namespace">import</span> <span class="name">Y4</span> <span class="keyword">as</span> <span class="name">Z4</span>
+</pre>
 <p>&quot;output.tags&quot;
 with &quot;--options=NONE -o - --extras=+r --fields=+rzKZ input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 204)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
 <pre class="literal-block">
-X4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:module     roles:namespace
-Y4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:unknown    scope:module:X4 roles:indirectlyImported
-Z4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:unknown    roles:def       nameref:unknown:Y4
+.. code-block:: tags
+
+        X4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:module     roles:namespace
+        Y4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:unknown    scope:module:X4 roles:indirectlyImported
+        Z4      input.py        /^from X4 import Y4 as Z4$/;&quot;   kind:unknown    roles:def       nameref:unknown:Y4
+
 </pre>
+</div>
 <p>&quot;Y4&quot; is similar to &quot;Y3&quot; of &quot;from X3 import Y3&quot; but the name cannot be used here.
 <tt class="docutils literal">indirectlyImported</tt> role assigned to &quot;Y4&quot; representing this. &quot;Z4&quot; is the name for
 accessing the language object named in &quot;Y4&quot; in &quot;X4&quot; module. &quot;nameref:unknown:Y4&quot;
@@ -655,7 +690,7 @@ attached to &quot;Z4&quot; and &quot;scope:module:X4&quot; attached to &quot;Y4&
 </div>
 <div class="section" id="lambda-expression-and-type-hint">
 <h1>LAMBDA EXPRESSION AND TYPE HINT</h1>
-<div class="section" id="id1">
+<div class="section" id="summary-1">
 <h2>Summary</h2>
 <p><cite>id = lambda var0: var0</cite></p>
 <blockquote>
@@ -713,23 +748,30 @@ attached to &quot;Z4&quot; and &quot;scope:module:X4&quot; attached to &quot;Y4&
 </table>
 </blockquote>
 </div>
-<div class="section" id="id2">
+<div class="section" id="examples-1">
 <h2>Examples</h2>
-<p>&quot;input.py&quot;
-.. code-block:: Python</p>
-<blockquote>
-from typing import Callable
-id = lambda var0: var0
-id_t: Callable[[int], int] = lambda var1: var1</blockquote>
-<p>&quot;output.tags&quot;
-with &quot;--options=NONE -o - --sort=no --fields=+KS --fields-Python='+{nameref}' --extras='+{anonymous}' input.py&quot;</p>
-<pre class="literal-block">
-id      input.py        /^id = lambda var0: var0$/;&quot;    function        signature:(var0)
-id_t    input.py        /^id_t: Callable[[int], int] = lambda var1: var1$/;&quot;\
-        variable        typeref:typename:Callable[[int], int]   nameref:function:anonFunc84011d2c0101
-anonFunc84011d2c0101    input.py        /^id_t: Callable[[int], int] = lambda var1: var1$/;&quot;\
-        function        signature:(var1)
+<p>&quot;input.py&quot;</p>
+<pre class="code Python literal-block">
+<span class="keyword namespace">from</span> <span class="name namespace">typing</span> <span class="keyword namespace">import</span> <span class="name">Callable</span>
+<span class="name builtin">id</span> <span class="operator">=</span> <span class="keyword">lambda</span> <span class="name">var0</span><span class="punctuation">:</span> <span class="name">var0</span>
+<span class="name">id_t</span><span class="punctuation">:</span> <span class="name">Callable</span><span class="punctuation">[[</span><span class="name builtin">int</span><span class="punctuation">],</span> <span class="name builtin">int</span><span class="punctuation">]</span> <span class="operator">=</span> <span class="keyword">lambda</span> <span class="name">var1</span><span class="punctuation">:</span> <span class="name">var1</span>
 </pre>
+<p>&quot;output.tags&quot;
+with &quot;--options=NONE -o - --sort=no --fields=+KS --fields-Python=+{nameref} --extras=+{anonymous} input.py&quot;</p>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">ctags-lang-python.7.rst</tt>, line 251)</p>
+<p>Cannot analyze code. No Pygments lexer found for &quot;tags&quot;.</p>
+<pre class="literal-block">
+.. code-block:: tags
+
+        id      input.py        /^id = lambda var0: var0$/;&quot;    function        signature:(var0)
+        id_t    input.py        /^id_t: Callable[[int], int] = lambda var1: var1$/;&quot;\
+                variable        typeref:typename:Callable[[int], int]   nameref:function:anonFunc84011d2c0101
+        anonFunc84011d2c0101    input.py        /^id_t: Callable[[int], int] = lambda var1: var1$/;&quot;\
+                function        signature:(var1)
+
+</pre>
+</div>
 <p>If a variable (&quot;id&quot;) with no type hint is initialized with a lambda expression,
 ctags assigns <tt class="docutils literal">function</tt> kind for the tag of &quot;id&quot;.</p>
 <p>If a variable (&quot;id_t&quot;) with a type hint is initialized with a lambda expression,
@@ -755,7 +797,7 @@ ctags has to analyze &quot;Callable[[int], int]&quot; deeper. We don't want to d
 </div>
 <div class="section" id="see-also">
 <h1>SEE ALSO</h1>
-<p>ctags(1), ctags-client-tools(7)</p>
+<p>ctags(1), ctags-client-tools(7), ctags-lang-iPythonCell(7)</p>
 </div>
 </div>
 </body>

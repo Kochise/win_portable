@@ -1,23 +1,25 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>Request for extending a parser (or Reporting a bug of parser) &#8212; Universal Ctags 0.3.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributions" href="contributions.html" />
-    <link rel="prev" title="Introduced changes" href="news.html" /> 
+    <link rel="prev" title="Testing readtags" href="testing-readtags.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,9 +31,10 @@
           <a href="contributions.html" title="Contributions"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="news.html" title="Introduced changes"
+          <a href="testing-readtags.html" title="Testing readtags"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Request for extending a parser (or Reporting a bug of parser)</a></li> 
       </ul>
     </div>  
 
@@ -40,29 +43,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="request-for-extending-a-parser-or-reporting-a-bug-of-parser">
-<h1>Request for extending a parser (or Reporting a bug of parser)<a class="headerlink" href="#request-for-extending-a-parser-or-reporting-a-bug-of-parser" title="Permalink to this headline">¶</a></h1>
+  <section id="request-for-extending-a-parser-or-reporting-a-bug-of-parser">
+<h1>Request for extending a parser (or Reporting a bug of parser)<a class="headerlink" href="#request-for-extending-a-parser-or-reporting-a-bug-of-parser" title="Permalink to this heading">¶</a></h1>
 <dl class="field-list simple">
-<dt class="field-odd">Maintainer</dt>
+<dt class="field-odd">Maintainer<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Masatake YAMATO &lt;<a class="reference external" href="mailto:yamato&#37;&#52;&#48;redhat&#46;com">yamato<span>&#64;</span>redhat<span>&#46;</span>com</a>&gt;</p>
 </dd>
 </dl>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title"><cite>Table of contents</cite></p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#before-reporting" id="id1">Before reporting</a></p></li>
 <li><p><a class="reference internal" href="#the-content-of-report" id="id2">The content of report</a></p></li>
 <li><p><a class="reference internal" href="#an-example-of-good-report" id="id3">An example of good report</a></p></li>
 </ul>
-</div>
+</nav>
 <hr class="docutils" />
 <p>Sometimes you will find u-ctags doesn’t make a tag for a language
 object unexpectedly. Writing a patch for making the tag is
 appreciate. However, you may not have time to do so. In that case, you
 can open an issue on the GitHub page of u-ctags.</p>
 <p>This section tells you how to drive u-ctags developers effectively.</p>
-<div class="section" id="before-reporting">
-<h2><a class="toc-backref" href="#id1">Before reporting</a><a class="headerlink" href="#before-reporting" title="Permalink to this headline">¶</a></h2>
+<section id="before-reporting">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Before reporting</a><a class="headerlink" href="#before-reporting" title="Permalink to this heading">¶</a></h2>
 <p>U-Ctags just captures the definitions of language objects.  U-ctags
 has an infrastructure for capturing references for language objects.
 However, we implement reference tagging limited area.  We will not
@@ -77,11 +80,11 @@ status of kinds. <cite>--list-kinds=&lt;LANG&gt;</cite> or (<cite>--list-kinds-f
 option lists the status of the given language.</p>
 <p>Let’s see an example.</p>
 <p>Consider following input (foo.h):</p>
-<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">point</span> <span class="p">{</span>
-  <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">;</span>
-<span class="p">};</span>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">point</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="k">struct</span> <span class="n">point</span> <span class="o">*</span><span class="nf">make_point</span><span class="p">(</span><span class="kt">int</span> <span class="n">x0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y0</span><span class="p">);</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">point</span><span class="w"> </span><span class="o">*</span><span class="n">make_point</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y0</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>tags output generated with <cite>u-ctags -o - /tmp/foo.h</cite> is as following.</p>
@@ -112,9 +115,9 @@ y    foo.h    /^  int x, y;$/;&quot;    m    struct:point    typeref:typename:in
 <p>Wildcard <cite>*</cite> is for enabling all kinds of a language at once.
 <cite>--kinds-C++=*</cite> option enables all kinds of C++ parser. If you specify <cite>all</cite>
 as the name of <cite>&lt;LANG&gt;</cite>, you can enable all kinds of all languages at once.</p>
-</div>
-<div class="section" id="the-content-of-report">
-<h2><a class="toc-backref" href="#id2">The content of report</a><a class="headerlink" href="#the-content-of-report" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="the-content-of-report">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">The content of report</a><a class="headerlink" href="#the-content-of-report" title="Permalink to this heading">¶</a></h2>
 <p>Don’t assume following three things.</p>
 <p>U-ctags developers know vi.</p>
 <blockquote>
@@ -167,9 +170,9 @@ source tree as a test case.</p>
 page of GitHub. Use triple backquotes notation of GitHub’s
 markdown notation. I will close an issue with a bad notation
 like this <a class="reference external" href="https://github.com/universal-ctags/ctags/issues/1547">issue</a>.</p>
-</div>
-<div class="section" id="an-example-of-good-report">
-<h2><a class="toc-backref" href="#id3">An example of good report</a><a class="headerlink" href="#an-example-of-good-report" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="an-example-of-good-report">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">An example of good report</a><a class="headerlink" href="#an-example-of-good-report" title="Permalink to this heading">¶</a></h2>
 <p>For the following input file(input.f90), u-ctags reports incomplete pattern
 for function <cite>f</cite> at the line 23.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>! input.f90, taken from https://github.com/universal-ctags/ctags/issues/1616
@@ -235,17 +238,19 @@ Exuberant Ctags 5.8, Copyright (C) 1996-2009 Darren Hiebert
   Optional compiled features: +wildcards, +regex, +multibyte, +debug, +option-directory, +xpath, +json, +interactive, +sandbox, +yaml
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Request for extending a parser (or Reporting a bug of parser)</a><ul>
 <li><a class="reference internal" href="#before-reporting">Before reporting</a></li>
 <li><a class="reference internal" href="#the-content-of-report">The content of report</a></li>
@@ -254,22 +259,27 @@ Exuberant Ctags 5.8, Copyright (C) 1996-2009 Darren Hiebert
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="news.html"
-                        title="previous chapter">Introduced changes</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="contributions.html"
-                        title="next chapter">Contributions</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="testing-readtags.html"
+                          title="previous chapter">Testing readtags</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="contributions.html"
+                          title="next chapter">Contributions</a></p>
+  </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -284,15 +294,16 @@ Exuberant Ctags 5.8, Copyright (C) 1996-2009 Darren Hiebert
           <a href="contributions.html" title="Contributions"
              >next</a> |</li>
         <li class="right" >
-          <a href="news.html" title="Introduced changes"
+          <a href="testing-readtags.html" title="Testing readtags"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Universal Ctags 0.3.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Request for extending a parser (or Reporting a bug of parser)</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2015, Universal Ctags Team.
-      Last updated on 21 Sep 2020.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.
+        &#169; Copyright 2015-2022, Universal Ctags Team.
+      Last updated on 21 Aug 2022.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.1.1.
     </div>
   </body>
 </html>
