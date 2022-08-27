@@ -154,14 +154,14 @@ pub fn fetch(config FetchConfig) ?Response {
 		in_memory_verification: config.in_memory_verification
 		allow_redirect: config.allow_redirect
 	}
-	res := req.do() ?
+	res := req.do()?
 	return res
 }
 
 // get_text sends a GET HTTP request to the URL and returns the text content of the response
 pub fn get_text(url string) string {
 	resp := fetch(url: url, method: .get) or { return '' }
-	return resp.text
+	return resp.body
 }
 
 // url_encode_form_data converts mapped data to an URL encoded string
@@ -183,7 +183,7 @@ fn fetch_with_method(method Method, _config FetchConfig) ?Response {
 }
 
 fn build_url_from_fetch(config FetchConfig) ?string {
-	mut url := urllib.parse(config.url) ?
+	mut url := urllib.parse(config.url)?
 	if config.params.len == 0 {
 		return url.str()
 	}

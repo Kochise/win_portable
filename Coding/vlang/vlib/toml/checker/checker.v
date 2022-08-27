@@ -25,28 +25,28 @@ pub struct Checker {
 // check checks the `ast.Value` and all it's children
 // for common errors.
 pub fn (c Checker) check(n &ast.Value) ? {
-	walker.walk(c, n) ?
+	walker.walk(c, n)?
 }
 
 fn (c Checker) visit(value &ast.Value) ? {
 	match value {
 		ast.Bool {
-			c.check_boolean(value) ?
+			c.check_boolean(value)?
 		}
 		ast.Number {
-			c.check_number(value) ?
+			c.check_number(value)?
 		}
 		ast.Quoted {
-			c.check_quoted(value) ?
+			c.check_quoted(value)?
 		}
 		ast.DateTime {
-			c.check_date_time(value) ?
+			c.check_date_time(value)?
 		}
 		ast.Date {
-			c.check_date(value) ?
+			c.check_date(value)?
 		}
 		ast.Time {
-			c.check_time(value) ?
+			c.check_time(value)?
 		}
 		else {}
 	}
@@ -104,20 +104,20 @@ fn (c Checker) check_number(num ast.Number) ? {
 	is_float := lit_lower_case.all_before('e').contains('.')
 	has_exponent_notation := lit_lower_case.contains('e')
 	float_decimal_index := lit.index('.') or { -1 }
-	// mut is_first_digit := byte(lit[0]).is_digit()
-	mut ascii := byte(lit[0]).ascii_str()
+	// mut is_first_digit := u8(lit[0]).is_digit()
+	mut ascii := u8(lit[0]).ascii_str()
 	is_sign_prefixed := lit[0] in [`+`, `-`]
 	mut lit_sans_sign := lit
 	if is_sign_prefixed { // +/- ...
 		lit_sans_sign = lit[1..]
 		hex_bin_oct = is_hex_bin_oct_prefixed(lit_sans_sign)
 		if hex_bin_oct {
-			ascii = byte(lit[0]).ascii_str()
+			ascii = u8(lit[0]).ascii_str()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
 				' numbers like "$lit" (hex, octal and binary) can not start with `$ascii` in ...${c.excerpt(num.pos)}...')
 		}
 		if lit.len > 1 && lit_sans_sign.starts_with('0') && !lit_sans_sign.starts_with('0.') {
-			ascii = byte(lit_sans_sign[0]).ascii_str()
+			ascii = u8(lit_sans_sign[0]).ascii_str()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
 				' numbers like "$lit" can not start with `$ascii` in ...${c.excerpt(num.pos)}...')
 		}
@@ -198,7 +198,7 @@ fn (c Checker) check_number(num ast.Number) ? {
 		}
 		last := lit[lit.len - 1]
 		if last in scanner.digit_extras {
-			ascii = byte(last).ascii_str()
+			ascii = u8(last).ascii_str()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
 				' numbers like "$lit" (float) can not end with `$ascii` in ...${c.excerpt(num.pos)}...')
 		}
@@ -215,12 +215,12 @@ fn (c Checker) check_number(num ast.Number) ? {
 			if r !in [`0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `.`, `e`, `E`, `-`, `+`,
 				`_`] {
 				return error(@MOD + '.' + @STRUCT + '.' + @FN +
-					' numbers like "$lit" (float) can not contain `${byte(r).ascii_str()}` in ...${c.excerpt(num.pos)}...')
+					' numbers like "$lit" (float) can not contain `${u8(r).ascii_str()}` in ...${c.excerpt(num.pos)}...')
 			}
 		}
 	} else {
 		if lit.len > 1 && lit.starts_with('0') && lit[1] !in [`b`, `o`, `x`] {
-			ascii = byte(lit[0]).ascii_str()
+			ascii = u8(lit[0]).ascii_str()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
 				' numbers like "$lit" can not start with `$ascii` in ...${c.excerpt(num.pos)}...')
 		}
@@ -307,7 +307,7 @@ fn (c Checker) check_date_time(dt ast.DateTime) ? {
 				pos: dt.pos.pos
 				col: dt.pos.col
 			}
-		}) ?
+		})?
 		c.check_time(ast.Time{
 			text: split[1]
 			pos: token.Pos{
@@ -316,7 +316,7 @@ fn (c Checker) check_date_time(dt ast.DateTime) ? {
 				pos: dt.pos.pos + split[0].len
 				col: dt.pos.col + split[0].len
 			}
-		}) ?
+		})?
 		// Use V's builtin functionality to validate the string
 		time.parse_rfc3339(lit) or {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
@@ -395,8 +395,8 @@ pub fn (c Checker) check_quoted(q ast.Quoted) ? {
 		return error(@MOD + '.' + @STRUCT + '.' + @FN +
 			' string values like "$lit" has unbalanced quote literals `q.quote` in ...${c.excerpt(q.pos)}...')
 	}
-	c.check_quoted_escapes(q) ?
-	c.check_utf8_validity(q) ?
+	c.check_quoted_escapes(q)?
+	c.check_utf8_validity(q)?
 }
 
 // check_quoted_escapes returns an error for any disallowed escape sequences.
@@ -415,7 +415,7 @@ pub fn (c Checker) check_quoted(q ast.Quoted) ? {
 // \UXXXXXXXX - Unicode         (U+XXXXXXXX)
 fn (c Checker) check_quoted_escapes(q ast.Quoted) ? {
 	// Setup a scanner in stack memory for easier navigation.
-	mut s := scanner.new_simple_text(q.text) ?
+	mut s := scanner.new_simple_text(q.text)?
 
 	// See https://toml.io/en/v1.0.0#string for more info on string types.
 	is_basic := q.quote == `\"`
@@ -425,9 +425,9 @@ fn (c Checker) check_quoted_escapes(q ast.Quoted) ? {
 		if ch == scanner.end_of_text {
 			break
 		}
-		ch_byte := byte(ch)
+		ch_byte := u8(ch)
 		if ch == `\\` {
-			next_ch := byte(s.at())
+			next_ch := u8(s.at())
 
 			if next_ch == `\\` {
 				s.next()
@@ -452,7 +452,7 @@ fn (c Checker) check_quoted_escapes(q ast.Quoted) ? {
 							if !(ch_ == ` ` || ch_ == `\t`) {
 								st := s.state()
 								return error(@MOD + '.' + @STRUCT + '.' + @FN +
-									' invalid character `${byte(ch_).ascii_str()}` after `$escape` at ($st.line_nr,$st.col) in ...${c.excerpt(q.pos)}...')
+									' invalid character `${u8(ch_).ascii_str()}` after `$escape` at ($st.line_nr,$st.col) in ...${c.excerpt(q.pos)}...')
 							}
 						}
 					}
@@ -539,7 +539,7 @@ fn (c Checker) check_unicode_escape(esc_unicode string) ? {
 	// if !sequence.is_upper() {
 	//	return error('Unicode escape sequence `$esc_unicode` is not in all uppercase.')
 	//}
-	validate_utf8_codepoint_string(sequence.to_upper()) ?
+	validate_utf8_codepoint_string(sequence.to_upper())?
 	if is_long_esc_type {
 		// Long escape type checks
 	} else {
@@ -552,13 +552,13 @@ fn (c Checker) check_unicode_escape(esc_unicode string) ? {
 pub fn (c Checker) check_comment(comment ast.Comment) ? {
 	lit := comment.text
 	// Setup a scanner in stack memory for easier navigation.
-	mut s := scanner.new_simple_text(lit) ?
+	mut s := scanner.new_simple_text(lit)?
 	for {
 		ch := s.next()
 		if ch == scanner.end_of_text {
 			break
 		}
-		ch_byte := byte(ch)
+		ch_byte := u8(ch)
 		// Check for carrige return
 		if ch_byte == 0x0D {
 			st := s.state()
@@ -569,7 +569,7 @@ pub fn (c Checker) check_comment(comment ast.Comment) ? {
 		if util.is_illegal_ascii_control_character(ch_byte) {
 			st := s.state()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' control character `$ch_byte.hex()` is not allowed ($st.line_nr,$st.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(st.pos, 10)}...')
+				' control character `$ch_byte.hex()` is not allowed ($st.line_nr,$st.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(st.pos, 10)}...')
 		}
 	}
 

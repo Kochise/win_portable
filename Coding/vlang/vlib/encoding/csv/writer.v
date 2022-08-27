@@ -10,9 +10,10 @@ mut:
 	sb strings.Builder
 pub mut:
 	use_crlf  bool
-	delimiter byte
+	delimiter u8
 }
 
+// new_writer returns a reference to a Writer
 pub fn new_writer() &Writer {
 	return &Writer{
 		delimiter: `,`
@@ -75,6 +76,7 @@ fn (w &Writer) field_needs_quotes(field string) bool {
 	return false
 }
 
+// str returns the writer contents
 pub fn (mut w Writer) str() string {
 	return w.sb.str()
 }

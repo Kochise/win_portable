@@ -111,16 +111,16 @@ fn test_a_simple_tcp_client_html_page() {
 // net.http client based tests follow:
 fn assert_common_http_headers(x http.Response) ? {
 	assert x.status() == .ok
-	assert x.header.get(.server) ? == 'VWeb'
-	assert x.header.get(.content_length) ?.int() > 0
-	assert x.header.get(.connection) ? == 'close'
+	assert x.header.get(.server)? == 'VWeb'
+	assert x.header.get(.content_length)?.int() > 0
+	assert x.header.get(.connection)? == 'close'
 }
 
 fn test_http_client_index() ? {
 	x := http.get('http://$localserver/') or { panic(err) }
-	assert_common_http_headers(x) ?
-	assert x.header.get(.content_type) ? == 'text/plain'
-	assert x.text == 'Welcome to VWeb'
+	assert_common_http_headers(x)?
+	assert x.header.get(.content_type)? == 'text/plain'
+	assert x.body == 'Welcome to VWeb'
 }
 
 fn test_http_client_404() ? {
@@ -137,36 +137,36 @@ fn test_http_client_404() ? {
 
 fn test_http_client_simple() ? {
 	x := http.get('http://$localserver/simple') or { panic(err) }
-	assert_common_http_headers(x) ?
-	assert x.header.get(.content_type) ? == 'text/plain'
-	assert x.text == 'A simple result'
+	assert_common_http_headers(x)?
+	assert x.header.get(.content_type)? == 'text/plain'
+	assert x.body == 'A simple result'
 }
 
 fn test_http_client_html_page() ? {
 	x := http.get('http://$localserver/html_page') or { panic(err) }
-	assert_common_http_headers(x) ?
-	assert x.header.get(.content_type) ? == 'text/html'
-	assert x.text == '<h1>ok</h1>'
+	assert_common_http_headers(x)?
+	assert x.header.get(.content_type)? == 'text/html'
+	assert x.body == '<h1>ok</h1>'
 }
 
 fn test_http_client_settings_page() ? {
 	x := http.get('http://$localserver/bilbo/settings') or { panic(err) }
-	assert_common_http_headers(x) ?
-	assert x.text == 'username: bilbo'
+	assert_common_http_headers(x)?
+	assert x.body == 'username: bilbo'
 	//
 	y := http.get('http://$localserver/kent/settings') or { panic(err) }
-	assert_common_http_headers(y) ?
-	assert y.text == 'username: kent'
+	assert_common_http_headers(y)?
+	assert y.body == 'username: kent'
 }
 
 fn test_http_client_user_repo_settings_page() ? {
 	x := http.get('http://$localserver/bilbo/gostamp/settings') or { panic(err) }
-	assert_common_http_headers(x) ?
-	assert x.text == 'username: bilbo | repository: gostamp'
+	assert_common_http_headers(x)?
+	assert x.body == 'username: bilbo | repository: gostamp'
 	//
 	y := http.get('http://$localserver/kent/golang/settings') or { panic(err) }
-	assert_common_http_headers(y) ?
-	assert y.text == 'username: kent | repository: golang'
+	assert_common_http_headers(y)?
+	assert y.body == 'username: kent | repository: golang'
 	//
 	z := http.get('http://$localserver/missing/golang/settings') or { panic(err) }
 	assert z.status() == .not_found
@@ -187,18 +187,18 @@ fn test_http_client_json_post() ? {
 	$if debug_net_socket_client ? {
 		eprintln('/json_echo endpoint response: $x')
 	}
-	assert x.header.get(.content_type) ? == 'application/json'
-	assert x.text == json_for_ouser
-	nuser := json.decode(User, x.text) or { User{} }
+	assert x.header.get(.content_type)? == 'application/json'
+	assert x.body == json_for_ouser
+	nuser := json.decode(User, x.body) or { User{} }
 	assert '$ouser' == '$nuser'
 	//
 	x = http.post_json('http://$localserver/json', json_for_ouser) or { panic(err) }
 	$if debug_net_socket_client ? {
 		eprintln('/json endpoint response: $x')
 	}
-	assert x.header.get(.content_type) ? == 'application/json'
-	assert x.text == json_for_ouser
-	nuser2 := json.decode(User, x.text) or { User{} }
+	assert x.header.get(.content_type)? == 'application/json'
+	assert x.body == json_for_ouser
+	nuser2 := json.decode(User, x.body) or { User{} }
 	assert '$ouser' == '$nuser2'
 }
 
@@ -221,11 +221,11 @@ $contents\r
 			value: ct
 		)
 		data: data
-	) ?
+	)?
 	$if debug_net_socket_client ? {
 		eprintln('/form_echo endpoint response: $x')
 	}
-	assert x.text == contents
+	assert x.body == contents
 }
 
 fn test_http_client_shutdown_does_not_work_without_a_cookie() {
@@ -234,7 +234,7 @@ fn test_http_client_shutdown_does_not_work_without_a_cookie() {
 		return
 	}
 	assert x.status() == .not_found
-	assert x.text == '404 Not Found'
+	assert x.body == '404 Not Found'
 }
 
 fn testsuite_end() {
@@ -251,7 +251,7 @@ fn testsuite_end() {
 		return
 	}
 	assert x.status() == .ok
-	assert x.text == 'good bye'
+	assert x.body == 'good bye'
 }
 
 // utility code:
@@ -292,8 +292,8 @@ $config.content'
 	$if debug_net_socket_client ? {
 		eprintln('sending:\n$message')
 	}
-	client.write(message.bytes()) ?
-	read := io.read_all(reader: client) ?
+	client.write(message.bytes())?
+	read := io.read_all(reader: client)?
 	$if debug_net_socket_client ? {
 		eprintln('received:\n$read')
 	}

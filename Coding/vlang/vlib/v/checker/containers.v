@@ -52,7 +52,8 @@ pub fn (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 			c.ensure_sumtype_array_has_default_value(node)
 		}
 		c.ensure_type_exists(node.elem_type, node.elem_type_pos) or {}
-		if node.typ.has_flag(.generic) && c.table.cur_fn.generic_names.len == 0 {
+		if node.typ.has_flag(.generic) && !isnil(c.table.cur_fn)
+			&& c.table.cur_fn.generic_names.len == 0 {
 			c.error('generic struct cannot use in non-generic function', node.pos)
 		}
 		return node.typ
@@ -80,8 +81,12 @@ pub fn (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 		// }
 		array_info := type_sym.array_info()
 		node.elem_type = array_info.elem_type
-		// clear optional flag incase of: `fn opt_arr ?[]int { return [] }`
-		return c.expected_type.clear_flag(.optional)
+		// clear optional flag incase of: `fn opt_arr() ?[]int { return [] }`
+		return if c.expected_type.has_flag(.shared_f) {
+			c.expected_type.clear_flag(.shared_f).deref()
+		} else {
+			c.expected_type
+		}.clear_flag(.optional)
 	}
 	// [1,2,3]
 	if node.exprs.len > 0 && node.elem_type == ast.void_type {
@@ -177,7 +182,7 @@ pub fn (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 		}
 		node.elem_type = elem_type
 	} else if node.is_fixed && node.exprs.len == 1 && node.elem_type != ast.void_type {
-		// [50]byte
+		// [50]u8
 		mut fixed_size := i64(0)
 		init_expr := node.exprs[0]
 		c.expr(init_expr)
@@ -223,7 +228,7 @@ pub fn (mut c Checker) array_init(mut node ast.ArrayInit) ast.Type {
 }
 
 fn (mut c Checker) check_array_init_para_type(para string, expr ast.Expr, pos token.Pos) {
-	sym := c.table.sym(c.expr(expr))
+	sym := c.table.sym(c.unwrap_generic(c.expr(expr)))
 	if sym.kind !in [.int, .int_literal] {
 		c.error('array $para needs to be an int', pos)
 	}

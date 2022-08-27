@@ -1,0 +1,54 @@
+name: Graphics CI
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "**.md"
+
+jobs:
+  gg-regressions:
+    runs-on: ubuntu-18.04
+    if: github.event_name != 'push' || github.event.ref == 'refs/heads/master' || github.event.repository.full_name != 'vlang/v'
+    timeout-minutes: 10
+    env:
+      VFLAGS: -cc tcc
+      DISPLAY: :99
+    steps:
+      - name: Checkout V
+        uses: actions/checkout@v2
+
+      - name: Build local v
+        run: make
+
+      - uses: openrndr/setup-opengl@v1.1
+
+      - name: Setup dependencies
+        run: |
+          # imagemagick              : convert, mogrify
+          # xvfb                     : xvfb (installed by openrndr/setup-opengl@v1.1)
+          # openimageio-tools        : idiff
+          # libxcursor-dev libxi-dev : V gfx deps
+          # mesa-common-dev          : For headless rendering
+          # freeglut3-dev            : Fixes graphic apps compilation with tcc
+          sudo apt-get update
+          sudo apt-get install imagemagick openimageio-tools mesa-common-dev libxcursor-dev libxi-dev freeglut3-dev
+          wget https://raw.githubusercontent.com/tremby/imgur.sh/c98345d/imgur.sh
+          git clone https://github.com/Larpon/gg-regression-images gg-regression-images
+          chmod +x ./imgur.sh
+
+      - name: Sample and compare
+        id: compare
+        continue-on-error: true
+        run: |
+          Xvfb $DISPLAY -screen 0 1280x1024x24 &
+          ./v gret -t ./gg-regression-images/vgret.v_examples.toml -v ./gg-sample_images ./gg-regression-images
+
+      - name: Upload regression to imgur
+        if: steps.compare.outcome != 'success'
+        run: |
+          ./imgur.sh /tmp/fail.png
+          ./imgur.sh /tmp/diff.png
+          exit 1

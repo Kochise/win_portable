@@ -24,7 +24,7 @@ pub fn min<T>(a []T) ?T {
 	return val
 }
 
-// max returns the maximum the maximum value in the array
+// max returns the maximum value in the array
 // Example: arrays.max([1,2,3,0,9]) // => 9
 pub fn max<T>(a []T) ?T {
 	if a.len == 0 {
@@ -369,7 +369,7 @@ pub fn upper_bound<T>(arr []T, val T) ?T {
 // binary search, requires `arr` to be sorted, returns index of found item or error.
 // Binary searches on sorted lists can be faster than other array searches because at maximum
 // the algorithm only has to traverse log N elements
-// Example: arrays.binary_search([1, 2, 3, 4], 4) ? // => 3
+// Example: arrays.binary_search([1, 2, 3, 4], 4)? // => 3
 pub fn binary_search<T>(arr []T, target T) ?int {
 	mut left := 0
 	mut right := arr.len - 1

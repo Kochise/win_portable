@@ -8,6 +8,7 @@ module clipboard
 // Clipboard represents a system clipboard.
 //
 // System "copy" and "paste" actions utilize the clipboard for temporary storage.
+[heap]
 pub struct Clipboard {
 	pb             voidptr
 	last_cb_serial i64
@@ -17,7 +18,7 @@ mut:
 
 fn C.darwin_new_pasteboard() voidptr
 
-fn C.darwin_get_pasteboard_text(voidptr) &byte
+fn C.darwin_get_pasteboard_text(voidptr) &u8
 
 fn C.darwin_set_pasteboard_text(voidptr, string) bool
 
@@ -74,7 +75,7 @@ pub fn (mut cb Clipboard) get_text() string {
 		return ''
 	}
 	utf8_clip := C.darwin_get_pasteboard_text(cb.pb)
-	return unsafe { tos_clone(&byte(utf8_clip)) }
+	return unsafe { tos_clone(&u8(utf8_clip)) }
 }
 
 // new_primary returns a new X11 `PRIMARY` type `Clipboard` instance allocated on the heap.

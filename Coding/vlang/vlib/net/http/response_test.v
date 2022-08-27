@@ -4,20 +4,20 @@ fn test_response_bytestr() ? {
 	{
 		resp := new_response(
 			status: .ok
-			text: 'Foo'
+			text: 'Foo' // TODO: replace with `body` once deprecaped
 		)
 		assert resp.bytestr() == 'HTTP/1.1 200 OK\r\n' + 'Content-Length: 3\r\n' + '\r\n' + 'Foo'
 	}
 	{
 		resp := new_response(
 			status: .found
-			text: 'Foo'
+			body: 'Foo'
 			header: new_header(key: .location, value: '/')
 		)
 		lines := resp.bytestr().split_into_lines()
 		assert lines[0] == 'HTTP/1.1 302 Found'
 		// header order is not guaranteed
-		check_headers(['Location: /', 'Content-Length: 3'], lines[1..3]) ?
+		check_headers(['Location: /', 'Content-Length: 3'], lines[1..3])?
 		assert lines[3] == ''
 		assert lines[4] == 'Foo'
 	}

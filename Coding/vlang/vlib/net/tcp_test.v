@@ -1,3 +1,4 @@
+// vtest flaky: true
 // vtest retry: 8
 import net
 import os
@@ -8,7 +9,7 @@ const (
 
 fn handle_conn(mut c net.TcpConn) {
 	for {
-		mut buf := []byte{len: 100, init: 0}
+		mut buf := []u8{len: 100, init: 0}
 		read := c.read(mut buf) or {
 			println('Server: connection dropped')
 			return
@@ -30,18 +31,18 @@ fn one_shot_echo_server(mut l net.TcpListener, ch_started chan int) ? {
 }
 
 fn echo(address string) ? {
-	mut c := net.dial_tcp(address) ?
+	mut c := net.dial_tcp(address)?
 	defer {
 		c.close() or {}
 	}
 
-	println('local: ' + c.addr() ?.str())
-	println(' peer: ' + c.peer_addr() ?.str())
+	println('local: ' + c.addr()?.str())
+	println(' peer: ' + c.peer_addr()?.str())
 
 	data := 'Hello from vlib/net!'
-	c.write_string(data) ?
-	mut buf := []byte{len: 4096}
-	read := c.read(mut buf) ?
+	c.write_string(data)?
+	mut buf := []u8{len: 4096}
+	read := c.read(mut buf)?
 	assert read == data.len
 	for i := 0; i < read; i++ {
 		assert buf[i] == data[i]

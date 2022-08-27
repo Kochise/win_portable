@@ -22,10 +22,18 @@ enum Char_parse_state {
 	reset_params
 }
 
+// v_printf prints a sprintf-like formated `string` to the terminal.
 pub fn v_printf(str string, pt ...voidptr) {
 	print(v_sprintf(str, ...pt))
 }
 
+// v_sprintf returns a sprintf-like formated `string`.
+//
+// Example:
+// ```v
+// x := 3.141516
+// assert strconv.v_sprintf('aaa %G', x) == 'aaa 3.141516'
+// ```
 [manualfree]
 pub fn v_sprintf(str string, pt ...voidptr) string {
 	mut res := strings.new_builder(pt.len * 16)
@@ -40,7 +48,7 @@ pub fn v_sprintf(str string, pt ...voidptr) string {
 	mut len0 := -1 // forced length, if -1 free length
 	mut len1 := -1 // decimal part for floats
 	def_len1 := 6 // default value for len1
-	mut pad_ch := byte(` `) // pad char
+	mut pad_ch := u8(` `) // pad char
 
 	// prefix chars for Length field
 	mut ch1 := `0` // +1 char if present else `0`
@@ -62,7 +70,7 @@ pub fn v_sprintf(str string, pt ...voidptr) string {
 
 		ch := str[i]
 		if ch != `%` && status == .norm_char {
-			res.write_byte(ch)
+			res.write_u8(ch)
 			i++
 			continue
 		}
@@ -75,8 +83,8 @@ pub fn v_sprintf(str string, pt ...voidptr) string {
 		// single char, manage it here
 		if ch == `c` && status == .field_char {
 			v_sprintf_panic(p_index, pt.len)
-			d1 := unsafe { *(&byte(pt[p_index])) }
-			res.write_byte(d1)
+			d1 := unsafe { *(&u8(pt[p_index])) }
+			res.write_u8(d1)
 			status = .reset_params
 			p_index++
 			i++
@@ -297,7 +305,7 @@ pub fn v_sprintf(str string, pt ...voidptr) string {
 					// hh fot 8 bit unsigned int
 					`h` {
 						if ch2 == `h` {
-							d1 = u64(unsafe { *(&byte(pt[p_index])) })
+							d1 = u64(unsafe { *(&u8(pt[p_index])) })
 						} else {
 							d1 = u64(unsafe { *(&u16(pt[p_index])) })
 						}
@@ -579,11 +587,11 @@ pub fn format_fl_old(f f64, p BF_param) string {
 		if p.pad_ch == `0` {
 			if p.positive {
 				if p.sign_flag {
-					res.write_byte(`+`)
+					res.write_u8(`+`)
 					sign_len_diff = -1
 				}
 			} else {
-				res.write_byte(`-`)
+				res.write_u8(`-`)
 				sign_len_diff = -1
 			}
 			tmp := s
@@ -611,13 +619,13 @@ pub fn format_fl_old(f f64, p BF_param) string {
 
 		if p.allign == .right {
 			for i1 := 0; i1 < dif; i1++ {
-				res.write_byte(p.pad_ch)
+				res.write_u8(p.pad_ch)
 			}
 		}
 		res.write_string(s)
 		if p.allign == .left {
 			for i1 := 0; i1 < dif; i1++ {
-				res.write_byte(p.pad_ch)
+				res.write_u8(p.pad_ch)
 			}
 		}
 
@@ -628,7 +636,7 @@ pub fn format_fl_old(f f64, p BF_param) string {
 }
 
 [manualfree]
-pub fn format_es_old(f f64, p BF_param) string {
+fn format_es_old(f f64, p BF_param) string {
 	unsafe {
 		mut s := ''
 		mut fs := f64_to_str_pad(if f > 0 { f } else { -f }, p.len1)
@@ -648,11 +656,11 @@ pub fn format_es_old(f f64, p BF_param) string {
 		if p.pad_ch == `0` {
 			if p.positive {
 				if p.sign_flag {
-					res.write_byte(`+`)
+					res.write_u8(`+`)
 					sign_len_diff = -1
 				}
 			} else {
-				res.write_byte(`-`)
+				res.write_u8(`-`)
 				sign_len_diff = -1
 			}
 			tmp := s
@@ -679,25 +687,25 @@ pub fn format_es_old(f f64, p BF_param) string {
 		dif := p.len0 - s.len + sign_len_diff
 		if p.allign == .right {
 			for i1 := 0; i1 < dif; i1++ {
-				res.write_byte(p.pad_ch)
+				res.write_u8(p.pad_ch)
 			}
 		}
 		res.write_string(s)
 		if p.allign == .left {
 			for i1 := 0; i1 < dif; i1++ {
-				res.write_byte(p.pad_ch)
+				res.write_u8(p.pad_ch)
 			}
 		}
 		return res.str()
 	}
 }
 
-pub fn remove_tail_zeros_old(s string) string {
+fn remove_tail_zeros_old(s string) string {
 	mut i := 0
 	mut last_zero_start := -1
 	mut dot_pos := -1
 	mut in_decimal := false
-	mut prev_ch := byte(0)
+	mut prev_ch := u8(0)
 	for i < s.len {
 		ch := unsafe { s.str[i] }
 		if ch == `.` {
@@ -745,11 +753,11 @@ pub fn format_dec_old(d u64, p BF_param) string {
 	if p.pad_ch == `0` {
 		if p.positive {
 			if p.sign_flag {
-				res.write_byte(`+`)
+				res.write_u8(`+`)
 				sign_len_diff = -1
 			}
 		} else {
-			res.write_byte(`-`)
+			res.write_u8(`-`)
 			sign_len_diff = -1
 		}
 		tmp := s
@@ -776,13 +784,13 @@ pub fn format_dec_old(d u64, p BF_param) string {
 
 	if p.allign == .right {
 		for i1 := 0; i1 < dif; i1++ {
-			res.write_byte(p.pad_ch)
+			res.write_u8(p.pad_ch)
 		}
 	}
 	res.write_string(s)
 	if p.allign == .left {
 		for i1 := 0; i1 < dif; i1++ {
-			res.write_byte(p.pad_ch)
+			res.write_u8(p.pad_ch)
 		}
 	}
 	return res.str()

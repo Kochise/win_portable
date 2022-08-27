@@ -92,7 +92,7 @@ pub fn (s &Context) add_fallback_font(base int, fallback int) int {
 // `free_data` indicates if `data` should be freed after the font is added.
 // The function returns the id of the font on success, `fontstash.invalid` otherwise.
 [inline]
-pub fn (s &Context) add_font_mem(name string, data []byte, free_data bool) int {
+pub fn (s &Context) add_font_mem(name string, data []u8, free_data bool) int {
 	return C.fonsAddFontMem(s, &char(name.str), data.data, data.len, int(free_data))
 }
 
@@ -251,8 +251,8 @@ pub fn (s &Context) text_iter_next(iter &C.FONStextIter, quad &C.FONSquad) int {
 // get_texture_data returns the current Context's raw texture data.
 // `width` and `height` is assigned the size of the texture dimensions.
 [inline]
-pub fn (s &Context) get_texture_data(width &int, height &int) &byte {
-	return &byte(C.fonsGetTextureData(s, width, height))
+pub fn (s &Context) get_texture_data(width &int, height &int) &u8 {
+	return &u8(C.fonsGetTextureData(s, width, height))
 }
 
 // validate_texture fills the `dirty` argument with the pixel dimensions

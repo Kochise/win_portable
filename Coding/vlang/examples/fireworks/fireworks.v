@@ -6,8 +6,8 @@ import rand
 
 struct App {
 mut:
-	gg      &gg.Context       = 0
-	ui      &objects.UIParams = 0
+	gg      &gg.Context       = unsafe { 0 }
+	ui      &objects.UIParams = unsafe { 0 }
 	rockets []objects.Rocket
 	frames  [][]objects.Rocket
 	// i thought about using a fixed fifo queue for the frames but the array
@@ -25,7 +25,7 @@ fn on_frame(mut app App) {
 	for mut frame in app.frames {
 		for mut rocket in frame {
 			if !rocket.exploded {
-				rocket.color.a = byte(f32_max(rocket.color.a - 8, 0))
+				rocket.color.a = u8(f32_max(rocket.color.a - 8, 0))
 				rocket.draw(mut app.gg)
 			}
 		}

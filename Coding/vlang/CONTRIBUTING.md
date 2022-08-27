@@ -35,32 +35,35 @@ The main files are:
 - Creates a parser object for each file and runs `parse()` on them.
 - The correct backend is called (C, JS, native), and a binary is compiled.
 
-2. `v/scanner` The scanner's job is to parse a list of characters and convert
+2. `vlib/v/scanner` The scanner's job is to parse a list of characters and convert
 them to tokens.
 
-3. `v/token` This is simply a list of all tokens, their string values, and a
+3. `vlib/v/token` This is simply a list of all tokens, their string values, and a
 couple of helper functions.
 
-4. `v/parser` The parser. It converts a list of tokens into an AST.
+4. `vlib/v/parser` The parser. It converts a list of tokens into an AST.
 In V, objects can be used before declaration, so unknown types are marked as
 unresolved. They are resolved later in the type checker.
 
-5. `v/table` V creates one table object that is shared by all parsers. It
+5. `vlib/v/table` V creates one table object that is shared by all parsers. It
 contains all types, consts, and functions, as well as several helpers to search
 for objects by name, register new objects, modify types' fields, etc.
 
-6. `v/checker` Type checker and resolver. It processes the AST and makes sure
+6. `vlib/v/checker` Type checker and resolver. It processes the AST and makes sure
 the types are correct. Unresolved types are resolved, type information is added
 to the AST.
 
-7. `v/gen/c` C backend. It simply walks the AST and generates C code that can be
+7. `vlib/v/gen/c` C backend. It simply walks the AST and generates C code that can be
 compiled with Clang, GCC, Visual Studio, and TCC.
 
-8. `json.v` defines the json code generation. This file will be removed once V
+8. `vlib/v/gen/js` JavaScript backend. It simply walks the AST and generates JS code that can be
+executed on the browser or in NodeJS/Deno.
+
+9. `vlib/v/gen/c/json.v` defines the json code generation. This file will be removed once V
 supports comptime code generation, and it will be possible to do this using the
 language's tools.
 
-9. `v/gen/native` is the directory with all the machine code generation logic. It
+10. `vlib/v/gen/native` is the directory with all the machine code generation logic. It
 defines a set of functions that translate assembly instructions to machine code
 and build the binary from scratch byte by byte. It manually builds all headers,
 segments, sections, symtable, relocations, etc. Right now it only has basic
@@ -90,6 +93,7 @@ making pullrequests, and you can just do normal git operations such as:
 
 5. When finished with a feature/bugfix/change, you can:
 `git checkout -b fix_alabala`
+   - Don't forget to keep formatting standards, run `v fmt -w YOUR_MODIFIED_FILES` before committing
 6. `git push pullrequest`  # (NOTE: the `pullrequest` remote was setup on step 4)
 7. On GitHub's web interface, go to: https://github.com/vlang/v/pulls
 
@@ -187,7 +191,6 @@ to create a copy of the compiler rather than replacing it with `v self`.
 | `debug_codegen` | Prints automatically generated V code during the scanning phase |
 | `debug_interface_table` | Prints generated interfaces during C generation |
 | `debug_interface_type_implements` | Prints debug information when checking that a type implements in interface |
-| `debug_embed_file_in_prod` | Prints debug information about the embedded files with `$embed_file('somefile')` |
 | `print_vweb_template_expansions` | Prints vweb compiled HTML files |
 | `time_checking` | Prints the time spent checking files and other related information |
 | `time_parsing` | Prints the time spent parsing files and other related information |
@@ -200,3 +203,4 @@ to create a copy of the compiler rather than replacing it with `v self`.
 | `trace_thirdparty_obj_files` | Prints details about built thirdparty obj files |
 | `trace_usecache` | Prints details when -usecache is used |
 | `trace_embed_file` | Prints details when $embed_file is used |
+| `embed_only_metadata` | Embed only the metadata for the file(s) with `$embed_file('somefile')`; faster; for development, *not* distribution |

@@ -13,7 +13,6 @@ mut:
 }
 
 fn event(e &tui.Event, x voidptr) {
-	println(e)
 	if e.typ == .key_down && e.code == .escape {
 		exit(0)
 	}
@@ -40,7 +39,7 @@ fn main() {
 		frame_fn: frame
 		hide_cursor: true
 	)
-	app.tui.run() ?
+	app.tui.run()?
 }
 ```
 

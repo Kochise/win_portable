@@ -20,7 +20,12 @@ fn (mut g Gen) comptime_selector(node ast.ComptimeSelector) {
 		if node.field_expr.expr is ast.Ident {
 			if node.field_expr.expr.name == g.comptime_for_field_var
 				&& node.field_expr.field_name == 'name' {
-				g.write(c_name(g.comptime_for_field_value.name))
+				field_name := g.comptime_for_field_value.name
+				left_sym := g.table.sym(g.unwrap_generic(node.left_type))
+				_ := g.table.find_field_with_embeds(left_sym, field_name) or {
+					g.error('`$node.left` has no field named `$field_name`', node.left.pos())
+				}
+				g.write(c_name(field_name))
 				return
 			}
 		}
@@ -263,14 +268,14 @@ fn (mut g Gen) comptime_if(node ast.IfExpr) {
 		if node.is_expr {
 			len := branch.stmts.len
 			if len > 0 {
-				last := branch.stmts[len - 1] as ast.ExprStmt
+				last := branch.stmts.last() as ast.ExprStmt
 				if len > 1 {
 					tmp := g.new_tmp_var()
 					styp := g.typ(last.typ)
 					g.indent++
 					g.writeln('$styp $tmp;')
 					g.writeln('{')
-					g.stmts(branch.stmts[0..len - 1])
+					g.stmts(branch.stmts[..len - 1])
 					g.write('\t$tmp = ')
 					g.stmt(last)
 					g.writeln('}')
@@ -283,7 +288,7 @@ fn (mut g Gen) comptime_if(node ast.IfExpr) {
 			}
 		} else {
 			// Only wrap the contents in {} if we're inside a function, not on the top level scope
-			should_create_scope := g.fn_decl != 0
+			should_create_scope := unsafe { g.fn_decl != 0 }
 			if should_create_scope {
 				g.writeln('{')
 			}
@@ -697,6 +702,12 @@ fn (mut g Gen) comptime_if_to_ifdef(name string, is_comptime_optional bool) ?str
 		}
 		'aarch64', 'arm64' {
 			return '__V_arm64'
+		}
+		'arm32' {
+			return '__V_arm32'
+		}
+		'i386' {
+			return '__V_x86'
 		}
 		// bitness:
 		'x64' {

@@ -43,7 +43,7 @@ fn (mut p Parser) array_init() ast.ArrayInit {
 		}
 		last_pos = p.tok.pos()
 	} else {
-		// [1,2,3] or [const]byte
+		// [1,2,3] or [const]u8
 		old_inside_array_lit := p.inside_array_lit
 		p.inside_array_lit = true
 		pre_cmnts = p.eat_comments()
@@ -65,9 +65,13 @@ fn (mut p Parser) array_init() ast.ArrayInit {
 		}
 		last_pos = p.tok.pos()
 		p.check(.rsbr)
-		if exprs.len == 1 && p.tok.kind in [.name, .amp, .lsbr] && p.tok.line_nr == line_nr {
-			// [100]byte
+		if exprs.len == 1 && p.tok.line_nr == line_nr
+			&& (p.tok.kind in [.name, .amp] || (p.tok.kind == .lsbr && p.is_array_type())) {
+			// [100]u8
 			elem_type = p.parse_type()
+			if p.table.sym(elem_type).name == 'byte' {
+				p.error('`byte` has been deprecated in favor of `u8`: use `[10]u8{}` instead of `[10]byte{}`')
+			}
 			last_pos = p.tok.pos()
 			is_fixed = true
 			if p.tok.kind == .lcbr {
@@ -85,7 +89,7 @@ fn (mut p Parser) array_init() ast.ArrayInit {
 					p.scope_register_it_as_index()
 					default_expr = p.expr(0)
 					has_it = if var := p.scope.find_var('it') {
-						mut variable := var
+						mut variable := unsafe { var }
 						is_used := variable.is_used
 						variable.is_used = true
 						is_used
@@ -144,7 +148,7 @@ fn (mut p Parser) array_init() ast.ArrayInit {
 					p.scope_register_it_as_index()
 					default_expr = p.expr(0)
 					has_it = if var := p.scope.find_var('it') {
-						mut variable := var
+						mut variable := unsafe { var }
 						is_used := variable.is_used
 						variable.is_used = true
 						is_used

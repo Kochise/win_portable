@@ -4,15 +4,15 @@
 module musl
 
 import rand.seed
+import rand.buffer
 
 pub const seed_len = 1
 
 // MuslRNG ported from https://git.musl-libc.org/cgit/musl/tree/src/prng/rand_r.c
 pub struct MuslRNG {
+	buffer.PRNGBuffer
 mut:
-	state      u32 = seed.time_seed_32()
-	bytes_left int
-	buffer     u32
+	state u32 = seed.time_seed_32()
 }
 
 // seed sets the current random state based on `seed_data`.
@@ -29,16 +29,16 @@ pub fn (mut rng MuslRNG) seed(seed_data []u32) {
 
 // byte returns a uniformly distributed pseudorandom 8-bit unsigned positive `byte`.
 [inline]
-pub fn (mut rng MuslRNG) byte() byte {
+pub fn (mut rng MuslRNG) u8() u8 {
 	if rng.bytes_left >= 1 {
 		rng.bytes_left -= 1
-		value := byte(rng.buffer)
+		value := u8(rng.buffer)
 		rng.buffer >>= 8
 		return value
 	}
 	rng.buffer = rng.u32()
 	rng.bytes_left = 3
-	value := byte(rng.buffer)
+	value := u8(rng.buffer)
 	rng.buffer >>= 8
 	return value
 }

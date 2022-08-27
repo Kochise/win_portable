@@ -38,22 +38,22 @@ fn (err InvalidLineEndingError) msg() string {
 	return 'encoding.csv: could not find any valid line endings'
 }
 
-struct Reader {
+pub struct Reader {
 	// not used yet
 	// has_header        bool
 	// headings          []string
 	data string
 pub mut:
-	delimiter         byte
-	comment           byte
+	delimiter         u8
+	comment           u8
 	is_mac_pre_osx_le bool
 	row_pos           int
 }
 
 [params]
 pub struct ReaderConfig {
-	delimiter byte = `,`
-	comment   byte = `#`
+	delimiter u8 = `,`
+	comment   u8 = `#`
 }
 
 // new_reader initializes a Reader with string data to parse and,
@@ -69,7 +69,7 @@ pub fn new_reader(data string, config ReaderConfig) &Reader {
 // read reads a row from the CSV data.
 // If successful, the result holds an array of each column's data.
 pub fn (mut r Reader) read() ?[]string {
-	l := r.read_record() ?
+	l := r.read_record()?
 	return l
 }
 
@@ -133,7 +133,7 @@ fn (mut r Reader) read_record() ?[]string {
 	mut i := -1
 	for {
 		if need_read {
-			l := r.read_line() ?
+			l := r.read_line()?
 			if l.len <= 0 {
 				if keep_raw {
 					line += '\n'
@@ -210,6 +210,6 @@ fn (mut r Reader) read_record() ?[]string {
 	return fields
 }
 
-fn valid_delim(b byte) bool {
+fn valid_delim(b u8) bool {
 	return b != 0 && b != `"` && b != `\r` && b != `\n`
 }

@@ -7,7 +7,6 @@ import strings
 import v.ast
 import v.util
 import v.pref
-import v.mathutil
 
 const (
 	bs      = '\\'
@@ -15,6 +14,7 @@ const (
 	max_len = [0, 35, 60, 85, 93, 100]
 )
 
+[minify]
 pub struct Fmt {
 pub mut:
 	file               ast.File
@@ -40,6 +40,7 @@ pub mut:
 	used_imports       []string          // to remove unused imports
 	import_syms_used   map[string]bool   // to remove unused import symbols.
 	mod2alias          map[string]string // for `import time as t`, will contain: 'time'=>'t'
+	mod2syms           map[string]string // import time { now } 'time.now'=>'now'
 	use_short_fn_args  bool
 	single_line_fields bool   // should struct fields be on a single line
 	it_name            string // the name to replace `it` with
@@ -47,6 +48,7 @@ pub mut:
 	inside_const       bool
 	is_mbranch_expr    bool // match a { x...y { } }
 	fn_scope           &ast.Scope = voidptr(0)
+	wsinfix_depth      int
 }
 
 pub fn fmt(file ast.File, table &ast.Table, pref &pref.Preferences, is_debug bool) string {
@@ -69,8 +71,16 @@ pub fn fmt(file ast.File, table &ast.Table, pref &pref.Preferences, is_debug boo
 	if res.len == 1 {
 		return f.out_imports.str().trim_space() + '\n'
 	}
-	bounded_import_pos := mathutil.min(res.len, f.import_pos)
-	return res[..bounded_import_pos] + f.out_imports.str() + res[bounded_import_pos..]
+	if res.len <= f.import_pos {
+		imp_str := f.out_imports.str().trim_space()
+		if imp_str.len > 0 {
+			return res + '\n' + imp_str + '\n'
+		} else {
+			return res
+		}
+	} else {
+		return res[..f.import_pos] + f.out_imports.str() + res[f.import_pos..]
+	}
 }
 
 pub fn (mut f Fmt) process_file_imports(file &ast.File) {
@@ -80,6 +90,9 @@ pub fn (mut f Fmt) process_file_imports(file &ast.File) {
 			f.mod2alias['${imp.mod}.$sym.name'] = sym.name
 			f.mod2alias['${imp.mod.all_after_last('.')}.$sym.name'] = sym.name
 			f.mod2alias[sym.name] = sym.name
+			f.mod2syms['${imp.mod}.$sym.name'] = sym.name
+			f.mod2syms['${imp.mod.all_after_last('.')}.$sym.name'] = sym.name
+			f.mod2syms[sym.name] = sym.name
 			f.import_syms_used[sym.name] = false
 		}
 	}
@@ -206,8 +219,8 @@ pub fn (mut f Fmt) short_module(name string) string {
 	if !name.contains('.') || name.starts_with('JS.') {
 		return name
 	}
-	if name in f.mod2alias {
-		return f.mod2alias[name]
+	if name in f.mod2syms {
+		return f.mod2syms[name]
 	}
 	if name.ends_with('>') {
 		generic_levels := name.trim_string_right('>').split('<')
@@ -236,7 +249,7 @@ pub fn (mut f Fmt) short_module(name string) string {
 		}
 	}
 	if aname == '' {
-		return symname
+		return '$tprefix$symname'
 	}
 	return '$tprefix${aname}.$symname'
 }
@@ -1290,6 +1303,7 @@ pub fn (mut f Fmt) alias_type_decl(node ast.AliasTypeDecl) {
 }
 
 pub fn (mut f Fmt) fn_type_decl(node ast.FnTypeDecl) {
+	f.attrs(node.attrs)
 	if node.is_pub {
 		f.write('pub ')
 	}
@@ -1334,6 +1348,8 @@ pub fn (mut f Fmt) fn_type_decl(node ast.FnTypeDecl) {
 		f.write(' $ret_str')
 	} else if fn_info.return_type.has_flag(.optional) {
 		f.write(' ?')
+	} else if fn_info.return_type.has_flag(.result) {
+		f.write(' !')
 	}
 
 	f.comments(node.comments, has_nl: false)
@@ -1461,7 +1477,7 @@ pub fn (mut f Fmt) array_init(node ast.ArrayInit) {
 					|| f.line_len + expr.pos().len > fmt.max_len[3]
 			}
 		}
-		line_break := f.array_init_break[f.array_init_depth - 1]
+		mut line_break := f.array_init_break[f.array_init_depth - 1]
 		mut penalty := if line_break { 0 } else { 4 }
 		if penalty > 0 {
 			if i == 0
@@ -1479,14 +1495,26 @@ pub fn (mut f Fmt) array_init(node ast.ArrayInit) {
 		}
 		single_line_expr := expr_is_single_line(expr)
 		if single_line_expr {
-			estr := f.node_str(expr)
-			if !is_new_line && !f.buffering && f.line_len + estr.len > fmt.max_len.last() {
+			mut estr := ''
+			if !is_new_line && !f.buffering && f.line_len + expr.pos().len > fmt.max_len.last() {
+				if inc_indent {
+					estr = f.node_str(expr)
+				}
 				f.writeln('')
 				is_new_line = true
 				if !inc_indent {
 					f.indent++
 					inc_indent = true
+					f.write_indent()
+					f.empty_line = false
+					estr = f.node_str(expr)
 				}
+				if i == 0 {
+					f.array_init_break[f.array_init_depth - 1] = true
+					line_break = true
+				}
+			} else {
+				estr = f.node_str(expr)
 			}
 			if !is_new_line && i > 0 {
 				f.write(' ')
@@ -1577,7 +1605,7 @@ pub fn (mut f Fmt) array_init(node ast.ArrayInit) {
 		f.indent--
 	}
 	f.write(']')
-	// `[100]byte`
+	// `[100]u8`
 	if node.is_fixed {
 		if node.has_val {
 			f.write('!')
@@ -1622,6 +1650,7 @@ pub fn (mut f Fmt) call_expr(node ast.CallExpr) {
 	for arg in node.args {
 		f.comments(arg.comments)
 	}
+	mut is_method_newline := false
 	if node.is_method {
 		if node.name in ['map', 'filter', 'all', 'any'] {
 			f.in_lambda_depth++
@@ -1633,7 +1662,8 @@ pub fn (mut f Fmt) call_expr(node ast.CallExpr) {
 			// `time.now()` without `time imported` is processed as a method call with `time` being
 			// a `node.left` expression. Import `time` automatically.
 			// TODO fetch all available modules
-			if node.left.name in ['time', 'os', 'strings', 'math', 'json', 'base64'] {
+			if node.left.name in ['time', 'os', 'strings', 'math', 'json', 'base64']
+				&& !node.left.scope.known_var(node.left.name) {
 				f.file.imports << ast.Import{
 					mod: node.left.name
 					alias: node.left.name
@@ -1641,6 +1671,11 @@ pub fn (mut f Fmt) call_expr(node ast.CallExpr) {
 			}
 		}
 		f.expr(node.left)
+		is_method_newline = node.left.pos().last_line != node.name_pos.line_nr
+		if is_method_newline {
+			f.indent++
+			f.writeln('')
+		}
 		f.write('.' + node.name)
 	} else {
 		f.write_language_prefix(node.language)
@@ -1663,6 +1698,9 @@ pub fn (mut f Fmt) call_expr(node ast.CallExpr) {
 	f.write(')')
 	f.or_expr(node.or_block)
 	f.comments(node.comments, has_nl: false)
+	if is_method_newline {
+		f.indent--
+	}
 }
 
 fn (mut f Fmt) write_generic_call_if_require(node ast.CallExpr) {
@@ -1677,6 +1715,7 @@ fn (mut f Fmt) write_generic_call_if_require(node ast.CallExpr) {
 				name = 'JS.' + name
 			}
 			f.write(name)
+			f.mark_import_as_used(name)
 			if i != node.concrete_types.len - 1 {
 				f.write(', ')
 			}
@@ -1934,7 +1973,8 @@ pub fn (mut f Fmt) if_expr(node ast.IfExpr) {
 }
 
 fn branch_is_single_line(b ast.IfBranch) bool {
-	if b.stmts.len == 1 && b.comments.len == 0 && stmt_is_single_line(b.stmts[0]) {
+	if b.stmts.len == 1 && b.comments.len == 0 && stmt_is_single_line(b.stmts[0])
+		&& b.pos.line_nr == b.stmts[0].pos.line_nr {
 		return true
 	}
 	return false
@@ -2059,7 +2099,13 @@ fn split_up_infix(infix_str string, ignore_paren bool, is_cond_infix bool) ([]st
 	return conditions, penalties
 }
 
+const wsinfix_depth_max = 10
+
 fn (mut f Fmt) write_splitted_infix(conditions []string, penalties []int, ignore_paren bool, is_cond bool) {
+	f.wsinfix_depth++
+	defer {
+		f.wsinfix_depth--
+	}
 	for i, cnd in conditions {
 		c := cnd.trim_space()
 		if f.line_len + c.len < fmt.max_len[penalties[i]] {
@@ -2070,6 +2116,11 @@ fn (mut f Fmt) write_splitted_infix(conditions []string, penalties []int, ignore
 		} else {
 			is_paren_expr := (c[0] == `(` || (c.len > 5 && c[3] == `(`)) && c.ends_with(')')
 			final_len := ((f.indent + 1) * 4) + c.len
+			if f.wsinfix_depth > fmt.wsinfix_depth_max {
+				// limit indefinite recursion, by just giving up splitting:
+				f.write(c)
+				continue
+			}
 			if final_len > fmt.max_len.last() && is_paren_expr {
 				conds, pens := split_up_infix(c, true, is_cond)
 				f.write_splitted_infix(conds, pens, true, is_cond)
@@ -2302,8 +2353,11 @@ pub fn (mut f Fmt) or_expr(node ast.OrExpr) {
 			f.stmts(node.stmts)
 			f.write('}')
 		}
-		.propagate {
-			f.write(' ?')
+		.propagate_option {
+			f.write('?')
+		}
+		.propagate_result {
+			f.write('!')
 		}
 	}
 }
@@ -2314,7 +2368,11 @@ pub fn (mut f Fmt) par_expr(node ast.ParExpr) {
 		f.par_level++
 		f.write('(')
 	}
-	f.expr(node.expr)
+	mut expr := node.expr
+	for mut expr is ast.ParExpr {
+		expr = expr.expr
+	}
+	f.expr(expr)
 	if requires_paren {
 		f.par_level--
 		f.write(')')
@@ -2328,6 +2386,9 @@ pub fn (mut f Fmt) postfix_expr(node ast.PostfixExpr) {
 		f.write(' ?')
 	} else {
 		f.write('$node.op')
+	}
+	if node.is_c2v_prefix {
+		f.write('$')
 	}
 }
 

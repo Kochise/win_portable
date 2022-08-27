@@ -7,9 +7,9 @@ import strings
 
 pub struct Color {
 pub:
-	r byte
-	g byte
-	b byte
+	r u8
+	g u8
+	b u8
 }
 
 pub fn (c Color) hex() string {
@@ -116,6 +116,7 @@ pub fn (mut ctx Context) clear() {
 [inline]
 pub fn (mut ctx Context) set_window_title(s string) {
 	print('\x1b]0;$s\x07')
+	flush_stdout()
 }
 
 // draw_point draws a point at position `x`,`y`.

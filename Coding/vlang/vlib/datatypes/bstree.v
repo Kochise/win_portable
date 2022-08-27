@@ -9,13 +9,13 @@ mut:
 	// Value of the node
 	value T
 	// The parent of the node
-	parent &BSTreeNode<T> = 0
+	parent &BSTreeNode<T> = unsafe { 0 }
 	// The left side with value less than the
 	// value of this node
-	left &BSTreeNode<T> = 0
+	left &BSTreeNode<T> = unsafe { 0 }
 	// The right side with value grater than the
 	// value of thiss node
-	right &BSTreeNode<T> = 0
+	right &BSTreeNode<T> = unsafe { 0 }
 }
 
 // Create new root bst node
@@ -61,7 +61,7 @@ fn (mut node BSTreeNode<T>) bind(mut to_bind BSTreeNode<T>, left bool) {
 // Space complexity O(N)
 pub struct BSTree<T> {
 mut:
-	root &BSTreeNode<T> = 0
+	root &BSTreeNode<T> = unsafe { 0 }
 }
 
 // insert give the possibility to insert an element in the BST.
@@ -76,13 +76,13 @@ pub fn (mut bst BSTree<T>) insert(value T) bool {
 // insert_helper walks the tree and inserts the given node.
 fn (mut bst BSTree<T>) insert_helper(mut node BSTreeNode<T>, value T) bool {
 	if node.value < value {
-		if node.right != 0 && node.right.is_init {
+		if unsafe { node.right != 0 } && node.right.is_init {
 			return bst.insert_helper(mut node.right, value)
 		}
 		node.right = new_node(node, value)
 		return true
 	} else if node.value > value {
-		if node.left != 0 && node.left.is_init {
+		if unsafe { node.left != 0 } && node.left.is_init {
 			return bst.insert_helper(mut node.left, value)
 		}
 		node.left = new_node(node, value)
@@ -99,7 +99,7 @@ pub fn (bst &BSTree<T>) contains(value T) bool {
 // contains_helper is a helper function to walk the tree, and return
 // the absence or presence of the `value`.
 fn (bst &BSTree<T>) contains_helper(node &BSTreeNode<T>, value T) bool {
-	if node == 0 || !node.is_init {
+	if unsafe { node == 0 } || !node.is_init {
 		return false
 	}
 	if node.value < value {
@@ -113,7 +113,7 @@ fn (bst &BSTree<T>) contains_helper(node &BSTreeNode<T>, value T) bool {
 
 // remove removes an element with `value` from the BST.
 pub fn (mut bst BSTree<T>) remove(value T) bool {
-	if bst.root == 0 {
+	if bst.is_empty() {
 		return false
 	}
 	return bst.remove_helper(mut bst.root, value, false)
@@ -124,12 +124,12 @@ fn (mut bst BSTree<T>) remove_helper(mut node BSTreeNode<T>, value T, left bool)
 		return false
 	}
 	if node.value == value {
-		if node.left != 0 && node.left.is_init {
+		if unsafe { node.left != 0 } && node.left.is_init {
 			// In order to remove the element we need to bring up as parent the max of the
 			// left sub-tree.
 			mut max_node := bst.get_max_from_right(node.left)
 			node.bind(mut max_node, true)
-		} else if node.right != 0 && node.right.is_init {
+		} else if unsafe { node.right != 0 } && node.right.is_init {
 			// Bring up the element with the minimum value in the right sub-tree.
 			mut min_node := bst.get_min_from_left(node.right)
 			node.bind(mut min_node, false)
@@ -153,8 +153,11 @@ fn (mut bst BSTree<T>) remove_helper(mut node BSTreeNode<T>, value T, left bool)
 
 // get_max_from_right returns the max element of the BST following the right branch.
 fn (bst &BSTree<T>) get_max_from_right(node &BSTreeNode<T>) &BSTreeNode<T> {
+	if unsafe { node == 0 } {
+		return new_none_node<T>(false)
+	}
 	right_node := node.right
-	if right_node == 0 || !right_node.is_init {
+	if unsafe { right_node == 0 } || !right_node.is_init {
 		return node
 	}
 	return bst.get_max_from_right(right_node)
@@ -162,8 +165,11 @@ fn (bst &BSTree<T>) get_max_from_right(node &BSTreeNode<T>) &BSTreeNode<T> {
 
 // get_min_from_left returns the min element of the BST by following the left branch.
 fn (bst &BSTree<T>) get_min_from_left(node &BSTreeNode<T>) &BSTreeNode<T> {
+	if unsafe { node == 0 } {
+		return new_none_node<T>(false)
+	}
 	left_node := node.left
-	if left_node == 0 || !left_node.is_init {
+	if unsafe { left_node == 0 } || !left_node.is_init {
 		return node
 	}
 	return bst.get_min_from_left(left_node)
@@ -171,7 +177,7 @@ fn (bst &BSTree<T>) get_min_from_left(node &BSTreeNode<T>) &BSTreeNode<T> {
 
 // is_empty checks if the BST is empty
 pub fn (bst &BSTree<T>) is_empty() bool {
-	return bst.root == 0
+	return unsafe { bst.root == 0 }
 }
 
 // in_order_traversal traverses the BST in order, and returns the result as an array.
@@ -183,7 +189,7 @@ pub fn (bst &BSTree<T>) in_order_traversal() []T {
 
 // in_order_traversal_helper helps traverse the BST, and accumulates the result in the `result` array.
 fn (bst &BSTree<T>) in_order_traversal_helper(node &BSTreeNode<T>, mut result []T) {
-	if node == 0 || !node.is_init {
+	if unsafe { node == 0 } || !node.is_init {
 		return
 	}
 	bst.in_order_traversal_helper(node.left, mut result)
@@ -201,7 +207,7 @@ pub fn (bst &BSTree<T>) post_order_traversal() []T {
 // post_order_traversal_helper is a helper function that traverses the BST in post order,
 // accumulating the result in an array.
 fn (bst &BSTree<T>) post_order_traversal_helper(node &BSTreeNode<T>, mut result []T) {
-	if node == 0 || !node.is_init {
+	if unsafe { node == 0 } || !node.is_init {
 		return
 	}
 
@@ -220,7 +226,7 @@ pub fn (bst &BSTree<T>) pre_order_traversal() []T {
 // pre_order_traversal_helper is a helper function to traverse the BST
 // in pre order and accumulates the results in an array.
 fn (bst &BSTree<T>) pre_order_traversal_helper(node &BSTreeNode<T>, mut result []T) {
-	if node == 0 || !node.is_init {
+	if unsafe { node == 0 } || !node.is_init {
 		return
 	}
 	result << node.value
@@ -230,7 +236,7 @@ fn (bst &BSTree<T>) pre_order_traversal_helper(node &BSTreeNode<T>, mut result [
 
 // get_node is a helper method to ge the internal rapresentation of the node with the `value`.
 fn (bst &BSTree<T>) get_node(node &BSTreeNode<T>, value T) &BSTreeNode<T> {
-	if node == 0 || !node.is_init {
+	if unsafe { node == 0 } || !node.is_init {
 		return new_none_node<T>(false)
 	}
 	if node.value == value {
@@ -251,6 +257,9 @@ fn (bst &BSTree<T>) get_node(node &BSTreeNode<T>, value T) &BSTreeNode<T> {
 // left_value, exist := bst.to_left(10)
 //```
 pub fn (bst &BSTree<T>) to_left(value T) ?T {
+	if bst.is_empty() {
+		return none
+	}
 	node := bst.get_node(bst.root, value)
 	if !node.is_init {
 		return none
@@ -267,6 +276,9 @@ pub fn (bst &BSTree<T>) to_left(value T) ?T {
 // left_value, exist := bst.to_right(10)
 //```
 pub fn (bst &BSTree<T>) to_right(value T) ?T {
+	if bst.is_empty() {
+		return none
+	}
 	node := bst.get_node(bst.root, value)
 	if !node.is_init {
 		return none
@@ -278,6 +290,9 @@ pub fn (bst &BSTree<T>) to_right(value T) ?T {
 // max return the max element inside the BST.
 // Time complexity O(N) if the BST is not balanced
 pub fn (bst &BSTree<T>) max() ?T {
+	if bst.is_empty() {
+		return none
+	}
 	max := bst.get_max_from_right(bst.root)
 	if !max.is_init {
 		return none
@@ -288,6 +303,9 @@ pub fn (bst &BSTree<T>) max() ?T {
 // min return the minimum element in the BST.
 // Time complexity O(N) if the BST is not balanced.
 pub fn (bst &BSTree<T>) min() ?T {
+	if bst.is_empty() {
+		return none
+	}
 	min := bst.get_min_from_left(bst.root)
 	if !min.is_init {
 		return none

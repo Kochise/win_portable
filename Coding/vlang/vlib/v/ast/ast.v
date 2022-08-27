@@ -202,6 +202,7 @@ pub:
 	pos token.Pos
 }
 
+[minify]
 pub struct StringLiteral {
 pub:
 	val      string
@@ -223,7 +224,7 @@ pub:
 pub mut:
 	exprs      []Expr
 	expr_types []Type
-	fmts       []byte
+	fmts       []u8
 	need_fmts  []bool // an explicit non-default fmt required, e.g. `x`
 }
 
@@ -246,6 +247,7 @@ pub enum GenericKindField {
 }
 
 // `foo.bar`
+[minify]
 pub struct SelectorExpr {
 pub:
 	pos        token.Pos
@@ -254,13 +256,14 @@ pub:
 	mut_pos    token.Pos
 	next_token token.Kind
 pub mut:
-	expr             Expr // expr.field_name
-	expr_type        Type // type of `Foo` in `Foo.bar`
-	typ              Type // type of the entire thing (`Foo.bar`)
-	name_type        Type // T in `T.name` or typeof in `typeof(expr).name`
-	gkind_field      GenericKindField // `T.name` => ast.GenericKindField.name, `T.typ` => ast.GenericKindField.typ, or .unknown
-	scope            &Scope
-	from_embed_types []Type // holds the type of the embed that the method is called from
+	expr                Expr // expr.field_name
+	expr_type           Type // type of `Foo` in `Foo.bar`
+	typ                 Type // type of the entire thing (`Foo.bar`)
+	name_type           Type // T in `T.name` or typeof in `typeof(expr).name`
+	gkind_field         GenericKindField // `T.name` => ast.GenericKindField.name, `T.typ` => ast.GenericKindField.typ, or .unknown
+	scope               &Scope
+	from_embed_types    []Type // holds the type of the embed that the method is called from
+	has_hidden_receiver bool
 }
 
 // root_ident returns the origin ident where the selector started.
@@ -287,11 +290,13 @@ pub:
 	is_skipped bool      // module main can be skipped in single file programs
 }
 
+[minify]
 pub struct StructField {
 pub:
 	pos              token.Pos
 	type_pos         token.Pos
 	comments         []Comment
+	i                int
 	has_default_expr bool
 	attrs            []Attr
 	is_pub           bool
@@ -299,6 +304,10 @@ pub:
 	is_mut           bool
 	is_global        bool
 	is_volatile      bool
+	//
+	is_deprecated    bool
+	deprecation_msg  string
+	deprecated_after string
 pub mut:
 	default_expr     Expr
 	default_expr_typ Type
@@ -333,6 +342,7 @@ pub mut:
 }
 
 // const declaration
+[minify]
 pub struct ConstDecl {
 pub:
 	is_pub bool
@@ -344,6 +354,7 @@ pub mut:
 	is_block     bool // const() block
 }
 
+[minify]
 pub struct StructDecl {
 pub:
 	pos           token.Pos
@@ -380,6 +391,7 @@ pub:
 	comments []Comment
 }
 
+[minify]
 pub struct InterfaceDecl {
 pub:
 	name          string
@@ -431,6 +443,7 @@ pub mut:
 //    ...a
 //    field1: 'hello'
 // }`
+[minify]
 pub struct StructInit {
 pub:
 	pos             token.Pos
@@ -484,6 +497,7 @@ pub mut:
 }
 
 // function or method declaration
+[minify]
 pub struct FnDecl {
 pub:
 	name            string // 'math.bits.normalize'
@@ -520,6 +534,7 @@ pub:
 	attrs           []Attr
 	ctdefine_idx    int = -1 // the index in fn.attrs of `[if xyz]`, when such attribute exists
 pub mut:
+	idx               int // index in an external container; can be used to refer to the function in a more efficient way, just by its integer index
 	params            []Param
 	stmts             []Stmt
 	defer_stmts       []DeferStmt
@@ -534,13 +549,14 @@ pub mut:
 	end_comments  []Comment // comments *after* header declarations. E.g.: `fn C.C_func(x int) int // Comment`
 	next_comments []Comment // comments that are one line after the decl; used for InterfaceDecl
 	//
-	source_file &File = 0
+	source_file &File = unsafe { 0 }
 	scope       &Scope
 	label_names []string
 	pos         token.Pos // function declaration position
 }
 
 // break, continue
+[minify]
 pub struct BranchStmt {
 pub:
 	kind  token.Kind
@@ -549,6 +565,7 @@ pub:
 }
 
 // function or method call expr
+[minify]
 pub struct CallExpr {
 pub:
 	pos      token.Pos
@@ -588,6 +605,7 @@ pub struct AutofreeArgVar {
 }
 */
 // function call argument: `f(callarg)`
+[minify]
 pub struct CallArg {
 pub:
 	is_mut   bool
@@ -611,6 +629,7 @@ pub mut:
 	types []Type
 }
 
+[minify]
 pub struct Var {
 pub:
 	name            string
@@ -642,6 +661,7 @@ pub mut:
 
 // used for smartcasting only
 // struct fields change type in scopes
+[minify]
 pub struct ScopeStructField {
 pub:
 	struct_type Type // type of struct
@@ -656,6 +676,7 @@ pub:
 	//        12 <- the current casted type (typ)
 }
 
+[minify]
 pub struct GlobalField {
 pub:
 	name        string
@@ -663,6 +684,7 @@ pub:
 	pos         token.Pos
 	typ_pos     token.Pos
 	is_markused bool // an explict `[markused]` tag; the global will NOT be removed by `-skip-unused`
+	is_volatile bool
 pub mut:
 	expr     Expr
 	typ      Type
@@ -680,6 +702,7 @@ pub mut:
 	end_comments []Comment
 }
 
+[minify]
 pub struct EmbeddedFile {
 pub:
 	rpath            string // used in the source code, as an ID/key to the embed
@@ -688,7 +711,7 @@ pub:
 pub mut:
 	// these are set by gen_embed_file_init in v/gen/c/embed
 	is_compressed bool
-	bytes         []byte
+	bytes         []u8
 	len           int
 }
 
@@ -706,6 +729,7 @@ pub:
 	is_generated  bool // true for `[generated] module xyz` files; turn off notices
 	is_translated bool // true for `[translated] module xyz` files; turn off some checks
 pub mut:
+	idx              int    // index in an external container; can be used to refer to the file in a more efficient way, just by its integer index
 	path             string // absolute path of the source file - '/projects/v/file.v'
 	path_base        string // file name - 'file.v' (useful for tracing)
 	scope            &Scope
@@ -746,6 +770,7 @@ pub mut:
 
 // TODO: (joe) remove completely, use ident.obj
 // instead which points to the scope object
+[minify]
 pub struct IdentVar {
 pub mut:
 	typ         Type
@@ -768,6 +793,7 @@ pub enum IdentKind {
 }
 
 // A single identifier
+[minify]
 pub struct Ident {
 pub:
 	language Language
@@ -813,6 +839,7 @@ pub fn (i &Ident) var_info() IdentVar {
 
 // left op right
 // See: token.Kind.is_infix
+[minify]
 pub struct InfixExpr {
 pub:
 	op      token.Kind
@@ -835,14 +862,16 @@ pub mut:
 // ++, --
 pub struct PostfixExpr {
 pub:
-	op  token.Kind
-	pos token.Pos
+	op            token.Kind
+	pos           token.Pos
+	is_c2v_prefix bool // for `--x` (`x--$`), only for translated code until c2v can handle it
 pub mut:
 	expr        Expr
 	auto_locked string
 }
 
 // See: token.Kind.is_prefix
+[minify]
 pub struct PrefixExpr {
 pub:
 	op  token.Kind
@@ -854,6 +883,7 @@ pub mut:
 	is_option  bool // IfGuard
 }
 
+[minify]
 pub struct IndexExpr {
 pub:
 	pos token.Pos
@@ -871,6 +901,7 @@ pub mut:
 	is_gated  bool // #[] gated array
 }
 
+[minify]
 pub struct IfExpr {
 pub:
 	is_comptime   bool
@@ -918,6 +949,7 @@ pub mut:
 	scope    &Scope
 }
 
+[minify]
 pub struct MatchExpr {
 pub:
 	tok_kind token.Kind
@@ -956,6 +988,7 @@ pub mut:
 	expected_type Type // for debugging only
 }
 
+[minify]
 pub struct SelectBranch {
 pub:
 	pos           token.Pos
@@ -997,6 +1030,7 @@ pub mut:
 	scope &Scope
 }
 
+[minify]
 pub struct ForInStmt {
 pub:
 	key_var    string
@@ -1057,6 +1091,7 @@ pub:
 }
 */
 // variable assign statement
+[minify]
 pub struct AssignStmt {
 pub:
 	op           token.Kind // include: =,:=,+=,-=,*=,/= and so on; for a list of all the assign operators, see vlib/token/token.v
@@ -1084,7 +1119,7 @@ pub mut:
 	expr_type Type // from type
 }
 
-// an enum value, like OS.macos or .macos
+// An enum value, like OS.macos or .macos
 pub struct EnumVal {
 pub:
 	enum_name string
@@ -1108,6 +1143,7 @@ pub mut:
 }
 
 // enum declaration
+[minify]
 pub struct EnumDecl {
 pub:
 	name             string
@@ -1136,6 +1172,7 @@ pub:
 	name          string
 	is_pub        bool
 	pos           token.Pos
+	name_pos      token.Pos
 	comments      []Comment
 	typ           Type
 	generic_types []Type
@@ -1152,11 +1189,13 @@ pub:
 	pos      token.Pos
 	type_pos token.Pos
 	comments []Comment
+	attrs    []Attr // attributes of type declaration
 }
 
 // TODO: handle this differently
 // v1 excludes non current os ifdefs so
 // the defer's never get added in the first place
+[minify]
 pub struct DeferStmt {
 pub:
 	stmts []Stmt
@@ -1175,6 +1214,7 @@ pub mut:
 	expr Expr
 }
 
+[minify]
 pub struct GoExpr {
 pub:
 	pos token.Pos
@@ -1195,6 +1235,7 @@ pub:
 	pos  token.Pos
 }
 
+[minify]
 pub struct ArrayInit {
 pub:
 	pos           token.Pos   // `[]` in []Type{} position
@@ -1230,14 +1271,16 @@ pub mut:
 
 pub struct ChanInit {
 pub:
-	pos     token.Pos
-	has_cap bool
+	pos           token.Pos
+	elem_type_pos token.Pos
+	has_cap       bool
 pub mut:
 	cap_expr  Expr
 	typ       Type
 	elem_type Type
 }
 
+[minify]
 pub struct MapInit {
 pub:
 	pos       token.Pos
@@ -1253,6 +1296,7 @@ pub mut:
 }
 
 // s[10..20]
+[minify]
 pub struct RangeExpr {
 pub:
 	has_high bool
@@ -1264,6 +1308,7 @@ pub mut:
 	high Expr
 }
 
+[minify]
 pub struct CastExpr {
 pub mut:
 	arg       Expr   // `n` in `string(buf, n)`
@@ -1275,6 +1320,7 @@ pub mut:
 	pos       token.Pos
 }
 
+[minify]
 pub struct AsmStmt {
 pub:
 	arch        pref.Arch
@@ -1292,6 +1338,7 @@ pub mut:
 	local_labels  []string // local to the assembly block
 }
 
+[minify]
 pub struct AsmTemplate {
 pub mut:
 	name         string
@@ -1456,6 +1503,7 @@ pub const (
 	}
 )
 
+[minify]
 pub struct AssertStmt {
 pub:
 	pos token.Pos
@@ -1483,7 +1531,8 @@ pub mut:
 pub enum OrKind {
 	absent
 	block
-	propagate
+	propagate_option
+	propagate_result
 }
 
 // `or { ... }`
@@ -1506,6 +1555,7 @@ pub:
 */
 
 // deprecated
+[minify]
 pub struct Assoc {
 pub:
 	var_name string
@@ -1535,6 +1585,7 @@ pub mut:
 	typ  Type
 }
 
+[minify]
 pub struct OffsetOf {
 pub:
 	struct_type Type
@@ -1550,6 +1601,7 @@ pub mut:
 	expr Expr
 }
 
+[minify]
 pub struct TypeOf {
 pub:
 	pos token.Pos
@@ -1558,6 +1610,7 @@ pub mut:
 	expr_type Type
 }
 
+[minify]
 pub struct DumpExpr {
 pub:
 	pos token.Pos
@@ -1593,6 +1646,7 @@ pub mut:
 	val string
 }
 
+[minify]
 pub struct ComptimeSelector {
 pub:
 	has_parens bool // if $() is used, for vfmt
@@ -1604,6 +1658,7 @@ pub mut:
 	typ        Type
 }
 
+[minify]
 pub struct ComptimeCall {
 pub:
 	pos         token.Pos
@@ -1772,9 +1827,9 @@ pub fn (expr Expr) is_expr() bool {
 	return true
 }
 
-pub fn (expr Expr) is_lit() bool {
+pub fn (expr Expr) is_pure_literal() bool {
 	return match expr {
-		BoolLiteral, CharLiteral, StringLiteral, IntegerLiteral { true }
+		BoolLiteral, CharLiteral, FloatLiteral, StringLiteral, IntegerLiteral { true }
 		else { false }
 	}
 }
@@ -1817,6 +1872,9 @@ pub fn (e &Expr) is_lockable() bool {
 pub fn (stmt Stmt) check_c_expr() ? {
 	match stmt {
 		AssignStmt {
+			return
+		}
+		ForCStmt, ForInStmt, ForStmt {
 			return
 		}
 		ExprStmt {
@@ -2070,6 +2128,17 @@ pub fn (mut lx IndexExpr) recursive_mapset_is_setter(val bool) {
 	}
 }
 
+pub fn (mut lx IndexExpr) recursive_arraymap_set_is_setter() {
+	lx.is_setter = true
+	if mut lx.left is IndexExpr {
+		lx.left.recursive_arraymap_set_is_setter()
+	} else if mut lx.left is SelectorExpr {
+		if mut lx.left.expr is IndexExpr {
+			lx.left.expr.recursive_arraymap_set_is_setter()
+		}
+	}
+}
+
 // return all the registers for the given architecture
 pub fn all_registers(mut t Table, arch pref.Arch) map[string]ScopeObject {
 	mut res := map[string]ScopeObject{}
@@ -2178,7 +2247,7 @@ pub fn (expr Expr) is_literal() bool {
 		CastExpr {
 			return !expr.has_arg && expr.expr.is_literal()
 				&& (expr.typ.is_ptr() || expr.typ.is_pointer()
-				|| expr.typ in [i8_type, i16_type, int_type, i64_type, byte_type, u8_type, u16_type, u32_type, u64_type, f32_type, f64_type, char_type, bool_type, rune_type])
+				|| expr.typ in [i8_type, i16_type, int_type, i64_type, byte_type, u16_type, u32_type, u64_type, f32_type, f64_type, char_type, bool_type, rune_type])
 		}
 		SizeOf, IsRefType {
 			return expr.is_type || expr.expr.is_literal()

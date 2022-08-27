@@ -54,7 +54,7 @@ MacOSX has no unnamed semaphores and no `timed_wait()` at all
    so we emulate the behaviour with other devices
 */
 [heap]
-struct Semaphore {
+pub struct Semaphore {
 	mtx  C.pthread_mutex_t
 	cond C.pthread_cond_t
 mut:
@@ -228,5 +228,5 @@ pub fn (mut sem Semaphore) destroy() {
 			return
 		}
 	}
-	panic(unsafe { tos_clone(&byte(C.strerror(res))) })
+	panic(unsafe { tos_clone(&u8(C.strerror(res))) })
 }

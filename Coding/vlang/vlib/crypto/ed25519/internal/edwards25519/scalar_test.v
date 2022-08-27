@@ -22,9 +22,9 @@ fn test_scalar_equal() {
 
 fn test_scalar_non_adjacent_form() {
 	mut s := Scalar{
-		s: [byte(0x1a), 0x0e, 0x97, 0x8a, 0x90, 0xf6, 0x62, 0x2d, 0x37, 0x47, 0x02, 0x3f, 0x8a,
-			0xd8, 0x26, 0x4d, 0xa7, 0x58, 0xaa, 0x1b, 0x88, 0xe0, 0x40, 0xd1, 0x58, 0x9e, 0x7b,
-			0x7f, 0x23, 0x76, 0xef, 0x09]!
+		s: [u8(0x1a), 0x0e, 0x97, 0x8a, 0x90, 0xf6, 0x62, 0x2d, 0x37, 0x47, 0x02, 0x3f, 0x8a, 0xd8,
+			0x26, 0x4d, 0xa7, 0x58, 0xaa, 0x1b, 0x88, 0xe0, 0x40, 0xd1, 0x58, 0x9e, 0x7b, 0x7f,
+			0x23, 0x76, 0xef, 0x09]!
 	}
 	expected_naf := [i8(0), 13, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, -11,
 		0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 3, 0, 0,
@@ -91,8 +91,8 @@ fn test_scalar_set_canonical_bytes() ? {
 
 fn test_scalar_set_canonical_bytes_round_trip() ? {
 	for i in 0 .. 10 {
-		mut sc1 := generate_scalar(2) ?
-		mut sc2 := generate_scalar(6) ?
+		mut sc1 := generate_scalar(2)?
+		mut sc2 := generate_scalar(6)?
 		sc2.set_canonical_bytes(sc1.bytes()) or { panic(err) }
 
 		assert sc1 == sc2
@@ -101,7 +101,7 @@ fn test_scalar_set_canonical_bytes_round_trip() ? {
 
 const (
 	sc_error = Scalar{
-		s: [32]byte{init: (byte(-1))}
+		s: [32]u8{init: (u8(-1))}
 	}
 )
 
@@ -117,14 +117,14 @@ fn test_scalar_set_canonical_bytes_on_noncanonical_value() ? {
 
 fn test_scalar_set_uniform_bytes() ? {
 	// mod, _ := new(big.Integer).SetString("27742317777372353535851937790883648493", 10)
-	mut mod := big.integer_from_string('27742317777372353535851937790883648493') ?
+	mut mod := big.integer_from_string('27742317777372353535851937790883648493')?
 	// mod.Add(mod, new(big.Integer).Lsh(big.NewInt(1), 252))
 	mod = mod + big.integer_from_i64(1).lshift(252)
 
-	mut sc := generate_scalar(100) ?
-	inp := rand.bytes(64) ?
+	mut sc := generate_scalar(100)?
+	inp := rand.bytes(64)?
 
-	sc.set_uniform_bytes(inp[..]) ?
+	sc.set_uniform_bytes(inp[..])?
 	assert is_reduced(sc) == true
 
 	scbig := bigint_from_le_bytes(sc.s[..])
@@ -134,7 +134,7 @@ fn test_scalar_set_uniform_bytes() ? {
 	assert m.abs_cmp(scbig) == 0 // NEED FIX
 }
 
-fn bigint_from_le_bytes(b []byte) big.Integer {
+fn bigint_from_le_bytes(b []u8) big.Integer {
 	mut bc := b.clone()
 	buf := swap_endianness(mut bc) // WITHOUT THIS, some test would fail
 	bg := big.integer_from_bytes(buf)
@@ -190,9 +190,9 @@ fn test_scalar_set_bytes_with_clamping() {
 }
 
 fn test_scalar_multiply_distributes_over_add() ? {
-	x := generate_scalar(100) ?
-	y := generate_scalar(100) ?
-	z := generate_scalar(100) ?
+	x := generate_scalar(100)?
+	y := generate_scalar(100)?
+	z := generate_scalar(100)?
 
 	// Compute t1 = (x+y)*z
 	mut t1 := Scalar{}

@@ -36,12 +36,10 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 	}
 	name_pos := p.tok.pos()
 	p.check_for_impure_v(language, name_pos)
+	if p.disallow_declarations_in_script_mode() {
+		return ast.StructDecl{}
+	}
 	mut name := p.check_name()
-	// defer {
-	// if name.contains('App') {
-	// println('end of struct decl $name')
-	// }
-	// }
 	if name.len == 1 && name[0].is_capital() {
 		p.error_with_pos('single letter capital names are reserved for generic template types.',
 			name_pos)
@@ -103,6 +101,7 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 	mut end_comments := []ast.Comment{}
 	if !no_body {
 		p.check(.lcbr)
+		mut i := 0
 		for p.tok.kind != .rcbr {
 			mut comments := []ast.Comment{}
 			for p.tok.kind == .comment {
@@ -180,11 +179,15 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 			}
 			field_start_pos := p.tok.pos()
 			mut is_field_volatile := false
+			mut is_field_deprecated := false
+			mut field_deprecation_msg := ''
+			mut field_deprecated_after := ''
 			if p.tok.kind == .key_volatile {
 				p.next()
 				is_field_volatile = true
 			}
 			is_embed := ((p.tok.lit.len > 1 && p.tok.lit[0].is_capital()
+				&& (p.peek_tok.line_nr != p.tok.line_nr || p.peek_tok.kind !in [.name, .amp])
 				&& (p.peek_tok.kind != .lsbr || p.peek_token(2).kind != .rsbr))
 				|| p.peek_tok.kind == .dot) && language == .v && p.peek_tok.kind != .key_fn
 			is_on_top := ast_fields.len == 0 && !(is_field_mut || is_field_global)
@@ -244,6 +247,19 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 			if p.tok.kind == .lsbr {
 				// attrs are stored in `p.attrs`
 				p.attributes()
+				for fa in p.attrs {
+					match fa.name {
+						'deprecated' {
+							// [deprecated: 'use a replacement']
+							is_field_deprecated = true
+							field_deprecation_msg = fa.arg
+						}
+						'deprecated_after' {
+							field_deprecated_after = fa.arg
+						}
+						else {}
+					}
+				}
 			}
 			mut default_expr := ast.empty_expr()
 			mut has_default_expr := false
@@ -266,6 +282,7 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 					pos: field_pos
 					type_pos: type_pos
 					comments: comments
+					i: i
 					default_expr: default_expr
 					has_default_expr: has_default_expr
 					attrs: p.attrs
@@ -273,6 +290,9 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 					is_mut: is_embed || is_field_mut
 					is_global: is_field_global
 					is_volatile: is_field_volatile
+					is_deprecated: is_field_deprecated
+					deprecation_msg: field_deprecation_msg
+					deprecated_after: field_deprecated_after
 				}
 			}
 			// save embeds as table fields too, it will be used in generation phase
@@ -282,6 +302,7 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 				pos: field_pos
 				type_pos: type_pos
 				comments: comments
+				i: i
 				default_expr: default_expr
 				has_default_expr: has_default_expr
 				attrs: p.attrs
@@ -289,14 +310,19 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 				is_mut: is_embed || is_field_mut
 				is_global: is_field_global
 				is_volatile: is_field_volatile
+				is_deprecated: is_field_deprecated
+				deprecation_msg: field_deprecation_msg
+				deprecated_after: field_deprecated_after
 			}
 			p.attrs = []
+			i++
 		}
 		p.top_level_statement_end()
 		last_line = p.tok.line_nr
 		p.check(.rcbr)
 	}
-	t := ast.TypeSymbol{
+	is_minify := attrs.contains('minify')
+	mut t := ast.TypeSymbol{
 		kind: .struct_
 		language: language
 		name: name
@@ -308,6 +334,7 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 			is_typedef: attrs.contains('typedef')
 			is_union: is_union
 			is_heap: attrs.contains('heap')
+			is_minify: is_minify
 			is_generic: generic_types.len > 0
 			generic_types: generic_types
 			attrs: attrs
@@ -318,9 +345,7 @@ fn (mut p Parser) struct_decl() ast.StructDecl {
 		p.error_with_pos('invalid recursive struct `$orig_name`', name_pos)
 		return ast.StructDecl{}
 	}
-	mut ret := 0
-	// println('reg type symbol $name mod=$p.mod')
-	ret = p.table.register_sym(t)
+	mut ret := p.table.register_sym(t)
 	// allow duplicate c struct declarations
 	if ret == -1 && language != .c {
 		p.error_with_pos('cannot register struct `$name`, another type with this name exists',
@@ -464,7 +489,15 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 	}
 	name_pos := p.tok.pos()
 	p.check_for_impure_v(language, name_pos)
+	if p.disallow_declarations_in_script_mode() {
+		return ast.InterfaceDecl{}
+	}
 	modless_name := p.check_name()
+	if modless_name.len == 1 && modless_name[0].is_capital() {
+		p.error_with_pos('single letter capital names are reserved for generic template types.',
+			name_pos)
+		return ast.InterfaceDecl{}
+	}
 	if modless_name == 'IError' && p.mod != 'builtin' {
 		p.error_with_pos('cannot register interface `IError`, it is builtin interface type',
 			name_pos)
@@ -511,11 +544,13 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 	// Parse fields or methods
 	mut fields := []ast.StructField{cap: 20}
 	mut methods := []ast.FnDecl{cap: 20}
+	mut embeds := []ast.InterfaceEmbedding{}
 	mut is_mut := false
 	mut mut_pos := -1
-	mut ifaces := []ast.InterfaceEmbedding{}
 	for p.tok.kind != .rcbr && p.tok.kind != .eof {
-		if p.tok.kind == .name && p.tok.lit.len > 0 && p.tok.lit[0].is_capital() {
+		if p.tok.kind == .name && p.tok.lit.len > 0 && p.tok.lit[0].is_capital()
+			&& (p.peek_tok.line_nr != p.tok.line_nr
+			|| p.peek_tok.kind !in [.name, .amp, .lsbr, .lpar]) {
 			iface_pos := p.tok.pos()
 			mut iface_name := p.tok.lit
 			iface_type := p.parse_type()
@@ -523,7 +558,7 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 				iface_name = p.table.sym(iface_type).name
 			}
 			comments := p.eat_comments()
-			ifaces << ast.InterfaceEmbedding{
+			embeds << ast.InterfaceEmbedding{
 				name: iface_name
 				typ: iface_type
 				pos: iface_pos
@@ -549,7 +584,7 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 				break
 			}
 			comments := p.eat_comments()
-			ifaces << ast.InterfaceEmbedding{
+			embeds << ast.InterfaceEmbedding{
 				name: from_mod_name
 				typ: from_mod_typ
 				pos: p.prev_tok.pos()
@@ -581,10 +616,6 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 			}
 			if ts.has_method(name) {
 				p.error_with_pos('duplicate method `$name`', method_start_pos)
-				return ast.InterfaceDecl{}
-			}
-			if language == .v && util.contains_capital(name) {
-				p.error('interface methods cannot contain uppercase letters, use snake_case instead')
 				return ast.InterfaceDecl{}
 			}
 			// field_names << name
@@ -664,7 +695,7 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 			}
 		}
 	}
-	info.embeds = ifaces.map(it.typ)
+	info.embeds = embeds.map(it.typ)
 	ts.info = info
 	p.top_level_statement_end()
 	p.check(.rcbr)
@@ -675,7 +706,7 @@ fn (mut p Parser) interface_decl() ast.InterfaceDecl {
 		typ: typ
 		fields: fields
 		methods: methods
-		embeds: ifaces
+		embeds: embeds
 		is_pub: is_pub
 		attrs: attrs
 		pos: pos

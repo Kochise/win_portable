@@ -6,8 +6,8 @@ module checker
 import v.ast
 import v.token
 
-pub fn (mut c Checker) get_default_fmt(ftyp ast.Type, typ ast.Type) byte {
-	if ftyp.has_flag(.optional) {
+pub fn (mut c Checker) get_default_fmt(ftyp ast.Type, typ ast.Type) u8 {
+	if ftyp.has_flag(.optional) || ftyp.has_flag(.result) {
 		return `s`
 	} else if typ.is_float() {
 		return `g`
@@ -97,7 +97,7 @@ pub fn (mut c Checker) string_inter_lit(mut node ast.StringInterLiteral) ast.Typ
 			node.need_fmts[i] = fmt != c.get_default_fmt(ftyp, typ)
 		}
 		// check recursive str
-		if c.table.cur_fn.is_method && c.table.cur_fn.name == 'str'
+		if !isnil(c.table.cur_fn) && c.table.cur_fn.is_method && c.table.cur_fn.name == 'str'
 			&& c.table.cur_fn.receiver.name == expr.str() {
 			c.error('cannot call `str()` method recursively', expr.pos())
 		}

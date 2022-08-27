@@ -31,9 +31,9 @@ enum Direction {
 	push
 }
 
-struct Channel {
-	ringbuf   &byte // queue for buffered channels
-	statusbuf &byte // flags to synchronize write/read in ringbuf
+pub struct Channel {
+	ringbuf   &u8 // queue for buffered channels
+	statusbuf &u8 // flags to synchronize write/read in ringbuf
 	objsize   u32
 mut: // atomic
 	writesem           Semaphore // to wake thread that wanted to write, but buffer was full
@@ -70,8 +70,8 @@ pub fn new_channel<T>(n u32) &Channel {
 fn new_channel_st(n u32, st u32) &Channel {
 	wsem := if n > 0 { n } else { 1 }
 	rsem := if n > 0 { u32(0) } else { 1 }
-	rbuf := if n > 0 { unsafe { malloc(int(n * st)) } } else { &byte(0) }
-	sbuf := if n > 0 { vcalloc_noscan(int(n * 2)) } else { &byte(0) }
+	rbuf := if n > 0 { unsafe { malloc(int(n * st)) } } else { &u8(0) }
+	sbuf := if n > 0 { vcalloc_noscan(int(n * 2)) } else { &u8(0) }
 	mut ch := Channel{
 		objsize: st
 		cap: n
@@ -93,8 +93,8 @@ fn new_channel_st_noscan(n u32, st u32) &Channel {
 	$if gcboehm_opt ? {
 		wsem := if n > 0 { n } else { 1 }
 		rsem := if n > 0 { u32(0) } else { 1 }
-		rbuf := if n > 0 { unsafe { malloc_noscan(int(n * st)) } } else { &byte(0) }
-		sbuf := if n > 0 { vcalloc_noscan(int(n * 2)) } else { &byte(0) }
+		rbuf := if n > 0 { unsafe { malloc_noscan(int(n * st)) } } else { &u8(0) }
+		sbuf := if n > 0 { vcalloc_noscan(int(n * 2)) } else { &u8(0) }
 		mut ch := Channel{
 			objsize: st
 			cap: n
@@ -322,7 +322,7 @@ fn (mut ch Channel) try_push_priv(src voidptr, no_block bool) ChanState {
 				mut wr_ptr := ch.ringbuf
 				mut status_adr := ch.statusbuf
 				unsafe {
-					wr_ptr += wr_idx * ch.objsize
+					wr_ptr += (wr_idx * ch.objsize)
 					status_adr += wr_idx * sizeof(u16)
 				}
 				mut expected_status := u16(BufferElemStat.unused)
@@ -547,8 +547,10 @@ fn (mut ch Channel) try_pop_priv(dest voidptr, no_block bool) ChanState {
 //               -2 if all channels are closed
 
 pub fn channel_select(mut channels []&Channel, dir []Direction, mut objrefs []voidptr, timeout time.Duration) int {
-	assert channels.len == dir.len
-	assert dir.len == objrefs.len
+	$if debug {
+		assert channels.len == dir.len
+		assert dir.len == objrefs.len
+	}
 	mut subscr := []Subscription{len: channels.len}
 	mut sem := unsafe { Semaphore{} }
 	sem.init(0)
@@ -643,7 +645,7 @@ pub fn channel_select(mut channels []&Channel, dir []Direction, mut objrefs []vo
 			unsafe {
 				*subscr[i].prev = subscr[i].nxt
 			}
-			if subscr[i].nxt != 0 {
+			if unsafe { subscr[i].nxt != 0 } {
 				subscr[i].nxt.prev = subscr[i].prev
 				// just in case we have missed a semaphore during restore
 				subscr[i].nxt.sem.post()
@@ -657,7 +659,7 @@ pub fn channel_select(mut channels []&Channel, dir []Direction, mut objrefs []vo
 			unsafe {
 				*subscr[i].prev = subscr[i].nxt
 			}
-			if subscr[i].nxt != 0 {
+			if unsafe { subscr[i].nxt != 0 } {
 				subscr[i].nxt.prev = subscr[i].prev
 				subscr[i].nxt.sem.post()
 			}

@@ -14,7 +14,11 @@ pub mut:
 // They have their own specialized CI runner.
 const github_job = os.getenv('GITHUB_JOB')
 
-const should_skip = github_job != '' && github_job != 'websocket_tests'
+const should_skip = get_should_skip()
+
+fn get_should_skip() bool {
+	return github_job != '' && github_job != 'websocket_tests'
+}
 
 // tests with internal ws servers
 fn test_ws_ipv6() {
@@ -51,7 +55,7 @@ fn start_server(family net.AddrFamily, listen_port int) ? {
 			return false
 		}
 		return true
-	}) ?
+	})?
 	s.on_message(fn (mut ws websocket.Client, msg &websocket.Message) ? {
 		match msg.opcode {
 			.pong { ws.write_string('pong') or { panic(err) } }
@@ -70,9 +74,9 @@ fn ws_test(family net.AddrFamily, uri string) ? {
 	eprintln('connecting to $uri ...')
 
 	mut test_results := WebsocketTestResults{}
-	mut ws := websocket.new_client(uri) ?
+	mut ws := websocket.new_client(uri)?
 	ws.on_open(fn (mut ws websocket.Client) ? {
-		ws.pong() ?
+		ws.pong()?
 		assert true
 	})
 	ws.on_error(fn (mut ws websocket.Client, err string) ? {

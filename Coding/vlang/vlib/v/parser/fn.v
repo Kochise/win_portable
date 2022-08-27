@@ -24,7 +24,6 @@ pub fn (mut p Parser) call_expr(language ast.Language, mod string) ast.CallExpr 
 	mut or_kind := ast.OrKind.absent
 	if fn_name == 'json.decode' {
 		p.expecting_type = true // Makes name_expr() parse the type `User` in `json.decode(User, txt)`
-		or_kind = .block
 	}
 
 	old_expr_mod := p.expr_mod
@@ -45,10 +44,6 @@ pub fn (mut p Parser) call_expr(language ast.Language, mod string) ast.CallExpr 
 	args := p.call_args()
 	last_pos := p.tok.pos()
 	p.check(.rpar)
-	// ! in mutable methods
-	if p.tok.kind == .not {
-		p.next()
-	}
 	mut pos := first_pos.extend(last_pos)
 	mut or_stmts := []ast.Stmt{} // TODO remove unnecessary allocations by just using .absent
 	mut or_pos := p.tok.pos()
@@ -70,13 +65,14 @@ pub fn (mut p Parser) call_expr(language ast.Language, mod string) ast.CallExpr 
 		p.close_scope()
 		p.inside_or_expr = was_inside_or_expr
 	}
-	if p.tok.kind == .question {
+	if p.tok.kind in [.question, .not] {
+		is_not := p.tok.kind == .not
 		// `foo()?`
 		p.next()
 		if p.inside_defer {
 			p.error_with_pos('error propagation not allowed inside `defer` blocks', p.prev_tok.pos())
 		}
-		or_kind = .propagate
+		or_kind = if is_not { .propagate_result } else { .propagate_option }
 	}
 	if fn_name in p.imported_symbols {
 		fn_name = p.imported_symbols[fn_name]
@@ -185,18 +181,60 @@ fn (mut p Parser) fn_decl() ast.FnDecl {
 	mut comments := []ast.Comment{}
 	for fna in p.attrs {
 		match fna.name {
-			'noreturn' { is_noreturn = true }
-			'manualfree' { is_manualfree = true }
-			'deprecated' { is_deprecated = true }
-			'direct_array_access' { is_direct_arr = true }
-			'keep_args_alive' { is_keep_alive = true }
-			'export' { is_exported = true }
-			'wasm_export' { is_exported = true }
-			'unsafe' { is_unsafe = true }
-			'trusted' { is_trusted = true }
-			'c2v_variadic' { is_c2v_variadic = true }
-			'use_new' { is_ctor_new = true }
-			'markused' { is_markused = true }
+			'noreturn' {
+				is_noreturn = true
+			}
+			'manualfree' {
+				is_manualfree = true
+			}
+			'deprecated' {
+				is_deprecated = true
+			}
+			'direct_array_access' {
+				is_direct_arr = true
+			}
+			'keep_args_alive' {
+				is_keep_alive = true
+			}
+			'export' {
+				is_exported = true
+			}
+			'wasm_export' {
+				is_exported = true
+			}
+			'unsafe' {
+				is_unsafe = true
+			}
+			'trusted' {
+				is_trusted = true
+			}
+			'c2v_variadic' {
+				is_c2v_variadic = true
+			}
+			'use_new' {
+				is_ctor_new = true
+			}
+			'markused' {
+				is_markused = true
+			}
+			'windows_stdcall' {
+				p.note_with_pos('the tag [windows_stdcall] has been deprecated, it will be an error after 2022-06-01, use `[callconv: stdcall]` instead',
+					p.tok.pos())
+			}
+			'_fastcall' {
+				p.note_with_pos('the tag [_fastcall] has been deprecated, it will be an error after 2022-06-01, use `[callconv: fastcall]` instead',
+					p.tok.pos())
+			}
+			'callconv' {
+				if !fna.has_arg {
+					p.error_with_pos('callconv attribute is present but its value is missing',
+						p.prev_tok.pos())
+				}
+				if fna.arg !in ['stdcall', 'fastcall', 'cdecl'] {
+					p.error_with_pos('unsupported calling convention, supported are stdcall, fastcall and cdecl',
+						p.prev_tok.pos())
+				}
+			}
 			else {}
 		}
 	}
@@ -313,8 +351,9 @@ fn (mut p Parser) fn_decl() ast.FnDecl {
 	if is_method && rec.typ.has_flag(.generic) {
 		sym := p.table.sym(rec.typ)
 		if sym.info is ast.Struct {
-			rec_generic_names := sym.info.generic_types.map(p.table.sym(it).name)
-			for gname in rec_generic_names {
+			fn_generic_names := generic_names.clone()
+			generic_names = sym.info.generic_types.map(p.table.sym(it).name)
+			for gname in fn_generic_names {
 				if gname !in generic_names {
 					generic_names << gname
 				}
@@ -359,6 +398,11 @@ fn (mut p Parser) fn_decl() ast.FnDecl {
 		return_type = p.parse_type()
 		p.inside_fn_return = false
 		return_type_pos = return_type_pos.extend(p.prev_tok.pos())
+	}
+	if p.tok.kind == .comma {
+		mr_pos := return_type_pos.extend(p.peek_tok.pos())
+		p.error_with_pos('multiple return types in function declaration must use parentheses, e.g. (int, string)',
+			mr_pos)
 	}
 	mut type_sym_method_idx := 0
 	no_body := p.tok.kind != .lcbr
@@ -633,10 +677,10 @@ fn (mut p Parser) fn_receiver(mut params []ast.Param, mut rec ReceiverParsingInf
 fn (mut p Parser) anon_fn() ast.AnonFn {
 	pos := p.tok.pos()
 	p.check(.key_fn)
-	if p.pref.is_script && p.tok.kind == .name {
-		p.error_with_pos('function declarations in script mode should be before all script statements',
-			p.tok.pos())
-		return ast.AnonFn{}
+	if p.tok.kind == .name {
+		if p.disallow_declarations_in_script_mode() {
+			return ast.AnonFn{}
+		}
 	}
 	old_inside_defer := p.inside_defer
 	p.inside_defer = false
@@ -707,6 +751,17 @@ fn (mut p Parser) anon_fn() ast.AnonFn {
 	typ := ast.new_type(idx)
 	p.inside_defer = old_inside_defer
 	// name := p.table.get_type_name(typ)
+	if inherited_vars.len > 0 && args.len > 0 {
+		for arg in args {
+			for var in inherited_vars {
+				if arg.name == var.name {
+					p.error_with_pos('the parameter name `$arg.name` conflicts with the captured value name',
+						arg.pos)
+					break
+				}
+			}
+		}
+	}
 	return ast.AnonFn{
 		decl: ast.FnDecl{
 			name: name
@@ -741,9 +796,10 @@ fn (mut p Parser) fn_args() ([]ast.Param, bool, bool) {
 	} else {
 		p.tok.lit
 	}
+	is_generic_type := p.tok.kind == .name && p.tok.lit.len == 1 && p.tok.lit[0].is_capital()
 
 	types_only := p.tok.kind in [.amp, .ellipsis, .key_fn, .lsbr]
-		|| (p.peek_tok.kind == .comma && p.table.known_type(argname))
+		|| (p.peek_tok.kind == .comma && (p.table.known_type(argname) || is_generic_type))
 		|| p.peek_tok.kind == .dot || p.peek_tok.kind == .rpar
 		|| (p.tok.kind == .key_mut && (p.peek_token(2).kind == .comma
 		|| p.peek_token(2).kind == .rpar || (p.peek_tok.kind == .name

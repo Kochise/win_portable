@@ -12,8 +12,8 @@ pub struct EmbedFileData {
 	apath            string
 	compression_type string
 mut:
-	compressed        &byte
-	uncompressed      &byte
+	compressed        &u8
+	uncompressed      &u8
 	free_compressed   bool
 	free_uncompressed bool
 pub:
@@ -33,11 +33,11 @@ pub fn (mut ed EmbedFileData) free() {
 		ed.compression_type.free()
 		if ed.free_compressed {
 			free(ed.compressed)
-			ed.compressed = &byte(0)
+			ed.compressed = &u8(0)
 		}
 		if ed.free_uncompressed {
 			free(ed.uncompressed)
-			ed.uncompressed = &byte(0)
+			ed.uncompressed = &u8(0)
 		}
 	}
 }
@@ -45,12 +45,12 @@ pub fn (mut ed EmbedFileData) free() {
 pub fn (original &EmbedFileData) to_string() string {
 	unsafe {
 		mut ed := &EmbedFileData(original)
-		the_copy := &byte(memdup(ed.data(), ed.len))
+		the_copy := &u8(memdup(ed.data(), ed.len))
 		return the_copy.vstring_with_len(ed.len)
 	}
 }
 
-pub fn (original &EmbedFileData) to_bytes() []byte {
+pub fn (original &EmbedFileData) to_bytes() []u8 {
 	unsafe {
 		mut ed := &EmbedFileData(original)
 		the_copy := memdup(ed.data(), ed.len)
@@ -58,7 +58,7 @@ pub fn (original &EmbedFileData) to_bytes() []byte {
 	}
 }
 
-pub fn (mut ed EmbedFileData) data() &byte {
+pub fn (mut ed EmbedFileData) data() &u8 {
 	if !isnil(ed.uncompressed) {
 		return ed.uncompressed
 	}
@@ -71,7 +71,7 @@ pub fn (mut ed EmbedFileData) data() &byte {
 			panic('EmbedFileData error: decompression of "$ed.path" failed: $err')
 		}
 		unsafe {
-			ed.uncompressed = &byte(memdup(decompressed.data, ed.len))
+			ed.uncompressed = &u8(memdup(decompressed.data, ed.len))
 		}
 	} else {
 		mut path := os.resource_abs_path(ed.path)
@@ -100,7 +100,7 @@ pub struct EmbedFileIndexEntry {
 	id   int
 	path string
 	algo string
-	data &byte
+	data &u8
 }
 
 // find_index_entry_by_path is used internally by the V compiler:
@@ -111,7 +111,7 @@ pub fn find_index_entry_by_path(start voidptr, path string, algo string) &EmbedF
 			x++
 		}
 	}
-	$if debug_embed_file_in_prod ? {
+	$if trace_embed_file ? {
 		eprintln('>> v.embed_file find_index_entry_by_path ${ptr_str(start)}, id: $x.id, path: "$path", algo: "$algo" => ${ptr_str(x)}')
 	}
 	return x

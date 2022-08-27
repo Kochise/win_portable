@@ -12,7 +12,7 @@ mut:
 
 struct App {
 mut:
-	tui      &tui.Context = 0
+	tui      &tui.Context = unsafe { 0 }
 	rects    []Rect
 	cur_rect Rect
 	is_drag  bool
@@ -21,9 +21,9 @@ mut:
 
 fn random_color() tui.Color {
 	return tui.Color{
-		r: rand.byte()
-		g: rand.byte()
-		b: rand.byte()
+		r: rand.u8()
+		g: rand.u8()
+		b: rand.u8()
 	}
 }
 
@@ -93,5 +93,5 @@ fn main() {
 		hide_cursor: true
 		frame_rate: 60
 	)
-	app.tui.run() ?
+	app.tui.run()?
 }

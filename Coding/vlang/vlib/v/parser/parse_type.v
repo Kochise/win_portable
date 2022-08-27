@@ -113,12 +113,12 @@ pub fn (mut p Parser) parse_map_type() ast.Type {
 	}
 	p.check(.lsbr)
 	key_type := p.parse_type()
-	key_sym := p.table.sym(key_type)
-	is_alias := key_sym.kind == .alias
 	if key_type.idx() == 0 {
 		// error is reported in parse_type
 		return 0
 	}
+	key_sym := p.table.sym(key_type)
+	is_alias := key_sym.kind == .alias
 	key_type_supported := key_type in [ast.string_type_idx, ast.voidptr_type_idx]
 		|| key_sym.kind in [.enum_, .placeholder, .any]
 		|| ((key_type.is_int() || key_type.is_float() || is_alias) && !key_type.is_ptr())
@@ -150,8 +150,7 @@ pub fn (mut p Parser) parse_map_type() ast.Type {
 }
 
 pub fn (mut p Parser) parse_chan_type() ast.Type {
-	if p.peek_tok.kind != .name && p.peek_tok.kind != .key_mut && p.peek_tok.kind != .amp
-		&& p.peek_tok.kind != .lsbr {
+	if p.peek_tok.kind !in [.name, .key_mut, .amp, .lsbr] {
 		p.next()
 		return ast.chan_type
 	}
@@ -171,8 +170,7 @@ pub fn (mut p Parser) parse_thread_type() ast.Type {
 	if is_opt {
 		p.next()
 	}
-	if p.peek_tok.kind != .name && p.peek_tok.kind != .key_mut && p.peek_tok.kind != .amp
-		&& p.peek_tok.kind != .lsbr {
+	if p.peek_tok.kind !in [.name, .key_mut, .amp, .lsbr] {
 		p.next()
 		if is_opt {
 			mut ret_type := ast.void_type
@@ -198,7 +196,7 @@ pub fn (mut p Parser) parse_multi_return_type() ast.Type {
 	p.check(.lpar)
 	mut mr_types := []ast.Type{}
 	mut has_generic := false
-	for p.tok.kind != .eof {
+	for p.tok.kind !in [.eof, .rpar] {
 		mr_type := p.parse_type()
 		if mr_type.idx() == 0 {
 			break
@@ -229,6 +227,23 @@ pub fn (mut p Parser) parse_multi_return_type() ast.Type {
 pub fn (mut p Parser) parse_fn_type(name string) ast.Type {
 	// p.warn('parse fn')
 	p.check(.key_fn)
+
+	for attr in p.attrs {
+		match attr.name {
+			'callconv' {
+				if !attr.has_arg {
+					p.error_with_pos('callconv attribute is present but its value is missing',
+						p.prev_tok.pos())
+				}
+				if attr.arg !in ['stdcall', 'fastcall', 'cdecl'] {
+					p.error_with_pos('unsupported calling convention, supported are stdcall, fastcall and cdecl',
+						p.prev_tok.pos())
+				}
+			}
+			else {}
+		}
+	}
+
 	mut has_generic := false
 	line_nr := p.tok.line_nr
 	args, _, is_variadic := p.fn_args()
@@ -255,6 +270,7 @@ pub fn (mut p Parser) parse_fn_type(name string) ast.Type {
 		return_type: return_type
 		return_type_pos: return_type_pos
 		is_method: false
+		attrs: p.attrs
 	}
 	// MapFooFn typedefs are manually added in cheaders.v
 	// because typedefs get generated after the map struct is generated
@@ -357,18 +373,24 @@ pub fn (mut p Parser) parse_sum_type_variants() []ast.TypeNode {
 pub fn (mut p Parser) parse_type() ast.Type {
 	// optional
 	mut is_optional := false
+	mut is_result := false
+	line_nr := p.tok.line_nr
 	optional_pos := p.tok.pos()
 	if p.tok.kind == .question {
-		line_nr := p.tok.line_nr
 		p.next()
 		is_optional = true
-		if p.tok.line_nr > line_nr {
-			mut typ := ast.void_type
-			if is_optional {
-				typ = typ.set_flag(.optional)
-			}
-			return typ
+	} else if p.tok.kind == .not {
+		p.next()
+		is_result = true
+	}
+	if (is_optional || is_result) && p.tok.line_nr > line_nr {
+		mut typ := ast.void_type
+		if is_optional {
+			typ = typ.set_flag(.optional)
+		} else if is_result {
+			typ = typ.set_flag(.result)
 		}
+		return typ
 	}
 	is_shared := p.tok.kind == .key_shared
 	is_atomic := p.tok.kind == .key_atomic
@@ -383,8 +405,11 @@ pub fn (mut p Parser) parse_type() ast.Type {
 			p.error_with_pos('cannot use `mut` on struct field type', p.tok.pos())
 		}
 	}
-	if p.tok.kind == .key_mut || is_shared || is_atomic {
+	if p.tok.kind == .key_mut || is_shared { // || is_atomic {
 		nr_muls++
+		p.next()
+	}
+	if is_atomic {
 		p.next()
 	}
 	if p.tok.kind == .mul {
@@ -419,6 +444,9 @@ pub fn (mut p Parser) parse_type() ast.Type {
 	}
 	if is_optional {
 		typ = typ.set_flag(.optional)
+	}
+	if is_result {
+		typ = typ.set_flag(.result)
 	}
 	if is_shared {
 		typ = typ.set_flag(.shared_f)
@@ -542,7 +570,7 @@ pub fn (mut p Parser) parse_any_type(language ast.Language, is_ptr bool, check_d
 					'i64' {
 						ret = ast.i64_type
 					}
-					'byte' {
+					'u8' {
 						ret = ast.byte_type
 					}
 					'u16' {
@@ -631,11 +659,17 @@ pub fn (mut p Parser) parse_generic_inst_type(name string) ast.Type {
 	mut concrete_types := []ast.Type{}
 	mut is_instance := false
 	for p.tok.kind != .eof {
+		mut type_pos := p.tok.pos()
 		gt := p.parse_type()
+		type_pos = type_pos.extend(p.prev_tok.pos())
 		if !gt.has_flag(.generic) {
 			is_instance = true
 		}
 		gts := p.table.sym(gt)
+		if !is_instance && gts.name.len > 1 {
+			p.error_with_pos('generic struct parameter name needs to be exactly one char',
+				type_pos)
+		}
 		bs_name += gts.name
 		bs_cname += gts.cname
 		concrete_types << gt

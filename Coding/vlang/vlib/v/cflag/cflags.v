@@ -121,6 +121,10 @@ pub fn (cflags []CFlag) defines_others_libs() ([]string, []string, []string) {
 			libs << copt
 			continue
 		}
+		if copt.ends_with('.a') {
+			libs << '"$copt"'
+			continue
+		}
 		if copt.starts_with('-D') {
 			defines << copt
 			continue

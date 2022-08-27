@@ -211,66 +211,101 @@ pub fn (ctx &Context) draw_rect_filled(x f32, y f32, w f32, h f32, c gx.Color) {
 	sgl.end()
 }
 
-// draw_rounded_rect_empty draws the outline of a rounded rectangle
+// draw_rounded_rect_empty draws the outline of a rounded rectangle with a thickness of 1 px.
 // `x`,`y` is the top-left corner of the rectangle.
 // `w` is the width, `h` is the height.
 // `radius` is the radius of the corner-rounding in pixels.
 // `c` is the color of the outline.
 pub fn (ctx &Context) draw_rounded_rect_empty(x f32, y f32, w f32, h f32, radius f32, c gx.Color) {
-	mut theta := f32(0)
-	mut xx := f32(0)
-	mut yy := f32(0)
-	r := radius * ctx.scale
-	nx := x * ctx.scale
-	ny := y * ctx.scale
+	if w <= 0 || h <= 0 || radius < 0 {
+		return
+	}
+	if c.a != 255 {
+		sgl.load_pipeline(ctx.timage_pip)
+	}
+	sgl.c4b(c.r, c.g, c.b, c.a)
+
+	mut new_radius := radius
+	if w >= h && radius > h / 2 {
+		new_radius = h / 2
+	} else if radius > w / 2 {
+		new_radius = w / 2
+	}
+	r := new_radius * ctx.scale
+	sx := x * ctx.scale // start point x
+	sy := y * ctx.scale
 	width := w * ctx.scale
 	height := h * ctx.scale
-	segments := 2 * math.pi * r
-	segdiv := segments / 4
-	rb := 0
-	lb := int(rb + segdiv)
-	lt := int(lb + segdiv)
-	rt := int(lt + segdiv)
-	sgl.c4b(c.r, c.g, c.b, c.a)
-	sgl.begin_line_strip()
-	// left top
-	lx := nx + r
-	ly := ny + r
-	theta_coeff := 2 * f32(math.pi) / segments
-	for i in lt .. rt {
-		theta = theta_coeff * f32(i)
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + lx, yy + ly)
+	// circle center coordinates
+	ltx := sx + r
+	lty := sy + r
+	rtx := sx + width - r
+	rty := lty
+	rbx := rtx
+	rby := sy + height - r
+	lbx := ltx
+	lby := rby
+
+	mut rad := f32(0)
+	mut dx := f32(0)
+	mut dy := f32(0)
+
+	if r != 0 {
+		// left top quarter
+		sgl.begin_line_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(ltx - dx, lty - dy)
+		}
+		sgl.end()
+
+		// right top quarter
+		sgl.begin_line_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(rtx + dx, rty - dy)
+		}
+		sgl.end()
+
+		// right bottom quarter
+		sgl.begin_line_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(rbx + dx, rby + dy)
+		}
+		sgl.end()
+
+		// left bottom quarter
+		sgl.begin_line_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(lbx - dx, lby + dy)
+		}
+		sgl.end()
 	}
-	// right top
-	mut rx := nx + width - r
-	mut ry := ny + r
-	for i in rt .. int(segments) {
-		theta = theta_coeff * f32(i)
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + rx, yy + ry)
-	}
-	// right bottom
-	mut rbx := rx
-	mut rby := ny + height - r
-	for i in rb .. lb {
-		theta = theta_coeff * f32(i)
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + rbx, yy + rby)
-	}
-	// left bottom
-	mut lbx := lx
-	mut lby := ny + height - r
-	for i in lb .. lt {
-		theta = theta_coeff * f32(i)
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + lbx, yy + lby)
-	}
-	sgl.v2f(lx + xx, ly)
+
+	// Currently don't use 'gg.draw_line()' directly, it will repeatedly execute '*ctx.scale'.
+	sgl.begin_lines()
+	// top
+	sgl.v2f(ltx, sy)
+	sgl.v2f(rtx, sy)
+	// right
+	sgl.v2f(rtx + r, rty)
+	sgl.v2f(rtx + r, rby)
+	// bottom
+	sgl.v2f(lbx, lby + r)
+	sgl.v2f(rbx, rby + r)
+	// left
+	sgl.v2f(sx, lty)
+	sgl.v2f(sx, lby)
 	sgl.end()
 }
 
@@ -278,72 +313,108 @@ pub fn (ctx &Context) draw_rounded_rect_empty(x f32, y f32, w f32, h f32, radius
 // `x`,`y` is the top-left corner of the rectangle.
 // `w` is the width, `h` is the height .
 // `radius` is the radius of the corner-rounding in pixels.
-// `c` is the color of the outline.
+// `c` is the color of the filled.
 pub fn (ctx &Context) draw_rounded_rect_filled(x f32, y f32, w f32, h f32, radius f32, c gx.Color) {
+	if w <= 0 || h <= 0 || radius < 0 {
+		return
+	}
+	if c.a != 255 {
+		sgl.load_pipeline(ctx.timage_pip)
+	}
 	sgl.c4b(c.r, c.g, c.b, c.a)
-	sgl.begin_triangle_strip()
-	mut theta := f32(0)
-	mut xx := f32(0)
-	mut yy := f32(0)
-	r := radius * ctx.scale
-	nx := x * ctx.scale
-	ny := y * ctx.scale
+
+	mut new_radius := radius
+	if w >= h && radius > h / 2 {
+		new_radius = h / 2
+	} else if radius > w / 2 {
+		new_radius = w / 2
+	}
+	r := new_radius * ctx.scale
+	sx := x * ctx.scale // start point x
+	sy := y * ctx.scale
 	width := w * ctx.scale
 	height := h * ctx.scale
-	segments := 2 * math.pi * r
-	segdiv := segments / 4
-	rb := 0
-	lb := int(rb + segdiv)
-	lt := int(lb + segdiv)
-	rt := int(lt + segdiv)
-	// left top
-	lx := nx + r
-	ly := ny + r
-	for i in lt .. rt {
-		theta = 2 * f32(math.pi) * f32(i) / segments
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + lx, yy + ly)
-		sgl.v2f(lx, ly)
+	// circle center coordinates
+	ltx := sx + r
+	lty := sy + r
+	rtx := sx + width - r
+	rty := lty
+	rbx := rtx
+	rby := sy + height - r
+	lbx := ltx
+	lby := rby
+
+	mut rad := f32(0)
+	mut dx := f32(0)
+	mut dy := f32(0)
+
+	if r != 0 {
+		// left top quarter
+		sgl.begin_triangle_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(ltx - dx, lty - dy)
+			sgl.v2f(ltx, lty)
+		}
+		sgl.end()
+
+		// right top quarter
+		sgl.begin_triangle_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(rtx + dx, rty - dy)
+			sgl.v2f(rtx, rty)
+		}
+		sgl.end()
+
+		// right bottom quarter
+		sgl.begin_triangle_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(rbx + dx, rby + dy)
+			sgl.v2f(rbx, rby)
+		}
+		sgl.end()
+
+		// left bottom quarter
+		sgl.begin_triangle_strip()
+		for i in 0 .. 31 {
+			rad = f32(math.radians(i * 3))
+			dx = r * math.cosf(rad)
+			dy = r * math.sinf(rad)
+			sgl.v2f(lbx - dx, lby + dy)
+			sgl.v2f(lbx, lby)
+		}
+		sgl.end()
 	}
-	// right top
-	mut rx := nx + width - r
-	mut ry := ny + r
-	for i in rt .. int(segments) {
-		theta = 2 * f32(math.pi) * f32(i) / segments
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + rx, yy + ry)
-		sgl.v2f(rx, ry)
-	}
-	// right bottom
-	mut rbx := rx
-	mut rby := ny + height - r
-	for i in rb .. lb {
-		theta = 2 * f32(math.pi) * f32(i) / segments
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + rbx, yy + rby)
-		sgl.v2f(rbx, rby)
-	}
-	// left bottom
-	mut lbx := lx
-	mut lby := ny + height - r
-	for i in lb .. lt {
-		theta = 2 * f32(math.pi) * f32(i) / segments
-		xx = r * math.cosf(theta)
-		yy = r * math.sinf(theta)
-		sgl.v2f(xx + lbx, yy + lby)
-		sgl.v2f(lbx, lby)
-	}
-	sgl.v2f(lx + xx, ly)
-	sgl.v2f(lx, ly)
-	sgl.end()
+
+	// Separate drawing is to prevent transparent color overlap
+	// top rectangle
 	sgl.begin_quads()
-	sgl.v2f(lx, ly)
-	sgl.v2f(rx, ry)
-	sgl.v2f(rbx, rby)
+	sgl.v2f(ltx, sy)
+	sgl.v2f(rtx, sy)
+	sgl.v2f(rtx, rty)
+	sgl.v2f(ltx, lty)
+	sgl.end()
+	// middle rectangle
+	sgl.begin_quads()
+	sgl.v2f(sx, lty)
+	sgl.v2f(rtx + r, rty)
+	sgl.v2f(rbx + r, rby)
+	sgl.v2f(sx, lby)
+	sgl.end()
+	// bottom rectangle
+	sgl.begin_quads()
 	sgl.v2f(lbx, lby)
+	sgl.v2f(rbx, rby)
+	sgl.v2f(rbx, rby + r)
+	sgl.v2f(lbx, rby + r)
 	sgl.end()
 }
 
@@ -450,7 +521,35 @@ pub fn (ctx &Context) draw_circle_empty(x f32, y f32, radius f32, c gx.Color) {
 // `radius` defines the radius of the circle.
 // `c` is the fill color.
 pub fn (ctx &Context) draw_circle_filled(x f32, y f32, radius f32, c gx.Color) {
-	ctx.draw_circle_with_segments(x, y, radius, radius_to_segments(radius), c)
+	ctx.draw_polygon_filled(x, y, radius, radius_to_segments(radius), 0, c)
+}
+
+// draw_polygon_filled draws a filled polygon.
+// `x`,`y` defines the center of the polygon.
+// `size` defines the size of the polygon.
+// `edge` defines edge number of the polygon.
+// `rotation` defines rotation of the polygon.
+// `c` is the fill color.
+pub fn (ctx &Context) draw_polygon_filled(x f32, y f32, size f32, edge int, rotation f32, c gx.Color) {
+	if c.a != 255 {
+		sgl.load_pipeline(ctx.timage_pip)
+	}
+	sgl.c4b(c.r, c.g, c.b, c.a)
+	nx := x * ctx.scale
+	ny := y * ctx.scale
+	nr := size * ctx.scale
+	mut theta := f32(0)
+	mut xx := f32(0)
+	mut yy := f32(0)
+	sgl.begin_triangle_strip()
+	for i := 0; i < edge + 1; i++ {
+		theta = 2.0 * f32(math.pi) * f32(i) / f32(edge)
+		xx = nr * math.cosf(theta + f32(math.radians(rotation)))
+		yy = nr * math.sinf(theta + f32(math.radians(rotation)))
+		sgl.v2f(xx + nx, yy + ny)
+		sgl.v2f(nx, ny)
+	}
+	sgl.end()
 }
 
 // draw_circle_with_segments draws a filled circle with a specific number of segments.
@@ -459,25 +558,7 @@ pub fn (ctx &Context) draw_circle_filled(x f32, y f32, radius f32, c gx.Color) {
 // `segments` affects how smooth/round the circle is.
 // `c` is the fill color.
 pub fn (ctx &Context) draw_circle_with_segments(x f32, y f32, radius f32, segments int, c gx.Color) {
-	if c.a != 255 {
-		sgl.load_pipeline(ctx.timage_pip)
-	}
-	sgl.c4b(c.r, c.g, c.b, c.a)
-	nx := x * ctx.scale
-	ny := y * ctx.scale
-	nr := radius * ctx.scale
-	mut theta := f32(0)
-	mut xx := f32(0)
-	mut yy := f32(0)
-	sgl.begin_triangle_strip()
-	for i := 0; i < segments + 1; i++ {
-		theta = 2.0 * f32(math.pi) * f32(i) / f32(segments)
-		xx = nr * math.cosf(theta)
-		yy = nr * math.sinf(theta)
-		sgl.v2f(xx + nx, yy + ny)
-		sgl.v2f(nx, ny)
-	}
-	sgl.end()
+	ctx.draw_polygon_filled(x, y, radius, segments, 0, c)
 }
 
 // draw_circle_line draws the outline of a circle with a specific number of segments.
@@ -587,6 +668,10 @@ pub fn (ctx &Context) draw_arc_empty(x f32, y f32, inner_radius f32, thickness f
 		return
 	}
 
+	if c.a != 255 {
+		sgl.load_pipeline(ctx.timage_pip)
+	}
+
 	mut a1 := start_angle
 	mut a2 := end_angle
 
@@ -648,6 +733,10 @@ pub fn (ctx &Context) draw_arc_empty(x f32, y f32, inner_radius f32, thickness f
 pub fn (ctx &Context) draw_arc_filled(x f32, y f32, inner_radius f32, thickness f32, start_angle f32, end_angle f32, segments int, c gx.Color) {
 	if start_angle == end_angle || inner_radius <= 0.0 {
 		return
+	}
+
+	if c.a != 255 {
+		sgl.load_pipeline(ctx.timage_pip)
 	}
 
 	mut a1 := start_angle

@@ -33,15 +33,12 @@ const (
 		'\t\t\t\t\t\t\t',
 		'\t\t\t\t\t\t\t\t',
 		'\t\t\t\t\t\t\t\t\t',
+		'\t\t\t\t\t\t\t\t\t\t',
 	]
 )
 
-const builtin_module_names = ['builtin', 'strconv', 'strings', 'dlmalloc']
-
 pub fn module_is_builtin(mod string) bool {
-	// NOTE: using util.builtin_module_parts here breaks -usecache on macos
-	return mod in util.builtin_module_names
-	// return mod in util.builtin_module_parts
+	return mod in util.builtin_module_parts
 }
 
 pub fn tabs(n int) string {
@@ -80,10 +77,10 @@ pub fn resolve_env_value(str string, check_for_presence bool) ?string {
 	at := str.index(env_ident) or {
 		return error('no "$env_ident' + '...\')" could be found in "$str".')
 	}
-	mut ch := byte(`.`)
+	mut ch := u8(`.`)
 	mut env_lit := ''
 	for i := at + env_ident.len; i < str.len && ch != `)`; i++ {
-		ch = byte(str[i])
+		ch = u8(str[i])
 		if ch.is_letter() || ch.is_digit() || ch == `_` {
 			env_lit += ch.ascii_str()
 		} else {
@@ -172,14 +169,26 @@ pub fn launch_tool(is_verbose bool, tool_name string, args []string) {
 			// .v line numbers, to ease diagnostic in #bugs and issues.
 			compilation_command += ' -g '
 		}
+		if tool_name == 'vfmt' {
+			compilation_command += ' -d vfmt '
+		}
 		compilation_command += os.quoted_path(tool_source)
 		if is_verbose {
 			println('Compiling $tool_name with: "$compilation_command"')
 		}
-		tool_compilation := os.execute_or_exit(compilation_command)
-		if tool_compilation.exit_code != 0 {
-			eprintln('cannot compile `$tool_source`: \n$tool_compilation.output')
-			exit(1)
+
+		retry_max_count := 3
+		for i in 0 .. retry_max_count {
+			tool_compilation := os.execute(compilation_command)
+			if tool_compilation.exit_code == 0 {
+				break
+			} else {
+				if i == retry_max_count - 1 {
+					eprintln('cannot compile `$tool_source`: \n$tool_compilation.output')
+					exit(1)
+				}
+				time.sleep(20 * time.millisecond)
+			}
 		}
 	}
 	$if windows {
@@ -290,6 +299,9 @@ pub fn cached_read_source_file(path string) ?string {
 		cache = &SourceCache{}
 	}
 
+	$if trace_cached_read_source_file ? {
+		println('cached_read_source_file            $path')
+	}
 	if path.len == 0 {
 		unsafe { cache.sources.free() }
 		unsafe { free(cache) }
@@ -300,9 +312,15 @@ pub fn cached_read_source_file(path string) ?string {
 	// eprintln('>> cached_read_source_file path: $path')
 	if res := cache.sources[path] {
 		// eprintln('>> cached')
+		$if trace_cached_read_source_file_cached ? {
+			println('cached_read_source_file     cached $path')
+		}
 		return res
 	}
 	// eprintln('>> not cached | cache.sources.len: $cache.sources.len')
+	$if trace_cached_read_source_file_not_cached ? {
+		println('cached_read_source_file not cached $path')
+	}
 	raw_text := os.read_file(path) or { return error('failed to open $path') }
 	res := skip_bom(raw_text)
 	cache.sources[path] = res

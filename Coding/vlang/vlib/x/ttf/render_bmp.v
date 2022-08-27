@@ -19,8 +19,8 @@ import math
 pub struct BitMap {
 pub mut:
 	tf       &TTF_File
-	buf      &byte = 0 // pointer to the memory buffer
-	buf_size int   // allocated buf size in bytes
+	buf      &u8 = unsafe { 0 } // pointer to the memory buffer
+	buf_size int // allocated buf size in bytes
 	width    int = 1 // width of the buffer
 	height   int = 1 // height of the buffer
 	bp       int = 4 // byte per pixel of the buffer
@@ -59,13 +59,13 @@ pub fn (mut bmp BitMap) clear() {
 }
 
 // transform matrix applied to the text
-fn (bmp &BitMap) trf_txt(p &Point) (int, int) {
+pub fn (bmp &BitMap) trf_txt(p &Point) (int, int) {
 	return int(p.x * bmp.tr_matrix[0] + p.y * bmp.tr_matrix[3] + bmp.tr_matrix[6]), int(
 		p.x * bmp.tr_matrix[1] + p.y * bmp.tr_matrix[4] + bmp.tr_matrix[7])
 }
 
 // transform matrix applied to the char
-fn (bmp &BitMap) trf_ch(p &Point) (int, int) {
+pub fn (bmp &BitMap) trf_ch(p &Point) (int, int) {
 	return int(p.x * bmp.ch_matrix[0] + p.y * bmp.ch_matrix[3] + bmp.ch_matrix[6]), int(
 		p.x * bmp.ch_matrix[1] + p.y * bmp.ch_matrix[4] + bmp.ch_matrix[7])
 }
@@ -195,12 +195,12 @@ pub fn (mut bmp BitMap) plot(x int, y int, c u32) bool {
 	mut index := (x + y * bmp.width) * bmp.bp
 	unsafe {
 		// bmp.buf[index]=0xFF
-		bmp.buf[index] = byte(c & 0xFF) // write only the alpha
+		bmp.buf[index] = u8(c & 0xFF) // write only the alpha
 	}
 	/*
 	for count in 0..(bmp.bp) {
 		unsafe{
-			bmp.buf[index + count] = byte((c >> (bmp.bp - count - 1) * 8) & 0x0000_00FF)
+			bmp.buf[index + count] = u8((c >> (bmp.bp - count - 1) * 8) & 0x0000_00FF)
 		}
 	}
 	*/

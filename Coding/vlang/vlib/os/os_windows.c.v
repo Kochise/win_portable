@@ -14,6 +14,8 @@ fn C.CreateHardLinkW(&u16, &u16, C.SECURITY_ATTRIBUTES) int
 
 fn C._getpid() int
 
+const executable_suffixes = ['.exe', '.bat', '.cmd', '']
+
 pub const (
 	path_separator = '\\'
 	path_delimiter = ';'
@@ -74,7 +76,7 @@ mut:
 	dw_flags           u32
 	w_show_window      u16
 	cb_reserved2       u16
-	lp_reserved2       &byte
+	lp_reserved2       &u8
 	h_std_input        voidptr
 	h_std_output       voidptr
 	h_std_error        voidptr
@@ -94,7 +96,7 @@ struct C._utimbuf {
 
 fn C._utime(&char, voidptr) int
 
-fn init_os_args_wide(argc int, argv &&byte) []string {
+fn init_os_args_wide(argc int, argv &&u8) []string {
 	mut args_ := []string{len: argc}
 	for i in 0 .. argc {
 		args_[i] = unsafe { string_from_wide(&u16(argv[i])) }
@@ -293,6 +295,8 @@ pub fn get_error_msg(code int) string {
 }
 
 // execute starts the specified command, waits for it to complete, and returns its output.
+// In opposition to `raw_execute` this function will safeguard against content that is known to cause
+// a lot of problems when executing shell commands on Windows.
 pub fn execute(cmd string) Result {
 	if cmd.contains(';') || cmd.contains('&&') || cmd.contains('||') || cmd.contains('\n') {
 		return Result{
@@ -300,6 +304,14 @@ pub fn execute(cmd string) Result {
 			output: ';, &&, || and \\n are not allowed in shell commands'
 		}
 	}
+	return unsafe { raw_execute(cmd) }
+}
+
+// raw_execute starts the specified command, waits for it to complete, and returns its output.
+// It's marked as `unsafe` to help emphasize the problems that may arise by allowing, for example,
+// user provided escape sequences.
+[unsafe]
+pub fn raw_execute(cmd string) Result {
 	mut child_stdin := &u32(0)
 	mut child_stdout_read := &u32(0)
 	mut child_stdout_write := &u32(0)
@@ -352,7 +364,7 @@ pub fn execute(cmd string) Result {
 	}
 	C.CloseHandle(child_stdin)
 	C.CloseHandle(child_stdout_write)
-	buf := [4096]byte{}
+	buf := [4096]u8{}
 	mut bytes_read := u32(0)
 	mut read_data := strings.new_builder(1024)
 	for {
@@ -506,7 +518,7 @@ pub fn is_writable_folder(folder string) ?bool {
 	tmp_folder_name := 'tmp_perm_check_pid_' + getpid().str()
 	tmp_perm_check := join_path_single(folder, tmp_folder_name)
 	write_file(tmp_perm_check, 'test') or { return error('cannot write to folder "$folder": $err') }
-	rm(tmp_perm_check) ?
+	rm(tmp_perm_check)?
 	return true
 }
 

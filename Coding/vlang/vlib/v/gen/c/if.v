@@ -20,13 +20,17 @@ fn (mut g Gen) need_tmp_var_in_if(node ast.IfExpr) bool {
 					if is_noreturn_callexpr(stmt.expr) {
 						return true
 					}
+					if stmt.expr is ast.MatchExpr {
+						return true
+					}
 					if stmt.expr is ast.CallExpr {
 						if stmt.expr.is_method {
 							left_sym := g.table.sym(stmt.expr.receiver_type)
 							if left_sym.kind in [.array, .array_fixed, .map] {
 								return true
 							}
-						} else if stmt.expr.or_block.kind != .absent {
+						}
+						if stmt.expr.or_block.kind != .absent {
 							return true
 						}
 					}
@@ -43,7 +47,7 @@ fn (mut g Gen) if_expr(node ast.IfExpr) {
 		return
 	}
 	// For simpe if expressions we can use C's `?:`
-	// `if x > 0 { 1 } else { 2 }` => `(x > 0) ? (1) : (2)`
+	// `if x > 0 { 1 } else { 2 }` => `(x > 0)? (1) : (2)`
 	// For if expressions with multiple statements or another if expression inside, it's much
 	// easier to use a temp var, than do C tricks with commas, introduce special vars etc
 	// (as it used to be done).
@@ -74,9 +78,15 @@ fn (mut g Gen) if_expr(node ast.IfExpr) {
 				g.expr(branch.cond)
 				g.write(' ? ')
 			}
+			prev_expected_cast_type := g.expected_cast_type
+			if node.is_expr
+				&& (g.table.sym(node.typ).kind == .sum_type || node.typ.has_flag(.shared_f)) {
+				g.expected_cast_type = node.typ
+			}
 			g.stmts(branch.stmts)
+			g.expected_cast_type = prev_expected_cast_type
 		}
-		if node.branches.len == 1 {
+		if node.branches.len == 1 && !node.is_expr {
 			g.write(': 0')
 		}
 		g.write(')')
@@ -123,11 +133,19 @@ fn (mut g Gen) if_expr(node ast.IfExpr) {
 				var_name = g.new_tmp_var()
 				guard_vars[i] = var_name // for `else`
 				g.tmp_count--
-				g.writeln('if (${var_name}.state == 0) {')
+				if branch.cond.expr_type.has_flag(.optional) {
+					g.writeln('if (${var_name}.state == 0) {')
+				} else if branch.cond.expr_type.has_flag(.result) {
+					g.writeln('if (!${var_name}.is_error) {')
+				}
 			} else {
 				g.write('if ($var_name = ')
 				g.expr(branch.cond.expr)
-				g.writeln(', ${var_name}.state == 0) {')
+				if branch.cond.expr_type.has_flag(.optional) {
+					g.writeln(', ${var_name}.state == 0) {')
+				} else if branch.cond.expr_type.has_flag(.result) {
+					g.writeln(', !${var_name}.is_error) {')
+				}
 			}
 			if short_opt || branch.cond.vars[0].name != '_' {
 				base_type := g.base_type(branch.cond.expr_type)
@@ -143,7 +161,7 @@ fn (mut g Gen) if_expr(node ast.IfExpr) {
 				} else {
 					mut is_auto_heap := false
 					if branch.stmts.len > 0 {
-						scope := g.file.scope.innermost(ast.Node(branch.stmts[branch.stmts.len - 1]).pos().pos)
+						scope := g.file.scope.innermost(ast.Node(branch.stmts.last()).pos().pos)
 						if v := scope.find_var(branch.cond.vars[0].name) {
 							is_auto_heap = v.is_auto_heap
 						}
@@ -195,11 +213,13 @@ fn (mut g Gen) if_expr(node ast.IfExpr) {
 			}
 		}
 		if needs_tmp_var {
-			if node.is_expr && g.table.sym(node.typ).kind == .sum_type {
+			prev_expected_cast_type := g.expected_cast_type
+			if node.is_expr
+				&& (g.table.sym(node.typ).kind == .sum_type || node.typ.has_flag(.shared_f)) {
 				g.expected_cast_type = node.typ
 			}
 			g.stmts_with_tmp_var(branch.stmts, tmp)
-			g.expected_cast_type = 0
+			g.expected_cast_type = prev_expected_cast_type
 		} else {
 			// restore if_expr stmt header pos
 			stmt_pos := g.nth_stmt_pos(0)

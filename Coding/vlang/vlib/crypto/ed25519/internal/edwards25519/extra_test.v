@@ -23,7 +23,7 @@ fn testsuite_begin() {
 //
 // Disabled curve25519 not available yet, but maybe can use own curve25519
 /*
-fn fn_mon(scalar [32]byte) bool {
+fn fn_mon(scalar [32]u8) bool {
                mut s := new_scalar().set_bytes_with_clamping(scalar[..])
                p := (&Point{}).scalar_base_mult(s)
                got := p.bytes_montgomery()
@@ -32,7 +32,7 @@ fn fn_mon(scalar [32]byte) bool {
        }
 
 fn test_bytes_montgomery() {
-       /* f := fn(scalar [32]byte) bool {
+       /* f := fn(scalar [32]u8) bool {
                s := new_scalar().set_bytes_with_clamping(scalar[..])
                p := (&Point{}).scalar_base_mult(s)
                got := p.bytes_montgomery()
@@ -49,7 +49,7 @@ fn test_bytes_montgomery_sodium() ? {
 	// crypto_sign_keypair().pubkey
 	pubkey := '3bf918ffc2c955dc895bf145f566fb96623c1cadbe040091175764b5fde322c0'
 	mut p := Point{}
-	p.set_bytes(hex.decode(pubkey) ?) ?
+	p.set_bytes(hex.decode(pubkey)?)?
 
 	// crypto_sign_ed25519_pk_to_curve25519(pubkey)
 	want := 'efc6c9d0738e9ea18d738ad4a2653631558931b0f1fde4dd58c436d19686dc28'
@@ -70,7 +70,7 @@ const (
 	loworder_bytes  = hex.decode(loworder_string) or { panic(err) }
 )
 
-fn fn_cofactor(mut data []byte) bool {
+fn fn_cofactor(mut data []u8) bool {
 	if data.len != 64 {
 		panic('data.len should be 64')
 	}
@@ -88,9 +88,9 @@ fn fn_cofactor(mut data []byte) bool {
 
 	// 8 * p == (8 * s) * B
 	mut sc := Scalar{
-		s: [32]byte{}
+		s: [32]u8{}
 	}
-	sc.s[0] = byte(0x08)
+	sc.s[0] = u8(0x08)
 	s.multiply(s, sc)
 	mut pp := Point{}
 	pp.scalar_base_mult(mut s)
@@ -115,7 +115,7 @@ fn fn_cofactor(mut data []byte) bool {
 
 fn test_mult_by_cofactor() ? {
 	mut loworder := Point{}
-	mut data := rand.bytes(64) ?
+	mut data := rand.bytes(64)?
 
 	assert fn_cofactor(mut data) == true
 }

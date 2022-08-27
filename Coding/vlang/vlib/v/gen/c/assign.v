@@ -7,7 +7,7 @@ import v.ast
 import v.util
 import v.token
 
-fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
+fn (mut g Gen) assign_stmt(node_ ast.AssignStmt) {
 	mut node := unsafe { node_ }
 	if node.is_static {
 		g.write('static ')
@@ -18,6 +18,9 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 	mut return_type := ast.void_type
 	is_decl := node.op == .decl_assign
 	g.assign_op = node.op
+	defer {
+		g.assign_op = .unknown
+	}
 	op := if is_decl { token.Kind.assign } else { node.op }
 	right_expr := node.right[0]
 	match right_expr {
@@ -208,7 +211,11 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 			} else if g.inside_for_c_stmt {
 				g.expr(val)
 			} else {
-				g.write('{$styp _ = ')
+				if left_sym.kind == .function {
+					g.write('{void* _ = ')
+				} else {
+					g.write('{$styp _ = ')
+				}
 				g.expr(val)
 				g.writeln(';}')
 			}
@@ -299,7 +306,7 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 					g.write(' = ${styp}_${util.replace_op(extracted_op)}(')
 					method := g.table.find_method(left_sym, extracted_op) or {
 						// the checker will most likely have found this, already...
-						g.error('assignemnt operator `$extracted_op=` used but no `$extracted_op` method defined',
+						g.error('assignment operator `$extracted_op=` used but no `$extracted_op` method defined',
 							node.pos)
 						ast.Fn{}
 					}
@@ -314,11 +321,32 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 				}
 				func := right_sym.info as ast.FnType
 				ret_styp := g.typ(func.func.return_type)
-				g.write('$ret_styp (*${g.get_ternary_name(ident.name)}) (')
+
+				mut call_conv := ''
+				mut msvc_call_conv := ''
+				for attr in func.func.attrs {
+					match attr.name {
+						'callconv' {
+							if g.is_cc_msvc {
+								msvc_call_conv = '__$attr.arg '
+							} else {
+								call_conv = '$attr.arg'
+							}
+						}
+						else {}
+					}
+				}
+				call_conv_attribute_suffix := if call_conv.len != 0 {
+					'__attribute__(($call_conv))'
+				} else {
+					''
+				}
+
+				g.write('$ret_styp ($msvc_call_conv*${g.get_ternary_name(ident.name)}) (')
 				def_pos := g.definitions.len
 				g.fn_decl_params(func.func.params, voidptr(0), false)
 				g.definitions.go_back(g.definitions.len - def_pos)
-				g.write(')')
+				g.write(')$call_conv_attribute_suffix')
 			} else {
 				if is_decl {
 					if is_inside_ternary {
@@ -361,6 +389,9 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 							g.write('*')
 						}
 						g.expr(left)
+						if !is_decl && var_type.has_flag(.shared_f) {
+							g.write('->val') // don't reset the mutex, just change the value
+						}
 					}
 				}
 			}
@@ -404,7 +435,6 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 				}
 				*/
 			}
-			g.is_shared = var_type.has_flag(.shared_f)
 			if !cloned {
 				if is_fixed_array_var {
 					// TODO Instead of the translated check, check if it's a pointer already
@@ -417,9 +447,10 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 					g.expr(val)
 					g.write(', sizeof($typ_str))')
 				} else if is_decl {
+					g.is_shared = var_type.has_flag(.shared_f)
 					if is_fixed_array_init && !has_val {
 						if val is ast.ArrayInit {
-							g.array_init(val)
+							g.array_init(val, ident.name)
 						} else {
 							g.write('{0}')
 						}
@@ -430,7 +461,13 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 						if val.is_auto_deref_var() {
 							g.write('*')
 						}
-						g.expr(val)
+						if val is ast.ArrayInit {
+							g.array_init(val, ident.name)
+						} else if val_type.has_flag(.shared_f) {
+							g.expr_with_cast(val, val_type, var_type)
+						} else {
+							g.expr(val)
+						}
 						if is_auto_heap {
 							g.write('))')
 						}
@@ -442,11 +479,11 @@ fn (mut g Gen) gen_assign_stmt(node_ ast.AssignStmt) {
 						if op_overloaded {
 							g.op_arg(val, op_expected_right, val_type)
 						} else {
-							exp_type := if left.is_auto_deref_var() {
+							exp_type := if left.is_auto_deref_var() || var_type.has_flag(.shared_f) {
 								var_type.deref()
 							} else {
 								var_type
-							}
+							}.clear_flag(.shared_f) // don't reset the mutex, just change the value
 							g.expr_with_cast(val, val_type, exp_type)
 						}
 					}
@@ -588,12 +625,13 @@ fn (mut g Gen) gen_cross_var_assign(node &ast.AssignStmt) {
 			ast.Ident {
 				left_typ := node.left_types[i]
 				left_sym := g.table.sym(left_typ)
+				anon_ctx := if g.anon_fn { '$closure_ctx->' } else { '' }
 				if left_sym.kind == .function {
 					g.write_fn_ptr_decl(left_sym.info as ast.FnType, '_var_$left.pos.pos')
-					g.writeln(' = ${c_name(left.name)};')
+					g.writeln(' = $anon_ctx${c_name(left.name)};')
 				} else {
 					styp := g.typ(left_typ)
-					g.writeln('$styp _var_$left.pos.pos = ${c_name(left.name)};')
+					g.writeln('$styp _var_$left.pos.pos = $anon_ctx${c_name(left.name)};')
 				}
 			}
 			ast.IndexExpr {
@@ -724,6 +762,22 @@ fn (mut g Gen) gen_cross_tmp_variable(left []ast.Expr, val ast.Expr) {
 				g.write(val.op.str())
 				g.gen_cross_tmp_variable(left, val.right)
 			}
+		}
+		ast.ParExpr {
+			g.write('(')
+			g.gen_cross_tmp_variable(left, val.expr)
+			g.write(')')
+		}
+		ast.CallExpr {
+			fn_name := val.name.replace('.', '__')
+			g.write('${fn_name}(')
+			for i, arg in val.args {
+				g.gen_cross_tmp_variable(left, arg.expr)
+				if i != val.args.len - 1 {
+					g.write(', ')
+				}
+			}
+			g.write(')')
 		}
 		ast.PrefixExpr {
 			g.write(val.op.str())

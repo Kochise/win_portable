@@ -28,6 +28,9 @@ endif
 ifeq ($(_SYS),Linux)
 LINUX := 1
 TCCOS := linux
+ifneq ($(shell ldd /bin/ls | grep musl),)
+TCCOS := linuxmusl
+endif
 endif
 
 ifeq ($(_SYS),Darwin)
@@ -76,7 +79,7 @@ endif
 endif
 endif
 
-.PHONY: all clean fresh_vc fresh_tcc check_for_working_tcc
+.PHONY: all clean check fresh_vc fresh_tcc check_for_working_tcc
 
 ifdef prod
 VFLAGS+=-prod
@@ -84,13 +87,13 @@ endif
 
 all: latest_vc latest_tcc
 ifdef WIN32
-	$(CC) $(CFLAGS) -std=c99 -municode -w -I ./thirdparty/stdatomic/nix -o v1.exe $(VC)/$(VCFILE) $(LDFLAGS)
+	$(CC) $(CFLAGS) -std=c99 -municode -w -o v1.exe $(VC)/$(VCFILE) $(LDFLAGS)
 	v1.exe -no-parallel -o v2.exe $(VFLAGS) cmd/v
 	v2.exe -o $(V) $(VFLAGS) cmd/v
 	del v1.exe
 	del v2.exe
 else
-	$(CC) $(CFLAGS) -std=gnu99 -w -I ./thirdparty/stdatomic/nix -o v1.exe $(VC)/$(VCFILE) -lm -lpthread $(LDFLAGS)
+	$(CC) $(CFLAGS) -std=gnu99 -w -o v1.exe $(VC)/$(VCFILE) -lm -lpthread $(LDFLAGS)
 	./v1.exe -no-parallel -o v2.exe $(VFLAGS) cmd/v
 	./v2.exe -o $(V) $(VFLAGS) cmd/v
 	rm -rf v1.exe v2.exe
@@ -113,7 +116,7 @@ endif
 
 check_for_working_tcc:
 	@$(TMPTCC)/tcc.exe --version > /dev/null 2> /dev/null || echo "The executable '$(TMPTCC)/tcc.exe' does not work."
-	
+
 fresh_vc:
 	rm -rf $(VC)
 	$(GITFASTCLONE) $(VCREPO) $(VC)
@@ -164,3 +167,5 @@ selfcompile-static:
 install:
 	@echo 'Please use `sudo ./v symlink` instead.'
 
+check:
+	$(V) test-all

@@ -2,7 +2,7 @@ import term.ui as tui
 
 struct App {
 mut:
-	tui &tui.Context = 0
+	tui &tui.Context = unsafe { 0 }
 }
 
 fn event(e &tui.Event, x voidptr) {
@@ -43,5 +43,5 @@ fn main() {
 		use_alternate_buffer: false
 	)
 	println('V term.ui event viewer (press `esc` to exit)\n\n')
-	app.tui.run() ?
+	app.tui.run()?
 }

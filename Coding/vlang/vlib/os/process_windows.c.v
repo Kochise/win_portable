@@ -4,13 +4,13 @@ import strings
 
 fn C.GenerateConsoleCtrlEvent(event u32, pgid u32) bool
 fn C.GetModuleHandleA(name &char) HMODULE
-fn C.GetProcAddress(handle voidptr, procname &byte) voidptr
+fn C.GetProcAddress(handle voidptr, procname &u8) voidptr
 fn C.TerminateProcess(process HANDLE, exit_code u32) bool
 fn C.PeekNamedPipe(hNamedPipe voidptr, lpBuffer voidptr, nBufferSize int, lpBytesRead voidptr, lpTotalBytesAvail voidptr, lpBytesLeftThisMessage voidptr) bool
 
 type FN_NTSuspendResume = fn (voidptr)
 
-fn ntdll_fn(name &char) FN_NTSuspendResume {
+fn ntdll_fn(name &u8) FN_NTSuspendResume {
 	ntdll := C.GetModuleHandleA(c'NTDLL')
 	if ntdll == 0 {
 		return FN_NTSuspendResume(0)
@@ -47,7 +47,7 @@ fn close_valid_handle(p voidptr) {
 pub struct WProcess {
 pub mut:
 	proc_info    ProcessInformation
-	command_line [65536]byte
+	command_line [65536]u8
 	child_stdin  &u32
 	//
 	child_stdout_read  &u32
@@ -176,7 +176,7 @@ fn (mut p Process) win_write_string(idx int, s string) {
 
 fn (mut p Process) win_read_string(idx int, maxbytes int) (string, int) {
 	mut wdata := &WProcess(p.wdata)
-	if wdata == 0 {
+	if unsafe { wdata == 0 } {
 		return '', 0
 	}
 	mut rhandle := &u32(0)
@@ -198,7 +198,7 @@ fn (mut p Process) win_read_string(idx int, maxbytes int) (string, int) {
 	}
 
 	mut bytes_read := int(0)
-	buf := []byte{len: bytes_avail + 300}
+	buf := []u8{len: bytes_avail + 300}
 	unsafe {
 		C.ReadFile(rhandle, &buf[0], buf.cap, voidptr(&bytes_read), 0)
 	}
@@ -207,7 +207,7 @@ fn (mut p Process) win_read_string(idx int, maxbytes int) (string, int) {
 
 fn (mut p Process) win_slurp(idx int) string {
 	mut wdata := &WProcess(p.wdata)
-	if wdata == 0 {
+	if unsafe { wdata == 0 } {
 		return ''
 	}
 	mut rhandle := &u32(0)
@@ -221,7 +221,7 @@ fn (mut p Process) win_slurp(idx int) string {
 		return ''
 	}
 	mut bytes_read := u32(0)
-	buf := [4096]byte{}
+	buf := [4096]u8{}
 	mut read_data := strings.new_builder(1024)
 	for {
 		mut result := false

@@ -90,7 +90,7 @@ const (
 
 struct App {
 mut:
-	ui                  &ui.Context = 0
+	ui                  &ui.Context = unsafe { 0 }
 	header_text         []string
 	mouse_pos           Point
 	msg                 string
@@ -125,7 +125,7 @@ fn main() {
 	app.mouse_pos.x = 40
 	app.mouse_pos.y = 15
 	app.ui.clear()
-	app.ui.run() ?
+	app.ui.run()?
 }
 
 fn frame(x voidptr) {

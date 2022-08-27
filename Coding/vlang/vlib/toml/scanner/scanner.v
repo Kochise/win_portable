@@ -9,7 +9,7 @@ import toml.util
 
 pub const (
 	digit_extras = [`_`, `.`, `x`, `o`, `b`, `e`, `E`]
-	end_of_text  = 4294967295
+	end_of_text  = u32(~0)
 )
 
 // Scanner contains the necessary fields for the state of the scan process.
@@ -50,7 +50,7 @@ pub:
 pub fn new_scanner(config Config) ?&Scanner {
 	mut s := &Scanner{
 		config: config
-		text: config.input.read_input() ?
+		text: config.input.read_input()?
 	}
 	return s
 }
@@ -59,7 +59,7 @@ pub fn new_scanner(config Config) ?&Scanner {
 pub fn new_simple(config Config) ?Scanner {
 	return Scanner{
 		config: config
-		text: config.input.read_input() ?
+		text: config.input.read_input()?
 	}
 }
 
@@ -74,7 +74,7 @@ pub fn new_simple_text(text string) ?Scanner {
 	}
 	return Scanner{
 		config: config
-		text: config.input.read_input() ?
+		text: config.input.read_input()?
 	}
 }
 
@@ -89,18 +89,18 @@ pub fn new_simple_file(path string) ?Scanner {
 	}
 	return Scanner{
 		config: config
-		text: config.input.read_input() ?
+		text: config.input.read_input()?
 	}
 }
 
 // scan returns the next token from the input.
 [direct_array_access]
 pub fn (mut s Scanner) scan() ?token.Token {
-	s.validate_and_skip_headers() ?
+	s.validate_and_skip_headers()?
 
 	for {
 		c := s.next()
-		byte_c := byte(c)
+		byte_c := u8(c)
 		if c == scanner.end_of_text {
 			s.inc_line_number()
 			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'reached EOF')
@@ -110,7 +110,7 @@ pub fn (mut s Scanner) scan() ?token.Token {
 		ascii := byte_c.ascii_str()
 		util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'current char "$ascii"')
 
-		if byte_c == byte(0x0) {
+		if byte_c == u8(0x0) {
 			s.reset()
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
 				' NULL control character `$c.hex()` is not allowed at ($s.line_nr,$s.col) "$ascii" near ...${s.excerpt(s.pos, 5)}...')
@@ -127,15 +127,15 @@ pub fn (mut s Scanner) scan() ?token.Token {
 		is_signed_inf := !is_signed_nan && is_sign && s.at() == `i` && peek_1 == `n`
 			&& peek_2 == `f`
 		if !s.is_left_of_assign && (is_nan || is_inf || is_signed_nan || is_signed_inf) {
-			num := s.extract_nan_or_inf_number() ?
+			num := s.extract_nan_or_inf_number()?
 			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'identified a special number "$num" ($num.len)')
 			return s.new_token(.number, num, num.len)
 		}
 
-		is_signed_number := is_sign && byte(s.at()).is_digit() && !byte(s.peek(-1)).is_digit()
+		is_signed_number := is_sign && u8(s.at()).is_digit() && !u8(s.peek(-1)).is_digit()
 		is_digit := byte_c.is_digit()
 		if is_digit || is_signed_number {
-			num := s.extract_number() ?
+			num := s.extract_number()?
 			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'identified a number "$num" ($num.len)')
 			return s.new_token(.number, num, num.len)
 		}
@@ -158,8 +158,8 @@ pub fn (mut s Scanner) scan() ?token.Token {
 				}
 				// Date-Time in RFC 3339 is allowed to have a space between the date and time in supplement to the 'T'
 				// so we allow space characters to slip through to the parser if the space is between two digits...
-				// util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, '"'+byte(s.peek(-1)).ascii_str()+'" < "$ascii" > "'+byte(s.at()).ascii_str()+'"')
-				if c == ` ` && byte(s.peek(-1)).is_digit() && byte(s.at()).is_digit() {
+				// util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, '"'+u8(s.peek(-1)).ascii_str()+'" < "$ascii" > "'+u8(s.at()).ascii_str()+'"')
+				if c == ` ` && u8(s.peek(-1)).is_digit() && u8(s.at()).is_digit() {
 					util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'identified, what could be, a space between a RFC 3339 date and time ("$ascii") ($ascii.len)')
 					return s.new_token(token.Kind.whitespace, ascii, ascii.len)
 				}
@@ -197,12 +197,12 @@ pub fn (mut s Scanner) scan() ?token.Token {
 				return s.new_token(.assign, ascii, ascii.len)
 			}
 			`"`, `'` { // ... some string "/'
-				ident_string := s.extract_string() ?
+				ident_string := s.extract_string()?
 				util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'identified quoted string `$ident_string`')
 				return s.new_token(.quoted, ident_string, ident_string.len)
 			}
 			`#` {
-				hash := s.ignore_line() ?
+				hash := s.ignore_line()?
 				util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'identified comment hash "$hash" ($hash.len)')
 				return s.new_token(.hash, hash, hash.len + 1)
 			}
@@ -358,7 +358,7 @@ fn (mut s Scanner) ignore_line() ?string {
 	util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, ' ignoring until EOL...')
 	start := s.pos
 	for c := s.at(); c != scanner.end_of_text && c != `\n`; c = s.at() {
-		util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'skipping "${byte(c).ascii_str()} / $c"')
+		util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'skipping "${u8(c).ascii_str()} / $c"')
 		if s.at_crlf() {
 			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'letting `\\r\\n` slip through')
 			break
@@ -383,7 +383,7 @@ fn (mut s Scanner) extract_key() string {
 	s.col--
 	start := s.pos
 	for s.pos < s.text.len {
-		c := byte(s.at())
+		c := u8(s.at())
 		if !(util.is_key_char(c) || c.is_digit() || c in [`_`, `-`]) {
 			break
 		}
@@ -403,14 +403,14 @@ fn (mut s Scanner) extract_string() ?string {
 	// a byte that is the start of a string so we rewind it to start at the correct
 	s.pos--
 	s.col--
-	quote := byte(s.at())
+	quote := u8(s.at())
 	start := s.pos
 	mut lit := quote.ascii_str()
 
 	is_multiline := s.text[s.pos + 1] == quote && s.text[s.pos + 2] == quote
 	// Check for escaped multiline quote
 	if is_multiline {
-		mls := s.extract_multiline_string() ?
+		mls := s.extract_multiline_string()?
 		return mls
 	}
 
@@ -420,14 +420,14 @@ fn (mut s Scanner) extract_string() ?string {
 
 		if s.pos >= s.text.len {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' unfinished single-line string literal `$quote.ascii_str()` started at $start ($s.line_nr,$s.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
+				' unfinished single-line string literal `$quote.ascii_str()` started at $start ($s.line_nr,$s.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
 		}
 
-		c := byte(s.at())
+		c := u8(s.at())
 		util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'c: `$c.ascii_str()` / $c (quote type: $quote/$quote.ascii_str())')
 
 		// Check for escaped chars
-		if c == byte(92) {
+		if c == u8(92) {
 			esc, skip := s.handle_escapes(quote, is_multiline)
 			lit += esc
 			if skip > 0 {
@@ -439,7 +439,7 @@ fn (mut s Scanner) extract_string() ?string {
 		// Check for control characters (allow TAB)
 		if util.is_illegal_ascii_control_character(c) {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' control character `$c.hex()` is not allowed at $start ($s.line_nr,$s.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
+				' control character `$c.hex()` is not allowed at $start ($s.line_nr,$s.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
 		}
 
 		if c == quote {
@@ -453,7 +453,7 @@ fn (mut s Scanner) extract_string() ?string {
 		// Don't eat multiple lines in single-line mode
 		if lit.contains('\n') {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' unfinished single-line string literal `$quote.ascii_str()` started at $start ($s.line_nr,$s.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
+				' unfinished single-line string literal `$quote.ascii_str()` started at $start ($s.line_nr,$s.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
 		}
 	}
 	return lit
@@ -466,7 +466,7 @@ fn (mut s Scanner) extract_string() ?string {
 fn (mut s Scanner) extract_multiline_string() ?string {
 	// extract_multiline_string is called from extract_string so we know the 3 first
 	// characters is the quotes
-	quote := byte(s.at())
+	quote := u8(s.at())
 	start := s.pos
 	mut lit := quote.ascii_str() + quote.ascii_str() + quote.ascii_str()
 
@@ -482,10 +482,10 @@ fn (mut s Scanner) extract_multiline_string() ?string {
 
 		if s.pos >= s.text.len {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' unfinished multi-line string literal ($quote.ascii_str()$quote.ascii_str()$quote.ascii_str()) started at $start ($s.line_nr,$s.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
+				' unfinished multi-line string literal ($quote.ascii_str()$quote.ascii_str()$quote.ascii_str()) started at $start ($s.line_nr,$s.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
 		}
 
-		c := byte(s.at())
+		c := u8(s.at())
 		util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'c: `$c.ascii_str()` / $c (quote type: $quote/$quote.ascii_str())')
 
 		if c == `\n` {
@@ -495,7 +495,7 @@ fn (mut s Scanner) extract_multiline_string() ?string {
 			continue
 		}
 		// Check for escaped chars
-		if c == byte(92) {
+		if c == u8(92) {
 			esc, skip := s.handle_escapes(quote, true)
 			lit += esc
 			if skip > 0 {
@@ -507,7 +507,7 @@ fn (mut s Scanner) extract_multiline_string() ?string {
 		// Check for control characters (allow TAB)
 		if util.is_illegal_ascii_control_character(c) {
 			return error(@MOD + '.' + @STRUCT + '.' + @FN +
-				' control character `$c.hex()` is not allowed at $start ($s.line_nr,$s.col) "${byte(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
+				' control character `$c.hex()` is not allowed at $start ($s.line_nr,$s.col) "${u8(s.at()).ascii_str()}" near ...${s.excerpt(s.pos, 5)}...')
 		}
 
 		if c == quote {
@@ -536,13 +536,13 @@ fn (mut s Scanner) extract_multiline_string() ?string {
 
 // handle_escapes returns any escape character sequence.
 // For escape sequence validation see `Checker.check_quoted_escapes`.
-fn (mut s Scanner) handle_escapes(quote byte, is_multiline bool) (string, int) {
-	c := byte(s.at())
+fn (mut s Scanner) handle_escapes(quote u8, is_multiline bool) (string, int) {
+	c := u8(s.at())
 	mut lit := c.ascii_str()
 	is_literal_string := quote == `'`
 	if !is_literal_string {
-		if s.peek(1) == `u` && byte(s.peek(2)).is_hex_digit() && byte(s.peek(3)).is_hex_digit()
-			&& byte(s.peek(4)).is_hex_digit() && byte(s.peek(5)).is_hex_digit() {
+		if s.peek(1) == `u` && u8(s.peek(2)).is_hex_digit() && u8(s.peek(3)).is_hex_digit()
+			&& u8(s.peek(4)).is_hex_digit() && u8(s.peek(5)).is_hex_digit() {
 			lit += s.text[s.pos + 1..s.pos + 6] //.ascii_str()
 			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'gulp escaped unicode `$lit`')
 			return lit, 5
@@ -559,12 +559,12 @@ fn (mut s Scanner) handle_escapes(quote byte, is_multiline bool) (string, int) {
 	}
 	if is_literal_string {
 		if s.peek(1) == quote {
-			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'ignore escape `$lit${byte(s.peek(1)).ascii_str()}` in literal string')
+			util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'ignore escape `$lit${u8(s.peek(1)).ascii_str()}` in literal string')
 			return '', 0
 		}
 	}
 
-	lit += byte(s.peek(1)).ascii_str()
+	lit += u8(s.peek(1)).ascii_str()
 	util.printdbg(@MOD + '.' + @STRUCT + '.' + @FN, 'gulp escaped `$lit`')
 	return lit, 1
 }
@@ -582,23 +582,22 @@ fn (mut s Scanner) extract_number() ?string {
 	start := s.pos
 
 	mut c := s.at()
-	is_digit := byte(c).is_digit()
+	is_digit := u8(c).is_digit()
 	if !(is_digit || c in [`+`, `-`]) {
 		return error(@MOD + '.' + @STRUCT + '.' + @FN +
-			' ${byte(c).ascii_str()} is not a number at ${s.excerpt(s.pos, 10)}')
+			' ${u8(c).ascii_str()} is not a number at ${s.excerpt(s.pos, 10)}')
 	}
 	s.pos++
 	s.col++
 	for s.pos < s.text.len {
 		c = s.at()
 		// Handle signed exponent notation. I.e.: 3e2, 3E2, 3e-2, 3E+2, 3e0, 3.1e2, 3.1E2, -1E-1
-		if c in [`e`, `E`] && s.peek(1) in [`+`, `-`] && byte(s.peek(2)).is_digit() {
+		if c in [`e`, `E`] && s.peek(1) in [`+`, `-`] && u8(s.peek(2)).is_digit() {
 			s.pos += 2
 			s.col += 2
 		}
 		c = s.at()
-		if !(byte(c).is_hex_digit() || c in scanner.digit_extras)
-			|| (c == `.` && s.is_left_of_assign) {
+		if !(u8(c).is_hex_digit() || c in scanner.digit_extras) || (c == `.` && s.is_left_of_assign) {
 			break
 		}
 		s.pos++
@@ -622,7 +621,7 @@ fn (mut s Scanner) extract_nan_or_inf_number() ?string {
 	mut c := s.at()
 	if c !in [`+`, `-`, `n`, `i`] {
 		return error(@MOD + '.' + @STRUCT + '.' + @FN +
-			' ${byte(c).ascii_str()} is not a number at ${s.excerpt(s.pos, 10)}')
+			' ${u8(c).ascii_str()} is not a number at ${s.excerpt(s.pos, 10)}')
 	}
 	s.pos++
 	s.col++
@@ -659,7 +658,7 @@ pub fn (s Scanner) state() State {
 
 fn (mut s Scanner) validate_and_skip_headers() ? {
 	// UTF-16 / UTF-32 headers (BE/LE)
-	s.check_utf16_or_32_bom() ?
+	s.check_utf16_or_32_bom()?
 
 	// NICE-TO-HAVE-TODO Check other types of (UTF-?) headers and yield an error. TOML is UTF-8 only.
 
@@ -671,7 +670,7 @@ fn (mut s Scanner) validate_and_skip_headers() ? {
 	}
 
 	// Check after we've skipped UTF-8 BOM
-	s.check_utf16_or_32_bom() ?
+	s.check_utf16_or_32_bom()?
 }
 
 fn (mut s Scanner) check_utf16_or_32_bom() ? {

@@ -61,8 +61,7 @@ fn (mut g Gen) match_expr(node ast.MatchExpr) {
 		}
 		g.inside_match_optional = true
 	}
-	if node.cond in [ast.Ident, ast.SelectorExpr, ast.IntegerLiteral, ast.StringLiteral,
-		ast.FloatLiteral] {
+	if node.cond in [ast.Ident, ast.SelectorExpr, ast.IntegerLiteral, ast.StringLiteral, ast.FloatLiteral] {
 		cond_var = g.expr_string(node.cond)
 	} else {
 		line := if is_expr {
@@ -92,7 +91,8 @@ fn (mut g Gen) match_expr(node ast.MatchExpr) {
 	typ := g.table.final_sym(node.cond_type)
 	if node.is_sum_type {
 		g.match_expr_sumtype(node, is_expr, cond_var, tmp_var)
-	} else if typ.kind == .enum_ && g.loop_depth == 0 && node.branches.len > 5 && g.fn_decl != 0 { // do not optimize while in top-level
+	} else if typ.kind == .enum_ && g.loop_depth == 0 && node.branches.len > 5
+		&& unsafe { g.fn_decl != 0 } { // do not optimize while in top-level
 		g.match_expr_switch(node, is_expr, cond_var, tmp_var, typ)
 	} else {
 		g.match_expr_classic(node, is_expr, cond_var, tmp_var)
@@ -159,7 +159,7 @@ fn (mut g Gen) match_expr_sumtype(node ast.MatchExpr, is_expr bool, cond_var str
 					}
 				}
 				if is_expr && tmp_var.len == 0 {
-					g.write(') ? ')
+					g.write(')? ')
 				} else {
 					g.writeln(') {')
 				}
@@ -404,7 +404,7 @@ fn (mut g Gen) match_expr_classic(node ast.MatchExpr, is_expr bool, cond_var str
 				}
 			}
 			if is_expr && tmp_var.len == 0 {
-				g.write(') ? ')
+				g.write(')? ')
 			} else {
 				g.writeln(') {')
 			}

@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 module mt19937
 
+import rand.buffer
 import rand.seed
 
 /*
@@ -60,11 +61,10 @@ const (
 // MT19937RNG is generator that uses the Mersenne Twister algorithm with period 2^19937.
 // **NOTE**: The RNG is not seeded when instantiated so remember to seed it before use.
 pub struct MT19937RNG {
+	buffer.PRNGBuffer
 mut:
-	state      []u64 = get_first_state(seed.time_seed_array(2))
-	mti        int   = mt19937.nn
-	bytes_left int
-	buffer     u64
+	state []u64 = get_first_state(seed.time_seed_array(2))
+	mti   int   = mt19937.nn
 }
 
 fn get_first_state(seed_data []u32) []u64 {
@@ -99,16 +99,16 @@ pub fn (mut rng MT19937RNG) seed(seed_data []u32) {
 
 // byte returns a uniformly distributed pseudorandom 8-bit unsigned positive `byte`.
 [inline]
-pub fn (mut rng MT19937RNG) byte() byte {
+pub fn (mut rng MT19937RNG) u8() u8 {
 	if rng.bytes_left >= 1 {
 		rng.bytes_left -= 1
-		value := byte(rng.buffer)
+		value := u8(rng.buffer)
 		rng.buffer >>= 8
 		return value
 	}
 	rng.buffer = rng.u64()
 	rng.bytes_left = 7
-	value := byte(rng.buffer)
+	value := u8(rng.buffer)
 	rng.buffer >>= 8
 	return value
 }

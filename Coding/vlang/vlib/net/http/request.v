@@ -62,7 +62,7 @@ pub fn (req &Request) do() ?Response {
 		if no_redirects == max_redirects {
 			return error('http.request.do: maximum number of redirects reached ($max_redirects)')
 		}
-		qresp := req.method_and_url_to_response(req.method, rurl) ?
+		qresp := req.method_and_url_to_response(req.method, rurl)?
 		resp = qresp
 		if !req.allow_redirect {
 			break
@@ -105,11 +105,11 @@ fn (req &Request) method_and_url_to_response(method Method, url urllib.URL) ?Res
 	// println('fetch $method, $scheme, $host_name, $nport, $path ')
 	if scheme == 'https' {
 		// println('ssl_do( $nport, $method, $host_name, $path )')
-		res := req.ssl_do(nport, method, host_name, path) ?
+		res := req.ssl_do(nport, method, host_name, path)?
 		return res
 	} else if scheme == 'http' {
 		// println('http_do( $nport, $method, $host_name, $path )')
-		res := req.http_do('$host_name:$nport', method, path) ?
+		res := req.http_do('$host_name:$nport', method, path)?
 		return res
 	}
 	return error('http.request.method_and_url_to_response: unsupported scheme: "$scheme"')
@@ -152,18 +152,18 @@ fn (req &Request) build_request_cookies_header() string {
 }
 
 fn (req &Request) http_do(host string, method Method, path string) ?Response {
-	host_name, _ := net.split_address(host) ?
+	host_name, _ := net.split_address(host)?
 	s := req.build_request_headers(method, host_name, path)
-	mut client := net.dial_tcp(host) ?
+	mut client := net.dial_tcp(host)?
 	client.set_read_timeout(req.read_timeout)
 	client.set_write_timeout(req.write_timeout)
 	// TODO this really needs to be exposed somehow
-	client.write(s.bytes()) ?
+	client.write(s.bytes())?
 	$if trace_http_request ? {
 		eprintln('> $s')
 	}
-	mut bytes := io.read_all(reader: client) ?
-	client.close() ?
+	mut bytes := io.read_all(reader: client)?
+	client.close()?
 	response_text := bytes.bytestr()
 	$if trace_http_response ? {
 		eprintln('< $response_text')
@@ -176,28 +176,17 @@ pub fn (req &Request) referer() string {
 	return req.header.get(.referer) or { '' }
 }
 
-// Parse a raw HTTP request into a Request object
+// parse_request parses a raw HTTP request into a Request object.
+// See also: `parse_request_head`, which parses only the headers.
 pub fn parse_request(mut reader io.BufferedReader) ?Request {
-	// request line
-	mut line := reader.read_line() ?
-	method, target, version := parse_request_line(line) ?
-
-	// headers
-	mut header := new_header()
-	line = reader.read_line() ?
-	for line != '' {
-		key, value := parse_header(line) ?
-		header.add_custom(key, value) ?
-		line = reader.read_line() ?
-	}
-	header.coerce(canonicalize: true)
+	mut request := parse_request_head(mut reader)?
 
 	// body
-	mut body := []byte{}
-	if length := header.get(.content_length) {
+	mut body := []u8{}
+	if length := request.header.get(.content_length) {
 		n := length.int()
 		if n > 0 {
-			body = []byte{len: n}
+			body = []u8{len: n}
 			mut count := 0
 			for count < body.len {
 				count += reader.read(mut body[count..]) or { break }
@@ -205,12 +194,37 @@ pub fn parse_request(mut reader io.BufferedReader) ?Request {
 		}
 	}
 
+	request.data = body.bytestr()
+	return request
+}
+
+// parse_request_head parses *only* the header of a raw HTTP request into a Request object
+pub fn parse_request_head(mut reader io.BufferedReader) ?Request {
+	// request line
+	mut line := reader.read_line()?
+	method, target, version := parse_request_line(line)?
+
+	// headers
+	mut header := new_header()
+	line = reader.read_line()?
+	for line != '' {
+		key, value := parse_header(line)?
+		header.add_custom(key, value)?
+		line = reader.read_line()?
+	}
+	header.coerce(canonicalize: true)
+
+	mut request_cookies := map[string]string{}
+	for _, cookie in read_cookies(header.data, '') {
+		request_cookies[cookie.name] = cookie.value
+	}
+
 	return Request{
 		method: method
 		url: target.str()
 		header: header
-		data: body.bytestr()
 		version: version
+		cookies: request_cookies
 	}
 }
 
@@ -220,7 +234,7 @@ fn parse_request_line(s string) ?(Method, urllib.URL, Version) {
 		return error('malformed request line')
 	}
 	method := method_from_str(words[0])
-	target := urllib.parse(words[1]) ?
+	target := urllib.parse(words[1])?
 	version := version_from_str(words[2])
 	if version == .unknown {
 		return error('unsupported version')
@@ -236,16 +250,22 @@ fn parse_request_line(s string) ?(Method, urllib.URL, Version) {
 //
 // a possible solution is to use the a list of QueryValue
 pub fn parse_form(body string) map[string]string {
-	words := body.split('&')
 	mut form := map[string]string{}
-	for word in words {
-		kv := word.split_nth('=', 2)
-		if kv.len != 2 {
-			continue
+
+	if body.match_glob('{*}') {
+		form['json'] = body
+	} else {
+		words := body.split('&')
+
+		for word in words {
+			kv := word.split_nth('=', 2)
+			if kv.len != 2 {
+				continue
+			}
+			key := urllib.query_unescape(kv[0]) or { continue }
+			val := urllib.query_unescape(kv[1]) or { continue }
+			form[key] = val
 		}
-		key := urllib.query_unescape(kv[0]) or { continue }
-		val := urllib.query_unescape(kv[1]) or { continue }
-		form[key] = val
 	}
 	return form
 	// }
@@ -390,7 +410,7 @@ pub fn parse_multipart_form(body string, boundary string) (map[string]string, ma
 	return form, files
 }
 
-// Parse the Content-Disposition header of a multipart form
+// parse_disposition parses the Content-Disposition header of a multipart form
 // Returns a map of the key="value" pairs
 // Example: assert parse_disposition('Content-Disposition: form-data; name="a"; filename="b"') == {'name': 'a', 'filename': 'b'}
 fn parse_disposition(line string) map[string]string {

@@ -17,7 +17,7 @@ import v.dotgraph
 
 pub struct Builder {
 pub:
-	compiled_dir string // contains os.real_path() of the dir of the final file beeing compiled, or the dir itself when doing `v .`
+	compiled_dir string // contains os.real_path() of the dir of the final file being compiled, or the dir itself when doing `v .`
 	module_path  string
 pub mut:
 	checker             &checker.Checker
@@ -40,6 +40,7 @@ pub mut:
 	mod_invalidates_paths map[string][]string // changes in mod `os`, invalidate only .v files, that do `import os`
 	mod_invalidates_mods  map[string][]string // changes in mod `os`, force invalidation of mods, that do `import os`
 	path_invalidates_mods map[string][]string // changes in a .v file from `os`, invalidates `os`
+	crun_cache_keys       []string // target executable + top level source files; filled in by Builder.should_rebuild
 }
 
 pub fn new_builder(pref &pref.Preferences) Builder {
@@ -53,6 +54,7 @@ pub fn new_builder(pref &pref.Preferences) Builder {
 	if pref.use_color == .never {
 		util.emanager.set_support_color(false)
 	}
+	table.pointer_size = if pref.m64 { 8 } else { 4 }
 	msvc := find_msvc(pref.m64) or {
 		if pref.ccompiler == 'msvc' {
 			// verror('Cannot find MSVC on this OS')
@@ -123,8 +125,8 @@ pub fn (mut b Builder) middle_stages() ? {
 }
 
 pub fn (mut b Builder) front_and_middle_stages(v_files []string) ? {
-	b.front_stages(v_files) ?
-	b.middle_stages() ?
+	b.front_stages(v_files)?
+	b.middle_stages()?
 }
 
 // parse all deps from already parsed files
@@ -214,6 +216,9 @@ pub fn (mut b Builder) parse_imports() {
 		}
 		exit(0)
 	}
+	if b.pref.dump_files != '' {
+		b.dump_files(b.parsed_files.map(it.path))
+	}
 	b.rebuild_modules()
 }
 
@@ -240,6 +245,7 @@ pub fn (mut b Builder) resolve_deps() {
 	for node in deps_resolved.nodes {
 		mods << node.name
 	}
+	b.dump_modules(mods)
 	if b.pref.is_verbose {
 		eprintln('------ imported modules: ------')
 		eprintln(mods.str())
@@ -269,7 +275,7 @@ pub fn (b &Builder) import_graph() &depgraph.DepGraph {
 			deps << 'builtin'
 			if b.pref.backend == .c {
 				// TODO JavaScript backend doesn't handle os for now
-				if b.pref.is_vsh && p.mod.name !in ['os', 'dl'] {
+				if b.pref.is_vsh && p.mod.name !in ['os', 'dl', 'strings.textscanner'] {
 					deps << 'os'
 				}
 			}
@@ -555,7 +561,9 @@ pub fn (mut b Builder) print_warnings_and_errors() {
 				}
 			}
 			if redefines.len > 0 {
-				eprintln('redefinition of function `$fn_name`')
+				ferror := util.formatted_error('builder error:', 'redefinition of function `$fn_name`',
+					'', token.Pos{})
+				eprintln(ferror)
 				for redefine in redefines {
 					eprintln(util.formatted_error('conflicting declaration:', redefine.fheader,
 						redefine.fpath, redefine.f.pos))

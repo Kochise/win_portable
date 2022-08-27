@@ -28,6 +28,7 @@ fn help_cmd() Command {
 	}
 }
 
+// print_help_for_command outputs the help message of `help_cmd`.
 pub fn print_help_for_command(help_cmd Command) ? {
 	if help_cmd.args.len > 0 {
 		mut cmd := help_cmd.parent
@@ -48,12 +49,13 @@ pub fn print_help_for_command(help_cmd Command) ? {
 		}
 		print(cmd.help_message())
 	} else {
-		if help_cmd.parent != 0 {
+		if unsafe { help_cmd.parent != 0 } {
 			print(help_cmd.parent.help_message())
 		}
 	}
 }
 
+// help_message returns a generated help message as a `string` for the `Command`.
 pub fn (cmd Command) help_message() string {
 	mut help := ''
 	help += 'Usage: $cmd.full_name()'

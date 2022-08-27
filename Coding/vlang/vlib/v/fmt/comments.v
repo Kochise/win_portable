@@ -16,7 +16,7 @@ pub enum CommentsLevel {
 // - level:  either .keep (don't indent), or .indent (increment indentation)
 // - iembed: a /* ... */ block comment used inside expressions; // comments the whole line
 // - prev_line: the line number of the previous token to save linebreaks
-[params]
+[minify; params]
 pub struct CommentsOptions {
 	has_nl    bool = true
 	inline    bool
@@ -137,6 +137,6 @@ pub fn (mut f Fmt) import_comments(comments []ast.Comment, options CommentsOptio
 	}
 }
 
-fn is_char_alphanumeric(c byte) bool {
+fn is_char_alphanumeric(c u8) bool {
 	return c.is_letter() || c.is_digit()
 }

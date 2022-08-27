@@ -24,6 +24,14 @@ fn test_add() {
 	assert a.ends_with('3')
 }
 
+fn test_len_utf8() {
+	assert 'Vlang'.len_utf8() == 5
+	assert 'María'.len_utf8() == 5
+	assert '姓名'.len_utf8() == 2
+	assert 'Слово'.len_utf8() == 5
+	assert 'Λέξη'.len_utf8() == 4
+}
+
 fn test_ends_with() {
 	a := 'browser.v'
 	assert a.ends_with('.v')
@@ -137,15 +145,15 @@ fn test_ranges() {
 }
 
 fn ranges_propagate_first(s string) ?string {
-	return s[10..] ?
+	return s[10..]?
 }
 
 fn ranges_propagate_last(s string) ?string {
-	return s[..20] ?
+	return s[..20]?
 }
 
 fn ranges_propagate_both(s string) ?string {
-	return s[1..20] ?
+	return s[1..20]?
 }
 
 fn test_split_nth() {
@@ -439,6 +447,13 @@ fn test_contains_any() {
 	assert !''.contains_any('')
 }
 
+fn test_contains_only() {
+	assert '23885'.contains_only('0123456789')
+	assert '23gg885'.contains_only('01g23456789')
+	assert !'hello;'.contains_only('hello')
+	assert !''.contains_only('')
+}
+
 fn test_contains_any_substr() {
 	s := 'Some random text'
 	assert s.contains_any_substr(['false', 'not', 'rand'])
@@ -457,7 +472,7 @@ fn test_arr_contains() {
 fn test_to_num() {
 	s := '7'
 	assert s.int() == 7
-	assert s.byte() == 7
+	assert s.u8() == 7
 	assert s.u64() == 7
 	f := '71.5 hasdf'
 	// QTODO
@@ -574,7 +589,7 @@ fn test_bytes_to_string() {
 	}
 	assert unsafe { buf.vstring() } == 'hello'
 	assert unsafe { buf.vstring_with_len(2) } == 'he'
-	bytes := [byte(`h`), `e`, `l`, `l`, `o`]
+	bytes := [u8(`h`), `e`, `l`, `l`, `o`]
 	assert bytes.bytestr() == 'hello'
 }
 
@@ -837,11 +852,11 @@ fn test_double_quote_inter() {
 	assert '$a $b' == '1 2'
 }
 
-fn foo(b byte) byte {
+fn foo(b u8) u8 {
 	return b - 10
 }
 
-fn filter(b byte) bool {
+fn filter(b u8) bool {
 	return b != `a`
 }
 
@@ -981,6 +996,16 @@ fn test_string_f32() {
 	assert '-123.456'.f32() - (-123.456) <= f32_epsilon
 }
 
+fn test_string_is_ascii() {
+	assert ''.is_ascii() == true
+	assert ' '.is_ascii() == true
+	assert '~~'.is_ascii() == true
+	assert ' Az~'.is_ascii() == true
+	assert ' Aö~'.is_ascii() == false
+	assert '👋'.is_ascii() == false
+	assert 'a👋bc'.is_ascii() == false
+}
+
 fn test_string_with_zero_byte_escape() {
-	assert '\x00'.bytes() == [byte(0)]
+	assert '\x00'.bytes() == [u8(0)]
 }

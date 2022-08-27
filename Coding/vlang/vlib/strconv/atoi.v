@@ -12,7 +12,7 @@ const (
 	max_u64  = u64(18446744073709551615) // as u64 // use this until we add support
 )
 
-pub fn byte_to_lower(c byte) byte {
+pub fn byte_to_lower(c u8) u8 {
 	return c | (`x` - `X`)
 }
 
@@ -87,7 +87,7 @@ pub fn common_parse_uint2(s string, _base int, _bit_size int) (u64, int) {
 		c := s[i]
 		cl := byte_to_lower(c)
 
-		mut d := byte(0)
+		mut d := u8(0)
 		if c == `_` && base0 {
 			// underscore_ok already called
 			continue
@@ -98,7 +98,7 @@ pub fn common_parse_uint2(s string, _base int, _bit_size int) (u64, int) {
 		} else {
 			return n, i + 1
 		}
-		if d >= byte(base) {
+		if d >= u8(base) {
 			return n, i + 1
 		}
 		if n >= cutoff {
@@ -144,7 +144,7 @@ pub fn common_parse_int(_s string, base int, _bit_size int, error_on_non_digit b
 	// un := parse_uint(s, base, bit_size) or {
 	// return i64(0)
 	// }
-	un := common_parse_uint(s, base, bit_size, error_on_non_digit, error_on_high_digit) ?
+	un := common_parse_uint(s, base, bit_size, error_on_non_digit, error_on_high_digit)?
 	if un == 0 {
 		return i64(0)
 	}
@@ -208,7 +208,7 @@ pub fn atoi(s string) ?int {
 		return if s[0] == `-` { -n } else { n }
 	}
 	// Slow path for invalid, big, or underscored integers.
-	int64 := parse_int(s, 10, 0) ?
+	int64 := parse_int(s, 10, 0)?
 	return int(int64)
 }
 

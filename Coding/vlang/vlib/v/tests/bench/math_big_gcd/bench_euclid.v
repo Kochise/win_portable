@@ -60,7 +60,11 @@ fn main() {
 			(aa % gcd) == big.zero_int,
 			(bb % gcd) == big.zero_int,
 		].all(it == true)
-		{ true } else { false }
+		{
+			true
+		} else {
+			false
+		}
 	}
 
 	cfgs := [
@@ -271,12 +275,12 @@ pub fn bi_from_decimal_string(s string) big.Integer {
 // need the bi.digits.len - during test only - to calculate
 // the size of big.Integers-buffer
 //
-fn bi_buffer_len(input []byte) int {
+fn bi_buffer_len(input []u8) int {
 	if input.len == 0 {
 		return 0
 	}
 	// pad input
-	mut padded_input := []byte{len: ((input.len + 3) & ~0x3) - input.len, cap: (input.len + 3) & ~0x3, init: 0x0}
+	mut padded_input := []u8{len: ((input.len + 3) & ~0x3) - input.len, cap: (input.len + 3) & ~0x3, init: 0x0}
 	padded_input << input
 	mut digits := []u32{len: padded_input.len / 4}
 	// combine every 4 bytes into a u32 and insert into n.digits

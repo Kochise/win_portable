@@ -39,6 +39,9 @@ fn test_sb() {
 	assert last_2 == '56'
 	final_sb := sb.str()
 	assert final_sb == '1234'
+
+	sb.clear()
+	assert sb.str() == ''
 	//}
 }
 
@@ -65,7 +68,7 @@ fn test_byte_write() {
 	temp_str := 'byte testing'
 	mut count := 0
 	for word in temp_str {
-		sb.write_byte(word)
+		sb.write_u8(word)
 		count++
 		assert count == sb.len
 	}

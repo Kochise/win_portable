@@ -1,5 +1,7 @@
 # V Documentation
 
+(See https://modules.vlang.io/ for documentation of V's standard library)
+
 ## Introduction
 
 V is a statically typed compiled programming language designed for building maintainable software.
@@ -40,7 +42,7 @@ NB: You can also pass one of `-gcc`, `-msvc`, `-clang` to `make.bat` instead,
 if you do prefer to use a different C compiler, but -tcc is small, fast, and
 easy to install (V will download a prebuilt binary automatically).
 
-For C compiler downloads and more info, see 
+For C compiler downloads and more info, see
 [here](https://github.com/vlang/v/wiki/Installing-a-C-compiler-on-Windows).
 
 It is recommended to add this folder to the PATH of your environment variables.
@@ -105,7 +107,7 @@ For more details and troubleshooting, please visit the [vab GitHub repository](h
 </td><td width=33% valign=top>
 
 * [Functions 2](#functions-2)
-    * [Pure functions by default](#pure-functions-by-default)
+    * [Immutable function args by default](#immutable-function-args-by-default)
     * [Mutable arguments](#mutable-arguments)
     * [Variable number of arguments](#variable-number-of-arguments)
     * [Anonymous & higher-order functions](#anonymous--higher-order-functions)
@@ -341,8 +343,7 @@ the expression `T(v)` converts the value `v` to the
 type `T`.
 
 Unlike most other languages, V only allows defining variables in functions.
-Global (module level) variables are not allowed. There's no global state in V
-(see [Pure functions by default](#pure-functions-by-default) for details).
+Global (module level) variables are not allowed. There's no global state in V.
 
 For consistency across different code bases, all variable and function names
 must use the `snake_case` style, as opposed to type names, which must use `PascalCase`.
@@ -434,7 +435,7 @@ bool
 string
 
 i8    i16  int  i64      i128 (soon)
-byte  u16  u32  u64      u128 (soon)
+u8    u16  u32  u64      u128 (soon)
 
 rune // represents a Unicode code point
 
@@ -460,7 +461,7 @@ These are the allowed possibilities:
                   ↘     ↘
                     f32 → f64
                   ↗     ↗
- byte → u16 → u32 → u64 ⬎
+   u8 → u16 → u32 → u64 ⬎
       ↘     ↘     ↘      ptr
    i8 → i16 → int → i64 ⬏
 ```
@@ -490,7 +491,7 @@ d := b + x     // d is of type `f64` - automatic promotion of `x`'s value
 ```v nofmt
 name := 'Bob'
 assert name.len == 3       // will print 3
-assert name[0] == byte(66) // indexing gives a byte, byte(66) == `B`
+assert name[0] == u8(66) // indexing gives a byte, u8(66) == `B`
 assert name[1..3] == 'ob'  // slicing gives a string 'ob'
 
 // escape codes
@@ -499,7 +500,7 @@ assert windows_newline.len == 2
 
 // arbitrary bytes can be directly specified using `\x##` notation where `#` is
 // a hex digit aardvark_str := '\x61ardvark' assert aardvark_str == 'aardvark'
-assert '\xc0'[0] == byte(0xc0)
+assert '\xc0'[0] == u8(0xc0)
 
 // or using octal escape `\###` notation where `#` is an octal digit
 aardvark_str2 := '\141ardvark'
@@ -518,7 +519,7 @@ In V, a string is a read-only array of bytes. All Unicode characters are encoded
 s := 'hello 🌎' // emoji takes 4 bytes
 assert s.len == 10
 
-arr := s.bytes() // convert `string` to `[]byte`
+arr := s.bytes() // convert `string` to `[]u8`
 assert arr.len == 10
 
 s2 := arr.bytestr() // convert `[]byte` to `string`
@@ -614,7 +615,7 @@ Also note: in most cases, it's best to leave the format type empty. Floats will 
 default as `g`, integers will be rendered by default as `d`, and `s` is almost always redundant.
 There are only three cases where specifying a type is recommended:
 
-- format strings are parsed at compile time, so specifing a type can help detect errors then
+- format strings are parsed at compile time, so specifying a type can help detect errors then
 - format strings default to using lowercase letters for hex digits and the `e` in exponents. Use a
   uppercase type to force the use of uppercase hex digits and an uppercase `E` in exponents.
 - format strings are the most convenient way to get hex, binary or octal strings from an integer.
@@ -692,7 +693,7 @@ A `rune` can be converted to UTF-8 bytes by using the `.bytes()` method.
 
 ```v
 rocket := `🚀`
-assert rocket.bytes() == [byte(0xf0), 0x9f, 0x9a, 0x80]
+assert rocket.bytes() == [u8(0xf0), 0x9f, 0x9a, 0x80]
 ```
 
 Hex, Unicode, and Octal escape sequences also work in a `rune` literal:
@@ -704,9 +705,9 @@ assert `\u0061` == `a`
 
 // multibyte literals work too
 assert `\u2605` == `★`
-assert `\u2605`.bytes() == [byte(0xe2), 0x98, 0x85]
-assert `\xe2\x98\x85`.bytes() == [byte(0xe2), 0x98, 0x85]
-assert `\342\230\205`.bytes() == [byte(0xe2), 0x98, 0x85]
+assert `\u2605`.bytes() == [u8(0xe2), 0x98, 0x85]
+assert `\xe2\x98\x85`.bytes() == [u8(0xe2), 0x98, 0x85]
+assert `\342\230\205`.bytes() == [u8(0xe2), 0x98, 0x85]
 ```
 
 Note that `rune` literals use the same escape syntax as strings, but they can only hold one unicode
@@ -763,7 +764,7 @@ If you want a different type of integer, you can use casting:
 
 ```v
 a := i64(123)
-b := byte(42)
+b := u8(42)
 c := i16(12345)
 ```
 
@@ -843,7 +844,7 @@ println(nums.cap) // "3" or greater
 nums = [] // The array is now empty
 println(nums.len) // "0"
 ```
-`data` is a field (of type `voidptr`) with the address of the first 
+`data` is a field (of type `voidptr`) with the address of the first
 element. This is for low-level [`unsafe`](#memory-unsafe-code) code.
 
 Note that the fields are read-only and can't be modified by the user.
@@ -854,7 +855,7 @@ The type of an array is determined by the first element:
 * `[1, 2, 3]` is an array of ints (`[]int`).
 * `['a', 'b']` is an array of strings (`[]string`).
 
-The user can explicitly specify the type for the first element: `[byte(16), 32, 64, 128]`.
+The user can explicitly specify the type for the first element: `[u8(16), 32, 64, 128]`.
 V arrays are homogeneous (all elements must have the same type).
 This means that code like `[1, 'a']` will not compile.
 
@@ -892,7 +893,7 @@ for i in 0 .. 1000 {
 ```
 Note: The above code uses a [range `for`](#range-for) statement.
 
-You can initialize the array by accessing the `it` variable which gives 
+You can initialize the array by accessing the `it` variable which gives
 the index as shown here:
 
 ```v
@@ -1022,7 +1023,7 @@ upper_fn := words.map(fn (w string) string {
 println(upper_fn) // ['HELLO', 'WORLD']
 ```
 
-`it` is a builtin variable which refers to the element currently being 
+`it` is a builtin variable which refers to the element currently being
 processed in filter/map methods.
 
 Additionally, `.any()` and `.all()` can be used to conveniently test
@@ -1035,8 +1036,8 @@ println(nums.all(it >= 2)) // false
 ```
 
 There are further built-in methods for arrays:
-* `a.repeat(n)` concatenates the array elements `n` times 
-* `a.insert(i, val)` inserts a new element `val` at index `i` and 
+* `a.repeat(n)` concatenates the array elements `n` times
+* `a.insert(i, val)` inserts a new element `val` at index `i` and
   shifts all following elements to the right
 * `a.insert(i, [3, 4, 5])` inserts several elements
 * `a.prepend(val)` inserts a value at the beginning, equivalent to `a.insert(0, val)`
@@ -1052,7 +1053,7 @@ There are further built-in methods for arrays:
 * `a.pop()` removes the last element and returns it
 * `a.reverse()` makes a new array with the elements of `a` in reverse order
 * `a.reverse_in_place()` reverses the order of elements in `a`
-* `a.join(joiner)` concatenates an array of strings into one string 
+* `a.join(joiner)` concatenates an array of strings into one string
   using `joiner` string as a separator
 
 See also [vlib/arrays](https://modules.vlang.io/arrays.html).
@@ -1185,7 +1186,7 @@ println(b) // [7, 3]
 
 V supports array and string slices with negative indexes.
 Negative indexing starts from the end of the array towards the start,
-for example `-3` is equal to `array.len - 3`. 
+for example `-3` is equal to `array.len - 3`.
 Negative slices have a different syntax from normal slices, i.e. you need
 to add a `gate` between the array name and the square bracket: `a#[..-3]`.
 The `gate` specifies that this is a different type of slice and remember that
@@ -1293,6 +1294,16 @@ mm := map[string]int{}
 val := mm['bad_key'] or { panic('key not found') }
 ```
 
+You can also check, if a key is present, and get its value, if it was present, in one go:
+```v
+m := {
+	'abc': 'def'
+}
+if v := m['abc'] {
+	println('the map value for that key is: $v')
+}
+```
+
 The same optional check applies to arrays:
 
 ```v
@@ -1301,7 +1312,7 @@ large_index := 999
 val := arr[large_index] or { panic('out of bounds') }
 println(val)
 // you can also do this, if you want to *propagate* the access error:
-val2 := arr[333] ?
+val2 := arr[333]?
 println(val2)
 ```
 
@@ -1891,7 +1902,7 @@ enum State {
 
 // write log file and return number of bytes written
 fn write_log(s State) ?int {
-	mut f := os.create('log.txt') ?
+	mut f := os.create('log.txt')?
 	defer {
 		f.close()
 	}
@@ -2223,7 +2234,7 @@ button.Size = Size{
 If multiple embedded structs have methods or fields with the same name, or if methods or fields
 with the same name are defined in the struct, you can call methods or assign to variables in
 the embedded struct like `button.Size.area()`.
-When you do not specify the embedded struct name, the method of the outermost struct will be 
+When you do not specify the embedded struct name, the method of the outermost struct will be
 targeted.
 
 ## Unions
@@ -2267,22 +2278,24 @@ Note that the embedded struct arguments are not necessarily stored in the order 
 
 ## Functions 2
 
-### Pure functions by default
+### Immutable function args by default
 
-V functions are pure by default, meaning that their return values are a function of their
-arguments only, and their evaluation has no side effects (besides I/O).
+In V function arguments are immutable by default, and mutable args have to be
+marked on call.
 
-This is achieved by a lack of global variables and all function arguments being
-immutable by default, even when [references](#references) are passed.
+Since there are also no globals, that means that the return values of the functions,
+are a function of their arguments only, and their evaluation has no side effects
+(unless the function uses I/O).
 
-V is not a purely functional language however.
+Function arguments are immutable by default, even when [references](#references) are passed.
+
+Note that V is not a purely functional language however.
 
 There is a compiler flag to enable global variables (`-enable-globals`), but this is
 intended for low-level applications like kernels and drivers.
 
 ### Mutable arguments
-
-It is possible to modify function arguments by using the keyword `mut`:
+It is possible to modify function arguments by declaring them with the keyword `mut`:
 
 ```v
 struct User {
@@ -2301,7 +2314,7 @@ user.register()
 println(user.is_registered) // "true"
 ```
 
-In this example, the receiver (which is simply the first argument) is marked as mutable,
+In this example, the receiver (which is just the first argument) is explicitly marked as mutable,
 so `register()` can change the user object. The same works with non-receiver arguments:
 
 ```v
@@ -2419,9 +2432,6 @@ fn main() {
 V supports closures too.
 This means that anonymous functions can inherit variables from the scope they were created in.
 They must do so explicitly by listing all variables that are inherited.
-
-> Warning: currently works on Unix-based, x64 architectures only.
-Some work is in progress to make closures work on Windows, then other architectures.
 
 ```v oksyntax
 my_int := 1
@@ -2951,7 +2961,7 @@ a convenience for writing `s.xyz()` instead of `xyz(s)`.
 N.B. This feature is NOT a "default implementation" like in C#.
 
 For example, if a struct `cat` is wrapped in an interface `a`, that has
-implemented a method with the same name `speak`, as a method implemented by 
+implemented a method with the same name `speak`, as a method implemented by
 the struct, and you do `a.speak()`, *only* the interface method is called:
 
 ```v
@@ -3420,7 +3430,7 @@ propagate the error:
 import net.http
 
 fn f(url string) ?string {
-	resp := http.get(url) ?
+	resp := http.get(url)?
 	return resp.text
 }
 ```
@@ -3491,13 +3501,13 @@ Above, `http.get` returns a `?http.Response`. `resp` is only in scope for the fi
 
 ## Custom error types
 
-V gives you the ability to define custom error types through the `IError` interface. 
-The interface requires two methods: `msg() string` and `code() int`. Every type that 
-implements these methods can be used as an error. 
+V gives you the ability to define custom error types through the `IError` interface.
+The interface requires two methods: `msg() string` and `code() int`. Every type that
+implements these methods can be used as an error.
 
-When defining a custom error type it is recommended to embed the builtin `Error` default 
-implementation. This provides an empty default implementation for both required methods, 
-so you only have to implement what you really need, and may provide additional utility 
+When defining a custom error type it is recommended to embed the builtin `Error` default
+implementation. This provides an empty default implementation for both required methods,
+so you only have to implement what you really need, and may provide additional utility
 functions in the future.
 
 ```v
@@ -3592,8 +3602,8 @@ println(compare(1.1, 1.2)) //         -1
 
 ## Concurrency
 ### Spawning Concurrent Tasks
-V's model of concurrency is very similar to Go's. To run `foo()` concurrently in
-a different thread, just call it with `go foo()`:
+V's model of concurrency is going to be very similar to Go's.
+For now, `go foo()` runs `foo()` concurrently in a different thread:
 
 ```v
 import math
@@ -3608,6 +3618,9 @@ fn main() {
 	// p will be run in parallel thread
 }
 ```
+
+> In V 0.4 `go foo()` will be automatically renamed via vfmt to `spawn foo()`,
+and there will be a way to launch a coroutine (a lightweight thread managed by the runtime).
 
 Sometimes it is necessary to wait until a parallel thread has finished. This can
 be done by assigning a *handle* to the started thread and calling the `wait()` method
@@ -3938,7 +3951,7 @@ println(user.last_name)
 println(user.age)
 // You can also decode JSON arrays:
 sfoos := '[{"x":123},{"x":456}]'
-foos := json.decode([]Foo, sfoos) ?
+foos := json.decode([]Foo, sfoos)?
 println(foos[0].x)
 println(foos[1].x)
 ```
@@ -4043,8 +4056,8 @@ If a test function has an error return type, any propagated errors will fail the
 import strconv
 
 fn test_atoi() ? {
-	assert strconv.atoi('1') ? == 1
-	assert strconv.atoi('one') ? == 1 // test will fail
+	assert strconv.atoi('1')? == 1
+	assert strconv.atoi('one')? == 1 // test will fail
 }
 ```
 
@@ -4105,17 +4118,16 @@ fn (data &MyType) free() {
 Just as the compiler frees C data types with C's `free()`, it will statically insert
 `free()` calls for your data type at the end of each variable's lifetime.
 
+Autofree can be enabled with an `-autofree` flag.
+
 For developers willing to have more low level control, autofree can be disabled with
 `-manualfree`, or by adding a `[manualfree]` on each function that wants manage its
 memory manually. (See [attributes](#attributes)).
 
-_Note: right now autofree is hidden behind the -autofree flag. It will be enabled by
-default in V 0.3. If autofree is not used, V programs will leak memory._
 
-Note 2: Autofree is still WIP. Until it stabilises and becomes the default, please 
-compile your long running processes with `-gc boehm`, which will use the 
-Boehm-Demers-Weiser conservative garbage collector, to free the memory, that your
-programs leak, at runtime.
+Note 2: Autofree is still WIP. Until it stabilises and becomes the default, please
+avoid using it. Right now allocations are handled by a minimal and well performing GC
+until V's autofree engine is production ready.
 
 ### Examples
 
@@ -4436,7 +4448,7 @@ struct Customer {
 	country   string [nonull]
 }
 
-db := sqlite.connect('customers.db') ?
+db := sqlite.connect('customers.db')?
 
 // you can create tables:
 // CREATE TABLE IF NOT EXISTS `Customer` (
@@ -4702,7 +4714,7 @@ Modules are up to date.
 	at the top of all files in your module. For `mymodule.v`:
 	```v
 	module mymodule
-	
+
 	pub fn hello_world() {
 		println('Hello World!')
 	}
@@ -5357,7 +5369,7 @@ Full list of builtin options:
 import os
 fn main() {
 	embedded_file := $embed_file('v.png')
-	os.write_file('exported.png', embedded_file.to_string()) ?
+	os.write_file('exported.png', embedded_file.to_string())?
 }
 ```
 
@@ -5381,7 +5393,7 @@ Currently only one compression type is supported: `zlib`
 import os
 fn main() {
 	embedded_file := $embed_file('v.png', .zlib) // compressed using zlib
-	os.write_file('exported.png', embedded_file.to_string()) ?
+	os.write_file('exported.png', embedded_file.to_string())?
 }
 ```
 
@@ -5432,9 +5444,6 @@ numbers: [1, 2, 3]
 3
 ```
 
-
-
-
 #### `$env`
 
 ```v
@@ -5449,6 +5458,34 @@ fn main() {
 V can bring in values at compile time from environment variables.
 `$env('ENV_VAR')` can also be used in top-level `#flag` and `#include` statements:
 `#flag linux -I $env('JAVA_HOME')/include`.
+
+#### `$compile_error` and `$compile_warn`
+
+These two comptime functions are very useful for displaying custom errors/warnings during
+compile time.
+
+Both receive as their only argument a string literal that contains the message to display:
+
+```v failcompile nofmt
+// x.v
+module main
+
+$if linux {
+    $compile_error('Linux is not supported')
+}
+
+fn main() {
+}
+
+$ v run x.v
+x.v:4:5: error: Linux is not supported
+    2 |
+    3 | $if linux {
+    4 |     $compile_error('Linux is not supported')
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    5 | }
+    6 |
+```
 
 ### Environment specific files
 
@@ -5670,8 +5707,6 @@ For more examples, see [github.com/vlang/v/tree/master/vlib/v/tests/assembly/asm
 
 ## Translating C to V
 
-TODO: translating C to V will be available in V 0.3.
-
 V can translate your C code to human readable V code and generate V wrappers on top of C libraries.
 
 
@@ -5745,11 +5780,11 @@ fn main() {
 ```
 
 Build this example with `v -live message.v`.
-	
-You can also run this example with `v -live run message.v`. 
-	Make sure that in command you use a path to a V's file, 
-	**not** a path to a folder (like `v -live run .`) - 
-	in that case you need to modify content of a folder (add new file, for example), 
+
+You can also run this example with `v -live run message.v`.
+	Make sure that in command you use a path to a V's file,
+	**not** a path to a folder (like `v -live run .`) -
+	in that case you need to modify content of a folder (add new file, for example),
 	because changes in *message.v* will have no effect.
 
 Functions that you want to be reloaded must have `[live]` attribute
@@ -5809,7 +5844,7 @@ fn sh(cmd string){
 rmdir_all('build') or { }
 
 // Create build/, never fails as build/ does not exist
-mkdir('build') ?
+mkdir('build')?
 
 // Move *.v files to build/
 result := execute('mv *.v build/')
@@ -5820,7 +5855,7 @@ if result.exit_code != 0 {
 sh('ls')
 
 // Similar to:
-// files := ls('.') ?
+// files := ls('.')?
 // mut count := 0
 // if files.len > 0 {
 //     for file in files {
@@ -5881,6 +5916,19 @@ fn main() {
 }
 ```
 
+Struct field deprecations:
+```v oksyntax
+module abc
+
+// Note that only *direct* accesses to Xyz.d in *other modules*, will produce deprecation notices/warnings:
+pub struct Xyz {
+pub mut:
+	a int
+	d int [deprecated: 'use Xyz.a instead'; deprecated_after: '2999-03-01'] // produce a notice, the deprecation date is in the far future
+}
+```
+
+Function/method deprecations:
 ```v
 // Calling this function will result in a deprecation warning
 [deprecated]
@@ -5978,9 +6026,14 @@ fn custom_allocations() {
 struct C.Foo {
 }
 
-// Used in Win32 API code when you need to pass callback function
-[windows_stdcall]
+// Used to add a custom calling convention to a function, available calling convention: stdcall, fastcall and cdecl.
+// This list aslo apply for type aliases (see below).
+[callconv: "stdcall"]
 fn C.DefWindowProc(hwnd int, msg int, lparam int, wparam int)
+
+// Used to add a custom calling convention to a function type aliases.
+[callconv: "fastcall"]
+type FastFn = fn (int) bool
 
 // Windows only:
 // If a default graphics library is imported (ex. gg, ui), then the graphical window takes
@@ -6019,7 +6072,7 @@ a nested loop, and those do not risk violating memory-safety.
 
 ## Appendix I: Keywords
 
-V has 41 reserved keywords (3 are literals):
+V has 42 reserved keywords (3 are literals):
 
 ```v ignore
 as
@@ -6031,7 +6084,6 @@ const
 continue
 defer
 else
-embed
 enum
 false
 fn
@@ -6043,6 +6095,7 @@ import
 in
 interface
 is
+isreftype
 lock
 match
 module
@@ -6090,15 +6143,15 @@ This lists operators for [primitive types](#primitive-types) only.
 
 <<   left shift             integer << unsigned integer
 >>   right shift            integer >> unsigned integer
->>>  unsigned right shift	integer >> unsigned integer
+>>>  unsigned right shift   integer >> unsigned integer
 
 
 Precedence    Operator
-    5             *  /  %  <<  >> >>> &
-    4             +  -  |  ^
-    3             ==  !=  <  <=  >  >=
-    2             &&
-    1             ||
+    5            *  /  %  <<  >> >>> &
+    4            +  -  |  ^
+    3            ==  !=  <  <=  >  >=
+    2            &&
+    1            ||
 
 
 Assignment Operators

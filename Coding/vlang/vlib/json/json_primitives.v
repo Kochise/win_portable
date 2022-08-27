@@ -8,7 +8,7 @@ module json
 #include "cJSON.h"
 #define js_get(object, key) cJSON_GetObjectItemCaseSensitive((object), (key))
 
-struct C.cJSON {
+pub struct C.cJSON {
 	valueint    int
 	valuedouble f64
 	valuestring &char
@@ -71,18 +71,16 @@ fn decode_i64(root &C.cJSON) i64 {
 	return i64(root.valuedouble) // i64 is double in C
 }
 
+// TODO: remove when `byte` is removed
 fn decode_byte(root &C.cJSON) byte {
-	if isnil(root) {
-		return byte(0)
-	}
-	return byte(root.valueint)
+	return byte(decode_u8(root))
 }
 
 fn decode_u8(root &C.cJSON) u8 {
 	if isnil(root) {
-		return byte(0)
+		return u8(0)
 	}
-	return byte(root.valueint)
+	return u8(root.valueint)
 }
 
 fn decode_u16(root &C.cJSON) u16 {
@@ -129,7 +127,7 @@ fn decode_rune(root &C.cJSON) rune {
 	}
 
 	// TODO: Parse as runes, bypassing string casting...?
-	return unsafe { tos_clone(&byte(root.valuestring)).runes().first() }
+	return unsafe { tos_clone(&u8(root.valuestring)).runes().first() }
 }
 
 fn decode_string(root &C.cJSON) string {
@@ -139,9 +137,7 @@ fn decode_string(root &C.cJSON) string {
 	if isnil(root.valuestring) {
 		return ''
 	}
-	// println('decode string valuestring="$root.valuestring"')
-	// return tos(root.valuestring, _strlen(root.valuestring))
-	return unsafe { tos_clone(&byte(root.valuestring)) } // , _strlen(root.valuestring))
+	return unsafe { tos_clone(&u8(root.valuestring)) } // , _strlen(root.valuestring))
 }
 
 fn decode_bool(root &C.cJSON) bool {
@@ -152,6 +148,7 @@ fn decode_bool(root &C.cJSON) bool {
 }
 
 // ///////////////////
+
 fn encode_int(val int) &C.cJSON {
 	return C.cJSON_CreateNumber(val)
 }
@@ -168,8 +165,9 @@ fn encode_i64(val i64) &C.cJSON {
 	return C.cJSON_CreateNumber(val)
 }
 
-fn encode_byte(val byte) &C.cJSON {
-	return C.cJSON_CreateNumber(val)
+// TODO: remove when `byte` is removed
+fn encode_byte(root byte) &C.cJSON {
+	return encode_u8(u8(root))
 }
 
 fn encode_u8(val u8) &C.cJSON {
@@ -217,12 +215,12 @@ fn json_parse(s string) &C.cJSON {
 // json_string := json_print(encode_User(user))
 fn json_print(json &C.cJSON) string {
 	s := C.cJSON_PrintUnformatted(json)
-	return unsafe { tos(&byte(s), C.strlen(&char(s))) }
+	return unsafe { tos(&u8(s), C.strlen(&char(s))) }
 }
 
 fn json_print_pretty(json &C.cJSON) string {
 	s := C.cJSON_Print(json)
-	return unsafe { tos(&byte(s), C.strlen(&char(s))) }
+	return unsafe { tos(&u8(s), C.strlen(&char(s))) }
 }
 
 // /  cjson wrappers

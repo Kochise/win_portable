@@ -85,9 +85,9 @@ mut:
 	deletes u32 // count
 	// array allocated (with `cap` bytes) on first deletion
 	// has non-zero element when key deleted
-	all_deleted &byte
-	values      &byte
-	keys        &byte
+	all_deleted &u8
+	keys        &u8
+	values      &u8
 }
 
 [inline]
@@ -107,13 +107,13 @@ fn new_dense_array(key_bytes int, value_bytes int) DenseArray {
 
 [inline]
 fn (d &DenseArray) key(i int) voidptr {
-	return unsafe { d.keys + i * d.key_bytes }
+	return unsafe { voidptr(d.keys + i * d.key_bytes) }
 }
 
 // for cgen
 [inline]
 fn (d &DenseArray) value(i int) voidptr {
-	return unsafe { d.values + i * d.value_bytes }
+	return unsafe { voidptr(d.values + i * d.value_bytes) }
 }
 
 [inline]
@@ -126,8 +126,8 @@ fn (d &DenseArray) has_index(i int) bool {
 [inline]
 fn (mut d DenseArray) expand() int {
 	old_cap := d.cap
-	old_value_size := d.value_bytes * old_cap
 	old_key_size := d.key_bytes * old_cap
+	old_value_size := d.value_bytes * old_cap
 	if d.cap == d.len {
 		d.cap += d.cap >> 3
 		unsafe {
@@ -135,7 +135,7 @@ fn (mut d DenseArray) expand() int {
 			d.values = realloc_data(d.values, old_value_size, d.value_bytes * d.cap)
 			if d.deletes != 0 {
 				d.all_deleted = realloc_data(d.all_deleted, old_cap, d.cap)
-				vmemset(d.all_deleted + d.len, 0, d.cap - d.len)
+				vmemset(voidptr(d.all_deleted + d.len), 0, d.cap - d.len)
 			}
 		}
 	}
@@ -167,9 +167,9 @@ mut:
 	// Highest even index in the hashtable
 	even_index u32
 	// Number of cached hashbits left for rehashing
-	cached_hashbits byte
+	cached_hashbits u8
 	// Used for right-shifting out used hashbits
-	shift byte
+	shift u8
 	// Array storing key-values (ordered)
 	key_values DenseArray
 	// Pointer to meta-data:
@@ -194,7 +194,7 @@ fn map_eq_string(a voidptr, b voidptr) bool {
 }
 
 fn map_eq_int_1(a voidptr, b voidptr) bool {
-	return unsafe { *&byte(a) == *&byte(b) }
+	return unsafe { *&u8(a) == *&u8(b) }
 }
 
 fn map_eq_int_2(a voidptr, b voidptr) bool {
@@ -218,7 +218,7 @@ fn map_clone_string(dest voidptr, pkey voidptr) {
 
 fn map_clone_int_1(dest voidptr, pkey voidptr) {
 	unsafe {
-		*&byte(dest) = *&byte(pkey)
+		*&u8(dest) = *&u8(pkey)
 	}
 }
 
@@ -274,8 +274,8 @@ fn new_map(key_bytes int, value_bytes int, hash_fn MapHashFn, key_eq_fn MapEqFn,
 fn new_map_init(hash_fn MapHashFn, key_eq_fn MapEqFn, clone_fn MapCloneFn, free_fn MapFreeFn, n int, key_bytes int, value_bytes int, keys voidptr, values voidptr) map {
 	mut out := new_map(key_bytes, value_bytes, hash_fn, key_eq_fn, clone_fn, free_fn)
 	// TODO pre-allocate n slots
-	mut pkey := &byte(keys)
-	mut pval := &byte(values)
+	mut pkey := &u8(keys)
+	mut pval := &u8(values)
 	for _ in 0 .. n {
 		unsafe {
 			out.set(pkey, pval)
@@ -292,6 +292,14 @@ pub fn (mut m map) move() map {
 		vmemset(m, 0, int(sizeof(map)))
 	}
 	return r
+}
+
+// clear clears the map without deallocating the allocated data.
+// It does it by setting the map length to `0`
+// Example: a.clear() // `a.len` and `a.key_values.len` is now 0
+pub fn (mut m map) clear() {
+	m.len = 0
+	m.key_values.len = 0
 }
 
 [inline]
@@ -348,7 +356,7 @@ fn (mut m map) ensure_extra_metas(probe_count u32) {
 		m.extra_metas += extra_metas_inc
 		mem_size := (m.even_index + 2 + m.extra_metas)
 		unsafe {
-			x := realloc_data(&byte(m.metas), int(size_of_u32 * old_mem_size), int(size_of_u32 * mem_size))
+			x := realloc_data(&u8(m.metas), int(size_of_u32 * old_mem_size), int(size_of_u32 * mem_size))
 			m.metas = &u32(x)
 			vmemset(m.metas + mem_size - extra_metas_inc, 0, int(sizeof(u32) * extra_metas_inc))
 		}
@@ -388,7 +396,7 @@ fn (mut m map) set(key voidptr, value voidptr) {
 		pkey := m.key_values.key(kv_index)
 		pvalue := m.key_values.value(kv_index)
 		m.clone_fn(pkey, key)
-		vmemcpy(&byte(pvalue), value, m.value_bytes)
+		vmemcpy(&u8(pvalue), value, m.value_bytes)
 	}
 	m.meta_greater(index, meta, u32(kv_index))
 	m.len++
@@ -418,7 +426,7 @@ fn (mut m map) rehash() {
 	meta_bytes := sizeof(u32) * (m.even_index + 2 + m.extra_metas)
 	unsafe {
 		// TODO: use realloc_data here too
-		x := v_realloc(&byte(m.metas), int(meta_bytes))
+		x := v_realloc(&u8(m.metas), int(meta_bytes))
 		m.metas = &u32(x)
 		vmemset(m.metas, 0, int(meta_bytes))
 	}
@@ -468,7 +476,7 @@ fn (mut m map) get_and_set(key voidptr, zero voidptr) voidptr {
 				pkey := unsafe { m.key_values.key(kv_index) }
 				if m.key_eq_fn(key, pkey) {
 					pval := unsafe { m.key_values.value(kv_index) }
-					return unsafe { &byte(pval) }
+					return unsafe { &u8(pval) }
 				}
 			}
 			index += 2
@@ -494,7 +502,7 @@ fn (m &map) get(key voidptr, zero voidptr) voidptr {
 			pkey := unsafe { m.key_values.key(kv_index) }
 			if m.key_eq_fn(key, pkey) {
 				pval := unsafe { m.key_values.value(kv_index) }
-				return unsafe { &byte(pval) }
+				return unsafe { &u8(pval) }
 			}
 		}
 		index += 2
@@ -518,7 +526,7 @@ fn (m &map) get_check(key voidptr) voidptr {
 			pkey := unsafe { m.key_values.key(kv_index) }
 			if m.key_eq_fn(key, pkey) {
 				pval := unsafe { m.key_values.value(kv_index) }
-				return unsafe { &byte(pval) }
+				return unsafe { &u8(pval) }
 			}
 		}
 		index += 2
@@ -604,7 +612,7 @@ pub fn (mut m map) delete(key voidptr) {
 // Returns all keys in the map.
 pub fn (m &map) keys() array {
 	mut keys := __new_array(m.len, 0, m.key_bytes)
-	mut item := unsafe { &byte(keys.data) }
+	mut item := unsafe { &u8(keys.data) }
 	if m.key_values.deletes == 0 {
 		for i := 0; i < m.key_values.len; i++ {
 			unsafe {
@@ -626,6 +634,31 @@ pub fn (m &map) keys() array {
 		}
 	}
 	return keys
+}
+
+// Returns all values in the map.
+pub fn (m &map) values() array {
+	mut values := __new_array(m.len, 0, m.value_bytes)
+	mut item := unsafe { &u8(values.data) }
+
+	if m.key_values.deletes == 0 {
+		unsafe {
+			vmemcpy(item, m.key_values.values, m.value_bytes * m.key_values.len)
+		}
+		return values
+	}
+
+	for i := 0; i < m.key_values.len; i++ {
+		if !m.key_values.has_index(i) {
+			continue
+		}
+		unsafe {
+			pvalue := m.key_values.value(i)
+			vmemcpy(item, pvalue, m.value_bytes)
+			item = item + m.value_bytes
+		}
+	}
+	return values
 }
 
 // warning: only copies keys, does not clone

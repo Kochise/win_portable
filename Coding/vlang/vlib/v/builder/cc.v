@@ -93,6 +93,14 @@ fn (mut v Builder) post_process_c_compiler_output(res os.Result) {
 		}
 		return
 	}
+	if res.exit_code != 0 && v.pref.gc_mode != .no_gc && res.output.contains('libgc.a')
+		&& !v.pref.is_o {
+		$if windows {
+			verror(r'Your V installation may be out-of-date. Try removing `thirdparty\tcc\` and running `.\make.bat`')
+		} $else {
+			verror('Your V installation may be out-of-date. Try removing `thirdparty/tcc/` and running `make`')
+		}
+	}
 	for emsg_marker in [builder.c_verror_message_marker, 'error: include file '] {
 		if res.output.contains(emsg_marker) {
 			emessage := res.output.all_after(emsg_marker).all_before('\n').all_before('\r').trim_right('\r\n')
@@ -206,6 +214,14 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	if v.pref.os == .macos && os.exists('/opt/procursus') {
 		ccoptions.linker_flags << '-Wl,-rpath,/opt/procursus/lib'
 	}
+	mut user_darwin_version := 999_999_999
+	mut user_darwin_ppc := false
+	$if macos {
+		user_darwin_version = os.uname().release.split('.')[0].int()
+		if os.uname().machine == 'Power Macintosh' {
+			user_darwin_ppc = true
+		}
+	}
 	ccoptions.debug_mode = v.pref.is_debug
 	ccoptions.guessed_compiler = v.pref.ccompiler
 	if ccoptions.guessed_compiler == 'cc' && v.pref.is_prod {
@@ -252,7 +268,10 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	}
 	if ccoptions.is_cc_gcc {
 		if ccoptions.debug_mode {
-			debug_options = ['-g', '-no-pie']
+			debug_options = ['-g']
+			if user_darwin_version > 9 {
+				debug_options << '-no-pie'
+			}
 		}
 		optimization_options = ['-O3', '-fno-strict-aliasing', '-flto']
 	}
@@ -279,6 +298,9 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	}
 	if v.pref.sanitize {
 		ccoptions.args << '-fsanitize=leak'
+	}
+	if v.pref.is_o {
+		ccoptions.args << '-c'
 	}
 	//
 	ccoptions.shared_postfix = '.so'
@@ -334,7 +356,7 @@ fn (mut v Builder) setup_ccompiler_options(ccompiler string) {
 	}
 	// macOS code can include objective C  TODO remove once objective C is replaced with C
 	if v.pref.os == .macos || v.pref.os == .ios {
-		if !ccoptions.is_cc_tcc {
+		if !ccoptions.is_cc_tcc && !user_darwin_ppc {
 			ccoptions.source_args << '-x objective-c'
 		}
 	}
@@ -407,6 +429,21 @@ fn (v &Builder) all_args(ccoptions CcompilerOptions) []string {
 	}
 	all << ccoptions.args
 	all << ccoptions.o_args
+	$if windows {
+		// Adding default options for tcc, gcc and clang as done in msvc.v.
+		// This is done before pre_args is added so that it can be overwritten if needed.
+		// -Wl,-stack=16777216 == /F 16777216
+		// -Werror=implicit-function-declaration == /we4013
+		// /volatile:ms - there seems to be no equivalent,
+		// normally msvc should use /volatile:iso
+		// but it could have an impact on vinix if it is created with msvc.
+		if !ccoptions.is_cc_msvc {
+			all << '-Wl,-stack=16777216'
+			if !v.pref.is_cstrict {
+				all << '-Werror=implicit-function-declaration'
+			}
+		}
+	}
 	all << ccoptions.pre_args
 	all << ccoptions.source_args
 	all << ccoptions.post_args
@@ -455,17 +492,6 @@ fn (mut v Builder) setup_output_name() {
 		verror("'$v.pref.out_name' is a directory")
 	}
 	v.ccoptions.o_args << '-o "$v.pref.out_name"'
-}
-
-fn (mut v Builder) dump_c_options(all_args []string) {
-	if v.pref.dump_c_flags != '' {
-		non_empty_args := all_args.filter(it != '').join('\n') + '\n'
-		if v.pref.dump_c_flags == '-' {
-			print(non_empty_args)
-		} else {
-			os.write_file(v.pref.dump_c_flags, non_empty_args) or { panic(err) }
-		}
-	}
 }
 
 pub fn (mut v Builder) cc() {
@@ -650,10 +676,6 @@ pub fn (mut v Builder) cc() {
 		break
 	}
 	if v.pref.compress {
-		$if windows {
-			println('-compress does not work on Windows for now')
-			return
-		}
 		ret := os.system('strip $v.pref.out_name')
 		if ret != 0 {
 			println('strip failed')
@@ -674,7 +696,7 @@ pub fn (mut v Builder) cc() {
 				println('install upx\n' + 'for example, on Debian/Ubuntu run `sudo apt install upx`')
 			}
 			$if windows {
-				// :)
+				println('install upx')
 			}
 		}
 	}
@@ -840,7 +862,7 @@ fn (mut c Builder) cc_windows_cross() {
 	all_args << args
 	all_args << '-municode'
 	c.dump_c_options(all_args)
-	mut cmd := pref.vcross_compiler_name(pref.cc_to_windows) + ' ' + all_args.join(' ')
+	mut cmd := c.pref.vcross_compiler_name() + ' ' + all_args.join(' ')
 	// cmd := 'clang -o $obj_name -w $include -m32 -c -target x86_64-win32 ${pref.default_module_path}/$c.out_name_c'
 	if c.pref.is_verbose || c.pref.show_cc {
 		println(cmd)

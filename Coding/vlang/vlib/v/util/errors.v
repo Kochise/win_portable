@@ -86,14 +86,18 @@ pub fn formatted_error(kind string, omsg string, filepath string, pos token.Pos)
 			path = path.replace_once(util.normalised_workdir, '')
 		}
 	}
-	//
-	position := '$path:${pos.line_nr + 1}:${mu.max(1, pos.col + 1)}:'
+
+	position := if filepath.len > 0 {
+		'$path:${pos.line_nr + 1}:${mu.max(1, pos.col + 1)}:'
+	} else {
+		''
+	}
 	scontext := source_file_context(kind, filepath, pos).join('\n')
 	final_position := bold(position)
 	final_kind := bold(color(kind, kind))
 	final_msg := emsg
 	final_context := if scontext.len > 0 { '\n$scontext' } else { '' }
-	//
+
 	return '$final_position $final_kind $final_msg$final_context'.trim_space()
 }
 
@@ -150,7 +154,7 @@ pub fn source_file_context(kind string, filepath string, pos token.Pos) []string
 			mut pointerline_builder := strings.new_builder(sline.len)
 			for i := 0; i < start_column; {
 				if sline[i].is_space() {
-					pointerline_builder.write_byte(sline[i])
+					pointerline_builder.write_u8(sline[i])
 					i++
 				} else {
 					char_len := utf8_char_len(sline[i])

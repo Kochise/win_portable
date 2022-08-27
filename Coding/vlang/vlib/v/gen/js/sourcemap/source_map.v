@@ -10,7 +10,7 @@ const (
 
 type SourceMapJson = map[string]json2.Any
 
-struct SourceMap {
+pub struct SourceMap {
 pub mut:
 	version                int               [json: version]
 	file                   string            [json: file]
@@ -24,7 +24,7 @@ pub mut:
 
 struct StringWriter {
 pub mut:
-	bytes []byte
+	bytes []u8
 }
 
 pub fn new_sourcemap(file string, source_root string, sources_content_inline bool) SourceMap {
@@ -129,7 +129,7 @@ pub fn (mut sm SourceMap) to_json() SourceMapJson {
 	return source_map_json
 }
 
-fn (mut w StringWriter) write(buf []byte) ?int {
+fn (mut w StringWriter) write(buf []u8) ?int {
 	w.bytes << buf
 	return buf.len
 }

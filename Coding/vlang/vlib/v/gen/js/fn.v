@@ -45,7 +45,7 @@ fn (mut g JsGen) js_mname(name_ string) string {
 				''
 			}
 		}
-	} else if g.ns == 0 {
+	} else if unsafe { g.ns == 0 } {
 		name
 	} else if ns == g.ns.name {
 		name.split('.').last()
@@ -116,12 +116,12 @@ fn (mut g JsGen) js_call(node ast.CallExpr) {
 				// g.write('return ')
 				g.stmt(it.or_block.stmts.last())
 			}
-			.propagate {
+			.propagate_option {
 				panicstr := '`optional not set (\${err + ""})`'
 				if g.file.mod.name == 'main' && g.fn_decl.name == 'main.main' {
 					g.writeln('return builtin__panic($panicstr)')
 				} else {
-					g.writeln('throw new Option({ state: new byte(2), err: error(new string($panicstr)) });')
+					g.writeln('throw new Option({ state: new u8(2), err: error(new string($panicstr)) });')
 				}
 			}
 			else {}
@@ -176,12 +176,12 @@ fn (mut g JsGen) js_method_call(node ast.CallExpr) {
 				// g.write('return ')
 				g.stmt(it.or_block.stmts.last())
 			}
-			.propagate {
+			.propagate_option {
 				panicstr := '`optional not set (\${err + ""})`'
 				if g.file.mod.name == 'main' && g.fn_decl.name == 'main.main' {
 					g.writeln('return builtin__panic($panicstr)')
 				} else {
-					g.writeln('throw new Option({ state: new byte(2), err: error(new string($panicstr)) });')
+					g.writeln('throw new option({ state: new u8(2), err: error(new string($panicstr)) });')
 				}
 			}
 			else {}
@@ -222,7 +222,7 @@ fn (mut g JsGen) method_call(node ast.CallExpr) {
 		g.get_str_fn(rec_type)
 	}
 	mut unwrapped_rec_type := node.receiver_type
-	if g.fn_decl != 0 && g.fn_decl.generic_names.len > 0 { // in generic fn
+	if unsafe { g.fn_decl != 0 } && g.fn_decl.generic_names.len > 0 { // in generic fn
 		unwrapped_rec_type = g.unwrap_generic(node.receiver_type)
 	} else { // in non-generic fn
 		sym := g.table.sym(node.receiver_type)
@@ -367,7 +367,7 @@ fn (mut g JsGen) method_call(node ast.CallExpr) {
 				// g.write('return ')
 				g.stmt(it.or_block.stmts.last())
 			}
-			.propagate {
+			.propagate_option {
 				panicstr := '`optional not set (\${err.valueOf().msg})`'
 				if g.file.mod.name == 'main' && g.fn_decl.name == 'main.main' {
 					g.writeln('return builtin__panic($panicstr)')
@@ -468,7 +468,7 @@ fn (mut g JsGen) gen_call_expr(it ast.CallExpr) {
 				//	g.write('return ')
 				g.stmt(it.or_block.stmts.last())
 			}
-			.propagate {
+			.propagate_option {
 				panicstr := '`optional not set (\${err.valueOf().msg})`'
 				if g.file.mod.name == 'main' && g.fn_decl.name == 'main.main' {
 					g.writeln('return builtin__panic($panicstr)')

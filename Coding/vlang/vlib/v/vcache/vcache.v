@@ -39,6 +39,7 @@ pub fn new_cache_manager(opts []string) CacheManager {
 	if vcache_basepath == '' {
 		vcache_basepath = os.join_path(os.vmodules_dir(), 'cache')
 	}
+	nlog(@FN, 'vcache_basepath: $vcache_basepath\n         opts: $opts\n      os.args: ${os.args.join(' ')}')
 	dlog(@FN, 'vcache_basepath: $vcache_basepath | opts:\n     $opts')
 	if !os.is_dir(vcache_basepath) {
 		os.mkdir_all(vcache_basepath) or { panic(err) }
@@ -54,7 +55,14 @@ pub fn new_cache_manager(opts []string) CacheManager {
 		os.write_file(readme_file, readme_content) or { panic(err) }
 		dlog(@FN, 'created readme_file:\n    $readme_file')
 	}
-	original_vopts := opts.join('|')
+	mut deduped_opts := map[string]bool{}
+	for o in opts {
+		deduped_opts[o] = true
+	}
+	deduped_opts_keys := deduped_opts.keys().filter(it != '' && !it.starts_with("['gcboehm', "))
+	// TODO: do not filter the gcboehm options here, instead just start `v build-module vlib/builtin` without the -d gcboehm etc.
+	// Note: the current approach of filtering the gcboehm keys may interfere with (potential) other gc modes.
+	original_vopts := deduped_opts_keys.join('|')
 	return CacheManager{
 		basepath: vcache_basepath
 		vopts: original_vopts
@@ -111,20 +119,29 @@ pub fn (mut cm CacheManager) exists(postfix string, key string) ?string {
 
 pub fn (mut cm CacheManager) save(postfix string, key string, content string) ?string {
 	fpath := cm.postfix_with_key2cpath(postfix, key)
-	os.write_file(fpath, content) ?
+	os.write_file(fpath, content)?
 	dlog(@FN, 'postfix: $postfix | key: $key | fpath: $fpath')
 	return fpath
 }
 
 pub fn (mut cm CacheManager) load(postfix string, key string) ?string {
-	fpath := cm.exists(postfix, key) ?
-	content := os.read_file(fpath) ?
+	fpath := cm.exists(postfix, key)?
+	content := os.read_file(fpath)?
 	dlog(@FN, 'postfix: $postfix | key: $key | fpath: $fpath')
 	return content
 }
 
 [if trace_usecache ?]
 pub fn dlog(fname string, s string) {
+	xlog(fname, s)
+}
+
+[if trace_usecache_n ?]
+fn nlog(fname string, s string) {
+	xlog(fname, s)
+}
+
+fn xlog(fname string, s string) {
 	pid := unsafe { mypid() }
 	if fname[0] != `|` {
 		eprintln('> VCache | pid: $pid | CacheManager.$fname $s')

@@ -25,6 +25,10 @@ pub fn (mut c Checker) struct_decl(mut node ast.StructDecl) {
 				}
 			}
 		}
+		if struct_sym.info.is_minify {
+			node.fields.sort_with_compare(minify_sort_fn)
+			struct_sym.info.fields.sort_with_compare(minify_sort_fn)
+		}
 		for attr in node.attrs {
 			if attr.name == 'typedef' && node.language != .c {
 				c.error('`typedef` attribute can only be used with C structs', node.pos)
@@ -97,6 +101,12 @@ pub fn (mut c Checker) struct_decl(mut node ast.StructDecl) {
 				}
 				// Check for unnecessary inits like ` = 0` and ` = ''`
 				if field.typ.is_ptr() {
+					if field.default_expr is ast.IntegerLiteral {
+						if !c.inside_unsafe && !c.is_builtin_mod && field.default_expr.val == '0' {
+							c.warn('default value of `0` for references can only be used inside `unsafe`',
+								field.default_expr.pos)
+						}
+					}
 					continue
 				}
 				if field.default_expr is ast.IntegerLiteral {
@@ -121,6 +131,62 @@ pub fn (mut c Checker) struct_decl(mut node ast.StructDecl) {
 			c.error('generic struct declaration must specify the generic type names, e.g. Foo<T>',
 				node.pos)
 		}
+	}
+}
+
+fn minify_sort_fn(a &ast.StructField, b &ast.StructField) int {
+	if a.typ == b.typ {
+		return 0
+	}
+	// push all bool fields to the end of the struct
+	if a.typ == ast.bool_type_idx {
+		if b.typ == ast.bool_type_idx {
+			return 0
+		}
+		return 1
+	} else if b.typ == ast.bool_type_idx {
+		return -1
+	}
+
+	mut t := global_table
+	a_sym := t.sym(a.typ)
+	b_sym := t.sym(b.typ)
+
+	// push all non-flag enums to the end too, just before the bool fields
+	// TODO: support enums with custom field values as well
+	if a_sym.info is ast.Enum {
+		if !a_sym.info.is_flag && !a_sym.info.uses_exprs {
+			if b_sym.kind == .enum_ {
+				a_nr_vals := (a_sym.info as ast.Enum).vals.len
+				b_nr_vals := (b_sym.info as ast.Enum).vals.len
+				return if a_nr_vals > b_nr_vals {
+					-1
+				} else if a_nr_vals < b_nr_vals {
+					1
+				} else {
+					0
+				}
+			}
+			return 1
+		}
+	} else if b_sym.info is ast.Enum {
+		if !b_sym.info.is_flag && !b_sym.info.uses_exprs {
+			return -1
+		}
+	}
+
+	a_size, a_align := t.type_size(a.typ)
+	b_size, b_align := t.type_size(b.typ)
+	return if a_align > b_align {
+		-1
+	} else if a_align < b_align {
+		1
+	} else if a_size > b_size {
+		-1
+	} else if a_size < b_size {
+		1
+	} else {
+		0
 	}
 }
 
@@ -159,7 +225,7 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 				&& node.generic_types.len != struct_sym.info.generic_types.len {
 				c.error('generic struct init expects $struct_sym.info.generic_types.len generic parameter, but got $node.generic_types.len',
 					node.pos)
-			} else if node.generic_types.len > 0 {
+			} else if node.generic_types.len > 0 && !isnil(c.table.cur_fn) {
 				for gtyp in node.generic_types {
 					gtyp_name := c.table.sym(gtyp).name
 					if gtyp_name !in c.table.cur_fn.generic_names {
@@ -187,7 +253,7 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 		}
 	}
 	// register generic struct type when current fn is generic fn
-	if c.table.cur_fn.generic_names.len > 0 {
+	if !isnil(c.table.cur_fn) && c.table.cur_fn.generic_names.len > 0 {
 		c.table.unwrap_generic_type(node.typ, c.table.cur_fn.generic_names, c.table.cur_concrete_types)
 	}
 	c.ensure_type_exists(node.typ, node.pos) or {}
@@ -201,7 +267,7 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 		&& c.table.cur_concrete_types.len == 0 {
 		pos := type_sym.name.last_index('.') or { -1 }
 		first_letter := type_sym.name[pos + 1]
-		if !first_letter.is_capital() {
+		if !first_letter.is_capital() && type_sym.kind != .placeholder {
 			c.error('cannot initialize builtin type `$type_sym.name`', node.pos)
 		}
 	}
@@ -231,7 +297,7 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 				'it cannot be initialized with `$type_sym.name{}`', node.pos)
 		}
 	}
-	if type_sym.name.len == 1 && c.table.cur_fn.generic_names.len == 0 {
+	if type_sym.name.len == 1 && !isnil(c.table.cur_fn) && c.table.cur_fn.generic_names.len == 0 {
 		c.error('unknown struct `$type_sym.name`', node.pos)
 		return 0
 	}
@@ -261,11 +327,17 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 			if node.is_short {
 				exp_len := info.fields.len
 				got_len := node.fields.len
-				if exp_len != got_len {
+				if exp_len != got_len && !c.pref.translated {
+					// XTODO remove !translated check
 					amount := if exp_len < got_len { 'many' } else { 'few' }
 					c.error('too $amount fields in `$type_sym.name` literal (expecting $exp_len, got $got_len)',
 						node.pos)
 				}
+			}
+			mut info_fields_sorted := []ast.StructField{}
+			if node.is_short {
+				info_fields_sorted = info.fields.clone()
+				info_fields_sorted.sort(a.i < b.i)
 			}
 			mut inited_fields := []string{}
 			for i, mut field in node.fields {
@@ -277,7 +349,7 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 						// We should just stop here.
 						break
 					}
-					field_info = info.fields[i]
+					field_info = info_fields_sorted[i]
 					field_name = field_info.name
 					node.fields[i].name = field_name
 				} else {
@@ -305,6 +377,9 @@ pub fn (mut c Checker) struct_init(mut node ast.StructInit) ast.Type {
 				expected_type = field_info.typ
 				c.expected_type = expected_type
 				expr_type = c.expr(field.expr)
+				if expr_type == ast.void_type {
+					c.error('`$field.expr` (no value) used as value', field.pos)
+				}
 				if !field_info.typ.has_flag(.optional) {
 					expr_type = c.check_expr_opt_call(field.expr, expr_type)
 				}

@@ -8,14 +8,18 @@ import net.conv
 
 pub fn (db DB) @select(config orm.SelectConfig, data orm.QueryData, where orm.QueryData) ?[][]orm.Primitive {
 	query := orm.orm_select_gen(config, '"', true, '$', 1, where)
+
+	res := pg_stmt_worker(db, query, where, data)?
+
 	mut ret := [][]orm.Primitive{}
 
-	res := pg_stmt_worker(db, query, orm.QueryData{}, where) ?
+	if config.is_count {
+	}
 
 	for row in res {
 		mut row_data := []orm.Primitive{}
 		for i, val in row.vals {
-			field := str_to_primitive(val, config.types[i]) ?
+			field := str_to_primitive(val, config.types[i])?
 			row_data << field
 		}
 		ret << row_data
@@ -28,17 +32,17 @@ pub fn (db DB) @select(config orm.SelectConfig, data orm.QueryData, where orm.Qu
 
 pub fn (db DB) insert(table string, data orm.QueryData) ? {
 	query := orm.orm_stmt_gen(table, '"', .insert, true, '$', 1, data, orm.QueryData{})
-	pg_stmt_worker(db, query, data, orm.QueryData{}) ?
+	pg_stmt_worker(db, query, data, orm.QueryData{})?
 }
 
 pub fn (db DB) update(table string, data orm.QueryData, where orm.QueryData) ? {
 	query := orm.orm_stmt_gen(table, '"', .update, true, '$', 1, data, where)
-	pg_stmt_worker(db, query, data, where) ?
+	pg_stmt_worker(db, query, data, where)?
 }
 
 pub fn (db DB) delete(table string, where orm.QueryData) ? {
 	query := orm.orm_stmt_gen(table, '"', .delete, true, '$', 1, orm.QueryData{}, where)
-	pg_stmt_worker(db, query, orm.QueryData{}, where) ?
+	pg_stmt_worker(db, query, orm.QueryData{}, where)?
 }
 
 pub fn (db DB) last_id() orm.Primitive {
@@ -51,12 +55,12 @@ pub fn (db DB) last_id() orm.Primitive {
 
 pub fn (db DB) create(table string, fields []orm.TableField) ? {
 	query := orm.orm_table_gen(table, '"', true, 0, fields, pg_type_from_v, false) or { return err }
-	pg_stmt_worker(db, query, orm.QueryData{}, orm.QueryData{}) ?
+	pg_stmt_worker(db, query, orm.QueryData{}, orm.QueryData{})?
 }
 
 pub fn (db DB) drop(table string) ? {
 	query := 'DROP TABLE "$table";'
-	pg_stmt_worker(db, query, orm.QueryData{}, orm.QueryData{}) ?
+	pg_stmt_worker(db, query, orm.QueryData{}, orm.QueryData{})?
 }
 
 // utils
@@ -92,10 +96,10 @@ fn pg_stmt_match(mut types []u32, mut vals []&char, mut lens []int, mut formats 
 			lens << int(sizeof(bool))
 			formats << 1
 		}
-		byte {
+		u8 {
 			types << u32(Oid.t_char)
-			vals << &char(&(d as byte))
-			lens << int(sizeof(byte))
+			vals << &char(&(d as u8))
+			lens << int(sizeof(u8))
 			formats << 1
 		}
 		u16 {
@@ -166,7 +170,9 @@ fn pg_stmt_match(mut types []u32, mut vals []&char, mut lens []int, mut formats 
 		}
 		time.Time {
 			types << u32(Oid.t_int4)
-			vals << &char(&int(data.unix))
+			unix := int(data.unix)
+			num := conv.htn32(unsafe { &u32(&unix) })
+			vals << &char(&num)
 			lens << int(sizeof(u32))
 			formats << 1
 		}
@@ -178,25 +184,28 @@ fn pg_stmt_match(mut types []u32, mut vals []&char, mut lens []int, mut formats 
 
 fn pg_type_from_v(typ int) ?string {
 	str := match typ {
-		6, 10 {
+		orm.type_idx['i8'], orm.type_idx['i16'], orm.type_idx['byte'], orm.type_idx['u16'] {
 			'SMALLINT'
 		}
-		7, 11, orm.time {
+		orm.type_idx['bool'] {
+			'BOOLEAN'
+		}
+		orm.type_idx['int'], orm.type_idx['u32'], orm.time {
 			'INT'
 		}
-		8, 12 {
+		orm.type_idx['i64'], orm.type_idx['u64'] {
 			'BIGINT'
 		}
-		13 {
+		orm.float[0] {
 			'REAL'
 		}
-		14 {
+		orm.float[1] {
 			'DOUBLE PRECISION'
 		}
 		orm.string {
 			'TEXT'
 		}
-		-1 {
+		orm.serial {
 			'SERIAL'
 		}
 		else {
@@ -212,57 +221,62 @@ fn pg_type_from_v(typ int) ?string {
 fn str_to_primitive(str string, typ int) ?orm.Primitive {
 	match typ {
 		// bool
-		16 {
-			return orm.Primitive(str.i8() == 1)
+		orm.type_idx['bool'] {
+			return orm.Primitive(str == 't')
 		}
 		// i8
-		5 {
+		orm.type_idx['i8'] {
 			return orm.Primitive(str.i8())
 		}
 		// i16
-		6 {
+		orm.type_idx['i16'] {
 			return orm.Primitive(str.i16())
 		}
 		// int
-		7 {
+		orm.type_idx['int'] {
 			return orm.Primitive(str.int())
 		}
 		// i64
-		8 {
+		orm.type_idx['i64'] {
 			return orm.Primitive(str.i64())
 		}
 		// byte
-		9 {
+		orm.type_idx['byte'] {
 			data := str.i8()
-			return orm.Primitive(*unsafe { &byte(&data) })
+			return orm.Primitive(*unsafe { &u8(&data) })
 		}
 		// u16
-		10 {
+		orm.type_idx['u16'] {
 			data := str.i16()
 			return orm.Primitive(*unsafe { &u16(&data) })
 		}
 		// u32
-		11 {
+		orm.type_idx['u32'] {
 			data := str.int()
 			return orm.Primitive(*unsafe { &u32(&data) })
 		}
 		// u64
-		12 {
+		orm.type_idx['u64'] {
 			data := str.i64()
 			return orm.Primitive(*unsafe { &u64(&data) })
 		}
 		// f32
-		13 {
+		orm.type_idx['f32'] {
 			return orm.Primitive(str.f32())
 		}
 		// f64
-		14 {
+		orm.type_idx['f64'] {
 			return orm.Primitive(str.f64())
 		}
 		orm.string {
 			return orm.Primitive(str)
 		}
 		orm.time {
+			if str.contains_any(' /:-') {
+				date_time_str := time.parse(str)?
+				return orm.Primitive(date_time_str)
+			}
+
 			timestamp := str.int()
 			return orm.Primitive(time.unix(timestamp))
 		}
