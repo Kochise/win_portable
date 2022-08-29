@@ -31,7 +31,7 @@
 %%
 \ProvidesFile
   {microtype-pdftex.def}
-  [2022/03/14 v3.0d
+  [2022/06/23 v3.0f
    Definitions specific to
    pdftex
    (RS)]
@@ -352,11 +352,11 @@
   \rpcode\MT@font #2=\numexpr\rpcode\MT@font#1+\@tempcnta\relax
 }
 \def\MT@prot@addtoken@next#1{%
-  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
+  \MT@toks\expandafter{\the\MT@toks#1}%
   \setbox\MT@tempbox\hbox{\the\MT@toks
     \relax
     \ifnum\lastnodetype=7 \aftergroup\@firstoftwo\else\aftergroup\@secondoftwo\fi}%
-      \MT@prot@get@nextchar
+      \MT@prot@get@nexttoken
       {\MT@prot@l{\the\MT@toks}}%
 }
 \def\MT@expansion{\MT@maybe@do{ex}}
@@ -615,7 +615,7 @@
   \MT@vinfo{Tracking font `\MT@@font'\on@line}%
   \MT@requires@pdftex8\@firstofone{%
     \MT@ifdefined@n@TF{\MT@@font-fake6}{%
-      \expandafter\ifx\csname\MT@@font-fake6\endcsname\@empty
+      \MT@exp@cs\ifx{\MT@@font-fake6}\@empty
         \MT@warning@nl{%
           Font `\MT@@font' does not specify its\MessageBreak
           \@backslashchar fontdimen 6 (width of an `em')! Therefore,\MessageBreak
@@ -1458,7 +1458,7 @@
     \MT@check@active@set{ex}%
     \MT@ifdefined@n@TF{showhyphens }{%
       \def\MT@temp##1##2{%
-        \expandafter\CheckCommand\csname showhyphens \endcsname[1]{##1}%
+        \MT@exp@cs\CheckCommand{showhyphens }[1]{##1}%
         \DeclareRobustCommand\showhyphens[1]{##2}}%
     }{%
       \def\MT@temp##1##2{%

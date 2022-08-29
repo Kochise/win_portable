@@ -7,7 +7,7 @@
 %% xkeyval.dtx  (with options: `xkvlatex')
 %% 
 %% ---------------------------------------
-%% Copyright (C) 2004-2020 Hendri Adriaens
+%% Copyright (C) 2004-2022 Hendri Adriaens
 %% ---------------------------------------
 %%
 %% This work may be distributed and/or modified under the
@@ -35,7 +35,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{xkeyval}
-  [2020/11/20 v2.8 package option processing (HA)]
+  [2022/06/16 v2.9 package option processing (HA)]
 \ifx\XKeyValLoaded\endinput\else\input xkeyval \fi
 \edef\XKVcatcodes{%
   \catcode`\noexpand\=\the\catcode`\=\relax
@@ -135,7 +135,7 @@
   \XKV@ifundefined{ver@xkvltxp.sty}{}{%
     \@onelevel@sanitize\XKV@resa
   }%
-  \@expandtwoargs\@removeelement{\XKV@resa}%
+  \@expandtwoargs\@removeelement{\expandafter\@remove@eq@value\XKV@resa=\@nil}%
     {\@unusedoptionlist}\@unusedoptionlist
 }
 \DeclareOptionX*{%

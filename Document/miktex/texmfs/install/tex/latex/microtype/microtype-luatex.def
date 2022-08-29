@@ -31,7 +31,7 @@
 %%
 \ProvidesFile
   {microtype-luatex.def}
-  [2022/03/14 v3.0d
+  [2022/06/23 v3.0f
    Definitions specific to
    luatex
    (RS)]
@@ -58,8 +58,8 @@
   #1{\ifnum
   \MT@luatex@no
     <#1 \expandafter\@secondoftwo\else\expandafter\@firstoftwo\fi}
-\@ifl@t@r\fmtversion{2016/01/01}\relax{\RequirePackage{luatexbase}}
-\@ifl@t@r\fmtversion{2017/01/01}\relax{\RequirePackage{luaotfload}}
+\IfFormatAtLeastTF{2016/01/01}\relax{\RequirePackage{luatexbase}}
+\IfFormatAtLeastTF{2017/01/01}\relax{\RequirePackage{luaotfload}}
 \MT@lua{require("microtype")}
 \MT@requires@luatex6{\let\MT@glet\glet}\relax
 \def\MT@ifint#1{\csname\MT@lua{microtype.if_int([[#1]])}\endcsname}
@@ -266,11 +266,11 @@
   \rpcode\MT@font #2=\numexpr\rpcode\MT@font#1+\@tempcnta\relax
 }
 \def\MT@prot@addtoken@next#1{%
-  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
+  \MT@toks\expandafter{\the\MT@toks#1}%
   \setbox\MT@tempbox\hbox{\the\MT@toks
   }\setbox\MT@tempbox\hbox{\unhbox\MT@tempbox
     \ifnum\lastnodetype=7 \aftergroup\@firstoftwo\else\aftergroup\@secondoftwo\fi}%
-      \MT@prot@get@nextchar
+      \MT@prot@get@nexttoken
       {\MT@prot@l{\the\MT@toks}}%
 }
 \def\MT@expansion{\MT@maybe@do{ex}}
@@ -1161,7 +1161,7 @@
     \MT@check@active@set{ex}%
     \MT@ifdefined@n@TF{showhyphens }{%
       \def\MT@temp##1##2{%
-        \expandafter\CheckCommand\csname showhyphens \endcsname[1]{##1}%
+        \MT@exp@cs\CheckCommand{showhyphens }[1]{##1}%
         \DeclareRobustCommand\showhyphens[1]{##2}}%
     }{%
       \def\MT@temp##1##2{%

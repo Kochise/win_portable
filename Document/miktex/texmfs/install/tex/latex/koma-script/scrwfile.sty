@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% scrwfile.dtx  (with options: `package,trace,scrwfile,identify,option,body')
+%% scrwfile.dtx  (with options: `package,scrwfile,identify,option,body')
 %% scrlogo.dtx  (with options: `logo')
 %% 
 %% Copyright (c) 2010-2021 Markus Kohm [komascript at gmx info]
@@ -22,7 +22,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -39,27 +39,28 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrwfile.dtx 3600 2021-05-30 19:00:56Z kohm $
+%%% From File: $Id: scrwfile.dtx 3889 2022-06-09 12:11:14Z kohm $
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{scrwfile}
-  [2021/05/30 v0.1.9-alpha KOMA-Script package (write and clone files)]
+  [2021/05/30 v0.1.10 KOMA-Script package (write and clone files)]
 \PackageWarningNoLine{scrwfile}{%
-  THIS IS AN ALPHA VERSION!\MessageBreak
-  USAGE OF THIS VERSION IS ON YOUR OWN RISK!\MessageBreak
+  THIS IS AN EXPERIMENTAL PACKAGE!\MessageBreak
+  USAGE OF THIS PACKAGE IS ON YOUR OWN RISK!\MessageBreak
   EVERYTHING MAY HAPPEN!\MessageBreak
   EVERYTHING MAY CHANGE IN FUTURE!\MessageBreak
   THERE IS NO SUPPORT, IF YOU USE THIS PACKAGE!\MessageBreak
-  Maybe, it would be better not to load this package.%
+  Maybe, it would be better not to load this package%
 }
 \RequirePackage{scrbase}[2010/09/17]
 \RequirePackage{scrlfile}[2010/09/30]
-\scr@ifluatex{%
-  \PackageInfoNoLine{scrwfile}{LuaLaTeX detected.\MessageBreak
+\RequirePackage{iftex}
+\ifluatex
+  \PackageWarningNoLine{scrwfile}{LuaLaTeX detected.\MessageBreak
     With LuaLaTeX you should never get an error message:\MessageBreak
     \space\space`No room for a new \string\write'.\MessageBreak
     So scrwfile could make much more harm than benefit\MessageBreak
     and using it is not recommended}%
-}{}
+\fi
 \newcommand*{\scrwfile@if@only}[1]{%
   \begingroup
     \scr@ifundefinedorrelax{scrwfile@only}{\@tempswatrue}{%
@@ -86,7 +87,6 @@
   \scrwfile@if@only{#1}{\scrwfile@@starttoc}{\scrwfile@saved@starttoc}{#1}%
 }
 \newcommand*{\scrwfile@@starttoc}[1]{%
-  \typeout{Use my own \string\@starttoc\space for #1}%
   \begingroup
     \if@filesw
       \xdef\scrwfile@writefilelist{\scrwfile@writefilelist,#1}%
@@ -99,7 +99,6 @@
   \scrwfile@if@only{#1}{\scrwfile@@writefile}{\scrwfile@saved@writefile}{#1}%
 }
 \newcommand{\scrwfile@@writefile}[2]{%
-  \typeout{Use my own \string\@writefile\space for #1}%
   \ifnum\scrwfile@wrtout>0
     \begingroup
       \@temptokena{#2}%
@@ -131,7 +130,6 @@
         \begingroup
           \ifx\@currext\@empty\else
             \scr@ifundefinedorrelax{tf@\@currext}{%
-              \typeout{Process extension: `\@currext'}
               \immediate\openout\@partaux \jobname.\@currext
               \expandafter\let\csname tf@\@currext\endcsname\@partaux
               \@input@{\jobname.wrt}%
@@ -209,7 +207,6 @@
           \ifx\reserved@d\reserved@a\@tempswafalse\fi
         }%
         \if@tempswa
-          \typeout{clone entry from `#1' to `\reserved@a'}%
           \immediate\write\scrwfile@wrtout{%
             \string\@writefile{\reserved@a}{\the\@temptokena}%
           }%
@@ -256,10 +253,8 @@
   }%
 }
 \@onlypreamble\TOCClone
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrwfile.sty'.

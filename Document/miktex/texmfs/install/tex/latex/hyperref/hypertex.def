@@ -6,17 +6,16 @@
 %%
 %% hyperref.dtx  (with options: `hypertex')
 %% 
-%% File: hyperref.dtx
 %% Copyright
 %% 1995-2001 Sebastian Rahtz, with portions written by David Carlisle and Heiko Oberdiek,
 %% 2001-2015 Heiko Oberdiek.
 %% 2016-2019 Oberdiek Package Support Group
-%% 2019-2021 LaTeX Project
+%% 2019-2022 LaTeX Project
 %%      https://github.com/latex3/hyperref/issues
-%%
+%% 
 %% This file is part of the `Hyperref Bundle'.
 %% -------------------------------------------
-%%
+%% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
 %% of this license or (at your option) any later version.
@@ -24,16 +23,17 @@
 %%   http://www.latex-project.org/lppl.txt
 %% and version 1.3 or later is part of all distributions of LaTeX
 %% version 2005/12/01 or later.
-%%
+%% 
 %% This work has the LPPL maintenance status `maintained'.
-%%
+%% 
 %% The Current Maintainer of this work is the LaTeX Project.
-%%
+%% 
 %% The list of all files belonging to the `Hyperref Bundle' is
 %% given in the file `manifest.txt'.
-%%
+%% 
+%% File: hyperref.dtx
 \ProvidesFile{hypertex.def}
-  [2022-02-21 v7.00n %
+  [2022-06-20 v7.00s %
   Hyperref driver for HyperTeX specials]
 \Hy@VersionCheck{hypertex.def}
 \providecommand*{\XR@ext}{dvi}
@@ -178,6 +178,8 @@
     \hss
   }%
 }
+\@ifundefined{hyper@nopatch@sectioning}
+{
 \let\H@old@ssect\@ssect
 \def\@ssect#1#2#3#4#5{%
   \Hy@MakeCurrentHrefAuto{section*}%
@@ -263,43 +265,7 @@
     \H@old@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}]{#8}%
   }%
 }
-\def\Hy@tempa{%
-  \def\@addchap[##1]##2{%
-    \typeout{##2}%
-    \if@twoside
-      \@mkboth{##1}{}%
-    \else
-      \@mkboth{}{##1}%
-    \fi
-    \addtocontents{lof}{\protect\addvspace{10\p@}}%
-    \addtocontents{lot}{\protect\addvspace{10\p@}}%
-    \Hy@MakeCurrentHrefAuto{\Hy@chapapp*}%
-    \Hy@raisedlink{%
-      \hyper@anchorstart{\@currentHref}\hyper@anchorend
-    }%
-    \if@twocolumn
-       \@topnewpage[\@makeschapterhead{##2}]%
-    \else
-       \@makeschapterhead{##2}%
-       \@afterheading
-    \fi
-    \addcontentsline{toc}{chapter}{##1}%
-  }%
-}
-\@ifclassloaded{scrbook}{%
-  \@ifclasslater{scrbook}{2001/01/01}{%
-    \let\Hy@tempa\@empty
-  }{}%
-}{%
-  \@ifclassloaded{scrreprt}{%
-    \@ifclasslater{scrreprt}{2001/01/01}{%
-      \let\Hy@tempa\@empty
-    }{}%
-  }{%
-    \let\Hy@tempa\@empty
-  }%
-}%
-\Hy@tempa
+}{}
 \endinput
 %%
 %% End of file `hypertex.def'.

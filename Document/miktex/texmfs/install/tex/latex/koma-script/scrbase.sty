@@ -27,7 +27,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -44,7 +44,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -66,19 +66,19 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: prepare)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{%
   scrbase%
 }[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (%
     KOMA-Script-independent
@@ -330,7 +330,7 @@
         \else
           \string\PassOptionsToPackage
         \fi
-        {\string\CurrentOption}{^^e2^^80^^a6}.\MessageBreak
+        {\string\CurrentOption}{…}.\MessageBreak
         With LaTeX 2020/10/01 or 2021/06/01 this results in
         \string\CurrentOption\MessageBreak
         in the raw option list and therefore is not allowed.\MessageBreak
@@ -342,7 +342,7 @@
           \string\PassOptionsToPackage
         \fi
         \MessageBreak\space\space\space
-        \string\expandafter{\string\CurrentOption}{^^e2^^80^^a6}\MessageBreak
+        \string\expandafter{\string\CurrentOption}{…}\MessageBreak
         instead or update LaTeX (if possible)%
       }%
       \let\CurrentOption\@empty
@@ -597,7 +597,7 @@
 \long\def\l@addto@macro#1#2{%
   \edef#1{\unexpanded\expandafter{#1#2}}%
 }%
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: option)
 \DefineFamily{KOMA}
 \DefineFamilyMember{KOMA}
@@ -609,9 +609,9 @@
   \RelaxFamilyKey[.scrbase.sty]{KOMA}{internalonly}%
 }
 \FamilyProcessOptions{KOMA}\relax
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: body)
 \newcommand*{\XdivY}[2]{%
   \numexpr ( #1 + #2 / 2 ) / #2 - 1\relax
@@ -634,7 +634,11 @@
   \reserved@a
 }
 \newif\if@atdocument
-\AtBeginDocument{\@atdocumenttrue}
+\IfLTXAtLeastTF{2020/10/01}{%
+  \AddToHook{begindocument/before}{\@atdocumenttrue}%
+}{%
+  \AtBeginDocument{\@atdocumenttrue}%
+}
 \@onlypreamble\@atdocumentrue
 \@onlypreamble\@atdocumentfalse
 \newcommand*{\Ifundefinedorrelax}{\scr@ifundefinedorrelax}%
@@ -696,7 +700,16 @@
   }%
   \reserved@a#1#2\@nil
 }
-\newcommand*{\ifislengthprimitive}[1]{%
+\providecommand*{\ifislengthprimitive}{%
+  \PackageWarning{scrbase}{Usage of deprecated command
+    `\string\ifislengthprimitive'.\MessageBreak
+    The command has been renamed because of a\MessageBreak
+    recommendation of The LaTeX Project Team.\MessageBreak
+    Please replace `\string\ifislengthprimitive' by `\string\Ifislengthprimitive'%
+  }%
+  \Ifislengthprimitive
+}
+\newcommand*{\Ifislengthprimitive}[1]{%
   \IfArgIsEmpty{#1}{\@secondoftwo}{\scr@ifislengthprimitive#1\@nil}%
 }
 \newcommand*{\scr@ifislengthprimitive}[1]{%
@@ -913,7 +926,16 @@
   \endgroup
   #1%
 }
-\newcommand*{\ifisdefchar}[1]{%
+\providecommand*{\ifisdefchar}{%
+  \PackageWarning{scrbase}{Usage of deprecated command
+    `\string\ifisdefchar'.\MessageBreak
+    The command has been renamed because of a\MessageBreak
+    recommendation of The LaTeX Project Team.\MessageBreak
+    Please replace `\string\ifisdefchar' by `\string\Ifisdefchar'%
+  }%
+  \Ifisdefchar
+}
+\newcommand*{\Ifisdefchar}[1]{%
   \IfArgIsEmpty{#1}{\@secondoftwo}{\scr@ifisdefchar#1\@nil}%
 }
 \newcommand*{\scr@ifisdefchar}[1]{%
@@ -1257,7 +1279,7 @@
   \Ifnumber
 }
 \newcommand\Ifnumber[1]{%
-  \begingroup\@tempswafalse\let\scr@next\test@number
+  \begingroup\@tempswafalse\let\scr@next\scr@test@number
     \IfArgIsEmpty{#1}{}{\expandafter\scr@next#1\scr@next}%
     \if@tempswa
       \aftergroup\@firstoftwo
@@ -1266,7 +1288,7 @@
     \fi
   \endgroup
 }
-\newcommand*{\test@number}[1]{%
+\newcommand*{\scr@test@number}[1]{%
   \ifx \scr@next#1%
     \let\scr@next\relax
   \else
@@ -1310,7 +1332,7 @@
     \else
       \ifx #1+%
       \else
-        \def\scr@next{\let\scr@next\test@number\scr@next #1}%
+        \def\scr@next{\let\scr@next\scr@test@number\scr@next #1}%
       \fi
     \fi
   \fi
@@ -1326,20 +1348,20 @@
   \Ifdimen
 }
 \newcommand{\Ifdimen}[1]{%
-  \begingroup\@tempswatrue\let\scr@next\test@posdimen
-  \expandafter\test@dimen#1\scr@next
+  \begingroup\@tempswatrue\let\scr@next\scr@test@posdimen
+  \expandafter\scr@test@dimen#1\scr@next
   \if@tempswa
     \endgroup\expandafter\@firstoftwo
   \else
     \endgroup\expandafter\@secondoftwo
   \fi
 }
-\newcommand*{\test@dimen}[1]{%
+\newcommand*{\scr@test@dimen}[1]{%
   \ifx -#1\else\ifx +#1\else
-      \def\scr@next{\let\scr@next\test@posdimen\scr@next#1}\fi\fi
+      \def\scr@next{\let\scr@next\scr@test@posdimen\scr@next#1}\fi\fi
   \scr@next
 }
-\newcommand*{\test@posdimen}[1]{%
+\newcommand*{\scr@test@posdimen}[1]{%
   \ifx \scr@next#1%
     \@tempswafalse\let\scr@next\relax
   \else
@@ -1348,22 +1370,22 @@
         \expandafter\expandafter\expandafter\number\expandafter`#1\relax
         \ifnum \@tempcnta>47
           \ifnum \@tempcnta<58
-          \else\def\scr@next{\test@dimunt#1}\fi
-        \else\def\scr@next{\test@dimunt#1}\fi
+          \else\def\scr@next{\scr@test@dimunt#1}\fi
+        \else\def\scr@next{\scr@test@dimunt#1}\fi
     \fi\fi
   \fi
   \scr@next
 }
-\newcommand*{\test@dimunt}{}
-\def\test@dimunt#1\scr@next{%
-  \expandafter\test@trueunt#1truetrue\test@trueunt
+\newcommand*{\scr@test@dimunt}{}
+\def\scr@test@dimunt#1\scr@next{%
+  \expandafter\scr@test@trueunt#1truetrue\scr@test@trueunt
 }
-\newcommand*{\test@trueunt}{}
-\def\test@trueunt#1true#2true#3\test@trueunt{%
+\newcommand*{\scr@test@trueunt}{}
+\def\scr@test@trueunt#1true#2true#3\scr@test@trueunt{%
   \edef\reserved@a{#1}%
-  \ifx\reserved@a\@empty\test@@ifdimunt{#2}\else\test@@ifdimunt{#1}\fi
+  \ifx\reserved@a\@empty\scr@test@@dimunt{#2}\else\scr@test@@dimunt{#1}\fi
 }
-\newcommand*\test@@ifdimunt[1]{%
+\newcommand*\scr@test@@dimunt[1]{%
   \@tempswafalse
   \Ifstr{#1}{pt}{\@tempswatrue}{%
     \Ifstr{#1}{pc}{\@tempswatrue}{%
@@ -1500,9 +1522,10 @@
   \Ifdvioutput
 }
 \newcommand*{\Ifdvioutput}{\scr@ifdvioutput}
-\newcommand*{\scr@smashdp}[1]{%
+\DeclareRobustCommand{\scr@smashdp}[1]{%
+  \relax
   \begingroup
-    \def\finsm@sh{\dp\z@\z@\box\z@}%
+    \def\finsm@sh{\dp\z@\z@ \leavevmode\box\z@}%
     \ifmmode
       \expandafter\mathpalette\expandafter\mathsm@sh
     \else
@@ -1519,7 +1542,7 @@
     \else
       \expandafter\@secondoftwo
     \fi
-  }
+  }%
 }
 \newcommand*{\IfLTR}{%
   \scr@ifundefinedorrelax{if@RTL}{\@firstoftwo}{%
@@ -1529,7 +1552,7 @@
     \else
       \expandafter\@firstoftwo
     \fi
-  }
+  }%
 }
 \providecommand*{\PackageInfoNoLine}[2]{%
   \PackageInfo{#1}{#2\@gobble}%
@@ -1652,9 +1675,13 @@
 \newcommand*{\scr@show@key@state@error}{%
   \ifx\FamilyKeyState\FamilyKeyStateProcessed\else
     \PackageError{scrbase}{%
-      unknown option
-      \ifx\FamilyKeyState\FamilyKeyStateUnknownValue
-        value at
+      \ifx\FamilyKeyState\FamilyKeyStateNeedValue
+        missing option value at
+      \else
+        unknown option
+        \ifx\FamilyKeyState\FamilyKeyStateUnknownValue
+          value at
+        \fi
       \fi
       `\expandafter\detokenize\expandafter{\scr@key@atlist}'%
     }{%
@@ -2168,7 +2195,7 @@
 }
 \newcommand*{\Family@@Counter@@Macro@@Key}{}
 \def\Family@@Counter@@Macro@@Key#1#2#3[#4]#5{%
-  \ifdefined#4\else\let#4\z@\fi
+  \ifdefined#5\else\let#5\z@\fi
   \DefineFamilyKey[{#1}]{#2}{#3}[{#4}]{\FamilySetCounterMacro{#2}{#3}{#5}{##1}}%
 }
 \newcommand*{\Family@Counter@Macro@Key}[4]{%
@@ -2360,7 +2387,7 @@
 }
 \newcommand*{\Family@@String@@Key}{}
 \long\def\Family@@String@@Key#1#2#3[#4]#5{%
-  \DefineFamilyKey[{#1}]{#2}{#3}[{#4}]{\def#5{##1}}%
+  \DefineFamilyKey[{#1}]{#2}{#3}[{#4}]{\def#5{##1}\FamilyKeyStateProcessed}%
 }
 \newcommand{\Family@String@Key}[4]{%
   \DefineFamilyKey[{#1}]{#2}{#3}{\def#4{##1}\FamilyKeyStateProcessed}%
@@ -2371,7 +2398,7 @@
 }
 \newcommand*{\Family@@CS@@Key}{}
 \long\def\Family@@CS@@Key#1#2#3[#4]#5{%
-  \DefineFamilyKey[{#1}]{#2}{#3}[{#4}]{\@namedef{#5}{##1}}%
+  \DefineFamilyKey[{#1}]{#2}{#3}[{#4}]{\@namedef{#5}{##1}\FamilyKeyStateProcessed}%
 }
 \newcommand{\Family@CS@Key}[4]{%
   \DefineFamilyKey[{#1}]{#2}{#3}{\@namedef{#4}{##1}\FamilyKeyStateProcessed}%
@@ -2469,7 +2496,7 @@
     }%
   }%
 }
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\defcaptionname}{%
   \kernel@ifstar\scr@def@scaptionname\scr@def@captionname
@@ -2963,10 +2990,8 @@
     \reserved@b
   }%
 }
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrbase.sty'.

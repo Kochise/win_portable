@@ -31,7 +31,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -48,7 +48,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -70,23 +70,23 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{typearea}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (type area)]
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: init)
 \providecommand*
   {\scr@compatibility}{\scr@v@last}
@@ -170,13 +170,15 @@
 \@namedef{scr@v@3.33}{18}
 \@namedef{scr@v@3.34}{18}
 \@namedef{scr@v@3.35}{19}
-\@namedef{scr@v@last}{19}
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+\@namedef{scr@v@3.36}{20}
+\@namedef{scr@v@3.37 BETA}{20}
+\@namedef{scr@v@last}{20}
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: init)
 \providecommand\ta@divlist{{}{}{}{}{}{}{}{}{}{8}{10}{12}}
 \providecommand\ta@divlistelse{1}
 \newcommand*{\@lastdiv}{\z@}\let\@lastdiv\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: option)
 \KOMA@key{version}[last]{%
   \scr@ifundefinedorrelax{scr@v@#1}{%
@@ -203,6 +205,24 @@
     \KOMA@kav@xreplacevalue{.%
       typearea.\scr@pkgextension
     }{version}{#1}%
+    \ifnum\scr@compatibility<\scr@v@last
+      \PackageWarningNoLine{%
+        typearea%
+      }{%
+        Switching back to an old KOMA-Script release does\MessageBreak
+        not mean, that KOMA-Script is fully compatible with\MessageBreak
+        the old release. If you need full compatibility\MessageBreak
+        to an old KOMA-Script release, you should use that\MessageBreak
+        old KOMA-Script release. However, in that case you\MessageBreak
+        could also need old releases of other packages and\MessageBreak
+        even of the LaTeX kernel.\MessageBreak
+        You should also note, that the KOMA-Script developers\MessageBreak
+        refuse support for documents using `version=#1'.\MessageBreak
+        We recommend to eliminate all deprecated options\MessageBreak
+        and commands. We also recommend to not use option\MessageBreak
+        `version', i.e., with other values than `last'%
+      }%
+    \fi
   }%
 }
 \AtEndOfPackage{%
@@ -231,7 +251,7 @@
 \newcommand*{\scr@ta@v@is@ge}[1]{%
   \numexpr\scr@ta@compatibility+\@ne >\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: options)
 \providecommand*{\PaperNameToSize}[2][warning]{%
   \Ifstr{#2}{letter}{%
@@ -996,9 +1016,9 @@
   \KOMAExecuteOptions{twoside=false}
 \fi
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: body)
 \newcommand*{\ta@divfor}[1]{%
   \ta@div=\z@
@@ -1319,7 +1339,10 @@
       \fi
     \fi
     \edef\@lastdiv{\the\ta@div}%
-    \if@atdocument\newpage\fi
+    \if@atdocument
+      \newpage
+      \if@twocolumn\ifnum\@colnum=\z@\else\null\newpage\fi\fi
+    \fi
     \normalsize
     \@ifundefined{ta@hh}{%
       \headheight=1.25\baselineskip
@@ -1738,13 +1761,11 @@
   \kernel@ifstar \l@addto@macro \g@addto@macro \@areaset@end
 }
 \newcommand*{\@areaset@end}{}
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: final)
 \typearea[current]{current}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `typearea.sty'.

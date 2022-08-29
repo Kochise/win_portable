@@ -67,7 +67,206 @@
 \newdimen \pgfstartlinewidth
 %%>>>
 
-% arrow tips macros and utilities %<<<1
+%% Colors%<<<
+
+% The following code is by @muzimuzhi --- see comment in
+% https://github.com/circuitikz/circuitikz/issues/605#issuecomment-1030745366
+\newif\ifpgf@circ@setcolor
+
+% similar to how `/tikz/draw` and `/tikz/fill` are defined
+%
+% - `color=none`, \pgfusecolor is not executed at the beginning of node path(s)
+% - `color` or `color=` (no or empty value), ignored
+% - `color=<color name>`, \pgfusecolor{<color name>} will be executed
+\ctikzset{
+  color/.code={%
+    \edef\pgf@circ@temp{#1}%
+    \ifx\pgf@circ@temp\pgf@nonetext
+      \pgf@circ@setcolorfalse
+    \else
+      \ifx\pgf@circ@temp\pgfutil@empty
+      \else
+        \pgf@circ@setcolortrue
+        \pgfkeyssetvalue{\circuitikzbasekey/color}{#1}%
+        \edef\ctikz@strokecolor{\ctikzvalof{color}}%
+      \fi
+    \fi
+  },
+  % init
+  color=none
+}
+
+\let\ctikz@strokecolor\pgfutil@empty
+\let\ctikz@fillcolor\pgfutil@empty
+% do our tracking of color
+\pgfkeys{/tikz/color/.add code={}{%
+    \edef\ctikz@strokecolor{#1}\ctikzset{color={#1}}}}
+% do our tracking of fill
+\pgfkeys{/tikz/fill/.add code={}{%
+    \edef\ctikz@fillcolor{#1}}}
+%
+% This is to try to track the "implicit" color specification of Tikz,
+% like \draw[red,...] ...; which are not exactly the same than saying
+% \draw[color=red,...] ...;
+% This is too dangerous to issue by default (it was in 1.5.0 and it
+% was an error), so we will just define a command and tell it in the
+% manual.
+% It needs \usepackage{regexpatch} (which is not compatible with
+% xpatch, unfortunately)
+% I do not know how to do the xpatchcmd in ConTeXt...
+%
+\def\ctikzPatchImplicitColor{%
+\ifpgfutil@format@is@latex
+    \pgfkeysgetvalue{/tikz/.unknown/.@cmd}{\my@temp}
+    \xpatchcmd*\my@temp % use starred-form to replace all (two places actually)
+      {\expandafter\tikz@addoption\expandafter}
+        {\edef\ctikz@strokecolor{\tikz@key}%
+        \expandafter\tikz@addoption\expandafter}
+      {}{%
+      \pgfutil@packagewarning{circuitikz}{%
+        Color patch failed, use only explicit color=... (see manual)}}
+    \pgfkeyslet{/tikz/.unknown/.@cmd}{\my@temp}
+\else
+    \pgfutil@packagewarning{circuitikz}{%
+        Not on LaTeX: patch failed, ^^J%
+        use only explicit color=...(see manual).}
+\fi
+}
+%
+\def\pgf@circ@setcolor{%
+  \ifpgf@circ@setcolor
+    \pgfsetcolor{\ctikzvalof{color}}%
+  \fi
+}%
+%
+% Try our best to set the fill color the same as the draw
+% color. This needs the patch above
+%
+\def\pgf@circ@setfillcolorasdraw{%
+    \ifx\tikz@strokecolor\pgfutil@empty
+        % we do not have the stroke color. Resort to the
+        % last explicit color command; this will fail if
+        % the color is changed mid-draw.
+        % "Doctor, it hurts if I touch here..."
+        \ifx\ctikz@strokecolor\pgfutil@empty
+            % no info here. Try to use the current color.
+            \pgfsetfillcolor{.}%
+        \else
+            % Try with the last seen change-color command
+            \pgfsetfillcolor{\ctikz@strokecolor}
+        \fi
+    \else
+        % we have strokecolor, yay!
+        \pgfsetfillcolor{\tikz@strokecolor}
+    \fi
+}
+% we call this when we want to fill of the "draw"
+% color. So if we have no explicit color, use ".".
+\def\pgf@circ@fill@strokecolor{%
+    \pgf@circ@setfillcolorasdraw
+}
+% this is to select the \pgftext color; set it as
+% the stroke color (\pgftext uses the fill color)
+\def\pgf@circ@text@strokecolor{%
+    \pgf@circ@setfillcolorasdraw
+}
+% debug text
+\def\pgf@circ@debug@colors{%
+    \pgfscope
+        \pgfsetcolor{black}%
+        \pgftext[y=10pt]{\tiny S:\tikz@strokecolor~T:\tikz@textcolor~F:\tikz@fillcolor}%
+        \pgftext[y=16pt]{\tiny CS:\ctikz@strokecolor~CF:\ctikz@fillcolor}%
+    \endpgfscope
+}
+%>>>
+
+
+%% Macros for basic drawing%<<<
+%
+\long\gdef\pgf@circ@draw@component#1{%
+    \behindbackgroundpath{%
+        \pgf@circ@start@draw@hooks
+        #1%
+        \pgf@circ@end@draw@hooks
+    }%
+}%
+%
+% auxiliary macros to reset some thing in paths, for background images.
+% use with care and ALWAYS inside a \pgfscope, see here:
+% https://matrix.to/#/!NuxCISwYQJuyWwNsEI:matrix.org/$vQO6luq1F66LJ79dERmaqKI46qMBcjStqYCPi725uZE?via=matrix.org&via=2krueger.de&via=im.f3l.de
+% Thanks to @muzimuzhi
+%
+\def\pgf@circ@reset@arrows{%
+    \pgfsetshortenstart{+0pt}\pgfsetshortenend{+0pt}\pgfsetarrows{-}%
+}
+\def\pgf@circ@reset@rounded{%
+    \pgfsetcornersarced{\pgfpointorigin}%
+}
+\def\pgf@circ@reset@arrows@rounded{%
+    \pgf@circ@reset@arrows\pgf@circ@reset@rounded
+}
+\def\pgf@circ@adjustfill{%
+    \ifx\ctikz@fillcolor\pgfutil@empty
+    % do  nothing
+    \else
+        \ifx\ctikz@fillcolor\pgf@nonetext
+        % do nothing
+        \else
+            \pgfsetfillcolor{\ctikz@fillcolor}%
+        \fi
+    \fi
+}
+%% Hook macros for the start and end of component drawing. The idea is that
+%% specific macros overrides class macro that overrides generic macro
+%% the generic macro is the one that resets arrows and curved path parameters
+%% but let the path inherits the rest (dashed, etc.)
+
+\def\pgf@circ@start@draw@hooks{%
+    % \typeout{SHAPE: \pgf@sm@shape@name}
+    \ifcsname ctikz@hook@start@draw@component@\pgf@sm@shape@name\endcsname
+        \csname ctikz@hook@start@draw@component@\pgf@sm@shape@name\endcsname
+    \else
+        \ifcsname ctikzclass\endcsname
+            \ifcsname ctikz@hook@start@draw@class@\ctikzclass\endcsname
+                \csname ctikz@hook@start@draw@class@\ctikzclass\endcsname
+            % class defined, but no hook, run generic hook
+            \else
+                \csname ctikz@hook@start@draw@default\endcsname
+            \fi
+        % we have no class, we did not run specific hook:run generic hook
+        \else
+            \csname ctikz@hook@start@draw@default\endcsname
+        \fi
+    \fi
+}
+\def\pgf@circ@end@draw@hooks{%
+    % \typeout{SHAPE: \pgf@sm@shape@name}
+    \ifcsname ctikz@hook@end@draw@component@\pgf@sm@shape@name\endcsname
+        \csname ctikz@hook@end@draw@component@\pgf@sm@shape@name\endcsname
+    \else
+        \ifcsname ctikzclass\endcsname
+            \ifcsname ctikz@hook@end@draw@class@\ctikzclass\endcsname
+                \csname ctikz@hook@end@draw@class@\ctikzclass\endcsname
+            % class defined, but no hook, run generic hook
+            \else
+                \csname ctikz@hook@end@draw@default\endcsname
+            \fi
+        % we have no class, we did not run specific hook:run generic hook
+        \else
+            \csname ctikz@hook@end@draw@default\endcsname
+        \fi
+    \fi
+}
+%
+%% default hook is to stop the propagation of arrows parameters and
+%% arced corners.
+%
+\def\ctikz@hook@start@draw@default{\pgf@circ@reset@arrows@rounded}
+%
+%
+%>>>
+
+%% arrow tips macros and utilities %<<<1
 
 % the default arrow is latexslim, which has been ported over old arrows library (deprecated)
 % see https://tex.stackexchange.com/questions/234084/latex-arrow-tip-with-arrows-meta-library
@@ -138,6 +337,7 @@
 \def\pgf@circ@setifdefinedfill#1#2{%
     % if \ctikzclass is defined and \ctikzclass/fill is defined and is not none:
     % set the fill color and execute \pgfusepath{#1}, else execute \pgfusepath{#2}
+    % \typeout{SETIFDEF:#1\space#2:}
     \ifdefined\ctikzclass
         \pgfkeysifdefined{\circuitikzbasekey/\ctikzclass/fill}%
         {% yes, it's defined
@@ -160,7 +360,16 @@
 
 \def\pgf@circ@draworfill{%
     \ifx\tikz@fillcolor\pgfutil@empty
-        \pgf@circ@setifdefinedfill{draw,fill}{draw}
+        \ifx\ctikz@fillcolor\pgfutil@empty
+            \pgf@circ@setifdefinedfill{draw,fill}{draw}
+        \else
+            \ifx\ctikz@fillcolor\pgf@nonetext
+                 \pgf@circ@setifdefinedfill{draw,fill}{draw}
+            \else
+                \pgfsetfillcolor{\ctikz@fillcolor}
+                \pgfusepath{draw, fill}
+            \fi
+        \fi
     \else
         \pgfsetfillcolor{\tikz@fillcolor}
         \pgfusepath{draw, fill}
@@ -169,8 +378,18 @@
 
 \def\pgf@circ@draworfillandclip{%
     \ifx\tikz@fillcolor\pgfutil@empty
-        \pgf@circ@setifdefinedfill{draw, clip, fill}{draw, clip}
-        \pgfusepath{draw, clip}
+        \ifx\ctikz@fillcolor\pgfutil@empty
+            \pgf@circ@setifdefinedfill{draw, clip, fill}{draw, clip}
+            \pgfusepath{draw, clip}
+        \else
+            \ifx\ctikz@fillcolor\pgf@nonetext
+                \pgf@circ@setifdefinedfill{draw, clip, fill}{draw, clip}
+                \pgfusepath{draw, clip}
+            \else
+                \pgfsetfillcolor{\ctikz@fillcolor}
+                \pgfusepath{draw, clip, fill}
+            \fi
+        \fi
     \else
         \pgfsetfillcolor{\tikz@fillcolor}
         \pgfusepath{draw, clip, fill}
@@ -178,8 +397,18 @@
 }
 
 \def\pgf@circ@maybefill{%
+    % \typeout{MAYBEFILL\tikz@fillcolor}%
     \ifx\tikz@fillcolor\pgfutil@empty
-        \pgf@circ@setifdefinedfill{fill}{discard}
+        \ifx\ctikz@fillcolor\pgfutil@empty
+            \pgf@circ@setifdefinedfill{fill}{discard}
+        \else
+            \ifx\ctikz@fillcolor\pgf@nonetext
+                \pgf@circ@setifdefinedfill{fill}{discard}
+            \else
+                \pgfsetfillcolor{\ctikz@fillcolor}
+                \pgfusepath{fill}
+            \fi
+        \fi
     \else
         \pgfsetfillcolor{\tikz@fillcolor}
         \pgfusepath{fill}
@@ -219,20 +448,6 @@
     \fi
 }
 
-% auxiliary macro to reset some thing in paths, for background images.
-% use with care and ALWAYS inside a \pgfscope, see here:
-% https://matrix.to/#/!NuxCISwYQJuyWwNsEI:matrix.org/$vQO6luq1F66LJ79dERmaqKI46qMBcjStqYCPi725uZE?via=matrix.org&via=2krueger.de&via=im.f3l.de
-% Thanks to @muzimuzhi
-%
-\def\pgf@circ@reset@arrows{%
-    \pgfsetshortenstart{+0pt}\pgfsetshortenend{+0pt}\pgfsetarrows{-}%
-}
-\def\pgf@circ@reset@rounded{%
-    \pgfsetcornersarced{\pgfpointorigin}%
-}
-\def\pgf@circ@reset@arrows@rounded{%
-    \pgf@circ@reset@arrows\pgf@circ@reset@rounded
-}
 
 %%>>>
 
@@ -462,11 +677,9 @@
                 \pgfpointborderrectangle{\pgfpoint{\pgf@circ@res@left}{\pgf@circ@res@up}}{\pgfpoint{-\pgf@x}{-\pgf@y}}
             \fi
         }
-
-        #2
-
-        \backgroundpath{
-            \pgfsetcolor{\ctikzvalof{color}}
+        #2%
+        \pgf@circ@draw@component{
+            \pgf@circ@setcolor
 
             \northeast
             \pgf@circ@res@up = \pgf@y
@@ -477,10 +690,8 @@
             \pgf@circ@res@down = \pgf@y
             \pgf@circ@scaled@Rlen=\scaledRlen
             \pgfstartlinewidth=\pgflinewidth
-            % no rounded corners nor default arrows on bipole's bodies
-            \pgf@circ@reset@arrows@rounded
-            #7
-
+            % we used to reset arced corners here --- now it's in the hooks. I hope.
+            #7%
             \pgfsetlinewidth{\pgfstartlinewidth}
         }
     }
@@ -511,9 +722,54 @@
 }
 
 % Just up and down (very common)
-\def\pgfcirc@border@extend@updown#1#2{\pgfcirc@border@extend@full{1}{#1}{1}{#2}}% %>>>
+\def\pgfcirc@border@extend@updown#1#2{\pgfcirc@border@extend@full{1}{#1}{1}{#2}}%
 
-% text position in some component.%<<<1
+
+% set of symmetrical, geographical anchors when a \northwest saved anchor is available
+\long\def\pgfcirc@northwest@symmetric@geoanchors{%
+    \anchor{right}{\northwest\pgf@y=0pt\pgf@x=-\pgf@x}
+    \anchor{east}{\northwest\pgf@y=0pt\pgf@x=-\pgf@x}
+    \anchor{e}{\northwest\pgf@y=0pt\pgf@x=-\pgf@x}
+    \anchor{left}{\northwest\pgf@y=0pt}
+    \anchor{west}{\northwest\pgf@y=0pt}
+    \anchor{w}{\northwest\pgf@y=0pt}
+    \anchor{south}{\northwest\pgf@x=0pt\pgf@y=-\pgf@y}
+    \anchor{s}{\northwest\pgf@x=0pt\pgf@y=-\pgf@y}
+    \anchor{north}{\northwest\pgf@x=0pt}
+    \anchor{n}{\northwest\pgf@x=0pt}
+    \anchor{south west}{\northwest\pgf@y=-\pgf@y}
+    \anchor{sw}{\northwest\pgf@y=-\pgf@y}
+    \anchor{north east}{\northwest\pgf@x=-\pgf@x}
+    \anchor{ne}{\northwest\pgf@x=-\pgf@x}
+    \anchor{north west}{\northwest}
+    \anchor{nw}{\northwest}
+    \anchor{south east}{\northwest\pgf@x=-\pgf@x\pgf@y=-\pgf@y}
+    \anchor{se}{\northwest\pgf@x=-\pgf@x\pgf@y=-\pgf@y}
+}
+% the same, when we have \northeast (I know...)
+\long\def\pgfcirc@northeast@symmetric@geoanchors{%
+    \anchor{north}{\northeast\pgf@x=0cm\relax}
+    \anchor{n}{\northeast\pgf@x=0cm\relax}
+    \anchor{east}{\northeast\pgf@y=0cm\relax}
+    \anchor{e}{\northeast\pgf@y=0cm\relax}
+    \anchor{right}{\northeast\pgf@y=0cm\relax}
+    \anchor{south}{\northeast\pgf@y=-\pgf@y \pgf@x=0cm\relax}
+    \anchor{s}{\northeast\pgf@y=-\pgf@y \pgf@x=0cm\relax}
+    \anchor{west}{\northeast\pgf@y=0cm\pgf@x=-\pgf@x}
+    \anchor{w}{\northeast\pgf@y=0cm\pgf@x=-\pgf@x}
+    \anchor{left}{\northeast\pgf@y=0cm\pgf@x=-\pgf@x}
+    \anchor{north east}{\northeast}
+    \anchor{ne}{\northeast}
+    \anchor{north west}{\northeast\pgf@x=-\pgf@x}
+    \anchor{nw}{\northeast\pgf@x=-\pgf@x}
+    \anchor{south east}{\northeast\pgf@y=-\pgf@y}
+    \anchor{se}{\northeast\pgf@y=-\pgf@y}
+    \anchor{south west}{\northeast\pgf@y=-\pgf@y\pgf@x=-\pgf@x}
+    \anchor{sw}{\northeast\pgf@y=-\pgf@y\pgf@x=-\pgf@x}
+}
+%>>>
+
+%% text position in some component.%<<<1
 % (added with ieeestd logic ports. Maybe to be extended to other components,
 % like amplifiers)
 %
@@ -527,7 +783,7 @@
 \ctikzset{left text distance/.initial=0.3em}%
 %>>>
 
-% voltage direction options%<<<1
+%% voltage direction options%<<<1
 
 \newif\ifpgf@circ@oldvoltagedirection % default false
 \newif\ifpgf@circ@explicitvdir
@@ -541,7 +797,7 @@
 \tikzset{voltage dir/.style={circuitikz/voltage dir=#1}}%
 %>>>
 
-% bipole definitions for path component and text decorations%%<<<1
+%% bipole definitions for path component and text decorations%%<<<1
 %
 % Option "t=*" for nodes
 \pgfkeys{/tikz/t/.add code={}{\ctikzset{text=#1}}}
@@ -623,11 +879,9 @@
 \ctikzset{label/align/smart/.code={\ctikzsetvalof{label/align}{smart}}}
 %%>>>
 
-% traditional styles %<<<1
+%% traditional styles %<<<1
 %
 \ctikzset{thickness/.initial=2}
-\ctikzset{color/.initial=black}
-\pgfkeys{/tikz/color/.add code={}{\ctikzset{color={#1}}}}
 \ctikzset{bipoles/border margin/.initial=1.1}
 \ctikzset{bipoles/thickness/.initial=2}
 \ctikzset{tripoles/thickness/.initial=2}
@@ -635,7 +889,7 @@
 \ctikzset{nodes width/.initial=.04}
 %%>>>
 
-% Styles definitions and macros%<<<1
+%% Styles definitions and macros%<<<1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% main style definitions
@@ -771,7 +1025,7 @@
 \tikzset{cute/.style = {european currents, european voltages, american resistors, cute inductors, american ports}}
 %%>>>
 
-% voltage and current options%<<<1
+%% voltage and current options%<<<1
 %
 \ctikzset{current arrow scale/.initial=16}
 \ctikzset{current/distance/.initial = .5}

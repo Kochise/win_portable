@@ -1,11 +1,11 @@
-% Copyright 2010 TeX Users Group.
-% Copyright (C) 1994--1997 Y&Y, Inc.
+% Copyright 2010--2018 TeX Users Group.
+% Copyright 1994--1997 Y&Y, Inc.
 
 % Released under the LaTeX Project Public License, any version.
 
 % ============================================================================
 % Code to allow plain TeX and LaTeX to fully exploit `texnansi.vec' encoding
-%		(TeX 'n ANSI)	VERSION 2.7 (1997 Jan 30)
+%		(TeX 'n ANSI)	VERSION 2.8 (2018 May 25)
 % ============================================================================
 
 % \input texnansi in TeX source when using fonts with `TeX n ANSI' encoding.
@@ -188,7 +188,7 @@
 \def\c #1{% cedilla
 \if#1c^^e7\else%	\char231 
 \if#1C^^c7\else%	\char199 
-{\setbox0\hbox{#1}\ifdim\ht0=1ex\accent24 #1
+{\setbox0\hbox{#1}\ifdim\ht0=1ex\accent24 #1%
   \else{\ooalign{\hidewidth\char24\hidewidth\crcr\unhbox0}}\fi}%
 \fi\fi}
 
@@ -214,7 +214,7 @@
     \vbox to.2ex{\hbox{\char22}\vss}\hidewidth}}%
 
 % ogonek (using ogonek at 7)
-\def\k#1{\setbox0\hbox{#1}\ifdim\ht0=1ex\accent7 #1
+\def\k#1{\setbox0\hbox{#1}\ifdim\ht0=1ex\accent7 #1%
   \else{\ooalign{\hidewidth\char7\hidewidth\crcr\unhbox0}}\fi}%
 
 % --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -243,7 +243,7 @@
 % underline and cedilla accents (macron at 22, cedilla at 24)
 \def\b##1{\oalign{##1\crcr\hidewidth
     \vbox to.2ex{\hbox{\char22}\vss}\hidewidth}}%
-\def\c##1{\setbox0\hbox{##1}\ifdim\ht0=1ex\accent24 ##1
+\def\c##1{\setbox0\hbox{##1}\ifdim\ht0=1ex\accent24 ##1%
   \else{\ooalign{\hidewidth\char24\hidewidth\crcr\unhbox0}}\fi}%
 }
 

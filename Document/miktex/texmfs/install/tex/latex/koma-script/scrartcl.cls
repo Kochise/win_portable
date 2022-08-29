@@ -67,7 +67,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -84,7 +84,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -106,7 +106,7 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@clsextension}{\@clsextension}
 \AtBeginDocument{%
@@ -121,16 +121,16 @@
   article%
 }
 \ProvidesClass{\KOMAClassName}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   document class (\ClassName)%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-listsof.dtx 3477 2020-04-11 07:26:26Z kohm $
+%%% From File: $Id: scrkernel-listsof.dtx 3892 2022-06-17 16:26:06Z kohm $
 %%%            (run: prepare)
 \RequirePackage{tocbasic}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
 ]
 \addtotoclist[ToC]{toc}
 \Ifstr{\ext@toc}{toc}{}{%
@@ -138,9 +138,9 @@
   \expandafter[\expandafter T\expandafter o\expandafter C\expandafter ]%
   \expandafter{\ext@toc}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
 \newcommand*{\scr@dotchangeatdocument}[1]{%
   \ClassError{\KOMAClassName}{%
@@ -150,10 +150,6 @@
     but this option is only allowed at the document preamble.\MessageBreak
     See KOMA-Script manual for more information about.%
   }%
-}
-\newcommand*{\scr@osectarg}{0}
-\newcommand*{\scr@activate@xsection}[1]{%
-  \renewcommand*{\scr@osectarg}{#1}%
 }
 \newif\if@altsecnumformat\@altsecnumformatfalse
 \newif\if@autodot
@@ -168,9 +164,16 @@
 \newcommand*{\scr@altsecnumhookfalse}{%
   \@altsecnumformatfalse\global\let\@altsecnumformattrue\@altsecnumformatfalse
 }
+\newcommand*{\scr@osectarg}{0}
+\newcommand*{\scr@activate@xsection}[1]{%
+  \renewcommand*{\scr@osectarg}{#1}%
+}
 \IfLTXAtLeastTF{2020/10/01}{\NewHook{\KOMAClassName/appendix}}{}
 \newcommand*{\size@part}{}
+\newcommand*{\scr@fnt@part}{\size@part}
 \newcommand*{\size@partnumber}{}
+\newcommand*{\scr@fnt@partnumber}{\size@partnumber}
+\aliaskomafont{partprefix}{partnumber}
 \newcommand*{\scr@part@beforeskip}{%
   4ex
 }
@@ -188,12 +191,17 @@
   \vskip\@tempskipa
 }
 \newcommand*{\size@section}{}
+\newcommand*{\scr@fnt@section}{\size@section}
 \newcommand*{\size@subsection}{}
+\newcommand*{\scr@fnt@subsection}{\size@subsection}
 \newcommand*{\size@subsubsection}{}
+\newcommand*{\scr@fnt@subsubsection}{\size@subsubsection}
 \newcommand*{\size@paragraph}{}
+\newcommand*{\scr@fnt@paragraph}{\size@paragraph}
 \newcommand*{\size@subparagraph}{}
+\newcommand*{\scr@fnt@subparagraph}{\size@subparagraph}
 \newcommand*{\sectfont}{\normalcolor\@gr@gsffamily\bfseries}
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: init)
 \newcommand*
   {\scr@compatibility}{\scr@v@last}
@@ -276,10 +284,12 @@
 \@namedef{scr@v@3.33}{18}
 \@namedef{scr@v@3.34}{18}
 \@namedef{scr@v@3.35}{19}
-\@namedef{scr@v@last}{19}
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+\@namedef{scr@v@3.36}{20}
+\@namedef{scr@v@3.37 BETA}{20}
+\@namedef{scr@v@last}{20}
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: option)
 \newif\if@scr@emulatestandardclasses
 \let\scr@emulatestandardclassestrue\relax
@@ -322,11 +332,27 @@
     \ClassInfoNoLine{\KOMAClassName}{%
       Switching compatibility level to `#1'%
     }%
-    \edef\scr@compatibility{\@nameuse{scr@v@#1}}%
+ \edef\scr@compatibility{\@nameuse{scr@v@#1}}%
     \FamilyKeyStateProcessed
     \KOMA@kav@xreplacevalue{.%
       \KOMAClassFileName
     }{version}{#1}%
+    \ifnum\scr@compatibility<\scr@v@last
+      \ClassWarningNoLine{\KOMAClassName}{%
+        Switching back to an old KOMA-Script release does\MessageBreak
+        not mean, that KOMA-Script is fully compatible with\MessageBreak
+        the old release. If you need full compatibility\MessageBreak
+        to an old KOMA-Script release, you should use that\MessageBreak
+        old KOMA-Script release. However, in that case you\MessageBreak
+        could also need old releases of other packages and\MessageBreak
+        even of the LaTeX kernel.\MessageBreak
+        You should also note, that the KOMA-Script developers\MessageBreak
+        refuse support for documents using `version=#1'.\MessageBreak
+        We recommend to eliminate all deprecated options\MessageBreak
+        and commands. We also recommend to not use option\MessageBreak
+        `version', i.e., with other values than `last'%
+      }%
+    \fi
   }%
 }
 \KOMA@kav@add{.\KOMAClassFileName}{version}{last}
@@ -354,7 +380,7 @@
 \newcommand*{\scr@v@is@ge}[1]{%
   \numexpr\scr@compatibility+\@ne\relax>\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{draft}[true]{%
   \KOMA@set@ifkey{draft}{@tempswa}{#1}%
@@ -410,9 +436,9 @@
 \newcommand*{\@gr@gsffamily}{%
   \if@egregdoesnotlikesansseriftitles\else\sffamily\fi
 }
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \providecommand*\@ptsize{%
   11%
@@ -498,7 +524,7 @@
 \BeforePackage{tex4ht}{%
   \let\scr@defineobsoletefonts\thr@@
 }
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: options)
 \KOMA@key{twoside}[true]{%
   \if@atdocument\else\PassOptionsToPackage{twoside=#1}{typearea}\fi%
@@ -625,7 +651,7 @@
 }
 \DeclareOption*{%
   \x@paper}
-%%% From File: $Id: scrkernel-paragraphs.dtx 3596 2021-05-17 12:53:41Z kohm $
+%%% From File: $Id: scrkernel-paragraphs.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newcommand*{\setparsizes}[3]{%
   \edef\f@parindent{\the\parindent}%
@@ -652,6 +678,9 @@
 \newcommand*{\f@parindent}{\the\parindent}
 \newcommand*{\f@parskip}{\the\parskip}
 \newcommand*{\f@parfillskip}{\the\parfillskip}
+\newcommand*{\scr@parindent}{1em}
+\newcommand*{\scr@parskip}{\z@}
+\newcommand*{\scr@parfillskip}{\z@ \@plus 1fil}
 \AtEndOfClass{%
   \edef\f@parindent{\the\parindent}%
   \edef\f@parskip{\the\parskip}%
@@ -662,9 +691,6 @@
 \newcommand*{\default@par@update}{}
 \let\default@par@update\relax
 \AtBeginDocument{\par@update}
-\newcommand*{\scr@parindent}{1em}
-\newcommand*{\scr@parskip}{\z@}
-\newcommand*{\scr@parfillskip}{\z@ \@plus 1fil}
 \KOMA@key{parskip}[true]{%
   \begingroup
     \KOMA@set@ncmdkey{parskip}{@tempa}{%
@@ -791,7 +817,7 @@
 \KOMA@DeclareDeprecatedOption{parindent}{parskip=false}
 \KOMA@kav@add{.\KOMAClassFileName}{parskip}{false}
 \KOMA@kav@add{.\KOMAClassFileName}{parskip}{absolute}
-%%% From File: $Id: scrkernel-title.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-title.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newif\if@titlepage
 \@titlepagefalse
@@ -826,9 +852,9 @@
 \KOMA@ifkey{abstract}{@abstrt}
 \KOMA@DeclareDeprecatedOption{abstracton}{abstract=true}
 \KOMA@DeclareDeprecatedOption{abstractoff}{abstract=false}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{numbers}{%
   \KOMA@set@ncmdkey{numbers}{@tempa}{%
@@ -963,46 +989,46 @@
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{small}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{standardclasses}%
       \KOMA@kav@add{.\KOMAClassFileName}{headings}{big}%
-      \renewcommand*{\size@part}{\Huge}%
-      \renewcommand*{\size@partnumber}{\huge}%
-      \renewcommand*{\size@section}{\Large}%
-      \renewcommand*{\size@subsection}{\large}%
-      \renewcommand*{\size@subsubsection}{\normalsize}%
-      \renewcommand*{\size@paragraph}{\normalsize}%
-      \renewcommand*{\size@subparagraph}{\normalsize}%
+      \setkomafont{part}{\Huge}%
+      \setkomafont{partnumber}{\huge}%
+      \setkomafont{section}{\Large}%
+      \setkomafont{subsection}{\large}%
+      \setkomafont{subsubsection}{\normalsize}%
+      \setkomafont{paragraph}{\normalsize}%
+      \setkomafont{subparagraph}{\normalsize}%
     \or % normal
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{big}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{normal}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{small}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{standardclasses}%
       \KOMA@kav@add{.\KOMAClassFileName}{headings}{normal}%
-      \renewcommand*{\size@part}{\huge}%
-      \renewcommand*{\size@partnumber}{\huge}%
-      \renewcommand*{\size@section}{\large}%
-      \renewcommand*{\size@subsection}{\normalsize}%
-      \renewcommand*{\size@subsubsection}{\normalsize}%
-      \renewcommand*{\size@paragraph}{\normalsize}%
-      \renewcommand*{\size@subparagraph}{\normalsize}%
+      \setkomafont{part}{\huge}%
+      \setkomafont{partnumber}{\huge}%
+      \setkomafont{section}{\large}%
+      \setkomafont{subsection}{\normalsize}%
+      \setkomafont{subsubsection}{\normalsize}%
+      \setkomafont{paragraph}{\normalsize}%
+      \setkomafont{subparagraph}{\normalsize}%
     \or % small
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{big}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{normal}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{small}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{standardclasses}%
       \KOMA@kav@add{.\KOMAClassFileName}{headings}{small}%
-      \renewcommand*{\size@part}{\LARGE}%
-      \renewcommand*{\size@partnumber}{\LARGE}%
-      \renewcommand*{\size@section}{\normalsize}%
-      \renewcommand*{\size@subsection}{\normalsize}%
-      \renewcommand*{\size@subsubsection}{\normalsize}%
-      \renewcommand*{\size@paragraph}{\normalsize}%
-      \renewcommand*{\size@subparagraph}{\normalsize}%
+      \setkomafont{part}{\LARGE}%
+      \setkomafont{partnumber}{\LARGE}%
+      \setkomafont{section}{\normalsize}%
+      \setkomafont{subsection}{\normalsize}%
+      \setkomafont{subsubsection}{\normalsize}%
+      \setkomafont{paragraph}{\normalsize}%
+      \setkomafont{subparagraph}{\normalsize}%
     \or % openany
     \or % openright
     \or % openleft
     \or % twolinechapter
     \or % onelinechapter
     \or % twolineappendix
-    \or % onelineappend
+    \or % onelineappendix
     \or % optiontotocandhead
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{optiontotocandhead}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{optiontotoc}%
@@ -1027,13 +1053,13 @@
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{small}%
       \KOMA@kav@remove{.\KOMAClassFileName}{headings}{standardclasses}%
       \KOMA@kav@add{.\KOMAClassFileName}{headings}{standardclasses}%
-      \renewcommand*{\size@part}{\huge}%
-      \renewcommand*{\size@partnumber}{\Large}%
-      \renewcommand*{\size@section}{\Large}%
-      \renewcommand*{\size@subsection}{\large}%
-      \renewcommand*{\size@subsubsection}{\normalsize}%
-      \renewcommand*{\size@paragraph}{\normalsize}%
-      \renewcommand*{\size@subparagraph}{\normalsize}%
+      \setkomafont{part}{\huge}%
+      \setkomafont{partnumber}{\Large}%
+      \setkomafont{section}{\Large}%
+      \setkomafont{subsection}{\large}%
+      \setkomafont{subsubsection}{\normalsize}%
+      \setkomafont{paragraph}{\normalsize}%
+      \setkomafont{subparagraph}{\normalsize}%
       \renewcommand*{\sectfont}{\bfseries}%
     \fi
   \fi
@@ -1042,7 +1068,7 @@
 \KOMA@DeclareDeprecatedOption{bigheadings}{headings=big}
 \KOMA@DeclareDeprecatedOption{normalheadings}{headings=normal}
 \KOMA@DeclareDeprecatedOption{smallheadings}{headings=small}
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@ifkey{headsepline}{@hsl}%
 \KOMA@kav@add{.\KOMAClassFileName}{headsepline}{false}
@@ -1051,14 +1077,14 @@
 \KOMA@kav@add{.\KOMAClassFileName}{footsepline}{false}
 \KOMA@DeclareDeprecatedOption{footnosepline}{footsepline=false}
 \KOMA@key{cleardoublepage}{%
-  \begingroup%
+  \begingroup
     \def\@tempc{%
-      \endgroup%
+      \endgroup
       \KOMA@unknown@keyval{cleardoublepage}{#1}{%
         'current' or any defined pagestyle e.g. 'empty','plain', 'headings'}%
     }%
     \Ifstr{#1}{current}{%
-      \def\@tempc{\endgroup%
+      \def\@tempc{\endgroup
         \def\cleardoublepage{\cleardoublestandardpage}%
         \def\cleardoubleoddpage{\cleardoubleoddstandardpage}%
         \def\cleardoubleevenpage{\cleardoubleevenstandardpage}%
@@ -1069,7 +1095,7 @@
       }%
     }{%
       \Ifnotundefined{ps@#1}{%
-        \def\@tempc{\endgroup%
+        \def\@tempc{\endgroup
           \def\cleardoublepage{\cleardoublepageusingstyle{#1}}%
           \def\cleardoubleoddpage{\cleardoubleoddpageusingstyle{#1}}%
           \def\cleardoubleevenpage{\cleardoubleevenpageusingstyle{#1}}%
@@ -1082,7 +1108,7 @@
         \ifx\@currname\KOMAClassName
           \ifx\@currext\@clsextension
             \Ifstr{#1}{headings}{%
-              \def\@tempc{\endgroup%
+              \def\@tempc{\endgroup
                 \def\cleardoublepage{\cleardoublepageusingstyle{#1}}%
                 \def\cleardoubleoddpage{\cleardoubleoddpageusingstyle{#1}}%
                 \def\cleardoubleevenpage{\cleardoubleevenpageusingstyle{#1}}%
@@ -1147,7 +1173,7 @@
 \KOMA@DeclareDeprecatedOption{cleardoubleempty}{cleardoublepage=empty}
 \KOMA@DeclareDeprecatedOption{cleardoubleplain}{cleardoublepage=plain}
 \KOMA@DeclareDeprecatedOption{cleardoublestandard}{cleardoublepage=current}
-%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newif\if@captionabove\@captionabovefalse
 \newif\if@tablecaptionabove\@tablecaptionabovefalse
@@ -1282,7 +1308,7 @@
 \DeclareOption{origlongtable}{\@komalongtablefalse}
 \KOMA@DeclareDeprecatedOption{onelinecaption}{captions=oneline}
 \KOMA@DeclareDeprecatedOption{noonelinecaption}{captions=nooneline}
-%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{footnotes}{%
   \ifx\@footnotemark\scr@saved@footnotemark
@@ -1353,7 +1379,7 @@
   \csname FN@mf@prepare\endcsname
   \ifhmode\spacefactor\@x@sf\fi
   \relax}
-%%% From File: $Id: scrkernel-listsof.dtx 3477 2020-04-11 07:26:26Z kohm $
+%%% From File: $Id: scrkernel-listsof.dtx 3892 2022-06-17 16:26:06Z kohm $
 %%%            (run: option)
 \newif\if@tocleft
 \KOMA@key{toc}{%
@@ -1583,7 +1609,7 @@
 \KOMA@DeclareDeprecatedOption{liststotocnumbered}{listof=numbered}
 \KOMA@DeclareDeprecatedOption{listsleft}{listof=flat}
 \KOMA@DeclareDeprecatedOption{listsindent}{listof=graduated}
-%%% From File: $Id: scrkernel-bibliography.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-bibliography.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newcommand{\newbibstyle}[3][]{%
   \scr@ifundefinedorrelax{scr@bibstyle@#2}{%
@@ -1616,7 +1642,11 @@
         \csname scr@bibstyle@#1\endcsname
         #3%
       }%
-      \g@addto@macro\scr@bibstylelist{, `#2'}%
+      \ifx\scr@bibstylelist\@empty
+        \edef\scr@bibstylelist{`#2'}%
+      \else
+        \edef\scr@bibstylelist{\scr@bibstylelist, `#2'}%
+      \fi
     }%
   }{%
     \ClassError{\KOMAClassName}{bibliography style `#2' already exists}{%
@@ -1630,7 +1660,7 @@
 \newcommand*{\scr@bibstyle@}{}
 \newcommand*{\bib@beginhook}{}
 \newcommand*{\bib@endhook}{}
-\newcommand*{\scr@bibstylelist}{\@gobble}
+\newcommand*{\scr@bibstylelist}{}
 \newcommand*{\@openbib@code}{}
 \newcommand*{\newblock}{}
 \newbibstyle{openstyle}{%
@@ -1751,7 +1781,7 @@
 \KOMA@DeclareStandardOption{openbib}{bibliography=openstyle}
 \KOMA@DeclareDeprecatedOption{bibtotoc}{bibliography=totoc}
 \KOMA@DeclareDeprecatedOption{bibtotocnumbered}{bibliography=totocnumbered}
-%%% From File: $Id: scrkernel-index.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-index.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newcommand*{\idx@@heading}{%
   \ifidx@leveldown
@@ -1836,21 +1866,68 @@
 \KOMA@kav@add{.\KOMAClassFileName}{index}{notoc}
 \KOMA@kav@add{.\KOMAClassFileName}{index}{standardlevel}
 \KOMA@DeclareDeprecatedOption{idxtotoc}{index=totoc}
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{numbers=autoendperiod}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: execoption)
 \KOMAExecuteOptions{%
   parskip=false,%
   headings=big%
 }
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+\AtBeginDocument{%
+  \begingroup
+    \def\reserved@a#1/#2/#3 #4\@nil{\@tempcnta=#1\relax\@tempcntb=#2\relax}%
+    \expandafter\reserved@a\KOMAScriptVersion\@nil
+    \edef\reserved@a{\the\numexpr\@tempcnta+2\relax/%
+      \ifnum\@tempcntb<10 0\fi\the\@tempcntb/01}%
+    \expandafter\IfLTXAtLeastTF\expandafter{\reserved@a}{%
+      \ClassWarningNoLine{\KOMAClassName}{%
+        Your are using a KOMA-Script version, that has not\MessageBreak
+        been tested with your more than one year newer\MessageBreak
+        LaTeX release `\fmtversion'.\MessageBreak
+        Because of the high speed of LaTeX kernel development,\MessageBreak
+        this could result in a lot of issues.\MessageBreak
+        Please have a look at\MessageBreak
+        <http://www.ctan.org/pkg/koma-script> and if this\MessageBreak
+        shows a newer KOMA-Script version than\MessageBreak
+        `\KOMAScriptVersion', we suggest to do\MessageBreak
+        an update of KOMA-Script or maybe even the whole\MessageBreak
+        TeX distribution%
+      }%
+    }{%
+      \edef\reserved@a{\the\numexpr\@tempcnta-4\relax/%
+        \ifnum\@tempcntb<10 0\fi\the\@tempcntb/01}%
+      \expandafter\IfLTXAtLeastTF\expandafter{\reserved@a}{}{%
+        \ClassWarningNoLine{\KOMAClassName}{%
+          You are using a KOMA-Script version, that has not been\MessageBreak
+          tested with your more than four years older LaTeX\MessageBreak
+          release `\fmtversion'.\MessageBreak
+          Because of the high speed of LaTeX kernel development,\MessageBreak
+          KOMA-Script releases cannot be tested with all past\MessageBreak
+          LaTeX releases.\MessageBreak
+          \ifnum\scr@compatibility<\scr@v@last
+            So even if you are using option `version' implicitly\MessageBreak
+            or explicitly, this
+          \else
+            So this
+          \fi
+          could result in a lot of issues.\MessageBreak
+          We recommend, to update the whole TeX distribution.\MessageBreak
+          If this could not be done, we suggest to use at\MessageBreak
+          least an older KOMA-Script release, e.g., from\MessageBreak
+          <https://komascript.de/current>%
+        }%
+      }%
+    }%
+  \endgroup
+}
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*\scr@setlength[4]{%
   \expandafter\ifnum\scr@v@is@lt{3.12}\relax
@@ -2325,13 +2402,13 @@
   \@nomath\sfb}
 \DeclareRobustCommand*{\cal}{\@fontswitch\relax\mathcal}
 \DeclareRobustCommand*{\mit}{\@fontswitch\relax\mathnormal}
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
       \def\today{\ifcase\month\or
         January\or February\or March\or April\or May\or June\or
         July\or August\or September\or October\or November\or December\fi
         \space\number\day, \number\year}%
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: body)
 \let\@BCOR                =\relax
 \let\@@BCOR               =\relax
@@ -2378,12 +2455,50 @@
     \fi
   }%
 \fi
-%%% From File: $Id: scrkernel-paragraphs.dtx 3596 2021-05-17 12:53:41Z kohm $
+%%% From File: $Id: scrkernel-paragraphs.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
+\newcommand*{\par@updaterelative}{%
+  \begingroup
+    \edef\reserved@a{\the\parindent}\ifx\reserved@a\f@parindent
+      \aftergroup\parindent@update
+    \fi
+    \edef\reserved@a{\the\parskip}\ifx\reserved@a\f@parskip
+      \aftergroup\parskip@update
+    \fi
+    \edef\reserved@a{\the\parfillskip}\ifx\reserved@a\f@parfillskip
+      \aftergroup\parfillskip@update
+    \fi
+  \endgroup
+}
+\newcommand*{\parindent@update}{%
+  \scr@defaultunits\parindent\scr@parindent
+  \begingroup
+    \let\reserved@b\endgroup
+    \edef\reserved@a{\the\parindent}\ifx\reserved@a\f@parindent\else
+      \def\reserved@b{\endgroup\edef\f@parindent{\the\parindent}}%
+    \fi
+  \reserved@b
+}
+\newcommand*{\parskip@update}{%
+  \scr@defaultunits\parskip\scr@parskip
+  \begingroup
+    \let\reserved@b\endgroup
+    \edef\reserved@a{\the\parskip}\ifx\reserved@a\f@parskip\else
+      \def\reserved@b{\endgroup\edef\f@parskip{\the\parskip}}%
+    \fi
+  \reserved@b
+}
+\newcommand*{\parfillskip@update}{%
+  \scr@defaultunits\parfillskip\scr@parfillskip
+  \begingroup
+    \let\reserved@b\endgroup
+    \edef\reserved@a{\the\parfillskip}\ifx\reserved@a\f@parfillskip\else
+      \def\reserved@b{\endgroup\edef\f@parfillskip{\the\parfillskip}}%
+    \fi
+  \reserved@b
+}
 \setlength{\lineskip}{\p@}
 \setlength{\normallineskip}{\p@}
-\setlength{\columnsep}{10\p@}
-\setlength{\columnseprule}{\z@}
 \IfLTXAtLeastTF{2021/05/01}{%
   \AddToHook{selectfont}{\par@update}%
   \AfterPackage{everysel}{%
@@ -2454,46 +2569,6 @@
   \newcommand*{\scr@new@selectfont}{}
   \expandafter\let\expandafter\scr@new@selectfont\csname selectfont \endcsname
 }
-\newcommand*{\par@updaterelative}{%
-  \begingroup
-    \edef\@tempa{\the\parindent}\ifx\@tempa\f@parindent
-      \aftergroup\parindent@update
-    \fi
-    \edef\@tempa{\the\parskip}\ifx\@tempa\f@parskip
-      \aftergroup\parskip@update
-    \fi
-    \edef\@tempa{\the\parfillskip}\ifx\@tempa\f@parfillskip
-      \aftergroup\parfillskip@update
-    \fi
-  \endgroup
-}
-\newcommand*{\parindent@update}{%
-  \scr@defaultunits\parindent\scr@parindent
-  \begingroup
-    \let\@tempb\endgroup
-    \edef\@tempa{\the\parindent}\ifx\@tempa\f@parindent\else
-      \def\@tempb{\endgroup\edef\f@parindent{\the\parindent}}%
-    \fi
-  \@tempb
-}
-\newcommand*{\parskip@update}{%
-  \scr@defaultunits\parskip\scr@parskip
-  \begingroup
-    \let\@tempb\endgroup
-    \edef\@tempa{\the\parskip}\ifx\@tempa\f@parskip\else
-      \def\@tempb{\endgroup\edef\f@parskip{\the\parskip}}%
-    \fi
-  \@tempb
-}
-\newcommand*{\parfillskip@update}{%
-  \scr@defaultunits\parfillskip\scr@parfillskip
-  \begingroup
-    \let\@tempb\endgroup
-    \edef\@tempa{\the\parfillskip}\ifx\@tempa\f@parfillskip\else
-      \def\@tempb{\endgroup\edef\f@parfillskip{\the\parfillskip}}%
-    \fi
-  \@tempb
-}
 \newcommand*{\scr@defaultunits}[2]{%
   \begingroup
     \edef\@tempa{#2}%
@@ -2551,10 +2626,12 @@
   \l@addto@macro{\@listiii}{\@list@extra}%
   \l@addto@macro{\footnotesize}{\protect\add@extra@listi{ftns}}%
   \l@addto@macro{\small}{\protect\add@extra@listi{sml}}%
+\setlength{\columnsep}{10\p@}
+\setlength{\columnseprule}{\z@}
 \@lowpenalty  = 51
 \@medpenalty  =151
 \@highpenalty =301
-%%% From File: $Id: scrkernel-title.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-title.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\@extratitle}{}%
 \newcommand{\extratitle}[1]{\gdef\@extratitle{%
@@ -2927,15 +3004,15 @@
 }{%
   \if@restonecol\twocolumn \else \newpage \fi
 }%
-\newcommand*\titlefont{\sectfont}%
-\newcommand*{\subject@font}{\normalfont\normalcolor\bfseries\Large}%
 \newkomafont{subtitle}{\usekomafont{title}\large}%
 \newkomafont{titlehead}{}%
 \newkomafont{author}{\Large}
 \newkomafont{date}{\Large}
 \newkomafont{publishers}{\Large}
 \newkomafont{dedication}{\Large}
+\newcommand*\titlefont{\sectfont}%
 \newcommand*{\scr@fnt@title}{\titlefont}%
+\newcommand*{\subject@font}{\normalfont\normalcolor\bfseries\Large}%
 \newcommand*{\scr@fnt@subject}{\subject@font}%
 \newenvironment{abstract}{%
   \if@titlepage
@@ -2971,10 +3048,12 @@
   \fi
 }
 \newcommand*\abstractname{Abstract}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\abstractname{Abstract}
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \let\numberline\scr@numberline
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: class,style,part)
 \CloneTOCEntryStyle{tocline}{part}
 \TOCEntryStyleStartInitCode{part}{%
@@ -2988,7 +3067,7 @@
   \expandafter\providecommand\expandafter*%
   \csname scr@tso@#1@beforeskip\endcsname{2.25em \@plus\p@}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: class,style,section)
 \CloneTOCEntryStyle{tocline}{section}
 \TOCEntryStyleStartInitCode{section}{%
@@ -3007,18 +3086,41 @@
   \expandafter\providecommand\expandafter*%
   \csname scr@tso@#1@beforeskip\endcsname{1.0em \@plus\p@}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: class,style,subsection)
 \CloneTOCEntryStyle{tocline}{subsection}
 \TOCEntryStyleStartInitCode{subsection}{%
   \expandafter\providecommand%
   \csname scr@tso@#1@linefill\endcsname{\TOCLineLeaderFill\relax}%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: class,style,default)
 \CloneTOCEntryStyle{subsection}{default}
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
+\BeforeClosingMainAux{%
+  \if@autodot\if@filesw\immediate\write\@mainaux{%
+      \string\global\string\csname\space @altsecnumformattrue\string\endcsname}%
+  \fi\fi}
+\newcommand{\@maybeautodot}[1]{\if@autodot\else\begingroup%
+  \expandafter\@@maybeautodot #1\@stop\endgroup\fi
+}
+\newcommand*{\@@maybeautodot}[1]{%
+  \ifx #1\@stop\let\@@maybeautodot\relax
+  \else
+    \ifx #1\Alph \@autodottrue\fi
+    \ifx #1\alph \@autodottrue\fi
+    \ifx #1\Roman \@autodottrue\fi
+    \ifx #1\roman \@autodottrue\fi
+    \ifx #1\@Alph \@autodottrue\fi
+    \ifx #1\@alph \@autodottrue\fi
+    \ifx #1\@Roman \@autodottrue\fi
+    \ifx #1\@roman \@autodottrue\fi
+    \ifx #1\romannumeral \@autodottrue\fi
+  \fi
+  \@@maybeautodot
+}
+\newcommand*\autodot{\if@altsecnumformat.\fi}
 \setcounter{secnumdepth}{3}
 \providecommand*{\ifnumbered}{%
   \ClassWarning{\KOMAClassName}{Usage of deprecated command
@@ -3056,29 +3158,6 @@
 \newcommand*{\Ifunnumbered}[1]{%
   \Ifnumbered{#1}{\@secondoftwo}{\@firstoftwo}%
 }
-\BeforeClosingMainAux{%
-  \if@autodot\if@filesw\immediate\write\@mainaux{%
-      \string\global\string\csname\space @altsecnumformattrue\string\endcsname}%
-  \fi\fi}
-\newcommand{\@maybeautodot}[1]{\if@autodot\else\begingroup%
-  \expandafter\@@maybeautodot #1\@stop\endgroup\fi
-}
-\newcommand*{\@@maybeautodot}[1]{%
-  \ifx #1\@stop\let\@@maybeautodot\relax
-  \else
-    \ifx #1\Alph \@autodottrue\fi
-    \ifx #1\alph \@autodottrue\fi
-    \ifx #1\Roman \@autodottrue\fi
-    \ifx #1\roman \@autodottrue\fi
-    \ifx #1\@Alph \@autodottrue\fi
-    \ifx #1\@alph \@autodottrue\fi
-    \ifx #1\@Roman \@autodottrue\fi
-    \ifx #1\@roman \@autodottrue\fi
-    \ifx #1\romannumeral \@autodottrue\fi
-  \fi
-  \@@maybeautodot
-}
-\newcommand*\autodot{\if@altsecnumformat.\fi}
 \newcommand*{\scr@saved@startsection}[6]{%
   \if@noskipsec \leavevmode \fi
   \par
@@ -4495,34 +4574,6 @@
   }%
   \Ifstr{\@nameuse{scr@#1@style}}{#2}%
 }
-\newcommand*{\bprot@dottedtocline}[5]{%
-  \expandafter\ifnum\scr@v@is@gt{2.96}\relax
-    \ClassWarning{\KOMAClassName}{%
-      usage of `\string\bprot@dottedtocline' is deprecated.\MessageBreak
-      Maybe an old auxiliary file has been used.\MessageBreak
-      Note, this command will be removed from\MessageBreak
-      KOMA-Script soon. So if this warning message\MessageBreak
-      persists after one more LaTeX run, you should\MessageBreak
-      redeclare the corresponding ToC entries using\MessageBreak
-      \string\DeclareTOCStyleEntry[\MessageBreak
-      \space\space level=\detokenize{#1},\MessageBreak
-      \space\space indent=\detokenize{#2},\MessageBreak
-      \space\space numwidth=\detokenize{#3}]{default}{...},\MessageBreak
-      where `...' is the name of the ToC level.\MessageBreak
-      Note, in future usage of `\string\bprot@dottedtocline'\MessageBreak
-      could result in an error%
-    }%
-    \ifnum #1>\c@tocdepth \else
-      \ifnum \lastpenalty<\numexpr 20010-#1\relax
-        \addpenalty{\@lowpenalty}%
-      \fi
-      \@dottedtocline{#1}{#2}{#3}{#4}{#5}%
-      \penalty \numexpr 20009-#1\relax
-    \fi
-  \else
-    \@dottedtocline{#1}{#2}{#3}{#4}{#5}%
-  \fi
-}
 \newcommand*\appendix{%
   \Ifstr{\@currenvir}{appendix}{%
     \ClassWarning{\KOMAClassName}{%
@@ -4732,6 +4783,8 @@
 \renewcommand*{\thepart}{\@Roman\c@part}
 \newcommand*{\partformat}{\partname~\thepart\autodot}
 \newcommand*\partname{Part}
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\partname{Part}
 \newcommand*{\partmark}[1]{\@mkboth{}{}}
 \newcommand*\addpartmark[1]{%
   \begingroup
@@ -4743,9 +4796,6 @@
 }
 \newcommand*{\raggedpart}{}
 \let\raggedpart\raggedsection
-\newcommand*{\scr@fnt@part}{\size@part}
-\newcommand*{\scr@fnt@partnumber}{\size@partnumber}
-\aliaskomafont{partprefix}{partnumber}
 \newkomafont{partentry}{\usekomafont{disposition}\large}
 \newkomafont{partentrypagenumber}{}
 \newcommand*{\raggedsectionentry}{}
@@ -4832,11 +4882,6 @@
     \sectionmark{#1}%
   \endgroup
 }
-\newcommand*{\scr@fnt@section}{\size@section}
-\newcommand*{\scr@fnt@subsection}{\size@subsection}
-\newcommand*{\scr@fnt@subsubsection}{\size@subsubsection}
-\newcommand*{\scr@fnt@paragraph}{\size@paragraph}
-\newcommand*{\scr@fnt@subparagraph}{\size@subparagraph}
 \newkomafont{sectionentry}{\usekomafont{disposition}}
 \newkomafont{sectionentrypagenumber}{}
 \newkomafont{sectionentrydots}{}
@@ -4906,7 +4951,7 @@
 \fi
 \newcommand*{\scr@fnt@disposition}{\sectfont}
 \aliaskomafont{sectioning}{disposition}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newif\if@restonecol
 \newcommand{\dictum}[2][]{\par%
@@ -4934,9 +4979,6 @@
 \setlength{\skip\@mpfootins}{\skip\footins}
 \setlength\fboxsep{3\p@}
 \setlength\fboxrule{.4\p@}
-\renewcommand*\theequation{%
-  \@arabic\c@equation
-}
 \newcommand*{\new@tpo@label}{\@newl@bel{tpo}}
 \AtBeginDocument{%
   \if@filesw
@@ -4997,6 +5039,9 @@
   \else
     \expandafter\@secondoftwo
   \fi
+}
+\newcommand\marginline[1]{%
+  \marginpar[\raggedleft{#1}]{\raggedright #1}%
 }
 \scr@ifundefinedorrelax{textsubscript}{%
   \DeclareRobustCommand*\textsubscript[1]{%
@@ -5071,6 +5116,12 @@
   `parskip' with one of it's several values}
 \scr@package@not@recommended{titleps}{%
   package `scrlayer-scrpage'}
+\scr@package@not@recommended{titlesec}{%
+  KOMA-Script features\MessageBreak
+  like \string\setkomafont, \string\RedeclareSectionCommand,
+  \string\sectionlinesformat\MessageBreak
+  and several others to re-configure section\MessageBreak
+  headings}
 \AfterPackage*{sectsty}{%
   \@ifpackagelater{sectsty}{2002/02/26}{%
     \ClassInfo{\KOMAClassName}{Unknown `sectsty' release.\MessageBreak
@@ -5210,35 +5261,7 @@
     \let\scr@mt@saved@sect\relax
   \fi
 }
-\AfterPackage{titlesec}{%
-  \@ifpackagelater{titlesec}{2019/10/17}{%
-    \ClassInfo{\KOMAClassName}{Unknown `titesec' release.\MessageBreak
-      Cross your fingers, that is compatible%
-    }%
-  }{%
-    \scr@class@titlesec@warning
-  }%
-}
-\providecommand*{\scr@class@titlesec@warning}{%
-  \ClassWarning{\KOMAClassName}{%
-    Usage of this version of package `titlesec'\MessageBreak
-    with KOMA-Script class `\KOMAClassName' is\MessageBreak
-    not recommended, because the package does not\MessageBreak
-    support KOMA-Script classes, but break them.\MessageBreak
-    If you want to use `titlesec' with KOMA-Script\MessageBreak
-    classes instead of using the KOMA-Script's\MessageBreak
-    user interface to configure the headings of\MessageBreak
-    parts,
-    sections, subsections
-    ... subparagraphs,\MessageBreak
-    please ask the author of `titlesec' for support.\MessageBreak
-    Expect errors like:\MessageBreak
-    \space\space- ``Illegal unit of measure (pt inserted).''\MessageBreak
-    \space\space- ``Missing number, treated as zero''\MessageBreak
-    after loading `titlesec'%
-  }%
-}
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\set@tempdima@hw}{%
   \setlength{\@tempdima}{\textwidth}%
@@ -5334,7 +5357,7 @@
 \newcommand*{\indexpagestyle}{plain}
 \pagestyle{plain}
 \pagenumbering{arabic}
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: body)
 \providecommand*{\@mkleft}{%
   \IfActiveMkBoth{\markleft}{\@gobble}%
@@ -5345,11 +5368,8 @@
 \providecommand{\@mkdouble}[1]{%
   \@mkboth{#1}{#1}%
 }
-%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-\newcommand\marginline[1]{%
-  \marginpar[\raggedleft{#1}]{\raggedright #1}%
-}
 \newlength{\abovecaptionskip}
 \newlength{\belowcaptionskip}
 \setlength{\abovecaptionskip}{10\p@}
@@ -5362,8 +5382,8 @@
 \newcommand*{\scap@caption}{}
 \newcommand*{\scap@width}{\linewidth}
 \newcommand*{\scap@move}{\z@}
-\newcommand*{\scap@currentlabel}{}
 \newif\ifscap@alt
+\newcommand*{\scap@currentlabel}{}
 \newcommand*{\@captionbeside}{}
 \long\def\@captionbeside[#1]#2{%
   \kernel@ifnextchar [%]
@@ -5414,7 +5434,7 @@
   \begin{lrbox}{\c@pti@nb@sid@b@x}%
 }
 \newenvironment*{captionbeside}{%
-  \@dblarg\@captionbeside%
+  \@dblarg\@captionbeside
 }{%
   \end{lrbox}%
   \settowidth{\@tempdima}{\usebox\c@pti@nb@sid@b@x}%
@@ -5471,7 +5491,8 @@
 \newcommand*{\scr@fnt@captionlabel}{\caplabelfont}
 \newif\ifdofullc@p
 \dofullc@ptrue
-\newif\if@capbreak\@capbreakfalse
+\newif\if@capbreak
+\@capbreakfalse
 \newcommand*{\setcapindent}{\kernel@ifstar{\@@setcapindent}{\@setcapindent}}
 \newcommand*{\@setcapindent}[1]{%
   \setlength{\@tempdima}{#1}%
@@ -6061,10 +6082,15 @@
   \endcaptionbeside
 }
 \newcommand*\figurename{Figure}
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\figurename{Figure}
 \newcommand*\tablename{Table}
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\tablename{Table}
 \DeclareNewTOC[%
   type=figure,
   float,
+  nonfloat,
   floatpos=tbp,
   floattype=1,
   tocentryindent=1.5em,
@@ -6080,6 +6106,7 @@
 \DeclareNewTOC[%
   type=table,
   float,
+  nonfloat,
   floatpos=tbp,
   floattype=2,
   tocentryindent=1.5em,
@@ -6092,7 +6119,7 @@
 \expandafter\ifnum\scr@v@is@lt{3.35}%
   \renewcommand*\thetable{\@arabic\c@table}
 \fi
-%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \renewcommand*\footnoterule{%
   \normalsize\ftn@rule@test@values
@@ -6148,6 +6175,7 @@
 \newcommand\deffootnote[4][]{%
   \expandafter\ifnum\scr@v@is@ge{3.22}\relax
     \long\def\@makefntext##1{%
+      \ExecuteDoHook{footnote/text/begin}%
       \raggedfootnote
       \leftskip #2
       \l@addto@macro\@trivlist{%
@@ -6158,6 +6186,7 @@
         \hskip \dimexpr #1-#2\relax
       }%
       \ftn@font\hbox to \z@{\hss\@@makefnmark}##1%
+      \ExecuteDoHook{footnote/text/end}%
     }%
   \else
     \ClassInfo{\KOMAClassName}{%
@@ -6193,15 +6222,16 @@
 \newcommand*{\ftn@font}{\normalfont}
 \newcommand*{\scr@fnt@footnote}{\ftn@font}
 \newcommand*{\ftnm@font}{}
-\newcommand*{\scr@fnt@footnotenumber}{\ftnm@font}
+\aliaskomafont{footnotenumber}{footnotelabel}
 \newcommand*{\scr@fnt@footnotelabel}{\ftnm@font}
-\newcommand*{\scr@fnt@instead@footnotetext}{footnote}
+\aliaskomafont{footnotetext}{footnote}
 \newcommand*\deffootnotemark[1]{%
   \def\@makefnmark{\hbox{\ftntm@font{#1}}}%
 }
 \newcommand*{\ftntm@font}{}
 \newcommand*{\scr@fnt@footnotereference}{\ftntm@font}
-\newcommand*{\scr@fnt@footnoteref}{\ftntm@font}
+\aliaskomafont{footnoteref}{footnotereference}
+\aliaskomafont{footnotemark}{footnotereference}
 \newcommand*{\FN@mf@check}{%
   \ifdim\lastkern=\multiplefootnotemarker\relax
     \edef\@x@sf{\the\spacefactor}%
@@ -6250,7 +6280,7 @@
   \endgroup
   \@footnotemark
 }
-%%% From File: $Id: scrkernel-listsof.dtx 3477 2020-04-11 07:26:26Z kohm $
+%%% From File: $Id: scrkernel-listsof.dtx 3892 2022-06-17 16:26:06Z kohm $
 %%%            (run: body)
 \g@addto@macro{\numberline@numberpostfix}{\autodot}
 \usetocbasicnumberline[%
@@ -6394,9 +6424,11 @@
   UKenglish,ukenglish,USenglish,usenglish}\listtablename{List of Tables}
 \renewcommand*\listoflotname{\listtablename}
 \renewcommand*\listoflotentryname{\tablename}
-%%% From File: $Id: scrkernel-bibliography.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-bibliography.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*\refname{References}
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\refname{References}
 \newcommand*{\bibpreamble}{\relax}
 \let\bibpreamble\relax
 \newcommand{\setbibpreamble}[1]{\def\bibpreamble{#1}}
@@ -6480,7 +6512,7 @@
 }
 \newcommand{\AfterBibliographyPreamble}{\g@addto@macro\bib@before@hook}
 \newcommand{\AtEndBibliography}{\g@addto@macro\bib@after@hook}
-%%% From File: $Id: scrkernel-index.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-index.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\index@preamble}{}
 \let\index@preamble=\relax
@@ -6505,7 +6537,7 @@
   \fi
   \columnseprule \z@
   \columnsep 35\p@
-  \idx@heading%
+  \idx@heading
   \index@preamble\par\nobreak
   \ifx\indexpagestyle\@empty\else\thispagestyle{\indexpagestyle}\fi
   \parindent\z@
@@ -6522,7 +6554,9 @@
   \par \vskip 10\p@ \@plus5\p@ \@minus3\p@\relax
 }
 \newcommand*\indexname{Index}
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
+\providecaptionname{american,australian,british,canadian,english,newzealand,%
+  UKenglish,ukenglish,USenglish,usenglish}\indexname{Index}
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \if@twocolumn
   \setlength{\leftmargini}{2em}
@@ -6546,11 +6580,6 @@
 \@beginparpenalty=-\@lowpenalty
 \@endparpenalty  =-\@lowpenalty
 \@itempenalty    =-\@lowpenalty
-\setlength\arraycolsep{5\p@}
-\setlength\tabcolsep{6\p@}
-\setlength\arrayrulewidth{.4\p@}
-\setlength\doublerulesep{2\p@}
-\setlength\tabbingsep{\labelsep}
 \renewcommand*\theenumi{\@arabic\c@enumi}
 \renewcommand*\theenumii{\@alph\c@enumii}
 \renewcommand*\theenumiii{\@roman\c@enumiii}
@@ -6573,7 +6602,7 @@
   \endlist
 }
 \newcommand*{\descriptionlabel}[1]{%
-  \hspace{\labelsep}\descfont #1%
+  \hspace{\labelsep}\usekomafont{descriptionlabel}{#1}%
 }
 \newenvironment{labeling}[2][]{%
   \def\sc@septext{#1}%
@@ -6688,10 +6717,13 @@
 \newkomafont{labelitemiv}{\usekomafont{itemizelabel}}
 \newkomafont{labelinglabel}{}
 \newkomafont{labelingseparator}{}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+\setlength\arraycolsep{5\p@}
+\setlength\tabcolsep{6\p@}
+\setlength\arrayrulewidth{.4\p@}
+\setlength\doublerulesep{2\p@}
+\setlength\tabbingsep{\labelsep}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrartcl.cls'.

@@ -34,7 +34,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
-\ProvidesPackage{babel}[2022/02/26 3.73 The Babel package]
+\ProvidesPackage{babel}[2022/07/20 3.78 The Babel package]
 \@ifpackagewith{babel}{debug}
   {\providecommand\bbl@trace[1]{\message{^^J[ #1 ]}}%
    \let\bbl@debug\@firstofone
@@ -357,9 +357,12 @@
 \DeclareOption{hyphenmap=select}{\chardef\bbl@opt@hyphenmap\tw@}
 \DeclareOption{hyphenmap=other}{\chardef\bbl@opt@hyphenmap\thr@@}
 \DeclareOption{hyphenmap=other*}{\chardef\bbl@opt@hyphenmap4\relax}
+\DeclareOption{ensureinfo=off}{}
 \DeclareOption{safe=none}{\let\bbl@opt@safe\@empty}
 \DeclareOption{safe=bib}{\def\bbl@opt@safe{B}}
 \DeclareOption{safe=ref}{\def\bbl@opt@safe{R}}
+\DeclareOption{safe=refbib}{\def\bbl@opt@safe{BR}}
+\DeclareOption{safe=bibref}{\def\bbl@opt@safe{BR}}
 \chardef\bbl@bidimode\z@
 \DeclareOption{bidi=default}{\chardef\bbl@bidimode=\@ne}
 \DeclareOption{bidi=basic}{\chardef\bbl@bidimode=101 }
@@ -367,6 +370,9 @@
 \DeclareOption{bidi=bidi}{\chardef\bbl@bidimode=201 }
 \DeclareOption{bidi=bidi-r}{\chardef\bbl@bidimode=202 }
 \DeclareOption{bidi=bidi-l}{\chardef\bbl@bidimode=203 }
+\chardef\bbl@eqnpos\z@
+\DeclareOption{leqno}{\chardef\bbl@eqnpos\@ne}
+\DeclareOption{fleqn}{\chardef\bbl@eqnpos\tw@}
 \let\bbl@opt@shorthands\@nnil
 \let\bbl@opt@config\@nnil
 \let\bbl@opt@main\@nnil
@@ -440,6 +446,7 @@
 \fi
 \ifx\bbl@opt@safe\@undefined
   \def\bbl@opt@safe{BR}
+  % \let\bbl@opt@safe\@empty % -- By September
 \fi
 \bbl@trace{Defining IfBabelLayout}
 \ifx\bbl@opt@layout\@nnil
@@ -453,8 +460,8 @@
       \expandafter\@secondoftwo
     \fi}
 \fi
-\def\bbl@version{3.73}
-\def\bbl@date{2022/02/26}
+\def\bbl@version{3.78}
+\def\bbl@date{2022/07/20}
 \ifx\language\@undefined
   \csname newcount\endcsname\language
 \fi
@@ -2475,6 +2482,8 @@
   \let\bbl@KVP@Alph\@nil
   \let\bbl@KVP@labels\@nil
   \bbl@csarg\let{KVP@labels*}\@nil
+  \let\bbl@KVP@calendar\@nil
+  \let\bbl@calendars\@empty
   \global\let\bbl@inidata\@empty
   \global\let\bbl@extend@ini\@gobble
   \gdef\bbl@key@list{;}%
@@ -2567,6 +2576,11 @@
   \fi
   \ifx\bbl@KVP@language\@nil\else
     \bbl@csarg\edef{lname@#2}{\bbl@KVP@language}%
+  \fi
+  \ifcase\bbl@engine\or
+    \bbl@ifunset{bbl@chrng@\languagename}{}%
+      {\directlua{
+         Babel.set_chranges_b('\bbl@cl{sbcp}', '\bbl@cl{chrng}') }}%
   \fi
    % == onchar ==
   \ifx\bbl@KVP@onchar\@nil\else
@@ -2793,6 +2807,24 @@
       \\\bbl@add\<extras\languagename>{%
         \let\\\@Alph\<bbl@cntr@\bbl@KVP@Alph @\languagename>}}%
   \fi
+  % == Calendars ==
+  \ifx\bbl@KVP@calendar\@nil
+    \edef\bbl@KVP@calendar{\bbl@cl{calpr}}%
+  \fi
+  \def\bbl@tempe##1 ##2\@@{% Get first calendar
+    \def\bbl@tempa{##1}}%
+    \bbl@exp{\\\bbl@tempe\bbl@KVP@calendar\space\\\@@}%
+  \def\bbl@tempe##1.##2.##3\@@{%
+    \def\bbl@tempc{##1}%
+    \def\bbl@tempb{##2}}%
+  \expandafter\bbl@tempe\bbl@tempa..\@@
+  \bbl@csarg\edef{calpr@\languagename}{%
+    \ifx\bbl@tempc\@empty\else
+      calendar=\bbl@tempc
+    \fi
+    \ifx\bbl@tempb\@empty\else
+      ,variant=\bbl@tempb
+    \fi}%
   % == require.babel in ini ==
   % To load or reaload the babel-*.tex, if require.babel in ini
   \ifx\bbl@beforestart\relax\else  % But not in doc aux or body
@@ -2806,6 +2838,14 @@
          \let\atcatcode\relax
          \global\bbl@csarg\let{rqtex@\languagename}\relax
        \fi}%
+    \bbl@foreach\bbl@calendars{%
+      \bbl@ifunset{bbl@ca@##1}{%
+        \chardef\atcatcode=\catcode`\@
+        \catcode`\@=11\relax
+        \InputIfFileExists{babel-ca-##1.tex}{}{}%
+        \catcode`\@=\atcatcode
+        \let\atcatcode\relax}%
+      {}}%
   \fi
   % == frenchspacing ==
   \ifcase\bbl@howloaded\in@true\else\in@false\fi
@@ -3021,7 +3061,13 @@
     \def\bbl@section{##1}%
     \in@{=date.}{=##1}% Find a better place
     \ifin@
-      \bbl@ini@calendar{##1}%
+      \bbl@ifunset{bbl@inikv@##1}%
+        {\bbl@ini@calendar{##1}}%
+        {}%
+    \fi
+    \in@{=identification/extension.}{=##1/##2}%
+    \ifin@
+      \bbl@ini@extension{##2}%
     \fi
     \bbl@ifunset{bbl@inikv@##1}{}%
       {\csname bbl@inikv@##1\endcsname{##2}{##3}}}%
@@ -3067,6 +3113,9 @@
  \fi
  \ifx\bbl@tempa\relax\else
    \bbl@replace\bbl@tempa{=}{}%
+   \ifx\bbl@tempa\@empty\else
+     \xdef\bbl@calendars{,\bbl@tempa}%
+   \fi
    \bbl@exp{%
      \def\<bbl@inikv@#1>####1####2{%
        \\\bbl@inidate####1...\relax{####2}{\bbl@tempa}}}%
@@ -3094,6 +3143,17 @@
        \bbl@cs{@kv@identification.warning#1}\\%
        Reported }}}
 \let\bbl@release@transforms\@empty
+\def\bbl@ini@extension#1{%
+  \def\bbl@tempa{#1}%
+  \bbl@replace\bbl@tempa{extension.}{}%
+  \bbl@replace\bbl@tempa{.tag.bcp47}{}%
+  \bbl@ifunset{bbl@info@#1}%
+    {\bbl@csarg\xdef{info@#1}{ext/\bbl@tempa}%
+     \bbl@exp{%
+       \\\g@addto@macro\\\bbl@moreinfo{%
+         \\\bbl@exportkey{ext/\bbl@tempa}{identification.#1}{}}}}%
+    {}}
+\let\bbl@moreinfo\@empty
 \def\bbl@ini@exports#1{%
   % Identification always exported
   \bbl@iniwarning{}%
@@ -3116,12 +3176,16 @@
     {\csname bbl@esname@\languagename\endcsname}}%
   \bbl@exportkey{sbcp}{identification.script.tag.bcp47}{}%
   \bbl@exportkey{sotf}{identification.script.tag.opentype}{DFLT}%
+  \bbl@exportkey{rbcp}{identification.region.tag.bcp47}{}%
+  \bbl@exportkey{vbcp}{identification.variant.tag.bcp47}{}%
+  \bbl@moreinfo
   % Also maps bcp47 -> languagename
   \ifbbl@bcptoname
     \bbl@csarg\xdef{bcp@map@\bbl@cl{tbcp}}{\languagename}%
   \fi
   % Conditional
   \ifnum#1>\z@         % 0 = only info, 1, 2 = basic, (re)new
+    \bbl@exportkey{calpr}{date.calendar.preferred}{}%
     \bbl@exportkey{lnbrk}{typography.linebreaking}{h}%
     \bbl@exportkey{hyphr}{typography.hyphenrules}{}%
     \bbl@exportkey{lfthm}{typography.lefthyphenmin}{2}%
@@ -3145,6 +3209,7 @@
   \toks@{#2}%            This hides #'s from ini values
   \bbl@csarg\edef{@kv@\bbl@section.#1}{\the\toks@}}
 \let\bbl@inikv@identification\bbl@inikv
+\let\bbl@inikv@date\bbl@inikv
 \let\bbl@inikv@typography\bbl@inikv
 \let\bbl@inikv@characters\bbl@inikv
 \let\bbl@inikv@numbers\bbl@inikv
@@ -3315,21 +3380,35 @@
 \DeclareRobustCommand\localedate[1][]{\bbl@localedate{#1}}
 \def\bbl@localedate#1#2#3#4{%
   \begingroup
-    \ifx\@empty#1\@empty\else
-      \let\bbl@ld@calendar\@empty
-      \let\bbl@ld@variant\@empty
-      \edef\bbl@tempa{\zap@space#1 \@empty}%
-      \def\bbl@tempb##1=##2\@@{\@namedef{bbl@ld@##1}{##2}}%
-      \bbl@foreach\bbl@tempa{\bbl@tempb##1\@@}%
-      \edef\bbl@calendar{%
-        \bbl@ld@calendar
-        \ifx\bbl@ld@variant\@empty\else
-          .\bbl@ld@variant
-        \fi}%
-      \bbl@replace\bbl@calendar{gregorian}{}%
+    \edef\bbl@they{#2}%
+    \edef\bbl@them{#3}%
+    \edef\bbl@thed{#4}%
+    \edef\bbl@tempe{%
+      \bbl@ifunset{bbl@calpr@\languagename}{}{\bbl@cl{calpr}},%
+      #1}%
+    \bbl@replace\bbl@tempe{ }{}%
+    \bbl@replace\bbl@tempe{convert}{convert=}%
+    \let\bbl@ld@calendar\@empty
+    \let\bbl@ld@variant\@empty
+    \let\bbl@ld@convert\relax
+    \def\bbl@tempb##1=##2\@@{\@namedef{bbl@ld@##1}{##2}}%
+    \bbl@foreach\bbl@tempe{\bbl@tempb##1\@@}%
+    \bbl@replace\bbl@ld@calendar{gregorian}{}%
+    \ifx\bbl@ld@calendar\@empty\else
+      \ifx\bbl@ld@convert\relax\else
+        \babelcalendar[\bbl@they-\bbl@them-\bbl@thed]%
+          {\bbl@ld@calendar}\bbl@they\bbl@them\bbl@thed
+      \fi
     \fi
+    \@nameuse{bbl@precalendar}% Remove, eg, +, -civil (-ca-islamic)
+    \edef\bbl@calendar{% Used in \month..., too
+      \bbl@ld@calendar
+      \ifx\bbl@ld@variant\@empty\else
+        .\bbl@ld@variant
+      \fi}%
     \bbl@cased
-      {\@nameuse{bbl@date@\languagename @\bbl@calendar}{#2}{#3}{#4}}%
+      {\@nameuse{bbl@date@\languagename @\bbl@calendar}%
+         \bbl@they\bbl@them\bbl@thed}%
   \endgroup}
 \def\bbl@inidate#1.#2.#3.#4\relax#5#6{% TODO - ignore with 'captions'
   \bbl@trim@def\bbl@tempa{#1.#2}%
@@ -3345,24 +3424,24 @@
       {\lowercase{\def\bbl@tempb{#6}}%
        \bbl@trim@def\bbl@toreplace{#5}%
        \bbl@TG@@date
-       \bbl@ifunset{bbl@date@\languagename @}%
-         {\bbl@exp{% TODO. Move to a better place.
-            \gdef\<\languagename date>{\\\protect\<\languagename date >}%
-            \gdef\<\languagename date >####1####2####3{%
-              \\\bbl@usedategrouptrue
-              \<bbl@ensure@\languagename>{%
-                \\\localedate{####1}{####2}{####3}}}%
-            \\\bbl@add\\\bbl@savetoday{%
-              \\\SetString\\\today{%
-                \<\languagename date>%
-                   {\\\the\year}{\\\the\month}{\\\the\day}}}}}%
-         {}%
-       \global\bbl@csarg\let{date@\languagename @}\bbl@toreplace
-       \ifx\bbl@tempb\@empty\else
-         \global\bbl@csarg\let{date@\languagename @\bbl@tempb}\bbl@toreplace
+       \global\bbl@csarg\let{date@\languagename @\bbl@tempb}\bbl@toreplace
+       \ifx\bbl@savetoday\@empty
+         \bbl@exp{% TODO. Move to a better place.
+           \\\AfterBabelCommands{%
+             \def\<\languagename date>{\\\protect\<\languagename date >}%
+             \\\newcommand\<\languagename date >[4][]{%
+               \\\bbl@usedategrouptrue
+               \<bbl@ensure@\languagename>{%
+                 \\\localedate[####1]{####2}{####3}{####4}}}}%
+           \def\\\bbl@savetoday{%
+             \\\SetString\\\today{%
+               \<\languagename date>[convert]%
+                  {\\\the\year}{\\\the\month}{\\\the\day}}}}%
        \fi}%
       {}}}
 \let\bbl@calendar\@empty
+\newcommand\babelcalendar[2][\the\year-\the\month-\the\day]{%
+  \@nameuse{bbl@ca@#2}#1\@@}
 \newcommand\BabelDateSpace{\nobreakspace}
 \newcommand\BabelDateDot{.\@}  % TODO. \let instead of repeating
 \newcommand\BabelDated[1]{{\number#1}}
@@ -3460,7 +3539,7 @@
       {\bbl@exp{\\\bbl@ifblank{\bbl@cs{prehc@#1}}}%
         {}%
         {\ifx\bbl@xenohyph\@undefined
-           \let\bbl@xenohyph\bbl@xenohyph@d
+           \global\let\bbl@xenohyph\bbl@xenohyph@d
            \ifx\AtBeginDocument\@notprerr
              \expandafter\@secondoftwo  % to execute right now
            \fi
@@ -3565,13 +3644,21 @@
 \def\bbl@alphnum@invalid#1{%
   \bbl@error{Alphabetic numeral too large (#1)}%
     {Currently this is the limit.}}
+\def\bbl@localeinfo#1#2{%
+  \bbl@ifunset{bbl@info@#2}{#1}%
+    {\bbl@ifunset{bbl@\csname bbl@info@#2\endcsname @\languagename}{#1}%
+      {\bbl@cs{\csname bbl@info@#2\endcsname @\languagename}}}}
 \newcommand\localeinfo[1]{%
-  \bbl@ifunset{bbl@\csname bbl@info@#1\endcsname @\languagename}%
-    {\bbl@error{I've found no info for the current locale.\\%
-                The corresponding ini file has not been loaded\\%
-                Perhaps it doesn't exist}%
-               {See the manual for details.}}%
-    {\bbl@cs{\csname bbl@info@#1\endcsname @\languagename}}}
+  \ifx*#1\@empty   % TODO. A bit hackish to make it expandable.
+    \bbl@afterelse\bbl@localeinfo{}%
+  \else
+    \bbl@localeinfo
+      {\bbl@error{I've found no info for the current locale.\\%
+                  The corresponding ini file has not been loaded\\%
+                  Perhaps it doesn't exist}%
+                 {See the manual for details.}}%
+      {#1}%
+  \fi}
 \@namedef{bbl@info@tag.ini}{lini}
 \@namedef{bbl@info@name.english}{elname}
 \@namedef{bbl@info@name.opentype}{lname}
@@ -3582,6 +3669,9 @@
 \@namedef{bbl@info@script.name.opentype}{sname}
 \@namedef{bbl@info@script.tag.bcp47}{sbcp}
 \@namedef{bbl@info@script.tag.opentype}{sotf}
+\@namedef{bbl@info@region.tag.bcp47}{rbcp}
+\@namedef{bbl@info@variant.tag.bcp47}{vbcp}
+\providecommand\BCPdata[1]{\localeinfo*{#1.tag.bcp47}}
 \let\bbl@ensureinfo\@gobble
 \newcommand\BabelEnsureInfo{%
   \ifx\InputIfFileExists\@undefined\else
@@ -3591,6 +3681,9 @@
   \bbl@foreach\bbl@loaded{{%
     \def\languagename{##1}%
     \bbl@ensureinfo{##1}}}}
+\@ifpackagewith{babel}{ensureinfo=off}{}%
+  {\AtEndOfPackage{% Test for plain.
+    \ifx\@undefined\bbl@loaded\else\BabelEnsureInfo\fi}}
 \newcommand\getlocaleproperty{%
   \@ifstar\bbl@getproperty@s\bbl@getproperty@x}
 \def\bbl@getproperty@s#1#2#3{%
@@ -3723,7 +3816,7 @@
   \fi
 \fi
 \bbl@trace{Cross referencing macros}
-\ifx\bbl@opt@safe\@empty\else
+\ifx\bbl@opt@safe\@empty\else % ie, if 'ref' and/or 'bib'
   \def\@newl@bel#1#2#3{%
    {\@safe@activestrue
     \bbl@ifunset{#1@#2}%
@@ -3755,10 +3848,24 @@
 \fi
 \bbl@xin@{R}\bbl@opt@safe
 \ifin@
-  \bbl@redefinerobust\ref#1{%
-    \@safe@activestrue\org@ref{#1}\@safe@activesfalse}
-  \bbl@redefinerobust\pageref#1{%
-    \@safe@activestrue\org@pageref{#1}\@safe@activesfalse}
+  \edef\bbl@tempc{\expandafter\string\csname ref code\endcsname}%
+  \bbl@xin@{\expandafter\strip@prefix\meaning\bbl@tempc}%
+    {\expandafter\strip@prefix\meaning\ref}%
+  \ifin@
+    \bbl@redefine\@kernel@ref#1{%
+      \@safe@activestrue\org@@kernel@ref{#1}\@safe@activesfalse}
+    \bbl@redefine\@kernel@pageref#1{%
+      \@safe@activestrue\org@@kernel@pageref{#1}\@safe@activesfalse}
+    \bbl@redefine\@kernel@sref#1{%
+      \@safe@activestrue\org@@kernel@sref{#1}\@safe@activesfalse}
+    \bbl@redefine\@kernel@spageref#1{%
+      \@safe@activestrue\org@@kernel@spageref{#1}\@safe@activesfalse}
+  \else
+    \bbl@redefinerobust\ref#1{%
+      \@safe@activestrue\org@ref{#1}\@safe@activesfalse}
+    \bbl@redefinerobust\pageref#1{%
+      \@safe@activestrue\org@pageref{#1}\@safe@activesfalse}
+  \fi
 \else
   \let\org@ref\ref
   \let\org@pageref\pageref
@@ -3841,28 +3948,30 @@
        \bbl@tempc
      \fi}  % end ifbbl@single, end \IfBabelLayout
 \bbl@trace{Preventing clashes with other packages}
-\bbl@xin@{R}\bbl@opt@safe
-\ifin@
-  \AtBeginDocument{%
-    \@ifpackageloaded{ifthen}{%
-      \bbl@redefine@long\ifthenelse#1#2#3{%
-        \let\bbl@temp@pref\pageref
-        \let\pageref\org@pageref
-        \let\bbl@temp@ref\ref
-        \let\ref\org@ref
-        \@safe@activestrue
-        \org@ifthenelse{#1}%
-          {\let\pageref\bbl@temp@pref
-           \let\ref\bbl@temp@ref
-           \@safe@activesfalse
-           #2}%
-          {\let\pageref\bbl@temp@pref
-           \let\ref\bbl@temp@ref
-           \@safe@activesfalse
-           #3}%
-        }%
-      }{}%
-    }
+\ifx\org@ref\@undefined\else
+  \bbl@xin@{R}\bbl@opt@safe
+  \ifin@
+    \AtBeginDocument{%
+      \@ifpackageloaded{ifthen}{%
+        \bbl@redefine@long\ifthenelse#1#2#3{%
+          \let\bbl@temp@pref\pageref
+          \let\pageref\org@pageref
+          \let\bbl@temp@ref\ref
+          \let\ref\org@ref
+          \@safe@activestrue
+          \org@ifthenelse{#1}%
+            {\let\pageref\bbl@temp@pref
+             \let\ref\bbl@temp@ref
+             \@safe@activesfalse
+             #2}%
+            {\let\pageref\bbl@temp@pref
+             \let\ref\bbl@temp@ref
+             \@safe@activesfalse
+             #3}%
+          }%
+        }{}%
+      }
+\fi
   \AtBeginDocument{%
     \@ifpackageloaded{varioref}{%
       \bbl@redefine\@@vpageref#1[#2]#3{%
@@ -3968,11 +4077,7 @@
 \else
   \DeclareTextFontCommand{\textlatin}{\latintext}
 \fi
-\bbl@ifformatlater{2021-06-01}%
-  {\def\bbl@patchfont#1{\AddToHook{selectfont}{#1}}}
-  {\def\bbl@patchfont#1{%
-     \expandafter\bbl@add\csname selectfont \endcsname{#1}%
-     \expandafter\bbl@toglobal\csname selectfont \endcsname}}
+\def\bbl@patchfont#1{\AddToHook{selectfont}{#1}}
 \bbl@trace{Loading basic (internal) bidi support}
 \ifodd\bbl@engine
 \else % TODO. Move to txtbabel

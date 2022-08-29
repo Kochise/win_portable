@@ -24,7 +24,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -41,7 +41,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -63,9 +63,9 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: head)
 \ProvidesFile{%
   visualize%
@@ -75,12 +75,12 @@
 }
 \providecommand*\LCOWarning[2]{%
   \GenericWarning{%
-    (#1)\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces
+    (#1)\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces
   }{%
-    Letter class option  #1 Warning: #2%
+    Letter configuration option #1 Warning: #2%
   }%
 }
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \RequirePackage{eso-pic}
 \newcommand*{\showfields}[1]{%
@@ -226,27 +226,27 @@
 \newcommand*{\showfield@location}{%
   \begingroup
     \ifdim \useplength{locwidth}=\z@%
-      \@setplength{locwidth}{\paperwidth}%
+      \setplength{locwidth}{\paperwidth}%
       \ifdim \useplength{toaddrhpos}>\z@
-        \@addtoplength[-2]{locwidth}{\useplength{toaddrhpos}}%
+        \addtoplength[-2]{locwidth}{\useplength{toaddrhpos}}%
       \else
-        \@addtoplength[2]{locwidth}{\useplength{toaddrhpos}}%
+        \addtoplength[2]{locwidth}{\useplength{toaddrhpos}}%
       \fi
-      \@addtoplength[-1]{locwidth}{\useplength{toaddrwidth}}%
+      \addtoplength[-1]{locwidth}{\useplength{toaddrwidth}}%
       \if@bigloc%
-        \@setplength[.66667]{locwidth}{\useplength{locwidth}}%
+        \setplength[.66667]{locwidth}{\useplength{locwidth}}%
       \else%
-        \@setplength[.5]{locwidth}{\useplength{locwidth}}%
+        \setplength[.5]{locwidth}{\useplength{locwidth}}%
       \fi%
     \fi%
     \ifdim \useplength{lochpos}=\z@%
-      \@setplength{lochpos}{\useplength{toaddrhpos}}%
+      \setplength{lochpos}{\useplength{toaddrhpos}}%
     \fi
     \ifdim \useplength{locvpos}=\z@%
-      \@setplength{locvpos}{\useplength{toaddrvpos}}%
+      \setplength{locvpos}{\useplength{toaddrvpos}}%
     \fi
     \ifdim \useplength{locheight}=\z@%
-      \@setplength{locheight}{\useplength{toaddrheight}}%
+      \setplength{locheight}{\useplength{toaddrheight}}%
     \fi
     \setlengthtoplength[-]{\@tempskipa}{lochpos}%
     \ifdim \@tempskipa<\z@
@@ -263,17 +263,17 @@
   \begingroup
     \ifdim\useplength{refwidth}=\z@
       \if@refwide
-        \@setplength{refwidth}{\paperwidth}%
+        \setplength{refwidth}{\paperwidth}%
         \ifdim \useplength{toaddrhpos}>\z@
-          \@setplength{refhpos}{\useplength{toaddrhpos}}%
+          \setplength{refhpos}{\useplength{toaddrhpos}}%
         \else
-          \@setplength[-]{refhpos}{\useplength{toaddrhpos}}%
+          \setplength[-]{refhpos}{\useplength{toaddrhpos}}%
         \fi
-        \@addtoplength[-2]{refwidth}{\useplength{refhpos}}%
+        \addtoplength[-2]{refwidth}{\useplength{refhpos}}%
       \else
-        \@setplength{refwidth}{\textwidth}%
-        \@setplength{refhpos}{\oddsidemargin}%
-        \@addtoplength{refhpos}{1in}%
+        \setplength{refwidth}{\textwidth}%
+        \setplength{refhpos}{\oddsidemargin}%
+        \addtoplength{refhpos}{1in}%
       \fi
     \else\ifdim\useplength{refhpos}=\z@
         \begingroup
@@ -290,7 +290,7 @@
             \divide\@tempdima by\@tempdimc
           \fi
           \edef\@tempa{\noexpand\endgroup
-            \noexpand\@setplength{refhpos}{\the\@tempdima}}%
+            \noexpand\setplength{refhpos}{\the\@tempdima}}%
         \@tempa
     \fi\fi
     \showfield{\useplength{refhpos}}{\useplength{refvpos}}%
@@ -577,7 +577,7 @@
 \newcommand*{\showUScheck}{%
   \showenvelope(8.625in,3.625in)%
 }
-%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3895 2022-06-20 10:37:02Z kohm $
 %%%            (run: body)
 \endinput
 %%

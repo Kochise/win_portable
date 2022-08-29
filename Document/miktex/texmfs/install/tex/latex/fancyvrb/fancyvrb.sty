@@ -13,8 +13,8 @@
 %%   verbatim environments and commands and extensive documentation.
 %%
 \NeedsTeXFormat{LaTeX2e}
-\def\fileversion{4.2}
-\def\filedate{2022/04/12}
+\def\fileversion{4.5}
+\def\filedate{2022/06/06}
 \ProvidesPackage{fancyvrb}[\filedate\space \fileversion\space verbatim text (tvz,hv)]
 %\message{Style option: `fancyvrb' v\fileversion \space  <\filedate> (tvz)}
 \csname fancyvrb@loaded\endcsname
@@ -865,23 +865,16 @@
   \def\FV@LabelPositionTopLine{\@ne}%
   \def\FV@LabelPositionBottomLine{\@ne}}
 \fvset{labelposition=topline}
-%% DG/SR modification end
-%% DG/SR modification begin - May. 19, 1998
-%% \def\FV@SingleFrameLine{%
 \def\FV@SingleFrameLine#1{%
-%% DG/SR modification end
   \hbox to\z@{%
     \kern\leftmargin
-%% DG/SR modification begin - Jun. 22, 1998
     \ifnum#1=\z@
       \let\FV@Label\FV@LabelBegin
     \else
       \let\FV@Label\FV@LabelEnd
     \fi
     \ifx\FV@Label\relax
-%% DG/SR modification end
       \FancyVerbRuleColor{\vrule \@width\linewidth \@height\FV@FrameRule}%
-%% DG/SR modification begin - Jun. 22, 1998
     \else
       \ifnum#1=\z@
         \setbox\z@\hbox{\strut\enspace\FV@LabelBegin\enspace\strut}%
@@ -907,35 +900,29 @@
         \fi
       \fi
     \fi
-%% DG/SR modification end
     \hss}}
-%% DG/SR modification begin - May. 19, 1998
 \def\FV@FrameLineWithLabel{%
   \ht\z@\@tempdimb\dp\z@\@tempdimb%
   \FancyVerbRuleColor{%
     \vrule \@width\@tempdimc \@height\FV@FrameRule
     \raise\@tempdimb\box\z@
     \vrule \@width\@tempdimc \@height\FV@FrameRule}}
-%% DG/SR modification end
 \def\FV@BeginListFrame@Lines{%
   \begingroup
     \lineskip\z@skip
-%% DG modification begin - June 18, 1997 (effect of \baselineskip too earlier)
-%%    \baselineskip\z@skip
-%%    \FV@SingleFrameLine
-%% DG/SR modification begin - May. 19, 1998
-%%    \FV@SingleFrameLine
     \FV@SingleFrameLine{\z@}%
-%% DG/SR modification end
-    \kern-0.5\baselineskip\relax
+%    \kern-0.5\baselineskip\relax       %% 20220604 (hv)
+    \nointerlineskip			%% added 20220604 (hv)
     \baselineskip\z@skip
-%% DG modification end
     \kern\FV@FrameSep\relax
+    \penalty\@M% prevent a pagebreak _after_ the line 20220602 (hv)
   \endgroup}%
 \def\FV@EndListFrame@Lines{%
   \begingroup
     \baselineskip\z@skip
     \kern\FV@FrameSep\relax
+    \nointerlineskip			%% added 20220604 (hv)
+    \penalty\@M% prevent a pagebreak _before_ the line 20220602 (hv)
     \FV@SingleFrameLine{\@ne}%
   \endgroup}
 \def\FV@SingleFrameSep{%

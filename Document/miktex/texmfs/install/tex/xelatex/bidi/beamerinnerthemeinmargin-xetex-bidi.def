@@ -1,0 +1,136 @@
+%%
+%% This is file `beamerinnerthemeinmargin-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerinnerthemeinmargin-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerinnerthemeinmargin-xetex-bidi.def}[2022/06/09 v0.1 bidi adaptations for beamerinnerthemeinmargin package for XeTeX engine]
+\AtBeginDocument{%
+  \setbeamersize{sidebar width left=.25\paperwidth}%
+}
+
+\bidi@csundef{beamer@@tmpop@section in toc@inmargin}
+
+\bidi@csundef{beamer@@tmpop@title page@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block begin@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block end@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block alerted begin@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block alerted end@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block example begin@inmargin}
+
+\bidi@csundef{beamer@@tmpop@block example end@inmargin}
+
+\defbeamertemplate*{section in toc}{inmargin}
+{\leavevmode
+  \beamer@putleft{{\usebeamercolor[fg]{section in toc}\inserttocsection}\strut}{2.5ex}}
+
+\defbeamertemplate*{title page}{inmargin}
+{
+  \begin{block}{\inserttitleindicator}
+    \bgroup\usebeamercolor[fg]{title}\usebeamerfont{title}\inserttitle\egroup\par
+    \usebeamercolor[fg]{subtitle}\usebeamerfont{subtitle}\insertsubtitle
+  \end{block}
+  \vfill
+  \ifx\insertauthor\@empty
+  \else
+  \begin{block}{\insertauthorindicator}
+    \bgroup\usebeamercolor[fg]{author}\usebeamerfont{author}\insertauthor\egroup\par
+  \end{block}
+  \fi
+  \ifx\insertinstitute\@empty
+  \else
+  \begin{block}{\insertinstituteindicator}
+    \bgroup\usebeamercolor[fg]{institute}\usebeamerfont{institute}\insertinstitute\egroup\par
+  \end{block}
+  \fi
+  \ifx\insertdate\@empty
+  \else
+  \begin{block}{\insertdateindicator}
+    \bgroup\usebeamercolor[fg]{date}\usebeamerfont{date}\insertdate\egroup\par
+  \end{block}
+  \fi
+}
+
+\defbeamertemplate*{block begin}{inmargin}
+{
+  \par\vskip\medskipamount%
+  \leavevmode%
+  \beamer@putleft{\normalfont{\usebeamercolor[fg]{block title}\usebeamerfont*{block title}\insertblocktitle}}{2.5ex}%
+  \beginL\beamer@putright
+  %\usebeamercolor[fg]{block body}% to be done!
+}
+
+\defbeamertemplate*{block end}{inmargin}
+{\endbeamer@putright\endL\vskip\smallskipamount}
+
+\defbeamertemplate*{block alerted begin}{inmargin}
+{
+  \par\vskip\medskipamount%
+  \leavevmode%
+  \beamer@putleft{\normalfont{\usebeamercolor[fg]{block title alerted}\usebeamerfont*{block title alerted}\insertblocktitle}}{2.5ex}%
+  \beginL\beamer@putright
+  %\usebeamercolor[fg]{block body alerted}% to be done!
+}
+
+\defbeamertemplate*{block alerted end}{inmargin}
+{\endbeamer@putright\endL\vskip\smallskipamount}
+
+\defbeamertemplate*{block example begin}{inmargin}
+{
+  \par\vskip\medskipamount%
+  \leavevmode%
+  \beamer@putleft{\normalfont{\usebeamercolor[fg]{block title example}\usebeamerfont*{block title example}\insertblocktitle}}{2.5ex}%
+  \beginL\beamer@putright
+  %\usebeamercolor[fg]{block body example}% to be done
+}
+
+\defbeamertemplate*{block example end}{inmargin}
+{\endbeamer@putright\endL\vskip\smallskipamount}
+
+\bidi@AfterFile{beamerinnerthemerectangles-xetex-bidi.def}{%
+  \setbeamertemplate{section in toc}[inmargin]%
+  \setbeamertemplate{subsection in toc}[inmargin]%
+  \setbeamertemplate{subsubsection in toc}[inmargin]%
+}
+
+\endinput
+%%
+%% End of file `beamerinnerthemeinmargin-xetex-bidi.def'.

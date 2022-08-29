@@ -36,7 +36,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -53,28 +53,28 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{tocbasic}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (handling toc-files)%
 ]
-%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
-%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \ProcessOptions\relax
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \RequirePackage{scrbase}
 \AfterPackage*{multitoc}{%
-  \@ifpackagelater{multitoc}{2018/08/31}{}{%
+  \@ifpackagelater{multitoc}{2022/02/10}{}{%
     \PackageWarningNoLine{tocbasic}{%
       Usage of package `multitoc' is not recommended!\MessageBreak
       Note, this package generally results in empty ToCs\MessageBreak
@@ -1030,7 +1030,7 @@
             \noexpand\renewcommand*\expandafter\noexpand
             \csname the\tb@nt@type\endcsname{%
               \unexpanded{%
-                \expandafter\ifx\csname ifmainmatter\expandafter\endcsname
+                \expandafter\ifx\csname if@mainmatter\expandafter\endcsname
                 \csname iffalse\endcsname\else
               }%
                 \noexpand\ifnum
@@ -1095,7 +1095,7 @@
   }%
 }
 \newcommand*{\tb@nt@autofloattype}{16}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\scr@numberline}[1]{%
   \numberline@box{%
@@ -1500,8 +1500,7 @@
       \unexpanded\expandafter{\scr@dte@doopts}\noexpand\do{#2:}%
     }%
   \else
-    \PackageError{tocbasic%
-    }{only one argument supported}{%
+    \PackageError{tocbasic}{only one argument supported}{%
       \string\DefineTOCEntryCommandOption\space currently supports only
       commands with\MessageBreak
       at most one argument not #5}%
@@ -1559,8 +1558,7 @@
       \unexpanded\expandafter{\scr@dte@doopts}\noexpand\do{#2:}%
     }%
   \else
-    \PackageError{tocbasic%
-    }{only one argument supported}{%
+    \PackageError{tocbasic}{only one argument supported}{%
       \string\DefineTOCEntryCommandOption\space currently supports only
       commands with\MessageBreak
       at most two argument not #6}%
@@ -1637,8 +1635,7 @@
 }
 \newcommand*{\DeclareTOCStyleEntry}[3][]{%
   \scr@ifundefinedorrelax{scr@dte@def@l@#2}{%
-    \PackageError{tocbasic%
-    }{toc entry style `#2' undefined}{%
+    \PackageError{tocbasic}{toc entry style `#2' undefined}{%
       Somebody told me to define toc entry `#3' with style `#2',\MessageBreak
       but I do not know style `#2'.\MessageBreak
       You should first define the style then define the entry.\MessageBreak
@@ -1669,8 +1666,7 @@
       \aftergroup\@tempswatrue
       \def\do##1##2##3##4{%
         \scr@ifundefinedorrelax{##1#3##2}{%
-          \PackageError{tocbasic%
-          }{toc style `#2' needs ##4}{%
+          \PackageError{tocbasic}{toc style `#2' needs ##4}{%
             Usually the ##4 is defined using option `##3'.\MessageBreak
             In some cases it may be set defining command
             `\expandafter\string\csname ##1#3##2\endcsname'.\MessageBreak
@@ -1750,10 +1746,10 @@
 \providecommand*\@pnumwidth{1.55em}
 \providecommand*\@tocrmarg {2.55em}
 \providecommand*\@dotsep   {4.5}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,gobble)
 \DeclareTOCEntryStyle{gobble}{}%
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,dottedtocline)
 \DeclareTOCEntryStyle{dottedtocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -1887,7 +1883,7 @@
                    {\@nameuse{scr@tso@#1@numwidth}}{##1}{##2}%
   }%
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,undottedtocline)
 \DeclareTOCEntryStyle{undottedtocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -2047,7 +2043,7 @@
     \endgroup
   \fi
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style, largetocline)
 \DeclareTOCEntryStyle{largetocline}[{%
   \DefineTOCEntryLengthOption{indent}%
@@ -2160,7 +2156,7 @@
     \endgroup
   \fi
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,tocline)
 \DeclareTOCEntryStyle{tocline}[{%
   \DefineTOCEntryLengthOption{beforeskip}%
@@ -2632,8 +2628,7 @@
             \ifdim \scr@dte@tocline@numberwidth
                   >\dimexpr \@nameuse{scr@tso@#1@numwidth}%
                            +\@nameuse{scr@tso@#1@numsep}\relax\relax
-              \PackageWarning{tocbasic%
-              }{%
+              \PackageWarning{tocbasic}{%
                 number width of #1 toc entries should be
                 increased!\MessageBreak
                 Currently used number width =
@@ -2692,7 +2687,7 @@
     \mkern \@dotsep mu\hbox{#1}\mkern \@dotsep
     mu$}\hfill
 }
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,toctext)
 \DeclareTOCEntryStyle{toctext}[{%
   \DefineTOCEntryLengthOption{beforeskip}%
@@ -2936,10 +2931,10 @@
 \newcommand*{\scr@dte@toctext@raggedright}{}
 \newcommand*{\scr@dte@toctext@parend}{}
 \newcommand*{\scr@dte@toctext@lastend}{}
-%%% From File: $Id: scrkernel-tocstyle.dtx 3613 2021-07-15 12:25:10Z kohm $
+%%% From File: $Id: scrkernel-tocstyle.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: style,dottedtocline)
 \CloneTOCEntryStyle{dottedtocline}{default}
-%%% From File: $Id: tocbasic.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: tocbasic.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: exit)
 \AtBeginDocument{%
   \@ifundefined{MakeMarkcase}{%
@@ -2950,10 +2945,8 @@
     }%
   }{}%
 }
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `tocbasic.sty'.

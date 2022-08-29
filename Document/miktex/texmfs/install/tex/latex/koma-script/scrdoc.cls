@@ -1,6 +1,6 @@
 % ======================================================================
-% scrdoc.dtx
-% Copyright (c) Markus Kohm, 2002-2017
+% scrdoc.cls
+% Copyright (c) Markus Kohm, 2002-2022
 %
 % This file is part of the LaTeX2e KOMA-Script bundle.
 %
@@ -15,82 +15,63 @@
 %
 % The Current Maintainer and author of this work is Markus Kohm.
 %
-% This work consists of all files listed in manifest.txt.
-% ----------------------------------------------------------------------
-% scrdoc.dtx
-% Copyright (c) Markus Kohm, 2002-2017
-%
-% Dieses Werk darf nach den Bedingungen der LaTeX Project Public Lizenz,
-% Version 1.3c, verteilt und/oder veraendert werden.
-% Die neuste Version dieser Lizenz ist
-%   http://www.latex-project.org/lppl.txt
-% und Version 1.3c ist Teil aller Verteilungen von LaTeX
-% Version 2005/12/01 oder spaeter und dieses Werks.
-%
-% Dieses Werk hat den LPPL-Verwaltungs-Status "author-maintained"
-% (allein durch den Autor verwaltet).
-%
-% Der Aktuelle Verwalter und Autor dieses Werkes ist Markus Kohm.
-% 
-% Dieses Werk besteht aus den in manifest.txt aufgefuehrten Dateien.
+% This work consists of all files listed in MANIFEST.md.
 % ======================================================================
-%
 % Note: This class was made to shrink size of dtx files.
 %       Do not use this class for anything because it may change
 %       incompatible from distribution to distribution
-%
-
+% ======================================================================
+% $Id: scrdoc.cls 3900 2022-06-24 08:00:42Z kohm $
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{scrdoc}[%
-  2016/04/12 v0.1e KOMA-Script source documentation class]
+  2022/06/24 v0.1j KOMA-Script source documentation class (deprecated)]
 
-% Load standard LaTeX documentation class, passing all options to it
-% but use scrartcl instead of article.
-\IfFileExists{scrartcl.cls}{%
-  \newcommand*{\sd@saved@LoadClass}{}
-  \let\sd@saved@LoadClass=\LoadClass
-  \renewcommand*{\LoadClass}[2][]{%
-    \begingroup
-      \edef\@tempc{##2}\def\@tempb{article}%
-      \ifx\@tempc\@tempb
-        \let\LoadClass\sd@saved@LoadClass
-        \def\@tempc{scrartcl}%
-      \fi
-      \edef\@tempc{%
-        \noexpand\endgroup\noexpand\sd@saved@LoadClass[{##1}]{\@tempc}}%
-    \@tempc
-  }
-  \newcommand*{\sd@saved@PassOptionsToClass}{}
-  \let\sd@saved@PassOptionsToClass=\PassOptionsToClass
-  \renewcommand*{\PassOptionsToClass}[2]{%
-    \begingroup
-      \edef\@tempc{##2}\def\@tempb{article}%
-      \ifx\@tempc\@tempb
-        \def\@tempc{scrartcl}%
-      \fi
-      \edef\@tempc{%
-        \noexpand\endgroup\noexpand\sd@saved@PassOptionsToClass{##1}{%
-          \@tempc}}%
-    \@tempc
-  }
-}{%
-  \typeout{^^J%
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-    !!! You should generate KOMA-Script classes first!^^J%
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-    ^^J%
-  }%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}%
-  \def\addsec{\section*}%
-  \newenvironment{labeling}[2][]{%
-    \description
-  }{%
-    \csname enddescription\endcsname
-  }%
-  \newcommand*{\marginline}{\marginpar}%
+\ClassWarningNoLine{scrdoc}{%
+  This class is depreacted since KOMA-Script 3.36!\MessageBreak
+  The internal KOMA-Script source documentation class\MessageBreak
+  scrdoc is not used any longer for the implementation\MessageBreak
+  documentation of KOMA-Script.\MessageBreak
+  It is also not compatible with version 3 of the\MessageBreak
+  doc package and currently only a workaround is used to\MessageBreak
+  force using doc version 2 and to ignore ltxdoc.cfg.\MessageBreak
+  You should replace this class urgently, because it will\MessageBreak
+  be removed from KOMA-Script soon%
 }
-\LoadClassWithOptions{ltxdoc}
+  
+% scrdoc is incompatible with doc v3. Several changes would be needed
+% to improve this. However, currently a kind of emergency workaround can be
+% used.
+\PassOptionsToClass{nocfg,doc2}{scrdoc}
+
+% Replace article class by scrartcl class.  
+\newcommand*{\sd@saved@LoadClass}{}
+\let\sd@saved@LoadClass=\LoadClass
+\renewcommand*{\LoadClass}[2][]{%
+  \begingroup
+    \edef\@tempc{#2}\def\@tempb{article}%
+    \ifx\@tempc\@tempb
+      \let\LoadClass\sd@saved@LoadClass
+      \def\@tempc{scrartcl}%
+    \fi
+    \edef\@tempc{%
+      \noexpand\endgroup\noexpand\sd@saved@LoadClass[{#1}]{\@tempc}}%
+  \@tempc
+}
+\newcommand*{\sd@saved@PassOptionsToClass}{}
+\let\sd@saved@PassOptionsToClass=\PassOptionsToClass
+\renewcommand*{\PassOptionsToClass}[2]{%
+  \begingroup
+    \edef\@tempc{#2}\def\@tempb{article}%
+    \ifx\@tempc\@tempb
+      \def\@tempc{scrartcl}%
+    \fi
+    \edef\@tempc{%
+      \noexpand\endgroup\noexpand\sd@saved@PassOptionsToClass{#1}{%
+        \@tempc}}%
+  \@tempc
+}
+\LoadClassWithOptions{ltxdoc}[2022/06/14]
+\@ifundefined{cs}{\DeclareRobustCommand\cs[1]{\texttt{\bslash #1}}}{}
 
 % Use two columns at index
 \setcounter{IndexColumns}{2}

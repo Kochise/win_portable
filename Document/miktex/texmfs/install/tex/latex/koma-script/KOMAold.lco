@@ -24,7 +24,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -41,7 +41,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -63,9 +63,9 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: head)
 \ProvidesFile{%
   KOMAold%
@@ -75,18 +75,18 @@
 }
 \providecommand*\LCOWarning[2]{%
   \GenericWarning{%
-    (#1)\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces
+    (#1)\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces\@spaces
   }{%
-    Letter class option  #1 Warning: #2%
+    Letter configuration option #1 Warning: #2%
   }%
 }
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \@ifundefined{scr@fromname@var}{%
   \LCOWarningNoLine{%
     KOMAold%
   }{%
-    This letter class option file was made only\MessageBreak
+    This letter configuration option file was made only\MessageBreak
     to be used with KOMA-Script letter class\MessageBreak
     `scrlttr2' or letter package `scrletter'.\MessageBreak
     Use with other classes and without that package\MessageBreak
@@ -96,44 +96,44 @@
 \LetterOptionNeedsPapersize{%
   KOMAold%
 }{a4}
-\@setplength{foldmarkhpos}{3.5mm}
-\@setplength{tfoldmarkvpos}{%
+\setplength{foldmarkhpos}{3.5mm}
+\setplength{tfoldmarkvpos}{%
   103.5mm}
-\@setplength{mfoldmarkvpos}{\z@}
-\@setplength{bfoldmarkvpos}{%
+\setplength{mfoldmarkvpos}{\z@}
+\setplength{bfoldmarkvpos}{%
   202.5mm}
-\@setplength{lfoldmarkhpos}{\z@}
-\@setplength{toaddrvpos}{%
+\setplength{lfoldmarkhpos}{\z@}
+\setplength{toaddrvpos}{%
   49mm}
-\@setplength{toaddrhpos}{%
+\setplength{toaddrhpos}{%
   1in}
-\@addtoplength{toaddrhpos}{\oddsidemargin}
-\@setplength{toaddrwidth}{%
+\addtoplength{toaddrhpos}{\oddsidemargin}
+\setplength{toaddrwidth}{%
   70mm}
-\@setplength{toaddrheight}{%
+\setplength{toaddrheight}{%
   45mm}
-\@setplength{toaddrindent}{%
+\setplength{toaddrindent}{%
   \z@}
-\@setplength{backaddrheight}{%
+\setplength{backaddrheight}{%
   5mm}
-\@setplength{specialmailindent}{\fill}
-\@setplength{specialmailrightindent}{1em}
-\@setplength{locwidth}{%
+\setplength{specialmailindent}{\fill}
+\setplength{specialmailrightindent}{1em}
+\setplength{locwidth}{%
   \z@}
-\@setplength{firstheadvpos}{%
+\setplength{firstheadvpos}{%
   6mm}
-\@setplength{firstheadwidth}{%
+\setplength{firstheadwidth}{%
   \textwidth}
-\@setplength{firstfootwidth}{\useplength{firstheadwidth}}
-\@setplength{firstfootvpos}{\paperheight}
-\@addtoplength{firstfootvpos}{-2cm}
-\@setplength{refvpos}{%
+\setplength{firstfootwidth}{\useplength{firstheadwidth}}
+\setplength{firstfootvpos}{\paperheight}
+\addtoplength{firstfootvpos}{-2cm}
+\setplength{refvpos}{%
   89.5mm}
-\@setplength{refaftervskip}{%
+\setplength{refaftervskip}{%
   2\baselineskip}
-\@setplength{refwidth}{0pt}
-\@setplength{sigindent}{0mm}
-\@setplength{sigbeforevskip}{2\baselineskip}
+\setplength{refwidth}{0pt}
+\setplength{sigindent}{0mm}
+\setplength{sigbeforevskip}{2\baselineskip}
 \let\raggedsignature=\raggedright
 \def\yourref{\setkomavar{yourref}}
 \def\yourmail{\setkomavar{yourmail}}
@@ -218,9 +218,9 @@
   \@ObsoleteCommand{\subjectafteron}{subject=afteropening}}
 \def\subjectafteroff{%
   \@ObsoleteCommand{\subjectafteroff}{subject=beforeopening}}
-%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3895 2022-06-20 10:37:02Z kohm $
 %%%            (run: body)
-\def\setpresigskip{\@setplength{sigbeforevskip}}
+\def\setpresigskip{\setplength{sigbeforevskip}}
 \endinput
 %%
 %% End of file `KOMAold.lco'.

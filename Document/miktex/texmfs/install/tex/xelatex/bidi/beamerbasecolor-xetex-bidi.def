@@ -1,0 +1,125 @@
+%%
+%% This is file `beamerbasecolor-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerbasecolor-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerbasecolor-xetex-bidi.def}[2022/06/07 v0.2 bidi adaptations for beamerbasecolor package for XeTeX engine]
+\renewenvironment{beamercolorbox}[2][]{%
+  \def\beamer@vmode{\leavevmode}%
+  \setkeys{beamercolbox}{wd=\textwidth,ht={},dp={},%
+    leftskip=0pt,rightskip=0pt plus1fil,%
+    sep=0pt,colsep=0pt,colsep*=0pt,%
+    shadow=false,rounded=false,ignorebg=false}%
+  \if@RTL
+    \setkeys{beamercolbox}{rightskip=0pt,leftskip=0pt plus1fil}%
+  \else
+    \setkeys{beamercolbox}{leftskip=0pt,rightskip=0pt plus1fil}%
+  \fi
+  \setkeys{beamercolbox}{#1}%
+  \ifbeamercolorempty[bg]{#2}{\@tempswafalse}{\@tempswatrue}%
+  \ifbeamer@colbox@ignorebg\@tempswafalse\fi%
+  \def\beamer@colbox@color{#2}%
+  \setbox\beamer@tempbox=\hbox\bgroup\color@begingroup
+    \ifbeamer@colbox@ignorebg%
+      \colorlet{beamer@temp@color}{bg}%
+      \usebeamercolor[fg]{#2}%
+      \colorlet{bg}{beamer@temp@color}%
+    \else%
+      \usebeamercolor[fg]{#2}%
+    \fi%
+    \beginL
+    \vbox\bgroup%
+    \hsize=\beamer@colbox@wd%
+    \@arrayparboxrestore%
+    \leftskip=\beamer@colbox@ls%
+    \ifdim\beamer@colbox@sep>\z@\advance\leftskip\beamer@colbox@sep\fi%
+    \rightskip=\beamer@colbox@rs%
+    \ifdim\beamer@colbox@sep>\z@\advance\rightskip\beamer@colbox@sep\fi%
+    \if@tempswa\ifdim\beamer@colbox@colsep>\z@%
+      \advance\leftskip by\beamer@colbox@colsep%
+      \advance\rightskip by\beamer@colbox@colsep%
+      \vskip\beamer@colbox@colsep%
+    \fi%
+      \ifdim\beamer@colbox@colseps>\z@\vskip\beamer@colbox@colseps\fi%
+    \fi%
+    \ifdim\beamer@colbox@sep>\z@\vskip\beamer@colbox@sep\fi%
+    \beamer@vmode\ignorespaces}{%
+    \ifdim\beamer@colbox@sep>\z@\vskip\beamer@colbox@sep\fi%
+    \if@tempswa
+      \ifdim\beamer@colbox@colsep>\z@\vskip\beamer@colbox@colsep\fi%
+      \ifdim\beamer@colbox@colseps>\z@\vskip\beamer@colbox@colseps\fi%
+    \fi%
+  \egroup\endL\color@endgroup\egroup%
+  \wd\beamer@tempbox=\beamer@colbox@wd%
+  \ifx\beamer@colbox@ht\@empty\else\ht\beamer@tempbox=\beamer@colbox@ht\fi%
+  \ifx\beamer@colbox@dp\@empty\else\dp\beamer@tempbox=\beamer@colbox@dp\fi%
+  \ifbeamer@colbox@rounded%
+    \if@tempswa%
+      \begin{beamerboxesrounded}[%
+        shadow=\beamer@colbox@shadow,%
+        lower=\beamer@colbox@color,%
+        upper=normal text,%
+        width=\beamer@colbox@wd]{}%
+        \box\beamer@tempbox%
+      \end{beamerboxesrounded}%
+    \else%
+      \ifdim\wd\beamer@tempbox>\textwidth%
+        \setbox\beamer@tempbox=\hbox to\textwidth{\hss\box\beamer@tempbox\hss}%
+      \fi%
+      \box\beamer@tempbox%
+    \fi%
+  \else%
+    \if@tempswa\setbox\beamer@tempbox=\hbox{%
+      \usebeamercolor{\beamer@colbox@color}%
+      \hskip-\beamer@colbox@colseps%
+      \fboxsep=\z@\colorbox{bg}{%
+        \hskip\beamer@colbox@colseps%
+        \box\beamer@tempbox%
+        \hskip\beamer@colbox@colseps%
+      }%
+      \hskip-\beamer@colbox@colseps%
+      }\fi%
+    \ifdim\wd\beamer@tempbox>\textwidth%
+      \setbox\beamer@tempbox=\hbox to\textwidth{\hskip0pt minus\beamer@leftmargin\relax\box\beamer@tempbox\hskip0pt minus\beamer@rightmargin\relax}%
+    \fi%
+    \box\beamer@tempbox%
+  \fi%
+}
+
+\endinput
+%%
+%% End of file `beamerbasecolor-xetex-bidi.def'.

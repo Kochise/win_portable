@@ -272,6 +272,15 @@
     end
     return has_bidi
   end
+  function Babel.set_chranges_b (script, chrng)
+    if chrng == '' then return end
+    texio.write('Replacing ' .. script .. ' script ranges')
+    Babel.script_blocks[script] = {}
+    for s, e in string.gmatch(chrng..' ', '(.-)%.%.(.-)%s') do
+      table.insert(
+        Babel.script_blocks[script], {tonumber(s,16), tonumber(e,16)})
+    end
+  end
 }
 \endgroup
 \ifx\newattribute\@undefined\else
@@ -864,7 +873,7 @@ end
        There is nothing intrinsically wrong with this warning, and\\%
        you can ignore it altogether if you do not need these\\%
        families. But if they are used in the document, you should be\\%
-       aware 'babel' will no set Script and Language for them, so\\%
+       aware 'babel' will not set Script and Language for them, so\\%
        you may consider defining a new family with \string\babelfont.\\%
        See the manual for further details about \string\babelfont.\\%
        Reported}}
@@ -962,45 +971,6 @@ end
 \def\bbl@font@rst#1#2#3#4{%
   \bbl@csarg\def{famrst@#4}{\bbl@font@set{#1}#2#3}}
 \def\bbl@font@fams{rm,sf,tt}
-\newcommand\babelFSstore[2][]{%
-  \bbl@ifblank{#1}%
-    {\bbl@csarg\def{sname@#2}{Latin}}%
-    {\bbl@csarg\def{sname@#2}{#1}}%
-  \bbl@provide@dirs{#2}%
-  \bbl@csarg\ifnum{wdir@#2}>\z@
-    \let\bbl@beforeforeign\leavevmode
-    \EnableBabelHook{babel-bidi}%
-  \fi
-  \bbl@foreach{#2}{%
-    \bbl@FSstore{##1}{rm}\rmdefault\bbl@save@rmdefault
-    \bbl@FSstore{##1}{sf}\sfdefault\bbl@save@sfdefault
-    \bbl@FSstore{##1}{tt}\ttdefault\bbl@save@ttdefault}}
-\def\bbl@FSstore#1#2#3#4{%
-  \bbl@csarg\edef{#2default#1}{#3}%
-  \expandafter\addto\csname extras#1\endcsname{%
-    \let#4#3%
-    \ifx#3\f@family
-      \edef#3{\csname bbl@#2default#1\endcsname}%
-      \fontfamily{#3}\selectfont
-    \else
-      \edef#3{\csname bbl@#2default#1\endcsname}%
-    \fi}%
-  \expandafter\addto\csname noextras#1\endcsname{%
-    \ifx#3\f@family
-      \fontfamily{#4}\selectfont
-    \fi
-    \let#3#4}}
-\let\bbl@langfeatures\@empty
-\def\babelFSfeatures{% make sure \fontspec is redefined once
-  \let\bbl@ori@fontspec\fontspec
-  \renewcommand\fontspec[1][]{%
-    \bbl@ori@fontspec[\bbl@langfeatures##1]}
-  \let\babelFSfeatures\bbl@FSfeatures
-  \babelFSfeatures}
-\def\bbl@FSfeatures#1#2{%
-  \expandafter\addto\csname extras#1\endcsname{%
-    \babel@save\bbl@langfeatures
-    \edef\bbl@langfeatures{#2,}}}
 \directlua{
 Babel.script_blocks = {
   ['dflt'] = {},
@@ -1162,6 +1132,7 @@ end
 \catcode`\~=12
 \catcode`\%=12
 \catcode`\&=14
+\catcode`\|=12
 \gdef\babelprehyphenation{&%
   \@ifnextchar[{\bbl@settransform{0}}{\bbl@settransform{0}[]}}
 \gdef\babelposthyphenation{&%
@@ -1377,33 +1348,71 @@ end
 \bbl@trace{Redefinitions for bidi layout}
 \def\BabelNoAMSMath{\let\bbl@noamsmath\relax}
 \ifnum\bbl@bidimode>\z@
+  \ifx\matheqdirmode\@undefined\else
+    \matheqdirmode\@ne
+  \fi
   \let\bbl@eqnodir\relax
+  \def\bbl@eqdel{()}
+  \def\bbl@eqnum{%
+    {\normalfont\normalcolor
+     \expandafter\@firstoftwo\bbl@eqdel
+     \theequation
+     \expandafter\@secondoftwo\bbl@eqdel}}
+  \def\bbl@puteqno#1{\eqno\hbox{#1}}
+  \def\bbl@putleqno#1{\leqno\hbox{#1}}
+  \def\bbl@eqno@flip#1{%
+    \ifdim\predisplaysize=-\maxdimen
+      \eqno
+      \hb@xt@.01pt{\hb@xt@\displaywidth{\hss{#1}}\hss}%
+    \else
+      \leqno\hbox{#1}%
+    \fi}
+  \def\bbl@leqno@flip#1{%
+    \ifdim\predisplaysize=-\maxdimen
+      \leqno
+      \hb@xt@.01pt{\hss\hb@xt@\displaywidth{{#1}\hss}}%
+    \else
+      \eqno\hbox{#1}%
+    \fi}
   \AtBeginDocument{%
     \ifx\maketag@@@\@undefined % Normal equation, eqnarray
+      \AddToHook{env/equation/begin}{%
+        \ifnum\bbl@thetextdir>\z@
+          \let\@eqnnum\bbl@eqnum
+          \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
+          \chardef\bbl@thetextdir\z@
+          \bbl@add\normalfont{\bbl@eqnodir}%
+          \ifcase\bbl@eqnpos
+            \let\bbl@puteqno\bbl@eqno@flip
+          \or
+            \let\bbl@puteqno\bbl@leqno@flip
+          \fi
+        \fi}%
+      \ifnum\bbl@eqnpos=\tw@\else
+        \def\endequation{\bbl@puteqno{\@eqnnum}$$\@ignoretrue}%
+      \fi
       \AddToHook{env/eqnarray/begin}{%
         \ifnum\bbl@thetextdir>\z@
           \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
           \chardef\bbl@thetextdir\z@
           \bbl@add\normalfont{\bbl@eqnodir}%
-        \fi}%
-      \AddToHook{env/equation/begin}{%
-        \ifnum\bbl@thetextdir>\z@
-          \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
-          \chardef\bbl@thetextdir\z@
-          \bbl@add\normalfont{\bbl@eqnodir}%
-          \pardir TLT % dir for \eqno is \pardir!
-        \fi}%
-      \bbl@xin@{,leqno,}{,\@classoptionslist,}%
-      \ifin@
-        \def\@eqnnum{%
-          \setbox\z@\hbox{\normalfont\normalcolor(\theequation)}%
-          \hbox to0.01pt{\hss\hbox to\displaywidth{\box\z@\hss}}}%
-      \fi
+          \ifnum\bbl@eqnpos=\@ne
+            \def\@eqnnum{%
+             \setbox\z@\hbox{\bbl@eqnum}%
+             \hbox to0.01pt{\hss\hbox to\displaywidth{\box\z@\hss}}}%
+          \else
+             \let\@eqnnum\bbl@eqnum
+          \fi
+        \fi}
+      % Hack. YA luatex bug?:
+      \expandafter\bbl@sreplace\csname] \endcsname{$$}{\eqno\kern.001pt$$}%
     \else % amstex
       \ifx\bbl@noamsmath\@undefined
-        \@ifpackagewith{amsmath}{leqno}%
-          {\let\bbl@ams@lap\hbox}% = leqno
-          {\let\bbl@ams@lap\llap}% = default
+        \ifnum\bbl@eqnpos=\@ne
+          \let\bbl@ams@lap\hbox
+        \else
+          \let\bbl@ams@lap\llap
+        \fi
         \ExplSyntaxOn
         \bbl@sreplace\intertext@{\normalbaselines}%
           {\normalbaselines
@@ -1423,12 +1432,21 @@ end
             \bbl@sreplace\textdef@{\hbox}{\bbl@ams@tagbox\hbox}%
             \bbl@sreplace\maketag@@@{\hbox}{\bbl@ams@tagbox#1}%
           \fi}%
-        \AddToHook{env/equation/begin}{%
-          \ifnum\bbl@thetextdir>\z@
-            \ifx\bbl@ams@lap\llap\hrule\@height\z@\fi
-            \bbl@ams@preset\bbl@ams@flip
-          \fi}%
-        \AddToHook{env/equation*/begin}{\bbl@ams@preset\bbl@ams@flip}%
+        \ifnum\bbl@eqnpos=\tw@\else
+          \def\bbl@ams@equation{%
+            \ifnum\bbl@thetextdir>\z@
+              \edef\bbl@eqnodir{\noexpand\bbl@textdir{\the\bbl@thetextdir}}%
+              \chardef\bbl@thetextdir\z@
+              \bbl@add\normalfont{\bbl@eqnodir}%
+              \ifcase\bbl@eqnpos
+                \def\veqno##1##2{\bbl@eqno@flip{##1##2}}%
+              \or
+                \def\veqno##1##2{\bbl@leqno@flip{##1##2}}%
+              \fi
+            \fi}%
+          \AddToHook{env/equation/begin}{\bbl@ams@equation}%
+          \AddToHook{env/equation*/begin}{\bbl@ams@equation}%
+        \fi
         \AddToHook{env/cases/begin}{\bbl@ams@preset\bbl@ams@lap}%
         \AddToHook{env/multline/begin}{\bbl@ams@preset\hbox}%
         \AddToHook{env/gather/begin}{\bbl@ams@preset\bbl@ams@lap}%
@@ -1517,22 +1535,21 @@ end
        % \(text|par)dir required in pgf:
        \def\bbl@pictresetdir{\bodydir TRT\pardir TRT\textdir TRT\relax}%
      \fi}%
-   \ifx\AddToHook\@undefined\else
-     \AddToHook{env/picture/begin}{\bbl@pictsetdir\tw@}%
-     \directlua{
-       Babel.get_picture_dir = true
-       Babel.picture_has_bidi = 0
-       %
-       function Babel.picture_dir (head)
-         if not Babel.get_picture_dir then return head end
-         if Babel.hlist_has_bidi(head) then
-           Babel.picture_has_bidi = 1
-         end
-         return head
+   \AddToHook{env/picture/begin}{\bbl@pictsetdir\tw@}%
+   \directlua{
+     Babel.get_picture_dir = true
+     Babel.picture_has_bidi = 0
+     %
+     function Babel.picture_dir (head)
+       if not Babel.get_picture_dir then return head end
+       if Babel.hlist_has_bidi(head) then
+         Babel.picture_has_bidi = 1
        end
-       luatexbase.add_to_callback("hpack_filter", Babel.picture_dir,
-         "Babel.picture_dir")
-     }%
+       return head
+     end
+     luatexbase.add_to_callback("hpack_filter", Babel.picture_dir,
+       "Babel.picture_dir")
+   }%
    \AtBeginDocument{%
      \long\def\put(#1,#2)#3{%
        \@killglue
@@ -1547,7 +1564,7 @@ end
          \setbox\z@\hb@xt@\z@{%
            \@defaultunitsset\@tempdimc{#1}\unitlength
            \kern\@tempdimc
-           #3\hss}%
+           #3\hss}% TODO: #3 executed twice (below). That’s bad.
          \edef\bbl@tempc{\directlua{tex.print(Babel.picture_has_bidi)}}%
        \fi
        % Do:
@@ -1557,35 +1574,26 @@ end
          \kern\@tempdimc
          {\ifnum\bbl@tempc>\z@\bbl@pictresetdir\fi#3}\hss}%
        \ignorespaces}%
-       \MakeRobust\put}%
-   \fi
+     \MakeRobust\put}%
    \AtBeginDocument
-     {\ifx\pgfpicture\@undefined\else % TODO. Allow deactivate?
-        \ifx\AddToHook\@undefined
-          \bbl@sreplace\pgfpicture{\pgfpicturetrue}%
-            {\bbl@pictsetdir\z@\pgfpicturetrue}%
-        \else
-          \AddToHook{env/pgfpicture/begin}{\bbl@pictsetdir\@ne}%
-        \fi
+     {\AddToHook{cmd/diagbox@pict/before}{\let\bbl@pictsetdir\@gobble}%
+      \ifx\pgfpicture\@undefined\else % TODO. Allow deactivate?
+        \AddToHook{env/pgfpicture/begin}{\bbl@pictsetdir\@ne}%
         \bbl@add\pgfinterruptpicture{\bbl@pictresetdir}%
         \bbl@add\pgfsys@beginpicture{\bbl@pictsetdir\z@}%
       \fi
       \ifx\tikzpicture\@undefined\else
-        \ifx\AddToHook\@undefined\else
-          \AddToHook{env/tikzpicture/begin}{\bbl@pictsetdir\z@}%
-        \fi
+        \AddToHook{env/tikzpicture/begin}{\bbl@pictsetdir\z@}%
         \bbl@add\tikz@atbegin@node{\bbl@pictresetdir}%
         \bbl@sreplace\tikz{\begingroup}{\begingroup\bbl@pictsetdir\tw@}%
       \fi
-      \ifx\AddToHook\@undefined\else
-        \ifx\tcolorbox\@undefined\else
-          \AddToHook{env/tcolorbox/begin}{\bbl@pictsetdir\@ne}%
-          \bbl@sreplace\tcb@savebox
-            {\ignorespaces}{\ignorespaces\bbl@pictresetdir}%
-          \ifx\tikzpicture@tcb@hooked\@undefined\else
-            \bbl@sreplace\tikzpicture@tcb@hooked{\noexpand\tikzpicture}%
-              {\textdir TLT\noexpand\tikzpicture}%
-          \fi
+      \ifx\tcolorbox\@undefined\else
+        \AddToHook{env/tcolorbox/begin}{\bbl@pictsetdir\@ne}%
+        \bbl@sreplace\tcb@savebox
+          {\ignorespaces}{\ignorespaces\bbl@pictresetdir}%
+        \ifx\tikzpicture@tcb@hooked\@undefined\else
+          \bbl@sreplace\tikzpicture@tcb@hooked{\noexpand\tikzpicture}%
+            {\textdir TLT\noexpand\tikzpicture}%
         \fi
       \fi
     }}

@@ -1,0 +1,130 @@
+%%
+%% This is file `beamerouterthemedefault-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerouterthemedefault-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerouterthemedefault-xetex-bidi.def}[2022/06/27 v0.2 bidi adaptations for beamerouterthemedefault package for XeTeX engine]
+\def\beamer@fteleft{\if@RTLmain\vskip0.35cm\advance\leftskip by 1.7cm\advance\rightskip by1.7cm\else\fi}
+
+\def\beamer@fteright{\if@RTLmain\else\vskip0.35cm\advance\leftskip by 1.7cm\advance\rightskip by1.7cm\fi}
+
+\AtBeginDocument{%
+  \if@RTLmain
+    \setbeamertemplate{frametitle}[default][right]
+  \fi
+}
+
+\bidi@csundef{beamer@@tmpop@note page@default}
+
+\newcommand*{\bidi@beamer@today}{%
+\the\year-\ifnum\month<10\relax0\fi\the\month-\ifnum\day<10\relax0\fi\the\day}
+
+\defbeamertemplate*{note page}{default}
+{%
+  {%
+    \scriptsize
+    \usebeamerfont{note title}\usebeamercolor[fg]{note title}%
+    \ifbeamercolorempty[bg]{note title}{}{%
+      \insertvrule{.25\paperheight}{note title.bg}%
+      \vskip-.25\paperheight%
+      \nointerlineskip%
+    }%
+    \vbox{
+      \hfill\insertslideintonotes{0.25}\hskip-\Gm@rmargin\hskip0pt%
+      \vskip-0.25\paperheight%
+      \nointerlineskip
+      \if@RTL
+      \begin{pgfpicture}{-\textwidth}{0cm}{-\textwidth}{0cm}
+        \begin{pgflowlevelscope}{\pgftransformrotate{-90}}
+          {\pgftransformshift{\pgfpoint{2cm}{0.2cm}}%
+          \pgftext[base,right]{\usebeamerfont{note date}\usebeamercolor[fg]{note date}\bidi@beamer@today}}
+        \end{pgflowlevelscope}
+      \end{pgfpicture}%
+      \else
+      \begin{pgfpicture}{0cm}{0cm}{0cm}{0cm}
+        \begin{pgflowlevelscope}{\pgftransformrotate{90}}
+          {\pgftransformshift{\pgfpoint{-2cm}{0.2cm}}%
+          \pgftext[base,left]{\usebeamerfont{note date}\usebeamercolor[fg]{note date}\bidi@beamer@today}}
+        \end{pgflowlevelscope}
+      \end{pgfpicture}%
+      \fi}
+    \nointerlineskip
+    \vbox to .25\paperheight{\vskip0.5em
+    \if@RTL
+      \moveright0.25\textwidth
+    \fi
+      \hbox{\insertshorttitle[width=0.75\textwidth]}%
+      \setbox\beamer@tempbox=\hbox{\insertsection}%
+
+\if@RTL
+  \moveright\dimexpr0.29\textwidth-14pt\relax
+\fi
+\hbox{\if@RTL\beginR\fi\ifdim\wd\beamer@tempbox>1pt{\hskip4pt\raise3pt\hbox{\vrule
+            width0.4pt height7pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\begin{minipage}[t]{0.71\textwidth}\def\breakhere{}\insertsection\end{minipage}}\fi%
+      \if@RTL\endR\fi}%
+      \setbox\beamer@tempbox=\hbox{\insertsubsection}%
+
+\if@RTL
+  \moveright\dimexpr0.29\textwidth-27.4pt\relax
+\fi      \hbox{\if@RTL\beginR\fi\ifdim\wd\beamer@tempbox>1pt{\hskip17.4pt\raise3pt\hbox{\vrule
+            width0.4pt height7pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\begin{minipage}[t]{0.71\textwidth}\def\breakhere{}\insertsubsection\end{minipage}}\fi%
+      \if@RTL\endR\fi}%
+      \setbox\beamer@tempbox=\hbox{\insertshortframetitle}%
+
+\if@RTL
+  \moveright\dimexpr0.33\textwidth-40.8pt\relax
+\fi      \hbox{\if@RTL\beginR\fi\ifdim\wd\beamer@tempbox>1pt{\hskip30.8pt\raise3pt\hbox{\vrule
+            width0.4pt height7pt\vrule width 9pt
+            height0.4pt}}\hskip1pt\hbox{\insertshortframetitle[width=0.67\textwidth]}\fi%
+      \if@RTL\endR\fi}%
+      \vfil}%
+  }%
+  \ifbeamercolorempty[bg]{note page}{}{%
+    \nointerlineskip%
+    \insertvrule{.75\paperheight}{note page.bg}%
+    \vskip-.75\paperheight%
+  }%
+  \vskip.25em
+  \nointerlineskip
+  \insertnote
+}
+
+\endinput
+%%
+%% End of file `beamerouterthemedefault-xetex-bidi.def'.

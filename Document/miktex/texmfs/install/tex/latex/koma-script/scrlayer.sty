@@ -4,11 +4,11 @@
 %%
 %% The original source files were:
 %%
-%% scrlayer.dtx  (with options: `package,trace,scrlayer,identify')
-%% scrlayer.dtx  (with options: `package,trace,scrlayer,init')
-%% scrlayer.dtx  (with options: `package,trace,scrlayer,options')
-%% scrlayer.dtx  (with options: `package,trace,scrlayer,body')
-%% scrlayer.dtx  (with options: `package,trace,scrlayer,final')
+%% scrlayer.dtx  (with options: `package,scrlayer,identify')
+%% scrlayer.dtx  (with options: `package,scrlayer,init')
+%% scrlayer.dtx  (with options: `package,scrlayer,options')
+%% scrlayer.dtx  (with options: `package,scrlayer,body')
+%% scrlayer.dtx  (with options: `package,scrlayer,final')
 %% scrlogo.dtx  (with options: `logo')
 %% 
 %% Copyright (c) 2012-2021 Markus Kohm [komascript at gmx info]
@@ -26,7 +26,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -43,14 +43,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (defining layers and page styles)]
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: init)
 \newcommand*{\scrlayer@@inherited@options@cslist}{}
 \newcommand*{\scrlayer@@add@inherited@option}[1]{%
@@ -67,7 +67,6 @@
   }%
 }
 \newcommand*{\scrlayer@inherit@option}[2]{%
-  \typeout{TRACE: Define key `#2' of member `#1'}%
   \DefineFamilyMember[#1]{KOMA}%
   \expandafter\let\csname KV@KOMA#1@#2\expandafter\endcsname
                   \csname KV@KOMA.scrlayer.sty@#2\endcsname
@@ -130,15 +129,9 @@
   \newlength{\footheight}%
   \setlength{\footheight}{-12345sp}%
 }{%
-  \PackageInfo{scrlayer}{Using already defined \string\footheight\MessageBreak
-    hoping, that this is a length and\MessageBreak
-    not only a macro}%
 }
 \AtBeginDocument{%
   \ifdim\footheight=-12345sp
-    \PackageInfo{scrlayer}{Setting magic \string\footheight\space to
-      \string\baselineskip\space while\MessageBreak
-      \string\begin{document}}%
     \setlength{\footheight}{\baselineskip}
   \fi
 }
@@ -152,7 +145,7 @@
     \@namedef{scrlayer@deprecated@reported@for@#1}{\string #2}%
   }{}%
 }
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
   \begingroup
@@ -337,7 +330,7 @@
 \scrlayer@@add@inherited@option{forceoverwrite}
 \KOMA@ifkey{autoremoveinterfaces}{scrlayer@autoremoveinterfaces}
 \scrlayer@@add@inherited@option{autoremoveinterfaces}
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \newcommand*{\rightfirstmark}{\expandafter\@rightmark\firstmark\@empty\@empty}
@@ -390,21 +383,42 @@
 \providecommand{\@mkdouble}[1]{%
   \@mkboth{#1}{#1}%
 }
-\@ifundefined{markleft}{%
-  \DeclareRobustCommand{\markleft}[1]{%
-    \begingroup
-      \let\label\relax \let\index\relax \let\glossary\relax
-      \expandafter\@markleft\@themark {#1}%
-      \@temptokena \expandafter{\@themark}%
-      \mark{\the\@temptokena}%
-    \endgroup
-    \if@nobreak\ifvmode\nobreak\fi\fi
-  }%
-  \providecommand{\@markleft}[3]{%
-    \@temptokena {#2}%
-    \unrestored@protected@xdef\@themark{{#3}{\the\@temptokena}}%
-  }%
-}{}
+\csname ExplSyntaxOn\endcsname
+\IfLTXAtLeastTF{2022/06/01}{%
+  \@ifundefined{markleft}{%
+    \DeclareRobustCommand{\markleft}[1]{%
+      \begingroup
+        \let\label\relax \let\index\relax \let\glossary\relax
+        \expandafter\@markleft\@themark {#1}%
+        \@temptokena \expandafter{\@themark}%
+        \mark_insert:nn{2e-left}{#1}%
+        \mark{\the\@temptokena}%
+      \endgroup
+      \if@nobreak\ifvmode\nobreak\fi\fi
+    }%
+    \providecommand{\@markleft}[3]{%
+      \@temptokena {#2}%
+      \unrestored@protected@xdef\@themark{{#3}{\the\@temptokena}}%
+    }%
+  }{}%
+}{%
+  \@ifundefined{markleft}{%
+    \DeclareRobustCommand{\markleft}[1]{%
+      \begingroup
+        \let\label\relax \let\index\relax \let\glossary\relax
+        \expandafter\@markleft\@themark {#1}%
+        \@temptokena \expandafter{\@themark}%
+        \mark{\the\@temptokena}%
+      \endgroup
+      \if@nobreak\ifvmode\nobreak\fi\fi
+    }%
+    \providecommand{\@markleft}[3]{%
+      \@temptokena {#2}%
+      \unrestored@protected@xdef\@themark{{#3}{\the\@temptokena}}%
+    }%
+  }{}%
+}
+\csname ExplSyntaxOff\endcsname
 \providecommand{\markdouble}[1]{\markboth{#1}{#1}}
 \newcommand*{\manualmark}{%
   \begingroup
@@ -1096,8 +1110,6 @@
 }
 \newcommand{\ProvideLayer}[2][]{%
   \IfLayerExists{#2}{%
-    \PackageInfo{scrlayer}{\string\ProvideLayer{#2} ignored,\MessageBreak
-      because of already defined layer}%
   }{\DeclareNewLayer[{#1}]{#2}}%
 }
 \newcommand{\RedeclareLayer}[2][]{%
@@ -1192,10 +1204,6 @@
     \expandafter\let\csname scr@l@#1@postcontents@hook\relax
     \expandafter\let\csname scr@l@#1@artifact\relax
   }{%
-    \PackageInfo{scrlayer}{\string\DestroyLayer{#1} ignored,\MessageBreak
-      because that layer doesn't exist\MessageBreak
-      (any longer)%
-    }%
   }%
 }
 \newcommand*{\layercontentsmeasure}{%
@@ -1713,11 +1721,6 @@
   \@ifundefined{ps@#2}{%
     \DeclarePageStyleByLayers[{#1}]{#2}{#3}%
   }{%
-    \PackageInfo{scrlayer}{%
-      \string\ProvidePageStyleByLayers{#2}{#3} ignored,\MessageBreak
-      because page style `#2'\MessageBreak
-      already exists%
-    }%
   }%
 }
 \newcommand*{\RedeclarePageStyleByLayers}[2][]{%
@@ -2003,11 +2006,6 @@
   \@ifundefined{ps@#1}{%
     \DeclarePageStyleAlias{#1}{#2}%
   }{%
-    \PackageInfo{scrlayer}{%
-      \string\ProvidePageStyleAlias{#1}{#2} ignored,\MessageBreak
-      because page style `#1' already\MessageBreak
-      exists%
-    }%
   }%
 }
 \newcommand*{\RedeclarePageStyleAlias}[1]{%
@@ -2151,11 +2149,6 @@
       }{}%
     \fi
   }{%
-    \PackageInfo{scrlayer}{%
-      \string\DestroyRealLayerPageStyle{#1} ignored,\MessageBreak
-      because the layer page style isn't\MessageBreak
-      defined (any longer)%
-    }%
   }%
 }
 \newcommand*{\currentpagestyle}{}
@@ -2342,14 +2335,12 @@
   \@ifundefined{scrlayer@#1@onremove}{\@namedef{scrlayer@#1@onremove}{}}{}%
   \expandafter\l@addto@macro\csname scrlayer@#1@onremove\endcsname{#2}%
 }
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: final)
 \DeclareNewPageStyleByLayers{@everystyle@}{}
 \RedeclarePageStyleByLayers{empty}{}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrlayer.sty'.

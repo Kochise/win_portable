@@ -7,7 +7,7 @@
 %% amsmath.dtx 
 %% 
 %% Copyright (C) 1995, 1999, 2000, 2013 American Mathematical Society.
-%% Copyright (C) 2016-2021  LaTeX Project and American Mathematical Society.
+%% Copyright (C) 2016-2022  LaTeX Project and American Mathematical Society.
 %% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3c
@@ -27,7 +27,7 @@
 \providecommand\DeclareCurrentRelease[2]{}
 \DeclareRelease{}{2018-12-01}{amsmath-2018-12-01.sty}
 \DeclareCurrentRelease{}{2019-04-01}
-\ProvidesPackage{amsmath}[2021/10/15 v2.17l AMS math features]
+\ProvidesPackage{amsmath}[2022/04/08 v2.17n AMS math features]
 \edef\@temp{\catcode 96=\number\catcode 96 }
 \catcode\string `\`=12
 \def\do#1{\catcode\number`#1=\number\catcode`#1}
@@ -235,11 +235,11 @@ Foreign command \@backslashchar#1;\MessageBreak
 \else
 \DeclareRobustCommand{\frac}[2]{{\Ustack{\begingroup#1\endgroup\@@over#2}}}
 \fi
-\newcommand{\dfrac}{\genfrac{}{}{}0}
-\newcommand{\tfrac}{\genfrac{}{}{}1}
+\DeclareRobustCommand{\dfrac}{\genfrac{}{}{}0}
+\DeclareRobustCommand{\tfrac}{\genfrac{}{}{}1}
 \DeclareRobustCommand{\binom}{\genfrac()\z@{}}
-\newcommand{\dbinom}{\genfrac(){0pt}0}
-\newcommand{\tbinom}{\genfrac(){0pt}1}
+\DeclareRobustCommand{\dbinom}{\genfrac(){0pt}0}
+\DeclareRobustCommand{\tbinom}{\genfrac(){0pt}1}
 \ifx\directlua\@undefined
 \ifx\XeTeXcharclass\@undefined
 \DeclareRobustCommand{\genfrac}[4]{%
@@ -397,7 +397,7 @@ Foreign command \@backslashchar#1;\MessageBreak
 }{}
 \@saveprimitive\overline\@@overline
 \DeclareRobustCommand{\overline}[1]{\@@overline{#1}}
-\newcommand{\boxed}[1]{\fbox{\m@th$\displaystyle#1$}}
+\DeclareRobustCommand{\boxed}[1]{\fbox{\m@th$\displaystyle#1$}}
 \newcommand{\implies}{\DOTSB\;\Longrightarrow\;}
 \newcommand{\impliedby}{\DOTSB\;\Longleftarrow\;}
 \def\And{\DOTSB\;\mathchar"3026 \;}
@@ -407,7 +407,7 @@ Foreign command \@backslashchar#1;\MessageBreak
        \else\setboxz@h{\the\toks@\nobreak}\unhbox\z@\fi}%
   \FN@\next@
 }
-\renewcommand{\colon}{\nobreak\mskip2mu\mathpunct{}\nonscript
+\DeclareRobustCommand{\colon}{\nobreak\mskip2mu\mathpunct{}\nonscript
   \mkern-\thinmuskip{:}\mskip6muplus1mu\relax}
 \let\ifgtest@\iffalse                              % initial value
 \def\gtest@true{\global\let\ifgtest@\iftrue}
@@ -656,11 +656,11 @@ Foreign command \@backslashchar#1;\MessageBreak
  {{\cdotp}\mkern1.5mu{\cdotp}\mkern1.5mu{\cdotp}}%
  {{\cdotp}\mkern1mu{\cdotp}\mkern1mu{\cdotp}}%
  {{\cdotp}\mkern1mu{\cdotp}\mkern1mu{\cdotp}}}
-\ams@newcommand{\iint}{\DOTSI\protect\MultiIntegral{2}}
-\ams@newcommand{\iiint}{\DOTSI\protect\MultiIntegral{3}}
-\ams@newcommand{\iiiint}{\DOTSI\protect\MultiIntegral{4}}
-\newcommand{\idotsint}{\DOTSI\protect\MultiIntegral{0}}
-\newcommand{\MultiIntegral}[1]{%
+\ams@newcommand{\iint}{\DOTSI\MultiIntegral{2}}
+\ams@newcommand{\iiint}{\DOTSI\MultiIntegral{3}}
+\ams@newcommand{\iiiint}{\DOTSI\MultiIntegral{4}}
+\newcommand{\idotsint}{\DOTSI\MultiIntegral{0}}
+\DeclareRobustCommand{\MultiIntegral}[1]{%
   \edef\ints@c{\noexpand\intop
     \ifnum#1=\z@\noexpand\intdots@\else\noexpand\intkern@\fi
     \ifnum#1>\tw@\noexpand\intop\noexpand\intkern@\fi
@@ -719,10 +719,10 @@ Foreign command \@backslashchar#1;\MessageBreak
        \vbox{\kern-\normallineskiplimit\copy\strutbox}}}
 \addto@hook\every@math@size{\reset@strutbox@}
 \AtBeginDocument{\reset@strutbox@}
-\renewcommand{\big}{\bBigg@\@ne}
-\renewcommand{\Big}{\bBigg@{1.5}}
-\renewcommand{\bigg}{\bBigg@\tw@}
-\renewcommand{\Bigg}{\bBigg@{2.5}}
+\DeclareRobustCommand{\big}{\bBigg@\@ne}
+\DeclareRobustCommand{\Big}{\bBigg@{1.5}}
+\DeclareRobustCommand{\bigg}{\bBigg@\tw@}
+\DeclareRobustCommand{\Bigg}{\bBigg@{2.5}}
 \ifx\leavevmode@ifvmode\@undefined
 \def\bBigg@#1#2{%
   {\@mathmeasure\z@{\nulldelimiterspace\z@}%
@@ -748,6 +748,10 @@ Foreign command \@backslashchar#1;\MessageBreak
 \ams@newcommand{\ddddot}[1]{%
   {\mathop{\kern\z@#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
    \hbox{\,\normalfont....}\vss}}}}
+\AtBeginDocument{%
+  \MakeRobust\dddot
+  \MakeRobust\ddddot
+  }
 \def\set@mathaccent#1#2#3#4{%
   \xdef#2{%
     \@nx\mathaccentV
@@ -898,24 +902,24 @@ Foreign command \@backslashchar#1;\MessageBreak
 \def\Vec{\vec}
 \def\nonmatherr@#1{\@amsmath@err{\protect
   #1 allowed only in math mode}\@ehd}
-\renewcommand{\bmod}{\nonscript\mskip-\medmuskip\mkern5mu\mathbin
+\DeclareRobustCommand{\bmod}{\nonscript\mskip-\medmuskip\mkern5mu\mathbin
   {\operator@font mod}\penalty900
   \mkern5mu\nonscript\mskip-\medmuskip}
-\newcommand{\pod}[1]{\allowbreak
+\DeclareRobustCommand{\pod}[1]{\allowbreak
   \if@display\mkern18mu\else\mkern8mu\fi(#1)}
-\renewcommand{\pmod}[1]{\pod{{\operator@font mod}\mkern6mu#1}}
-\newcommand{\mod}[1]{\allowbreak\if@display\mkern18mu
+\DeclareRobustCommand{\pmod}[1]{\pod{{\operator@font mod}\mkern6mu#1}}
+\DeclareRobustCommand{\mod}[1]{\allowbreak\if@display\mkern18mu
   \else\mkern12mu\fi{\operator@font mod}\,\,#1}
-\newcommand{\cfrac}[3][c]{{\displaystyle\frac{%
+\DeclareRobustCommand{\cfrac}[3][c]{{\displaystyle\frac{%
   \strut\ifx r#1\hfill\fi#2\ifx l#1\hfill\fi}{#3}}%
   \kern-\nulldelimiterspace}
-\newcommand{\overset}[2]{\binrel@{#2}%
+\DeclareRobustCommand{\overset}[2]{\binrel@{#2}%
   \binrel@@{\mathop{\kern\z@#2}\limits^{#1}}}
-\newcommand{\underset}[2]{\binrel@{#2}%
+\DeclareRobustCommand{\underset}[2]{\binrel@{#2}%
   \binrel@@{\mathop{\kern\z@#2}\limits_{#1}}}
-\newcommand{\overunderset}[3]{\binrel@{#3}%
+\DeclareRobustCommand{\overunderset}[3]{\binrel@{#3}%
   \binrel@@{\mathop{\kern\z@#3}\limits^{#1}_{#2}}}
-\newcommand{\sideset}[3]{%
+\DeclareRobustCommand{\sideset}[3]{%
   \@mathmeasure\z@\displaystyle{#3}%
   \global\setbox\@ne\vbox to\ht\z@{}\dp\@ne\dp\z@
   \setbox\tw@\box\@ne
@@ -925,7 +929,7 @@ Foreign command \@backslashchar#1;\MessageBreak
   \hbox to\dimen@{}\mathop{\kern-\dimen@\box4\box6}%
 }
 \ifx\leavevmode@ifvmode\@undefined
-\renewcommand{\smash}[1][tb]{%
+\DeclareRobustCommand{\smash}[1][tb]{%
   \def\mb@t{\ht}\def\mb@b{\dp}\def\mb@tb{\ht\z@\z@\dp}%
   \edef\finsm@sh{\csname mb@#1\endcsname\z@\z@\box\z@}%
   \ifmmode \@xp\mathpalette\@xp\mathsm@sh
@@ -933,7 +937,7 @@ Foreign command \@backslashchar#1;\MessageBreak
   \fi
 }
 \else
-\renewcommand{\smash}[1][tb]{%
+\DeclareRobustCommand{\smash}[1][tb]{%
   \def\mb@t{\ht}\def\mb@b{\dp}\def\mb@tb{\ht\z@\z@\dp}%
   \edef\finsm@sh{\csname mb@#1\endcsname\z@\z@ \leavevmode@ifvmode\box\z@}%
   \ifmmode \@xp\mathpalette\@xp\mathsm@sh
@@ -963,8 +967,8 @@ Foreign command \@backslashchar#1;\MessageBreak
       \Umathcharnumdef\std@equal\Umathcodenum`\=\relax
     }%
   }
-\ams@def\relbar{\mathrel{\mathpalette\mathsm@sh\std@minus}}
-\ams@def\Relbar{\mathrel\std@equal}
+\ams@DeclareRobustCommand\relbar{\mathrel{\mathpalette\mathsm@sh\std@minus}}
+\ams@DeclareRobustCommand\Relbar{\mathrel\std@equal}
 \def\arrowfill@#1#2#3#4{%
   $\m@th\thickmuskip0mu\medmuskip\thickmuskip\thinmuskip\thickmuskip
    \relax#4#1\mkern-7mu%
@@ -985,6 +989,13 @@ Foreign command \@backslashchar#1;\MessageBreak
   \mathpalette{\overarrow@\leftarrowfill@}}
 \ams@newcommand{\overleftrightarrow}{%
   \mathpalette{\overarrow@\leftrightarrowfill@}}
+\AtBeginDocument{%
+  \expandafter\let\csname overleftarrow \endcsname\@undefined
+  \expandafter\let\csname overrightarrow \endcsname\@undefined
+  \MakeRobust\overrightarrow
+  \MakeRobust\overleftarrow
+  \MakeRobust\overleftrightarrow
+  }
 \def\underarrow@#1#2#3{%
  \vtop{\ialign{##\crcr$\m@th\hfil#2#3\hfil$\crcr
  \noalign{\nointerlineskip\kern1.3\ex@}#1#2\crcr}}}
@@ -994,6 +1005,11 @@ Foreign command \@backslashchar#1;\MessageBreak
   \mathpalette{\underarrow@\leftarrowfill@}}
 \ams@newcommand{\underleftrightarrow}{%
   \mathpalette{\underarrow@\leftrightarrowfill@}}
+\AtBeginDocument{%
+  \MakeRobust\underrightarrow
+  \MakeRobust\underleftarrow
+  \MakeRobust\underleftrightarrow
+  }
 \def\ext@arrow#1#2#3#4#5#6#7{%
   \mathrel{\mathop{%
     \setbox\z@\hbox{#5\displaystyle}%
@@ -1009,8 +1025,8 @@ Foreign command \@backslashchar#1;\MessageBreak
     \@ifnotempty{#6}{_{\if0#1\else\mkern#1mu\fi
                        #6\if0#2\else\mkern#2mu\fi}}}%
 }
-\newcommand{\xrightarrow}[2][]{\ext@arrow 0359\rightarrowfill@{#1}{#2}}
-\newcommand{\xleftarrow}[2][]{\ext@arrow 3095\leftarrowfill@{#1}{#2}}
+\DeclareRobustCommand{\xrightarrow}[2][]{\ext@arrow 0359\rightarrowfill@{#1}{#2}}
+\DeclareRobustCommand{\xleftarrow}[2][]{\ext@arrow 3095\leftarrowfill@{#1}{#2}}
 \ifx\directlua\@undefined
 \newenvironment{subarray}[1]{%
   \vcenter\bgroup
@@ -1041,7 +1057,7 @@ Foreign command \@backslashchar#1;\MessageBreak
   \crcr\egroup\egroup
 }
 \fi
-\newcommand{\substack}[1]{\subarray{c}#1\endsubarray}
+\DeclareRobustCommand{\substack}[1]{\subarray{c}#1\endsubarray}
 \newenvironment{smallmatrix}{\null\,\vcenter\bgroup
   \Let@\restore@math@cr\default@tag
   \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
@@ -1124,24 +1140,24 @@ ill-advised in LaTeX.%
   \setcounter{equation}{\value{parentequation}}%
   \ignorespacesafterend
 }
-\newcommand{\numberwithin}[3][\arabic]{%
+\DeclareRobustCommand{\numberwithin}[3][\arabic]{%
   \@ifundefined{c@#2}{\@nocounterr{#2}}{%
     \@ifundefined{c@#3}{\@nocnterr{#3}}{%
       \@addtoreset{#2}{#3}%
       \@xp\xdef\csname the#2\endcsname{%
         \@xp\@nx\csname the#3\endcsname .\@nx#1{#2}}}}%
 }
-\newcommand{\eqref}[1]{\textup{\tagform@{\ref{#1}}}}
+\DeclareRobustCommand{\eqref}[1]{\textup{\tagform@{\ref{#1}}}}
 \newcount\dspbrk@lvl
 \dspbrk@lvl=-1
 \interdisplaylinepenalty\@M
-\newcommand{\allowdisplaybreaks}[1][4]{%
+\DeclareRobustCommand{\allowdisplaybreaks}[1][4]{%
   \interdisplaylinepenalty\getdsp@pen{#1}\relax
 }
 \def\getdsp@pen#1{%
   \ifcase #1\@M \or 9999 \or 6999 \or 2999 \or \z@\fi
 }
-\newcommand{\displaybreak}{\new@ifnextchar[\dspbrk@{\dspbrk@[4]}}
+\DeclareRobustCommand{\displaybreak}{\new@ifnextchar[\dspbrk@{\dspbrk@[4]}}
 \chardef\dspbrk@context=\sixt@@n
 \def\dspbrk@[#1]{%
   \ifmeasuring@
@@ -2695,13 +2711,13 @@ Cannot use `split' here;\MessageBreak trying to recover with `aligned'}%
     \endgroup
 }
 \iftagsleft@
-    \def\shoveright#1{%
+    \protected\def\shoveright#1{%
         #1%
         \hfilneg
         \hskip\multlinegap
     }
 \else
-    \def\shoveright#1{%
+    \protected\def\shoveright#1{%
         #1%
         \hfilneg
         \iftag@
@@ -2716,12 +2732,11 @@ Cannot use `split' here;\MessageBreak trying to recover with `aligned'}%
         \fi
     }
 \fi
-
 \if@fleqn
     \def\shoveleft#1{#1}%
 \else
     \iftagsleft@
-        \def\shoveleft#1{%
+        \protected\def\shoveleft#1{%
             \setboxz@h{$\m@th\displaystyle{}#1$}%
             \setbox\@ne\hbox{$\m@th\displaystyle#1$}%
             \hfilneg
@@ -2736,17 +2751,17 @@ Cannot use `split' here;\MessageBreak trying to recover with `aligned'}%
                 \hskip\multlinegap
             \fi
             \hskip.5\wd\@ne
-            \hskip-.5\wdz@
+            \hskip-.5\wdz@ \relax
             #1%
         }
     \else
-        \def\shoveleft#1{%
+        \protected\def\shoveleft#1{%
             \setboxz@h{$\m@th\displaystyle{}#1$}%
             \setbox\@ne\hbox{$\m@th\displaystyle#1$}%
             \hfilneg
             \hskip\multlinegap
             \hskip.5\wd\@ne
-            \hskip-.5\wdz@
+            \hskip-.5\wdz@ \relax
             #1%
         }
     \fi

@@ -8,7 +8,6 @@
 %% 
 %%   __________________________________________________
 %%   Vafa Khalighi
-%%   tex-persian@vafa.ac
 %% 
 %%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
@@ -21,7 +20,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50574}
+%% \CheckSum{55413}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -38,7 +37,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesFile{multicol-xetex-bidi.def}[2022/02/01 v1.3 bidi adaptations for multicol package for XeTeX engine]
+\ProvidesFile{multicol-xetex-bidi.def}[2022/07/10 v1.4 bidi adaptations for multicol package for XeTeX engine]
 \def\page@sofar{%
    \process@cols\mult@rightbox
        {\ifvoid\count@
@@ -178,99 +177,20 @@
    \advance\dimen@-\skip\@bidi@copyins@
    \advance\dimen@-\ht\@bidi@copyins@
 }
+
 \bidi@AtEndPreamble{%
-  \if@bidi@csdef{footinsv@l}{%
-    \def\bidi@leave@mult@footins@vr{%
-       \advance\dimen@-\skip\footinsv@r
-       \advance\dimen@-\ht\footinsv@r
-     }%
-    \def\bidi@leave@mult@footins@vl{%
-       \advance\dimen@-\skip\footinsv@l
-       \advance\dimen@-\ht\footinsv@l
-     }%
-    \def\bidi@init@mult@footinsv@r{%
-      \multiply\count\footinsv@r\col@number
-      \multiply\skip \footinsv@r\col@number
-    }%
-    \def\bidi@init@mult@footinsv@l{%
-      \multiply\count\footinsv@l\col@number
-      \multiply\skip \footinsv@l\col@number
-    }%
-    \def\bidi@reinsert@footnotesv@r{\ifvoid\footinsv@r\else
-             \insert\footinsv@r{}\fi}%
-    \def\bidi@reinsert@footnotesv@l{\ifvoid\footinsv@l\else
-             \insert\footinsv@l{}\fi}%
-    \bidi@patchcmd{\prepare@multicols}{%
-      \reinsert@footnotes
-    }{%
-      \reinsert@footnotes
-      \bidi@init@mult@footinsv@r
-      \bidi@reinsert@footnotesv@r
-      \bidi@init@mult@footinsv@l
-      \bidi@reinsert@footnotesv@l
-    }{}{}%
+  \if@bidi@csundef{footinsv@l}{%
     \bidi@patchcmd{\multi@column@out}{%
-      \ifnum \c@tracingmulticols>\thr@@
+      \ifvbox \@kludgeins
     }{%
-       \ifvoid\footinsv@r
-         \ifvoid\footinsv@l
-         \else
-           \PackageWarning{multicol}%
-            {I moved some lines to
-             the next page.\MessageBreak
-             Footnotes on page
-             \thepage\space might be wrong}%
-         \fi
-       \else
-         \PackageWarning{multicol}%
-          {I moved some lines to
-           the next page.\MessageBreak
-           Footnotes on page
-           \thepage\space might be wrong}%
-       \fi
-  \ifnum \c@tracingmulticols>\thr@@
-}{}{}%
-\bidi@patchcmd{\endmulticols}{%
-  \reinsert@footnotes
-}{%
-  \reinsert@footnotes
-  \bidi@reinsert@footnotesv@r
-  \bidi@reinsert@footnotesv@l
-}{}{}%
-\bidi@patchcmd{\speci@ls}{%
-  \reinsert@footnotes
-}{%
-  \reinsert@footnotes
-  \bidi@reinsert@footnotesv@r
-  \bidi@reinsert@footnotesv@l
-}{}{}%
-\bidi@patchcmd{\speci@ls}{%
-  \reinsert@footnotes
-}{%
-  \reinsert@footnotes
-  \bidi@reinsert@footnotesv@r
-  \bidi@reinsert@footnotesv@l
-}{}{}%
-  }{}%
-  \bidi@patchcmd{\multi@column@out}{%
-     \ifvbox \@kludgeins
-  }{%
-    \if@bidi@csdef{footinsv@l}{%
-      \divide\skip\footinsv@r\col@number
-       \ifvoid\footinsv@r \else
-          \bidi@leave@mult@footins@vr
-       \fi
-      \divide\skip\footinsv@l\col@number
-       \ifvoid\footinsv@l \else
-          \bidi@leave@mult@footins@vl
-       \fi
-     }{}%
-     \ifvoid\@bidi@copyins@ \else
+      \ifvoid\@bidi@copyins@ \else
         \bidi@leave@mult@copyins
-     \fi
-     \ifvbox \@kludgeins
-  }{}{}%
+      \fi
+      \ifvbox \@kludgeins
+    }{}{}%
+  }{}%
 }
+
 \endinput
 %%
 %% End of file `multicol-xetex-bidi.def'.

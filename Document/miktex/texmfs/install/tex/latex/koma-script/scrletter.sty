@@ -16,7 +16,7 @@
 %% scrkernel-pseudolengths.dtx  (with options: `package,letter,option')
 %% scrkernel-pagestyles.dtx  (with options: `package,letter,option')
 %% scrkernel-notepaper.dtx  (with options: `package,letter,option')
-%% scrkernel-circularletters.dtx  (with options: `package,letter,option')
+%% scrkernel-addressfiles.dtx  (with options: `package,letter,option')
 %% scrkernel-miscellaneous.dtx  (with options: `package,letter,execoption')
 %% scrkernel-fonts.dtx  (with options: `package,letter,body')
 %% scrkernel-miscellaneous.dtx  (with options: `package,letter,body')
@@ -26,7 +26,7 @@
 %% scrkernel-pseudolengths.dtx  (with options: `package,letter,body')
 %% scrkernel-pagestyles.dtx  (with options: `package,letter,body')
 %% scrkernel-notepaper.dtx  (with options: `package,letter,body')
-%% scrkernel-circularletters.dtx  (with options: `package,letter,body')
+%% scrkernel-addressfiles.dtx  (with options: `package,letter,body')
 %% scrlogo.dtx  (with options: `logo')
 %% 
 %% Copyright (c) 1994-2021 Markus Kohm [komascript at gmx info]
@@ -44,7 +44,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -61,7 +61,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -83,20 +83,20 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
 \ProvidesPackage{scrletter}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   letter package extending any KOMA-Script class%
 ]
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: init)
 \scr@ifundefinedorrelax{KOMAClassName}{%
   \PackageWarningNoLine{scrletter}{%
@@ -120,29 +120,15 @@
   }
   \providecommand*{\par@updaterelative}{}
 }{}
-%%% From File: $Id: scrkernel-typearea.dtx 3488 2020-04-27 13:04:43Z kohm $
+%%% From File: $Id: scrkernel-typearea.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: init)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-\newcommand*{\lco@test}{%
-  \IfFileExists{\CurrentOption.lco}{%
-    \expandafter
-    \AtEndOfPackage
-    \expandafter{%
-      \expandafter\LoadLetterOption\expandafter{\CurrentOption}%
-    }%
-    \expandafter\def\expandafter\scr@pti@nerr@r\expandafter{%
-      \expandafter\def\expandafter\scr@pti@nerr@r\expandafter{%
-        \scr@pti@nerr@r
-      }%
-    }%
-  }{}%
-}
 \AtEndOfPackage
   {\LoadLetterOption{DIN}}
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \newif\if@orgdate\@orgdatetrue
 \KOMA@key{numericaldate}[true]{%
@@ -155,18 +141,18 @@
 }
 \KOMA@kav@add{.%
   scrletter.\scr@pkgextension
-}{orgdate}{true}
+}{numericaldate}{true}
 \KOMA@DeclareDeprecatedOption{scrdate}{numericaldate=true}
 \KOMA@DeclareDeprecatedOption{orgdate}{numericaldate=false}
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-variables.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-variables.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-pseudolengths.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-pseudolengths.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3895 2022-06-20 10:37:02Z kohm $
 %%%            (run: option)
 \KOMA@ifkey{firsthead}{@firsthead}
 \KOMAExecuteOptions{firsthead=true}
@@ -222,7 +208,7 @@
   scrletter.\scr@pkgextension
 }{addrfield}{true}
 \KOMA@ncmdkey{priority}[A]{ltr@priority}{%
-  {no}{0},{off}{0},{false}{0},{manual}{1},%
+  {no}{0},{off}{0},{false}{0},{manual}{0},%
   {B}{1},{b}{1},%
   {economy}{1},{Economy}{1},{ECONOMY}{1},%
   {B-ECONOMY}{1},{B-Economy}{1},{b-economy}{1},%
@@ -317,6 +303,7 @@
 }{locfield}{narrow}
 \KOMA@DeclareDeprecatedOption{wlocfield}{locfield=wide}
 \KOMA@DeclareDeprecatedOption{slocfield}{locfield=narrow}
+
 \newif\if@fold\@foldtrue
 \newcommand*{\@usefolds}{TMBPL}
 \KOMA@key{foldmarks}[true]{%
@@ -733,17 +720,17 @@
 \newcommand*{\scr@symbol@email}{\undefined}
 \newcommand*{\scr@symbol@mobilephone}{\undefined}
 \newcommand*{\scr@symbol@www}{\undefined}
-%%% From File: $Id: scrkernel-circularletters.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-addressfiles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: execoption)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \providecommand*{\scr@endstrut}{\unskip\ifhmode\nobreak\strut\fi}
-%%% From File: $Id: scrkernel-letterclassoptions.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrkernel-letterclassoptions.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\LoadLetterOption}[1]{%
   \@ifundefined{@restore@catcode@level}%
@@ -915,7 +902,7 @@
 \newcommand*{\LetterOptionNeedsPapersize}[2]{%
   \edef\LOPNP@size{#2}\edef\LOPNP@option{#1}%
 }
-%%% From File: $Id: scrkernel-language.dtx 3480 2020-04-13 09:39:03Z kohm $
+%%% From File: $Id: scrkernel-language.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\g@addnumerical@date}[2]{%
   \@ifundefined{date#1}{%
@@ -1486,7 +1473,7 @@
     \fi
   \fi
 }
-%%% From File: $Id: scrkernel-variables.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-variables.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\newkomavar}{%
   \kernel@ifstar {\@tempswatrue\@newkomavar}{\@tempswafalse\@newkomavar}}
@@ -1671,13 +1658,18 @@
     \fi
   }%
 }
-%%% From File: $Id: scrkernel-pseudolengths.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-pseudolengths.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-\newcommand*{\if@plength}[1]{%
+\newcommand*{\Ifplength}[1]{%
   \@ifundefined{ltr@len@#1}{\@secondoftwo}{\@firstoftwo}%
 }
-\newcommand*{\Ifplength}{\if@plength}
-\newcommand*{\@newplength}[1]{%
+\newcommand*{\if@plength}{%
+  \PackageWarning{scrletter}{%
+    Internal macro `\string\if@plength' is deprecated.\MessageBreak
+    Please use `\string\Ifplength' instead}%
+  \Ifplength
+}
+\newcommand*{\newplength}[1]{%
   \@ifundefined{ltr@len@#1}{%
     \expandafter\let\csname ltr@len@#1\endcsname=\z@%
   }{%
@@ -1685,20 +1677,26 @@
     }{%
       pseudo-length \expandafter\string\csname ltr@len@#1\endcsname
       already defined%
-      }{%
+    }{%
       You've tried to define a new pseudo-length using\MessageBreak
       \string\@newplength\space
       or \string\newplength.\MessageBreak
-      Please, try another name}%
+      Please, try another name%
     }%
-  }
-\newcommand*{\newplength}{\@newplength}
+  }%
+}
+\newcommand*{\@newplength}{%
+  \PackageWarning{scrletter}{%
+    Internal macro `\string\@newplength' is deprecated.\MessageBreak
+    Please use `\string\newplength' instead}%
+  \newplength
+}
 \newcommand*{\useplength}[1]{%
   \glueexpr \csname ltr@len@#1\endcsname\relax}%
 \newcommand*{\setlengthtoplength}[3][]{%
   \setlength{#2}{\useplength{#3}}%
   \setlength{#2}{#1#2}}
-\newcommand*{\@setplength}[3][]{%
+\newcommand*{\setplength}[3][]{%
   \begingroup%
     \setlength{\@tempskipa}{\glueexpr #3\relax}%
     \setlength{\@tempskipa}{#1\@tempskipa}%
@@ -1708,7 +1706,12 @@
     }%
   \@tempa
 }
-\newcommand*{\setplength}{\@setplength}
+\newcommand*{\@setplength}{%
+  \PackageWarning{scrletter}{%
+    Internal macro `\string\@setplength' is deprecated.\MessageBreak
+    Please use `\string\setplength' instead}%
+  \setplength
+}
 \newcommand*{\setplengthtowidth}[3][]{%
   \begingroup
     \settowidth{\@tempdima}{#3}%
@@ -1756,9 +1759,9 @@
     \setlengthtoplength[{#1}]{\@tempskipa}{#3}%
     \edef\@tempa{\endgroup%
       \noexpand\addtolength{#2}{\the\@tempskipa}}%
-    \@tempa%
-  }
-\newcommand*{\@addtoplength}[3][]{%
+  \@tempa%
+}
+\newcommand*{\addtoplength}[3][]{%
   \begingroup%
     \setlength{\@tempskipa}{\glueexpr #3\relax}%
     \setlength{\@tempskipa}{#1\@tempskipa}%
@@ -1767,10 +1770,14 @@
       \noexpand\expandafter\noexpand\renewcommand\noexpand\expandafter*%
       \noexpand\csname ltr@len@#2\noexpand\endcsname{\the\@tempskipa}%
       }%
-    \@tempa%
-  }
-\newcommand*{\addtoplength}{\@addtoplength}
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+  \@tempa%
+}
+\newcommand*{\@addtoplength}{%
+  \PackageWarning{scrletter}{%
+    Internal macro `\string\@addtoplength' is deprecated.\MessageBreak
+    Please use `\string\addtoplength' instead}%
+  \addtoplength}
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{%
   \letterpagemark
@@ -1802,8 +1809,9 @@
   \rofoot[\ifnum\@pageat=5 \pagemark\fi]%
          {}%
 }
-%%% From File: $Id: scrkernel-notepaper.dtx 3577 2021-03-05 10:17:58Z kohm $
+%%% From File: $Id: scrkernel-notepaper.dtx 3895 2022-06-20 10:37:02Z kohm $
 %%%            (run: body)
+
 \newkomavar{firsthead}
 \setkomavar{firsthead}{%
   \parbox[b]{\useplength{firstheadwidth}}%
@@ -1988,52 +1996,52 @@
 \scr@ifundefinedorrelax{scr@fnt@subject}{%
   \aliaskomafont{subject}{lettersubject}%
 }{}
-\@newplength{foldmarkhpos}
-\@newplength{foldmarkvpos}
-\@newplength{tfoldmarkvpos}
-\@newplength{mfoldmarkvpos}
-\@newplength{bfoldmarkvpos}
-\@newplength{lfoldmarkhpos}
-\@newplength{pfoldmarklength}
-\@newplength{tfoldmarklength}
-\@newplength{mfoldmarklength}
-\@newplength{bfoldmarklength}
-\@newplength{lfoldmarklength}
-\@newplength{foldmarkthickness}
-\@setplength{foldmarkthickness}{.2pt}
-\@newplength{toaddrvpos}
-\@newplength{backaddrheight}
-\@newplength{toaddrhpos}
-\@newplength{specialmailindent}
-\@newplength{specialmailrightindent}
-\@newplength{toaddrindent}
-\@newplength{PPheadheight}
-\@newplength{PPheadwidth}
-\@newplength{PPdatamatrixvskip}
-\@newplength{toaddrwidth}
-\@newplength{toaddrheight}
-\@newplength{locvpos}
-\@newplength{locwidth}
-\@newplength{lochpos}
-\@newplength{locheight}
-\@newplength{refvpos}
-\@newplength{refwidth}
-\@newplength{refhpos}
-\@newplength{refaftervskip}
-\@newplength{sigbeforevskip}
-\@newplength{sigindent}
-\@newplength{firstfootvpos}
-\@newplength{firstfootwidth}
-\@newplength{firstfoothpos}
-\@setplength{firstfoothpos}{\maxdimen}
-\@newplength{firstheadvpos}
-\@newplength{firstheadwidth}
-\@newplength{firstheadhpos}
-\@setplength{firstheadhpos}{\maxdimen}
-\@newplength{fromrulewidth}
-\@setplength{fromrulewidth}{0pt}
-\@newplength{fromrulethickness}
-\@setplength{fromrulethickness}{.4pt}
+\newplength{foldmarkhpos}
+\newplength{foldmarkvpos}
+\newplength{tfoldmarkvpos}
+\newplength{mfoldmarkvpos}
+\newplength{bfoldmarkvpos}
+\newplength{lfoldmarkhpos}
+\newplength{pfoldmarklength}
+\newplength{tfoldmarklength}
+\newplength{mfoldmarklength}
+\newplength{bfoldmarklength}
+\newplength{lfoldmarklength}
+\newplength{foldmarkthickness}
+\setplength{foldmarkthickness}{.2pt}
+\newplength{toaddrvpos}
+\newplength{backaddrheight}
+\newplength{toaddrhpos}
+\newplength{specialmailindent}
+\newplength{specialmailrightindent}
+\newplength{toaddrindent}
+\newplength{PPheadheight}
+\newplength{PPheadwidth}
+\newplength{PPdatamatrixvskip}
+\newplength{toaddrwidth}
+\newplength{toaddrheight}
+\newplength{locvpos}
+\newplength{locwidth}
+\newplength{lochpos}
+\newplength{locheight}
+\newplength{refvpos}
+\newplength{refwidth}
+\newplength{refhpos}
+\newplength{refaftervskip}
+\newplength{sigbeforevskip}
+\newplength{sigindent}
+\newplength{firstfootvpos}
+\newplength{firstfootwidth}
+\newplength{firstfoothpos}
+\setplength{firstfoothpos}{\maxdimen}
+\newplength{firstheadvpos}
+\newplength{firstheadwidth}
+\newplength{firstheadhpos}
+\setplength{firstheadhpos}{\maxdimen}
+\newplength{fromrulewidth}
+\setplength{fromrulewidth}{0pt}
+\newplength{fromrulethickness}
+\setplength{fromrulethickness}{.4pt}
 \newkomavar{firstfoot}
 \newcommand*{\move@topt}{%
   \null\vskip -1in\vskip -\topmargin%
@@ -2109,19 +2117,19 @@
     \typeout{Foldmarks: yes}%
     \move@topt
     \ifdim \useplength{pfoldmarklength}=\z@
-      \@setplength{pfoldmarklength}{4mm}%
+      \setplength{pfoldmarklength}{4mm}%
     \fi
     \ifdim \useplength{tfoldmarklength}=\z@
-      \@setplength{tfoldmarklength}{2mm}%
+      \setplength{tfoldmarklength}{2mm}%
     \fi
     \ifdim \useplength{mfoldmarklength}=\z@
-      \@setplength{mfoldmarklength}{2mm}%
+      \setplength{mfoldmarklength}{2mm}%
     \fi
     \ifdim \useplength{bfoldmarklength}=\z@
-      \@setplength{bfoldmarklength}{2mm}%
+      \setplength{bfoldmarklength}{2mm}%
     \fi
     \ifdim \useplength{lfoldmarklength}=\z@
-      \@setplength{lfoldmarklength}{4mm}%
+      \setplength{lfoldmarklength}{4mm}%
     \fi
     \begingroup
       \@expandtwoargs\in@{P}{\@usefolds}%
@@ -2367,16 +2375,16 @@
     \vb@t@z{{%
         \setparsizes{\z@}{\z@}{\z@ plus 1fil}\par@updaterelative
         \ifdim \useplength{toaddrindent}=\z@
-          \@setplength{toaddrindent}{8mm}%
+          \setplength{toaddrindent}{8mm}%
         \fi
         \ifdim \useplength{PPheadheight}=\z@
-          \@setplength{PPheadheight}{20.74pt}%
+          \setplength{PPheadheight}{20.74pt}%
         \fi
         \ifdim \useplength{PPheadwidth}=\z@
-          \@setplength{PPheadwidth}{42mm}%
+          \setplength{PPheadwidth}{42mm}%
         \fi
         \ifdim \useplength{PPdatamatrixvskip}=\z@
-          \@setplength{PPdatamatrixvskip}{9mm}%
+          \setplength{PPdatamatrixvskip}{9mm}%
         \fi
         \rlap{\move@topl
           \setlengthtoplength{\@tempskipa}{toaddrhpos}%
@@ -2490,17 +2498,17 @@
 \newcommand*{\@ogobble}[1][]{}
 \newcommand*{\@locfield}{%
   \ifdim \useplength{locwidth}=\z@%
-    \@setplength{locwidth}{\paperwidth}%
+    \setplength{locwidth}{\paperwidth}%
     \ifdim \useplength{toaddrhpos}>\z@
-      \@addtoplength[-2]{locwidth}{\useplength{toaddrhpos}}%
+      \addtoplength[-2]{locwidth}{\useplength{toaddrhpos}}%
     \else
-      \@addtoplength[2]{locwidth}{\useplength{toaddrhpos}}%
+      \addtoplength[2]{locwidth}{\useplength{toaddrhpos}}%
     \fi
-    \@addtoplength[-1]{locwidth}{\useplength{toaddrwidth}}%
+    \addtoplength[-1]{locwidth}{\useplength{toaddrwidth}}%
     \if@bigloc%
-      \@setplength[.66667]{locwidth}{\useplength{locwidth}}%
+      \setplength[.66667]{locwidth}{\useplength{locwidth}}%
     \else%
-      \@setplength[.5]{locwidth}{\useplength{locwidth}}%
+      \setplength[.5]{locwidth}{\useplength{locwidth}}%
     \fi%
   \fi%
   \ifcase\@alignfrom
@@ -2519,13 +2527,13 @@
   }{%
     \typeout{Location field: yes}%
     \ifdim \useplength{lochpos}=\z@%
-      \@setplength{lochpos}{\useplength{toaddrhpos}}%
+      \setplength{lochpos}{\useplength{toaddrhpos}}%
     \fi
     \ifdim \useplength{locvpos}=\z@%
-      \@setplength{locvpos}{\useplength{toaddrvpos}}%
+      \setplength{locvpos}{\useplength{toaddrvpos}}%
     \fi
     \ifdim \useplength{locheight}=\z@%
-      \@setplength{locheight}{\useplength{toaddrheight}}%
+      \setplength{locheight}{\useplength{toaddrheight}}%
     \fi
     \move@topt\vskip\useplength{locvpos}%
     \vb@t@z{\noindent\makebox[0pt][l]{%
@@ -2678,17 +2686,17 @@
     \setparsizes{\z@}{\z@}{\z@ plus 1fil}\par@updaterelative
     \ifdim\useplength{refwidth}=\z@
       \if@refwide
-        \@setplength{refwidth}{\paperwidth}%
+        \setplength{refwidth}{\paperwidth}%
         \ifdim \useplength{toaddrhpos}>\z@
-          \@setplength{refhpos}{\useplength{toaddrhpos}}%
+          \setplength{refhpos}{\useplength{toaddrhpos}}%
         \else
-          \@setplength[-]{refhpos}{\useplength{toaddrhpos}}%
+          \setplength[-]{refhpos}{\useplength{toaddrhpos}}%
         \fi
-        \@addtoplength[-2]{refwidth}{\useplength{refhpos}}%
+        \addtoplength[-2]{refwidth}{\useplength{refhpos}}%
       \else
-        \@setplength{refwidth}{\textwidth}%
-        \@setplength{refhpos}{\oddsidemargin}%
-        \@addtoplength{refhpos}{1in}%
+        \setplength{refwidth}{\textwidth}%
+        \setplength{refhpos}{\oddsidemargin}%
+        \addtoplength{refhpos}{1in}%
       \fi
     \else
       \ifdim\useplength{refhpos}=\z@
@@ -2706,7 +2714,7 @@
             \divide\@tempdima by\@tempdimc
           \fi
           \edef\@tempa{\noexpand\endgroup
-            \noexpand\@setplength{refhpos}{\the\@tempdima}}%
+            \noexpand\setplength{refhpos}{\the\@tempdima}}%
         \@tempa
     \fi\fi
     \@tempswafalse
@@ -2807,12 +2815,12 @@
     }%
   }%
 }
-\@newplength{subjectvpos}
-\@setplength{subjectvpos}{0pt}
-\@newplength{subjectaftervskip}
-\@setplength{subjectaftervskip}{2\baselineskip}
-\@newplength{subjectbeforevskip}
-\@setplength{subjectbeforevskip}{0pt}
+\newplength{subjectvpos}
+\setplength{subjectvpos}{0pt}
+\newplength{subjectaftervskip}
+\setplength{subjectaftervskip}{2\baselineskip}
+\newplength{subjectbeforevskip}
+\setplength{subjectbeforevskip}{0pt}
 \newkomavar{nexthead}
 \setkomavar{nexthead}{%
   \rlap{\parbox[c]{\textwidth}{\raggedright\strut
@@ -2902,7 +2910,7 @@
   \def\reserved@a{#1}\def\reserved@b{#2}%
 }
 \g@addto@macro\flushbottom{%
-  \g@addto@macro\stopletter{\vskip \z@\@plus.0001fil\relax}%
+  \AtEndLetter{\vskip \z@\@plus.0001fil\relax}%
 }
 \newcounter{letter}
 \newcommand*{\letterpagestyle}{%
@@ -2948,7 +2956,7 @@
       \begin{tabular}{@{}l@{}}
         #1\tabularnewline
         \usekomavar{signature}\tabularnewline
-      \end{tabular}
+      \end{tabular}%
     }%
     \setlength{\@tempdimb}{\hsize}%
     \addtolength{\@tempdimb}{-\useplength{sigindent}}%
@@ -2962,9 +2970,9 @@
   \nobreak\vskip\baselineskip
 }
 \newcommand\ps{\par%
-  \ifdim\parskip=\z@%
-    \vskip\baselineskip%
-  \fi\startbreaks\noindent\ignorespaces%
+  \ifdim\parskip=\z@
+    \vskip\baselineskip
+  \fi\startbreaks\noindent\ignorespaces
 }
 \newcommand*{\cc}[1]{\par%
   \ifdim\parskip=\z@%
@@ -2994,10 +3002,17 @@
     \setlength{\parfillskip}{\z@ \@plus 1fil}\par
   \endgroup
 }
-\newkomavar{signature}
-\setkomavar{signature}{\usekomavar{fromname}}
 \newkomavar{place}
 \newkomavar{location}
+\newkomavar{specialmail}
+\newkomavar{title}
+\newkomavar{fromlogo}
+\newkomavar{fromzipcode}
+\newkomavar{PPcode}
+\newkomavar{PPdatamatrix}
+\newkomavar{addresseeimage}
+\newkomavar{signature}
+\setkomavar{signature}{\usekomavar{fromname}}
 \newkomavar{backaddress}
 \setkomavar{backaddress}{%
   \Ifkomavarempty{fromname}{}{%
@@ -3006,13 +3021,6 @@
   \Ifkomavarempty{fromaddress}{}{%
     \strut\ignorespaces\usekomavar{fromaddress}}%
   }
-\newkomavar{specialmail}
-\newkomavar{title}
-\newkomavar{fromlogo}
-\newkomavar{fromzipcode}
-\newkomavar{PPcode}
-\newkomavar{PPdatamatrix}
-\newkomavar{addresseeimage}
 \newkomavar[\usekomavar{place}]{placeseparator}
 \setkomavar{placeseparator}{,\nobreakspace}
 \newkomavar[\subjectname]{subjectseparator}
@@ -3076,22 +3084,28 @@
   }%
   \scr@saved@date{#1}%
 }
-%%% From File: $Id: scrkernel-circularletters.dtx 3262 2019-10-10 08:25:29Z kohm $
+%%% From File: $Id: scrkernel-addressfiles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\adrentry}[7]{%
+  \PackageWarning{scrletter}{%
+    command `\string\adrentry' is deprecated.\MessageBreak
+    You should use `\string\addrentry' with additional\MessageBreak
+    empty 8th argument}%
   \addrentry{#1}{#2}{#3}{#4}{#5}{#6}{#7}{}}
-\newcommand*{\adrchar}{\addrchar}
 \newcommand*{\addrentry}[9]{\def\@tempa{#1}\ifx \@tempa\@empty \else
  \def\@tempa{#2}\ifx \@tempa\@empty
   \expandafter\def\csname #9\endcsname{#1\\#3}%
  \else
   \expandafter\def\csname #9\endcsname{#2 #1\\#3}%
  \fi \fi}
+\newcommand*{\adrchar}{%
+  \PackageWarning{scrletter}{%
+    command `\string\adrchar' is deprecated.\MessageBreak
+    You should use `\string\addrchar'}
+  \addrchar}
 \newcommand*{\addrchar}[1]{}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrletter.sty'.

@@ -1,0 +1,165 @@
+%%
+%% This is file `beamerinnerthememetropolis-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerinnerthememetropolis-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerinnerthememetropolis-xetex-bidi.def}[2022/06/13 v0.1 bidi adaptations for beamerinnerthememetropolis package for XeTeX engine]
+\setbeamertemplate{title}{
+  \bidi@beamer@ragged%
+  \linespread{1.0}%
+  \inserttitle%
+  \par%
+  \vspace*{0.5em}
+}
+
+\setbeamertemplate{subtitle}{
+  \bidi@beamer@ragged%
+  \insertsubtitle%
+  \par%
+  \vspace*{0.5em}
+}
+
+\bidi@csundef{beamer@@tmpop@section page@progressbar}
+
+\defbeamertemplate{section page}{progressbar}{
+  \centering
+  \begin{minipage}{22em}
+    \bidi@beamer@ragged
+    \usebeamercolor[fg]{section title}
+    \usebeamerfont{section title}
+    \insertsectionhead\\[-1ex]
+    \usebeamertemplate*{progress bar in section page}
+    \par
+    \ifx\insertsubsectionhead\@empty\else%
+      \usebeamercolor[fg]{subsection title}%
+      \usebeamerfont{subsection title}%
+      \insertsubsectionhead
+    \fi
+  \end{minipage}
+  \par
+  \vspace{\baselineskip}
+}
+
+\setbeamertemplate{progress bar in section page}{
+  \setlength{\metropolis@progressonsectionpage}{%
+    \textwidth * \ratio{\insertframenumber pt}{\inserttotalframenumber pt}%
+  }%
+  \begin{tikzpicture}
+    \fill[bg] (0,0) rectangle (\textwidth, \metropolis@progressonsectionpage@linewidth);
+\if@RTLmain
+    \fill[fg] (\textwidth-\metropolis@progressonsectionpage,0) rectangle (\textwidth, \metropolis@progressonsectionpage@linewidth);
+\else
+    \fill[fg] (0,0) rectangle (\metropolis@progressonsectionpage, \metropolis@progressonsectionpage@linewidth);
+\fi
+  \end{tikzpicture}%
+}
+
+\renewcommand{\metropolis@block}[1]{
+  \par\vskip\medskipamount%
+  \setlength{\parskip}{0pt}
+  \ifbeamercolorempty[bg]{block title#1}{%
+    \if@RTL
+      \begin{beamercolorbox}[leftskip=0pt plus 4em]{block title#1}%
+    \else
+      \begin{beamercolorbox}[rightskip=0pt plus 4em]{block title#1}%
+    \fi
+  }{%
+  \ifbeamercolorempty[bg]{block title}{%
+    \if@RTL
+      \begin{beamercolorbox}[leftskip=0pt plus 4em]{block title#1}%
+    \else
+      \begin{beamercolorbox}[rightskip=0pt plus 4em]{block title#1}%
+    \fi
+  }%
+  {%
+  \if@RTL
+    \begin{beamercolorbox}[
+      sep=\dimexpr\metropolis@blocksep-\metropolis@blockadjust\relax,
+      rightskip=\metropolis@blockadjust,
+      leftskip=\dimexpr\metropolis@blockadjust plus 4em\relax
+    ]{block title#1}%
+    \else
+    \begin{beamercolorbox}[
+      sep=\dimexpr\metropolis@blocksep-\metropolis@blockadjust\relax,
+      leftskip=\metropolis@blockadjust,
+      rightskip=\dimexpr\metropolis@blockadjust plus 4em\relax
+    ]{block title#1}%
+    \fi
+  }}%
+      \usebeamerfont*{block title#1}%
+      \metropolis@strut%
+      \insertblocktitle%
+      \metropolis@strut%
+  \end{beamercolorbox}%
+  \nointerlineskip%
+  \ifbeamercolorempty[bg]{block body#1}{%
+    \begin{beamercolorbox}[vmode]{block body#1}}{
+  \ifbeamercolorempty[bg]{block body}{%
+    \begin{beamercolorbox}[vmode]{block body#1}%
+  }{%
+    \begin{beamercolorbox}[sep=\metropolis@blocksep, vmode]{block body#1}%
+    \vspace{-\metropolis@parskip}
+  }}%
+      \usebeamerfont{block body#1}%
+      \setlength{\parskip}{\metropolis@parskip}%
+}
+
+\setbeamertemplate{footnote}{%
+  \parindent 0em\noindent%
+  \bidi@beamer@ragged
+  \usebeamercolor{footnote}\hbox to 0.8em{\hfil\insertfootnotemark}\insertfootnotetext\par%
+}
+
+\setbeamertemplate{RTLfootnote}{%
+  \parindent 0em\noindent%
+  \raggedleft
+  \usebeamercolor{footnote}\hbox to 0.8em{\hfil\insertfootnotemark}\insertfootnotetext\par%
+}
+
+\setbeamertemplate{LTRfootnote}{%
+  \parindent 0em\noindent%
+  \raggedright
+  \usebeamercolor{footnote}\hbox to 0.8em{\hfil\insertfootnotemark}\insertfootnotetext\par%
+}
+
+\setbeamertemplate{itemize items}{\textbullet}
+
+\setbeamertemplate{section page}[progressbar]
+
+\endinput
+%%
+%% End of file `beamerinnerthememetropolis-xetex-bidi.def'.

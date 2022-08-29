@@ -48,7 +48,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -65,7 +65,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrextend.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrextend.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: preidentify)
 \begingroup\expandafter\expandafter\expandafter\endgroup
 \expandafter\ifx\csname KOMAClassName\endcsname\relax\else
@@ -78,7 +78,7 @@
   }%
   \expandafter\endinput
 \fi
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -100,16 +100,16 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrextend.dtx 3453 2020-02-25 07:33:30Z kohm $
+%%% From File: $Id: scrextend.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
 \ProvidesPackage{scrextend}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package (extend other classes with features of KOMA-Script classes)%
 ]
 \newcommand*{\scr@ext@activate}[1]{%
@@ -133,13 +133,13 @@
     \expandafter\g@addto@macro\csname scr@ext@activate@#1\endcsname
   }%
 }
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: load)
 \RequirePackage{scrkbase}[\KOMAScriptVersion]
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: prepare)
 \newcommand*{\sectfont}{\normalcolor\@gr@gsffamily\bfseries}
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: init)
 \providecommand*
   {\scr@compatibility}{\scr@v@last}
@@ -222,8 +222,10 @@
 \@namedef{scr@v@3.33}{18}
 \@namedef{scr@v@3.34}{18}
 \@namedef{scr@v@3.35}{19}
-\@namedef{scr@v@last}{19}
-%%% From File: $Id: scrextend.dtx 3453 2020-02-25 07:33:30Z kohm $
+\@namedef{scr@v@3.36}{20}
+\@namedef{scr@v@3.37 BETA}{20}
+\@namedef{scr@v@last}{20}
+%%% From File: $Id: scrextend.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{extendedfeature}{%
   \scr@ext@activate{#1}%
@@ -247,7 +249,7 @@
     \def\FamilyKeyState{Option `extendedfeature' too late}%
   }%
 }
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: option)
 \KOMA@key{version}[last]{%
   \scr@ifundefinedorrelax{scr@v@#1}{%
@@ -269,11 +271,29 @@
     }{%
       Switching compatibility level to `#1'%
     }%
-    \edef\scr@compatibility{\@nameuse{scr@v@#1}}%
+ \edef\scr@compatibility{\@nameuse{scr@v@#1}}%
     \FamilyKeyStateProcessed
     \KOMA@kav@xreplacevalue{.%
       scrextend.\scr@pkgextension
     }{version}{#1}%
+    \ifnum\scr@compatibility<\scr@v@last
+      \PackageWarningNoLine{%
+        scrextend%
+      }{%
+        Switching back to an old KOMA-Script release does\MessageBreak
+        not mean, that KOMA-Script is fully compatible with\MessageBreak
+        the old release. If you need full compatibility\MessageBreak
+        to an old KOMA-Script release, you should use that\MessageBreak
+        old KOMA-Script release. However, in that case you\MessageBreak
+        could also need old releases of other packages and\MessageBreak
+        even of the LaTeX kernel.\MessageBreak
+        You should also note, that the KOMA-Script developers\MessageBreak
+        refuse support for documents using `version=#1'.\MessageBreak
+        We recommend to eliminate all deprecated options\MessageBreak
+        and commands. We also recommend to not use option\MessageBreak
+        `version', i.e., with other values than `last'%
+      }%
+    \fi
   }%
 }
 \AtEndOfPackage{%
@@ -302,7 +322,7 @@
 \newcommand*{\scr@v@is@ge}[1]{%
   \numexpr\scr@compatibility+\@ne\relax>\@nameuse{scr@v@#1}
 }
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{draft}[true]{%
   \KOMA@set@ifkey{draft}{@tempswa}{#1}%
@@ -361,7 +381,7 @@
 \newcommand*{\@gr@gsffamily}{%
   \if@egregdoesnotlikesansseriftitles\else\sffamily\fi
 }
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \providecommand*{\@fontsizefilebase}{scrsize}
 \KOMA@key{fontsize}{%
@@ -398,7 +418,7 @@
     scrextend.\scr@pkgextension
   }{fontsize}{#1}%
 }
-%%% From File: $Id: scrkernel-title.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-title.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \scr@ext@activateable{title}{%
   \scr@ifundefinedorrelax{if@titlepage}{%
@@ -442,19 +462,19 @@
 \KOMA@DeclareStandardOption%
   [scrextend]%
   {notitlepage}{titlepage=false}
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{cleardoublepage}{%
-  \begingroup%
+  \begingroup
     \def\@tempc{%
-      \endgroup%
+      \endgroup
       \KOMA@unknown@keyval{cleardoublepage}{#1}{%
         'current' or any defined pagestyle e.g. 'empty','plain', 'headings'}%
     }%
     \Ifstr{#1}{current}{%
-      \def\@tempc{\endgroup%
+      \def\@tempc{\endgroup
         \def\cleardoublepage{\cleardoublestandardpage}%
         \def\cleardoubleoddpage{\cleardoubleoddstandardpage}%
         \def\cleardoubleevenpage{\cleardoubleevenstandardpage}%
@@ -465,7 +485,7 @@
       }%
     }{%
       \Ifnotundefined{ps@#1}{%
-        \def\@tempc{\endgroup%
+        \def\@tempc{\endgroup
           \def\cleardoublepage{\cleardoublepageusingstyle{#1}}%
           \def\cleardoubleoddpage{\cleardoubleoddpageusingstyle{#1}}%
           \def\cleardoubleevenpage{\cleardoubleevenpageusingstyle{#1}}%
@@ -526,9 +546,9 @@
   {\pagestyle{#1}\cleardoublestandardpage}}
 \newcommand*{\cleardoubleemptypage}{\cleardoublepageusingstyle{empty}}
 \newcommand*{\cleardoubleplainpage}{\cleardoublepageusingstyle{plain}}
-%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
 \KOMA@key{footnotes}{%
   \ifx\@footnotemark\scr@saved@footnotemark
@@ -599,16 +619,63 @@
   \csname FN@mf@prepare\endcsname
   \ifhmode\spacefactor\@x@sf\fi
   \relax}
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: execoption)
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: execoption)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-compatibility.dtx 3617 2021-10-12 09:21:01Z kohm $
+%%% From File: $Id: scrkernel-compatibility.dtx 3896 2022-06-21 09:06:07Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+\AtBeginDocument{%
+  \begingroup
+    \def\reserved@a#1/#2/#3 #4\@nil{\@tempcnta=#1\relax\@tempcntb=#2\relax}%
+    \expandafter\reserved@a\KOMAScriptVersion\@nil
+    \edef\reserved@a{\the\numexpr\@tempcnta+2\relax/%
+      \ifnum\@tempcntb<10 0\fi\the\@tempcntb/01}%
+    \expandafter\IfLTXAtLeastTF\expandafter{\reserved@a}{%
+      \PackageWarningNoLine{scrextend}{%
+        Your are using a KOMA-Script version, that has not\MessageBreak
+        been tested with your more than one year newer\MessageBreak
+        LaTeX release `\fmtversion'.\MessageBreak
+        Because of the high speed of LaTeX kernel development,\MessageBreak
+        this could result in a lot of issues.\MessageBreak
+        Please have a look at\MessageBreak
+        <http://www.ctan.org/pkg/koma-script> and if this\MessageBreak
+        shows a newer KOMA-Script version than\MessageBreak
+        `\KOMAScriptVersion', we suggest to do\MessageBreak
+        an update of KOMA-Script or maybe even the whole\MessageBreak
+        TeX distribution%
+      }%
+    }{%
+      \edef\reserved@a{\the\numexpr\@tempcnta-4\relax/%
+        \ifnum\@tempcntb<10 0\fi\the\@tempcntb/01}%
+      \expandafter\IfLTXAtLeastTF\expandafter{\reserved@a}{}{%
+        \PackageWarningNoLine{scrextend}{%
+          You are using a KOMA-Script version, that has not been\MessageBreak
+          tested with your more than four years older LaTeX\MessageBreak
+          release `\fmtversion'.\MessageBreak
+          Because of the high speed of LaTeX kernel development,\MessageBreak
+          KOMA-Script releases cannot be tested with all past\MessageBreak
+          LaTeX releases.\MessageBreak
+          \ifnum\scr@compatibility<\scr@v@last
+            So even if you are using option `version' implicitly\MessageBreak
+            or explicitly, this
+          \else
+            So this
+          \fi
+          could result in a lot of issues.\MessageBreak
+          We recommend, to update the whole TeX distribution.\MessageBreak
+          If this could not be done, we suggest to use at\MessageBreak
+          least an older KOMA-Script release, e.g., from\MessageBreak
+          <https://komascript.de/current>%
+        }%
+      }%
+    }%
+  \endgroup
+}
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*\scr@setlength[4]{%
   \expandafter\ifnum\scr@v@is@lt{3.12}\relax
@@ -965,7 +1032,7 @@
     because I do not change it%
   }%
 }
-%%% From File: $Id: scrkernel-title.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrkernel-title.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \scr@ext@addto@activateable{title}{%
 \newcommand*{\@extratitle}{}%
@@ -1343,21 +1410,19 @@
 }%
 }{}%
 }\csname scr@ext@immediate@title\endcsname
-\newcommand*\titlefont{\sectfont}%
-\newcommand*{\subject@font}{\normalfont\normalcolor\bfseries\Large}%
 \newkomafont{subtitle}{\usekomafont{title}\large}%
 \newkomafont{titlehead}{}%
 \newkomafont{author}{\Large}
 \newkomafont{date}{\Large}
 \newkomafont{publishers}{\Large}
 \newkomafont{dedication}{\Large}
+\newcommand*\titlefont{\sectfont}%
 \newcommand*{\scr@fnt@title}{\titlefont}%
+\newcommand*{\subject@font}{\normalfont\normalcolor\bfseries\Large}%
 \newcommand*{\scr@fnt@subject}{\subject@font}%
-%%% From File: $Id: scrkernel-sections.dtx 3621 2021-10-15 10:20:41Z kohm $
+%%% From File: $Id: scrkernel-sections.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-\newcommand*{\scr@fnt@disposition}{\sectfont}
-\aliaskomafont{sectioning}{disposition}
-%%% From File: $Id: scrkernel-miscellaneous.dtx 3554 2021-01-28 15:40:05Z kohm $
+%%% From File: $Id: scrkernel-miscellaneous.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \scr@ifundefinedorrelax{if@restonecol}{%
   \expandafter\newif\csname if@restonecol\endcsname
@@ -1446,6 +1511,9 @@
     \expandafter\@secondoftwo
   \fi
 }
+\newcommand\marginline[1]{%
+  \marginpar[\raggedleft{#1}]{\raggedright #1}%
+}
 \scr@ifundefinedorrelax{textsubscript}{%
   \DeclareRobustCommand*\textsubscript[1]{%
     \@textsubscript{\selectfont#1}%
@@ -1461,18 +1529,16 @@
   {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}%
 }
 \providecommand*{\scr@endstrut}{\unskip\ifhmode\nobreak\strut\fi}
-%%% From File: $Id: scrkernel-pagestyles.dtx 3393 2019-11-19 10:33:44Z kohm $
+%%% From File: $Id: scrkernel-pagestyles.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-%%% From File: $Id: scrkernel-floats.dtx 3620 2021-10-12 10:27:43Z kohm $
+%%% From File: $Id: scrkernel-floats.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
-\newcommand\marginline[1]{%
-  \marginpar[\raggedleft{#1}]{\raggedright #1}%
-}
-%%% From File: $Id: scrkernel-footnotes.dtx 3570 2021-02-24 10:08:31Z kohm $
+%%% From File: $Id: scrkernel-footnotes.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand\deffootnote[4][]{%
   \expandafter\ifnum\scr@v@is@ge{3.22}\relax
     \long\def\@makefntext##1{%
+      \ExecuteDoHook{footnote/text/begin}%
       \raggedfootnote
       \leftskip #2
       \l@addto@macro\@trivlist{%
@@ -1483,6 +1549,7 @@
         \hskip \dimexpr #1-#2\relax
       }%
       \ftn@font\hbox to \z@{\hss\@@makefnmark}##1%
+      \ExecuteDoHook{footnote/text/end}%
     }%
   \else
     \PackageInfo{scrextend}{%
@@ -1518,15 +1585,16 @@
 \newcommand*{\ftn@font}{\normalfont}
 \newcommand*{\scr@fnt@footnote}{\ftn@font}
 \newcommand*{\ftnm@font}{}
-\newcommand*{\scr@fnt@footnotenumber}{\ftnm@font}
+\aliaskomafont{footnotenumber}{footnotelabel}
 \newcommand*{\scr@fnt@footnotelabel}{\ftnm@font}
-\newcommand*{\scr@fnt@instead@footnotetext}{footnote}
+\aliaskomafont{footnotetext}{footnote}
 \newcommand*\deffootnotemark[1]{%
   \def\@makefnmark{\hbox{\ftntm@font{#1}}}%
 }
 \newcommand*{\ftntm@font}{}
 \newcommand*{\scr@fnt@footnotereference}{\ftntm@font}
-\newcommand*{\scr@fnt@footnoteref}{\ftntm@font}
+\aliaskomafont{footnoteref}{footnotereference}
+\aliaskomafont{footnotemark}{footnotereference}
 \providecommand*{\FN@mf@check}{%
   \ifdim\lastkern=\multiplefootnotemarker\relax
     \edef\@x@sf{\the\spacefactor}%
@@ -1600,7 +1668,7 @@
   \endgroup
   \@footnotemark
 }
-%%% From File: $Id: scrkernel-listsandtabulars.dtx 3563 2021-02-15 18:40:44Z kohm $
+%%% From File: $Id: scrkernel-listsandtabulars.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newenvironment{labeling}[2][]{%
   \def\sc@septext{#1}%
@@ -1679,10 +1747,8 @@
 }
 \newkomafont{labelinglabel}{}
 \newkomafont{labelingseparator}{}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrextend.sty'.

@@ -8,7 +8,6 @@
 %% 
 %%   __________________________________________________
 %%   Vafa Khalighi
-%%   tex-persian@vafa.ac
 %% 
 %%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
@@ -21,7 +20,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50574}
+%% \CheckSum{55413}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -38,7 +37,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesFile{lscape-xetex-bidi.def}[2022/02/18 v0.1 bidi adaptations for lscape package for XeTeX engine]
+\ProvidesFile{lscape-xetex-bidi.def}[2022/07/14 v0.2 bidi adaptations for lscape package for XeTeX engine]
 \bidi@patchcmd{\LS@rot}{\rotatebox{90}{\box\@outputbox}}{%
   \if@RTL
     \rotatebox[origin=br]{-90}{\box\@outputbox}%
@@ -46,7 +45,11 @@
     \rotatebox{90}{\box\@outputbox}%
   \fi
 }{}{}
+
 \g@addto@macro{\landscape}{%
+  \if@bidi@csdef{bidi@columnwidth}{%
+    \bidi@columnwidth\columnwidth
+  }{}%
   \let\bidi@left@footnoterule\left@footnoterule
   \let\bidi@right@footnoterule\right@footnoterule
   \def\left@footnoterule{%

@@ -1,0 +1,33 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Unique TeX features</title><link rel="stylesheet" type="text/css" href="miktexman.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="MiKTeX Manual"><link rel="up" href="localguide.html" title="Chapter 3. Using MiKTeX"><link rel="prev" href="localguide.html" title="Chapter 3. Using MiKTeX"><link rel="next" href="texifying.html" title="texify: The MiKTeX Compiler Driver"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><nav><ul class="pager"><li><a aria-label="Prev" href="localguide.html"><span aria-hidden="true">Prev</span></a></li><li><a aria-label="Up" href="localguide.html"><span aria-hidden="true">Up</span></a></li><li><a aria-label="Next" href="texifying.html"><span aria-hidden="true">Next</span></a></li></ul></nav><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="texfeatures"></a>Unique <span class="application">TeX</span> features</h2></div></div></div><p>This section describes features that are unique to <span class="application">MiKTeX</span>'s <span class="application">TeX</span> implementation.</p><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="autoinstalloptions"></a>Automatic Package Installation</h3></div></div></div><p><span class="application">MiKTeX</span> can be configured in such a way that missing packages
+<a class="indexterm" name="id714949"></a>
+are automatically installed (see <a class="xref" href="autoinstall.html" title="Automatic Package Installation">the section called “Automatic Package Installation”</a>).</p><p>It is possible to override the global configuration setting with
+these command line options:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="option">--disable-installer</code></span></dt><dd><p>Missing packages
+<a class="indexterm" name="id714923"></a>
+will not be installed.</p></dd><dt><span class="term"><code class="option">--enable-installer</code></span></dt><dd><p>Missing packages will
+<a class="indexterm" name="id714994"></a>
+be installed.</p></dd></dl></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="recpkgusg"></a>Finding out Package Usages</h3></div></div></div><p>The command line option <code class="option">--record-package-usages</code>
+can be used to
+<a class="indexterm" name="id715002"></a>
+<a class="indexterm" name="id715003"></a>
+find out which packages are used in a job.</p><p>For example, you would say</p><pre class="programlisting">latex -record-package-usages=packages.txt test</pre><p>to create the file <code class="filename">packages.txt</code>, which contains the
+names of the packages used by <code class="filename">test.tex</code>.</p><p>If <code class="filename">test.tex</code> looks like this:</p><pre class="programlisting">\documentclass{scrartcl}
+\begin{document}
+Hello, world!
+\end{document}</pre><p>Then the resulting <code class="filename">packages.txt</code>
+would contain these lines:</p><pre class="programlisting">cm
+koma-script
+ltxbase</pre><p>The package list can be handed over to the package manager
+(see <a class="xref" href="mpm.html" title="mpm"><span class="refentrytitle">mpm</span>(1)</a>), e.g.</p><pre class="programlisting">mpm --update-some=packages.txt</pre><p>would ensure that you have the latest versions installed.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="includedirectory"></a>Specifying Additional Input Directories</h3></div></div></div><a class="indexterm" name="id715111"></a><p>The command-line option
+<code class="option">--include-directory=<em class="replaceable"><code>dir</code></em></code>
+causes the program to include <em class="replaceable"><code>dir</code></em> into
+the list of input directories.</p><p>For example:</p><pre class="programlisting">latex --include-directory="C:\My Styles" foo.tex</pre><p>This prepends <code class="filename">C:\My Styles</code> to the input search
+path, i.e., <code class="filename">C:\My Styles</code> will be searched first,
+when <span class="application">TeX</span> tries to find an input file.</p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a name="auxdirectory"></a>Specifying the Directory for Auxiliary Files</h3></div></div></div><a class="indexterm" name="id715165"></a><a class="indexterm" name="id715184"></a><p>The option <code class="option">--aux-directory=<em class="replaceable"><code>dir</code></em></code>
+causes <span class="application">TeX</span> to create auxiliary files in another directory. For example:</p><div class="informalexample"><pre class="screen"><code class="prompt">&gt; </code><strong class="userinput"><code>mkdir C:\texoutput</code></strong>
+<code class="prompt">&gt; </code><strong class="userinput"><code>mkdir C:\tobedeleted</code></strong>
+<code class="prompt">&gt; </code><strong class="userinput"><code>latex -output-directory=C:\texoutput -aux-directory=C:\tobedeleted foo.tex</code></strong>
+...
+<code class="prompt">&gt; </code></pre></div><p>This ensures that 1)<span class="symbol"> </span><code class="filename">foo.dvi</code> will be
+created in <code class="filename">C:\texoutput</code> and 2)<span class="symbol"> </span>all other
+files (<code class="filename">foo.log</code>, <span class="symbol">…</span>) will be created in
+<code class="filename">C:\tobedeleted</code>.</p></div></div></body></html>

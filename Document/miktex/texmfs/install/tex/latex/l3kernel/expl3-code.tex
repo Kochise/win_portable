@@ -70,7 +70,7 @@
 %% and all files in that bundle must be distributed together.
 %% 
 %% File: expl3.dtx
-\def\ExplFileDate{2022-04-10}%
+\def\ExplFileDate{2022-08-23}%
 \begingroup
   \def\next{\endgroup}%
   \expandafter\ifx\csname PackageError\endcsname\relax
@@ -922,6 +922,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   \__kernel_primitive:NN \crampedscriptstyle    \tex_crampedscriptstyle:D
   \__kernel_primitive:NN \crampedtextstyle      \tex_crampedtextstyle:D
   \__kernel_primitive:NN \csstring              \tex_csstring:D
+  \__kernel_primitive:NN \discretionaryligaturemode
+    \tex_discretionaryligaturemode:D
   \__kernel_primitive:NN \directlua             \tex_directlua:D
   \__kernel_primitive:NN \dviextension          \tex_dviextension:D
   \__kernel_primitive:NN \dvifeedback           \tex_dvifeedback:D
@@ -968,10 +970,12 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   \__kernel_primitive:NN \luatexbanner          \tex_luatexbanner:D
   \__kernel_primitive:NN \luatexrevision        \tex_luatexrevision:D
   \__kernel_primitive:NN \luatexversion         \tex_luatexversion:D
+  \__kernel_primitive:NN \mathdefaultsmode      \tex_mathdefaultsmode:D
   \__kernel_primitive:NN \mathdelimitersmode    \tex_mathdelimitersmode:D
   \__kernel_primitive:NN \mathdir               \tex_mathdir:D
   \__kernel_primitive:NN \mathdirection         \tex_mathdirection:D
   \__kernel_primitive:NN \mathdisplayskipmode   \tex_mathdisplayskipmode:D
+  \__kernel_primitive:NN \matheqdirmode         \tex_matheqdirmode:D
   \__kernel_primitive:NN \matheqnogapstep       \tex_matheqnogapstep:D
   \__kernel_primitive:NN \mathnolimitsmode      \tex_mathnolimitsmode:D
   \__kernel_primitive:NN \mathoption            \tex_mathoption:D
@@ -2284,7 +2288,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       }
       { \scan_stop: }
   }
-\cs_new:Npn \cs_argument_spec:N #1
+\cs_new:Npn \cs_parameter_spec:N #1
   {
     \token_if_macro:NTF #1
       {
@@ -4769,7 +4773,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \__kernel_chk_defined:NT #2
       {
         \exp_args:Nf \tl_if_empty:nTF
-          { \cs_prefix_spec:N #2 \cs_argument_spec:N #2 }
+          { \cs_prefix_spec:N #2 \cs_parameter_spec:N #2 }
           {
             \exp_args:Ne #1
               { \token_to_str:N #2 = \__kernel_exp_not:w \exp_after:wN {#2} }
@@ -4802,7 +4806,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \__kernel_chk_defined:NT #1
       {
         \exp_args:Nf \tl_if_empty:nTF
-          { \cs_prefix_spec:N #1 \cs_argument_spec:N #1 }
+          { \cs_prefix_spec:N #1 \cs_parameter_spec:N #1 }
           {
             \tl_set:Nx \l__tl_internal_a_tl {#3}
             \tl_if_eq:NNTF #1 \l__tl_internal_a_tl
@@ -5018,12 +5022,12 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \cs_new:Npn \__str_case:nnTF #1#2#3#4
   { \__str_case:nw {#1} #2 {#1} { } \s__str_mark {#3} \s__str_mark {#4} \s__str_stop }
 \cs_generate_variant:Nn \str_case:nn   { V , o , nV , nv }
+\prg_generate_conditional_variant:Nnn \str_case:nn
+  { V , o , nV , nv } { T , F , TF }
 \cs_new_eq:NN \str_case:Nn   \str_case:Vn
 \cs_new_eq:NN \str_case:NnT  \str_case:VnT
 \cs_new_eq:NN \str_case:NnF  \str_case:VnF
 \cs_new_eq:NN \str_case:NnTF \str_case:VnTF
-\prg_generate_conditional_variant:Nnn \str_case:nn
-  { V , o , nV , nv } { T , F , TF }
 \cs_new:Npn \__str_case:nw #1#2#3
   {
     \str_if_eq:nnTF {#1} {#2}
@@ -7258,7 +7262,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \exp:w \exp_end_continue_f:w % (
     \__bool_get_next:NN \use_i:nnnn #1 )
   }
-\cs_new:Npn \__bool_if_p_aux:w #1 \use_i:nnnn #2#3 {#2}
+\cs_new:Npn \__bool_if_p_aux:w #1 \use_i:nnnn #2#3
+  { \bool_if:NTF #2 \c_true_bool \c_false_bool }
 \cs_new:Npn \__bool_get_next:NN #1#2
   {
     \use:c
@@ -7619,6 +7624,11 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
               }
           }
       }
+  }
+\cs_new_protected:Npn \sys_ensure_backend:
+  {
+    \str_if_exist:NF \c_sys_backend_str
+      { \sys_load_backend:n { } }
   }
 \bool_new:N \g__sys_debug_bool
 \cs_new_protected:Npn \sys_load_debug:
@@ -9023,7 +9033,15 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { \cs_if_exist_p:N \tex_XeTeXversion:D }
   {
     \cs_set:Npn \__char_str_change_case:nN #1#2
-      { \tl_to_str:n {#2} }
+      {
+        \int_compare:nNnTF {#1} = 0
+          { \tl_to_str:n {#2} }
+          {
+            \int_compare:nTF { `A <= #1 <= `z }
+              { \char_generate:nn {#1} { 12 } }
+              { \tl_to_str:n {#2} }
+          }
+      }
   }
 \tl_const:Nx \c_catcode_other_space_tl { \char_generate:nn { `\  } { 12 } }
 \scan_new:N \s__token_mark
@@ -10138,7 +10156,6 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       { #1 ~ }
   }
 \prop_new:N \g_msg_module_name_prop
-\prop_gput:Nnn \g_msg_module_name_prop { LaTeX } { LaTeX3 }
 \prop_new:N \g_msg_module_type_prop
 \prop_gput:Nnn \g_msg_module_type_prop { LaTeX } { }
 \cs_new:Npn \msg_module_type:n #1
@@ -10790,7 +10807,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { Backend~request~inconsistent~with~engine:~using~'#2'~backend. }
   {
     You~have~requested~backend~'#1',~but~this~is~not~suitable~for~use~with~the~
-    active~engine.~LaTeX3~will~use~the~'#2'~backend~instead.
+    active~engine.~LaTeX~will~use~the~'#2'~backend~instead.
   }
 \cs_set_protected:Npn \__msg_tmp:w #1
   {
@@ -10829,7 +10846,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \cs_generate_variant:Nn \msg_expandable_error:nnnnn  { nnfff }
 \cs_generate_variant:Nn \msg_expandable_error:nnnn   { nnff }
 \cs_generate_variant:Nn \msg_expandable_error:nnn    { nnf }
-\prop_gput:Nnn \g_msg_module_name_prop { kernel } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { kernel } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { kernel } { }
 \clist_map_inline:nn
   {
@@ -10837,12 +10854,12 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     quark , prg , prop , scanmark , seq , sys
   }
   {
-    \prop_gput:Nnn \g_msg_module_name_prop {#1} { LaTeX3 }
+    \prop_gput:Nnn \g_msg_module_name_prop {#1} { LaTeX }
     \prop_gput:Nnn \g_msg_module_type_prop {#1} { }
   }
-\prop_gput:Nnn \g_msg_module_name_prop { LaTeX / cmd } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { LaTeX / cmd } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { LaTeX / cmd } { }
-\prop_gput:Nnn \g_msg_module_name_prop { LaTeX / ltcmd } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { LaTeX / ltcmd } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { LaTeX / ltcmd } { }
 %% File: l3file.dtx
 \tl_new:N  \l__ior_internal_tl
@@ -10853,7 +10870,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \int_step_inline:nnn
   { 0 }
   {
-    \cs_if_exist:NTF \normalend
+    \cs_if_exist:NTF \contextversion
       { \tex_count:D 38 ~ }
       {
         \tex_count:D 16 ~ %
@@ -10883,10 +10900,10 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \prg_generate_conditional_variant:Nnn \ior_open:Nn { c } { T , F , TF }
 \exp_args:NNf \cs_new_protected:Npn \__ior_new:N
   { \exp_args:NNc \exp_after:wN \exp_stop_f: { newread } }
-\cs_if_exist:NT \normalend
+\cs_if_exist:NT \contextversion
   {
     \cs_new_eq:NN \__ior_new_aux:N \__ior_new:N
-    \cs_set_protected:Npn \__ior_new:N #1
+    \cs_gset_protected:Npn \__ior_new:N #1
       {
         \cs_undefine:N #1
         \__ior_new_aux:N #1
@@ -11083,7 +11100,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \int_step_inline:nnn
   { 0 }
   {
-    \cs_if_exist:NTF \normalend
+    \cs_if_exist:NTF \contextversion
       { \tex_count:D 39 ~ }
       {
         \tex_count:D 17 ~
@@ -11103,6 +11120,15 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \iow_new:N \g_tmpb_iow
 \exp_args:NNf \cs_new_protected:Npn \__iow_new:N
   { \exp_args:NNc \exp_after:wN \exp_stop_f: { newwrite } }
+\cs_if_exist:NT \contextversion
+  {
+    \cs_new_eq:NN \__iow_new_aux:N \__iow_new:N
+    \cs_gset_protected:Npn \__iow_new:N #1
+      {
+        \cs_undefine:N #1
+        \__iow_new_aux:N #1
+      }
+  }
 \tl_new:N \l__iow_file_name_tl
 \cs_new_protected:Npn \iow_open:Nn #1#2
   {
@@ -11128,7 +11154,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \cs_generate_variant:Nn \__iow_open_stream:Nn { NV }
 \cs_new_protected:Npn \iow_close:N #1
   {
-    \int_compare:nT { - \c_log_iow < #1 < \c_term_iow }
+    \int_compare:nT { \c_log_iow < #1 < \c_term_iow }
       {
         \tex_immediate:D \tex_closeout:D #1
         \prop_gremove:NV \g__iow_streams_prop #1
@@ -13054,7 +13080,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { Misplaced~'='~in~key-value~input~\msg_line_context: }
 \msg_new:nnn { keyval } { blank-key-name }
   { Blank~key~name~in~key-value~input~\msg_line_context: }
-\prop_gput:Nnn \g_msg_module_name_prop { keyval } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { keyval } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { keyval } { }
 \group_begin:
   \cs_set_protected:Npn \__keyval_tmp:w #1
@@ -14287,7 +14313,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       { is~undefined. }
       { has~the~properties: #2 . }
   }
-\prop_gput:Nnn \g_msg_module_name_prop { keys } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { keys } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { keys } { }
 %% File: l3intarray.dtx
 \msg_new:nnn { kernel } { negative-array-size }
@@ -15029,7 +15055,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     '\token_to_str:N \fp_to_tl:N',~or~other~
     conversion~functions.
   }
-\prop_gput:Nnn \g_msg_module_name_prop { fp } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { fp } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { fp } { }
 %% File: l3fp-traps.dtx
 \flag_new:n { fp_invalid_operation }
@@ -21367,7 +21393,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     you~tried~to~interleave~them.~LaTeX~will~try~to~proceed,~
     but~results~may~be~unexpected.
   }
-\prop_gput:Nnn \g_msg_module_name_prop { cctab } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { cctab } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { cctab } { }
 %% File l3sort.dtx
 \seq_new:N \g__sort_internal_seq
@@ -21787,7 +21813,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \iow_char:N\\sort_return_swapped: ~multiple~times.~
     Exactly~one~of~these~should~be~called.
   }
-\prop_gput:Nnn \g_msg_module_name_prop { sort } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { sort } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { sort } { }
 %% File: l3str-convert.dtx
 \cs_new_protected:Npn \__str_tmp:w { }
@@ -22567,10 +22593,10 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \prg_new_conditional:Npnn \__str_if_escape_string:N #1 { TF }
   {
-    \if_int_compare:w `#1 < "21 \exp_stop_f:
+    \if_int_compare:w `#1 < "27 \exp_stop_f:
       \prg_return_false:
     \else:
-      \if_int_compare:w `#1 > "7E \exp_stop_f:
+      \if_int_compare:w `#1 > "7A \exp_stop_f:
         \prg_return_false:
       \else:
         \prg_return_true:
@@ -22671,7 +22697,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         Unicode~limits~code~points~to~the~range~[0,1114111].
       }
   }
-\prop_gput:Nnn \g_msg_module_name_prop { str } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { str } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { str } { }
 \cs_new_protected:cpn { __str_convert_decode_utf8: }
   {
@@ -23574,6 +23600,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \cs_new:Npn \__tl_analysis_char_arg_aux:Nw #1 ~ { #1 { ~ } }
 \cs_new_protected:Npn \peek_analysis_map_inline:n #1
   {
+    \group_align_safe_begin:
     \int_gincr:N \g__kernel_prg_map_int
     \cs_set_protected:cpn
       { __tl_analysis_map_ \int_use:N \g__kernel_prg_map_int :nnN }
@@ -23582,7 +23609,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \group_end:
         #1
         \__tl_peek_analysis_loop:NNn
-          \prg_break_point:Nn \peek_analysis_map_break: { }
+          \prg_break_point:Nn \peek_analysis_map_break:
+            { \group_align_safe_end: }
       }
     \__tl_peek_analysis_loop:NNn ? ? ?
   }
@@ -24726,7 +24754,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \cs_new_protected:cpx { __regex_compile_/#2: }
       {
         \__regex_compile_one:n
-          { \__regex_item_reverse:n \exp_not:c { __regex_prop_#1: } }
+          { \__regex_item_reverse:n { \exp_not:c { __regex_prop_#1: } } }
       }
   }
 \__regex_tmp:w d D
@@ -24883,8 +24911,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           {
             \__regex_compile_one:n
               {
-                \bool_if:NF \l__regex_internal_bool \__regex_item_reverse:n
-                \exp_not:c { __regex_posix_ \l__regex_internal_a_tl : }
+                \bool_if:NTF \l__regex_internal_bool \use:n \__regex_item_reverse:n
+                { \exp_not:c { __regex_posix_ \l__regex_internal_a_tl : } }
               }
           }
           {
@@ -25433,7 +25461,10 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
             \__regex_item_caseless_range:nn { }
             \__regex_item_exact:nn { }
           }
-          { #1 { \__regex_clean_int:n {#2} } { \__regex_clean_int:n {#3} } }
+          {
+            #1 { \__regex_clean_int:n {#2} } { \__regex_clean_int:n {#3} }
+            \__regex_clean_class_loop:nnn
+          }
           {
             \token_case_meaning:NnTF #1
               {
@@ -25444,7 +25475,22 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
                 #1 { \__regex_clean_int:n {#2} } { \__regex_clean_class:n {#3} }
                 \__regex_clean_class_loop:nnn
               }
-              { \prg_break: }
+              {
+                \exp_args:Nf \str_case:nnTF
+                  {
+                    \exp_args:Nf \str_range:nnn
+                      { \cs_to_str:N #1 } { 1 } { 13 }
+                  }
+                  {
+                    { __regex_prop_ } { }
+                    { __regex_posix } { }
+                  }
+                  {
+                    #1
+                    \__regex_clean_class_loop:nnn {#2} {#3}
+                  }
+                  { \prg_break: }
+              }
           }
       }
   }
@@ -26000,7 +26046,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       \int_set_eq:NN \l__regex_curr_char_int \l__regex_last_char_int
       \__regex_prop_w:
       \__regex_break_point:TF
-        { \group_end: \__regex_item_reverse:n \__regex_prop_w: }
+        { \group_end: \__regex_item_reverse:n { \__regex_prop_w: } }
         { \group_end: \__regex_prop_w: }
   }
 \cs_new_protected:Npn \__regex_Z_test:
@@ -27720,7 +27766,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \tl_if_empty:nTF {#1} { variable~ #2 } { {#1} } :
     #3
   }
-\prop_gput:Nnn \g_msg_module_name_prop { regex } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { regex } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { regex } { }
 \cs_new:Npn \__regex_msg_repeated:nnN #1#2#3
   {
@@ -28444,10 +28490,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \cs_new_eq:NN \color_group_begin: \group_begin:
 \cs_new_eq:NN \color_group_end:   \group_end:
 \cs_new_protected:Npn \color_ensure_current:
-  {
-    \__color_backend_pickup:N \l__color_current_tl
-    \__color_select:N \l__color_current_tl
-  }
+  { \__color_select:N \l__color_current_tl }
 \scan_new:N \s__color_stop
 \cs_new_protected:Npn \__color_select:N #1
   {
@@ -28464,7 +28507,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \int_new:N \l__color_internal_int
 \tl_new:N \l__color_internal_tl
 \scan_new:N \s__color_mark
-\prg_new_conditional:Npnn \__color_if_defined:n #1 { T, F, TF }
+\prg_new_conditional:Npnn \color_if_exist:n #1 { p , T, F, TF }
   {
     \prop_if_exist:cTF { l__color_named_ #1 _prop }
       {
@@ -28531,14 +28574,21 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { #1 }
 \cs_new:Npn \__color_convert_rgb_cmyk:w #1 ~ #2 ~ #3 \s__color_stop
   {
-    \exp_args:Nf \__color_convert_rgb_cmyk:nnnn
-      { \fp_eval:n { min ( 1 - #1 , 1 - #2 , 1 - #3 ) } } {#1} {#2} {#3}
+    \exp_args:Neee \__color_convert_rgb_cmyk:nnn
+       { \fp_eval:n { 1 - #1 } }
+       { \fp_eval:n { 1 - #2 } }
+       { \fp_eval:n { 1 - #3 } }
+  }
+\cs_new:Npn \__color_convert_rgb_cmyk:nnn #1#2#3
+  {
+    \exp_args:Ne \__color_convert_rgb_cmyk:nnnn
+      { \fp_eval:n { min( #1, #2 , #3 ) } } {#1} {#2} {#3}
   }
 \cs_new:Npn \__color_convert_rgb_cmyk:nnnn #1#2#3#4
   {
-    \fp_eval:n { min ( 1 , max ( 0 , 1 - #2 - #1 ) ) } \c_space_tl
-    \fp_eval:n { min ( 1 , max ( 0 , 1 - #3 - #1 ) ) } \c_space_tl
-    \fp_eval:n { min ( 1 , max ( 0 , 1 - #4 - #1 ) ) } \c_space_tl
+    \fp_eval:n { min ( 1 , max ( 0 , #2 - #1 ) ) } \c_space_tl
+    \fp_eval:n { min ( 1 , max ( 0 , #3 - #1 ) ) } \c_space_tl
+    \fp_eval:n { min ( 1 , max ( 0 , #4 - #1 ) ) } \c_space_tl
     #1
   }
 \cs_new:Npn \__color_convert_cmyk_gray:w #1 ~ #2 ~ #3 ~ #4 \s__color_stop
@@ -28557,7 +28607,6 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \tl_new:N \l__color_next_value_tl
 \cs_new_protected:Npx \__color_parse:nN #1#2
   {
-    \exp_not:N \__color_backend_pickup:N \exp_not:N \l__color_current_tl
     \tl_set:Nx \exp_not:c { l__color_named_ . _tl }
       { \exp_not:N \__color_model:N \exp_not:N \l__color_current_tl }
     \prop_put:NVx \exp_not:c { l__color_named_ . _prop }
@@ -28568,7 +28617,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new_protected:Npn \__color_parse_aux:nN #1#2
   {
-    \__color_if_defined:nTF {#1}
+    \color_if_exist:nTF {#1}
       { \__color_parse_set_eq:Nn #2 {#1} }
       { \__color_parse:Nw #2#1 ! \s__color_stop }
     \__color_check_model:N #2
@@ -28601,7 +28650,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new_protected:Npn \__color_parse:Nw #1#2 ! #3 \s__color_stop
   {
-    \__color_if_defined:nTF {#2}
+    \color_if_exist:nTF {#2}
       {
         \tl_if_blank:nTF {#3}
           { \__color_parse_set_eq:Nn #1 {#2} }
@@ -28649,7 +28698,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new_protected:Npn \__color_parse_loop:nn #1#2
   {
-    \__color_if_defined:nTF {#2}
+    \color_if_exist:nTF {#2}
       {
         \__color_extract:nNN {#2} \l__color_next_model_tl \l__color_next_value_tl
         \tl_if_eq:NNF \l__color_model_tl \l__color_next_model_tl
@@ -28883,6 +28932,41 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__color_parse_model_wave_rho:n #1
   { \fp_eval:n { min(1, max(0,#1) ) } }
+\cs_new:Npn \__color_parse_model_cmy:w #1 , #2 , #3 , #4 \s__color_stop
+  {
+    { cmyk }
+    { \__color_convert_rgb_cmyk:nnn {#1} {#2} {#3} }
+  }
+\cs_new:Npn \__color_parse_model_tHsb:w #1 , #2 , #3 , #4 \s__color_stop
+  {
+    \exp_args:Ne \__color_parse_model_hsb:nnn
+      { \__color_parse_model_tHsb:n {#1} } {#2} {#3}
+  }
+\cs_new:Npn \__color_parse_model_tHsb:n #1
+  {
+    \__color_parse_model_tHsb:nw {#1}
+        0 ,   0 ;
+       60 ,  30 ;
+      120 ,  60 ;
+      180 , 120 ;
+      210 , 180 ;
+      240 , 240 ;
+      360 , 360 ;
+      \q_recursion_tail , ;
+      \q_recursion_stop
+  }
+\cs_new:Npn \__color_parse_model_tHsb:nw #1 #2 , #3 ; #4 , #5 ;
+  {
+    \quark_if_recursion_tail_stop_do:nn {#4} { 0 }
+    \fp_compare:nNnTF {#1} > {#4}
+      { \__color_parse_model_tHsb:nw {#1} #4 , #5 ; }
+      {
+        \use_i_delimit_by_q_recursion_stop:nw
+          { \fp_eval:n { ((#1 - #2) / (#4 - #2) * (#5 - #3) + #3) / 360 } }
+      }
+  }
+\cs_new:cpn { __color_parse_model_&spot:w } #1 , #2 \s__color_stop
+  { { gray } { #1 } }
 \tl_new:N \l_color_fixed_model_tl
 \cs_new_protected:Npn \__color_check_model:N #1
   {
@@ -28988,14 +29072,21 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   {
     \peek_remove_filler:n
       {
+        \group_align_safe_begin:
         \peek_catcode:NTF \c_alignment_token
-          { \__color_math_scan_end: }
-          { \__color_math_scan_auxi: }
+          {
+            \group_align_safe_end:
+            \__color_math_scan_end:
+          }
+          {
+            \group_align_safe_end:
+            \__color_math_scan_auxi:
+          }
       }
   }
 \cs_new_protected:Npn \__color_math_scan_auxi:
   {
-    \token_case_meaning:NnTF \l_peek_token
+    \token_case_catcode:NnTF \l_peek_token
       {
         \c_math_subscript_token   { }
         \c_math_superscript_token { }
@@ -29076,7 +29167,10 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \exp_after:wN \__color_draw:nnn \l__color_current_tl { stroke }
   }
 \cs_new_protected:Npn \__color_draw:nnn #1#2#3
-  { \use:c { __color_backend_ #3 _ #1 :n } {#2} }
+  {
+    \use:c { __color_backend_ #3 _ #1 :n } {#2}
+    \exp_args:Nc \group_insert_after:N { __color_backend_ #3 _ reset: }
+  }
 \tl_new:N \l__color_named_tl
 \cs_new_protected:Npn \color_set:nn #1#2
   {
@@ -29166,7 +29260,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new_protected:Npn \color_set_eq:nn #1#2
   {
-    \__color_if_defined:nTF {#2}
+    \color_if_exist:nTF {#2}
       {
         \tl_clear_new:c { l__color_named_ #1 _tl }
         \prop_clear_new:c { l__color_named_ #1 _prop }
@@ -29955,7 +30049,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     #1 { color } { show }
       {#2}
       {
-        \__color_if_defined:nT {#2}
+        \color_if_exist:nT {#2}
           {
             \exp_args:Nv \__color_show:n { l__color_named_ #2 _tl }
             \prop_map_function:cN
@@ -30064,6 +30158,12 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \\ \\
     key~was~given~with~the~correct~information.
   }
+\msg_new:nnn { color } { unhandled-model }
+  {
+    Unhandled~color~model~in~LaTeX2e~value~"#1":
+    \\ \\
+    falling~back~on~grayscale.
+  }
 \msg_new:nnnn { color } { unknown-color }
   { Unknown~color~'#1'. }
   {
@@ -30103,7 +30203,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     LaTeX~has~been~asked~to~create~a~new~color~model~called~'#1',~
     but~this~type~of~model~was~never~set~up.
   }
-\prop_gput:Nnn \g_msg_module_name_prop { color } { LaTeX3 }
+\prop_gput:Nnn \g_msg_module_name_prop { color } { LaTeX }
 \prop_gput:Nnn \g_msg_module_type_prop { color } { }
 \msg_new:nnn { color } { show }
   {
@@ -31489,6 +31589,16 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { \lua_shipout_e:n { \exp_not:n {#1} } }
 \cs_new:Npn \lua_escape:e #1 { \__lua_escape:n {#1} }
 \cs_new:Npn \lua_escape:n #1 { \lua_escape:e { \exp_not:n {#1} } }
+\str_new:N \l__lua_err_msg_str
+\cs_generate_variant:Nn \msg_error:nnnn { nnnV }
+\cs_new_protected:Npn \lua_load_module:n #1
+  {
+    \bool_if:nF { \__lua_load_module_p:n { #1 } }
+      {
+        \msg_error:nnnV
+          { luatex } { module-not-found } { #1 } { \l__lua_err_msg_str }
+      }
+  }
 \sys_if_engine_luatex:F
   {
     \clist_map_inline:nn
@@ -31504,7 +31614,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           }
       }
     \clist_map_inline:nn
-      { \lua_shipout_e:n , \lua_shipout:n }
+      { \lua_shipout_e:n , \lua_shipout:n, \lua_load_module:n }
       {
         \cs_set_protected:Npn #1 ##1
           {
@@ -31519,6 +31629,19 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     The~feature~you~are~using~is~only~available~
     with~the~LuaTeX~engine.~LaTeX3~ignored~'#1'.
   }
+
+\msg_new:nnnn { luatex } { module-not-found }
+  { Lua~module~`#1'~not~found. }
+  {
+    The~file~`#1.lua'~could~not~be~found.~Please~ensure~
+    that~the~file~was~properly~installed~and~that~the~
+    filename~database~is~current. \\ \\
+    The~Lua~loader~provided~this~additional~information: \\
+    #2
+  }
+
+\prop_gput:Nnn \g_msg_module_name_prop { luatex } { LaTeX }
+\prop_gput:Nnn \g_msg_module_type_prop { luatex } { }
 %% File: l3unicode.dtx
 \ior_new:N \g__char_data_ior
 \bool_lazy_or:nnTF { \sys_if_engine_luatex_p: } { \sys_if_engine_xetex_p: }
@@ -31654,22 +31777,12 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
   {
     \group_begin:
-      \cs_set_protected:Npn \__char_tmp:NN #1#2
-        {
-          \quark_if_recursion_tail_stop:N #2
-          \tl_const:cn { c__char_uppercase_ #2 _tl } {#1}
-          \tl_const:cn { c__char_lowercase_ #1 _tl } {#2}
-          \tl_const:cn { c__char_foldcase_  #1 _tl } {#2}
-          \__char_tmp:NN
-        }
-      \__char_tmp:NN
-        AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz
-        ? \q_recursion_tail \q_recursion_stop
       \ior_open:Nn \g__char_data_ior { UnicodeData.txt }
       \ior_close:N \g__char_data_ior
     \group_end:
   }
 %% File: l3text.dtx
+\cs_generate_variant:Nn \tl_if_head_eq_meaning_p:nN { o }
 \scan_new:N \s__text_stop
 \quark_new:N \q__text_nil
 \__kernel_quark_new_conditional:Nn \__text_quark_if_nil:n { TF }
@@ -31677,7 +31790,19 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \quark_new:N \q__text_recursion_stop
 \cs_new:Npn \__text_use_i_delimit_by_q_recursion_stop:nw
   #1 #2 \q__text_recursion_stop {#1}
-\__kernel_quark_new_test:N \__text_if_recursion_tail_stop_do:Nn
+\__kernel_quark_new_test:N \__text_if_q_recursion_tail_stop_do:Nn
+\scan_new:N \s__text_recursion_tail
+\scan_new:N \s__text_recursion_stop
+\cs_new:Npn \__text_use_i_delimit_by_s_recursion_stop:nw
+  #1 #2 \s__text_recursion_stop {#1}
+\cs_new:Npn \__text_if_s_recursion_tail_stop_do:Nn #1
+  {
+    \bool_lazy_and:nnTF
+      { \cs_if_eq_p:NN \s__text_recursion_tail #1 }
+      { \str_if_eq_p:nn { \s__text_recursion_tail } {#1} }
+      { \__text_use_i_delimit_by_s_recursion_stop:nw }
+      { \use_none:n }
+  }
 \group_begin:
   \char_set_catcode_active:n { 0 }
   \cs_new:Npn \__text_token_to_explicit:N #1
@@ -31829,7 +31954,11 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \TH \th
   }
 \tl_new:N \l_text_case_exclude_arg_tl
-\tl_set:Nn \l_text_case_exclude_arg_tl { \begin \cite \end \label \ref }
+\tl_set:Nx \l_text_case_exclude_arg_tl
+  {
+    \exp_not:n { \begin \cite \end \label \ref }
+    \exp_not:c { cite ~ }
+  }
 \tl_new:N \l_text_math_arg_tl
 \tl_set:Nn \l_text_math_arg_tl { \ensuremath }
 \tl_new:N \l_text_math_delims_tl
@@ -31889,7 +32018,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   {
     \group_align_safe_begin:
     \__text_expand_loop:w #1
-      \q__text_recursion_tail \q__text_recursion_stop
+      \s__text_recursion_tail \s__text_recursion_stop
     \__text_expand_result:n { }
   }
 \cs_new:Npn \__text_expand_store:n #1
@@ -31903,7 +32032,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \exp_end:
     #2
   }
-\cs_new:Npn \__text_expand_loop:w #1 \q__text_recursion_stop
+\cs_new:Npn \__text_expand_loop:w #1 \s__text_recursion_stop
   {
     \tl_if_head_is_N_type:nTF {#1}
       { \__text_expand_N_type:N }
@@ -31912,7 +32041,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           { \__text_expand_group:n }
           { \__text_expand_space:w }
       }
-    #1 \q__text_recursion_stop
+    #1 \s__text_recursion_stop
   }
 \cs_new:Npn \__text_expand_group:n #1
   {
@@ -31933,7 +32062,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npx \__text_expand_N_type:N #1
   {
-    \exp_not:N \__text_if_recursion_tail_stop_do:Nn #1
+    \exp_not:N \__text_if_s_recursion_tail_stop_do:Nn #1
       { \exp_not:N \__text_expand_end:w }
     \exp_not:N \bool_lazy_any:nTF
       {
@@ -31995,7 +32124,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_expand_math_search:NNN #1#2#3
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_expand_explicit:N #1 }
     \token_if_eq_meaning:NNTF #1 #2
       {
@@ -32007,7 +32136,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       }
       { \__text_expand_math_search:NNN #1 }
   }
-\cs_new:Npn \__text_expand_math_loop:Nw #1#2 \q__text_recursion_stop
+\cs_new:Npn \__text_expand_math_loop:Nw #1#2 \s__text_recursion_stop
   {
     \tl_if_head_is_N_type:nTF {#2}
       { \__text_expand_math_N_type:NN }
@@ -32016,11 +32145,11 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           { \__text_expand_math_group:Nn }
           { \__text_expand_math_space:Nw }
       }
-    #1#2 \q__text_recursion_stop
+    #1#2 \s__text_recursion_stop
   }
 \cs_new:Npn \__text_expand_math_N_type:NN #1#2
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_s_recursion_tail_stop_do:Nn #2
       { \__text_expand_end:w }
     \__text_expand_store:n {#2}
     \token_if_eq_meaning:NNTF #2 #1
@@ -32043,18 +32172,42 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \token_if_cs:NTF #1
       { \__text_expand_exclude:N #1 }
       {
-        \__text_expand_store:n {#1}
-        \__text_expand_loop:w
+        \bool_lazy_and:nnTF
+          { \token_if_active_p:N #1 }
+          {
+            ! \bool_lazy_any_p:n
+              {
+                { \token_if_protected_macro_p:N #1 }
+                { \token_if_protected_long_macro_p:N #1 }
+                { \tl_if_head_eq_meaning_p:oN {#1} \UTFviii@two@octets }
+                { \tl_if_head_eq_meaning_p:oN {#1} \UTFviii@three@octets }
+                { \tl_if_head_eq_meaning_p:oN {#1} \UTFviii@four@octets }
+              }
+          }
+          { \exp_after:wN \__text_expand_loop:w #1 }
+          {
+            \__text_expand_store:n {#1}
+            \__text_expand_loop:w
+          }
       }
   }
 \cs_new:Npn \__text_expand_exclude:N #1
   {
-    \exp_args:Ne \__text_expand_exclude:nN
+    \cs_if_eq:NNTF #1 \text_case_switch:nnnn
+      { \__text_expand_exclude_switch:Nnnnn #1 }
       {
-        \exp_not:V \l_text_math_arg_tl
-        \exp_not:V \l_text_expand_exclude_tl
+        \exp_args:Ne \__text_expand_exclude:nN
+          {
+            \exp_not:V \l_text_math_arg_tl
+            \exp_not:V \l_text_expand_exclude_tl
+          }
+        #1
       }
-    #1
+  }
+\cs_new:Npn \__text_expand_exclude_switch:Nnnnn #1#2#3#4#5
+  {
+    \__text_expand_store:n { #1 {#2} {#3} {#4} {#5} }
+    \__text_expand_loop:w
   }
 \cs_new:Npn \__text_expand_exclude:nN #1#2
   {
@@ -32063,7 +32216,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_expand_exclude:NN #1#2
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_expand_accent:N #1 }
     \str_if_eq:nnTF {#1} {#2}
       {
@@ -32087,7 +32240,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_expand_accent:NN #1#2
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_expand_letterlike:N #1 }
     \cs_if_eq:NNTF #2 #1
       {
@@ -32107,7 +32260,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_expand_letterlike:NN #1#2
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_expand_cs:N #1 }
     \cs_if_eq:NNTF #2 #1
       {
@@ -32131,7 +32284,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           { \exp_not:N \__text_expand_replace:N #1 }
       }
   }
-\cs_new:Npn \__text_expand_protect:w #1 \q__text_recursion_stop
+\cs_new:Npn \__text_expand_protect:w #1 \s__text_recursion_stop
   {
     \tl_if_head_is_N_type:nTF {#1}
       { \__text_expand_protect:N }
@@ -32139,11 +32292,11 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \__text_expand_store:n { \protect }
         \__text_expand_loop:w
       }
-        #1 \q__text_recursion_stop
+        #1 \s__text_recursion_stop
   }
 \cs_new:Npn \__text_expand_protect:N #1
   {
-    \__text_if_recursion_tail_stop_do:Nn #1
+    \__text_if_s_recursion_tail_stop_do:Nn #1
       {
         \__text_expand_store:n { \protect }
         \__text_expand_end:w
@@ -32218,7 +32371,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
     \exp_after:wN \__text_expand_unexpanded_test:w
     \exp:w \exp_end_continue_f:w
   }
-\cs_new:Npn \__text_expand_unexpanded_test:w #1 \q__text_recursion_stop
+\cs_new:Npn \__text_expand_unexpanded_test:w #1 \s__text_recursion_stop
   {
     \tl_if_head_is_group:nTF {#1}
       { \__text_expand_unexpanded:n }
@@ -32226,7 +32379,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \__text_expand_unexpanded:w
         \tl_if_head_is_N_type:nT {#1} { \__text_expand_unexpanded:N }
       }
-    #1 \q__text_recursion_stop
+    #1 \s__text_recursion_stop
   }
 \cs_new:Npn \__text_expand_unexpanded:N #1
   {
@@ -32270,12 +32423,32 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
      \__kernel_exp_not:w \exp_after:wN
       {
         \exp:w
-        \exp_args:Ne \__text_change_case_aux:nnn
+        \exp_args:Ne \__text_change_case_auxi:nnn
           { \text_expand:n {#3} }
           {#1} {#2}
       }
   }
-\cs_new:Npn \__text_change_case_aux:nnn #1#2#3
+\cs_new:Npn \__text_change_case_auxi:nnn #1#2#3
+  { \exp_args:No \__text_change_case_BCP:nnn { \tl_to_str:n {#3} } {#1} {#2} }
+\cs_new:Npx \__text_change_case_BCP:nnn #1#2#3
+  {
+    \exp_not:N \__text_change_case_BCP:nnw
+      {#2} {#3} #1 \tl_to_str:n { -x- -x- } \exp_not:N \q__text_stop
+  }
+\use:x
+  {
+    \cs_new:Npn \exp_not:N \__text_change_case_BCP:nnw
+      ##1##2##3 \tl_to_str:n { -x- } ##4 \tl_to_str:n { -x- } ##5
+      \exp_not:N \q__text_stop
+  }
+  { \__text_change_case_BCP:nnnnw {#1} {#2} {#4} {#3} #3 - - \q__text_stop }
+\cs_new:Npn \__text_change_case_BCP:nnnnw #1#2#3#4#5 - #6 - #7 \q__text_stop
+  {
+    \cs_if_exist:cTF { __text_change_case_ #2 _ #5 -x- #3 :nnnN }
+      { \__text_change_case_auxii:nnn {#1} {#2} { #5 -x- #3 } }
+      { \__text_change_case_auxii:nnn {#1} {#2} {#4} }
+  }
+\cs_new:Npn \__text_change_case_auxii:nnn #1#2#3
   {
     \group_align_safe_begin:
     \cs_if_exist_use:c { __text_change_case_boundary_ #2 _ #3 :Nnnw }
@@ -32317,7 +32490,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \exp_after:wN
           {
             \exp:w
-            \__text_change_case_aux:nnn {#3} {#1} {#2}
+            \__text_change_case_auxii:nnn {#3} {#1} {#2}
           }
       }
     \__text_change_case_loop:nnw {#1} {#2}
@@ -32331,7 +32504,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \exp_after:wN
           {
             \exp:w
-            \__text_change_case_aux:nnn {#3} {#1} {#2}
+            \__text_change_case_auxii:nnn {#3} {#1} {#2}
           }
       }
     \__text_change_case_loop:nnw { lower } {#2}
@@ -32343,7 +32516,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \exp_after:wN
           {
             \exp:w
-            \__text_change_case_aux:nnn {#3} {#1} {#2}
+            \__text_change_case_auxii:nnn {#3} {#1} {#2}
           }
       }
     \__text_change_case_break:w
@@ -32359,7 +32532,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_change_case_N_type:nnN #1#2#3
   {
-    \__text_if_recursion_tail_stop_do:Nn #3
+    \__text_if_q_recursion_tail_stop_do:Nn #3
       { \__text_change_case_end:w }
     \__text_change_case_N_type_aux:nnN {#1} {#2} #3
   }
@@ -32376,7 +32549,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_change_case_math_search:nnNNN #1#2#3#4#5
   {
-    \__text_if_recursion_tail_stop_do:Nn #4
+    \__text_if_q_recursion_tail_stop_do:Nn #4
       { \__text_change_case_cs_check:nnN {#1} {#2} #3 }
     \token_if_eq_meaning:NNTF #3 #4
       {
@@ -32401,7 +32574,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_change_case_math_N_type:nnNN #1#2#3#4
   {
-    \__text_if_recursion_tail_stop_do:Nn #4
+    \__text_if_q_recursion_tail_stop_do:Nn #4
       { \__text_change_case_end:w }
     \__text_change_case_store:n {#4}
     \token_if_eq_meaning:NNTF #4 #3
@@ -32445,8 +32618,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_change_case_exclude:nnNN #1#2#3#4
   {
-    \__text_if_recursion_tail_stop_do:Nn #4
-      { \use:c { __text_change_case_letterlike_ #1 :nnN } {#1} {#2} #3 }
+    \__text_if_q_recursion_tail_stop_do:Nn #4
+      { \__text_change_case_replace:nnN {#1} {#2} #3 }
     \str_if_eq:nnTF {#3} {#4}
       {
         \__text_use_i_delimit_by_q_recursion_stop:nw
@@ -32458,7 +32631,49 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { \__text_change_case_exclude:nnNnn {#1} {#2} {#3} {#4} }
 \cs_new:Npn \__text_change_case_exclude:nnNnn #1#2#3#4#5
   {
-    \__text_change_case_store:n { #3#4 {#5} }
+    \tl_if_blank:nTF {#4}
+       { \__text_change_case_store:n { #3 {#5} } }
+       {
+        \__text_change_case_store:o
+          {
+            \exp_after:wN #3
+              \exp:w \__text_change_case_auxii:nnn {#4} {#1} {#2}
+              {#5}
+          }
+      }
+    \__text_change_case_loop:nnw {#1} {#2}
+  }
+\cs_new:Npn \__text_change_case_replace:nnN #1#2#3
+  {
+    \cs_if_exist:cTF { l__text_case_ \token_to_str:N #3 _tl }
+      {
+        \exp_args:Nv \__text_change_case_replace:nnn
+          { l__text_case_ \token_to_str:N #3 _tl } {#1} {#2}
+      }
+      { \__text_change_case_switch:nnN {#1} {#2} #3 }
+  }
+\cs_new:Npn \__text_change_case_replace:nnn #1#2#3
+  { \__text_change_case_loop:nnw {#2} {#3} #1 }
+\cs_new:Npn \__text_change_case_switch:nnN #1#2#3
+  {
+    \cs_if_eq:NNTF #3 \text_case_switch:nnnn
+      { \use:c { __text_change_case_switch_ #1 :nnNnnnn  } }
+      { \use:c { __text_change_case_letterlike_ #1 :nnN } }
+        {#1} {#2} #3
+  }
+\cs_new:Npn \__text_change_case_switch_lower:nnNnnnn #1#2#3#4#5#6#7
+  {
+    \__text_change_case_store:n {#6}
+    \__text_change_case_loop:nnw {#1} {#2}
+  }
+\cs_new:Npn \__text_change_case_switch_upper:nnNnnnn #1#2#3#4#5#6#7
+  {
+    \__text_change_case_store:n {#5}
+    \__text_change_case_loop:nnw {#1} {#2}
+  }
+\cs_new:Npn \__text_change_case_switch_title:nnNnnnn #1#2#3#4#5#6#7
+  {
+    \__text_change_case_store:n {#7}
     \__text_change_case_loop:nnw {#1} {#2}
   }
 \cs_new:Npn \__text_change_case_letterlike_lower:nnN #1#2#3
@@ -32676,11 +32891,22 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   \__text_change_case_char_next_lower:nn
 \cs_new:Npn \__text_change_case_char_next_end:nn #1#2
   { \__text_change_case_break:w }
+\cs_new_protected:Npn \text_declare_case_equivalent:Nn #1#2
+  {
+    \tl_clear_new:c { l__text_case_ \token_to_str:N #1 _tl }
+    \tl_set:cn { l__text_case_ \token_to_str:N #1 _tl } {#2}
+  }
+\cs_new:Npn \text_case_switch:nnnn #1#2#3#4
+  {
+    \__text_case_switch_marker:
+    #1
+  }
+\cs_new:Npn \__text_case_switch_marker: { }
 \bool_lazy_or:nnTF
   { \sys_if_engine_luatex_p: }
   { \sys_if_engine_xetex_p: }
   {
-    \cs_new:cpn { __text_change_case_upper_de-alt:nnnN } #1#2#3#4
+    \cs_new:cpn { __text_change_case_upper_de-x-eszett:nnnN } #1#2#3#4
       {
         \int_compare:nNnTF { `#4 } = { "00DF }
           {
@@ -32693,16 +32919,16 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       }
   }
   {
-    \cs_new:cpx { __text_change_case_upper_de-alt:nnnN } #1#2#3#4
+    \cs_new:cpx { __text_change_case_upper_de-x-eszett:nnnN } #1#2#3#4
       {
         \exp_not:N \int_compare:nNnTF { `#4 } = { "00C3 }
           {
-            \exp_not:c { __text_change_case_upper_de-alt:nnnNN }
+            \exp_not:c { __text_change_case_upper_de-x-eszett:nnnNN }
               {#1} {#2} {#3} #4
           }
           { \exp_not:N \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
       }
-    \cs_new:cpn { __text_change_case_upper_de-alt:nnnNN } #1#2#3#4#5
+    \cs_new:cpn { __text_change_case_upper_de-x-eszett:nnnNN } #1#2#3#4#5
       {
         \int_compare:nNnTF { `#5 } = { "009F }
           {
@@ -32712,7 +32938,9 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           { \__text_change_case_char:nnnN {#1} {#2} {#3} #4#5 }
       }
   }
-\bool_lazy_or:nnT
+\cs_new_eq:cc { __text_change_case_upper_de-alt:nnnN }
+  { __text_change_case_upper_de-x-eszett:nnnN }
+\bool_lazy_or:nnTF
   { \sys_if_engine_luatex_p: }
   { \sys_if_engine_xetex_p: }
   {
@@ -32723,8 +32951,27 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
             \exp_args:Ne \__text_change_case_upper_el:nnn
               { \char_to_nfd:N #4 } {#2} {#3}
           }
-          { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+          {
+            \int_compare:nNnTF { `#4 } = { "0345 }
+              {
+                \__text_change_case_store:e
+                  {
+                    \use:c { __text_change_case_upper_ #3 :N } #4
+                  }
+                \__text_change_case_loop:nnw {#2} {#3}
+              }
+              { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+          }
       }
+    \cs_new_eq:cN { __text_change_case_upper_el-x-iota:nnnN }
+      \__text_change_case_upper_el:nnnN
+    \cs_new:Npn \__text_change_case_upper_el:N #1
+      {
+        \char_generate:nn { "0399 }
+          { \char_value_catcode:n { "0399 } }
+      }
+    \cs_new:cpn { __text_change_case_upper_el-x-iota:N } #1
+      { \exp_not:n {#1} }
     \cs_new:Npn \__text_change_case_upper_el:nnn #1#2#3
       { \__text_change_case_upper_el:nnNw {#2} {#3} #1 }
     \cs_new:Npn \__text_change_case_upper_el:nnNw #1#2#3#4 \q__text_recursion_stop
@@ -32745,21 +32992,65 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
             \__text_change_case_loop:nnw {#2} {#3} #4
           }
           {
-            \int_compare:nNnTF { `#4 } = { "0308 }
-              { \__text_change_case_upper_el_dialytika:nnN {#2} {#3} #1 }
+            \__text_change_case_if_takes_ypogegrammeni:nTF { `#1 }
               {
-                 \__text_change_case_if_greek_accent:nTF { `#4 }
-                  { \__text_change_case_upper_el_hiatus:nnNw {#2} {#3} #1 }
+                \__text_change_case_upper_el_ypogegrammeni:Nnnnnw
+                  #1 {#2} {#3} { } { } #4
+              }
+              { \__text_change_case_upper_el_aux:NnnN #1 {#2} {#3} #4 }
+          }
+      }
+    \cs_new:Npn \__text_change_case_upper_el_ypogegrammeni:Nnnnnw
+      #1#2#3#4#5#6 \q__text_recursion_stop
+      {
+        \tl_if_head_is_N_type:nTF {#6}
+          {
+            \__text_change_case_upper_el_ypogegrammeni:NnnnnN
+              #1 {#2} {#3} {#4} {#5}
+          }
+          { \__text_change_case_upper_el_aux:NnnN #1 {#2} {#3} #4#5 }
+            #6 \q__text_recursion_stop
+      }
+    \cs_new:Npn \__text_change_case_upper_el_ypogegrammeni:NnnnnN #1#2#3#4#5#6
+      {
+        \token_if_cs:NTF #6
+          { \__text_change_case_upper_el_aux:NnnN #1 {#2} {#3} #4#5 #6 }
+          {
+            \int_compare:nNnTF { `#6 } = { "0345 }
+              {
+                \__text_change_case_upper_el_ypogegrammeni:Nnnnnw
+                  #1 {#2} {#3} {#4} {#6}
+              }
+              {
+                \bool_lazy_or:nnTF
+                  { \__text_change_case_if_greek_accent_p:n { `#6 } }
+                  { \__text_change_case_if_greek_diacritic_p:n { `#6 } }
                   {
-                    \__text_change_case_if_greek_diacritic:nTF { `#4 }
-                      {
-                        \__text_change_case_store:e { \char_uppercase:N #1 }
-                        \__text_change_case_loop:nnw {#2} {#3}
-                      }
-                      {
-                        \__text_change_case_store:e { \char_uppercase:N #1 }
-                        \__text_change_case_loop:nnw {#2} {#3} #4
-                      }
+                    \__text_change_case_upper_el_ypogegrammeni:Nnnnnw
+                      #1 {#2} {#3} {#4#6} {#5}
+                  }
+                  { \__text_change_case_upper_el_aux:NnnN #1 {#2} {#3} #4#5 #6 }
+            }
+          }
+      }
+    \cs_new:Npn \__text_change_case_upper_el_aux:NnnN #1#2#3#4
+      {
+        \int_compare:nNnTF { `#4 } = { "0308 }
+          { \__text_change_case_upper_el_dialytika:nnN {#2} {#3} #1 }
+          {
+            \__text_change_case_if_greek_accent:nTF { `#4 }
+              { \__text_change_case_upper_el_hiatus:nnNw {#2} {#3} #1 }
+              {
+                \__text_change_case_if_greek_diacritic:nTF { `#4 }
+                  {
+                    \__text_change_case_store:e { \char_uppercase:N #1 }
+                    \__text_change_case_loop:nnw {#2} {#3}
+                  }
+                  {
+                    \int_compare:nNnTF { `#4 } = { "0345 }
+                      { \__text_change_case_store:e { [XXX] } }
+                      { \__text_change_case_store:e { \char_uppercase:N #1 } }
+                    \__text_change_case_loop:nnw {#2} {#3} #4
                   }
               }
           }
@@ -32825,6 +33116,37 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           { \__text_change_case_upper_el_gobble:nnw {#1} {#2} }
       }
   }
+  {
+    \cs_new:Npn \__text_change_case_upper_el:nnnN #1#2#3#4
+      {
+        \int_compare:nNnTF { `#4 } > { "80 }
+          {
+            \int_compare:nNnTF { `#4 } < { "E0 }
+              { \__text_change_case_upper_el:nnnNN }
+              {
+                 \int_compare:nNnTF { `#4 } < { "F0 }
+                  { \__text_change_case_upper_el:nnnNNN }
+                  { \__text_change_case_char:nnnN }
+              }
+          }
+          { \__text_change_case_char:nnnN }
+             {#1} {#2} {#3} #4
+      }
+    \cs_new:Npn \__text_change_case_upper_el:nnnNN #1#2#3#4#5
+      { \__text_change_case_upper_el:nnnn {#1} {#2} {#3} {#4#5} }
+    \cs_new:Npn \__text_change_case_upper_el:nnnNNN #1#2#3#4#5#6
+      { \__text_change_case_upper_el:nnnn {#1} {#2} {#3} {#4#5#6} }
+    \cs_new:Npn \__text_change_case_upper_el:nnnn #1#2#3#4
+      {
+        \cs_if_exist:cTF { c__text_uppercase_el_ \tl_to_str:n {#4} _tl }
+          {
+            \__text_change_case_store:v
+              { c__text_uppercase_el_ \tl_to_str:n {#4} _tl }
+            \__text_change_case_loop:nnw {#1} {#3}
+          }
+          { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+      }
+  }
 \prg_new_conditional:Npnn \__text_change_case_if_greek:n #1 { TF }
   {
     \if_int_compare:w #1 < "0370 \exp_stop_f:
@@ -32835,7 +33157,11 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           \prg_return_false:
         \else:
           \if_int_compare:w #1 > "1FFF \exp_stop_f:
-            \prg_return_false:
+            \if_int_compare:w #1 = "2126 \exp_stop_f:
+              \prg_return_true:
+            \else:
+              \prg_return_false:
+            \fi:
           \else:
             \prg_return_true:
           \fi:
@@ -32917,7 +33243,23 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         \fi:
       \fi:
     \fi:
-   }
+  }
+\prg_new_conditional:Npnn \__text_change_case_if_takes_ypogegrammeni:n #1 { TF }
+  {
+    \if_int_compare:w #1 = "03B1 \exp_stop_f:
+      \prg_return_true:
+    \else:
+      \if_int_compare:w #1 = "03B7 \exp_stop_f:
+        \prg_return_true:
+      \else:
+        \if_int_compare:w #1 = "03C9 \exp_stop_f:
+          \prg_return_true:
+        \else:
+          \prg_return_false:
+        \fi:
+      \fi:
+    \fi:
+  }
 \bool_lazy_or:nnT
   { \sys_if_engine_luatex_p: }
   { \sys_if_engine_xetex_p: }
@@ -32972,6 +33314,43 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   {
     \cs_new:Npn \__text_change_case_title_el:nnnN #1#2#3#4
       { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+  }
+\bool_lazy_or:nnT
+  { \sys_if_engine_luatex_p: }
+  { \sys_if_engine_xetex_p: }
+  {
+    \cs_new:cpn { __text_change_case_upper_hy:nnnN } #1#2#3#4
+      {
+        \int_compare:nNnTF { `#4 } = { "0587 }
+          {
+            \__text_change_case_store:e
+              {
+                \char_generate:nn { "0535 } { \__text_char_catcode:N #4 }
+                \char_generate:nn { "054E } { \__text_char_catcode:N #4 }
+              }
+            \use:c { __text_change_case_char_next_ #2 :nn }
+              {#2} {#3}
+          }
+          { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+      }
+    \cs_new:cpn { __text_change_case_title_hy:nnnN } #1#2#3#4
+      {
+        \int_compare:nNnTF { `#4 } = { "0587 }
+          {
+            \__text_change_case_store:e
+              {
+                \char_generate:nn { "0535 } { \__text_char_catcode:N #4 }
+                \char_generate:nn { "057E } { \__text_char_catcode:N #4 }
+              }
+            \use:c { __text_change_case_char_next_ #2 :nn }
+              {#2} {#3}
+          }
+          { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+      }
+    \cs_new:cpn { __text_change_case_upper_hy-x-yiwn:nnnN } #1#2#3#4
+      { \__text_change_case_char:nnnN {#1} {#2} {#3} #4 }
+    \cs_new_eq:cc { __text_change_case_title_hy-x-yiwn:nnnN }
+      { __text_change_case_upper_hy-x-yiwn:nnnN }
   }
 \bool_lazy_or:nnT
   { \sys_if_engine_luatex_p: }
@@ -33405,6 +33784,8 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
         { 0179 } { 017A }
         { 017B } { 017C }
         { 017D } { 017E }
+        { 01A0 } { 01A1 }
+        { 01AF } { 01B0 }
         { 01CD } { 01CE }
         { 01CF } { 01D0 }
         { 01D1 } { 01D2 }
@@ -33559,6 +33940,24 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
       \__text_tmp:w { 03F1 } { 03A1 } { upper }
       \__text_tmp:w { 03F4 } { 03B8 } { lower }
       \__text_tmp:w { 03F5 } { 0395 } { upper }
+      \__text_tmp:w { 01C4 } { 01C5 } { title }
+      \__text_tmp:w { 01C4 } { 01C6 } { lower }
+      \__text_tmp:w { 01C5 } { 01C4 } { upper }
+      \__text_tmp:w { 01C5 } { 01C6 } { lower }
+      \__text_tmp:w { 01C6 } { 01C4 } { upper }
+      \__text_tmp:w { 01C6 } { 01C5 } { title }
+      \__text_tmp:w { 01C7 } { 01C8 } { title }
+      \__text_tmp:w { 01C7 } { 01C9 } { lower }
+      \__text_tmp:w { 01C8 } { 01C7 } { upper }
+      \__text_tmp:w { 01C8 } { 01C9 } { lower }
+      \__text_tmp:w { 01C9 } { 01C7 } { upper }
+      \__text_tmp:w { 01C9 } { 01C8 } { title }
+      \__text_tmp:w { 01CA } { 01CB } { title }
+      \__text_tmp:w { 01CA } { 01CC } { lower }
+      \__text_tmp:w { 01CB } { 01CA } { upper }
+      \__text_tmp:w { 01CB } { 01CC } { lower }
+      \__text_tmp:w { 01CC } { 01CA } { upper }
+      \__text_tmp:w { 01CC } { 01CB } { title }
       \cs_set_protected:Npn \__text_tmp:w #1#2#3
         {
           \group_begin:
@@ -33620,6 +34019,54 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           \__text_tmp:nnnnnn { upper } {#5} {#6} {#7} {#1} {#2} {#3}
           \__text_tmp:nnnnnn { title } {#5} {#6} {#7} {#1} {#2} {#3}
         }
+      \__text_loop:nn
+        { 1EA0 } { 1EA1 }
+        { 1EA2 } { 1EA3 }
+        { 1EA4 } { 1EA5 }
+        { 1EA6 } { 1EA7 }
+        { 1EA8 } { 1EA9 }
+        { 1EAA } { 1EAB }
+        { 1EAC } { 1EAD }
+        { 1EAE } { 1EAF }
+        { 1EB0 } { 1EB1 }
+        { 1EB2 } { 1EB3 }
+        { 1EB4 } { 1EB5 }
+        { 1EB6 } { 1EB7 }
+        { 1EB8 } { 1EB9 }
+        { 1EBA } { 1EBB }
+        { 1EBC } { 1EBD }
+        { 1EBE } { 1EBF }
+        { 1EC0 } { 1EC1 }
+        { 1EC2 } { 1EC3 }
+        { 1EC4 } { 1EC5 }
+        { 1EC6 } { 1EC7 }
+        { 1EC8 } { 1EC9 }
+        { 1ECA } { 1ECB }
+        { 1ECC } { 1ECD }
+        { 1ECE } { 1ECF }
+        { 1ED0 } { 1ED1 }
+        { 1ED2 } { 1ED3 }
+        { 1ED4 } { 1ED5 }
+        { 1ED6 } { 1ED7 }
+        { 1ED8 } { 1ED9 }
+        { 1EDA } { 1EDB }
+        { 1EDC } { 1EDD }
+        { 1EDE } { 1EDF }
+        { 1EE0 } { 1EE1 }
+        { 1EE2 } { 1EE3 }
+        { 1EE4 } { 1EE5 }
+        { 1EE6 } { 1EE7 }
+        { 1EE8 } { 1EE9 }
+        { 1EEA } { 1EEB }
+        { 1EEC } { 1EED }
+        { 1EEE } { 1EEF }
+        { 1EF0 } { 1EF1 }
+        { 1EF2 } { 1EF3 }
+        { 1EF4 } { 1EF5 }
+        { 1EF6 } { 1EF7 }
+        { 1EF8 } { 1EF9 }
+        \q_recursion_tail ?
+        \q_recursion_stop
       \__text_loop:nn
         { 1F08 } { 1F00 }
         { 1F09 } { 1F01 }
@@ -33748,6 +34195,368 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
           \group_end:
         }
     \__text_tmp:w { 1FBE } { 0399 } { upper }
+      \cs_set_protected:Npn \__text_tmp:w #1#2#3#4#5#6#7#8
+        {
+          \tl_const:cx
+            {
+              c__text_uppercase_el_
+              \char_generate:nn {#1} { 12 }
+              \char_generate:nn {#2} { 12 }
+              _tl
+            }
+            {
+              \exp_after:wN \exp_after:wN \exp_after:wN
+                \exp_not:N \char_generate:nn {#5} { 13 }
+              \exp_after:wN \exp_after:wN \exp_after:wN
+                \exp_not:N \char_generate:nn {#6} { 13 }
+            }
+        }
+      \__text_loop:nn
+        { 0370 } { 0370 }
+        { 0371 } { 0370 }
+        { 0372 } { 0372 }
+        { 0373 } { 0372 }
+        { 0376 } { 0376 }
+        { 0377 } { 0376 }
+        { 03FD } { 03FD }
+        { 037B } { 03FD }
+        { 03FE } { 03FE }
+        { 037C } { 03FE }
+        { 03FF } { 03FF }
+        { 037D } { 03FF }
+        { 0386 } { 0391 }
+        { 0388 } { 0395 }
+        { 0389 } { 0397 }
+        { 038A } { 0399 }
+        { 038C } { 039F }
+        { 038E } { 03A5 }
+        { 038F } { 03A9 }
+        { 0390 } { 03AA }
+        { 0391 } { 0391 }
+        { 0392 } { 0392 }
+        { 0393 } { 0393 }
+        { 0394 } { 0394 }
+        { 0395 } { 0395 }
+        { 0396 } { 0396 }
+        { 0397 } { 0397 }
+        { 0398 } { 0398 }
+        { 0399 } { 0399 }
+        { 039A } { 039A }
+        { 039B } { 039B }
+        { 039C } { 039C }
+        { 039D } { 039D }
+        { 039E } { 039E }
+        { 039F } { 039F }
+        { 03A0 } { 03A0 }
+        { 03A1 } { 03A1 }
+        { 03A3 } { 03A3 }
+        { 03A4 } { 03A4 }
+        { 03A5 } { 03A5 }
+        { 03A6 } { 03A6 }
+        { 03A7 } { 03A7 }
+        { 03A8 } { 03A8 }
+        { 03A9 } { 03A9 }
+        { 03AA } { 03AA }
+        { 03AB } { 03AB }
+        { 03AC } { 0391 }
+        { 03AD } { 0395 }
+        { 03AE } { 0397 }
+        { 03AF } { 0399 }
+        { 03B0 } { 03AB }
+        { 03B1 } { 0391 }
+        { 03B2 } { 0392 }
+        { 03B3 } { 0393 }
+        { 03B4 } { 0394 }
+        { 03B5 } { 0395 }
+        { 03B6 } { 0396 }
+        { 03B7 } { 0397 }
+        { 03B8 } { 0398 }
+        { 03B9 } { 0399 }
+        { 03BA } { 039A }
+        { 03BB } { 039B }
+        { 03BC } { 039C }
+        { 03BD } { 039D }
+        { 03BE } { 039E }
+        { 03BF } { 039F }
+        { 03C0 } { 03A0 }
+        { 03C1 } { 03A1 }
+        { 03C2 } { 03A3 }
+        { 03C3 } { 03A3 }
+        { 03C4 } { 03A4 }
+        { 03C5 } { 03A5 }
+        { 03C6 } { 03A6 }
+        { 03C7 } { 03A7 }
+        { 03C8 } { 03A8 }
+        { 03C9 } { 03A9 }
+        { 03CA } { 03AA }
+        { 03CB } { 03AB }
+        { 03CC } { 039F }
+        { 03CD } { 03A5 }
+        { 03CE } { 03A9 }
+        { 03D0 } { 0392 }
+        { 03D1 } { 0398 }
+        { 03D2 } { 03A5 }
+        { 03D3 } { 03A5 }
+        { 03D4 } { 03AB }
+        { 03D5 } { 03A6 }
+        { 03D6 } { 03A0 }
+        { 03DA } { 03DA }
+        { 03DB } { 03DA }
+        { 03DC } { 03DC }
+        { 03DD } { 03DC }
+        { 03DE } { 03DE }
+        { 03DF } { 03DE }
+        { 03E0 } { 03E0 }
+        { 03E1 } { 03E0 }
+        { 03F0 } { 039A }
+        { 03F1 } { 03A1 }
+        { 03F2 } { 03F9 }
+        { 03F9 } { 03F9 }
+        \q_recursion_tail ?
+        \q_recursion_stop
+      \cs_set_protected:Npn \__text_tmp:w #1#2#3#4#5#6#7#8
+        {
+          \tl_const:cx
+            {
+              c__text_uppercase_el_
+              \char_generate:nn {#1} { 12 }
+              \char_generate:nn {#2} { 12 }
+              \char_generate:nn {#3} { 12 }
+              _tl
+            }
+            {
+              \exp_after:wN \exp_after:wN \exp_after:wN
+                \exp_not:N \char_generate:nn {#5} { 13 }
+              \exp_after:wN \exp_after:wN \exp_after:wN
+                \exp_not:N \char_generate:nn {#6} { 13 }
+              \tl_if_blank:nF {#7}
+                {
+                  \exp_after:wN \exp_after:wN \exp_after:wN
+                    \exp_not:N \char_generate:nn {#7} { 13 }
+                }
+            }
+        }
+      \__text_loop:nn
+        { 1F00 } { 0391 }
+        { 1F01 } { 0391 }
+        { 1F02 } { 0391 }
+        { 1F03 } { 0391 }
+        { 1F04 } { 0391 }
+        { 1F05 } { 0391 }
+        { 1F06 } { 0391 }
+        { 1F07 } { 0391 }
+        { 1F08 } { 0391 }
+        { 1F09 } { 0391 }
+        { 1F0A } { 0391 }
+        { 1F0B } { 0391 }
+        { 1F0C } { 0391 }
+        { 1F0D } { 0391 }
+        { 1F0E } { 0391 }
+        { 1F0F } { 0391 }
+        { 1F10 } { 0395 }
+        { 1F11 } { 0395 }
+        { 1F12 } { 0395 }
+        { 1F13 } { 0395 }
+        { 1F14 } { 0395 }
+        { 1F15 } { 0395 }
+        { 1F18 } { 0395 }
+        { 1F19 } { 0395 }
+        { 1F1A } { 0395 }
+        { 1F1B } { 0395 }
+        { 1F1C } { 0395 }
+        { 1F1D } { 0395 }
+        { 1F20 } { 0397 }
+        { 1F21 } { 0397 }
+        { 1F22 } { 0397 }
+        { 1F23 } { 0397 }
+        { 1F24 } { 0397 }
+        { 1F25 } { 0397 }
+        { 1F26 } { 0397 }
+        { 1F27 } { 0397 }
+        { 1F28 } { 0397 }
+        { 1F29 } { 0397 }
+        { 1F2A } { 0397 }
+        { 1F2B } { 0397 }
+        { 1F2C } { 0397 }
+        { 1F2D } { 0397 }
+        { 1F2E } { 0397 }
+        { 1F2F } { 0397 }
+        { 1F30 } { 0399 }
+        { 1F31 } { 0399 }
+        { 1F32 } { 0399 }
+        { 1F33 } { 0399 }
+        { 1F34 } { 0399 }
+        { 1F35 } { 0399 }
+        { 1F36 } { 0399 }
+        { 1F37 } { 0399 }
+        { 1F38 } { 0399 }
+        { 1F39 } { 0399 }
+        { 1F3A } { 0399 }
+        { 1F3B } { 0399 }
+        { 1F3C } { 0399 }
+        { 1F3D } { 0399 }
+        { 1F3E } { 0399 }
+        { 1F3F } { 0399 }
+        { 1F40 } { 039F }
+        { 1F41 } { 039F }
+        { 1F42 } { 039F }
+        { 1F43 } { 039F }
+        { 1F44 } { 039F }
+        { 1F45 } { 039F }
+        { 1F48 } { 039F }
+        { 1F49 } { 039F }
+        { 1F4A } { 039F }
+        { 1F4B } { 039F }
+        { 1F4C } { 039F }
+        { 1F4D } { 039F }
+        { 1F50 } { 03A5 }
+        { 1F51 } { 03A5 }
+        { 1F52 } { 03A5 }
+        { 1F53 } { 03A5 }
+        { 1F54 } { 03A5 }
+        { 1F55 } { 03A5 }
+        { 1F56 } { 03A5 }
+        { 1F57 } { 03A5 }
+        { 1F59 } { 03A5 }
+        { 1F5B } { 03A5 }
+        { 1F5D } { 03A5 }
+        { 1F5F } { 03A5 }
+        { 1F60 } { 03A9 }
+        { 1F61 } { 03A9 }
+        { 1F62 } { 03A9 }
+        { 1F63 } { 03A9 }
+        { 1F64 } { 03A9 }
+        { 1F65 } { 03A9 }
+        { 1F66 } { 03A9 }
+        { 1F67 } { 03A9 }
+        { 1F68 } { 03A9 }
+        { 1F69 } { 03A9 }
+        { 1F6A } { 03A9 }
+        { 1F6B } { 03A9 }
+        { 1F6C } { 03A9 }
+        { 1F6D } { 03A9 }
+        { 1F6E } { 03A9 }
+        { 1F6F } { 03A9 }
+        { 1F70 } { 0391 }
+        { 1F71 } { 0391 }
+        { 1F72 } { 0395 }
+        { 1F73 } { 0395 }
+        { 1F74 } { 0397 }
+        { 1F75 } { 0397 }
+        { 1F76 } { 0399 }
+        { 1F77 } { 0399 }
+        { 1F78 } { 039F }
+        { 1F79 } { 039F }
+        { 1F7A } { 03A5 }
+        { 1F7B } { 03A5 }
+        { 1F7C } { 03A9 }
+        { 1F7D } { 03A9 }
+        { 1F80 } { 1FBC }
+        { 1F81 } { 1FBC }
+        { 1F82 } { 1FBC }
+        { 1F83 } { 1FBC }
+        { 1F84 } { 1FBC }
+        { 1F85 } { 1FBC }
+        { 1F86 } { 1FBC }
+        { 1F87 } { 1FBC }
+        { 1F88 } { 1FBC }
+        { 1F89 } { 1FBC }
+        { 1F8A } { 1FBC }
+        { 1F8B } { 1FBC }
+        { 1F8C } { 1FBC }
+        { 1F8D } { 1FBC }
+        { 1F8E } { 1FBC }
+        { 1F8F } { 1FBC }
+        { 1F90 } { 1FCC }
+        { 1F91 } { 1FCC }
+        { 1F92 } { 1FCC }
+        { 1F93 } { 1FCC }
+        { 1F94 } { 1FCC }
+        { 1F95 } { 1FCC }
+        { 1F96 } { 1FCC }
+        { 1F97 } { 1FCC }
+        { 1F98 } { 1FCC }
+        { 1F99 } { 1FCC }
+        { 1F9A } { 1FCC }
+        { 1F9B } { 1FCC }
+        { 1F9C } { 1FCC }
+        { 1F9D } { 1FCC }
+        { 1F9E } { 1FCC }
+        { 1F9F } { 1FCC }
+        { 1FA0 } { 1FFC }
+        { 1FA1 } { 1FFC }
+        { 1FA2 } { 1FFC }
+        { 1FA3 } { 1FFC }
+        { 1FA4 } { 1FFC }
+        { 1FA5 } { 1FFC }
+        { 1FA6 } { 1FFC }
+        { 1FA7 } { 1FFC }
+        { 1FA8 } { 1FFC }
+        { 1FA9 } { 1FFC }
+        { 1FAA } { 1FFC }
+        { 1FAB } { 1FFC }
+        { 1FAC } { 1FFC }
+        { 1FAD } { 1FFC }
+        { 1FAE } { 1FFC }
+        { 1FAF } { 1FFC }
+        { 1FB0 } { 1FB8 }
+        { 1FB1 } { 1FB9 }
+        { 1FB2 } { 1FBC }
+        { 1FB3 } { 1FBC }
+        { 1FB4 } { 1FBC }
+        { 1FB6 } { 0391 }
+        { 1FB7 } { 1FBC }
+        { 1FB8 } { 1FB8 }
+        { 1FB9 } { 1FB9 }
+        { 1FBA } { 0391 }
+        { 1FBB } { 0391 }
+        { 1FBC } { 1FBC }
+        { 1FBD } { 1FBD }
+        { 1FC2 } { 1FCC }
+        { 1FC3 } { 1FCC }
+        { 1FC4 } { 1FCC }
+        { 1FC6 } { 0397 }
+        { 1FC7 } { 1FCC }
+        { 1FC8 } { 0395 }
+        { 1FC9 } { 0395 }
+        { 1FCA } { 0397 }
+        { 1FCB } { 0397 }
+        { 1FCC } { 1FCC }
+        { 1FD0 } { 1FD8 }
+        { 1FD1 } { 1FD9 }
+        { 1FD2 } { 03AA }
+        { 1FD3 } { 03AA }
+        { 1FD6 } { 0399 }
+        { 1FD7 } { 03AA }
+        { 1FD8 } { 1FD8 }
+        { 1FD9 } { 1FD9 }
+        { 1FDA } { 0399 }
+        { 1FDB } { 0399 }
+        { 1FE0 } { 1FE8 }
+        { 1FE1 } { 1FE9 }
+        { 1FE2 } { 03AB }
+        { 1FE3 } { 03AB }
+        { 1FE4 } { 03A1 }
+        { 1FE5 } { 03A1 }
+        { 1FE6 } { 03A5 }
+        { 1FE7 } { 03AB }
+        { 1FE8 } { 1FE8 }
+        { 1FE9 } { 1FE9 }
+        { 1FEA } { 03A5 }
+        { 1FEB } { 03A5 }
+        { 1FEC } { 1FEC }
+        { 1FF2 } { 1FFC }
+        { 1FF3 } { 1FFC }
+        { 1FF4 } { 1FFC }
+        { 1FF6 } { 03A9 }
+        { 1FF7 } { 1FFC }
+        { 1FF8 } { 039F }
+        { 1FF9 } { 039F }
+        { 1FFA } { 03A9 }
+        { 1FFB } { 03A9 }
+        { 1FFC } { 1FFC }
+        \q_recursion_tail ?
+        \q_recursion_stop
   }
 \group_end:
 \group_begin:
@@ -33860,7 +34669,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_purify_N_type:N #1
   {
-    \__text_if_recursion_tail_stop_do:Nn #1 { \__text_purify_end:w }
+    \__text_if_q_recursion_tail_stop_do:Nn #1 { \__text_purify_end:w }
     \__text_purify_N_type_aux:N #1
   }
 \cs_new:Npn \__text_purify_N_type_aux:N #1
@@ -33872,7 +34681,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_purify_math_search:NNN #1#2#3
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_purify_math_cmd:N #1 }
     \token_if_eq_meaning:NNTF #1 #2
       {
@@ -33913,7 +34722,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_purify_math_N_type:NNN #1#2#3
   {
-    \__text_if_recursion_tail_stop_do:Nn #3
+    \__text_if_q_recursion_tail_stop_do:Nn #3
       { \__text_purify_math_stop:Nw #1 }
     \token_if_eq_meaning:NNTF #3 #2
       { \__text_purify_math_end:w }
@@ -33941,7 +34750,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_purify_math_cmd:NN #1#2
   {
-    \__text_if_recursion_tail_stop_do:Nn #2
+    \__text_if_q_recursion_tail_stop_do:Nn #2
       { \__text_purify_replace:N #1 }
     \cs_if_eq:NNTF #2 #1
       {
@@ -33984,7 +34793,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   }
 \cs_new:Npn \__text_purify_protect:N #1
   {
-    \__text_if_recursion_tail_stop_do:Nn #1 { \__text_purify_end:w }
+    \__text_if_q_recursion_tail_stop_do:Nn #1 { \__text_purify_end:w }
     \__text_purify_loop:w
   }
 \cs_new:Npn \__text_purify_encoding:N #1
@@ -35345,6 +36154,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
   { \sys_if_engine_xetex:T } { 2017-01-01 }
 \__deprecation_old:Nnn \xetex_if_engine:TF
   { \sys_if_engine_xetex:TF } { 2017-01-01 }
+\cs_gset:Npn \cs_argument_spec:N { \cs_parameter_spec:N }
 \__kernel_patch_deprecation:nnNNpn { 2020-01-03 } { \str_lowercase:n }
 \cs_gset:Npn \str_lower_case:n { \str_lowercase:n }
 \__kernel_patch_deprecation:nnNNpn { 2020-01-03 } { \str_lowercase:f }
@@ -35365,12 +36175,7 @@ Type  H <return>  for immediate help}\def~{\errmessage{%
 \__kernel_patch_deprecation:nnNNpn { 2020-06-18 } { \seq_map_indexed_function:NN }
 \cs_gset:Npn \seq_indexed_map_function:NN { \seq_map_indexed_function:NN }
 \__kernel_patch_deprecation:nnNNpn { 2021-01-11 } { (no~longer~required) }
-\cs_gset_protected:Npn \sys_load_deprecation:
-  {
-    \bool_if:NF \g__str_deprecation_bool
-      { \__kernel_sys_configuration_load:n { l3deprecation } }
-    \bool_gset_true:N \g__str_deprecation_bool
-  }
+\cs_gset_protected:Npn \sys_load_deprecation: { }
 \__kernel_patch_deprecation:nnNNpn { 2020-01-03 } { \text_lowercase:n }
 \cs_gset:Npn \tl_lower_case:n #1
   { \text_lowercase:n {#1} }

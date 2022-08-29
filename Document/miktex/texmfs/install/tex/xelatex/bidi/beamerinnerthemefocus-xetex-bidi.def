@@ -1,0 +1,107 @@
+%%
+%% This is file `beamerinnerthemefocus-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerinnerthemefocus-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerinnerthemefocus-xetex-bidi.def}[2022/06/13 v0.1 bidi adaptations for beamerinnerthemefocus package for XeTeX engine]
+\setbeamertemplate{section in toc}[square]
+\setbeamertemplate{subsection in toc}[square]
+
+\setbeamertemplate{itemize items}[square]
+\setbeamertemplate{itemize subitem}[triangle]
+
+\bidi@csundef{beamer@@tmpop@title page@focus}
+
+\defbeamertemplate*{title page}{focus}{%
+    {%
+        \usebeamercolor{frametitle}\colorlet{focus@@temp}{bg}%
+        \begin{tikzpicture}[overlay, remember picture]
+            \fill[color=focus@@temp] (current page.north west) rectangle ([shift = {(0, -0.45\paperheight)}] current page.north east);
+    \end{tikzpicture}
+    }
+
+    \vspace{-1.65\baselineskip}
+    \begin{minipage}[b][0.35\paperheight]{\textwidth}
+        \vspace{\baselineskip}
+        \usebeamerfont{title}
+        \usebeamercolor[fg]{frametitle}
+        \inserttitle
+    \end{minipage}
+
+    \begin{minipage}[t][0.1\paperheight]{\textwidth}
+        \usebeamerfont{subtitle}
+        \usebeamercolor[fg]{frametitle}
+        \insertsubtitle
+    \end{minipage}
+
+    % Set the title graphic in a zero-height box, so that
+    % the position of other elements is not affected.
+    {\vfuzz=9999pt\vbox to 0pt {
+        \if@RTL
+          \raggedright
+        \else
+          \raggedleft
+        \fi
+        \inserttitlegraphic
+    }}
+
+    \begin{minipage}[t]{\textwidth}
+        \usebeamerfont{author}
+        \insertauthor
+    \end{minipage}
+
+    \vspace*{\baselineskip}
+    \begin{minipage}[t]{\textwidth}
+        \usebeamerfont{institute}
+        \insertinstitute
+    \end{minipage}
+
+    \vspace*{\baselineskip}
+    \begin{minipage}[t]{\textwidth}
+        \usebeamerfont{date}
+        \insertdate
+    \end{minipage}
+
+    \vspace*{0pt plus 100fill}
+
+    \addtocounter{framenumber}{-1}
+    \addtocounter{realframenumber}{-1}
+}
+
+\endinput
+%%
+%% End of file `beamerinnerthemefocus-xetex-bidi.def'.

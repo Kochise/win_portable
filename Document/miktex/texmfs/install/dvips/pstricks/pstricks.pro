@@ -1,7 +1,7 @@
-% $Id: pstricks.pro 317 2021-11-16 20:47:25Z herbert $
+% $Id: pstricks.pro 269 2021-09-25 13:47:26Z herbert $
 %
 %% PostScript prologue for pstricks.tex.
-%% Version 1.41, 2021/11/16
+%% Version 1.40, 2021/09/25
 %%
 %% This program can be redistributed and/or modified under the terms
 %% of the LaTeX Project Public License Distributed from CTAN archives
@@ -17,8 +17,6 @@ revision 952 gt
          (\n\n%%%% WARNING: Transparency operations ignored - need to use -dALLOWPSTRANSPARENCY\n\n) print flush
          /.setopacityalpha { pop } bind def 
          /.setshapealpha { pop } bind def 
-         /.setfillconstantalpha { pop } bind def 
-         /.setstrokeconstantalpha { pop } bind def 
       }
       {
         /.setopacityalpha /.setfillconstantalpha load def 
@@ -42,7 +40,6 @@ revision 952 gt
 /tx@Dict 200 dict def 				% the main PSTricks dictionary
 tx@Dict begin
 /ADict 25 dict def				% The arrow dictionary
-/fill@Dict 30 dict def				% the fill dictionary
 /CM { matrix currentmatrix } bind def
 /SLW /setlinewidth load def
 /CLW /currentlinewidth load def

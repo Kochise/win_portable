@@ -1,0 +1,158 @@
+%%
+%% This is file `beamerbasenavigation-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerbasenavigation-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerbasenavigation-xetex-bidi.def}[2022/06/27 v0.2 bidi adaptations for beamerbasenavigation package for XeTeX engine]
+\def\slideentry#1#2#3#4#5#6{%
+  %section number, subsection number, slide number, first/last frame, page number, part number
+  \ifnum#6=\c@part\ifnum#1>0\ifnum#3>0%
+    \ifbeamer@compress%
+      \advance\beamer@xpos by1\relax%
+    \else%
+      \ifnum#2=0%
+        \beamer@ypos@offset=1\relax%
+      \fi
+      \beamer@xpos=#3\relax%
+      \beamer@ypos=#2\relax%
+      \advance\beamer@ypos by \beamer@ypos@offset\relax
+    \fi%
+  \hbox to 0pt{%
+    \beamer@tempdim=-\beamer@vboxoffset%
+    \advance\beamer@tempdim by-\beamer@boxsize%
+    \multiply\beamer@tempdim by\beamer@ypos%
+    \advance\beamer@tempdim by -.05cm%
+    \raise\beamer@tempdim\hbox{%
+      \beamer@tempdim=\beamer@boxsize%
+      \multiply\beamer@tempdim by\beamer@xpos%
+      \advance\beamer@tempdim by -\beamer@boxsize%
+      \advance\beamer@tempdim by 1pt%
+      \kern\beamer@tempdim
+      \global\beamer@section@min@dim\beamer@tempdim
+      \hbox{\beamer@link(#4){{%
+          \usebeamerfont{mini frame}%
+          \ifnum\c@section=#1%
+            \ifnum\c@subsection=#2%
+              \usebeamercolor[fg]{mini frame}%
+              \ifnum\c@subsectionslide=#3%
+                \usebeamertemplate{mini frame}%\beamer@minislidehilight%
+              \else%
+                \usebeamertemplate{mini frame in current subsection}%\beamer@minisliderowhilight%
+              \fi%
+            \else%
+              \usebeamercolor{mini frame}%
+              %\color{fg!50!bg}%
+              \usebeamertemplate{mini frame in other subsection}%\beamer@minislide%
+            \fi%
+          \else%
+            \usebeamercolor{mini frame}%
+            %\color{fg!50!bg}%
+            \usebeamertemplate{mini frame in other subsection}%\beamer@minislide%
+          \fi%
+        }}}}\hskip-10cm plus 1fil%
+  }\fi\fi%
+  \else%
+  \fakeslideentry{#1}{#2}{#3}{#4}{#5}{#6}%
+  \fi\ignorespaces
+  }
+
+\pgfdefobject{bidi@beamer@RTL@gotosymbol}{\pgfpoint{0pt}{-1pt}}{\pgfpoint{5pt}{5pt}}
+{
+  \pgfpathqmoveto{3.5bp}{0.5bp}
+  \pgfpathqlineto{1.5bp}{2bp}
+  \pgfpathqlineto{3.5bp}{3.5bp}
+  \pgfusepathqfill
+}
+
+\def\insertgotosymbol{%
+\if@RTL
+  \begin{pgfpicture}{-1pt}{0pt}{4pt}{5pt}
+    \pgfuseobject{bidi@beamer@RTL@gotosymbol}%
+  \end{pgfpicture}%
+\else
+  \begin{pgfpicture}{1pt}{0pt}{6pt}{5pt}
+    \pgfuseobject{beamergotosymbol}%
+  \end{pgfpicture}%
+\fi
+}
+
+\pgfdefobject{bidi@beamer@RTL@skipsymbol}{\pgfpoint{0pt}{-1pt}}{\pgfpoint{7pt}{5pt}}
+{
+  \pgfpathqmoveto{5.5bp}{0.5bp}
+  \pgfpathqlineto{3.5bp}{2bp}
+  \pgfpathqlineto{5.5bp}{3.5bp}
+  \pgfpathqmoveto{3.5bp}{0.5bp}
+  \pgfpathqlineto{1.5bp}{2bp}
+  \pgfpathqlineto{3.5bp}{3.5bp}
+  \pgfusepathqfill
+}
+
+\def\insertskipsymbol{%
+\if@RTL
+  \begin{pgfpicture}{-1pt}{0pt}{6pt}{5pt}
+    \pgfuseobject{bidi@beamer@RTL@skipsymbol}%
+  \end{pgfpicture}%
+\else
+  \begin{pgfpicture}{1pt}{0pt}{8pt}{5pt}
+    \pgfuseobject{beamerskipsymbol}%
+  \end{pgfpicture}%
+\fi
+}
+
+\pgfdefobject{bidi@beamer@RTL@returnsymbol}{\pgfpoint{0pt}{-1pt}}{\pgfpoint{5pt}{5pt}}
+{
+  \pgfpathqmoveto{1.5bp}{0.5bp}
+  \pgfpathqlineto{3.5bp}{2bp}
+  \pgfpathqlineto{1.5bp}{3.5bp}
+  \pgfusepathqfill
+}
+
+\def\insertreturnsymbol{%
+\if@RTL
+  \begin{pgfpicture}{-1pt}{0pt}{4pt}{5pt}
+    \pgfuseobject{bidi@beamer@RTL@returnsymbol}%
+  \end{pgfpicture}%
+\else
+  \begin{pgfpicture}{1pt}{0pt}{6pt}{5pt}
+    \pgfuseobject{beamerreturnsymbol}%
+  \end{pgfpicture}%
+\fi
+}
+
+\endinput
+%%
+%% End of file `beamerbasenavigation-xetex-bidi.def'.

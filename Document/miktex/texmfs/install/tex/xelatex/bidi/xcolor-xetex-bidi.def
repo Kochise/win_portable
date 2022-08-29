@@ -8,7 +8,6 @@
 %% 
 %%   __________________________________________________
 %%   Vafa Khalighi
-%%   tex-persian@vafa.ac
 %% 
 %%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
@@ -21,7 +20,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50574}
+%% \CheckSum{55413}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -38,14 +37,14 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesFile{xcolor-xetex-bidi.def}[2013/04/08 v0.2 bidi adaptations for xcolor package for XeTeX engine]
+\ProvidesFile{xcolor-xetex-bidi.def}[2022/06/13 v0.3 bidi adaptations for xcolor package for XeTeX engine]
 \long\def\color@b@x#1#2#3%
  {\leavevmode\ifmmode\else\if@RTL\beginL\fi\fi
   \setbox\z@\hbox{\kern\fboxsep{\set@color\if@RTL\beginR\fi#3\if@RTL\endR\fi}\kern\fboxsep}%
   \dimen@\ht\z@\advance\dimen@\fboxsep\ht\z@\dimen@
   \dimen@\dp\z@\advance\dimen@\fboxsep\dp\z@\dimen@
   {#1{#2\color@block{\wd\z@}{\ht\z@}{\dp\z@}\box\z@}}\ifmmode\else\if@RTL\endL\fi\fi}
-\def\normalcolor{\let\current@color\default@color\ifhmode\if@RTL\beginL\aftergroup\endR\fi\fi\set@color\ifhmode\if@RTL\beginR\aftergroup\endL\fi\fi}
+\protected\def\normalcolor{\let\current@color\default@color\ifhmode\if@RTL\beginL\aftergroup\endR\fi\fi\set@color\ifhmode\if@RTL\beginR\aftergroup\endL\fi\fi}
 \DeclareRobustCommand\color
  {\ifhmode\if@RTL\beginL\aftergroup\endR\fi\fi\@ifnextchar[\@undeclaredcolor\@declaredcolor}
 \def\@undeclaredcolor[#1]#2%

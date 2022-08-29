@@ -164,7 +164,7 @@
        There is nothing intrinsically wrong with this warning, and\\%
        you can ignore it altogether if you do not need these\\%
        families. But if they are used in the document, you should be\\%
-       aware 'babel' will no set Script and Language for them, so\\%
+       aware 'babel' will not set Script and Language for them, so\\%
        you may consider defining a new family with \string\babelfont.\\%
        See the manual for further details about \string\babelfont.\\%
        Reported}}
@@ -262,45 +262,6 @@
 \def\bbl@font@rst#1#2#3#4{%
   \bbl@csarg\def{famrst@#4}{\bbl@font@set{#1}#2#3}}
 \def\bbl@font@fams{rm,sf,tt}
-\newcommand\babelFSstore[2][]{%
-  \bbl@ifblank{#1}%
-    {\bbl@csarg\def{sname@#2}{Latin}}%
-    {\bbl@csarg\def{sname@#2}{#1}}%
-  \bbl@provide@dirs{#2}%
-  \bbl@csarg\ifnum{wdir@#2}>\z@
-    \let\bbl@beforeforeign\leavevmode
-    \EnableBabelHook{babel-bidi}%
-  \fi
-  \bbl@foreach{#2}{%
-    \bbl@FSstore{##1}{rm}\rmdefault\bbl@save@rmdefault
-    \bbl@FSstore{##1}{sf}\sfdefault\bbl@save@sfdefault
-    \bbl@FSstore{##1}{tt}\ttdefault\bbl@save@ttdefault}}
-\def\bbl@FSstore#1#2#3#4{%
-  \bbl@csarg\edef{#2default#1}{#3}%
-  \expandafter\addto\csname extras#1\endcsname{%
-    \let#4#3%
-    \ifx#3\f@family
-      \edef#3{\csname bbl@#2default#1\endcsname}%
-      \fontfamily{#3}\selectfont
-    \else
-      \edef#3{\csname bbl@#2default#1\endcsname}%
-    \fi}%
-  \expandafter\addto\csname noextras#1\endcsname{%
-    \ifx#3\f@family
-      \fontfamily{#4}\selectfont
-    \fi
-    \let#3#4}}
-\let\bbl@langfeatures\@empty
-\def\babelFSfeatures{% make sure \fontspec is redefined once
-  \let\bbl@ori@fontspec\fontspec
-  \renewcommand\fontspec[1][]{%
-    \bbl@ori@fontspec[\bbl@langfeatures##1]}
-  \let\babelFSfeatures\bbl@FSfeatures
-  \babelFSfeatures}
-\def\bbl@FSfeatures#1#2{%
-  \expandafter\addto\csname extras#1\endcsname{%
-    \babel@save\bbl@langfeatures
-    \edef\bbl@langfeatures{#2,}}}
 \input txtbabel.def
 \endinput
 %%

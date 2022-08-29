@@ -1,0 +1,271 @@
+%%
+%% This is file `beamerbaseauxtemplates-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerbaseauxtemplates-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerbaseauxtemplates-xetex-bidi.def}[2022/06/06 v0.2 bidi adaptations for beamerbaseauxtemplates package for XeTeX engine]
+\bidi@csundef{beamer@@tmpop@section in toc@circle}
+
+\bidi@csundef{beamer@@tmpop@subsection in toc@circle}
+
+\bidi@csundef{beamer@@tmpop@subsubsection in toc@circle}
+
+\defbeamertemplate{section in toc}{circle}
+{\leavevmode\bidi@beamer@leftskip=2ex%
+  \llap{%
+    \usebeamerfont*{section number projected}%
+    \usebeamercolor{section number projected}%
+    \begin{pgfpicture}{-1ex}{0ex}{1ex}{2ex}
+      \color{bg}
+      \pgfpathcircle{\pgfpoint{0pt}{.75ex}}{1.2ex}
+      \pgfusepath{fill}
+      \pgftext[base]{\color{fg}\inserttocsectionnumber}
+    \end{pgfpicture}\kern1.25ex%
+  }%
+  \inserttocsection\par}
+
+\defbeamertemplate{subsection in toc}{circle}
+{\leavevmode\bidi@beamer@leftskip=2em\inserttocsubsection\par}
+
+\defbeamertemplate{subsubsection in toc}{circle}
+{\leavevmode\normalsize\usebeamerfont{subsection in
+    toc}\bidi@beamer@leftskip=3em\usebeamerfont{subsubsection in toc}%
+  \inserttocsubsubsection\par}
+
+\bidi@csundef{beamer@@tmpop@section in toc@square}
+
+\bidi@csundef{beamer@@tmpop@subsection in toc@square}
+
+\bidi@csundef{beamer@@tmpop@subsubsection in toc@square}
+
+\bidi@csundef{beamer@@tmpop@enumerate item@square}
+
+\bidi@csundef{beamer@@tmpop@enumerate subitem@square}
+
+\bidi@csundef{beamer@@tmpop@enumerate subsubitem@square}
+
+\bidi@csundef{beamer@@tmpop@enumerate mini template@square}
+
+\defbeamertemplate{section in toc}{square}
+{\leavevmode\bidi@beamer@leftskip=1.75ex%
+  \llap{{%
+    \usebeamerfont*{section number projected}%
+    \usebeamercolor[bg]{section number projected}%
+    \if@RTL
+    \else
+      \vrule width2.25ex height1.85ex depth.4ex%
+      \hskip-2.25ex%
+    \fi
+    \hbox to2.25ex{{\hfil\color{fg}\inserttocsectionnumber\hfil}}%
+    \if@RTL
+      \hskip-2.25ex%
+      \vrule width2.25ex height1.85ex depth.4ex%
+    \fi
+    }}%
+  \kern1.25ex\inserttocsection\par}
+
+\defbeamertemplate{subsection in toc}{square}
+{\leavevmode\bidi@beamer@leftskip=5ex\llap{{%
+    \usebeamercolor[bg]{subsection number projected}%
+    \vrule width1ex height1ex\kern1ex}}\inserttocsubsection\par}
+
+\defbeamertemplate{subsubsection in toc}{square}
+{\leavevmode\normalsize\usebeamerfont{subsection in
+    toc}\bidi@beamer@leftskip=7ex\usebeamerfont{subsubsection in toc}%
+  \llap{{%
+    \usebeamercolor[bg]{subsubsection number projected}%
+    \vrule width0.75ex height0.75ex\kern1ex}}\inserttocsubsubsection\par}
+
+\defbeamertemplate{enumerate item}{square}
+{
+  \hbox{{%
+    \usebeamerfont*{item projected}%
+    \usebeamercolor[bg]{item projected}%
+    \if@RTL
+    \else
+      \vrule width2.25ex height1.85ex depth.4ex%
+      \hskip-2.25ex%
+    \fi
+    \hbox to2.25ex{{%
+      \hfil%
+      \color{fg}\insertenumlabel%
+      \hfil}}%
+      \if@RTL
+        \hskip-2.25ex%
+        \vrule width2.25ex height1.85ex depth.4ex%
+      \fi
+  }}%
+}
+[action]
+{\setbeamerfont{item projected}{size=\scriptsize}}
+
+\defbeamertemplate{enumerate subitem}{square}
+{
+  \hbox{{%
+    \usebeamerfont*{subitem projected}%
+    \usebeamercolor[bg]{subitem projected}%
+    \if@RTL
+    \else
+      \vrule width2.25ex height1.85ex depth.4ex%
+      \hskip-2.25ex%
+    \fi
+    \hbox to2.25ex{{%
+      \hfil%
+      \color{fg}\insertsubenumlabel%
+      \hfil}}%
+      \if@RTL
+        \hskip-2.25ex%
+        \vrule width2.25ex height1.85ex depth.4ex%
+      \fi
+  }}%
+}
+
+\defbeamertemplate{enumerate subsubitem}{square}
+{
+  \hbox{{%
+    \usebeamerfont*{subitem projected}%
+    \usebeamercolor[bg]{subsubitem projected}%
+    \if@RTL
+    \else
+      \vrule width2.25ex height1.85ex depth.4ex%
+      \hskip-2.25ex%
+    \fi
+    \hbox to2.25ex{{%
+      \hfil%
+      \color{fg}\insertsubsubenumlabel%
+      \hfil}}%
+      \if@RTL
+        \hskip-2.25ex%
+        \vrule width2.25ex height1.85ex depth.4ex%
+      \fi
+  }}%
+}
+
+\defbeamertemplate{enumerate mini template}{square}
+{
+  \hbox{{%
+    \usebeamerfont*{\beameritemnestingprefix item projected}%
+    \usebeamercolor[bg]{\beameritemnestingprefix item projected}%
+    \if@RTL
+    \else
+      \vrule width2.25ex height1.85ex depth.4ex%
+      \hskip-2.25ex%
+    \fi
+    \hbox to2.25ex{{%
+      \hfil%
+      \color{fg}\insertenumlabel%
+      \hfil}}%
+      \if@RTL
+        \hskip-2.25ex%
+        \vrule width2.25ex height1.85ex depth.4ex%
+      \fi
+  }}%
+}
+
+\bidi@csundef{beamer@@tmpop@section in toc@ball}
+
+\bidi@csundef{beamer@@tmpop@subsection in toc@ball}
+
+\bidi@csundef{beamer@@tmpop@subsubsection in toc@ball}
+
+\defbeamertemplate{section in toc}{ball}
+{\leavevmode\bidi@beamer@leftskip=2.75ex%
+  \llap{%
+    \normalsize%
+    \begin{pgfpicture}{-1ex}{-0.7ex}{1ex}{1ex}
+      \pgftext{\beamer@usesphere{section number projected}{tocsphere}}
+      \pgftext{%
+        \usebeamerfont*{section number projected}%
+        \usebeamercolor{section number projected}%
+        \color{fg!90!bg}%
+        \inserttocsectionnumber}
+    \end{pgfpicture}%
+    \kern1.25ex}%
+  \inserttocsection\par
+}
+[action]
+{\setbeamerfont{section number projected}{size=\scriptsize}}
+
+\defbeamertemplate{subsection in toc}{ball}
+{\leavevmode\bidi@beamer@leftskip=5ex%
+  \llap{\raise0.1ex\beamer@usesphere{subsection number projected}{bigsphere}\kern1ex}%
+  \inserttocsubsection\par%
+}
+
+\defbeamertemplate{subsubsection in toc}{ball}
+{\leavevmode\normalsize\usebeamerfont{subsection in
+    toc}\bidi@beamer@leftskip=7ex\usebeamerfont{subsubsection in toc}%
+  \llap{\beamer@usesphere{subsubsection number projected}{bigsphere}\kern0.75ex}%
+  \inserttocsubsubsection\par%
+}
+
+\bidi@csundef{beamer@@tmpop@block begin@rounded}
+
+\bidi@csundef{beamer@@tmpop@block alerted begin@rounded}
+
+\bidi@csundef{beamer@@tmpop@block example begin@rounded}
+
+\defbeamertemplate{block begin}{rounded}[1][shadow=false]
+{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title,lower=block body,#1]%
+    {\raggedright\usebeamerfont*{block title}\insertblocktitle}%
+    \bidi@beamer@ragged%
+    \usebeamerfont{block body}%
+}
+
+\defbeamertemplate{block alerted begin}{rounded}[1][shadow=false]
+{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title alerted,lower=block body alerted,#1]%
+    {\raggedright\usebeamerfont*{block title alerted}\insertblocktitle}%
+    \bidi@beamer@ragged%
+    \usebeamerfont{block body alerted}%
+}%
+
+\defbeamertemplate{block example begin}{rounded}[1][shadow=false]
+{%
+  \par\vskip\medskipamount%
+  \begin{beamerboxesrounded}[upper=block title example,lower=block body example,#1]
+    {\raggedright\usebeamerfont*{block title example}\insertblocktitle}%
+    \bidi@beamer@ragged%
+    \usebeamerfont{block body example}%
+}%
+
+\endinput
+%%
+%% End of file `beamerbaseauxtemplates-xetex-bidi.def'.

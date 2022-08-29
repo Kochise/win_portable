@@ -24,10 +24,10 @@
 %% Please report errors to: <daniel (dot) flipo (at) free (dot) fr>
 %% 
 \ProvidesLanguage{french}
-         [2021/07/20 v3.5m French support from the babel system]
+         [2022/04/18 v3.5n French support from the babel system]
 %%
 %%  Babel package for LaTeX version 2e
-%%  Copyright © 1996-2021
+%%  Copyright © 1996-2022
 %%            by Daniel Flipo <daniel (dot) flipo (at) free (dot) fr>
 %%
 \LdfInit\CurrentOption{FBclean@on@exit}
@@ -772,12 +772,16 @@
 \DeclareRobustCommand*{\nos}{%
     \texorpdfstring{n\up{os}\FBmedkern}{n\textdegree\space}}
 \ifLaTeXe
+  \DeclareRobustCommand*{\bname}[1]{%
+    \texorpdfstring{\leavevmode\begingroup\kern0pt #1\endgroup}{#1}%
+  }
   \DeclareRobustCommand*{\bsc}[1]{%
     \texorpdfstring{\leavevmode\begingroup\kern0pt \scshape #1\endgroup}%
                    {\textsc{#1}}%
   }
 \else
-  \newcommand*{\bsc}[1]{\leavevmode\begingroup\kern0pt #1\endgroup}
+  \newcommand*{\bname}[1]{\leavevmode\begingroup\kern0pt #1\endgroup}
+  \let\bsc\bname
 \fi
 \ifFBunicode
   \providecommand*{\textbackslash}{{\char"005C}}
@@ -1176,8 +1180,6 @@
     \FBFrenchFootnotestrue
     \FBAutoSpaceFootnotestrue
     \FBCustomiseFigTabCaptionstrue
-  \else
-    \FBGlobalLayoutFrenchfalse
   \fi
   \RequirePackage{keyval}%
   \define@key{FB}{ShowOptions}[true]%
@@ -1187,7 +1189,7 @@
              \csname FBStandardLayout#1\endcsname
            \else
              \PackageWarning{french.ldf}%
-               {Option `StandardlLayout' skipped:\MessageBreak
+               {Option `StandardLayout' skipped:\MessageBreak
                 French is *not* babel's last option.\MessageBreak
                 Reported}%
            \fi
@@ -1199,7 +1201,6 @@
              \FBIndentFirstfalse
              \FBFrenchFootnotesfalse
              \FBAutoSpaceFootnotesfalse
-             \FBGlobalLayoutFrenchfalse
            \else
              \FBStandardListSpacingfalse
              \FBStandardItemizeEnvfalse
@@ -1505,6 +1506,14 @@
   \def\FB@ufl{\update@frenchlists}
   \ifFB@mainlanguage@FR
     \update@frenchlists
+  \else
+    \ifFBStandardItemizeEnv
+    \else
+      \PackageWarning{french.ldf}%
+        {babel-french will not customize lists' layout\MessageBreak
+         when French is not the main language,\MessageBreak
+         reported}%
+    \fi
   \fi
   \ifFBAutoSpacePunctuation
     \autospace@beforeFDP
@@ -1814,22 +1823,13 @@
 }
 \addto\extrasfrench{\bbl@frenchlistlayout}
 \def\bbl@frenchindent{%
-  \ifFBGlobalLayoutFrench
-  \else
-    \babel@save\@afterindentfalse
-  \fi
+  \ifFBGlobalLayoutFrench\else\babel@save\@afterindentfalse\fi
   \ifFBIndentFirst
+    \ifFB@mainlanguage@FR\else\babel@save\@afterindentfalse\fi
     \let\@afterindentfalse\@afterindenttrue
     \@afterindenttrue
   \fi}
-\def\bbl@nonfrenchindent{%
-  \ifFBGlobalLayoutFrench
-    \ifFBIndentFirst
-      \@afterindenttrue
-    \fi
-  \fi}
 \addto\extrasfrench{\bbl@frenchindent}
-\addto\noextrasfrench{\bbl@nonfrenchindent}
 \AtBeginDocument{\@ifpackageloaded{bigfoot}%
                    {\PackageInfo{french.ldf}%
                      {bigfoot package in use.\MessageBreak

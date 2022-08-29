@@ -1,0 +1,438 @@
+%%
+%% This is file `beamerbaseframecomponents-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerbaseframecomponents-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerbaseframecomponents-xetex-bidi.def}[2022/06/13 v0.4 bidi adaptations for beamerbaseframecomponents package for XeTeX engine]
+\renewcommand{\setbeamersize}[1]{%
+  \beamer@dogeometryfalse%
+  \setkeys{beamer@margin}{#1}%
+  \ifbeamer@dogeometry%
+    % Reset left margin now
+    \beamer@tempdim=\beamer@leftmargin%
+    \advance\beamer@tempdim by\beamer@leftsidebar%
+    \if@RTLmain
+      \geometry{right=\the\beamer@tempdim}%
+    \else
+      \geometry{left=\the\beamer@tempdim}%
+    \fi
+    % Reset right margin now
+    \beamer@tempdim=\beamer@rightmargin%
+    \advance\beamer@tempdim by\beamer@rightsidebar%
+    \if@RTLmain
+      \geometry{left=\the\beamer@tempdim}%
+    \else
+      \geometry{right=\the\beamer@tempdim}%
+    \fi
+  \fi%
+}
+
+\newcommand*{\bidi@beamer@Gm@lmargin}{%
+  \if@RTLmain
+    \Gm@rmargin
+  \else
+    \Gm@lmargin
+  \fi
+}
+
+\newcommand*{\bidi@beamer@Gm@rmargin}{%
+  \if@RTLmain
+    \Gm@lmargin
+  \else
+    \Gm@rmargin
+  \fi
+}
+
+\def\ps@navigation{
+  \def\@oddhead{%
+    \begingroup%
+    \setbox\beamer@tempbox=\hbox{\usebeamertemplate***{background canvas}\hyper@pagetransition\hyper@pageduration}%
+    \beamer@tempdim=\ht\beamer@tempbox%
+    \setbox\beamer@tempbox=\hbox{\lower\beamer@tempdim\hbox{\box\beamer@tempbox}}%
+    \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+    \setbox\@tempboxa=\hbox{\usebeamertemplate***{background}}%
+    \beamer@tempdim=\ht\@tempboxa%
+    \setbox\@tempboxa=\hbox{\lower\beamer@tempdim\hbox{\box\@tempboxa}}%
+    \wd\@tempboxa=0pt\ht\@tempboxa=0pt\dp\@tempboxa=0pt%
+    \vbox{\hbox{\hskip-\bidi@beamer@Gm@lmargin\box\beamer@tempbox\box\@tempboxa}%
+      \hbox{%
+        {%
+          \setbox\beamer@tempbox=\hbox{\hskip-\bidi@beamer@Gm@lmargin%
+          \if@RTLmain
+                      {%
+              \vbox to \sidebarheight{%
+                \usebeamertemplate***{sidebar left}%
+                \vfil%
+            }}%
+            \@ifpackageloaded{beamerinnerthemeinmargin}{}{%
+              \hskip-\textwidth
+            }%
+            \fi
+            {\setbox\beamer@tempbox=\hbox{\vbox to \sidebarheight{%
+                  \usebeamercolor*{sidebar left}%
+                  \usebeamertemplate{sidebar canvas left}%
+                  \vss%
+                }}%
+              \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+              \box\beamer@tempbox}%
+              \if@RTLmain
+              \else
+            {%
+              \vbox to \sidebarheight{%
+                \usebeamertemplate***{sidebar left}%
+                \vfil%
+            }}\fi}%
+          \beamer@tempdim=\ht\beamer@tempbox%
+          \setbox\beamer@tempbox=\hbox{{\lower\beamer@tempdim\hbox{\box\beamer@tempbox}}}%
+          \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+          \box\beamer@tempbox%
+        }%
+        {% print right sidebar first, since it should be overwritten by headline
+          \setbox\beamer@tempbox=\hbox{\hskip\textwidth\hskip\beamer@rightmargin%
+          \if@RTLmain
+                      {%
+              \vbox to \sidebarheight{%
+                \usebeamertemplate***{sidebar right}%
+                \vfil%
+            }}%
+            \hskip-\textwidth
+            \fi
+            {\setbox\beamer@tempbox=\hbox{\vbox to \sidebarheight{%
+                  \usebeamercolor*{sidebar right}%
+                  \usebeamertemplate{sidebar canvas right}%
+                  \vss%
+                }}%
+              \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+              \box\beamer@tempbox}%
+              \if@RTLmain
+              \else
+            {%
+              \vbox to \sidebarheight{%
+                \usebeamertemplate***{sidebar right}%
+                \vfil%
+            }}\fi}%
+          \beamer@tempdim=\ht\beamer@tempbox%
+          \setbox\beamer@tempbox=\hbox{{\lower\beamer@tempdim\hbox{\box\beamer@tempbox}}}%
+          \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+          \box\beamer@tempbox%
+        }%
+        \beamer@typesetheadorfoot{headline}%
+      }%
+      \hfil}%
+    \endgroup}
+  \def\@oddfoot{%
+    \vbox{\offinterlineskip\hbox{\beamer@typesetheadorfoot{footline}%
+    \hfil}\hbox{}}\hfil
+  }%
+  \let\@evenhead\@oddhead
+  \let\@evenfoot\@oddfoot}
+
+\AtBeginDocument{%
+  \pagestyle{navigation}%
+}
+
+\def\beamer@typesetheadorfoot#1{% typeset the head or footline
+  {\parskip0pt\offinterlineskip%
+    \hbox{%
+      \hskip-\bidi@beamer@Gm@lmargin%
+      \hbox{%
+        \vbox{%
+          \@tempdima=\textwidth%
+          \textwidth=\paperwidth%
+          \hsize=\textwidth%
+          \def\\{,}%
+          \usebeamertemplate***{#1}%
+        }}%
+      \hskip-\bidi@beamer@Gm@rmargin%
+    }}\hfil%
+}
+
+\def\ps@empty{%
+  \let\@mkboth\@gobbletwo%
+  \def\@oddhead{\begingroup%
+    \setbox\beamer@tempbox=\hbox{\usebeamertemplate***{background canvas}\hyper@pagetransition\hyper@pageduration}%
+    \beamer@tempdim=\ht\beamer@tempbox%
+    \setbox\beamer@tempbox=\hbox{\lower\beamer@tempdim\hbox{\box\beamer@tempbox}}%
+    \wd\beamer@tempbox=0pt\ht\beamer@tempbox=0pt\dp\beamer@tempbox=0pt%
+    \setbox\@tempboxa=\hbox{\usebeamertemplate***{background}}%
+    \beamer@tempdim=\ht\@tempboxa%
+    \setbox\@tempboxa=\hbox{\lower\beamer@tempdim\hbox{\box\@tempboxa}}%
+    \wd\@tempboxa=0pt\ht\@tempboxa=0pt\dp\@tempboxa=0pt%
+    \vbox{\hbox{\hskip-\Gm@lmargin\raise\headheight\box\beamer@tempbox\raise\headheight\box\@tempboxa}\hfil}%
+    \endgroup%
+  }
+  \def\@oddfoot{{\normalcolor{\hfil%
+    \setbox\beamer@tempbox=\hbox{\usebeamertemplate***{navigation symbols}\hskip-\Gm@rmargin\hskip2pt}%
+    \ht\beamer@tempbox=0pt%
+    \dp\beamer@tempbox=0pt%
+    \box\beamer@tempbox}}}
+  \let\@evenhead\@oddhead\let\@evenfoot\@oddfoot}
+
+\renewcommand<>\beamer@columncom[2][\beamer@colmode]{%
+  \beamer@colclose%
+  \def\beamer@colclose{\end{minipage}\hfill\end{actionenv}\ignorespaces}%
+\begin{actionenv}#3%
+  \setkeys{beamer@col}{#1}%
+  \begin{minipage}[\beamer@colalign]{#2}%
+    \leavevmode\bidi@beamer@ragged\beamer@colheadskip\ignorespaces}
+
+\renewenvironment<>{columns}[1][]{%
+  \begin{actionenv}#2%
+  \ifbeamer@onlytextwidth
+    \def\beamer@colentrycode{\hbox to\textwidth\bgroup\ignorespaces}%
+    \def\beamer@colexitcode{\unskip\egroup}
+  \else%
+    \def\beamer@colentrycode{%
+      \hbox to\textwidth\bgroup%
+      \leavevmode%
+      \hskip-\beamer@leftmargin%
+      \nobreak%
+      \beamer@tempdim=\textwidth%
+      \advance\beamer@tempdim by\beamer@leftmargin%
+      \advance\beamer@tempdim by\beamer@rightmargin%
+      \hbox to\beamer@tempdim\bgroup%
+      \hbox{}\hfill\ignorespaces}%
+    \def\beamer@colexitcode{\egroup%
+      \nobreak%
+      \hskip-\beamer@rightmargin\egroup}%
+  \fi%
+  \ifbeamer@centered\setkeys{beamer@col}{c}\else\setkeys{beamer@col}{t}\fi%
+  \setkeys{beamer@col}{#1}%
+  \par%
+  \leavevmode
+  \beamer@colentrycode%
+  \def\beamer@colclose{}\ignorespaces}%
+  {\beamer@colclose\def\beamer@colclose{}\beamer@colexitcode\end{actionenv}}%
+
+\def\@makeRTLfntext#1{%
+  \def\insertfootnotetext{#1}%
+  \def\insertfootnotemark{\@makefnmark}%
+  \usebeamertemplate***{RTLfootnote}}
+
+\def\@makeLTRfntext#1{%
+  \def\insertfootnotetext{#1}%
+  \def\insertfootnotemark{\@makefnmark}%
+  \usebeamertemplate***{LTRfootnote}}
+
+\renewcommand<>\beamer@framefootnotetext[1]{%
+  \global\setbox\beamer@footins\vbox{%
+    \if@RTL@footnote\@RTLtrue\else\@RTLfalse\fi%
+    \hsize\framewidth
+    \textwidth\hsize
+    \columnwidth\hsize
+    \unvbox\beamer@footins
+    \reset@font
+    \bidi@@footnotetext@font
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@footnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makefntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\renewcommand<>\beamer@frameRTLfootnotetext[1]{%
+  \global\setbox\beamer@footins\vbox{%
+    \@RTLtrue
+    \hsize\framewidth
+    \textwidth\hsize
+    \columnwidth\hsize
+    \unvbox\beamer@footins
+    \reset@font
+    \bidi@@RTLfootnotetext@font
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@footnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makeRTLfntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\renewcommand<>\beamer@frameLTRfootnotetext[1]{%
+  \global\setbox\beamer@footins\vbox{%
+    \@RTLfalse
+    \hsize\framewidth
+    \textwidth\hsize
+    \columnwidth\hsize
+    \unvbox\beamer@footins
+    \reset@font
+    \bidi@@LTRfootnotetext@font
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@footnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makeLTRfntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\renewcommand<>\@mpfootnotetext[1]{%
+\ifbidi@autofootnoterule\ifnum\c@mpfootnote=\@ne\if@RTL@footnote\global\let\bidi@mpfootnoterule\right@footnoterule\else\global\let\bidi@mpfootnoterule\left@footnoterule\fi\fi\fi
+  \global\setbox\@mpfootins\vbox{%
+    \if@RTL@footnote\@RTLtrue\else\@RTLfalse\fi
+    \unvbox\@mpfootins
+    \reset@font
+    \bidi@@footnotetext@font
+    \hsize\columnwidth
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@mpfootnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makefntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\renewcommand<>\@mpRTLfootnotetext[1]{%
+\ifbidi@autofootnoterule\ifnum\c@mpfootnote=\@ne\global\let\bidi@mpfootnoterule\right@footnoterule\fi\fi
+  \global\setbox\@mpfootins\vbox{%
+     \@RTLtrue
+    \unvbox\@mpfootins
+    \reset@font
+    \bidi@@RTLfootnotetext@font
+    \hsize\columnwidth
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@mpfootnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makeRTLfntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\renewcommand<>\@mpLTRfootnotetext[1]{%
+\ifbidi@autofootnoterule\ifnum\c@mpfootnote=\@ne\global\let\bidi@mpfootnoterule\left@footnoterule\fi\fi
+  \global\setbox\@mpfootins\vbox{%
+  \@RTLfalse
+    \unvbox\@mpfootins
+    \reset@font
+    \bidi@@LTRfootnotetext@font
+    \hsize\columnwidth
+    \@parboxrestore
+    \protected@edef\@currentlabel
+         {\csname p@mpfootnote\endcsname\@thefnmark}%
+    \color@begingroup
+      \uncover#2{\@makeLTRfntext{%
+        \rule\z@\footnotesep\ignorespaces#1\@finalstrut\strutbox}}%
+    \color@endgroup}}
+
+\let\@footnotetext=\beamer@framefootnotetext
+\let\@RTLfootnotetext=\beamer@frameRTLfootnotetext
+\let\@LTRfootnotetext=\beamer@frameLTRfootnotetext
+
+\footdir@temp\footdir@ORG@bidi@beamer@footnotetext\@footnotetext{\bidi@footdir@footnote}%
+\footdir@temp\footdir@ORG@bidi@beamer@RTLfootnotetext\@RTLfootnotetext{R}%
+\footdir@temp\footdir@ORG@bidi@beamer@LTRfootnotetext\@LTRfootnotetext{L}%
+
+\renewcommand<>{\footnote}[1][]{%
+  \let\beamer@footnotetext=\@footnotetext%
+  \let\beamer@mpfn=\@mpfn%
+  \let\beamer@thempfn=\thempfn%
+  \let\beamer@kvorig=\KV@errx%
+  \let\beamer@xkvorig=\XKV@err
+  \def\beamer@footarg{}%
+  \def\KV@errx##1{\edef\beamer@footarg{\@tempa}}%
+  \def\XKV@err##1{\edef\beamer@footarg{\XKV@tkey}}%
+  \setkeys{beamerfootnote}{#1}%
+  \let\KV@errx=\beamer@kvorig%
+  \let\XKV@errx=\beamer@xkvorig
+  \ifx\beamer@footarg\@empty%
+    \def\beamer@next{\stepcounter\beamer@mpfn
+      \protected@xdef\@thefnmark{\beamer@thempfn}%
+      \@footnotemark\beamer@footnotetext#2}%
+  \else%
+    \def\beamer@next{%
+      \begingroup
+        \csname c@\beamer@mpfn\endcsname\beamer@footarg\relax
+        \unrestored@protected@xdef\@thefnmark{\beamer@thempfn}%
+      \endgroup
+      \@footnotemark\beamer@footnotetext#2}%
+  \fi%
+  \beamer@next}
+
+\renewcommand<>{\RTLfootnote}[1][]{%
+  \let\beamer@RTLfootnotetext=\@RTLfootnotetext%
+  \let\beamer@mpfn=\@mpfn%
+  \let\beamer@thempfn=\thempfn%
+  \let\beamer@kvorig=\KV@errx%
+  \let\beamer@xkvorig=\XKV@err
+  \def\beamer@footarg{}%
+  \def\KV@errx##1{\edef\beamer@footarg{\@tempa}}%
+  \def\XKV@err##1{\edef\beamer@footarg{\XKV@tkey}}%
+  \setkeys{beamerfootnote}{#1}%
+  \let\KV@errx=\beamer@kvorig%
+  \let\XKV@errx=\beamer@xkvorig
+  \ifx\beamer@footarg\@empty%
+    \def\beamer@next{\stepcounter\beamer@mpfn
+      \protected@xdef\@thefnmark{\beamer@thempfn}%
+      \@footnotemark\beamer@RTLfootnotetext#2}%
+  \else%
+    \def\beamer@next{%
+      \begingroup
+        \csname c@\beamer@mpfn\endcsname\beamer@footarg\relax
+        \unrestored@protected@xdef\@thefnmark{\beamer@thempfn}%
+      \endgroup
+      \@footnotemark\beamer@RTLfootnotetext#2}%
+  \fi%
+  \beamer@next}
+
+\renewcommand<>{\LTRfootnote}[1][]{%
+  \let\beamer@LTRfootnotetext=\@LTRfootnotetext%
+  \let\beamer@mpfn=\@mpfn%
+  \let\beamer@thempfn=\thempfn%
+  \let\beamer@kvorig=\KV@errx%
+  \let\beamer@xkvorig=\XKV@err
+  \def\beamer@footarg{}%
+  \def\KV@errx##1{\edef\beamer@footarg{\@tempa}}%
+  \def\XKV@err##1{\edef\beamer@footarg{\XKV@tkey}}%
+  \setkeys{beamerfootnote}{#1}%
+  \let\KV@errx=\beamer@kvorig%
+  \let\XKV@errx=\beamer@xkvorig
+  \ifx\beamer@footarg\@empty%
+    \def\beamer@next{\stepcounter\beamer@mpfn
+      \protected@xdef\@thefnmark{\beamer@thempfn}%
+      \@footnotemark\beamer@LTRfootnotetext#2}%
+  \else%
+    \def\beamer@next{%
+      \begingroup
+        \csname c@\beamer@mpfn\endcsname\beamer@footarg\relax
+        \unrestored@protected@xdef\@thefnmark{\beamer@thempfn}%
+      \endgroup
+      \@footnotemark\beamer@LTRfootnotetext#2}%
+  \fi%
+  \beamer@next}
+
+\endinput
+%%
+%% End of file `beamerbaseframecomponents-xetex-bidi.def'.

@@ -31,7 +31,7 @@
 %%
 \ProvidesFile
   {microtype-xetex.def}
-  [2022/03/14 v3.0d
+  [2022/06/23 v3.0f
    Definitions specific to
    xetex
    (RS)]
@@ -226,11 +226,11 @@
   \rpcode\MT@font #2=\numexpr\rpcode\MT@font#1+\@tempcnta\relax
 }
 \def\MT@prot@addtoken@next#1{%
-  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
+  \MT@toks\expandafter{\the\MT@toks#1}%
   \setbox\MT@tempbox\hbox{\the\MT@toks
     \relax
     \ifnum\lastnodetype=7 \aftergroup\@firstoftwo\else\aftergroup\@secondoftwo\fi}%
-      \MT@prot@get@nextchar
+      \MT@prot@get@nexttoken
       {\MT@prot@l{\the\MT@toks}}%
 }
 \DeclareRobustCommand\lsstyle{%

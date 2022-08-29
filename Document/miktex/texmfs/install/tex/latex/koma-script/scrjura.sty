@@ -27,7 +27,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -44,21 +44,21 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{scrjura}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (for jurists)
 ]
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: init)
 \@ifpackageloaded{hyperref}{%
   \PackageError{scrjura}{Package hyperref already loaded}{%
-    If you want to use package scrjura with package hyperref, you have to
-    use\MessageBreak
-    package scrjura before package hyperref.\MessageBreak
+    If you want to use package scrjura with package hyperref, you have
+    to\MessageBreak
+    load package scrjura before package hyperref.\MessageBreak
     To solve the problem, you just should move the loading of package
     hyperref\MessageBreak
     behind the loading of package scrjura.}%
@@ -70,10 +70,19 @@
   numwidth=2em,
   level=\maxdimen
 ]{default}{cpar}
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: options)
-\DeclareOption{contract}{%
-  \g@addto@macro\document\contract%
+\KOMA@ifkey{contract}{@documentcontract}
+\IfLTXAtLeastTF{2020/10/01}{%
+  \AddToHook{begindocument/end}{%
+    \RelaxFamilyKey[.scrjura.sty]{KOMA}{contract}%
+    \if@documentcontract\expandafter\contract\fi
+  }%
+}{%
+  \g@addto@macro\document{%
+    \RelaxFamilyKey[.scrjura.sty]{KOMA}{contract}%
+    \if@documentcontract\expandafter\contract\fi
+  }%
 }
 \KOMA@key{juratotoc}[true]{%
   \KOMA@set@ifkey{juratotoc}{@tempswa}{#1}%
@@ -268,10 +277,10 @@
 \KOMA@kav@add{.scrjura.sty}{ref}{sentencelong}%
 \KOMA@DeclareDeprecatedOption[scrjura]{parcitename}{ref=parlong}
 \KOMA@DeclareDeprecatedOption[scrjura]{sentencecitename}{ref=sentencelong}
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: postoptions)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \providecommand*{\DeprecatedParagraph}{%
   \PackageError{scrjura}{modification of old document needed}{%
@@ -340,7 +349,7 @@
 \newcommand*{\parellipsis}{%
   \scr@ifundefinedorrelax{textellipsis}{\dots}{\textellipsis}%
 }
-\newcommand*{\contract}{%
+\newenvironment{contract}{%
   \ifx\scrjura@env@type\@empty
     \let\@doendpe\scrjura@doendpe
     \let\Clause\contract@paragraph
@@ -358,7 +367,7 @@
       a `\scrjura@env@type' environment or after loading\MessageBreak
       package `scrjura' with option `\scrjura@env@type'!}%
   \fi
-}
+}{}
 \let\if@scrjura@skiphyperref\iftrue
 \let\cl@Clause\@empty
 \let\cl@SubClause\@empty
@@ -1106,12 +1115,10 @@
     }%
   \fi
 }
-%%% From File: $Id: scrjura.dtx 3390 2019-11-18 17:09:35Z kohm $
+%%% From File: $Id: scrjura.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: final)
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrjura.sty'.

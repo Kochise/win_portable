@@ -12,8 +12,8 @@
 % particular purpose.
 
 % Set up the version strings here
-\def\abx@date{2022/02/02}
-\def\abx@version{3.17}
+\def\abx@date{2022/07/12}
+\def\abx@version{3.18b}
 \def\abx@bbxid{\abx@date\space v\abx@version\space biblatex bibliography style (PK/MW)}
 \def\abx@cbxid{\abx@date\space v\abx@version\space biblatex citation style (PK/MW)}
 \def\abx@lbxid{\abx@date\space v\abx@version\space biblatex localization (PK/MW)}
@@ -22,7 +22,7 @@
 % This is not updated by build script as the control file version
 % does not necessarily change with the package version.
 % This is used when writing the .bcf
-\def\blx@bcfversion{3.8}
+\def\blx@bcfversion{3.9}
 
 % This is not updated by build script as the bbl version
 % does not necessarily change with the package version.
@@ -149,6 +149,14 @@
     \blx@safe@actives
     \PackageWarning{biblatex}{#1}%
     \endgroup}}
+
+\def\blx@err@patch#1{%
+  \blx@error
+    {Patching #1 failed}
+    {This is an internal issue typically caused by a
+     conflict\MessageBreak between biblatex and some
+     other package. Modifying\MessageBreak the package
+     loading order may fix the problem}}
 
 %% Compatibility
 % this hook is executed once at the beginning of loading the package
@@ -328,6 +336,26 @@
        {}}
     {}%
   \appto\TE@hook{\blx@TE@hook}%
+  % we need to patch \addtocontents
+  \toggletrue{blx@tempa}%
+  % kernel definition
+  \patchcmd\addtocontents
+    {\let\glossary\@gobble}
+    {\let\glossary\@gobble
+     \blx@contentssafe@citecommands}
+    {}
+    {\togglefalse{blx@tempa}}%
+  % try tag.sto's definition
+  \iftoggle{blx@tempa}
+    {}
+    {\patchcmd\addtocontents
+       {\let\glossary\Gobble}
+       {\let\glossary\Gobble
+        \blx@contentssafe@citecommands}
+       {}
+       {% give up
+       \blx@err@patch{\string\addtocontents}}}%
+  % patch footnote
   \toggletrue{blx@tempa}%
   \def\do#1{%
     \patchcmd#1%
@@ -604,10 +632,10 @@
 }
 
 
-\protected\def\blx@providecounter#1{%
-  \ifltxcounter{#1}
+\protected\def\blx@providecount#1{%
+  \ifcscounter{#1}
     {}
-    {\newcounter{#1}}}
+    {\expandafter\newcount\csname #1\endcsname}}
 
 \def\blx@citecmds{}
 % \autocite and \autocites are not defined via \DeclareCiteCommand
@@ -628,13 +656,6 @@
   \boolfalse{pagetracker}%
   \boolfalse{backtracker}%
   \defcounter{refsection}{#1}}
-
-\patchcmd\addtocontents
-  {\let\glossary\@gobble}
-  {\let\glossary\@gobble
-   \blx@contentssafe@citecommands}
-  {}
-  {\blx@err@patch{\addtocontents}}
 
 % trick hyperref into believing we're natbib
 \let\NAT@parse\@empty
@@ -853,11 +874,12 @@
 \newcount\blx@tempcntc
 \newcounter{blx@maxsection}
 \def\theblx@maxsection{\the\c@blx@maxsection}
-\newcounter{blx@maxsegment@0}
+\expandafter\newcount\csname blx@maxsegment@0\endcsname
 \newcount\blx@notetype
 \newcount\blx@parenlevel@text
 \newcount\blx@parenlevel@foot
-\newcounter{blx@sectionciteorder@0}
+\expandafter\newcount\csname blx@sectionciteorder@0\endcsname
+\expandafter\newcount\csname blx@sectionciteorderinternal@0\endcsname
 \newcount\blx@entrysetcounter
 \newcount\blx@biblioinstance
 
@@ -919,6 +941,7 @@
 \newtoggle{blx@labeltitle}
 \newtoggle{blx@labeltitleyear}
 \newtoggle{blx@labeldateparts}
+\newtoggle{blx@pluralothers}
 \newtoggle{blx@natbib}
 \newtoggle{blx@mcite}
 \newtoggle{blx@loadfiles}
@@ -1345,13 +1368,6 @@
 \protected\def\abx@missing#1{%
   \mbox{\reset@font\bfseries#1}}
 
-\def\blx@err@patch#1{%
-  \blx@error
-    {Patching #1 failed}
-    {This is an internal issue typically caused by a
-     conflict\MessageBreak between biblatex and some
-     other package. Modifying\MessageBreak the package
-     loading order may fix the problem}}
 
 \def\blx@err@nolang#1{%
   \blx@error
@@ -2256,13 +2272,14 @@
     {\csuse{blx@bbx@#1}}
     {\ifcsdef{blx@bbx@*}
        {\blx@warning{%
-          No driver for entry type '#1'.\MessageBreak
+          No driver for '#1'.\MessageBreak
           Using fallback driver}%
         \csuse{blx@bbx@*}}
        {\blx@error
-          {No driver for '\abx@field@entrytype' found}
-          {I can't find a driver for the entry type
-           '\abx@field@entrytype'\MessageBreak
+          {No driver for '#1' found}
+          {I can't find a driver for
+           '#1'\MessageBreak
+           (entry type '\abx@field@entrytype')\MessageBreak
            and there is no fallback driver either}}}}
 
 % {<type>}{<true>}{<false>}
@@ -4580,6 +4597,11 @@
          \c@liststop#2\relax
        \fi
      \fi}%
+  \ifboolexpr{test {\iftoggle{blx@pluralothers}}
+              and
+              test {\ifnumcomp{\value{listtotal}-\value{liststop}}{=}{1}}}
+    {\c@liststop\c@listtotal}
+    {}%
   \blx@namecodes}
 
 \def\blx@namesetup@i#1{%
@@ -5030,69 +5052,147 @@
   \ifbibstring \ifbibxstring \iffieldbibstring
   \iffieldplusstringbibstring}
 
-\let\blx@hook@uc\relax
-\let\blx@hook@lc\relax
-
-\AtEndPreamble{%
-  \toggletrue{blx@tempa}%
-  \toggletrue{blx@tempb}%
-  \expandafter\patchcmd\csname MakeUppercase \endcsname
-    {\protected@edef}
-    {\blx@hook@uc\protected@edef}
-    {\togglefalse{blx@tempa}}
-    {}%
-  \expandafter\patchcmd\csname MakeLowercase \endcsname
-    {\protected@edef}
-    {\blx@hook@lc\protected@edef}
-    {\togglefalse{blx@tempb}}
-    {}%
-  \@ifpackageloaded{textcase}
-    {\expandafter\patchcmd\csname MakeUppercase \endcsname
-       {\def\i}
-       {\blx@hook@uc\def\i}
+% \DeclareCaseChangeEquivalent is available in
+% LaTeX 2022-06-01-PL5
+% the older code works-ish for LaTeX before 2022-06-01
+% it errors with 2022-06-01-PL4
+% but we'll not guard against this specific PL
+\ifundef\DeclareCaseChangeEquivalent
+  {\let\blx@hook@uc\relax
+   \let\blx@hook@lc\relax
+   %
+   \AtEndPreamble{%
+     \toggletrue{blx@tempa}%
+     \toggletrue{blx@tempb}%
+     \expandafter\patchcmd\csname MakeUppercase \endcsname
+       {\protected@edef}
+       {\blx@hook@uc\protected@edef}
        {\togglefalse{blx@tempa}}
        {}%
      \expandafter\patchcmd\csname MakeLowercase \endcsname
-       {\@uclcnotmath{}}
-       {\@uclcnotmath{\blx@hook@lc}}
+       {\protected@edef}
+       {\blx@hook@lc\protected@edef}
        {\togglefalse{blx@tempb}}
        {}%
-     \expandafter\patchcmd\csname MakeTextUppercase \endcsname
-       {\def\i}
-       {\blx@hook@uc\def\i}
-       {}
+     \@ifpackageloaded{textcase}
+       {\expandafter\patchcmd\csname MakeUppercase \endcsname
+          {\def\i}
+          {\blx@hook@uc\def\i}
+          {\togglefalse{blx@tempa}}
+          {}%
+        \expandafter\patchcmd\csname MakeLowercase \endcsname
+          {\@uclcnotmath{}}
+          {\@uclcnotmath{\blx@hook@lc}}
+          {\togglefalse{blx@tempb}}
+          {}%
+        \expandafter\patchcmd\csname MakeTextUppercase \endcsname
+          {\def\i}
+          {\blx@hook@uc\def\i}
+          {}
+          {}%
+        \expandafter\patchcmd\csname MakeTextLowercase \endcsname
+          {\@uclcnotmath{}}
+          {\@uclcnotmath{\blx@hook@lc}}
+          {}
+          {}}
        {}%
-     \expandafter\patchcmd\csname MakeTextLowercase \endcsname
-       {\@uclcnotmath{}}
-       {\@uclcnotmath{\blx@hook@lc}}
-       {}
-       {}}
-    {}%
-  \iftoggle{blx@tempa}{\blx@err@patch{\string\MakeUppercase}}{}%
-  \iftoggle{blx@tempb}{\blx@err@patch{\string\MakeLowercase}}{}%
-}
-
-\appto\blx@blxinit{%
-  \def\blx@hook@uc{%
-    \def\bibstring{\blx@imc@bibucstring}%
-    \def\biblstring{\blx@imc@bibuclstring}%
-    \def\bibsstring{\blx@imc@bibucsstring}%
-    \def\biblcstring{\blx@imc@bibucstring}%
-    \def\biblclstring{\blx@imc@bibuclstring}%
-    \def\biblcsstring{\blx@imc@bibucsstring}%
-    \def\bibcpstring{\blx@imc@bibucstring}%
-    \def\bibcplstring{\blx@imc@bibuclstring}%
-    \def\bibcpsstring{\blx@imc@bibucsstring}}%
-  \def\blx@hook@lc{%
-    \def\bibstring{\blx@imc@biblcstring}%
-    \def\biblstring{\blx@imc@biblclstring}%
-    \def\bibsstring{\blx@imc@biblcsstring}%
-    \def\bibucstring{\blx@imc@biblcstring}%
-    \def\bibuclstring{\blx@imc@biblclstring}%
-    \def\bibucsstring{\blx@imc@biblcsstring}%
-    \def\bibcpstring{\blx@imc@biblcstring}%
-    \def\bibcplstring{\blx@imc@biblclstring}%
-    \def\bibcpsstring{\blx@imc@biblcsstring}}}
+     \iftoggle{blx@tempa}{\blx@err@patch{\string\MakeUppercase}}{}%
+     \iftoggle{blx@tempb}{\blx@err@patch{\string\MakeLowercase}}{}%
+   }
+   %
+   \appto\blx@blxinit{%
+     \def\blx@hook@uc{%
+       \def\bibstring{\blx@imc@bibucstring}%
+       \def\biblstring{\blx@imc@bibuclstring}%
+       \def\bibsstring{\blx@imc@bibucsstring}%
+       \def\biblcstring{\blx@imc@bibucstring}%
+       \def\biblclstring{\blx@imc@bibuclstring}%
+       \def\biblcsstring{\blx@imc@bibucsstring}%
+       \def\bibcpstring{\blx@imc@bibucstring}%
+       \def\bibcplstring{\blx@imc@bibuclstring}%
+       \def\bibcpsstring{\blx@imc@bibucsstring}}%
+     \def\blx@hook@lc{%
+       \def\bibstring{\blx@imc@biblcstring}%
+       \def\biblstring{\blx@imc@biblclstring}%
+       \def\bibsstring{\blx@imc@biblcsstring}%
+       \def\bibucstring{\blx@imc@biblcstring}%
+       \def\bibuclstring{\blx@imc@biblclstring}%
+       \def\bibucsstring{\blx@imc@biblcsstring}%
+       \def\bibcpstring{\blx@imc@biblcstring}%
+       \def\bibcplstring{\blx@imc@biblclstring}%
+       \def\bibcpsstring{\blx@imc@biblcsstring}}}}
+  {\DeclareCaseChangeEquivalent{\bibstring}{%
+     \CaseSwitch
+       {\blx@imc@bibstring}
+       {\blx@imc@bibucstring}
+       {\blx@imc@biblcstring}
+       {\blx@imc@bibcpstring}}
+   \DeclareCaseChangeEquivalent{\biblstring}{%
+     \CaseSwitch
+       {\blx@imc@biblstring}
+       {\blx@imc@bibuclstring}
+       {\blx@imc@biblclstring}
+       {\blx@imc@bibcplstring}}
+   \DeclareCaseChangeEquivalent{\bibsstring}{%
+     \CaseSwitch
+       {\blx@imc@bibsstring}
+       {\blx@imc@bibucsstring}
+       {\blx@imc@biblcsstring}
+       {\blx@imc@bibcpsstring}}
+   \DeclareCaseChangeEquivalent{\biblcstring}{%
+     \CaseSwitch
+       {\blx@imc@bibstring}
+       {\blx@imc@bibucstring}
+       {\blx@imc@biblcstring}
+       {\blx@imc@bibcpstring}}
+   \DeclareCaseChangeEquivalent{\biblclstring}{%
+     \CaseSwitch
+       {\blx@imc@biblstring}
+       {\blx@imc@bibuclstring}
+       {\blx@imc@biblclstring}
+       {\blx@imc@bibcplstring}}
+   \DeclareCaseChangeEquivalent{\biblcsstring}{%
+     \CaseSwitch
+       {\blx@imc@bibsstring}
+       {\blx@imc@bibucsstring}
+       {\blx@imc@biblcsstring}
+       {\blx@imc@bibcpsstring}}
+   \DeclareCaseChangeEquivalent{\bibucstring}{%
+     \CaseSwitch
+       {\blx@imc@bibstring}
+       {\blx@imc@bibucstring}
+       {\blx@imc@biblcstring}
+       {\blx@imc@bibcpstring}}
+   \DeclareCaseChangeEquivalent{\bibuclstring}{%
+     \CaseSwitch
+       {\blx@imc@biblstring}
+       {\blx@imc@bibuclstring}
+       {\blx@imc@biblclstring}
+       {\blx@imc@bibcplstring}}
+   \DeclareCaseChangeEquivalent{\bibucsstring}{%
+     \CaseSwitch
+       {\blx@imc@bibsstring}
+       {\blx@imc@bibucsstring}
+       {\blx@imc@biblcsstring}
+       {\blx@imc@bibcpsstring}}
+   \DeclareCaseChangeEquivalent{\bibcpstring}{%
+     \CaseSwitch
+       {\blx@imc@bibstring}
+       {\blx@imc@bibucstring}
+       {\blx@imc@biblcstring}
+       {\blx@imc@bibcpstring}}
+   \DeclareCaseChangeEquivalent{\bibcplstring}{%
+     \CaseSwitch
+       {\blx@imc@biblstring}
+       {\blx@imc@bibuclstring}
+       {\blx@imc@biblclstring}
+       {\blx@imc@bibcplstring}}
+   \DeclareCaseChangeEquivalent{\bibcpsstring}{%
+     \CaseSwitch
+       {\blx@imc@bibsstring}
+       {\blx@imc@bibucsstring}
+       {\blx@imc@biblcsstring}
+       {\blx@imc@bibcpsstring}}}
 
 \def\abx@dostrings{%
   \do{bibliography}%
@@ -8421,16 +8521,17 @@
   \listcsxadd{blx@keyaliases@\the\c@refsection}{\detokenize{#1}}}
 
 % blx@dlist@list@<section>@<refcontext> - a list of list items in a refcontext in a
-%                                     section (for tracking bibliography lists,
-%                                     obeys skipbiblist)
+%                                         section (for tracking bibliography lists,
+%                                         obeys skipbiblist)
 % blx@dlist@entry@<section>@<list> - a list of normal entries in a list in a
-%                                      section (for tracking bibliographies,
-%                                      obeys skipbib)
+%                                    section (for tracking bibliographies,
+%                                    obeys skipbib)
 % blx@dlist@centry@<section>@<list> - a list of normal entries in a list in a
-%                                       section (for tracking citations,
-%                                       obeys skipbib). Same as @entry@ but
-%                                       with added set children
-
+%                                     section (for tracking citations,
+%                                     does not obey skipbib).
+%                                     Same as @entry@, but includes skipbib'd entries
+%                                     and set children
+%
 % {<entrykey>}{<entrytype>}{<options>}
 \protected\def\blx@bbl@entry#1#2#3{%
   \begingroup
@@ -8463,9 +8564,11 @@
      \ifdef\abx@field@entrysubtype
        {\listcsxadd{blx@subt@\the\c@refsection @\abx@field@entrysubtype}{\abx@field@entrykey}}
        {}%
+     \nottoggle{blx@setonly}
+       {\listcsxadd{blx@dlist@centry@\the\c@refsection @\blx@dlist@name}{\abx@field@entrykey}}
+       {}%
      \nottoggle{blx@skipbib}
-       {\listcsxadd{blx@dlist@entry@\the\c@refsection @\blx@dlist@name}{\abx@field@entrykey}%
-        \listcsxadd{blx@dlist@centry@\the\c@refsection @\blx@dlist@name}{\abx@field@entrykey}}
+       {\listcsxadd{blx@dlist@entry@\the\c@refsection @\blx@dlist@name}{\abx@field@entrykey}}
        {}}%
     {}%
   \nottoggle{blx@skipbiblist}
@@ -9600,7 +9703,7 @@
   \xifinlist{\blx@refcontext@context @\blx@tempe @entry}\blx@dlistnames
     {}
     {\listxadd\blx@dlistnames{\blx@refcontext@context @\blx@tempe @entry}%
-     \csxappto{blx@dlists}{%
+     \xappto\blx@dlists{%
        \blx@xml@dlist{\blx@refcontext@context}{entry}{\blx@tempe}{\blx@xml@dlist@refcontext{\blx@refcontext@sortingtemplatename}{\blx@refcontext@sortingnamekeytemplatename}{\blx@refcontext@labelprefix@real}{\blx@refcontext@uniquenametemplatename}{\blx@refcontext@labelalphanametemplatename}}{}}}%
   \ifdefvoid\blx@tempa
     {\blx@warn@bibempty\endgroup}
@@ -9651,7 +9754,7 @@
   \begingroup
   \delimcontext{bib}%
   \edef\on@line{\on@line}%
-  \ifnum\csname c@blx@maxsegment@\the\c@refsection\endcsname=\z@
+  \ifnum\csname blx@maxsegment@\the\c@refsection\endcsname=\z@
     \blx@warning{No reference segments found}%
   \fi
   \@ifnextchar[%]
@@ -9683,7 +9786,7 @@
        {\letcs\blx@tempa{blx@dlist@entry@\the\c@refsection @\blx@refcontext@context}}%
      \blx@filter\blx@tempa{blx@segm@\the\c@refsection @\the\c@refsegment}%
      \blx@bibliography\blx@tempa}%
-  \ifnum\c@refsegment<\csname c@blx@maxsegment@\the\c@refsection\endcsname
+  \ifnum\c@refsegment<\csname blx@maxsegment@\the\c@refsection\endcsname
     \advance\c@refsegment\@ne
     \expandafter\blx@refsegments
   \else
@@ -10195,6 +10298,8 @@
           \noexpand\blx@kv@setkeys{blx@refcontext}{\csuse{blx@refcontext@name@#2}}}%
         \blx@tempa}%
      % Override with explicit refcontext keyvals, if given
+     \def\blx@gdef@or@def{\gdef}%
+     \def\blx@xdef@or@edef{\xdef}%
      \blx@kv@setkeys{blx@refcontext}{#1}%
      % Add the sortingtemplate to the list of sortingtemplates so we can track
      % special cases like sorting=none which need cite order change detection
@@ -10241,16 +10346,70 @@
     \blx@refcontext@uniquenametemplatename/%
     \blx@refcontext@labelalphanametemplatename}}
 
+% local version of \newrefcontext
+\def\localrefcontext{%
+  \@ifnextchar[%]
+    {\localrefcontext@i}
+    {\localrefcontext@i[]}}
+
+\def\localrefcontext@i[#1]{%
+  \@ifnextchar\bgroup
+    {\localrefcontext@ii[{#1}]}
+    {\localrefcontext@ii[{#1}]{}}}
+
+\newcommand*{\localrefcontext@ii}[2][]{%
+  \ifblank{#2}
+    {}
+    {\begingroup
+     \edef\blx@tempa{\endgroup%
+       \noexpand\blx@kv@setkeys{blx@refcontext}{\csuse{blx@refcontext@name@#2}}}%
+     \blx@tempa}%
+  % Override with explicit refcontext keyvals, if given
+  \def\blx@gdef@or@def{\def}%
+  \def\blx@xdef@or@edef{\edef}%
+  \blx@kv@setkeys{blx@refcontext}{#1}%
+  % Add the sortingtemplate to the list of sortingtemplates so we can track
+  % special cases like sorting=none which need cite order change detection
+  \xifinlist\blx@refcontext@sortingtemplatename\blx@sortingtemplatenames
+    {}
+    {\listxadd\blx@sortingtemplatenames\blx@refcontext@sortingtemplatename}%
+  \blx@edef@refcontext{%
+    \blx@refcontext@sortingtemplatename/%
+    \blx@refcontext@sortingnamekeytemplatename/%
+    \blx@refcontext@labelprefix/%
+    \blx@refcontext@uniquenametemplatename/%
+    \blx@refcontext@labelalphanametemplatename}%
+  % Add the refcontext to the list of refcontexts so we can compare on next run
+  \xifinlist\blx@refcontext@context\blx@refcontexts
+    {}
+    {\listxadd\blx@refcontexts\blx@refcontext@context}%
+  \blx@auxwrite\@mainaux{}{\string\abx@aux@refcontext{\blx@refcontext@context}}%
+  \ifcsundef{blx@sortingtemplate@\blx@refcontext@sortingtemplatename}
+    {\blx@err@invopt{sorting=\blx@refcontext@sortingtemplatename}{}}
+    {}%
+  \ifcsundef{blx@sortingnamekeytemplate@\blx@refcontext@sortingnamekeytemplatename}
+    {\blx@err@invopt{sortingnamekeytemplate=\blx@refcontext@sortingnamekeytemplatename}{}}
+    {}%
+  \ifcsundef{blx@uniquenametemplate@\blx@refcontext@uniquenametemplatename}
+    {\blx@err@invopt{uniquenametemplate=\blx@refcontext@uniquenametemplatename}{}}
+    {}%
+  \ifcsundef{blx@labelalphanametemplate@\blx@refcontext@labelalphanametemplatename}
+    {\blx@err@invopt{labelalphanametemplate=\blx@refcontext@labelalphanametemplatename}{}}
+    {}}
+
+\def\blx@gdef@or@def{\gdef}
+\def\blx@xdef@or@edef{\xdef}
+
 % Meta option to set all name template options
 \blx@kv@defkey{blx@refcontext}{nametemplates}{%
-  \gdef\blx@refcontext@sortingnamekeytemplatename{#1}%
-  \gdef\blx@refcontext@uniquenametemplatename{#1}%
-  \gdef\blx@refcontext@labelalphanametemplatename{#1}}
+  \blx@gdef@or@def\blx@refcontext@sortingnamekeytemplatename{#1}%
+  \blx@gdef@or@def\blx@refcontext@uniquenametemplatename{#1}%
+  \blx@gdef@or@def\blx@refcontext@labelalphanametemplatename{#1}}
 
-\blx@kv@defkey{blx@refcontext}{sorting}{\gdef\blx@refcontext@sortingtemplatename{#1}}
-\blx@kv@defkey{blx@refcontext}{sortingnamekeytemplatename}{\gdef\blx@refcontext@sortingnamekeytemplatename{#1}}
-\blx@kv@defkey{blx@refcontext}{uniquenametemplatename}{\gdef\blx@refcontext@uniquenametemplatename{#1}}
-\blx@kv@defkey{blx@refcontext}{labelalphanametemplatename}{\gdef\blx@refcontext@labelalphanametemplatename{#1}}
+\blx@kv@defkey{blx@refcontext}{sorting}{\blx@gdef@or@def\blx@refcontext@sortingtemplatename{#1}}
+\blx@kv@defkey{blx@refcontext}{sortingnamekeytemplatename}{\blx@gdef@or@def\blx@refcontext@sortingnamekeytemplatename{#1}}
+\blx@kv@defkey{blx@refcontext}{uniquenametemplatename}{\blx@gdef@or@def\blx@refcontext@uniquenametemplatename{#1}}
+\blx@kv@defkey{blx@refcontext}{labelalphanametemplatename}{\blx@gdef@or@def\blx@refcontext@labelalphanametemplatename{#1}}
 
 % labelprefix cannot be used as is because it is used to construct the internal
 % refcontext name which is referenced/expanded a lot all over the place. So,
@@ -10259,8 +10418,8 @@
 % the way and so unexpandable content like \dag breaks.
 % Unexpandable content should be protected with \detokenize.
 \blx@kv@defkey{blx@refcontext}{labelprefix}{%
-  \xdef\blx@refcontext@labelprefix{\blx@mdfivesum{#1}}%
-  \gdef\blx@refcontext@labelprefix@real{#1}%
+  \blx@xdef@or@edef\blx@refcontext@labelprefix{\blx@mdfivesum{#1}}%
+  \blx@gdef@or@def\blx@refcontext@labelprefix@real{#1}%
   \iftoggle{blx@defernumbers}
     {}%
     {\iftoggle{blx@labelnumber}
@@ -10268,6 +10427,7 @@
           Option 'labelprefix' requires global\MessageBreak
           'defernumbers=true'}}
        {}}}
+
 
 % [refcontext keys]{<keyword1>,<keyword2>,...}
 \newcommand*{\assignrefcontextkeyws}{%
@@ -10356,7 +10516,49 @@
 \blx@kv@defkey{blx@assignrefcontext}{uniquenametemplatename}{\def\blx@tempd{#1}}
 \blx@kv@defkey{blx@assignrefcontext}{labelalphanametemplatename}{\def\blx@tempe{#1}}
 
+% Manually force a refcontext datalist in the .bcf
+\newcommand*{\GenRefcontextData}[1]{%
+  \begingroup
+  \edef\blx@tempb{\the\c@refsection}%
+  \def\blx@tempc{global}%
+  \def\blx@tempd{global}%
+  \def\blx@tempe{global}%
+  \let\blx@tempf\blx@sorting%
+  \let\blx@tempg\@empty%
+  \ifblank{#1}
+    {}
+    {\blx@kv@setkeys{blx@refcontextmanual}{#1}}%
+  \def\blx@tempa{\blx@tempf/\blx@tempc/\blx@tempg/\blx@tempd/\blx@tempe}%
+  \xifinlist{\blx@tempa @\blx@tempb @entry}\blx@dlistnames
+    {}
+    {\listxadd\blx@dlistnames{\blx@tempa @\blx@tempb @entry}%
+     \xappto\blx@dlists{%
+       \blx@xml@dlist{\blx@tempa}{entry}{\blx@tempb}{\blx@xml@dlist@refcontext{\blx@tempf}{\blx@tempc}{\blx@tempg}{\blx@tempd}{\blx@tempe}}{}}}%
+   \endgroup}
+
+% Meta option to set all name template options
+\blx@kv@defkey{blx@refcontextmanual}{nametemplates}{%
+  \def\blx@tempc@sortingnamekeytemplatename{#1}%
+  \def\blx@tempd@uniquenametemplatename{#1}%
+  \def\blx@tempe@labelalphanametemplatename{#1}}
+\blx@kv@defkey{blx@refcontextmanual}{sorting}{\def\blx@tempf{#1}}
+\blx@kv@defkey{blx@refcontextmanual}{sortingnamekeytemplatename}{\def\blx@tempc{#1}}
+\blx@kv@defkey{blx@refcontextmanual}{uniquenametemplatename}{\def\blx@tempd{#1}}
+\blx@kv@defkey{blx@refcontextmanual}{labelalphanametemplatename}{\def\blx@tempe{#1}}
+\blx@kv@defkey{blx@refcontextmanual}{labelprefix}{%
+  \def\blx@tempg{#1}%
+  \iftoggle{blx@defernumbers}
+    {}%
+    {\iftoggle{blx@labelnumber}
+       {\blx@warning{%
+          Option 'labelprefix' requires global\MessageBreak
+          'defernumbers=true'}}
+       {}}}
+
 % Reference sections
+\newrobustcmd*{\AtBeginRefsection}{\gappto\blx@hook@refsectioninit}
+\@onlypreamble\AtBeginRefsection
+
 \newrobustcmd*{\newrefsection}{%
   \endrefcontext
   \ifnum\c@refsection>\z@
@@ -10389,14 +10591,15 @@
   \endgroup
   \stepcounter{blx@maxsection}%
   \setcounter{refsection}{\value{blx@maxsection}}%
+  \csuse{blx@hook@refsectioninit}%
   \xifinlist{\the\c@refsection}\blx@allrefsections
     {}
     {\listxadd\blx@allrefsections{\the\c@refsection}}%
   \ifcsdef{blx@defaultrefcontexts@\the\c@refsection}
     {}
     {\global\cslet{blx@defaultrefcontexts@\the\c@refsection}\@empty}%
-  \blx@providecounter{blx@maxsegment@\the\c@refsection}%
-  \blx@providecounter{blx@sectionciteorder@\the\c@refsection}%
+  \blx@providecount{blx@maxsegment@\the\c@refsection}%
+  \blx@providecount{blx@sectionciteorder@\the\c@refsection}%
   \blx@inf@refsec
   \blx@secinit
   \if@filesw
@@ -10444,36 +10647,36 @@
 
 \def\blx@endrefsection{%
   \blx@endrefsegment
-  \blx@providecounter{blx@sectionciteorder@\the\c@refsection}%
+  \blx@providecount{blx@sectionciteorder@\the\c@refsection}%
   % make sure we always output aliases to the .bcf otherwise after their
   % first resolution by biber, they will be invisible to subsequent biber
   % runs since biblatex will resolve the \keyalias{} macro to the main
   % entry key, biber won't put \keyalias{}in the .bbl on subsequent runs
   % and biblatex will report a missing citekey
-  \def\do##1{%
-    \blx@xmlsanitizeafter{\def\blx@tempa}{##1}%
-    % Make sure this counter exists. Sometimes it might not when using, e.g:
-    % refsection=chapter and \includeonly to put in the chapters or when
-    % inserting citations into table of contents
-    \stepcounter{blx@sectionciteorder@\the\c@refsection}%
-    \blx@auxwrite\blx@bcfout{}{%
-      \blx@xml@citekey{\blx@tempa}{}
-      {\expandafter\the\csname c@blx@sectionciteorder@\the\c@refsection\endcsname}}}%
-  \ifcsundef{blx@keyaliases@\the\c@refsection}
+  \ifcsempty{blx@keyaliases@\the\c@refsection}
     {}
-    {\dolistcsloop{blx@keyaliases@\the\c@refsection}}%
+    {\def\do##1{%
+       \blx@xmlsanitizeafter{\def\blx@tempa}{##1}%
+       % Make sure this counter exists. Sometimes it might not when using, e.g:
+       % refsection=chapter and \includeonly to put in the chapters or when
+       % inserting citations into table of contents
+       \global\advance\csname blx@sectionciteorder@\the\c@refsection\endcsname\@ne
+       \blx@auxwrite\blx@bcfout{}{%
+         \blx@xml@citekey{\blx@tempa}{}
+         {\expandafter\the\csname blx@sectionciteorder@\the\c@refsection\endcsname}{1}}}%
+     \dolistcsloop{blx@keyaliases@\the\c@refsection}}%
   % output key counts (for \citecount sorting) if citecounter option is not false
   \ifcsundef{blx@cites@\the\c@refsection}
     {}
     {\ifundef\blx@citecounter
        {}
        {\def\do##1{%
-         \ifcsundef{blx@currcount@\the\c@refsection @##1}
-           {\csdef{blx@currcount@\the\c@refsection @##1}{0}}
-           {}%
-         \blx@auxwrite\blx@bcfout{}
-           {\blx@xml@citekeycount{##1}{\csuse{blx@currcount@\the\c@refsection @##1}}}}}%
-     \dolistcsloop{blx@cites@\the\c@refsection}}%
+          \ifcsundef{blx@currcount@\the\c@refsection @##1}
+            {\csdef{blx@currcount@\the\c@refsection @##1}{0}}
+            {}%
+          \blx@auxwrite\blx@bcfout{}
+            {\blx@xml@citekeycount{##1}{\csuse{blx@currcount@\the\c@refsection @##1}}}}%
+        \dolistcsloop{blx@cites@\the\c@refsection}}}%
   \ifnum\c@refsection>\z@
     \blx@auxwrite\blx@bcfout{}{%
       \blx@xml@endsection\blx@nl
@@ -10512,8 +10715,8 @@
     \blx@err@nestenv{refsegment}%
     \blx@endrefsegment
   \fi
-  \stepcounter{blx@maxsegment@\the\c@refsection}%
-  \setcounter{refsegment}{\value{blx@maxsegment@\the\c@refsection}}%
+  \global\advance\csname blx@maxsegment@\the\c@refsection\endcsname\@ne
+  \setcounter{refsegment}{\csuse{blx@maxsegment@\the\c@refsection}}%
   \blx@inf@refseg
   \blx@info{Setting label 'refsegment:\the\c@refsection\the\c@refsegment'}%
   \label{refsegment:\the\c@refsection\the\c@refsegment}%
@@ -10993,7 +11196,6 @@
   \apptocmd{\blx@hook@entrykey}}
 \@onlypreamble\AtEveryEntrykey
 
-
 \def\blx@imc@UseEveryCiteHook{\csuse{blx@hook@cite}}
 \def\blx@imc@UseEveryCitekeyHook{\csuse{blx@hook@citekey}}
 \def\blx@imc@UseEveryMultiCiteHook{\csuse{blx@hook@mcite}}
@@ -11109,7 +11311,8 @@
 \def\blx@citation@all{%
   \blx@auxwrite\@mainaux{}{\string\abx@aux@nociteall}%
   \ifbool{citerequest}
-    {\blx@bibreq{*}%
+    {\global\advance\csname blx@sectionciteorder@\the\c@refsection\endcsname\@ne
+     \blx@bibreq{*}%
      \global\csletcs
        {blx@segm@\the\c@refsection @\the\c@refsegment}
        {blx@dlist@entry@\the\c@refsection @\blx@refcontext@context}%
@@ -11122,6 +11325,7 @@
   \listgadd\blx@nocites{*}}
 
 \protected\def\blx@bibreq#1{%
+  \advance\blx@tempcntc\@ne% holds internal \cite{} citation order
   \begingroup
   \blx@xmlsanitizeafter{\def\blx@tempa}{#1}%
   \let\blx@tempb\@empty
@@ -11134,12 +11338,15 @@
               not test {\ifinlist{#1}\blx@directcites}}
     {\def\blx@tempb{ nocite="1"}}
     {}%
+  \blx@auxwrite\blx@bcfout{}{\blx@xml@citekey{\blx@tempa}{\blx@tempb}%
+      {\expandafter\the\csname blx@sectionciteorder@\the\c@refsection\endcsname}%
+      {\expandafter\the\csname blx@tempcntc\endcsname}}%
   % citeall is always order "0" - this makes no real difference as biber
   % ignores all other citekeys in the section if citeall is present
-  \ifstrequal{*}{#1}
-    {\blx@auxwrite\blx@bcfout{}{\blx@xml@citekey{\blx@tempa}{\blx@tempb}{0}}}
-    {\blx@auxwrite\blx@bcfout{}{\blx@xml@citekey{\blx@tempa}{\blx@tempb}{%
-       \expandafter\the\csname c@blx@sectionciteorder@\the\c@refsection\endcsname}}}%
+  % \ifstrequal{*}{#1}
+  %   {\blx@auxwrite\blx@bcfout{}{\blx@xml@citekey{\blx@tempa}{\blx@tempb}{0}}}
+  %   {\blx@auxwrite\blx@bcfout{}{\blx@xml@citekey{\blx@tempa}{\blx@tempb}{%
+  %      \expandafter\the\csname blx@sectionciteorder@\the\c@refsection\endcsname}}}%
   \endgroup}
 
 % {<set>}{<key1,key2,key3>}
@@ -11182,8 +11389,16 @@
   \endgroup}
 
 % {<entrykey>,...}
+% a crude way to check for a do-nothing argument:
+% loop over it to see what happens
 \protected\def\blx@citeloop#1{%
-  \expandafter\blx@citeloop@i\expandafter{\detokenize{#1}}}
+  \togglefalse{blx@tempa}%
+  \def\do{\toggletrue{blx@tempa}\listbreak}%
+  \expandafter\docsvlist\expandafter{\detokenize{#1}}%
+  \iftoggle{blx@tempa}
+    {\expandafter\blx@citeloop@i\expandafter{\detokenize{#1}}}
+    {\abx@missing@entry{empty citation}%
+     \@latex@warning{\blx@msg@cundefon{}}}}
 \protected\def\blx@citeloop@i#1{%
   \begingroup
   % This must be here and not after \blx@citeadd as this changes the refcontext
@@ -11194,10 +11409,11 @@
   % Make sure this counter exists. Sometimes it might not when using, e.g:
   % refsection=chapter and \includeonly to put in the chapters or when
   % inserting citations into table of contents
-  \blx@providecounter{blx@sectionciteorder@\the\c@refsection}%
-  \stepcounter{blx@sectionciteorder@\the\c@refsection}%
+  \blx@providecount{blx@sectionciteorder@\the\c@refsection}%
+  \global\advance\csname blx@sectionciteorder@\the\c@refsection\endcsname\@ne
   \blx@tempcnta\z@
   \blx@tempcntb\z@
+  \blx@tempcntc\z@
   \let\blx@tempa\@empty
   \forcsvlist\blx@citeadd{#1}% adds to \blx@tempa
   \blx@thenotecheck
@@ -11507,7 +11723,9 @@
 
 \def\blx@ibidtracker@constrict{%
   \blx@ifcitesingle
-    {\blx@mpfnsave
+    {\iftoggle{blx@footnote}
+       {\blx@mpfnsave}
+       {}%
      \blx@ibidtracker@context}
     {\blx@ibidreset@context}}%
 
@@ -11553,7 +11771,9 @@
 \let\blx@idemtracker@strict\blx@idemtracker@global
 
 \def\blx@idemtracker@constrict{%
-  \blx@mpfnsave
+  \iftoggle{blx@footnote}
+    {\blx@mpfnsave}
+    {}%
   \blx@idemtracker@context}
 
 \def\blx@idemreset@force{%
@@ -11602,7 +11822,9 @@
 
 \def\blx@opcittracker@constrict{%
   \blx@ifcitesingle
-    {\blx@mpfnsave
+    {\iftoggle{blx@footnote}
+       {\blx@mpfnsave}
+       {}%
      \blx@opcittracker@context}
     {\blx@opcitreset@context}}%
 
@@ -11913,8 +12135,8 @@
     % Make sure this counter exists. Sometimes it might not when using, e.g:
     % refsection=chapter and \includeonly to put in the chapters or when
     % inserting citations into table of contents
-  \blx@providecounter{blx@sectionciteorder@\the\c@refsection}%
-  \stepcounter{blx@sectionciteorder@\the\c@refsection}%
+  \blx@providecount{blx@sectionciteorder@\the\c@refsection}%
+  \global\advance\csname blx@sectionciteorder@\the\c@refsection\endcsname\@ne
   \blx@nocitation{#1}\blx@msg@cundef}
 
 % {<macro>}[<arg1>][<arg2>]{<arg3>}
@@ -13093,9 +13315,9 @@
 \xdef\blx@xml@uniquenametemplatenamepart#1#2#3{%
   ~~~~<bcf:namepart #1#2>#3</bcf:namepart>\blx@nl}
 
-\xdef\blx@xml@sortingnamekeytemplate#1#2{%
-  ~~<bcf:sortingnamekeytemplate name="#1">\blx@nl%
-  #2%
+\xdef\blx@xml@sortingnamekeytemplate#1#2#3{%
+  ~~<bcf:sortingnamekeytemplate name="#1" visibility="#2">\blx@nl%
+  #3%
   ~~</bcf:sortingnamekeytemplate>\blx@nl}
 
 \xdef\blx@xml@sortingnamekeykeypart#1#2{%
@@ -13166,8 +13388,8 @@
   ~~</bcf:bibdata>\blx@nl}
 \xdef\blx@xml@datasource#1#2#3#4#5{%
   ~~~~<bcf:datasource type="#1" datatype="#2"#3#4>#5</bcf:datasource>\blx@nl}
-\xdef\blx@xml@citekey#1#2#3{%
-  ~~~~<bcf:citekey order="#3"#2>#1</bcf:citekey>}
+\xdef\blx@xml@citekey#1#2#3#4{%
+  ~~~~<bcf:citekey order="#3" intorder="#4"#2>#1</bcf:citekey>}
 \xdef\blx@xml@citeset#1#2{%
   ~~~~<bcf:citekey type="set" members="#2">#1</bcf:citekey>}
 \xdef\blx@xml@citekeycount#1#2{%
@@ -13222,6 +13444,7 @@
     \blx@xml@toggle{nohashothers}%
     \blx@xml@toggle{noroman}%
     \blx@xml@toggle{nosortothers}%
+    \blx@xml@toggle{pluralothers}%
     \blx@xml@toggle{singletitle}%
     \blx@xml@toggle{skipbib}%
     \blx@xml@toggle{skipbiblist}%
@@ -13275,8 +13498,8 @@
     \blx@xml@toggle{nosortothers}%
     \blx@xml@toggle{singletitle}%
     \blx@xml@toggle{skipbib}%
-    \blx@xml@toggle{skiplab}%
     \blx@xml@toggle{skipbiblist}%
+    \blx@xml@toggle{skiplab}%
     \blx@xml@svalue{uniquelist}{\blx@uniquelist}%
     \blx@xml@svalue{uniquename}{\blx@uniquename}%
     \blx@xml@toggle{uniqueprimaryauthor}%
@@ -13476,7 +13699,7 @@
   \eappto\blx@tempa{\blx@xml@comment{SORTING NAME KEY TEMPLATES}}%
   \def\do##1{%
     \eappto\blx@tempa{%
-      \blx@xml@sortingnamekeytemplate{##1}{\csuse{blx@sortingnamekeytemplate@##1}}}}%
+      \blx@xml@sortingnamekeytemplate{##1}{\csuse{blx@sortingnamekeytemplatesvisibility@##1}}{\csuse{blx@sortingnamekeytemplate@##1}}}}%
   \dolistloop\blx@sortingnamekeytemplates
   % presort/sorting excludes/sorting includes
   \def\do##1{%
@@ -14159,7 +14382,7 @@
          Use '\string\DeclareBiblistFilter' to define it}}
     {\def\blx@thebiblistfilter{#1}}}
 
-% [<langids>][<entrytype>]{translitsource}{translittarget}
+% [<entrytype>]{specification}
 \newrobustcmd*{\DeclareSortTranslit}[2][]{%
   \begingroup
   \ifblank{#1}
@@ -14176,6 +14399,7 @@
 \@onlypreamble\DeclareSortTranslit
 \blx@DeclareBackendOption{global,type}[xml]{translit}
 
+% [<langids>]{<field or set>}{translitsource}{translittarget}
 \newcommand*{\blx@translit@setup}[4][]{%
   \eappto\blx@tempb{%
     \ifblank{#1}
@@ -14234,6 +14458,8 @@
   \let\namepart\blx@sortnk@namepart
   \let\keypart\blx@sortnk@keypart
   \let\literal\blx@sortnk@literal
+  \let\visibility\blx@sortnk@visibility
+  \csgdef{blx@sortingnamekeytemplatesvisibility@\blx@snkname}{sort}% default
   \let\blx@tempa\@empty
   \blx@tempcnta\z@
   #2%
@@ -14270,6 +14496,9 @@
   \let\blx@tempc\@empty
   \eappto\blx@tempb{%
     \blx@xml@sortingnamekeyliteral{\blx@tempe}{#1}}}
+
+\newcommand*{\blx@sortnk@visibility}[1]{%
+  \csgdef{blx@sortingnamekeytemplatesvisibility@\blx@snkname}{#1}}
 
 \newcommand*{\blx@sortnk@namepart}[2][]{%
   \advance\blx@tempcntb\@ne
@@ -14313,6 +14542,8 @@
   \def\citeorder{%
     \global\cslet{blx@sortingtemplate@citeorder@relevant@#2}\@empty
     \blx@sortdef@field{citeorder}}%
+  \def\intciteorder{%
+    \blx@sortdef@field{intciteorder}}%
   \def\citecount{%
     \blx@sortdef@field{citecount}}%
   \blx@tempcnta\z@
@@ -15561,6 +15792,9 @@
 \def\blx@opt@uniquelist@true{true}
 \def\blx@opt@uniquelist@minyear{minyear}
 
+\DeclareBiblatexOption{global}[boolean]{pluralothers}[true]{%
+  \settoggle{blx@pluralothers}{#1}}
+  
 \blx@DeclareBackendOption{entry,namelist}[string]{uniquelist}
 
 \DeclareBiblatexOption{global,type}[boolean]{nohashothers}[true]{%
@@ -15841,7 +16075,7 @@
 % Set defaults
 \blx@kv@setkeys{blx@opt@ldt}{style=numeric}
 \blx@kv@setkeys{blx@opt@pre}{%
-  sorting=nty,sortlocale=auto,sortcase,sortupper,sortcites=false,
+  sorting=nty,sortlocale=auto,sortcase,sortupper,sortcites=false,pluralothers=false,
   maxnames=3,minnames=1,maxalphanames=3,minalphanames=1,
   maxitems=3,minitems=1,mincrossrefs=2,minxrefs=2,
   useauthor=true,useeditor=true,usetranslator=false,
@@ -16071,6 +16305,7 @@
   \fi
   \blx@bblinput
   \setcounter{blx@maxsection}{0}%
+  \csuse{blx@hook@refsectioninit}%
   \csuse{abx@preamble}%
   \blx@inf@refsec
   \blx@inf@refseg}

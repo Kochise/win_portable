@@ -8,12 +8,45 @@
 %% 
 %% Copyright 2001 Dominique Unruh  <unruh@ut.ee>
 %% Copyright 2013 Wolfgang Jeltsch <wolfgang@cs.ioc.ee>
+%% Copyright 2022 David Carlisle https://github.com/LaTeX-Package-Repositories/ucs
 %% 
 %% This program is provided under the terms of the LaTeX Project Public License with some
 %% modifications. See the file LICENSE for information.
 %% 
 \ifx\ProvidesFile\undefined\else
-\ProvidesFile{utf8x.def}[2004/10/17 UCS: Input encoding UTF-8]%
+\ProvidesFile{utf8x.def}[2022/08/07 UCS: Input encoding UTF-8]%
+
+\ifx\uc@char@notloaded\@undefined
+
+\PackageNoteNoLine{ucs}{%
+utf8x\space disabled,\space assuming\space standard\space utf8\space processing\MessageBreak
+load\space ucs\space package\space to\space force\space utf8x\space processing}
+
+\let\ucs@parse@XML@charref\parse@XML@charref
+\let\ucs@parse@UTFviii@a\parse@UTFviii@a
+\let\ucs@parse@UTFviii@b\parse@UTFviii@b
+\AddToHook{begindocument/end}{%
+\let\parse@XML@charref\ucs@parse@XML@charref
+\let\parse@UTFviii@a\ucs@parse@UTFviii@a
+\let\parse@UTFviii@b\ucs@parse@UTFviii@b
+}
+
+\protected\def\unichar#1{%
+\begingroup
+\count@#1\relax
+\ifnum\count@>127
+\parse@XML@charref
+\else
+\edef\UTFviii@tmp{\char\the\count@\relax}%
+\fi
+\expandafter
+\endgroup
+\UTFviii@tmp
+}
+\def\inputencodingname{utf8}
+\input{utf8.def}%
+\expandafter\expandafter\expandafter\endinput
+\fi
 \fi
 \expandafter\ifx\csname restore@utf@viii@actives\endcsname\relax\else
   \csname restore@utf@viii@actives\endcsname\expandafter\endinput\fi
@@ -84,7 +117,7 @@
    \uccode`\u`\u%
    \uppercase{%
  \endgroup
-   \edef~%
+   \protected\edef~%
  #3{\noexpand\expandafter\noexpand\ifx\noexpand\csname u8-\number\count255-#4\noexpand\endcsname\relax
    \begingroup
      \let\noexpand\utf@viii@undeferr
@@ -113,7 +146,7 @@
     \uccode`\~\count255 %SPACE
     \uppercase{%
   \endgroup
-    \edef~}%
+    \protected\edef~}%
   {\noexpand\utf@viii@err{\number\count255}}%
  \advance\count255by1\relax
  \repeat}%

@@ -27,7 +27,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -44,7 +44,7 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrkernel-version.dtx 3636 2021-11-13 18:16:17Z kohm $
+%%% From File: $Id: scrkernel-version.dtx 3920 2022-07-04 08:01:38Z kohm $
 \begingroup
   \catcode`\@11\relax
   \ifx\KOMAScriptVersion\undefined
@@ -66,19 +66,19 @@
       \fi
     }
   \fi
-  \@CheckKOMAScriptVersion{2021/11/13 v3.35 KOMA-Script}%
+  \@CheckKOMAScriptVersion{2022/07/04 v3.37 KOMA-Script}%
 \endgroup
 \providecommand*{\scr@pkgextension}{\@pkgextension}
 \AtBeginDocument{%
   \let\scr@pkgextension\@pkgextension
 }
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: prepare)
 \NeedsTeXFormat{LaTeX2e}[1995/06/01]
 \ProvidesPackage{%
   scrkbase%
 }[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (%
     KOMA-Script-dependent
@@ -242,12 +242,12 @@
 }
 \newcommand*{\KOMAProcessOptions}{\FamilyProcessOptions{KOMA}}
 \@onlypreamble\KOMAProcessOptions
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: option)
 \KOMAProcessOptions\relax
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: option)
-%%% From File: $Id: scrkernel-basics.dtx 3606 2021-06-08 08:28:35Z kohm $
+%%% From File: $Id: scrkernel-basics.dtx 3913 2022-06-28 07:45:49Z kohm $
 %%%            (run: body)
 \newcommand*{\KOMAExecuteOptions}[1][.\@currname.\@currext]{%
   \FamilyExecuteOptions[#1]{KOMA}%
@@ -346,7 +346,7 @@
     \scr@ifundefinedorrelax{KV@KOMA.\@currname.\@currext @version}{%
       \edef\reserved@a{\noexpand\endgroup
         \noexpand#1{%
-          You've used obsolete option `\detokenize{#2}'.\noexpand\MessageBreak
+          You've used deprecated option `\detokenize{#2}'.\noexpand\MessageBreak
           Usage of this option is deprecated.\noexpand\MessageBreak
           You should simply replace `\detokenize{#2}'\noexpand\MessageBreak
           by `\detokenize{#3}'%
@@ -357,7 +357,7 @@
     }{%
       \edef\reserved@a{\noexpand\endgroup
         \noexpand#1{%
-          You've used obsolete option `\detokenize{#2}'.\noexpand\MessageBreak
+          You've used deprecated option `\detokenize{#2}'.\noexpand\MessageBreak
           Usage of this option indicates an old document\noexpand\MessageBreak
           and changes compatibility level using\noexpand\MessageBreak
           `\detokenize{#3},version=first,\noexpand\MessageBreak
@@ -415,7 +415,7 @@
   }%
   \KOMAoptions{#3}%
 }
-%%% From File: $Id: scrkernel-fonts.dtx 3597 2021-05-17 12:54:47Z kohm $
+%%% From File: $Id: scrkernel-fonts.dtx 3874 2022-06-05 10:38:02Z kohm $
 %%%            (run: body)
 \newcommand*{\IfExistskomafont}[1]{%
   \scr@ifundefinedorrelax{scr@fnt@#1}{%
@@ -635,10 +635,8 @@
     #2%
   }%
 }
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrkbase.sty'.

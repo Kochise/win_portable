@@ -1,17 +1,30 @@
+\expandafter\ifx\csname scrWMSG\endcsname\relax
+  \def\scrWMSG{\immediate\write17}
+\fi
+\scrWMSG{^^J%
++----------------------------------------------------------------------^^J%
+| WARNING (`scrlayer-notecolumn.sty'):^^J%|
++----------------------------------------------------------------------^^J%
+| YOU SHOULD NOTE, THAT THIS IS NOT AN OFFICIAL RELEASE!^^J%|
+| THIS VERSION IS INTENDED TO BE USED FOR TESTING ONLY!^^J%|
+| USAGE FOR PURPOSES OTHER THAN INTENDED IS DANGEROUS!^^J%|
+| DON'T EXPECT ANY SUPPORT FOR THIS VERSION!^^J%|
++----------------------------------------------------------------------^^J%
+}
 %%
 %% This is file `scrlayer-notecolumn.sty',
 %% generated with the docstrip utility, extended by scrdocstrip.
 %%
 %% The original source files were:
 %%
-%% scrlayer-notecolumn.dtx  (with options: `interface,trace,notecolumn,identify')
-%% scrlayer.dtx  (with options: `interface,trace,notecolumn,init')
-%% scrlayer-notecolumn.dtx  (with options: `interface,trace,notecolumn,init')
-%% scrlayer.dtx  (with options: `interface,trace,notecolumn,options')
-%% scrlayer-notecolumn.dtx  (with options: `interface,trace,notecolumn,options')
-%% scrlayer.dtx  (with options: `interface,trace,notecolumn,body')
-%% scrlayer-notecolumn.dtx  (with options: `interface,trace,notecolumn,body')
-%% scrlayer-notecolumn.dtx  (with options: `interface,trace,notecolumn,final')
+%% scrlayer-notecolumn.dtx  (with options: `interface,notecolumn,identify')
+%% scrlayer.dtx  (with options: `interface,notecolumn,init')
+%% scrlayer-notecolumn.dtx  (with options: `interface,notecolumn,init')
+%% scrlayer.dtx  (with options: `interface,notecolumn,options')
+%% scrlayer-notecolumn.dtx  (with options: `interface,notecolumn,options')
+%% scrlayer.dtx  (with options: `interface,notecolumn,body')
+%% scrlayer-notecolumn.dtx  (with options: `interface,notecolumn,body')
+%% scrlayer-notecolumn.dtx  (with options: `interface,notecolumn,final')
 %% scrlogo.dtx  (with options: `logo')
 %% 
 %% Copyright (c) 2013-2021 Markus Kohm [komascript at gmx info]
@@ -29,7 +42,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -46,14 +59,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3915 2022-06-29 07:09:48Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer-notecolumn}[%
-  2021/05/30 v0.3.3601 KOMA-Script 
+  2022/06/29 v0.3.3915 KOMA-Script 
   package
   (end user interface for scrlayer)]
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: init)
 \RequirePackage{scrlayer}
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
@@ -64,7 +77,7 @@
   \fi
 }
 \let\scrlayer@AtEndOfPackage\AtEndOfPackage
-%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3915 2022-06-29 07:09:48Z kohm $
 %%%            (run: init)
 \@tempswatrue
 \scr@ifundefinedorrelax{pdfsavepos}{%
@@ -97,7 +110,7 @@
   }%
   \batchmode\csname @@end\endcsname\end
 \fi
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
   \begingroup
@@ -241,11 +254,11 @@
   \KOMA@kav@replacebool{.scrlayer.sty}{autoremoveinterfaces}
                        {scrlayer@autoremoveinterfaces}%
 }
-%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3915 2022-06-29 07:09:48Z kohm $
 %%%            (run: options)
 \KOMA@ifkey{autoclearnotecolumns}{slnc@autoclearnotecolumns}
 \slnc@autoclearnotecolumnstrue
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \expandafter\let
@@ -317,7 +330,7 @@
 \expandafter\let
   \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces@default\endcsname
   \relax
-%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3915 2022-06-29 07:09:48Z kohm $
 %%%            (run: body)
 \newcommand*{\DeclareNoteColumn}[2][]{%
   \@ifundefined{slnc@#2@box}{%
@@ -534,9 +547,6 @@
 \newcommand*{\slnc@initwrite}{}%
 \newcommand*{\slnc@openwrite}{%
   \immediate\closein\slnc@file
-  \PackageInfo{scrlayer-notecolumn}{%
-    Opening `\jobname.slnc'\MessageBreak
-    for writing}%
   \immediate\openout\tf@slnc\jobname.slnc
 }
 \AfterReadingMainAux{%
@@ -567,17 +577,7 @@
       }%
     \else
       \ifx \slnc@mdfivesum\reserved@a
-        \PackageInfo{scrlayer-notecolumn}{%
-          MD5 of current `\jobname.slnc':\MessageBreak
-          \reserved@a}%
       \else
-        \PackageWarningNoLine{scrlayer-notecolumn}{%
-          MD5 of slnc-file changed.\MessageBreak
-          Last: \slnc@mdfivesum\MessageBreak
-          New: \space \reserved@a\MessageBreak
-          At least one more LaTeX rerun needed to\MessageBreak
-          make note columns right%
-        }%
         \aftergroup\@tempswatrue
       \fi
     \fi
@@ -634,9 +634,7 @@
       \fi
     }%
     \long\def\slnc@note##1##2##3##4{%
-        \typeout{TRACE (slnc): ##2<=\theslncpage?}%
       \ifnum ##2>\value{slncpage}\relax
-          \typeout{TRACE (slnc): no: unprocess note}%
         \expandafter\g@addto@macro\csname slnc@#1@unprocessed\endcsname{%
           \slnc@note{##1}{##2}{##3}{##4}%
         }%
@@ -674,20 +672,9 @@
               \@tempdimb=\dimexpr \expandafter\ht\csname slnc@#1@box\endcsname
                                  +\expandafter\dp\csname slnc@#1@box\endcsname
                          \relax
-              \typeout{Soll: \the\@tempdima^^JIst: \space\the\@tempdimb}%
               \ifdim\@tempdima<\@tempdimb
-                \PackageInfo{scrlayer-notecolumn}{%
-                  Note moved down from\MessageBreak
-                  \the\@tempdima\space to \the\@tempdimb\MessageBreak
-                  at note box `#1'
-                }%
               \else
                 \ifdim\@tempdima>\@tempdimb
-                  \PackageInfo{scrlayer-notecolumn}{%
-                    Adding vertical white space from\MessageBreak
-                    \the\@tempdimb\space to \the\@tempdima\MessageBreak
-                    into note box `#1'
-                  }%
                   \expandafter\setbox\csname slnc@#1@box\endcsname
                   \vbox {%
                     \expandafter\unvbox\csname slnc@#1@box\endcsname
@@ -734,12 +721,10 @@
     }%
     \reserved@a
     \expandafter\ifvoid\csname slnc@#1@box\endcsname
-      \PackageInfo{scrlayer-notecolumn}{Note box `#1' empty}%
     \else
       \ifdim \dimexpr \expandafter\ht\csname slnc@#1@box\endcsname
                      +\expandafter\dp\csname slnc@#1@box\endcsname
              \relax >\textheight\relax
-        \PackageInfo{scrlayer-notecolumn}{Split note box `#1'}%
         \splittopskip\topskip
         \splitmaxdepth\baselineskip
         \usekomafont{notecolumn.#1}{%
@@ -754,7 +739,6 @@
           }%
         \fi
       \else
-        \PackageInfo{scrlayer-notecolumn}{Flush note box `#1'}%
         \usekomafont{notecolumn.#1}{%
           \slnc@switchcolorstack{#1}%
           \expandafter\box\csname slnc@#1@box\endcsname%
@@ -770,10 +754,10 @@
   \scr@ifundefinedorrelax{slnc@#1@colorstack}{%
     \def\set@color{%
       \PackageWarningNoLine{scrlayer-notecolumn}{%
-        unsupported change of colour!\MessageBreak
+        unsupported change of color!\MessageBreak
         It seems you are using a TeX engine,\MessageBreak
         that does not support switching the\MessageBreak
-        colour stack like pdfTeX or luaTeX do.\MessageBreak
+        color stack like pdfTeX or luaTeX do.\MessageBreak
         Because of this, usage of \string\color,\MessageBreak
         \string\textcolor\space etc. inside a note
         column\MessageBreak
@@ -789,7 +773,7 @@
     \scr@ifundefinedorrelax{pdfcolorstack}{%
       \scr@ifundefinedorrelax{pdfextension}{%
         \PackageError{scrlayer-notecolumm}{%
-          colour stack defined but not usable%
+          color stack defined but not usable%
         }{%
           \expandafter\string
           \csname slnc@#1@colorstack\endcsname\space defined
@@ -897,8 +881,6 @@
           \fi
         \fi
       \else
-        \PackageInfo{scrlayer-notecolumn}{%
-          Ignoring `\expandafter\detokenize\expandafter{\reserved@a}'}%
         \@tempswatrue
       \fi
       \ifeof\slnc@file\@tempswafalse\fi
@@ -941,11 +923,6 @@
 }{%
   \xdef\slnc@mdfivesum{\pdfmdfivesum file {\jobname.slnc}}%
 }%
-\scr@ifundefinedorrelax{slnc@mdfivesum}{}{%
-  \PackageInfo{scrlayer-notecolumn}{%
-    MD5 of last `\jobname.slnc':\MessageBreak
-    \slnc@mdfivesum}%
-}%
 \newread\slnc@file
 \immediate\openin\slnc@file \jobname.slnc
 \newcounter{slnc@clearnote@label}%
@@ -976,12 +953,8 @@
       \edef\slnc@cmp@value{\expandafter\slnc@firstof\reserved@a\@nil}%
       \edef\reserved@a{\expandafter\slnc@secondof\reserved@a\@nil}%
     }%
-    \typeout{TRACE (slnc): clearnote=\@nameuse{theslnc@clearnote@label},
-      abspage=\the\value{slncpage}, until page=\slnc@cmp@value,
-      process=\reserved@a, pagetotal=\the\pagetotal, topskip=\the\topskip}%
     \ifvmode\ifdim \pagetotal<\topskip
         \edef\slnc@cmp@value{\the\numexpr\slnc@cmp@value-1}%
-          \typeout{TRACE (slnc): until page=\slnc@cmp@value}%
     \fi\fi
     \ifnum \reserved@a=\z@
       \ifvmode
@@ -1019,7 +992,6 @@
       \@tempswatrue
     \fi
     \@whilesw\if@tempswa\fi{%
-    \typeout{TRACE (slnc): add \string\clearpage}%
       \clearpage
       \expandafter\ifcase \slnc@voidtest{#1}%
         \begingroup
@@ -1091,12 +1063,8 @@
       \edef\slnc@cmp@value{\expandafter\slnc@firstof\reserved@a\@nil}%
       \edef\reserved@a{\expandafter\slnc@secondof\reserved@a\@nil}%
     }%
-    \typeout{TRACE (slnc): clearnote=\@nameuse{theslnc@clearnote@label},
-      abspage=\theslncpage, until page=\slnc@cmp@value,
-      process=\reserved@a, pagetotal=\the\pagetotal, topskip=\the\topskip}%
     \ifvmode\ifdim \pagetotal<\topskip
         \edef\slnc@cmp@value{\the\numexpr\slnc@cmp@value-1}%
-          \typeout{TRACE (slnc): until page=\slnc@cmp@value}%
     \fi\fi
     \ifnum \reserved@a=\z@
       \ifvmode
@@ -1135,7 +1103,6 @@
       \@tempswatrue
     \fi
     \@whilesw\if@tempswa\fi{%
-    \typeout{TRACE (slnc): add \string\clearpage}%
       \clearpage
       \begingroup
         \def\@elt##1{+\slnc@voidtest{##1}}%
@@ -1195,7 +1162,7 @@
         Using \string\syncwithnotecolumn\space in horizontal\MessageBreak
         mode may result in unwanted vertical\MessageBreak
         space inside paragraphs and may lost\MessageBreak
-        colours of text of notes. \space So perhaps you\MessageBreak
+        colors of text of notes. \space So perhaps you\MessageBreak
         should move \string\syncwithnotecolumn\space before\MessageBreak
         or after the paragraph%
       }%
@@ -1280,9 +1247,6 @@
                                -\topskip+\baselineskip
                                \relax
             \edef\slnc@textpos{\number\@tempdima}%
-            \PackageInfo{scrlayer-notecolumn}{%
-              Top position is \slnc@textpos%
-            }%
           \fi
           \ifnum\slnc@notepos>\slnc@textpos\relax
             \PackageInfo{scrlayer-notecolumn}{%
@@ -1309,7 +1273,7 @@
   \vadjust{#1}%
   \@esphack
 }
-%%% From File: $Id: scrlayer-notecolumn.dtx 3601 2021-05-30 19:11:44Z kohm $
+%%% From File: $Id: scrlayer-notecolumn.dtx 3915 2022-06-29 07:09:48Z kohm $
 %%%            (run: final)
 \DeclareNoteColumn{marginpar}
 \let\reserved@a\clearpage
@@ -1317,10 +1281,8 @@
   \ifslnc@autoclearnotecolumns\clearnotecolumns\relax\fi
 }%
 \expandafter\g@addto@macro\expandafter\clearpage\expandafter{\reserved@a}
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrlayer-notecolumn.sty'.

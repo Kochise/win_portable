@@ -8,7 +8,6 @@
 %% 
 %%   __________________________________________________
 %%   Vafa Khalighi
-%%   tex-persian@vafa.ac
 %% 
 %%   Copyright (c) 2007--2022  Vafa Khalighi
 %%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
@@ -21,7 +20,7 @@
 %%   by Vafa Khalighi.
 %% 
 %% 
-%% \CheckSum{50574}
+%% \CheckSum{55413}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -38,7 +37,7 @@
 %%   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %%   Right brace   \}     Tilde         \~}
 %%
-\ProvidesFile{longtable-xetex-bidi.def}[2019/01/19 v0.5 bidi adaptations for longtable package for XeTeX engine]
+\ProvidesFile{longtable-xetex-bidi.def}[2022/05/20 v0.6 bidi adaptations for longtable package for XeTeX engine]
 \def\LT@array[#1]#2{%
   \refstepcounter{table}\stepcounter{LT@tables}%
   \if l#1%
@@ -105,22 +104,19 @@
 \@ifpackageloaded{caption}{%
   \renewcommand\LT@makecaption[3]{%
     \caption@LT@make{%
-      \caption@settype*\LTcaptype
-      \ifdim\LTcapwidth=4in \else
-        \setcaptionwidth\LTcapwidth
-      \fi
-      \caption@setoptions{longtable}%
-      \caption@setoptions{@longtable}%
+      \caption@LT@settype\LTcaptype
       \caption@LT@setup
       \caption@setautoposition{\ifcase\LT@rows t\else b\fi}%
       \caption@startrue#1\caption@starfalse
-      \caption@prepare@stepcounter\LTcaptype{LT}%
+      \caption@prepare@stepcounter\LTcaptype
       \caption@begin\LTcaptype
         \caption@normalsize
         \vskip-\ht\strutbox
-        \caption@iftop{\vskip\belowcaptionskip}{\vskip\abovecaptionskip}%
+        \caption@ifdefined\FBifcaptop{%
+          \let\caption@belowskip\@empty}{}%
+        \caption@make@above
         \caption@@make{#2}{#3}\endgraf
-        \caption@iftop{\vskip\abovecaptionskip}{\vskip\belowcaptionskip}%
+        \caption@make@below
       \caption@end}}%
 }{}
 \def\LT@startpbox#1{%

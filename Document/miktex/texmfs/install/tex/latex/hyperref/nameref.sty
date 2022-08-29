@@ -6,12 +6,37 @@
 %%
 %% nameref.dtx  (with options: `package')
 %% 
+%% Copyright
+%% 1995-2001 Sebastian Rahtz, with portions written by David Carlisle and Heiko Oberdiek,
+%% 2001-2015 Heiko Oberdiek.
+%% 2016-2019 Oberdiek Package Support Group
+%% 2019-2022 LaTeX Project
+%%      https://github.com/latex3/hyperref/issues
+%% 
+%% This file is part of the `Hyperref Bundle'.
+%% -------------------------------------------
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% 
+%% This work has the LPPL maintenance status `maintained'.
+%% 
+%% The Current Maintainer of this work is the LaTeX Project.
+%% 
+%% The list of all files belonging to the `Hyperref Bundle' is
+%% given in the file `manifest.txt'.
+%% 
 %% File: nameref.dtx
 %% Copyright (C) 1995-1999 Sebastian Rahtz
 %%               2000 Sebastian Rahtz, Heiko Oberdiek
 %%               2001-2012 Heiko Oberdiek
 %%               2016-2019 Oberdiek Package Suport Group
-%%               2019-2021 The LaTeX Project
+%%               2019-2022 The LaTeX Project
 %%      https://github.com/latex3/hyperref/issues
 %%
 %% This file is part of the `Hyperref Bundle'.
@@ -33,7 +58,7 @@
 %% given in the file `manifest.txt'.
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{nameref}
-  [2021-04-02 v2.47 Cross-referencing by name of section]%
+  [2022-05-17 v2.50 Cross-referencing by name of section]%
 \RequirePackage{refcount}[2006/02/12]
 \RequirePackage{gettitlestring}[2009/12/18]
 \RequirePackage{ltxcmds}[2009/12/12]
@@ -139,146 +164,168 @@
 }
 \let\NR@sect\@sect
 \newcounter{section@level}
-\def\@sect#1#2#3#4#5#6[#7]#8{%
-  \setcounter{section@level}{#2}%
-  \NR@gettitle{#7}%
-  \NR@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}]{\Sectionformat{#8}{#2}}%
-}
+\@ifundefined{NR@nopatch@sectioning}
+ {\def\@sect#1#2#3#4#5#6[#7]#8{%
+   \setcounter{section@level}{#2}%
+   \NR@gettitle{#7}%
+   \NR@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}]{\Sectionformat{#8}{#2}}%
+ }}{}
 \let\NR@ssect\@ssect
-\def\@ssect#1#2#3#4#5{%
-  \NR@gettitle{#5}%
-  \NR@ssect{#1}{#2}{#3}{#4}{\Sectionformat{#5}{#1}}%
-}
-\ltx@IfUndefined{ifheadnameref}{%
-}{%
-  \ltx@IfUndefined{M@sect}{%
+\@ifundefined{NR@nopatch@sectioning}
+ {\def\@ssect#1#2#3#4#5{%
+   \NR@gettitle{#5}%
+   \NR@ssect{#1}{#2}{#3}{#4}{\Sectionformat{#5}{#1}}%
+ }}{}
+\@ifundefined{NR@nopatch@sectioning}
+ {\ltx@IfUndefined{ifheadnameref}{%
   }{%
-    \let\NRorg@M@sect\M@sect
-    \def\M@sect#1#2#3#4#5#6[#7][#8]{%
-      \ifheadnameref
-        \NR@gettitle{#8}%
-      \else
-        \NR@gettitle{#7}%
-      \fi
-      \NRorg@M@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}][{#8}]%
-    }%
-  }%
-}
-\let\NR@part\@part
-\long\def\@part[#1]#2{%
-  \NR@gettitle{#1}%
-  \NR@part[{#1}]{#2}%
-}
-\let\NR@spart\@spart
-\long\def\@spart#1{%
-  \NR@gettitle{#1}%
-  \NR@spart{#1}%
-}
-\let\NR@chapter\@chapter
-\def\@chapter[#1]#2{%
-  \NR@gettitle{#1}%
-  \NR@chapter[{#1}]{#2}%
-}
-\@ifclassloaded{memoir}{%
-  \ltx@IfUndefined{ifheadnameref}{%
-  }{%
-    \def\@chapter[#1]#2{%
-      \ltx@IfUndefined{ch@pt@c}{%
-        \NR@gettitle{#1}%
-      }{%
-        \ifx\ch@pt@c\ltx@empty
-          \NR@gettitle{#2}%
+    \ltx@IfUndefined{M@sect}{%
+    }{%
+      \let\NRorg@M@sect\M@sect
+      \def\M@sect#1#2#3#4#5#6[#7][#8]{%
+        \ifheadnameref
+          \NR@gettitle{#8}%
         \else
-          \def\NR@temp{#1}%
-          \ifx\NR@temp\ltx@empty
-            \expandafter\NR@gettitle\expandafter{\ch@pt@c}%
+          \NR@gettitle{#7}%
+        \fi
+        \NRorg@M@sect{#1}{#2}{#3}{#4}{#5}{#6}[{#7}][{#8}]%
+      }%
+    }%
+  }}{}
+\let\NR@part\@part
+\let\NR@spart\@spart
+\let\NR@chapter\@chapter
+\let\NR@schapter\@schapter
+\@ifundefined{NR@nopatch@sectioning}
+ {%
+  \long\def\@part[#1]#2{%
+    \NR@gettitle{#1}%
+    \NR@part[{#1}]{#2}%
+  }
+  \long\def\@spart#1{%
+    \NR@gettitle{#1}%
+    \NR@spart{#1}%
+  }
+  \def\@chapter[#1]#2{%
+    \NR@gettitle{#1}%
+    \NR@chapter[{#1}]{#2}%
+  }
+  \@ifclassloaded{memoir}{%
+    \ltx@IfUndefined{ifheadnameref}{%
+    }{%
+      \def\@chapter[#1]#2{%
+        \ltx@IfUndefined{ch@pt@c}{%
+          \NR@gettitle{#1}%
+        }{%
+          \ifx\ch@pt@c\ltx@empty
+            \NR@gettitle{#2}%
           \else
-            \ifheadnameref
-              \NR@gettitle{#1}%
-            \else
+            \def\NR@temp{#1}%
+            \ifx\NR@temp\ltx@empty
               \expandafter\NR@gettitle\expandafter{\ch@pt@c}%
+            \else
+              \ifheadnameref
+                \NR@gettitle{#1}%
+              \else
+                \expandafter\NR@gettitle\expandafter{\ch@pt@c}%
+              \fi
             \fi
           \fi
-        \fi
+        }%
+        \NR@chapter[{#1}]{#2}%
       }%
-      \NR@chapter[{#1}]{#2}%
     }%
-  }%
-}{}
-\let\NR@schapter\@schapter
-\def\@schapter#1{%
-  \NR@gettitle{#1}%
-  \NR@schapter{#1}%
-}
+  }{}
+  \def\@schapter#1{%
+    \NR@gettitle{#1}%
+    \NR@schapter{#1}%
+  }}{}
 \AtBeginDocument{%
-  \@ifpackageloaded{hyperref}{%
-    \@ifpackagelater{hyperref}{2009/12/05}\@gobble\@firstofone
-  }\@firstofone
+  \@ifpackageloaded{hyperref}{}
   {%
-    \let\NR@@caption\@caption
-    \long\def\@caption#1[#2]{%
+    \@ifundefined{NR@nopatch@caption}
+     {\let\NR@@caption\@caption
+      \long\def\@caption#1[#2]{%
       \NR@gettitle{#2}%
       \NR@@caption{#1}[{#2}]%
-    }%
+       }}%
+     {}%
   }%
   \@ifpackageloaded{longtable}{%
-    \let\NRorg@LT@c@ption\LT@c@ption
-    \def\LT@c@ption#1[#2]#3{%
-      \NRorg@LT@c@ption{#1}[{#2}]{#3}%
-      \def\@tempa{#2}%
-      \ifx\@tempa\@empty
-      \else
+   \@ifundefined{NR@nopatch@longtable}
+    {%
+      \let\NRorg@LT@c@ption\LT@c@ption
+      \def\LT@c@ption#1[#2]#3{%
+       \NRorg@LT@c@ption{#1}[{#2}]{#3}%
+       \def\@tempa{#2}%
+       \ifx\@tempa\@empty
+       \else
         \NR@gettitle{#2}%
-      \fi
-    }%
+       \fi
+      }%
+    }{}%
   }{}%
   \ltx@IfUndefined{descriptionlabel}{%
   }{%
-    \let\NRorg@descriptionlabel\descriptionlabel
-    \def\descriptionlabel#1{%
-      \NR@gettitle{#1}%
-      \NRorg@descriptionlabel{#1}%
-    }%
+    \@ifundefined{NR@nopatch@longtable}
+     {\let\NRorg@descriptionlabel\descriptionlabel
+      \def\descriptionlabel#1{%
+       \NR@gettitle{#1}%
+       \NRorg@descriptionlabel{#1}%
+       }%
+     }{}%
   }%
 }
 \AtBeginDocument{%
   \@ifpackageloaded{titlesec}{%
     \let\NRorg@ttl@sect@i\ttl@sect@i
-    \def\ttl@sect@i#1#2[#3]#4{%
-      \NR@gettitle{#4}%
-      \NRorg@ttl@sect@i{#1}{#2}[{#3}]{#4}%
-    }%
+    \@ifundefined{NR@nopatch@titlesec}
+     {%
+       \def\ttl@sect@i#1#2[#3]#4{%
+         \NR@gettitle{#4}%
+         \NRorg@ttl@sect@i{#1}{#2}[{#3}]{#4}%
+         }%
+      }{}%
   }{}%
 }
 \@ifclassloaded{beamer}{%
-  \def\NR@PatchBeamer#1{%
-    \expandafter\let\csname NRorg@beamer@#1\expandafter\endcsname
-                    \csname beamer@#1\endcsname
-    \begingroup
-      \edef\x{\endgroup
-        \long\def\expandafter\noexpand\csname beamer@#1\endcsname
-            [####1]{% hash-ok
-          \noexpand\NR@gettitle{####1}%
-          \expandafter\noexpand\csname NRorg@beamer@#1\endcsname
-          [{####1}]%
+ \@ifclasslater{beamer}{2022-05-17}
+  {}%do nothing
+  {%
+    \@ifundefined{NR@nopatch@beamer}
+    {%
+      \def\NR@PatchBeamer#1{%
+        \expandafter\let\csname NRorg@beamer@#1\expandafter\endcsname
+                        \csname beamer@#1\endcsname
+        \begingroup
+          \edef\x{\endgroup
+            \long\def\expandafter\noexpand\csname beamer@#1\endcsname
+                [####1]{% hash-ok
+              \noexpand\NR@gettitle{####1}%
+              \expandafter\noexpand\csname NRorg@beamer@#1\endcsname
+              [{####1}]%
+            }%
+          }%
+        \x
+      }%
+      \AddToHook{class/beamer/after}{%
+      \NR@PatchBeamer{section}%
+      \NR@PatchBeamer{subsection}%
+      \NR@PatchBeamer{subsubsection}%
+      \addtobeamertemplate{theorem begin}{%
+       \expandafter\NR@gettitle\expandafter{\inserttheoremaddition}%
+      }{}%
+      \@ifdefinable{\NRorg@beamer@descriptionitem}{%
+        \let\NRorg@beamer@descriptionitem\beamer@descriptionitem
+        \renewcommand{\beamer@descriptionitem}[1]{%
+          \NR@gettitle{#1}%
+          \NRorg@beamer@descriptionitem{#1}%
         }%
       }%
-    \x
-  }%
-  \NR@PatchBeamer{section}%
-  \NR@PatchBeamer{subsection}%
-  \NR@PatchBeamer{subsubsection}%
-  \addtobeamertemplate{theorem begin}{%
-    \expandafter\NR@gettitle\expandafter{\inserttheoremaddition}%
-  }{}%
-  \@ifdefinable{\NRorg@beamer@descriptionitem}{%
-    \let\NRorg@beamer@descriptionitem\beamer@descriptionitem
-    \renewcommand{\beamer@descriptionitem}[1]{%
-      \NR@gettitle{#1}%
-      \NRorg@beamer@descriptionitem{#1}%
-    }%
-  }%
-}{}
+     }%Hook
+   }{}%@ifundefined
+  }%class later
+ }{}
 \ltx@IfUndefined{@opargbegintheorem}{}{%
   \let\NRorg@opargbegintheorem\@opargbegintheorem
   \def\@opargbegintheorem#1#2#3{%
@@ -313,6 +360,7 @@
 \long\def\@fifthoffive#1#2#3#4#5{#5}
 \providecommand*\@safe@activestrue{}%
 \providecommand*\@safe@activesfalse{}%
+\newcommand\NR@ref@showkeys[1]{}%
 \def\NR@setref#1{%
   \begingroup
     \@safe@activestrue
@@ -327,162 +375,96 @@
   \@setref#1%
 }
 \def\T@ref#1{%
+  \NR@ref@showkeys{#1}%
+  \NR@setref{#1}\@firstoffive{#1}%
+}%
+\def\@refstar#1{%
+  \NR@ref@showkeys{#1}%
   \NR@setref{#1}\@firstoffive{#1}%
 }%
 \def\T@pageref#1{%
+  \NR@ref@showkeys{#1}%
   \NR@setref{#1}\@secondoffive{#1}%
 }%
+\def\@pagerefstar#1{%
+  \NR@ref@showkeys{#1}%
+  \NR@setref{#1}\@secondoffive{#1}%
+}%
+\def\T@Ref#1{%
+    \NR@ref@showkeys{#1}%
+    \NR@setref{#1}\NR@MakeUppercaseFirstOfFive{#1}%
+  }%
+\def\NR@MakeUppercaseFirstOfFive#1#2#3#4#5{%
+    \MakeUppercase#1%
+  }%
+\def\@Refstar#1{%
+    \NR@ref@showkeys{#1}%
+    \NR@setref{#1}\NR@MakeUppercaseFirstOfFive{#1}%
+  }%
 \ifNR@showkeys
   \ifx\SK@ref\@empty
   \else
-    \def\T@ref#1{%
-      \@safe@activestrue
-      \SK@\SK@@ref{#1}%
-      \@safe@activesfalse
-      \NR@setref{#1}\@firstoffive{#1}%
-    }%
-    \def\T@pageref#1{%
-      \@safe@activestrue
-      \SK@\SK@@ref{#1}%
-      \@safe@activesfalse
-      \NR@setref{#1}\@secondoffive{#1}%
-    }%
+  \renewcommand\NR@ref@showkeys[1]{%
+    \@safe@activestrue
+    \SK@\SK@@ref{#1}%
+    \@safe@activesfalse}
   \fi
 \fi
-\@ifpackageloaded{hyperref}{%
-}{%
-  \DeclareRobustCommand{\ref}{\T@ref}%
-  \DeclareRobustCommand{\pageref}{\T@pageref}%
+\AddToHook{begindocument}{%
+  \DeclareDocumentCommand\ref{s}
+   {\IfBooleanTF{#1}{\@refstar}{\T@ref}}%
+  \DeclareDocumentCommand\pageref{s}
+   {\IfBooleanTF{#1}{\@pagerefstar}{\T@pageref}}%
+  \DeclareDocumentCommand\Ref{s}
+   {\IfBooleanTF{#1}{\@Refstar}{\T@Ref}}%
 }
+\DeclareHookRule{begindocument}{showkeys}{before}{nameref}
 \def\T@nameref#1{%
+  \NR@ref@showkeys{#1}%
   \begingroup
     \let\label\@gobble
     \NR@setref{#1}\@thirdoffive{#1}%
   \endgroup
 }%
-\ifNR@showkeys
-  \ifx\SK@ref\@empty
-  \else
-    \def\T@nameref#1{%
-      \@safe@activestrue
-      \SK@\SK@@ref{#1}%
-      \@safe@activesfalse
-      \begingroup
-        \let\label\@gobble
-        \NR@setref{#1}\@thirdoffive{#1}%
-      \endgroup
-    }%
-  \fi
-\fi
-  \DeclareRobustCommand*{\nameref}{%
-    \@ifstar\T@nameref\T@nameref
-  }%
+\def\@namerefstar#1{%
+  \NR@ref@showkeys{#1}%
+  \begingroup
+    \let\label\@gobble
+    \NR@setref{#1}\@thirdoffive{#1}%
+  \endgroup
+}%
+\@ifundefined{nameref}
+  {
+   \NewDocumentCommand\nameref{s}
+    {\IfBooleanTF{#1}{\@namerefstar}{\T@nameref}}
+  }
+  {
+    \PackageWarning{nameref}{Redefining \string\nameref}
+    \RenewDocumentCommand\nameref{s}
+    {\IfBooleanTF{#1}{\@namerefstar}{\T@nameref}}
+  }
 \def\Nameref#1{`\nameref{#1}' on page~\pageref{#1}}
 \providecommand\Sectionformat[2]{#1}
-\@ifpackageloaded{ifthen}{%
-  \let\NROrg@ifthenelse\ifthenelse
-  \def\ifthenelse{%
-    \let\begingroup\NR@TE@begingroup
-    \NROrg@ifthenelse
-  }%
-  \let\NROrg@begingroup\begingroup
-  \def\NR@TE@begingroup{%
-    \let\begingroup\NROrg@begingroup
-    \begingroup
-    \def\ref##1{\getrefbykeydefault{##1}{}{??}}%
-    \def\pageref##1{\getrefbykeydefault{##1}{page}{0}}%
-  }%
-}{}
+\@ifundefined{@kernel@pageref@exp}
+   {\@ifpackageloaded{ifthen}{%
+     \let\NROrg@ifthenelse\ifthenelse
+     \def\ifthenelse{%
+       \let\begingroup\NR@TE@begingroup
+       \NROrg@ifthenelse
+     }%
+     \let\NROrg@begingroup\begingroup
+     \def\NR@TE@begingroup{%
+       \let\begingroup\NROrg@begingroup
+       \begingroup
+       \def\ref##1{\getrefbykeydefault{##1}{}{??}}%
+       \def\pageref##1{\getrefbykeydefault{##1}{page}{0}}%
+     }%
+   }{}}{}
 \AtBeginDocument{%
   \ifx\csname @@vpageref\endcsname\relax
   \else
-   \ifdefined\vp@gerefstar
    \let\NR@@vpageref\@@vpageref
-   \else
-      \def\NR@@vpageref#1[#2]#3{%
-        \leavevmode\unskip
-        \global\advance\c@vrcnt\@ne
-        \@ifundefined{r@\the\c@vrcnt @vr}%
-          {\@namedef{r@\the\c@vrcnt @vr}{{??}{??}{}{}{}}}{}%
-        \edef\@tempa{%
-          \expandafter\expandafter\expandafter
-          \@secondoffive\csname r@\the\c@vrcnt @vr\endcsname
-        }%
-        \@ifundefined{r@\the\c@vrcnt @xvr}%
-          {\@namedef{r@\the\c@vrcnt @xvr}{{??}{??}{}{}{}}}{}%
-        \edef\@tempb{%
-          \expandafter\expandafter\expandafter
-          \@secondoffive\csname r@\the\c@vrcnt @xvr\endcsname
-        }%
-        {%
-          \let\@currentlabel\@empty
-          \expandafter\label\expandafter{\the\c@vrcnt @xvr}%
-        }%
-        \ifx\@tempa\@tempb
-        \else
-          \vref@err{%
-            \noexpand\vref at page boundary %
-            \@tempb-\@tempa\space (may loop)%
-          }%
-        \fi
-        \@ifundefined{r@#3}{\@namedef{r@#3}{{??}{??}{}{}{}}}{}%
-        \edef\thevpagerefnum{%
-          \expandafter\expandafter\expandafter
-          \@secondoffive\csname r@#3\endcsname
-        }%
-        \ifx\vref@space\@undefined
-          \space
-        \else
-          \vref@space
-        \fi
-        \ifx\@tempa\thevpagerefnum
-          #1%
-        \else
-          #2%
-          \is@pos@number\thevpagerefnum{%
-            \is@pos@number\@tempa{%
-              \@tempcnta\@tempa
-              \advance\@tempcnta\@ne
-            }{%
-              \@tempcnta\maxdimen
-            }%
-            \ifnum \thevpagerefnum =\@tempcnta
-              \ifodd\@tempcnta
-                \if@twoside
-                  \reftextfaceafter
-                \else
-                  \reftextafter
-                \fi
-              \else
-                \reftextafter
-              \fi
-            \else
-              \advance\@tempcnta-2 %
-              \ifnum \thevpagerefnum =\@tempcnta
-                \ifodd\@tempcnta
-                  \reftextbefore
-                \else
-                  \if@twoside
-                    \reftextfacebefore
-                  \else
-                    \reftextbefore
-                  \fi
-                \fi
-              \else
-                \reftextfaraway{#3}%
-              \fi
-            \fi
-          }{%
-            \reftextfaraway{#3}%
-          }%
-        \fi
-        {%
-          \let\@currentlabel\@empty
-          \expandafter\label\expandafter{\the\c@vrcnt @vr}%
-        }%
-      }%
-    \fi
-    \def\@@vpageref#1[#2]#3{%
+   \def\@@vpageref#1[#2]#3{%
       \begingroup
         \csname @safe@activestrue\endcsname
         \edef\x{#3}%
@@ -496,38 +478,24 @@
       \x
     }%
     \DeclareRobustCommand\vnameref[1]{%
-      \unskip~\nameref{#1}%
+      \unskip~\nameref{#1} %
       \@vpageref[\unskip]{#1}%
     }%
   \fi
 }
-\@ifundefined{@Refstar}{%
-  \def\T@Ref#1{%
-    \NR@setref{#1}\NR@MakeUppercaseFirstOfFive{#1}%
-  }%
-  \def\NR@MakeUppercaseFirstOfFive#1#2#3#4#5{%
-    \MakeUppercase#1%
-  }%
-}{}%
-\AtBeginDocument{%
-  \@ifpackageloaded{varioref}{%
-    \@ifundefined{@Refstar}{%
-      \DeclareRobustCommand*{\Ref}[1]{%
-        \T@Ref{#1}%
-      }%
-    }{}%
-  }{}%
-}%
 \AtBeginDocument{%
   \@ifpackageloaded{listings}{%
-    \let\NROrg@lst@MakeCaption\lst@MakeCaption
-    \def\lst@MakeCaption{%
-      \ifx\lst@label\@empty
-      \else
-        \let\@currentlabelname\lst@@caption
-      \fi
-      \NROrg@lst@MakeCaption
-    }%
+    \@ifundefined{NR@nopatch@listings}
+     {%
+       \let\NROrg@lst@MakeCaption\lst@MakeCaption
+       \def\lst@MakeCaption{%
+         \ifx\lst@label\@empty
+         \else
+           \let\@currentlabelname\lst@@caption
+         \fi
+         \NROrg@lst@MakeCaption
+       }%
+      }{}%
   }{}%
 }
 \endinput

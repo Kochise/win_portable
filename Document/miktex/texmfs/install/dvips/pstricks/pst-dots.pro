@@ -1,7 +1,7 @@
-% $Id: pst-dots.pro 291 2021-10-01 09:22:45Z herbert $
+% $Id: pst-dots.pro 4 2020-06-09 08:32:19Z herbert $
 %
 %% PostScript prologue for pstricks.tex.
-%% Version 0.02,  2021/10/01
+%% Version 2.02,  2009/06/16
 %%
 %% For distribution, see pstricks.tex.
 %%
@@ -16,7 +16,7 @@
 %% to add /Diamond, /SolidDiamond and /BoldDiamond
 %% Modified by Herbert Voss (hv) - 2008/04/17 
 %
-12 dict dup begin
+12 dict dup dup begin
 /FontType 1 def
 /FontName /PSTricksDotFont def
 /FontInfo 9 dict dup begin
@@ -329,6 +329,6 @@ DBB61743DC569337082176ECBAD417354A5F900EA0BB5479162ED7ECCCD71AE8
 0000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000
 cleartomark
-%/PSTricksDotFont exch definefont
+/PSTricksDotFont exch definefont
 %
 %% end

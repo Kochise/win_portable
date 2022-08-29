@@ -1,0 +1,999 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>miktex.ini</title><link rel="stylesheet" type="text/css" href="miktexman.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><link rel="home" href="index.html" title="MiKTeX Manual"><link rel="up" href="files.html" title="Chapter 7. Files"><link rel="prev" href="files.html" title="Chapter 7. Files"><link rel="next" href="pdftex.cfg.html" title="pdftex.cfg"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><nav><ul class="pager"><li><a aria-label="Prev" href="files.html"><span aria-hidden="true">Prev</span></a></li><li><a aria-label="Up" href="files.html"><span aria-hidden="true">Up</span></a></li><li><a aria-label="Next" href="pdftex.cfg.html"><span aria-hidden="true">Next</span></a></li></ul></nav><div class="refentry"><a name="miktex.ini"></a><div class="titlepage"></div><div class="refnamediv"><h2>Name</h2><p>miktex.ini — <span class="application">MiKTeX</span> configuration data store</p></div><div class="refsect1"><a name="id756843"></a><h2>Description</h2><p><span class="application">MiKTeX</span> configurations settings are read from the file
+<code class="filename">miktex.ini</code>.</p></div><div class="refsect1"><a name="id756896"></a><h2>Syntax</h2><p>The syntax follows the informal conventions of a traditional
+<a class="ulink" href="https://en.wikipedia.org/wiki/INI_file" target="_top">INI file</a>.</p></div><div class="refsect1"><a name="id756869"></a><h2>Querying and Modifying</h2><p>It is recommended that you use the <span class="application">MiKTeX</span> Configuration Utility
+(see
+<a class="citerefentry" href="initexmf.html"><span class="citerefentry"><span class="refentrytitle">initexmf</span>(1)</span></a>)
+to query and modify configuration settings.</p></div><div class="refsect1"><a name="id756937"></a><h2>Settings Reference</h2><pre class="programlisting">[General]
+
+	;; This variable specifies the external program called for
+	;; TeX's interactive `e' option.  %l is replaced by the line
+	;; number and %f by the current file name.
+	;; If left unspecified, A platform dependent value is chosen.
+	;Editor = miktex-texworks -p=%l "%f"
+
+	;; Deprecated.
+	;GUIFramework = 1
+
+	;; Deprecated.
+	;UserInfoFile = 
+
+[Core]
+
+	;; Shell command mode.
+	;;   Forbidden: don't allow any shell commands
+	;;   Restricted: allow the commands listed in AllowedShellCommands[]
+	;;   Unrestricted: allow all shell commands
+	ShellCommandMode = Restricted
+
+	;; The programs listed here are probably safe: they either do
+	;; not write any output files or implement restrictions
+	;; similar to or higher than
+	;; [Core]AllowUnsafeOutputFiles=true.
+	;; They also have no features to invoke arbitrary other
+	;; programs, and no known exploitable bugs.  All to the best
+	;; of our knowledge.  They also have practical use for being
+	;; called from TeX.
+	AllowedShellCommands[] = miktex-bibtex
+	AllowedShellCommands[] = miktex-bibtex8
+	AllowedShellCommands[] = miktex-epstopdf
+	AllowedShellCommands[] = miktex-gregorio
+	AllowedShellCommands[] = miktex-kpsewhich
+	AllowedShellCommands[] = miktex-makeindex
+	AllowedShellCommands[] = bibtex
+	AllowedShellCommands[] = bibtex8
+	AllowedShellCommands[] = extractbb
+	AllowedShellCommands[] = findtexmf
+	AllowedShellCommands[] = gregorio
+	AllowedShellCommands[] = kpsewhich
+	AllowedShellCommands[] = makeindex
+	AllowedShellCommands[] = texosquery-jre8
+
+	;; Do we allow unrestricted shell command execution when running
+	;; with elevated privileges.
+	AllowUnrestrictedSuperUser = true
+
+	;; Do we allow TeX \input or \openin on file names starting
+	;; with `.' (e.g., .rhosts) or outside the current tree (e.g.,
+	;; /etc/passwd)?
+	AllowUnsafeInputFiles = true
+
+	;; Do we allow TeX \openout on file names starting with `.'
+	;; (e.g., .rhosts) or outside the current tree (e.g.,
+	;; /etc/passwd)?
+	AllowUnsafeOutputFiles = false
+
+	;; Automatically turn on administrator mode for elevated MiKTeX programs
+	;; in a shared setup.
+	AutoAdmin = ?
+
+	;; Root of the system-wide MiKTeX configuration tree.
+	;; A platform dependent location, if left unspecified.
+	;CommonConfig = 
+
+	;; Root of the system-wide MiKTeX data tree.
+	;; A platform dependent location, if left unspecified.
+	;CommonData = 
+
+	;; Root of the system-wide MiKTeX installation tree.
+	;; A platform dependent location, if left unspecified.
+	;CommonInstall = 
+
+	;; Extra system-wide MiKTeX trees.
+	;CommonRoots = 
+
+	;; System-wide directory in which to create symbolic links to
+        ;; MiKTeX executables.
+	CommonLinkTargetDirectory = 
+
+	;; System-wide log directory. A platform dependent location, if left unspecified.
+	;CommonLogDirectory = 
+
+	;; Deprecated.
+	;NoRegistry =
+
+	;; Other unmanaged system-wide trees.
+	;OtherCommonRoots = 
+
+	;; Other unmanaged per-user trees.
+	;OtherUserRoots = 
+
+	;; PK file name template.
+	PKFnTemplate = %f.pk
+
+	;; On Windows, prefer MiKTeX Ghostscript (mgs.exe)
+	;; to the installed Ghostscript
+	PreferMiKTeXGhostscript = true
+
+	;; Indicates whether MiKTeX is installed system-wide.
+	SharedSetup = ?
+
+	;; Path to the MiKTeX startup configuration file.
+	;StartupFile = 
+
+	;; Path to the directory for temporary files.
+	;TempDir =
+
+	;; Trace flags.
+	Trace =
+
+	;; Root of the per-user MiKTeX configuration tree.
+	;; A platform dependent location, if left unspecified.
+	;UserConfig = 
+
+	;; Root of the per-user MiKTeX data tree.
+	;; A platform dependent location, if left unspecified.
+	;UserData = 
+
+	;; Root of the per-user MiKTeX installation tree.
+	;; A platform dependent location, if left unspecified.
+	;UserInstall = 
+
+	;; Per-user directory in which to create symbolic links to
+        ;; MiKTeX executables.
+	UserLinkTargetDirectory = 
+
+	;; Per-user log directory. A platform dependent location, if left unspecified.
+	;UserLogDirectory = 
+
+	;; Extra per-user MiKTeX trees.
+	;UserRoots = 
+
+	;; Preferred UI languages.
+	;UILanguages[] = 
+
+[Core.FileTypes.afm]
+
+	;; Search path for Adobe font metric (AFM) files.
+	Paths[] = .
+	Paths[] = %R/fonts/afm//
+
+	;; Environment variables to be used for searching AFM files.
+	EnvVars[] = AFMFONTS
+	EnvVars[] = TEXFONTS
+
+	;; AFM file name extensions.
+	Extensions[] = .afm
+
+[Core.FileTypes.base]
+
+	;; Search path for METAFONT memory dump files.
+	Paths[] = .
+	Paths[] = %r/miktex/data/le
+
+	;; METAFONT memory dump file name extensions.
+	Extensions[] = .base
+
+[Core.FileTypes.bib]
+
+	;; Search path for BibTeX database files.
+	Paths[] = .
+	Paths[] = %R/bibtex/bib//
+
+	;; Environment variables to be used for searching BibTeX
+	;; databsae files.
+	EnvVars[] = BIBINPUTS
+	EnvVars[] = TEXBIB
+
+	;; BibTeX database file name extensions.
+	Extensions[] = .bib
+
+[Core.FileTypes.bst]
+
+	;; Search path for BibTeX style files.
+	Paths[] = .
+	Paths[] = %R/bibtex/{bst,csf}//
+
+	;; Environment variables to be used for searching BibTeX
+	;; style files.
+	EnvVars[] = BSTINPUTS
+
+	;; BibTeX style file name extensions.
+	Extensions[] = .bst
+
+[Core.FileTypes.cid maps]
+
+	;; Search path for CID map files.
+	Paths[] = .
+	Paths[] = %R/fonts/cid//
+
+	;; Environment variables to be used for searching CID map
+	;; files.
+	EnvVars[] = FONTCIDMAPS
+
+	;; CID map file name extensions.
+	Extensions[] = .cid
+	Extensions[] = .cidmap
+
+[Core.FileTypes.clua]
+
+	;; Search path for dynamic libraries for Lua.
+	Paths[] = .
+	Paths[] = %R/scripts/{$progname,$engine,}/lua//
+
+	;; Environment variables to be used for searching dynamic
+	;; libraries for Lua.
+	EnvVars[] = CLUAINPUTS
+
+	;; File name extensions for Lua dynamic libraries.
+	Extensions[] = .dll
+	Extensions[] = .so
+	
+[Core.FileTypes.cmap files]
+
+	;; Search path for character map files.
+	Paths[] = .
+	Paths[] = %R/fonts/cmap//
+
+	;; Environment variables to be used for character map files.
+	EnvVars[] = CMAPFONTS
+	EnvVars[] = TEXFONTS
+
+[Core.FileTypes.cweb]
+
+	;; Search path for CWeb input files.
+	Paths[] = .
+	Paths[] = %R/cweb//
+
+	;; Environment variables to be used for searching Cweb input
+	;; files.
+	EnvVars[] = CWEBINPUTS
+
+	;; CWeb file name extensions.
+	Extensions[] = .w
+
+[Core.FileTypes.dvi]
+
+	;; Search path for DVI files.
+	Paths[] = .
+	Paths[] = %R/doc//
+
+	;; DVI file name extensions.
+	Extensions[] = .dvi
+
+[Core.FileTypes.dvips config]
+
+	;; Search path for Dvips configuration files.
+	Paths[] = .
+	Paths[] = %R/dvips//
+
+	;; Environment variables to be used for searching Dvips
+	;; configuration files.
+	EnvVars[] = TEXCONFIG
+
+[Core.FileTypes.enc]
+
+	;; Search path for encoding vector files.
+	Paths[] = .
+	Paths[] = %R/fonts/enc//
+
+	;; Environment variables to be used for searching encoding
+	;; vector files.
+	EnvVars[] = ENCFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Encoding vector file name extensions.
+	Extensions[] = .enc
+
+[Core.FileTypes.font feature files]
+
+	;; Search path for font feature files.
+	Paths[] = .
+	Paths[] = %R/fonts/fea//
+
+	;; Environment variables to be used for searching font feature
+	;; files.
+	EnvVars[] = FONTFEATURES
+
+	;; Font feature file name extensions.
+	Extensions[] = .fea
+
+[Core.FileTypes.fmt]
+
+	;; Search path for TeX memory dump files.
+	Paths[] = .
+	Paths[] = %r/miktex/data/le/{$engine,}
+
+	;; TeX memory dump file name extensions.
+	Extensions[] = .fmt
+
+[Core.FileTypes.gf]
+
+	;; Search path for generic font bitmap files.
+	Paths[] = .
+	Paths[] = %R/fonts//
+
+	;; Environment variables to be used for searching generic font
+	;; bitmap files.
+	EnvVars[] = GFFONTS
+	EnvVars[] = GLYPHFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Generic font bitmap file name extensions.
+	Extensions[] = .gf
+
+[Core.FileTypes.bitmap font]
+
+	;; Search path for bitmap font files.
+	Paths[] = .
+	Paths[] = %R/fonts//
+
+	;; Environment variables to be used for searching bitmap font
+	;; files.
+	EnvVars[] = GLYPHFONTS
+	EnvVars[] = TEXFONTS
+
+[Core.FileTypes.graphic/figure]
+
+	;; Search path for figure files.
+	Paths[] = .
+	Paths[] = %R/dvips//
+	Paths[] = %R/pdftex//
+	Paths[] = %R/tex//
+
+	;; Environment variables to be used for searching figure
+	;; files.
+	EnvVars[] = TEXPICTS
+	EnvVars[] = TEXINPUTS
+
+	;; Figure file name extensions.
+	Extensions[] = .eps
+	Extensions[] = .epsi
+	Extensions[] = .png
+
+[Core.FileTypes.hbf]
+
+	;; Search path for HBF files.
+	Paths[] = .
+	Paths[] = %R/fonts/misc/hbf//
+
+	;; HBF file name extensions.
+	Extensions[] = .hbf
+
+[Core.FileTypes.ist]
+
+	;; Search path for MakeIndex style files.
+	Paths[] = .
+	Paths[] = %R/makeindex//
+
+	;; Environment variables to be used for searching MakeIndex
+	;; style files.
+	EnvVars[] = TEXINDEXSTYLE
+	EnvVars[] = INDEXSTYLE
+
+	;; MakeIndex style file name extensions.
+	Extensions[] = .ist
+
+[Core.FileTypes.lig files]
+
+	;; Search path for ligature definition files.
+	Paths[] = .
+	Paths[] = %R/fonts/lig//
+
+	;; Environment variables to be used for searching ligature
+	;; definition files.
+	EnvVars[] = TEXFONTS
+
+	;; Ligature definition file name extensions.
+	Extensions[] = .lig
+
+[Core.FileTypes.ls-R]
+
+	;; Search path for Web2c file name database files.
+	Paths[] = %R
+
+	;; Environment variables to be used for searching Web2C file
+	;; name database files.
+	EnvVars[] = TEXMFDBS
+
+[Core.FileTypes.lua]
+
+	;; Search path for Lua files.
+	Paths[] = .
+	Paths[] = %R/scripts/{$progname,$engine,}/{lua,}//
+	Paths[] = %R/tex/{$progname,generic,}//
+
+	;; Environment variables to be used for searching Lua files.
+	EnvVars[] = LUAINPUTS
+
+	;; File name extensions for Lua files.
+	Extensions[] = .lua
+	Extensions[] = .luatex
+	Extensions[] = .luc
+	Extensions[] = .luctex
+	Extensions[] = .texlua
+	Extensions[] = .texluc
+	Extensions[] = .tlu
+
+[Core.FileTypes.map]
+
+	;; Search path for font map files.
+	Paths[] = .
+	Paths[] = %R/fonts/map/{$progname,pdftex,dvips,}//
+
+	;; Environment variables to be used for searching font map
+	;; files.
+	EnvVars[] = TEXFONTMAPS
+	EnvVars[] = TEXFONTS
+
+	;; Font map file name extensions.
+	Extensions[] = .map
+
+[Core.FileTypes.mem]
+
+	;; Search path for MetaPost memory dump files.
+	Paths[] = .
+
+	;; MetaPost memory dump file name extensions.
+	Extensions[] = .mem
+
+[Core.FileTypes.mf]
+
+	;; Search path for METAFONT input files.
+	Paths[] = .
+	Paths[] = %R/metafont//
+	Paths[] = %R/fonts/source//
+
+	;; Environment variables to be used for searching METAFONT
+	;; input files.
+	EnvVars[] = MFINPUTS
+
+	;; METAFONT file name extensions.
+	Extensions[] = .mf
+
+[Core.FileTypes.mfpool]
+
+	;; Search path for METAFONT program string files.
+	Paths[] = .
+
+	;; Environment variables to be used for searching METAFONT
+	;; program string files.
+	EnvVars[] = MFPOOL
+	EnvVars[] = TEXMFINI
+
+	;; METAFONT program string file name extensions.
+	Extensions[] = .pool
+
+[Core.FileTypes.mft]
+
+	;; Search path for MFT style files.
+	Paths[] = .
+	Paths[] = %R/mft//
+
+	;; Environment variables to be used for searching MFT style
+	;; files.
+	EnvVars[] = MFTINPUTS
+
+	;; MFT style file name extensions.
+	Extensions[] = .mft
+
+[Core.FileTypes.misc fonts]
+
+	;; Search path for font related files.
+	Paths[] = .
+	Paths[] = %R/fonts/misc//
+
+	;; Environment variables to be used for font related
+	;; files.
+	EnvVars[] = MISCFONTS
+	EnvVars[] = TEXFONTS
+
+[Core.FileTypes.mlbib]
+
+	;; Search path for MlBibTeX database files.
+	Paths[] = .
+	Paths[] = %R/bibtex/bib/{mlbib,}//
+
+	;; Environment variables to be used for searching MlBibTeX
+	;; databsae files.
+	EnvVars[] = MLBIBINPUTS
+	EnvVars[] = BIBINPUTS
+	EnvVars[] = TEXBIB
+
+	;; MlBibTeX database file name extensions.
+	Extensions[] = .mlbib
+	Extensions[] = .bib
+
+[Core.FileTypes.mlbst]
+
+	;; Search path for MlBibTeX style files.
+	Paths[] = .
+	Paths[] = %R/bibtex/{mlbst,bst}//
+
+	;; Environment variables to be used for searching MlBibTeX
+	;; style files.
+	EnvVars[] = MLBSTINPUTS
+	EnvVars[] = BSTINPUTS
+
+	;; MlBibTeX style file name extensions.
+	Extensions[] = .bst
+
+[Core.FileTypes.mp]
+
+	;; Search path for MetaPost input files.
+	Paths[] = .
+	Paths[] = %R/metapost//
+
+	;; Environment variables to be used for searching MetaPost
+	;; input files.
+	EnvVars[] = MPINPUTS
+
+	;; MetaPost file name extensions.
+	Extensions[] = .mp
+
+[Core.FileTypes.mppool]
+
+	;; Search path for MetaPost program string files.
+	Paths[] = .
+
+	;; Environment variables to be used for searching MetaPost
+	;; program string files.
+	EnvVars[] = MPPOOL
+	EnvVars[] = TEXMFINI
+
+	;; MetaPost program string file name extensions.
+	Extensions[] = .pool
+
+[Core.FileTypes.MetaPost support]
+
+	;; Search path for MetaPost support files.
+	Paths[] = .
+	Paths[] = %R/metapost/support//
+
+	;; Environment variables to be used for searching MetaPost
+	;; support files.
+	EnvVars[] = MPSUPPORT
+
+[Core.FileTypes.ocp]
+
+	;; Search path for Omega compiled process files.
+	Paths[] = .
+	Paths[] = %R/omega/ocp//
+
+	;; Environment variables to be used for searching Omega
+	;; compiled process files.
+	EnvVars[] = OCPINPUTS
+
+	;; Omega compiled process file name extensions.
+	Extensions[] = .ocp
+
+[Core.FileTypes.ofm]
+
+	;; Search path for Omega font metric files.
+	Paths[] = .
+	Paths[] = %R/fonts/ofm//
+	Paths[] = %R/fonts/tfm//
+
+	;; Environment variables to be used for searching Omega
+	;; font metric files.
+	EnvVars[] = OFMFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Omega font metric file name extensions.
+	Extensions[] = .ofm
+	Extensions[] = .tfm
+
+[Core.FileTypes.opl]
+
+	;; Search path for Omega property list files.
+	Paths[] = .
+	Paths[] = %R/fonts/opl//
+
+	;; Environment variables to be used for searching Omega
+	;; property list files.
+	EnvVars[] = OPLFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Omega property list file name extensions.
+	Extensions[] = .opl
+
+[Core.FileTypes.otp]
+
+	;; Search path for Omega translation process files.
+	Paths[] = .
+	Paths[] = %R/fonts/otp//
+
+	;; Environment variables to be used for searching Omega
+	;; translation process files.
+	EnvVars[] = OTPINPUTS
+
+	;; Omega translation process file name extensions.
+	Extensions[] = .otp
+
+[Core.FileTypes.opentype fonts]
+
+	;; Search path for OpenType font files.
+	Paths[] = .
+	Paths[] = %R/fonts/opentype//
+
+	;; Environment variables to be used for searching OpenType
+	;; font files.
+	EnvVars[] = OPENTYPEFONTS
+	EnvVars[] = TEXFONTS
+
+	;; OpenType font file name extensions.
+	Extensions[] = .otf
+
+[Core.FileTypes.ovf]
+
+	;; Search path for Omega virtual font files.
+	Paths[] = .
+	Paths[] = %R/fonts/ovf//
+	Paths[] = %R/fonts/vf//
+
+	;; Environment variables to be used for searching Omega
+	;; virtual font files.
+	EnvVars[] = OVFFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Omega virtual font file name extensions.
+	Extensions[] = .ovf
+
+[Core.FileTypes.ovp]
+
+	;; Search path for Omega virtual property list files.
+	Paths[] = .
+	Paths[] = %R/fonts/ovp//
+
+	;; Environment variables to be used for searching Omega
+	;; virtual property list files.
+	EnvVars[] = OVPFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Omega virtual property list file name extensions.
+	Extensions[] = .ovp
+
+[Core.FileTypes.pdftex config]
+
+	;; Search path for pdfTeX configuration files.
+	Paths[] = .
+	Paths[] = %R/pdftex/{$progname,}//
+
+	;; Environment variables to be used for searching pdfTeX
+	;; configuration files.
+	EnvVars[] = PDFTEXCONFIG
+
+[Core.FileTypes.pk]
+
+	;; Search path for packed bitmap font files.
+	Paths[] = .
+	Paths[] = %R/fonts//
+
+	;; Packed bitmap font file name extensions.
+	Extensions[] = .pk
+
+[Core.FileTypes.other binary files]
+
+	;; Search path for program binary files.
+	Paths[] = .
+	Paths[] = %R/$progname//
+
+[Core.FileTypes.other text files]
+
+	;; Search path for program text files.
+	Paths[] = .
+	Paths[] = %R/$progname//
+
+[Core.FileTypes.PostScript header]
+
+	;; Search path for downloadable PostScript files.
+	Paths[] = .
+	Paths[] = %R/{dvips,fonts/{enc,type1,type42,type3}}//
+	Paths[] = $psfontdirs
+
+	;; Environment variables to be used for searching downloadable
+	;; PostScript files.
+	EnvVars[] = TEXPSHEADERS
+	EnvVars[] = PSHEADERS
+
+	;; Downloadable PostScript file name extensions.
+	Extensions[] = .pro
+	Extensions[] = .enc
+
+[Core.FileTypes.texmfscripts]
+
+	;; Search path for architecture-independent executables.
+	Paths[] = .
+	Paths[] = %R/scripts/{$progname,$engine,}//
+
+	;; Environment variables to be used for searching
+	;; architecture-independent executables.
+	EnvVars[] = TEXMFSCRIPTS
+
+[Core.FileTypes.subfont definition files]
+
+	;; Search path for subfont definition files.
+	Paths[] = .
+	Paths[] = %R/fonts/sfd//
+
+	;; Environment variables to be used for searching subfont
+	;; definition files.
+	EnvVars[] = SFDFONTS
+	EnvVars[] = TEXFONTS
+
+	;; Subfont definition file name extensions.
+	Extensions[] = .sfd
+
+[Core.FileTypes.tcx]
+
+	;; Search path for TCX files.
+	Paths[] = .
+	Paths[] = %R/miktex/config
+	Paths[] = %R/miktex/web2c
+
+	;; TCX file name extensions.
+	Extensions[] = .tcx
+
+[Core.FileTypes.tex]
+
+	;; Search path for TeX input files.
+	Paths[] = .
+	Paths[] = %R/tex/{$progname,generic,}//
+
+	;; Environment variables to be used for searching TeX input
+	;; files.
+	EnvVars[] = TEXINPUTS
+
+	;; TeX input file name extensions.
+	Extensions[] = .tex
+
+[Core.FileTypes.texpool]
+
+	;; Search path for TeX program string files.
+	Paths[] = .
+
+	;; Environment variables to be used for searching METAFONT
+	;; program string files.
+	EnvVars[] = TEXPOOL
+	EnvVars[] = TEXMFINI
+
+	;; TeX program string file name extensions.
+	Extensions[] = .pool
+
+[Core.FileTypes.TeX system sources]
+
+	;; Search path for source files.
+	Paths[] = .
+	Paths[] = %R/source//
+
+	;; Environment variables to be used for searching source
+	;; files.
+	EnvVars[] = TEXSOURCES
+
+[Core.FileTypes.TeX system documentation]
+
+	;; Search path for documentation files.
+	Paths[] = .
+	Paths[] = %R/doc/miktex//
+	Paths[] = %R/doc//
+
+	;; Environment variables to be used for searching
+	;; documentation files.
+	EnvVars[] = TEXDOCS
+
+	;; Documentation file name extensions.
+	Extensions[] = .pdf
+	Extensions[] = .html
+	Extensions[] = .md
+	Extensions[] = .txt
+	Extensions[] = .ps
+	Extensions[] = .dvi
+
+[Core.FileTypes.tfm]
+
+	;; Search path for TeX font metric files.
+	Paths[] = .
+	Paths[] = %R/fonts/tfm//
+
+	;; Environment variables to be used for searching TeX font
+	;; metric files.
+	EnvVars[] = TFMFONTS
+	EnvVars[] = TEXFONTS
+
+	;; TeX font metric file name extensions.
+	Extensions[] = .tfm
+
+[Core.FileTypes.troff fonts]
+
+	;; Environment variables to be used for searching Troff font
+	;; files.
+	EnvVars[] = TRFONTS
+
+[Core.FileTypes.truetype fonts]
+
+	;; Search path for TrueType font files.
+	Paths[] = .
+	Paths[] = %R/fonts/truetype//
+
+	;; Environment variables to be used for searching TrueType
+	;; font files.
+	EnvVars[] = TTFONTS
+	EnvVars[] = TEXFONTS
+
+	;; TrueType font file name extensions.
+	Extensions[] = .ttf
+	Extensions[] = .ttc
+
+[Core.FileTypes.type1 fonts]
+
+	;; Search path for Type1 font files.
+	Paths[] = .
+	Paths[] = %R/fonts/type1//
+
+	;; Environment variables to be used for searching Type1 font
+	;; files.
+	EnvVars[] = T1FONTS
+	EnvVars[] = T1INPUTS
+	EnvVars[] = TEXFONTS
+	EnvVars[] = TEXPSHEADERS
+	EnvVars[] = PSHEADERS
+
+	;; Type1 font file name extensions.
+	Extensions[] = .pfb
+	Extensions[] = .pfa
+
+[Core.FileTypes.type42 fonts]
+
+	;; Search path for Type42 font files.
+	Paths[] = .
+	Paths[] = %R/fonts/type42//
+
+	;; Environment variables to be used for searching Type42 font
+	;; files.
+	EnvVars[] = T42FONTS
+	EnvVars[] = TEXFONTS
+
+	;; Type42 font file name extensions.
+	Extensions[] = .t42
+	Extensions[] = .T42
+
+[Core.FileTypes.vf]
+
+	;; Search path for TeX virtual font files.
+	Paths[] = .
+	Paths[] = %R/fonts/vf//
+
+	;; Environment variables to be used for searching TeX virtual
+	;; font files.
+	EnvVars[] = VFFONTS
+	EnvVars[] = TEXFONTS
+
+	;; TeX virtual font file name extensions.
+	Extensions[] = .vf
+
+[Core.FileTypes.web2c files]
+
+	;; Search path for Web2c files.
+	Paths[] = .
+	Paths[] = %R/web2c//
+
+[Core.FileTypes.web]
+
+	;; Search path for WEB input files.
+	Paths[] = .
+	Paths[] = %R/web//
+
+	;; Environment variables to be used for searching WEB input
+	;; files.
+	EnvVars[] = WEBINPUTS
+
+	;; CWeb file name extensions.
+	Extensions[] = .web
+
+[MakeBase]
+
+	;; Directory where METAFONT stores *.base files.
+	DestDir = %R/miktex/data/le
+
+[MakeFMT]
+
+	;; Directory where TeX engines store *.fmt files.
+	DestDir = %R/miktex/data/le/$engine
+
+[MakePk]
+
+	;; Directory where makepk stores *.pk files.
+	DestDir = %R/fonts/pk/%m/%s/%t/dpi%d
+
+[MakeTFM]
+
+	;; Directory where maketfm stores *.tfm files.
+	DestDir = %R/fonts/tfm/%s/%t
+
+[MPM]
+
+	;; Install packages for all users.
+	AutoAdmin = ?
+
+	;; Install missing packages automatically (on-the-fly).
+	AutoInstall = ?
+
+	;; Deprecated.
+	ForceLocalServer = f
+
+	;; Local package repository path.
+	;LocalRepository = 
+
+	;; Deprecated.
+	;MiKTeXDirectRoot =
+
+	;; Indicates whether proxy authentication is required.
+	ProxyAuthReq = f
+
+	;; Proxy host address.
+	ProxyHost =
+
+	;; Proxy host port.
+	ProxyPort = 8080
+
+	;; Remote package repository URL. Pick a random URL, if empty.
+	RemoteRepository = 
+
+	;; The MiKTeX API endpoint.
+	RemoteService_4727 = https://api2.miktex.org/
+	
+	;; Package stream. One of: stable, next.
+	RepositoryReleaseState = stable
+
+	;; Type of the package repository. One of: remote, local.
+	RepositoryType = remote
+
+	;; Indicates whether a proxy is configured.
+	UseProxy = f
+
+[Setup]
+
+	;; Last time (a time_t value) a MiKTeX administrator has checked for system-wide issues.
+	;LastAdminDiagnose =
+
+	;; Last time (a time_t value) a MiKTeX administrator changed the system-wide configuration.
+	;LastAdminMaintenance =
+
+	;; Last time (a time_t value) a MiKTeX administrator has installed system-wide updates.
+	;LastAdminUpdate =
+
+	;; Last time (a time_t value) a MiKTeX administrator has checked for system-wide updates.
+	;LastAdminUpdateCheck =
+
+	;; Last time (a time_t value) a MiKTeX administrator has updated the system-wide package database.
+	;LastAdminUpdateDb =
+
+	;; Last time (a time_t value) the current MiKTeX user has checked for issues.
+	;LastUserDiagnose =
+
+	;; Last time (a time_t value) the current MiKTeX user changed the configuration.
+	;LastUserMaintenance =
+
+	;; Last time (a time_t value) the current MiKTeX user has installed updates.
+	;LastUserUpdate =
+
+	;; Last time (a time_t value) the current MiKTeX user has checked for updates.
+	;LastUserUpdateCheck =
+
+	;; Last time (a time_t value) the current MiKTeX user has updated the package database.
+	;LastUserUpdateDb =
+
+
+[TeXandFriends]
+
+	;; Create auxiliary directory if '--aux-directory=DIR' refers
+	;; to a non-existing directory.
+	CreateAuxDirectory = t
+
+	;; Create the output directory if '--output-directory=DIR'
+	;; refers to a non-existing directory.
+	CreateOutputDirectory = t
+
+	;; Enable file:line:error style messages.
+	CStyleErrors = f
+
+	;; Deprecated.
+	;ParseFirstLine =
+
+	;; Indicates whether format files (*.fmt) will be automatically renewed.
+	RenewFormatsOnUpdate = t
+
+[TeXjp]
+
+	;; Indicates whether input file encodings are guessed.
+	GuessInputKanjiEncoding = t
+</pre></div><div class="refsect1"><a name="id756929"></a><h2>See also</h2><span class="simplelist"><a class="citerefentry" href="initexmf.html"><span class="citerefentry"><span class="refentrytitle">initexmf</span>(1)</span></a></span></div></div></body></html>

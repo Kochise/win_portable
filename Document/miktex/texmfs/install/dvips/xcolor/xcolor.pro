@@ -23,11 +23,11 @@
 %% in the same archive or directory.)
 %%
 %% xcolor.pro (PostScript/dvips header file)
-%%  [2021/10/31 v2.13 LaTeX color extensions (UK)]
+%%  [2022/06/12 v2.14 LaTeX color extensions (UK)]
 %%
 %% ----------------------------------------------------------------
 %% Copyright (C) 2003-2021 by Dr. Uwe Kern <xcolor at ukern dot de>
-%%               2021      LaTeX Project https://github.com/latex3/xcolor/issues
+%%               2021-2022    LaTeX Project https://github.com/latex3/xcolor/issues
 %% ----------------------------------------------------------------
 %%
 userdict begin

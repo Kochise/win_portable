@@ -30,7 +30,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage
   {microtype}
-  [2022/03/14 v3.0d
+  [2022/06/23 v3.0f
    Micro-typographical refinements
    (RS)]
 \def\MT@MT
@@ -186,6 +186,7 @@
 \endinput\fi
 \RequirePackage{keyval}[1997/11/10]
 ^^X\RequirePackage{etoolbox}
+\providecommand\IfFormatAtLeastTF{\@ifl@t@r\fmtversion}
 \newtoks\MT@toks
 \newbox\MT@tempbox
 \newif\ifMT@if@
@@ -469,7 +470,7 @@
 \MT@with@package@T{fontspec}\MT@fontspectrue
 \newif\ifMT@xunicode
 \MT@with@package@T{xunicode}\MT@xunicodetrue
-\@ifl@t@r\fmtversion{2020/10/01}
+\IfFormatAtLeastTF{2020/10/01}
   {\IfFormatAtLeastTF{2021/11/15}
     {\AddToHook{package/fontspec/after}{\MT@fontspectrue}}
     {\AddToHook{package/after/fontspec}{\MT@fontspectrue}}}\relax
@@ -523,7 +524,10 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \MT@with@package@T{csquotes}{%
     \@ifpackagelater{csquotes}{2005/05/11}{%
       \g@addto@macro\MT@setupfont@hook\@disablequotes
-      ^^X\apptocmd\csq@bqgroup{\let\MT@csq@eqgroup\csq@eqgroup}\relax\relax
+      \g@addto@macro\MT@prot@hook{%
+        \def\csq@bqgroup{\begingroup\leavevmode
+          \let\MT@csq@eqgroup\endgroup}%
+        \let\csq@eqgroup\endgroup}%
     }{%
       \MT@warning@nl{%
         Should you receive warnings about unknown slot\MessageBreak
@@ -691,7 +695,9 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \@ifpackageloaded{amsmath}
       {\MT@patch@patch\tagform@{(}{\leftprotrusion{(}}%
        \MT@patch@patch\tagform@{)}{\rightprotrusion{)}}%
-       \MT@patch@patch\eqref{\tagform@}{\@nameuse{MT@patch@saved@\string\tagform@}}%
+       \MT@ifdefined@n@TF{eqref }
+         {\MT@exp@cs\MT@patch@patch{eqref }}{\MT@patch@patch\eqref}
+           {\tagform@}{\@nameuse{MT@patch@saved@\string\tagform@}}%
        \MT@with@package@T{mathtools}{%
          \ifMT@patch@ok\else \MT@patch@oktrue
            \MT@info@nl{The `eqnum' patch may not be effective because you are\MessageBreak
@@ -705,7 +711,14 @@ time will almost certainly lead to undesired results. Have your choice!}%
   }{}%
   \MT@define@patch{footnote}{%
     \@ifpackageloaded{hyperref}
-        {\ifHy@hyperfootnotes\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+        {\MT@if@false
+         \ifHy@implicit
+           \ifHy@hyperfootnotes
+             \MT@ifdefined@c@TF\hyper@nopatch@footnote\relax
+               \MT@if@true
+           \fi
+         \fi
+         \ifMT@if@\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
         \@secondoftwo
       {\MT@patch@patch\@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}%
        \MT@patch@patch\@footnotetext{\@empty\ignorespaces}{\@empty\ignorespaces\leftprotrusion}%
@@ -716,12 +729,17 @@ time will almost certainly lead to undesired results. Have your choice!}%
            {{\expandafter\hyper@@anchor\expandafter
                {\Hy@footnote@currentHref}{\relax}}\ignorespaces\leftprotrusion}}
       {\@ifclassloaded{memoir}
-         {\MT@patch@patch\@footnotetext{\foottextfont #1}{\foottextfont\leftprotrusion #1}%
-          \MT@patch@patch\@mpfootnotetext{\foottextfont #1}{\foottextfont\leftprotrusion #1}}
-         {\MT@patch@patch\@mpfootnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}%
-          \@ifpackageloaded{scrkbase}
-             {\MT@patch@patch\scr@saved@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}%
-             {\MT@patch@patch\@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}}}%
+        {\MT@patch@patch\@footnotetext{\foottextfont #1}{\foottextfont\leftprotrusion #1}%
+         \MT@patch@patch\@mpfootnotetext{\foottextfont #1}{\foottextfont\leftprotrusion #1}}
+        {\@ifclassloaded{beamer}
+          {\MT@exp@cs\MT@patch@patch{beamerx@\string\beamer@framefootnotetext}
+               {\ignorespaces}{\ignorespaces\leftprotrusion}%
+           \MT@exp@cs\MT@patch@patch{beamerx@\string\@mpfootnotetext}
+               {\ignorespaces}{\ignorespaces\leftprotrusion}}
+          {\@ifpackageloaded{scrkbase}
+            {\MT@patch@patch\scr@saved@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}%
+            {\MT@patch@patch\@footnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}%
+           \MT@patch@patch\@mpfootnotetext{\ignorespaces}{\ignorespaces\leftprotrusion}}}}%
   }{}%
   \MT@redefined@patches
 }}
@@ -1027,8 +1045,10 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \DeclareRobustCommand\noprotrusionifhmode{\relax\ifhmode\kern-\p@\kern\p@\fi}
 \DeclareRobustCommand\leftprotrusion{%
   \MT@toks{}%
-  \MT@prot@get@firstchar
+  \MT@prot@false
+  \MT@prot@get@firstgroup
 }
+\newif\ifMT@prot@
 \def\MT@prot@l#1{%
   \MT@get@prot{#1}{left}%
   #1%
@@ -1040,11 +1060,9 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \let\MT@prot@hook\@empty
 \let\MT@csq@eqgroup\relax
-\ifx\RawNoindent\@undefined
-  \let\MT@noindent\noindent
-\else
-  \let\MT@noindent\RawNoindent
-\fi
+\IfFormatAtLeastTF{2021/11/15}
+  {\let\MT@noindent\RawNoindent}
+  {\let\MT@noindent\noindent}
 \def\MT@get@prot#1#2{%
   \begingroup
     \setbox\MT@tempbox\vbox{%
@@ -1056,7 +1074,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
       \interlinepenalty\z@
       \@newlistfalse
       \MT@prot@hook
-      \MT@noindent #1\MT@csq@eqgroup}%
+      \MT@noindent #1\relax\MT@csq@eqgroup}%
     \vbadness=\@M
     \splittopskip=\z@
     \vfuzz=\maxdimen
@@ -1068,10 +1086,10 @@ time will almost certainly lead to undesired results. Have your choice!}%
       \fi
     }%
   \endgroup
-  \leavevmode
   \ifhbox\MT@tempbox
     \@tempdima=\@nameuse{#2marginkern}\MT@tempbox\relax
     \expandafter\ifdim\@tempdima=\z@ \else
+      \leavevmode
       \MT@vinfo{|<< adding #2 margin kern for `#1':\MessageBreak
         \the\@tempdima \on@line}%
       \kern\@tempdima
@@ -1084,19 +1102,8 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \def\MT@prot@ifcat#1{%
   \ifcat#1\noexpand\MT@prot@next\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
 }
-^^X\def\MT@prot@ifmacro{%
-^^X  \expandafter\MT@prot@ifmacro@\meaning\MT@prot@next\@nil
-^^X}
-^^X\edef\MT@prot@ifmacro@#1\@nil{%
-^^X  \noexpand\MT@prot@ifmacro@@#1{}{}\detokenize{macro:->}\noexpand\@nil
-^^X}
-^^X\edef\MT@temp{%
-^^X  \def\noexpand\MT@prot@ifmacro@@##1\detokenize{macro:->}##2\noexpand\@nil{%
-^^X    \noexpand\ifx\relax##1\relax
-^^X    \unexpanded{\expandafter\@firstofone\else\expandafter\@gobble\fi}%
-^^X  }%
-^^X}
-^^X\MT@temp
+^^X\def\MT@prot@ifmacro@{%
+^^X  \ifdefmacro\MT@prot@next{\ifdefparam\MT@prot@next\@gobble\@firstofone}\@gobble}
 ^^Q\let\MT@prot@ifmacro\@gobble
 \def\MT@prot@iffirstcmd#1{%
   \ifx\relax#1\expandafter\@secondoftwo\else
@@ -1109,65 +1116,97 @@ time will almost certainly lead to undesired results. Have your choice!}%
 }
 \long\def\MT@car#1#2\@nil{#1}
 \def\MT@getthird#1#2#3#4\@nil{#3}
-\def\MT@prot@iflicrcmd#1{%
-  \MT@exp@cs\MT@prot@iffirstcmd{#1-cmd}{%
-    \expandafter\expandafter\expandafter\let
+\def\MT@prot@iflicrcmd{%
+  \MT@prot@iffirstcmd\@current@cmd\@secondoftwo\@firstofone
+    {\MT@prot@iffirstcmd\@changed@cmd\@firstofone\@gobble}%
+  {\expandafter\expandafter\expandafter\let
       \expandafter\expandafter\expandafter\@tempa
       \expandafter\MT@getthird\MT@prot@next\relax\@nil
     \MT@exp@two@c\ifx\@car\@tempa\relax\@nil\@text@composite
-      \def\MT@temp*##1##2{\MT@prot@l{##1##2}}%
+      \def\MT@temp*##1##2{\MT@prot@l{\the\MT@toks##1##2}}%
     \else
-      \def\MT@temp*##1{\MT@prot@l{##1}}%
+      \def\MT@temp*##1{\MT@prot@l{\the\MT@toks##1}}%
     \fi
-    \@gobble
-  }\@firstofone
+  }%
 }
-\def\MT@prot@group{\bgroup\afterassignment\MT@prot@get@firstchar\let\MT@temp= }
-\def\MT@prot@get@firstchar{\futurelet\MT@prot@next\MT@prot@get@first@char}
-\def\MT@prot@get@nextchar{\futurelet\MT@prot@next\MT@prot@get@next@char}
-\def\MT@prot@get@first@char{%
+\def\MT@prot@addgroup{\bgroup\afterassignment\MT@prot@get@firsttoken\let\MT@temp= }
+\def\MT@prot@get@firstgroup{\futurelet\MT@prot@next\MT@prot@get@first@group}
+\def\MT@prot@get@firsttoken{\futurelet\MT@prot@next\MT@prot@get@first@token}
+\def\MT@prot@get@nexttoken{\futurelet\MT@prot@next\MT@prot@get@next@token}
+\def\MT@prot@check#1{\MT@prot@check@#1}
+\def\MT@prot@check@#1#2{%
+  \ifx\MT@prot@next#2%
+    \MT@prot@true
+    \csname MT@prot@check@#1\endcsname
+    \let\MT@prot@ifmacro\@gobble
+    \expandafter\MT@tlist@break
+  \fi
+}
+\def\MT@prot@check@I{%
+  \def\MT@temp*##1{\MT@prot@get@firsttoken}%
+}
+\def\MT@prot@check@S{%
+  \def\MT@temp*##1{\MT@toks\expandafter{\the\MT@toks##1}\MT@prot@get@firsttoken}%
+}
+\def\MT@prot@check@O{%
+  \def\MT@temp*##1##2{\MT@toks\expandafter{\the\MT@toks##1{##2}}\MT@prot@get@firsttoken}%
+}
+\def\MT@prot@check@T{%
+  \def\MT@temp*##1##2##3{\MT@toks\expandafter{\the\MT@toks##1{##2}{##3}}\MT@prot@get@firsttoken}%
+}
+\def\MT@prot@check@cmds{%
+  {I\ignorespaces}{I\relax}{I\@empty}%
+  {S\rmfamily}{S\sffamily}{S\ttfamily}{S\mdseries}{S\bfseries}%
+  {S\upshape}{S\slshape}{S\itshape}{S\scshape}%
+  {S\normalfont}{S\selectfont}%
+  {S\lsstyle}%
+  {S\tiny}{S\scriptsize}{S\footnotesize}{S\small}{S\normalsize}%
+  {S\large}{S\Large}{S\LARGE}{S\huge}{S\Huge}%
+  {O\fontencoding}{O\fontfamily}{O\fontseries}{O\fontshape}%
+  {O\microtypesetup}{O\microtypecontext}%
+  {T\fontsize}%
+}
+\IfFormatAtLeastTF{2020/02/02}
+  {\g@addto@macro\MT@prot@check@cmds{%
+    {S\swshape}{S\ulcshape}{S\sscshape}{S\normalshape}%
+    {O\fontseriesforce}{O\fontshapeforce}}}{}
+\MT@addto@setup{%
+  \MT@with@package@T{yfonts}
+    {\g@addto@macro\MT@prot@check@cmds{{S\frakfamily}{S\swabfamily}{S\gothfamily}}}%
+}
+\def\MT@prot@get@first@group{%
   \MT@prot@ifcat\bgroup{%
-    \def\MT@temp*{\MT@prot@group}%
+    \def\MT@temp*{\MT@prot@addgroup}%
   }{%
-    \MT@prot@ifx\ignorespaces{%
-      \def\MT@temp*##1{\MT@prot@get@firstchar}%
+    \def\MT@temp*{\MT@prot@get@first@token}%
+  }%
+  \MT@temp*%
+}
+\def\MT@prot@get@first@token{%
+  \def\MT@temp*{\ifMT@prot@\MT@prot@l{\the\MT@toks}\fi}%
+  \MT@prot@ifcat{a}{%
+    \def\MT@temp*{\MT@prot@addtoken@first}%
+  }{%
+    \MT@prot@ifcat{!}{%
+      \def\MT@temp*{\MT@prot@addtoken@first}%
     }{%
-      \MT@prot@ifx\relax{%
-        \def\MT@temp*##1{\MT@prot@get@firstchar}%
+      \MT@prot@ifx\@sptoken{%
+        \def\MT@temp* {\MT@prot@get@firsttoken}%
       }{%
-        \MT@prot@ifx\@sptoken{%
-          \def\MT@temp* {\MT@prot@get@firstchar}%
-        }{%
-          \MT@prot@ifcat{a}{%
-            \def\MT@temp*{\MT@prot@addtoken@first}%
+        \let\MT@prot@ifmacro\MT@prot@ifmacro@
+        \MT@map@tlist@c\MT@prot@check@cmds\MT@prot@check
+        \MT@prot@ifmacro{%
+          \MT@prot@iffirstcmd\UTFviii@two@octets{%
+            \def\MT@temp*##1##2{\MT@prot@l{\the\MT@toks##1##2}}%
           }{%
-            \MT@prot@ifcat{!}{%
-              \def\MT@temp*{\MT@prot@addtoken@first}%
+            \MT@prot@iffirstcmd\UTFviii@three@octets{%
+              \def\MT@temp*##1##2##3{\MT@prot@l{\the\MT@toks##1##2##3}}%
             }{%
-              \def\MT@temp*{}%
-              \MT@prot@ifmacro{%
-                \MT@prot@iffirstcmd\UTFviii@two@octets{%
-                  \def\MT@temp*##1##2{\MT@prot@l{##1##2}}%
-                }{%
-                  \MT@prot@iffirstcmd\UTFviii@three@octets{%
-                    \def\MT@temp*##1##2##3{\MT@prot@l{##1##2##3}}%
-                  }{%
-                    \MT@prot@iffirstcmd\UTFviii@four@octets{%
-                      \def\MT@temp*##1##2##3##4{\MT@prot@l{##1##2##3##4}}%
-                    }{%
-                      \MT@prot@iffirstcmd\csqQQ{\def\MT@temp*##1{\MT@prot@l{##1}}}{%
-                        \MT@prot@iflicrcmd{T1}{%
-                          \MT@prot@iflicrcmd{TU}{%
-                            \MT@prot@iflicrcmd{LY1}{%
-                              \MT@prot@iflicrcmd{OT1}{%
-                                \MT@prot@iflicrcmd{T2A}\relax % should we add more encodings?
-                              }%
-                            }%
-                          }%
-                        }%
-                      }%
-                    }%
-                  }%
+              \MT@prot@iffirstcmd\UTFviii@four@octets{%
+                \def\MT@temp*##1##2##3##4{\MT@prot@l{\the\MT@toks##1##2##3##4}}%
+              }{%
+                \MT@prot@iffirstcmd\csqQQ{\def\MT@temp*##1{\MT@prot@l{\the\MT@toks##1}}}{%
+                  \MT@prot@iflicrcmd
                 }%
               }%
             }%
@@ -1178,7 +1217,11 @@ time will almost certainly lead to undesired results. Have your choice!}%
   }%
   \MT@temp*%
 }
-\def\MT@prot@get@next@char{%
+\def\MT@prot@addtoken@first#1{%
+  \MT@toks\expandafter{\the\MT@toks#1}%
+  \MT@prot@get@nexttoken
+}
+\def\MT@prot@get@next@token{%
   \def\MT@temp*{\MT@prot@addtoken@next}%
   \MT@prot@ifcat{a}\relax{%
     \MT@prot@ifcat{!}\relax{%
@@ -1186,10 +1229,6 @@ time will almost certainly lead to undesired results. Have your choice!}%
     }%
   }%
   \MT@temp*%
-}
-\def\MT@prot@addtoken@first#1{%
-  \edef\MT@temp{\MT@toks={\the\MT@toks\noexpand#1}}\MT@temp
-  \MT@prot@get@nextchar
 }
 \newif\ifMT@nonselected
 \DeclareRobustCommand\textls{%
@@ -1490,6 +1529,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
         \MT@undefined@char{utf8}\else\expandafter ##1\fi}%
       \MT@ifdefined@c@T\PrerenderUnicode
         {\PrerenderUnicode{\@tempa}\let\unicode@charfilter\@firstofone}%
+      \MT@is@active@hook{#1}%
       \edef\x{\endgroup
         \def\noexpand\@tempa{\expandafter\expandafter\expandafter\@empty\@tempa}%
         \MT@toks={\the\MT@toks\space(=
@@ -1498,6 +1538,44 @@ time will almost certainly lead to undesired results. Have your choice!}%
     \x
   \fi
 }
+\let\MT@is@active@hook\@gobble
+^^Q\@gobble
+{\catcode`\#=12
+\MT@addto@setup{%
+  \MT@with@package@T{listings}{%
+    \apptocmd\MT@is@active@hook{%
+      \MT@ifdefined@n@T{lst@ShortInlineOldCatcode\string#1}{%
+        \catcode`#1=\csname lst@ShortInlineOldCatcode\string#1\endcsname\relax
+        \ifnum\catcode`#1=\active
+          \begingroup
+            \catcode`\~\active \lccode`\~`#1%
+            \lowercase{\endgroup
+              \MT@let@cn~{lst@ShortInlineOldMeaning\string#1}}%
+        \else
+          \def\@tempa{#1}%
+        \fi
+      }%
+    }{}{}%
+  }%
+  \MT@if@false
+  \MT@with@package@T{doc}\MT@if@true
+  \MT@with@package@T{shortvrb}\MT@if@true
+  \ifMT@if@\expandafter\@firstofone\else\expandafter\@gobble\fi{%
+    \apptocmd\MT@is@active@hook{%
+      \MT@ifdefined@n@T{cc\string#1}{%
+        \catcode`#1=\csname cc\string#1\endcsname\relax
+        \ifnum\catcode`#1=\active
+          \begingroup
+            \catcode`\~\active \lccode`\~`#1%
+            \lowercase{\endgroup
+              \MT@let@cn~{ac\string#1}}%
+        \else
+          \def\@tempa{#1}%
+        \fi
+      }%
+    }{}{}%
+  }%
+}}
 \def\MT@undefined@char#1{undefined in input encoding ``#1''}
 \def\MT@is@symbol{%
   \expandafter\def\expandafter\MT@char\expandafter
@@ -1516,8 +1594,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
 \def\MT@is@opt@char#1\iffontchar#2\char#3\else#4\fi\relax{%
   \MT@ifempty{#1}{%
     \iffontchar#2%
-      \expandafter\chardef
-        \csname\MT@encoding\MT@detokenize@c\@tempa\endcsname=#3\relax
+      \MT@exp@cs\chardef{\MT@encoding\MT@detokenize@c\@tempa}=#3\relax
     \fi
   }\relax
 }
@@ -1880,7 +1957,7 @@ time will almost certainly lead to undesired results. Have your choice!}%
   \expandafter\MT@test@ast\MT@val*\@nil\relax{%
     \MT@ifempty\@tempa{\def\@tempa{#1}}\relax
     \MT@ifdefined@n@TF{\@tempa default}%
-      {\edef\MT@val{\expandafter\noexpand\csname \@tempa default\endcsname}}%
+      {\edef\MT@val{\MT@exp@cs\noexpand{\@tempa default}}}%
       {\MT@warning{`\@backslashchar\@tempa default' is not a defined command.\MessageBreak
                    Ignoring `#1 = {\@tempa*}' in font set\MessageBreak`\MT@curr@set@name'}%
        \let\MT@val\@empty}%

@@ -4,13 +4,13 @@
 %%
 %% The original source files were:
 %%
-%% scrlayer-scrpage.dtx  (with options: `interface,trace,scrpage,identify')
-%% scrlayer.dtx  (with options: `interface,trace,scrpage,init')
-%% scrlayer-scrpage.dtx  (with options: `interface,trace,scrpage,init')
-%% scrlayer.dtx  (with options: `interface,trace,scrpage,options')
-%% scrlayer-scrpage.dtx  (with options: `interface,trace,scrpage,options')
-%% scrlayer.dtx  (with options: `interface,trace,scrpage,body')
-%% scrlayer-scrpage.dtx  (with options: `interface,trace,scrpage,body')
+%% scrlayer-scrpage.dtx  (with options: `interface,scrpage,identify')
+%% scrlayer.dtx  (with options: `interface,scrpage,init')
+%% scrlayer-scrpage.dtx  (with options: `interface,scrpage,init')
+%% scrlayer.dtx  (with options: `interface,scrpage,options')
+%% scrlayer-scrpage.dtx  (with options: `interface,scrpage,options')
+%% scrlayer.dtx  (with options: `interface,scrpage,body')
+%% scrlayer-scrpage.dtx  (with options: `interface,scrpage,body')
 %% scrlogo.dtx  (with options: `logo')
 %% 
 %% Copyright (c) 2012-2021 Markus Kohm [komascript at gmx info]
@@ -28,7 +28,7 @@
 %% `lppl.txt' or `lppl-de.txt' for additional information.
 %% 
 %% The list of files belonging to KOMA-Script distribution is given in
-%% the file `manifest.txt'.  See also `lppl.txt' or `lppl-de.txt' for
+%% the file `MANIFEST.md'.  See also `lppl.txt' or `lppl-de.txt' for
 %% additional information.
 %% 
 %% If this file is a beta version, you may not be allowed to distribute
@@ -45,14 +45,14 @@
 %% find a complete unmodified copy of LaTeX2e at
 %% <http://mirror.ctan.org/tex-archive/macros/latex/base/>.
 %% 
-%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: identify)
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{scrlayer-scrpage}[%
-  2021/11/13 v3.35 KOMA-Script
+  2022/07/04 v3.37 KOMA-Script
   package
   (end user interface for scrlayer)]
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: init)
 \RequirePackage{scrlayer}
 \scr@ifundefinedorrelax{scrlayer@AtEndOfPackage}{%
@@ -63,24 +63,20 @@
   \fi
 }
 \let\scrlayer@AtEndOfPackage\AtEndOfPackage
-%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: init)
 \AtEndOfPackage{%
   \sls@auto@pagestyleset%
 }
 \newcommand*{\sls@auto@pagestyleset}{%
   \scr@ifundefinedorrelax{KOMAClassName}{%
-    \PackageInfoNoLine{scrlayer-scrpage}{%
-      auto-selection of `pagestyleset=standard'}%
     \FamilyExecuteOptions[.scrlayer-scrpage.sty]{KOMA}{pagestyleset=standard}%
   }{%
-    \PackageInfoNoLine{scrlayer-scrpage}{%
-      auto-selection of `pagestyleset=KOMA-Script'}%
     \FamilyExecuteOptions[.scrlayer-scrpage.sty]{KOMA}%
     {pagestyleset=KOMA-Script}%
   }%
 }
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: options)
 \KOMA@key{markcase}{%
 \scrlayer@AtEndOfPackage{%
@@ -226,7 +222,7 @@
   \KOMA@kav@replacebool{.scrlayer.sty}{autoremoveinterfaces}
                        {scrlayer@autoremoveinterfaces}%
 }
-%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: options)
 \KOMA@key{headwidth}{%
   \begingroup
@@ -631,7 +627,7 @@
 \KOMA@ifkey{hmode}{sls@leavevmode}
 \KOMA@ifkey{autoenlargeheadfoot}{sls@autoenlarge}
 \KOMAExecuteOptions{autoenlargeheadfoot=true}
-%%% From File: $Id: scrlayer.dtx 3560 2021-02-15 13:20:12Z kohm $
+%%% From File: $Id: scrlayer.dtx 3894 2022-06-19 10:25:46Z kohm $
 %%%            (run: body)
 \KOMAProcessOptions\relax
 \expandafter\let
@@ -703,12 +699,20 @@
 \expandafter\let
   \csname KV@KOMA.\@currname.\@currext @autoremoveinterfaces@default\endcsname
   \relax
-%%% From File: $Id: scrlayer-scrpage.dtx 3595 2021-05-16 07:11:07Z kohm $
+%%% From File: $Id: scrlayer-scrpage.dtx 3889 2022-06-09 12:11:14Z kohm $
 %%%            (run: body)
 \newcommand*{\setheadwidth}[2][]{%
+  \PackageWarning{scrlayer-scrpage}{%
+    Command `\string\setheadwidth' is deprecated.\MessageBreak
+    I'm using \detokenize{\KOMAoptions{headwidth=#2:#1}} instead,\MessageBreak
+    and so should you do}%
   \KOMAoptions{headwidth=#2:#1}%
 }%
 \newcommand*{\setfootwidth}[2][]{%
+  \PackageWarning{scrlayer-scrpage}{%
+    Command `\string\setfootwidth' is deprecated.\MessageBreak
+    I'm using \detokenize{\KOMAoptions{footwidth=#2:#1}} instead,\MessageBreak
+    and so should you do}%
   \KOMAoptions{footwidth=#2:#1}%
 }%
 \newcommand*{\setheadtopline}{\sls@setline{head}{above}}%
@@ -1090,9 +1094,6 @@
   }{}
 }{}
 \scr@ifundefinedorrelax{scr@fnt@wrn@pagehead}{}{%
-  \PackageInfo{scrlayer-scrpage}{%
-    deactivating warning for font element\MessageBreak
-    `pagehead'}%
   \let\scr@fnt@wrn@pagehead\relax
 }
 \@ifundefined{scr@fnt@pagefoot}{%
@@ -1102,9 +1103,6 @@
   }{}%
 }{}
 \scr@ifundefinedorrelax{scr@fnt@wrn@pagefoot}{}{%
-  \PackageInfo{scrlayer-scrpage}{%
-    deactivating warning for font element\MessageBreak
-    `pagefoot'}%
   \let\scr@fnt@wrn@pagefoot\relax
 }
 \newcommand*\sls@hf@rule[3]{%
@@ -1212,10 +1210,6 @@
   \@ifundefined{ps@#1}{%
     \defpagestyle{#1}{#2}{#3}%
   }{%
-    \PackageInfo{scrlayer-scrpage}{%
-      page style `#1' already defined.\MessageBreak
-      New definition ignored%
-    }%
   }%
 }
 \newcommand*{\deftriplepagestyle}[1]{%
@@ -1532,14 +1526,8 @@
 \newcommand*{\providepairofpagestyles}[3][]{%
   \scr@ifundefinedorrelax{ps@#2}{%
     \@ifundefined{ps@plain.#2}{\defpairofpagestyles[#1]{#2}{#3}}{%
-      \PackageInfo{scrlayer-scrpage}{%
-        Plain page style of `#2' already\MessageBreak
-        defined. Definition ignored}%
     }%
   }{%
-    \PackageInfo{scrlayer-scrpage}{%
-      Page style of `#2' already defined.\MessageBreak
-      Definition ignored}%
   }%
 }%
 \newpairofpagestyles{scrheadings}{}%
@@ -1665,10 +1653,8 @@
 \expandafter\newcommand\expandafter*\csname ps@plain.useheadings\endcsname{%
   \@nameuse{ps@plain.scrheadings}%
 }%
-%%% From File: $Id: scrlogo.dtx 3527 2020-09-11 09:44:32Z kohm $
-\@ifundefined{KOMAScript}{%
-  \DeclareRobustCommand{\KOMAScript}{\textsf{K\kern.05em O\kern.05em%
-      M\kern.05em A\kern.1em-\kern.1em Script}}}{}
+%%% From File: $Id: scrlogo.dtx 3688 2022-02-10 08:26:37Z kohm $
+\RequirePackage{scrlogo}
 \endinput
 %%
 %% End of file `scrlayer-scrpage.sty'.

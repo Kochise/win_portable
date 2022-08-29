@@ -1,0 +1,108 @@
+%%
+%% This is file `beamerouterthemeshadow-xetex-bidi.def',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bidi.dtx  (with options: `table,beamerouterthemeshadow-xetex-bidi.def')
+%% 
+%%   __________________________________________________
+%%   Vafa Khalighi
+%% 
+%%   Copyright (c) 2007--2022  Vafa Khalighi
+%%   Copyright (c) 2018--2020 bidi-tex GitHub Organization
+%% 
+%%   It may be distributed and/or modified under the LaTeX Project Public License,
+%%   version 1.3c or higher (your choice). The latest version of
+%%   this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%%   This work is “author-maintained” (as per LPPL maintenance status)
+%%   by Vafa Khalighi.
+%% 
+%% 
+%% \CheckSum{55413}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\ProvidesFile{beamerouterthemeshadow-xetex-bidi.def}[2022/06/11 v0.3 bidi adaptations for beamerouterthemeshadow package for XeTeX engine]
+\pgfdeclarehorizontalshading[frametitle.bg,frametitle right.bg]{bidi@beamer@RTL@frametitleshade}{\paperheight}{%
+  color(0pt)=(frametitle right.bg);
+  color(\paperwidth)=(frametitle.bg)
+}
+
+\newcommand*{\bidi@beamer@frametitleshade}{%
+  \if@RTLmain
+    \pgfuseshading{bidi@beamer@RTL@frametitleshade}%
+  \else
+    \pgfuseshading{beamer@frametitleshade}%
+  \fi
+}
+
+\bidi@csundef{beamer@@tmpop@frametitle@shadow theme}
+
+\defbeamertemplate*{frametitle}{shadow theme}
+{%
+  \nointerlineskip%
+  \vskip-2pt%
+  \hbox{\leavevmode
+    \advance\beamer@leftmargin by -12bp%
+    \advance\beamer@rightmargin by -12bp%
+    \beamer@tempdim=\textwidth%
+    \advance\beamer@tempdim by \beamer@leftmargin%
+    \advance\beamer@tempdim by \beamer@rightmargin%
+    \hskip-\Gm@lmargin\hbox{%
+      \setbox\beamer@tempbox=\hbox{\begin{minipage}[b]{\paperwidth}%
+          \vbox{}\vskip-.75ex%
+          \bidi@beamer@leftskip0.3cm%
+          \bidi@beamer@rightskip0.3cm plus1fil\leavevmode
+          \bgroup\usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\strut\insertframetitle\strut\egroup\par%
+          \ifx\insertframesubtitle\@empty\else%
+            {\usebeamerfont*{framesubtitle}{\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}\strut\par}%
+          \fi%
+          \nointerlineskip
+          \vbox{}%
+          \end{minipage}}%
+      \beamer@tempdim=\ht\beamer@tempbox%
+      \advance\beamer@tempdim by 2pt%
+      \begin{pgfpicture}{0pt}{0pt}{\paperwidth}{\beamer@tempdim}
+        \begin{pgfscope}
+          \pgfsetfillcolor{black}%
+          \pgfpathrectangle{\pgfpoint{0pt}{-4pt}}{\pgfpoint{\paperwidth}{8pt}}%
+          \pgfsetfading{beamer@topshadowmask}{}%
+          \pgfusepath{fill}%
+        \end{pgfscope}
+        \begin{pgfscope}
+          \usebeamercolor{frametitle right}%
+          \pgfpathrectangle{\pgfpointorigin}{\pgfpoint{\paperwidth}{\beamer@tempdim}}%
+          \pgfusepath{clip}%
+          \pgftext[left,base]{\bidi@beamer@frametitleshade}%
+        \end{pgfscope}
+      \end{pgfpicture}
+      \hskip-\paperwidth%
+      \box\beamer@tempbox%
+    }%
+    \hskip-\Gm@rmargin%
+  }%
+  \vskip-2pt
+}
+
+\AtBeginDocument{%
+  \setbeamertemplate{frametitle}[shadow theme]%
+}
+
+\endinput
+%%
+%% End of file `beamerouterthemeshadow-xetex-bidi.def'.

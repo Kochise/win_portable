@@ -1,4 +1,4 @@
-%% $Id: pstricks-tex.def 276 2021-09-27 11:28:22Z herbert $
+%% $Id: pstricks-tex.def 592 2022-08-27 07:00:30Z herbert $
 %% pstricks-tex.def
 %
 %% fileversion and filedate see main file pstricks.tex
@@ -83,5 +83,10 @@
        \expandafter\@fornoop \else
       #4\relax\expandafter\@tforloop\fi#2\@@#3{#4}}
   \long\def\@break@tfor#1\@@#2#3{\csname fi\endcsname\csname fi\endcsname}
+%
+\def\colorlet#1[#2]#3{%
+  \expandafter\let\csname\string\color@#1\expandafter\endcsname\csname\string\color@#3\endcsname
+  \message{defining color #1: \expandafter\meaning\csname\string\color@#1\endcsname}%
+}
 %%
 %% END: pstricks-tex.def
