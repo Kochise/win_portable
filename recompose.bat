@@ -115,7 +115,7 @@ cd "..\.."
 
 rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 echo Recompose 'Chrome' dependencies...
-cd "Internet\Chrome\App\Chrome-bin\100.0.4896.127"
+cd "Internet\Chrome\App\Chrome-bin\104.0.5112.102"
 
 if exist "chrome.dll.001" (
 rem	if not exist "chrome.dll" (
