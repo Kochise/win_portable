@@ -59,6 +59,7 @@ Windows 7+ (mostly 64 bit applications now)
 
 **Accessoires** : `Wordpad` (`XP` version, the best, with ruler and preview)<br>
 **lite** : lightweight source code editor coded in/for **lua**<br>
+**MindForger** : hierarchical maekdown editor for mondmap editing<br>
 **Notepad++** : the best code editor with some extensions installed (regex works there)<br>
 **Notepad2-mod** : the best code editor 2 (`Alt+z` or `Alt+o` are best there)<br>
 **TextAnalysisTool.NET** : log files digger and forensic tool (filtering large logs)<br>

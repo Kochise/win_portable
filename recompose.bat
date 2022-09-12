@@ -114,6 +114,21 @@ rem	)
 cd "..\.."
 
 rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'MindForger' dependencies...
+cd "Editor\MindForger\bin"
+
+if exist "Qt5WebEngineCore.dll.001" (
+rem	if not exist "Qt5WebEngineCore.dll" (
+		copy /y /b "Qt5WebEngineCore.dll.001"+"Qt5WebEngineCore.dll.002" "Qt5WebEngineCore.dll"
+rem	)
+
+	del "Qt5WebEngineCore.dll.001" /q 1>nul 2>nul
+	del "Qt5WebEngineCore.dll.002" /q 1>nul 2>nul
+)
+
+cd "..\..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 echo Recompose 'Chrome' dependencies...
 cd "Internet\Chrome\App\Chrome-bin\104.0.5112.102"
 
