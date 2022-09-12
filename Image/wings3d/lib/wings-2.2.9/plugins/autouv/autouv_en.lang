@@ -1,0 +1,405 @@
+%% -*- mode:erlang; erlang-indent-level: 2 -*-
+{auv_mapping,
+ [
+  {chart_normal,
+   [
+    {1,"Can not calculate normal for chart."}
+   ]},
+  {find_axes,
+   [
+    {1,"I currently can't sphere/cylinder map this type of chart/cuts,\nI can't figure out which axes you want as X,Y, and Z,\nplease use unfolding or one of the projection mappings."}
+   ]},
+  {get_face_vspos,
+   [
+    {1,"Error: Face isn't triangulated ~p with ~p vertices"}
+   ]},
+  {lscm,
+   [
+    {1,"Couldn't calculate uv-coords for chart"},
+    {2,"Math error"}
+   ]},
+  {map_chart,
+   [
+    {1,"A closed surface cannot be mapped. (Either divide it into into two or more charts, or cut it along some edges.)"},
+    {2,"A cut in a closed surface must consist of at least two edges."},
+    {3,"At least 2 vertices (per chart) must be selected"},
+    {4,"Error:"},
+    {5,"Error, try to cleanup objects before uv-mapping"}
+   ]},
+  {map_chart_1,
+   [
+    {1,"Numeric problem, probably a bad face with an empty area."},
+    {2,"Error: try to cleanup objects before uv-mapping"},
+    {3,"Error"}
+   ]},
+  {stretch_iter,
+   [
+    {1,"iteration"}
+   ]},
+  {stretch_opt,
+   [
+    {1,"optimizing"},
+    {2,"initializing"},
+    {3,"After Stretch sum (mean) ~p"}
+   ]},
+  {stretch_setup,
+   [
+    {1,"Stretch sum (worst) ~p"},
+    {2,"Stretch sum (mean) ~p"}
+   ]}
+ ]}.
+{auv_seg_ui,
+ [
+  {mappers,
+   [
+    {1,"Unfolding"},
+    {2,"Projection Normal"},
+    {3,"Projection Camera"},
+    {4,"Sphere Map"},
+    {5,"Cylindrical Map"},
+    {6,"Unfolding (slower)"}
+   ]},
+  {seg_event,
+   [
+    {1,"Segmenting"}
+   ]},
+  {seg_event_3,
+   [
+    {1,"Continue"},
+    {2,"Segment by"},
+    {3,"Projection"},
+    {4,"Feature Detection"}
+   ]},
+  {seg_init_message,
+   [
+    {1,"Select"},
+    {2,"Show menu"}
+   ]},
+  {seg_map_charts,
+   [
+    {1,"preparing mapping"},
+    {2,"segmenting"},
+    {3,"normalizing"},
+    {4,"cutting"},
+    {5,"No mappable faces."},
+    {6,"mapping"}
+   ]},
+  {seg_map_charts_1,
+   [
+    {1,"chart"}
+   ]},
+  {seg_mode_menu,
+   [
+    {1,"Mark Edges for Cut"},
+    {2,"Unmark Edges"},
+    {3,"Select Marked Edges"},
+    {4,"Ignore Faces"},
+    {5,"Select"}
+   ]}
+ ]}.
+{auv_texture,
+ [
+  {background,
+   [
+    {1,"Background"}
+   ]},
+  {draw_options,
+   [
+    {1,"Size"},
+    {2,"Render"},
+    {3,"Draw Options"}
+   ]},
+  {options,
+   [
+    {1,"Image"},
+    {2,"Color"},
+    {3,"Draw All Edges"},
+    {4,"Draw Border Edges"},
+    {5,"Edge Color:"},
+    {6,"Edge Width:"},
+    {8,"Use vertex colors (on border edges)"}
+   ]},
+  {render_passes,
+   [
+    {1,"Background"},
+    {2,"Options"},
+    {3,"Options"}
+   ]},
+  {renderers,
+   [
+    {1,"None"},
+    {2,"Draw Edges"},
+    {3,"Draw Faces"}
+   ]}
+ ]}.
+{wpc_autouv,
+ [
+  {align_error,
+   [
+    {1,"Select two vertices or one edge"},
+    {2,"Select at least two charts to be aligned to each other"}
+   ]},
+  {auv_export_menu,
+   [
+    {1,"Export UV..."},
+    {2,"Exports the UV as cartoon edges (.eps, .svg)"}
+   ]},
+  {auv_menu,
+   [
+    {1,"UV Mapping"},
+    {2,"Generate UV mapping or texture"},
+    {3,"Force to segmenting mode (delete old segments)"},
+    {25,"Re-segment object(s)"}
+   ]},
+  {auv_show_menu,
+   [
+    {1,"Show/Hide Background Image"},
+    {2,"Toggle display of the background texture image"}
+   ]},
+  {command_menu,
+   [
+    {2,"Move"},
+    {3,"Move selected charts"},
+    {4,"Scale"},
+    {5,"Scale selected charts"},
+    {6,"Rotate"},
+    {7,"Rotate selected charts"},
+    {8,"Move to"},
+    {9,"Center"},
+    {10,"Move to Center"},
+    {11,"Center X"},
+    {12,"Move to horizontal center"},
+    {13,"Center Y"},
+    {14,"Move to vertical center"},
+    {15,"Bottom"},
+    {16,"Move to bottom border"},
+    {17,"Top"},
+    {18,"Move to top border"},
+    {19,"Left"},
+    {20,"Move to left border"},
+    {21,"Right"},
+    {22,"Move to right border"},
+    {23,"Move charts to position"},
+    {24,"Flip"},
+    {25,"Horizontal"},
+    {26,"Flip selection horizontally"},
+    {27,"Vertical"},
+    {28,"Flip selection vertically"},
+    {29,"Flip selected charts"},
+    {30,"Tighten"},
+    {31,"Move UV coordinates towards average midpoint"},
+    {32,"Hide"},
+    {33,"Hide selected charts but keep UV-coordinates"},
+    {34,"Delete"},
+    {35,"Remove UV-coordinates for the selected charts"},
+    {36,"ReMap UV"},
+    {37,"Stretch optimization"},
+    {38,"Optimize the chart stretch"},
+    {39,"Unfold"},
+    {40,"Unfold the chart"},
+    {41,"Project Normal"},
+    {42,"Project UVs from chart normal"},
+    {43,"Spherical"},
+    {44,"Spherical mapping"},
+    {45,"Calculate new UVs with chosen algorithm"},
+    {47,"Move"},
+    {48,"Move selected faces"},
+    {49,"Scale"},
+    {50,"Scale selected faces"},
+    {51,"Rotate"},
+    {52,"Rotate selected faces"},
+    {53,"Free"},
+    {54,"Rotate selection freely"},
+    {55,"Chart to X"},
+    {56,"Rotate chart to align selected edge to X-axis"},
+    {57,"Chart to Y"},
+    {58,"Rotate chart to align selected edge to Y-axis"},
+    {60,"Move"},
+    {61,"Move selected edges"},
+    {62,"Scale"},
+    {63,"Scale selected edges"},
+    {64,"Rotate"},
+    {65,"Rotate commands"},
+    {66,"Stitch"},
+    {67,"Stitch edges/charts"},
+    {68,"Cut"},
+    {69,"Cut selected edges"},
+    {70,"Free"},
+    {71,"Rotate selection freely"},
+    {72,"Chart to X"},
+    {73,"Rotate chart to align (imaginary) edge joining selected verts to X-axis"},
+    {74,"Chart to Y"},
+    {75,"Rotate chart to align (imaginary) edge joining selected verts to Y-axis"},
+    {77,"Move"},
+    {78,"Move selected vertices"},
+    {79,"Scale"},
+    {80,"Scale selected vertices"},
+    {81,"Rotate"},
+    {82,"Rotation commands"},
+    {83,"Flatten"},
+    {84,"Flatten horizontally"},
+    {85,"Flatten vertically"},
+    {86,"Flatten selected vertices"},
+    {87,"Tighten"},
+    {88,"Move UV coordinates towards average midpoint"},
+    {89,"Unfold"},
+    {90,"Unfold the chart (without moving the selected vertices)"},
+    {91,"SphereMap"},
+    {92,"Create a spherical mapping with selected vertices being North/South pole"},
+    {93,"Align"},
+    {94,"Align charts relative each other"},
+    {95,"Align to bottom"},
+    {96,"Align to top"},
+    {97,"Align to left"},
+    {98,"Align to right"},
+    {391,"Unfold (slow)"},
+    {392,"Unfold the chart, slow for charts with many faces but better"},
+    {411,"Normalize Sizes"},
+    {412,"Normalize Chart Sizes so that eachchart get it's corresponding 2d area"},
+    {521,"Project-Unfold"},
+    {522,"Project selected faces from normal and unfold the rest of chart"},
+    {641,"Slide"},
+    {642,"Slide along neighbor edges"},
+    {643,"Distribute"},
+    {644,"Distribute horizontally"},
+    {645,"Distribute vertically"},
+    {646,"Distribute vertices evenly"}
+   ]},
+  {create_window,
+   [
+    {1,"Segmenting"}
+   ]},
+  {drag_filter,
+   [
+    {1,"Drop: Change the texture image"}
+   ]},
+  {handle_event_3,
+   [
+    {1,"Select"},
+    {2,"Show menu"}
+   ]},
+  {menu,
+   [
+    {1,"UV Editor Window"},
+    {2,"Open a UV Editor window for each selected object"}
+   ]},
+  {move_directions,
+   [
+    {1,"Free"},
+    {2,"Move in both directions"},
+    {3,"Horizontal"},
+    {4,"Move horizontally (X dir)"},
+    {5,"Vertical"},
+    {6,"Move vertically (Y dir)"}
+   ]},
+  {option_menu,
+   [
+    {1,"Create Texture"},
+    {2,"Make and Attach a texture to the model"}
+   ]},
+  {remap,
+   [
+    {1,"Select two vertices, the North and South pole"},
+    {2,"At least two vertices per chart must be pinned"},
+    {3,"remapping"},
+    {4,"chart"},
+    {5,"All vertices can not be pinned"}
+   ]},
+  {scale_directions,
+   [
+    {1,"Uniform"},
+    {2,"Scale in both directions"},
+    {3,"Horizontal"},
+    {4,"Scale horizontally (X dir)"},
+    {5,"Vertical"},
+    {6,"Scale vertically (Y dir)"}
+   ]},
+  {start_uvmap,
+   [
+    {1,"Nothing selected"}
+   ]},
+  {stitch_charts,
+   [
+    {1,"Hmm, I can't stitch so many charts at the same time"}
+   ]},
+  {stretch_directions,
+   [
+    {1,"Max Uniform"},
+    {2,"Maximize either horizontally or vertically"},
+    {3,"Max Horizontal"},
+    {4,"Maximize horizontally (X dir)"},
+    {5,"Max Vertical"},
+    {6,"Maximize vertically (Y dir)"},
+    {7,"Maximize by using the horizontal dimension"},
+    {8,"Maximize by using the vertical dimension"}
+   ]}
+ ]}.
+{wpc_snap_win,
+ [
+  {proportional_scale,
+   [
+    {1,"...to Current X"},
+    {2,"Scale image's Y value to be proportional to it's current X value"},
+    {3,"...to Current Y"},
+    {4,"Scale image's X value to be proportional to it's current Y value"},
+    {5,"Actual Size"},
+    {6,"Reset image to its actual size"}
+   ]},
+  {snap_label,
+   [
+    {1,"Select Image"},
+    {2,"Activate"},
+    {3,"Deactivate"},
+    {4,"Snap Image"},
+    {5,"Opacity"},
+    {6,"Rotate"},
+    {7,"Move"},
+    {8,"Scale"},
+    {9,"Fit"},
+    {10,"Tiled Image"}
+   ]},
+  {snap_menu,
+   [
+    {1,"Horizontal"},
+    {2,"Scale the background image horizontally"},
+    {3,"Vertical"},
+    {4,"Scale the background image vertically"},
+    {5,"Free"},
+    {6,"Scale the background image freely"},
+    {7,"Uniform"},
+    {8,"Scale the background image uniformly"},
+    {10,"Move the background image horizontally"},
+    {12,"Move the background image vertically"},
+    {14,"Move the background image freely"},
+    {22,"Both"},
+    {26,"Center X"},
+    {27,"Center the background image horizontally"},
+    {28,"Center Y"},
+    {29,"Center the background image vertically"},
+    {30,"Center"},
+    {31,"Center the background image to the viewport"},
+    {32,"Proportional"},
+    {33,"Make image scale proportional"}
+   ]},
+  {snap_tooltip,
+   [
+    {1,"Select the image to be used for snap"},
+    {2,"Start snap mode for \"snapping\" UV coordinates onto an image"},
+    {3,"Exit snap mode"},
+    {4,"Put background image on selected faces by assigning UV coordinates to them"},
+    {5,"Defines how translucent the image is on screen"},
+    {6,"Rotate the background image"},
+    {7,"Move the background image"},
+    {8,"Scale the background image"},
+    {9,"Fit image to the dimensions of the viewport"},
+    {10,"Draws the image repeatedly "}
+   ]},
+  {snap_win_menu,
+   [
+    {2,"Shows the snap image window"}
+   ]},
+  {title,
+   [
+    {1,"Snap Image"}
+   ]}
+ ]}.

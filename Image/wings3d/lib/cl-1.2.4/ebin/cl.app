@@ -1,0 +1,12 @@
+{application,cl,
+             [{registered,[]},
+              {description,"OpenCL binding for Erlang"},
+              {vsn,"1.2.4"},
+              {modules,[cl,cl10,cl11,cl12,clu]},
+              {env,[]},
+              {applications,[kernel,stdlib]},
+              {maintainers,["Tony Rogvall","Dan Gudmundsson"]},
+              {licenses,["BSD"]},
+              {links,[{"Github","https://github.com/tonyrog/cl"}]},
+              {files,["rebar.config","README","COPYRIGHT","src","include",
+                      "c_src/*.[ch]","c_src/Makefile"]}]}.

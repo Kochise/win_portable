@@ -81,6 +81,7 @@ Windows 7+ (mostly 64 bit applications now)
 **OpenSCAD** : pretty good CAD program, yet using a DSL programming language<br>
 **paint.net** : the better `Paint` or `Gimp`, with layers and stuff<br>
 **Tesseract-OCR** : pretty effective fast and free OCR with many languages support <ins>EXTERNAL INSTALLER</ins><br>
+**Wings3D** : 3D subdivision modeler, easy to use, yet with no internal renderer<br>
 
 ### Internet
 
