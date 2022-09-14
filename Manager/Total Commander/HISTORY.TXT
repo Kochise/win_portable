@@ -1,3 +1,590 @@
+01.09.22 Release Total Commander 10.51 final
+01.09.22 Fixed: Installer: Parameter /K made the installer look for the key in the current directory instead of the installer directory (32/64)
+01.09.22 Fixed: Tree panel wasn't updated when changing directories via Search - Go to file or via command line parameters with /O parameter (32/64)
+31.08.22 Fixed: LOADLIST didn't show error for non existing files with paths with prefix \\?\, e.g. \\?\c:\nofilehere.txt (32/64)
+
+31.08.22 Release Total Commander 10.51 release candidate 4b (RC4b), private release
+31.08.22 Fixed: LOADLIST didn't work when called again in a list previously loaded with LOADLIST when not using folder tabs (32/64)
+
+31.08.22 Release Total Commander 10.51 release candidate 4a (RC4a), private release
+31.08.22 Fixed: The backup name in compare by content was still wrong in 64-bit only when comparing file.ext with file.ext.bak (64)
+30.08.22 Fixed: Prevent DLL injection in installer (and TC) by preloading TextShaping.dll, loaded by Windows itself when using certain Windows functions (32/64)
+30.08.22 Fixed: OneDrive green circle overlay icons were not shown in the OneDrive for business folders. Experimental, add 4 to IconOverlaysOneDrive to enable (32/64)
+30.08.22 Fixed: LOADLIST didn't correctly handle paths with prefix \\?\, treated them as wildcards (32/64)
+
+29.08.22 Release Total Commander 10.51 release candidate 4 (RC4)
+29.08.22 Fixed: Treat missing WCMICON*.DLL the same as icons in main menu turned off, otherwise there were glitches in the displayed menus (32/64)
+28.08.22 Fixed: Button bar, show button as menu: Show entries with no icon but with command and a hint as text (32/64)
+28.08.22 Fixed: Button bar, show button as menu: Show entries with no command but with a hint text as text, ignore the icon field (32/64)
+28.08.22 Fixed: Separate tree: The path of the target panel could be shown as active in the tree when using a view mode with auto-run commands (32/64)
+28.08.22 Fixed: Compare by content: When started for the first time on 800x600 screen, moving the dialog also changed the separator position (64)
+28.08.22 Fixed: Compare by content, binary mode: Underlines for found text were shown in the wrong location when using a horizontal scrollbar (32/64)
+26.08.22 Fixed: Verify checksums: Only skip 2 spaces between checksum and file name (unless the name starts with *) and consider the rest as being part of the file name (32/64)
+25.08.22 Fixed: The backup name in compare by content was wrong when comparing file.ext with file.ext.bak (32/64)
+25.08.22 Fixed: Configuration - Options - Copy/Delete: Set width of "k" text field behind size dynamically to available width, some users had overlaps of the field with the line to the right (32/64)
+25.08.22 Fixed: When LOADLIST is called in a search results directory or a list previously loaded with LOADLIST, set the search base directory to the previous search/LOADLIST base directory (32/64)
+
+24.08.22 Release Total Commander 10.51 release candidate 3 (RC3)
+24.08.22 Fixed: Button bar, show button as menu: Always show buttons with empty command field as separators, even if they have an icon or hint text, hide when at the start of the bar (32/64)
+24.08.22 Fixed: The ZIPFROMLIST command could fail when called once with the zip name in the parameters field and once with the zip name in the command field (32/64)
+24.08.22 Fixed: With option QuickSearchExactMatch=1, quick search didn't always find the extension when starting the search with a dot only (using *. worked) (32/64)
+24.08.22 Fixed: Prevent the command LOADLIST from trying to read regular expressions, they are currently not supported (32/64)
+24.08.22 Fixed: When changing the directory of the inactive (target) panel via directory hotlist (Target dir field) or cm_SyncChangeDir, the last used directory of that drive wasn't remembered (only relevant when the two panels show different drives) (32/64)
+23.08.22 Fixed: When switching from to a view mode with a different window width set via auto-run commands, e.g. cm_100Percent 70|cm_50Percent, the file under the cursor could be moved out of the visible area (32764)
+23.08.22 Fixed: When switching from a view mode with thumbnail view to another one with thumbnail view, the cursor position was lost (32/64)
+23.08.22 Fixed: Installer: Running auto-install with parameter /A on a system with no previous installation didn't write the ini locations to the registry (32/64)
+22.08.22 Fixed: Unpack from 7zip archive with ZoneId set, using Total7zip plugin, rename during unpacking -> the Zone ID was not set to the unpacked file with the changed name, but to the not overwritten file with the original name (32/64)
+22.08.22 Fixed: Compare by content, compare with file in encrypted 7z archive on one side: internal 7zip unpacker didn't ask again for the password if the user entered the wrong one (32/64)
+22.08.22 Fixed: Search, use list file in "Search in", e.g. @c:\totalcmd\list.txt: Ignore lines containing wildcards like *.dll when search depth is set to "current dir only" (32/64)
+21.08.22 Fixed: Installer: Copy the registry values IniFileName and FtpIniName from HKEY_LOCAL_MACHINE\Software\Ghisler\Total Commander to the same key under HKEY_CURRENT_USER if they don't exist there yet (32/64)
+19.08.22 Fixed: When clicking on "\" above the inactive (target) panel, activate the panel first before changing directories, otherwise the last used directory of that drive isn't remembered (32/64)
+19.08.22 Fixed: Do not show our own OneDrive green circle overlay icons when OneDrive isn't in On Demand mode (all files are always available offline) (32/64)
+19.08.22 Fixed: The OneDrive green circle overlay icons couldn't be turned on/off separately. IconOverlaysOneDrive now supports three values: 1=cloud icons, 2=checkmark icons, 3=both (32/64)
+19.08.22 Fixed: Only show the OneDrive green circle overlay icons below the OneDrive base directory, because copy&paste copies the attribute to other directories (32/64)
+18.08.22 Fixed: Improved look of OneDrive green circle overlay icons by using resampled icons (32/64)
+
+17.08.22 Release Total Commander 10.51 release candidate 2 (RC2)
+16.08.22 Fixed: Ignore commands CM_*BYNAME, CM*BYSIZE etc. when the parameter passed to it is negative (32/64)
+15.08.22 Fixed: Updated TCMDLZMA.DLL and TCLZMA64.DLL to LZMA SDK 22.01 (32/64)
+15.08.22 Fixed: Updated TC7Z.DLL and TC7Z64.DLL to LZMA SDK 22.01 (32/64)
+15.08.22 Fixed: Verify checksums: Blake3 library could cause an access violation (32/64)
+12.08.22 Fixed: The delete temporary file dialog, shown when editing multiple files from an archive in the same multiple document editor like PFE, could have dark background but light buttons when not focused (32/64)
+12.08.22 Fixed: When using a language file with a custom name like wcmd_test_deu.lng, also look for help file wcmd_test_deu.chm in the same directory before looking for wcmd_deu.chm and totalcmd.chm (32/64)
+12.08.22 Fixed: When clicking on ".." above the inactive (target) panel, activate the panel first before changing directories, otherwise the last used directory of that drive isn't remembered (32/64)
+12.08.22 Fixed: Lister: Drive letter in title bar was still shown in uppercase in some cases even with DrivesShowUpcase=0 set, e.g. when viewing files from archives (32/64)
+11.08.22 Fixed: Synchronize dirs: Cursor position was lost instead of staying on the file when clicking on one of the directional buttons or duplicates/singles (32/64)
+11.08.22 Fixed: Print preview didn't support emoji in file names (32/64)
+
+10.08.22 Release Total Commander 10.51 release candidate 1 (RC1)
+10.08.22 Fixed: NOTE: THIS WAS CHANGED BACK IN RC3: Search, use list file in "Search in", e.g. @c:\totalcmd\list.txt containing wildcards like *.dll: "Search in subdirectories" was off by 1, e.g. "1 levels" only searched the base directory (32/64)
+09.08.22 Fixed: The uninstaller didn't remove the "Total Commander" link from the "common desktop" (installed for all users) location (32/64)
+08.08.22 Fixed: When reading directory sizes from "Everything" became too fast in very large folders, some folders didn't receive the size due to message queue overflow (32/64)
+08.08.22 Added: Lister, Compare by content: Support side scrolling by tilting mouse wheel left/right (only supported by some mice). Faster with Ctrl pressed (32/64)
+07.08.22 Added: Search, second tab, and Change attributes: In the date/time picker, use the same date and time formats as chosen by the user for the file lists (32/64)
+07.08.22 Added: Configuration-Options-Tabstops/Data formats: Immediately show the separator chosen in the field "Date" in the field "Date format" (32/64)
+04.08.22 Fixed: OneDrive folder: When overlay icons were disabled, OneDrive overlay icons were only shown for EXE/LNK files, although there is a separate option IconOverlaysOneDrive (32/64)
+04.08.22 Added: OneDrive folder: Show green circle overlay icon with checkmark for files which are marked for always being available offline ("pinned") (32/64)
+04.08.22 Fixed: The default position and size of Lister was outside the current screen when showing the taskbar at the left or top of the screen (32/64)
+03.08.22 Added: Multi-rename tool: Added the new placeholder [X] to the dropdown menu of the "+" and "#" buttons, shows actual clipboard content as description. Only shown when the clipboard contains text (32/64)
+03.08.22 Fixed: The delete temporary file dialog, shown when editing multiple files from an archive in the same multiple document editor like PFE, didn't support dark mode, and wasn't adjusted to larger font sizes (32/64)
+03.08.22 Fixed: Dark mode: Clicking OK in "Change attributes" dialog with invalid input in date or time field showed error that the dialog box couldn't be closed (32/64)
+03.08.22 Fixed: Password prompt was cut when entering a RAR archive with a very long path containing encrypted file names, because the displayed name wasn't shortened (32/64)
+03.08.22 Fixed: 7zip: Opening multi-part 7zip archive would leave the first file 7z.001 opened (64)
+01.08.22 Added: Verify checksums: Support blake3 hashes of arbitrary length between 8 and 2048 bit (2 to 512 characters in hexadecimal format, equal number of characters) (32/64)
+01.08.22 Added: Verify checksums: Support extension .bk3 (in addition to .blake3) for Blake 3 hash files (32/64)
+01.08.22 Fixed: Increased maximum displayable year from 2559 to 9999 (32/64)
+18.07.22 Fixed: When trying to copy a file with F5-F2 and a folder with the same name already existed, the user was asked twice whether he wanted to copy the file to that folder instead (32/64)
+18.07.22 Added: Synchronize dirs: Show yellow progress color in task bar when done and the comparison took longer than 10 seconds (32/64)
+15.07.22 Added: Multi-rename tool: New placeholder [X] inserts text from the clipboard. The value is cached until the name field is changed, or the +/# button is pressed. Replaces forbidden characters *?:|"<> with underscores (32/64)
+15.07.22 Added: Button bar, start menu: New parameter %Q turns off automatic quotation marks around certain parameter combinations when the name contains a space, e.g. %Q%P%N. The user will have to add his own quotation marks (32/64)
+15.07.22 Fixed: WindowsCodecs.dll was loaded indirectly from the program directory by the Lazarus libraries by mistake, which is a possible security risk (64)
+13.07.22 Fixed: FTP: Re-request master password if the password (stored with master password) was cleared by minimizing and the connection was lost (32/64)
+13.07.22 Fixed: FTP: Do not clear password of active connection when minimizing if the password was stored without master password (32/64)
+13.07.22 Fixed: Lister: Drive letter in title bar was sometimes shown in uppercase even with DrivesShowUpcase=0 set, e.g. when starting Lister via /S=L C:\path\file.ext. Now defaults to lowercase (32/64)
+13.07.22 Fixed: Lister could not zoom icon files (.ico) (32)
+13.07.22 Fixed: Removed extra spaces from totalcmd.inc from sections "Sorting" and "Custom Column Views", and made some other small changes (32/64)
+13.07.22 Fixed: Unicode characters outside of the basic multilingual plane (low/high surrogates) could not be entered. e.g. emoji via Win+"." (64)
+13.07.22 Fixed: Quick search with search dialog: Prevent the accidental creation of more than one quick search window (32/64)
+12.07.22 Fixed: Faster reading of directory sizes from "Everything" in very large folders (32/64)
+12.07.22 Fixed: Tags from FLAC files were not read when stored in the last metadata block (32/64)
+
+07.07.22 Release Total Commander 10.50 final (silent update)
+07.07.22 Fixed: Find files: Searching with "Everything" could find files in the base directory of the search but report them in a lower directory (32/64)
+
+06.07.22 Release Total Commander 10.50 final
+06.07.22 Fixed: Dark mode: Comboboxes in Commands-Search-Plugins not high enough for larger fonts (32)
+05.07.22 Fixed: F2 in compare by content (edit mode): When using CompareF2Mode=1, searching for the next difference could get stuck at empty lines (32/64)
+05.07.22 Fixed: Find files: Searching with "Everything" could fail in Windows 7 in a virtual machine (64)
+04.07.22 Fixed: F2 in compare by content (edit mode): When using CompareF2Mode=2, don't jump to different line if current line doesn't contain any differences (32/64)
+04.07.22 Fixed: Lister/Quick view panel: Viewing an image with the built-in viewer (no plugins) didn't always use the configured background color (32)
+04.07.22 Fixed: Thumbnail view: Resource leak when displaying icons with a size of 256x256 pixels from some (e.g. .exe) files (32764)
+03.07.22 Fixed: Compare by content: F2 didn't jump to zero length differences: positions where text was added to the other file (32/64)
+03.07.22 Fixed: Thumbnails view: Reduce flickering when displaying freshly loaded icons and/or thumbnails (32/64)
+30.06.22 Fixed: Find files: Searching for *|*\ didn't return the same results with and without "Everything" (32/64)
+29.06.22 Fixed: Switching from normal to dark mode or starting the program directly in dark mode lost the menu translation (64)
+
+29.06.22 Release Total Commander 10.50 release candidate 4 (RC4)
+29.06.22 Fixed: Detect when "Everything" returns the same file twice in search results, and only show it once (32/64)
+29.06.22 Fixed: Lister, internal media player: Couldn't use cursor left/right to scroll through the track while maximized and no player controls visible (shows controls for 2 seconds) (32/64)
+29.06.22 Fixed: Lister, internal media player: Set focus to the track position trackbar when (re-)showing the player controls (32/64)
+29.06.22 Fixed: Dark mode: Dropdown button triangle in owner-drawn comboboxes was drawn too high (32/64)
+29.06.22 Fixed: Configuration - Options - Color: Draw strings for file list example centered, not bottom or top aligned (32/64)
+28.06.22 Fixed: Rename with Shift+F6, go to next/previous file with cursor keys: Footer wasn't updated, e.g. in brief view or branch view (32/64)
+27.06.22 Fixed: When changing between normal and dark mode, keep the main menu translation unchanged even if the user changed the language in another instance of the program (32/64)
+27.06.22 Fixed: Dark mode, Configuration - Options - Color - Others: When no color was set, a click on >> used the default color from light mode (32/64)
+26.06.22 Fixed: Compare by content: Very long lines over 10000 characters could result in overlapping text (32/64)
+26.06.22 Fixed: Could no longer copy a single file to multiple selected folders (F5 - Options - Copy to all selected...) (32/64)
+24.06.22 Fixed: When using the option "Select only the file name when renaming", the whole relative path+name was selected when they didn't contain any dots (32/64)
+24.06.22 Fixed: Synchronize dirs: Result list could show garbage (on Windows versions not supporting LB_SETCOUNT) while items were still added to the list (64)
+23.06.22 Fixed: Button bar: Hint texts (in tooltips) were not always translated any more due to switch to older compiler (64)
+23.06.22 Fixed: Dark mode: The background of the dark mode MessageBox replacement (e.g. error when trying to delete '..') wasn't two colors as in 32-bit (64)
+
+22.06.22 Release Total Commander 10.50 release candidate 3 (RC3)
+22.06.22 Fixed: Quick view panel (Ctrl+Q): The background color was not set to the user-defined background color when playing audio (32)
+22.06.22 Fixed: Quick view panel (Ctrl+Q): The panel didn't have a border, only after going to the next/previous file (64)
+22.06.22 Fixed: In custom columns view, a tooltip could be shown although name and extension were fully displayed (32/64)
+22.06.22 Fixed: Prevent the loading of more buttons from .bar files than the current limit (now increased to 1000 buttons) (32/64)
+22.06.22 Fixed: Button bar: Increased maximum number of buttons from 500 to 1000 (64k limit for .bar file still applies) (32/64)
+22.06.22 Fixed: Files - Change attributes: When multiple files are selected, pre-load the last used date only if the date format wasn't changed in the meantime (32/64)
+21.06.22 Fixed: Create CRC checksums: Invalid line breaks added to SFV files (CRC) when using "Create separate checksum files for each file" (32/64)
+21.06.22 Fixed: Synchronize dirs: Set minimum size so the buttons on the left don't overlap the "Show" groupbox (32/64)
+21.06.22 Fixed: For security reasons, clear all passwords of currently active FTP connections when Total Commander gets minimized or the screen saver starts, same as with the master password (32/64)
+21.06.22 Fixed: cm_UpdateQuickView didn't work if the file list wasn't updated via auto-refresh (32/64)
+20.06.22 Fixed: Optionally use string 5929 for internal plugins in Lister (plugins menu) and for description of 4i internal option instead of 1726 (32/64)
+17.06.22 Fixed: Compare by content, edit file, F2 jump to next match within a line: Blinking cursor may not be shown when F2 continues in the next line (32/64)
+17.06.22 Fixed: Synchronize dirs: Button "Synchronize..." too narrow for some languages, make wider when the dialog box is large enough (32/64)
+17.06.22 Fixed: Configuration-Options-Custom columns: The option chosen in "Configure columns for file system" was lost when changing language, resulting in an empty list of configurations (32)
+17.06.22 Fixed: Copy/Move with background transfer manager (F5-F2): Aborting a long file would show a dialog box which couldn't be accessed, but only on Windows 7/8/8.1 (32/64)
+17.06.22 Fixed: Lister: Disable zoom of album cover also when clicking on 100% menu item (32/64)
+17.06.22 Fixed: After hovering over an URL in Lister (html view), the "drop forbidden" cursor during Drag&drop changed to the URL cursor (64)
+17.06.22 Fixed: Copy/Move with background transfer manager (F5-F2): Removed colon ":" from name of operation (32/64)
+17.06.22 Fixed: Dark mode: Tab headers not redrawn correctly when changing tabs via cursor keys when focused, e.g. in Find files dialog (64)
+17.06.22 Fixed: When using the option "Select only the file name when renaming", the wrong part of the name would get selected in branch view or search results on cursor up/down (32/64)
+17.06.22 Fixed: Print preview (File - Print - File list): The list of fonts in the dropdown combobox was unsorted (32)
+17.06.22 Fixed: Dark mode: The "i" icon wasn't supported in the custom message box, e.g. when pressing F8 (delete) on ".." (32/64)
+17.06.22 Fixed: The new "Sync" button in "Compare by content" didn't support Unicode (32)
+17.06.22 Fixed: The new controls in Configuration - Options - Tabstops/Data Formats didn't support Unicode (32)
+
+15.06.22 Release Total Commander 10.50 release candidate 2 (RC2)
+15.06.22 Fixed: Shift+Tab didn't switch between file list panel and separate tree panel when the other panel was used for quick view (64)
+15.06.22 Fixed: Windows 11: Error when moving Lister window between two screens with different DPI due to snap function interfering (64)
+15.06.22 Fixed: Windows 11: Wrong menu item size in menu bar after moving main window or lister to secondary screen with Win+Shift+Cursor left/right (64)
+15.06.22 Fixed: Find files: Manually resize checkboxes ANSI, ASCII etc. so they don't overlap the right border in dark mode (64)
+14.06.22 Fixed: Drive buttonbar: Align the leftmost button of the right drive bar to the right file panel when using 50:50 percent split (32/64)
+14.06.22 Fixed: Windows 10, dark mode, main configuration: The category list on the left had a white scrollbar (only when using a font too large for the dialog, and autoscale disabled) (32/64)
+14.06.22 Fixed: Dark mode, Alt+F10 tree: The combobox font background was overdrawing the combobox border in some higher DPI resolutions (32/64)
+13.06.22 Fixed: Lister, internal media player: Mouse wheel only changed volume when the cursor was above the volume slider (32/64)
+13.06.22 Fixed: Lister was no longer showing percentage in its menu bar for lister plugins which supported it (32/64)
+12.06.22 Fixed: Configuration-Options-Font: Font preview was wrong when the font name contained non-English character(s), e.g. Chinese font name on Chinese Windows (64)
+12.06.22 Fixed: Lister: The buttons of the internal media player had invalid icons when using yellow or red as the text color (32/64)
+12.06.22 Fixed: File system plugin, find files, feed to listbox, F5 copy -> the option to preserve relative paths was missing after TC 9.22a (32/64)
+10.06.22 Fixed: Lister: Do not remember ASCII override set via parameter cm_list /S, it was used in all later opened listers too (32/64)
+09.06.22 Fixed: Returned to old Free Pascal (fpc) compiler 2.5.1 because some users experienced access violations at program start with newer compiler (64)
+09.06.22 Fixed: Print preview: Intercept also left/right cursor movement when there is no horizontal scrollbar to prevent unwanted scrolling (64)
+
+08.06.22 Release Total Commander 10.50 release candidate 1 (RC1)
+08.06.22 Fixed: Compare by content: The bottom 2 line compare list wasn't refreshed when changing an option via "Sync" button
+08.06.22 Fixed: Internal Media Player: Added some more distance between all the player controls because Windows controls were taking space outside (32/64)
+08.06.22 Fixed: Updated unrar9x.dll for Windows 9x/ME/2000 to version 6.12.0 from official unrar sources unrarsrc-6.1.7.tar.gz dated 2022-05-04 (32)
+08.06.22 Added: The following commands now work without a file name as a parameter, will ask user: SAVETABS, SAVETABSL, SAVETABSR, SAVETABS2, SAVETABS2L, SAVETABS2R (32/64)
+08.06.22 Fixed: Configuration - Options - Font used wrong font preview when the font encoding wasn't set to Western (64)
+08.06.22 Fixed: When copying folders to protected locations like "Program Files", the option "As Administrator" now confirms the entire folder with all items in it, even if some need to be copied later in a second pass (32/64)
+07.06.22 Fixed: wincmd.ini [Packer] PreferUtf8ForZip=1 is now the default also on Asian language Windows versions (32/64)
+07.06.22 Fixed: Configuration - Options - Font: Always draw separator lines manually, not only in dark mode (64)
+06.06.22 Fixed: Tooltips for button bar and drive bar used wrong font when the font name contained non-English character(s), e.g. Chinese font name on Chinese Windows (64)
+06.06.22 Fixed: Lister: When switching from Explorer view (mode 8) to plain text view (mode 1), do not perform ASCII encoding detection if the file is Unicode (32/64)
+06.06.22 Fixed: Titles in totalcmd.inc are now more consistent, but they will not get translated with older versions of Total Commander (32/64)
+05.06.22 Fixed: Lister: Double click on album art image didn't make the window full screen. Double clicking on a jpg/gif/png/bmp will also make the window full screen (32/64)
+05.06.22 Fixed: Compare by content: Increased maximum line length for character by character comparison from 4096 to 32768 characters, edit mode from 16350 to 32768 characters (32/64)
+05.06.22 Fixed: Compare by content: F2 didn't jump to the right location of the differences in edit mode when comparing UTF-8 files (32/64)
+05.06.22 Fixed: Internal Media Player: Cover image in OGG file meta data was ignored with MIME type image/jpg instead of image/jpeg (32/64)
+05.06.22 Added: wincmd.ini [Configuration] CompareF2Mode=1 controls how F2 finds new strings in Compare by content: 0: just within the current line, 1: go to next line after last match, 2: restart in the current line (wrap around) after last match (32/64)
+05.06.22 Fixed: When copying folders to protected locations like "Program Files", the folder timestamp couldn't be copied (32/64)
+03.06.22 Fixed: Compare by content, "Sync" option 3: Handle special case where the two matching separators (left and right file) are the same -> they need to be drawn as part of the identical text (32/64)
+03.06.22 Fixed: Compare by content, "Sync" button: When the user changes the user-defined separators, switch to mode 3 which uses them and re-display the lines (32/64)
+03.06.22 Fixed: Print preview: Intercept cursor movement and page up/down when there are no scrollbars to prevent unwanted scrolling (64)
+02.06.22 Fixed: cm_*UserSpec commands with parameters didn't work when combined with other commands in the button bar or start menu (32/64)
+
+01.06.22 Release Total Commander 10.50 beta 8
+01.06.22 Fixed: Configuration - Options - Color: Enable and immediately disable dark mode again, then switch to Font page -> buttons were missing (64)
+01.06.22 Added: cm_*UserSpec commands now support 2 parameters: 8: remember current file filter (including "All Files" and "Programs"), 9: restore previously remembered file filter (32/64)
+01.06.22 Fixed: Configuration - Options - Tabstops/Data formats: Revert the displayed choice to <Default> when the user chooses a character or number as a separator (32/64)
+01.06.22 Fixed: Button bar: A negative number in the command field like -27 was shown with a hint for the corresponding command with parameters when using external language files (32/64)
+01.06.22 Fixed: The last user command 899 (700+199) could not be executed from a button (32/64)
+01.06.22 Fixed: Dark mode: The text in checkboxes started too far to the right compared to normal mode. The exact value used by Windows is unknown, so 1/2 of the width of the number '0' will now be used (32/64)
+31.05.22 Fixed: The internal commands cm_list* now work with parameters even when the /S=L: part isn't removed (32/64)
+31.05.22 Fixed: Updated the TRegExpr library to version 158 to handle a combination of recursion and back references, e.g. ([a-z])(?R)?\1 to match e.g. abccba (32/64)
+31.05.22 Fixed: Mark newer, hide same files: The first character of the text "Comparison:" was converted to lowercase by mistake (due to DrivesShowUpcase) (32/64)
+30.05.22 Added: wincmd.ini [Packer] PreferUtf8ForZip=1/0 when a ZIP file does not have the UTF-8 flag set, but all characters are valid UTF-8, prefer UTF-8 over ANSI (enabled by default except for double byte languages like Chinese) (32/64)
+30.05.22 Fixed: Master password dialog: Ctrl+V not working when disabling the keyboard hook (AllowHook=0 in wcx_ftp.ini) (32/64)
+30.05.22 Fixed: cm_list* commands with parameters: /N (no plugins) and /PpluginName now take precedence over cm_list vs cm_listInternalOnly (32/64)
+30.05.22 Added: Support FileTipWindowsOnIcon=2 also in thumbnails view: The image part (with frame) is considered the icon where the Win32 style tip is shown, while the tip for the shortened name is shown below (32/64)
+30.05.22 Fixed: FileTipWindowsOnIcon=2 didn't work properly in brief view, only in the first column (32/64)
+30.05.22 Fixed: Two screens with different DPI, main window on second screen -> background pack/unpack/copy dialogs were placed incorrectly (background transfer manager was correct) (32/64)
+29.05.22 Fixed: When closing multiple Lister windows with media playback at once, e.g. by closing Total Commander or shutting down Windows, store all positions in [LastTracks] by increasing the seconds by one for each additional file (32/64)
+29.05.22 Fixed: Synchronize dirs: Print preview in dark mode had wrong color directories (32/64)
+29.05.22 Fixed: Synchronize dirs: Some subfolders were still found as missing when using filters like *.txt and a file was stored in an archive with a relative path a\b\filename without the folders themselves (32/64)
+
+25.05.22 Release Total Commander 10.50 beta 7
+25.05.22 Fixed: Trim of trailing spaces from id3v1 tags didn't work if the tag was filled to the end with spaces (32/64)
+25.05.22 Added: New parameters 8 and 9 for all internal commands cm_srcby*, e.g. cm_srcbyname 8 saves the current sort order internally, cm_srcbyname 9 restores it (32/64)
+25.05.22 Fixed: msimg32.dll was loaded from the program directory by the Lazarus libraries by mistake, which is a possible security risk (64)
+25.05.22 Fixed: Configuration-Options-Color: Preview color for dark mode border was wrong (32/64)
+25.05.22 Fixed: Configuration-Options-Color: Preview text for hint window was wrong (32/64)
+25.05.22 Fixed: Synchronize dirs: Date/time for the files on the right side were not shown in Windows 9x (32)
+24.05.22 Fixed: Internal Media Player: Read meta data and album cover image in GIF/JPEG/PNG format from m4a (mpeg 4) files also when stored at the END of the file (32/64)
+24.05.22 Added: The internal commands cm_list, cm_listInternalOnly, cm_listInternalMulti, cm_listOnly, cm_listMulti now support the same parameters as via command line, with switch / at the start, e.g. cm_list /T1 filename (omit the S=L: part of the command line parameter) (32/64)
+24.05.22 Added: Command line parameter /S=L to open a separate Lister window: New sub-parameter F to open Lister in full screen view, e.g. /S=L:F filename (32/64)
+24.05.22 Fixed: Lister, new internal media player: Ctrl+V now also switches to full screen as with the old player, in addition to Alt+Enter (32/64)
+24.05.22 Added: wincmd.ini [Configuration] FileTipWindowsOnIcon=2 shows Win32-style tip on icon, full name on shortened name, but only when Win32 style tips are enabled in settings (32/64)
+23.05.22 Fixed: Find files: Close standalone search with a small delay after receiving WM_CLOSE (e.g. from AutoHotkey) to avoid access violation (64)
+23.05.22 Fixed: Multi-rename tool: Refresh search and replace comboboxes manually, they aren't fully redrawn after adding items to their dropdown list with refresh disabled (64)
+23.05.22 Fixed: Internal Media Player: Album art wasn't found in some id3v2.4 tags which were using an extra "Data length indicator" field (32/64)
+23.05.22 Fixed: Synchronize dirs: Some subfolders were found as missing when a file was stored in an archive with a relative path a\b\filename without the folders themselves (32/64)
+23.05.22 Fixed: Compare by content, right to left language: The new "Sync" button was overlapping text (32/64)
+22.05.22 Fixed: Internal Media Player: Added some small distance between all the player controls (32/64)
+22.05.22 Fixed: Internal Media Player: The player controls didn't show up when moving the mouse to the bottom while paused/stopped in full screen mode (32/64)
+22.05.22 Fixed: Internal Media Player: Play/Pause didn't work by clicking on the album art image, only by clicking on the player background (32/64)
+22.05.22 Fixed: When using the new parameter /P to position the cursor on the last part of the passed path, the view mode was not updated to the new directory (32/64)
+20.05.22 Fixed: Thumbnails view, only about 1+1/2 rows visible, press left arrow in last line on first item -> cursor was not jumping to the last item in the previous row (32/64)
+20.05.22 Fixed: Id3v1 tags: Ignore genre=0 in id3v1 tag if incomplete id3v2 tag doesn't contain genre, and don't set genre field to 0 (32/64)
+20.05.22 Fixed: Compare by content: Use different dialog box title for "Edit user-defined separators" (32/64)
+20.05.22 Fixed: Tooltips (not the win32 style) were not shown correctly when using duplicate file finder - feed to listbox (32/64)
+20.05.22 Fixed: Button bar: When setting the tooltip to a single space to hide the tip, an empty tip was still shown for a button opening another button as a menu (after closing the menu) (32/64)
+20.05.22 Fixed: Rearranged dialog box items AGAIN in Configuration - Options - Edit/View (32/64)
+20.05.22 Fixed: Lister: Always check menu item "Internal" in "Plugins" menu when viewing file with mode '4' (Multimedia) and no plugin is used (32/64)
+
+18.05.22 Release Total Commander 10.50 beta 6
+18.05.22 Fixed: Internal Media Player: Clicking on the album art icon didn't make the player small again when the image was no longer shown (64)
+18.05.22 Fixed: Rearranged dialog box items again in Configuration - Options - Edit/View, removed spaces from hotkeys (32/64)
+17.05.22 Added: Internal Media Player: Read album cover image in GIF/JPEG/PNG format from m4a (mpeg 4) 'covr' tags (32/64)
+17.05.22 Fixed: Synchronize Dirs: Alt+F4 or click on "X" during an active comparison now immediately stops the comparison without closing the window (32/64)
+17.05.22 Added: wincmd.ini [Configuration] FileTipWindowsOnIcon=0, set to 1 to show tooltips only when the cursor is over the icon, or where it would be when icons are disabled. Does not affect thumbs view (32/64)
+15.05.22 Fixed: Read fields from id3v2.3 tag with desynchronization applied (32/64)
+15.05.22 Fixed: Read album cover image in GIF format from id3v2 tags (32/64)
+15.05.22 Fixed: Some album cover images from id3v2.4 tag were not shown (32/64)
+15.05.22 Fixed: Tab header, locked with directory changes allowed: The "!" when in a different folder was sometimes too close to the tab text (32/64)
+15.05.22 Fixed: cm_SwitchFileTipWindows: New value of FileTipWindows wasn't saved to wincmd.ini (32/64)
+13.05.22 Fixed: Print file list or tree: It was possible to scroll the list just up when there was no scrollbar, or one with a very limited range (64)
+13.05.22 Added: Load album cover images also from FLAC files (32/64)
+13.05.22 Fixed: Memory leak when a track contained multiple images, and the one used was not the first and replaced one earlier in the file (32/64)
+13.05.22 Fixed: FLAC file tags: If the genre field contains multiple entries separated by line breaks, replace the breaks with ";" (32/64)
+13.05.22 Fixed: Reduced flickering when dragging file(s) from one panel to another, or within the same panel (32/64)
+13.05.22 Added: Button bar: Set window title of the bar to the name of the bar file (without path) (32/64)
+13.05.22 Fixed: Dark mode, Configuration - Options - Color: An extra frame was drawn in the top-left corner of the dialog box instead of the preview panel (64)
+13.05.22 Fixed: Copying in background transfer manager (F5-F2) no longer worked when using "Only files of this type" (32/64)
+13.05.22 Fixed: Multi-rename tool: After choosing "<default>" from the dropdown combobox, adding new strings via buttons could sometimes insert unwanted random characters (64)
+13.05.22 Added: Multi-rename tool, "Upper-/lowercase" combobox, "First of each word uppercase (English)": When configured via LowercaseStrings option in wincmd.ini, end the description with ! to allow that the last word can be all lowercase (32/64)
+12.05.22 Fixed: Updated TC7Z.DLL and TC7Z64.DLL to LZMA SDK 21.7 (32/64)
+12.05.22 Fixed: Corrected some glitches in Configuration - Options - Edit/View (unwanted '&' characters, switching between languages) (32/64)
+12.05.22 Fixed: wincmd.ini [Configuration], the two new values SelectionFocusDark and InactiveFocusDark didn't use the values of SelectionFocus and InactiveFocus as the default (32/64)
+
+11.05.22 Release Total Commander 10.50 beta 5
+11.05.22 Fixed: Updated TCMDLZMA.DLL and TCLZMA64.DLL to LZMA SDK 21.7 (32/64)
+11.05.22 Fixed: Find files, search text: 0 byte files were not found by regular expressions matching empty text (32/64)
+11.05.22 Fixed: Print file list or tree: Couldn't scroll the preview with the mouse when the cursor was over the text area (32)
+10.05.22 Fixed: Dark mode: Deadlock when copying with F5-F2 when the target is set to a single name, the error dialog cannot be shown because the main window is busy (32/64)
+10.05.22 Added: Synchronize dirs: Much faster initial loading of result listbox and switching between filters (arrow buttons, singles, duplicates) when not using a screen reader (32/64)
+10.05.22 Fixed: Synchronize dirs: React to user input while loading results to listbox to avoid freezing of the user interface (32/64)
+10.05.22 Fixed: Problems with full screen Lister (Alt+Enter) when invoked while maximized when the task bar was set to auto-hide (32/64)
+09.05.22 Added: wincmd.ini [Configuration], two new values SelectionFocusDark and InactiveFocusDark: As SelectionFocus and InactiveFocus, but for dark mode. Use the value from normal mode when not set (32/64)
+08.05.22 Fixed: Ctrl+A in edit controls or the edit box part of comboboxes would clear the edit box when using auto-append for that edit box, e.g. in the F5 copy dialog (32/64)
+08.05.22 Fixed: Get directory sizes with 'Everything': Do not disable the option when 'Everything' is still busy creating/loading its index, only disable it when it's not installed, or the directory index isn't enabled (32/64)
+08.05.22 Fixed: Right click on item in separate tree while using "Mouse selection mode" - "Left mouse button": The focus needs to be set on that item, otherwise some context menu commands may be applied to the wrong item (32/64)
+08.05.22 Fixed: Ctrl+Q on music file (played with internal media player), Tab to quick view panel, pressing '1' -> quick view panel was shown with window title bar and border (32/64)
+08.05.22 Fixed: Button bar: Parameter %Z%T%M added only the file name without path for files in a subdirectory of an archive (32/64)
+08.05.22 Fixed: Dark mode: Overdraw listbox borders while moving windows to get rid of white border (32/64)
+06.05.22 Fixed: When determining the directory sizes and all folders were empty, the footer would keep showing a question mark when done (32/64)
+06.05.22 Fixed: Getting directory sizes without the tool 'Everything' would return a size 1 less than the real value (only since TC 10.50 beta) (32/64)
+06.05.22 Fixed: Lister: Only check menu item "Internal" in "Plugins" menu when viewing file with internal multimedia player or RTF viewer (32/64)
+06.05.22 Fixed: Setting foreground and background color of Lister media player controls via Configuration-Options-Color didn't work with Windows classic theme (32)
+06.05.22 Fixed: Folder tabs, dark mode: Moved text in tab header 2 pixels to the right to match position in light mode, and exclamation mark 1 pixel to the right (32/64)
+06.05.22 Fixed: Configuration - Options - Color: Color preview was wrong when a non-standard color was chosen via >> button (32/64)
+06.05.22 Fixed: Configuration dialog: Jumping directly to Colors page would activate "Apply" by mistake (32/64)
+06.05.22 Fixed: Files - Change attributes: Show 4 digit year placeholder yyyy instead of yy when opening the dialog with a directory focused (32/64)
+06.05.22 Added: wincmd.ini [Configuration] FontSampleText= now supports \n (line break) and \t (tabstop) characters (32/64)
+06.05.22 Added: Improved viewer configuration in Configuration - Options - Edit/View (32/64)
+
+04.05.22 Release Total Commander 10.50 beta 4
+04.05.22 Fixed: Id3v1 tags: If the genre tag is 255, interpret it as "unknown" and leave the field empty (32/64)
+04.05.22 Fixed: (Wasn't working in 64-bit) Lister: When closing, remember "Fit to window" image option chosen before zooming, so the next time Lister gets opened the file is again fitted to the window (64)
+04.05.22 Fixed: Compare by content, Synchronize dirs: Use thin border around listboxes, it looks better in dark mode (but still uses default colors) (32/64)
+04.05.22 Fixed: Drag&Drop: Reduce heavy flickering when dragging a file while the target panel showed a directory tree, e.g. when using a view mode with background color (32/64)
+03.05.22 Fixed: Dark mode: Some small display problems in Configuration - Options - Icons (64)
+03.05.22 Fixed: Dark mode: Changed thick divider lines to thin lines in various dialogs (Find files, Print file list, Synchronize directories confirmation, Associations: edit type and action, FTP: chmod, Packed file properties (32/64)
+03.05.22 Fixed: Change attributes, plugin fields, choose date field and click on "+" to pick a plugin -> some plugin fields were skipped by mistake (32/64)
+03.05.22 Fixed: Division by zero when opening Directory hotlist configure dialog (not reproduced) (32/64)
+02.05.22 Fixed: Access violation when choosing a color from the dropdown combobox for a view mode (Configuration - Options - View mode) (64)
+02.05.22 Fixed: Separate tree: Dragging a file above/below a file list could cause both that file list and the separate tree to scroll simultaneously (32/64)
+02.05.22 Fixed: Trim any trailing spaces from id3v1 tags (32/64)
+02.05.22 Fixed: Dark mode: Wrong color used for separator line to the left of \ .. in the header with the drive combobox (32/64)
+02.05.22 Fixed: Dark mode: When showing a button bar as a dropdown menu and right clicking on a button, the dropdown menu of that button looked wrong (64)
+01.05.22 Fixed: Folder tab panel bottom border drawn incorrectly in dark mode when moving the window out of the visual screen area and back (64)
+01.05.22 Fixed: Increased supported APE tag size from 1 MB to 4 MB to handle very large cover images (32/64)
+01.05.22 Fixed: cm_50percent: Right panel was 1 pixel too wide when not using folder tabs in the right panel (32/64)
+01.05.22 Fixed: Dark mode: Overdraw white line under the main menu with dark mode border color, configurable via Configuration-Options-Color (32/64)
+01.05.22 Added: F5 copy dialog: Show '?' in front of file/folder counts and total file size while still counting (32/64)
+01.05.22 Fixed: Thumbnails view: Files with thumbnails had their displayed size reset to zero by mistake (32/64)
+29.04.22 Fixed: Configuration - Options - Icons: Labels H and V not translated correctly immediately after switching languages with "Apply" (32/64)
+29.04.22 Added: Set foreground and background color of Lister media player controls via Configuration-Options-Color (32/64)
+29.04.22 Added: Set foreground and background color of Lister media player controls separately: wincmd.ini [Lister]/[ListerDark] MediaFgColor/MediaBgColor=RGB value (32/64)
+29.04.22 Fixed: Synchronize dirs: The main Total Commander window could disappear for a fraction of a second when closing the dialog via Alt+F4 or "X" button (64)
+28.04.22 Fixed: Updated regular expression library to latest code from GitHub https://github.com/andgineer/TRegExpr to fix a bug introduced by the update in beta 2 (32/64)
+
+27.04.22 Release Total Commander 10.50 beta 3
+27.04.22 Fixed: Id3 tags: Cyrillic with Unicode encoding was sometimes incorrectly changed as if the code page was wrong. Now tags with a mix of Unicode and ANSI are supported (32/64)
+27.04.22 Fixed: When automatically getting folder sizes via option "Automatic, only with 'Everything'", some folders had no size because the list returned by 'Everything' used a different sort order than lowercase Unicode (32/64)
+27.04.22 Fixed: Ctrl+Q quick view panel used larger border than the 32-bit version (64)
+27.04.22 Fixed: Ctrl+Q quick view panel didn't switch between normal and dark mode when switching the main window (32/64)
+27.04.22 Fixed: Ctrl+Q quick view panel was not using dark scroll bars in dark mode (only on Windows 10 1809 and newer) (32)
+26.04.22 Added: Lister: When closing, remember "Fit to window" image option chosen before zooming, so the next time Lister gets opened the file is again fitted to the window (32/64)
+26.04.22 Added: Numeric id3 genre tag: Support all 192 genres documented in Wikipedia (80 from the id3 standard plus 112 WinAmp extensions) (32/64)
+26.04.22 Added: Read APE tags from end of musepack (.mpc) files (32/64)
+25.04.22 Fixed: Updated regular expression library to latest code from GitHub https://github.com/andgineer/TRegExpr (32/64)
+25.04.22 Added: wincmd.ini [Configuration] FontSampleText= set sample text for Configuration - Options - Font. Empty text= use default (32/64)
+25.04.22 Added: Dark mode: Better looking scroll box control with thin borders in Change attributes, Find files (plugins), Settings (Auto Switch Mode), Custom column configuration, Print preview (32/64)
+25.04.22 Fixed: iso files which started with at least 512 zero bytes were incorrectly detected as empty tar archives (32/64)
+25.04.22 Added: Directory hotlist (Ctrl+D): wincmd.ini [Configuration] DirMenuHotkeys=0 uses again the hotkeys from the translations (32/64)
+25.04.22 Added: Directory hotlist (Ctrl+D): For add/remove button and Configure, use hotkeys +, - and * instead of those defined in the translations (32/64)
+25.04.22 Fixed: Button bar: When setting the tooltip to a single space to hide the tip, the button description in the delete button confirmation dialog was empty (32/64)
+25.04.22 Fixed: Most tags: Use the first tag if there are multiple tags of the same type (except for genre), e.g. multiple artists (32/64)
+25.04.22 Fixed: Id3v2 tags: Genre=0 was not detected as valid, although it's used for Blues. However, ignore genre=0 in id3v1 tag if incomplete id3v2 tag doesn't contain genre (32/64)
+24.04.22 Fixed: Configuration - Options - Font: Non-English font names (e.g. with accents or Chinese/Korean/Japanese names) were still displayed incorrectly (32/64)
+24.04.22 Fixed: Configuration - Options - Icons: Value '0' in comboboxes appeared as selected even when the combobox did not have the focus (32)
+22.04.22 Fixed: The copy function may hang when using F5-Enter very quickly (32/64)
+22.04.22 Fixed: Dark mode, button bar: Click on button which opens sub-bar as menu, close with ESC or second click -> icon disappeared (32/64)
+22.04.22 Fixed: Dialog box Configuration - Options: Clicking on "View mode" activated the page "Custom columns" by mistake in dark mode (32)
+22.04.22 Fixed: Removed warning "No files selected" after F5-F2 because it could still hang the program (32/64)
+22.04.22 Fixed: F5 copy dialog: Use same icons for files and folders as in the main program file lists (32/64)
+21.04.22 Added: Read missing metadata from id3v1 tag if album, artist, track name or year in other tag were empty (32/64)
+21.04.22 Fixed: Id3v2.4 tags: cover image was not loaded when the image description was using Unicode encoding, because the MIME type did not use Unicode in this case (32/64)
+21.04.22 Added: Read tags from end of wavpack (.wv) files (id3v1) (32/64)
+21.04.22 Fixed: Getting the directory sizes in a directory with many 1000 subdirectories like Windows\WinSxS could be very slow and block the user interface (32/64)
+21.04.22 Fixed: When automatically getting directory sizes, resume it after changing the sort order (32/64)
+
+20.04.22 Release Total Commander 10.50 beta 2
+20.04.22 Fixed: MULTIRENAME command didn't support = and == prefix in "parameters" field of the button bar/start menu (32/64)
+20.04.22 Fixed: Open multi-rename tool a bit faster when there are many items in the rename, search and replace histories (64)
+20.04.22 Fixed: Lister, dark mode: Viewing a binary (mode 2) file would briefly show a white background, caused by a change to reduce flickering when zooming images (32/64)
+20.04.22 Fixed: Portrait or upside down videos rotated with vmr9rotator.dll had white instead of black bars (as regular videos have) (32/64)
+20.04.22 Fixed: Files - Change attributes not working when using 12 hour AM/PM time format (32/64)
+20.04.22 Fixed: F5 copy dialog didn't display the number of selected files/folders and their sizes if a previous file operation was aborted before (32/64)
+20.04.22 Fixed: When not using tabs, one file panel could be 2 pixels more wide than the other at 50:50 split (32/64)
+20.04.22 Added: wincmd.ini [Configuration] CountMarkedInDialog=0 turns off the memory requirement determination in the F5 copy dialog (32/64)
+20.04.22 Fixed: Turning off "Calculate space occupied by subdirectories" - "before copying/deleting" now also disables space calculation (size, number of files and folders) in the F5 copy dialog (32/64)
+19.04.22 Fixed: Compare by content, binary mode: The "8-16-24-32 bytes" combobox was in wrong tab order (32/64)
+19.04.22 Fixed: The new parameter /P to go to the parent of the path parameter(s) and focus the last folder part didn't always work for folders in the root of a drive (32/64)
+19.04.22 Fixed: Id3v2 tags: Support multiple genres both as numeric and as text, also mixed (32/64)
+19.04.22 Fixed: Id3v2.3 and Id3v2.4 tags: Support TDRC tag for recording year in addition to TYER tag (32/64)
+19.04.22 Fixed: Id3v2.3 and Id3v2.4 tags: Support desynchonization (replacement of FF with FF 00 in headers) (32/64)
+19.04.22 Fixed: FLAC tags: Only the first genre was shown, now show them all separated by a semicolon (32/64)
+19.04.22 Fixed: Id3v2 tags: Prefer first cover image if a track contains multiple (32/64)
+19.04.22 Fixed: Lister: Use fixed zoom factors when enlarging/reducing the image size instead of multiplying with/dividing by 1.1 (32/64)
+18.04.22 Fixed: "Drive not found!" dialog (e.g. when choosing a disconnected drive from history): Don't show drive letter behind the warning if it's a backslash (network drive) or space (repeated failure) (32/64)
+18.04.22 Fixed: Lister: When switching from a track without album art to a track with it, re-size the window to its previous size if it was made smaller (32/64)
+17.04.22 Fixed: Packing with external packer to directory with accents no longer worked (problem with ioresult not being reset) (64)
+17.04.22 Fixed: Change attributes: Setting the date of a folder while leaving the time field empty no longer worked (32/64)
+17.04.22 Added: Ctrl+Z on [..] now allows to edit the comment of the folder itself (32/64)
+17.04.22 Fixed: Find files, load configuration: The current tab was always set to the plugins tab (32/64)
+17.04.22 Fixed: Windows 7 with classic theme: Switching to dark mode and back was showing the free+total space in the drive buttonbar with a black background when the drive dropdown list was disabled (32)
+17.04.22 Fixed: MULTIRENAME configured_settings: Do not show warning if configured_settings don't exist, only when using = or == autostart options (32/64)
+17.04.22 Fixed: Configuration - Options - Font: displayed font name wrong if it contained any accents or other non-English characters (64)
+15.04.22 Fixed: Copy with F5-F2 with "Only files of this type" set to a not existing type would hang in dark mode -> show error dialog as child of the main window (32/64)
+15.04.22 Fixed: Quick search with option "Letters - with search dialog" still not working properly with Traditional Chinese when choosing an English word in the IME-> react to WM_IME_ENDCOMPOSITION (64)
+15.04.22 Fixed: Configuration - Options - Language: The language list was no longer sorted alphabetically due to a change in the listbox control (64)
+15.04.22 Fixed: Folder tabs, locked with directory changes allowed: Exclamation mark "!" was always shown for locked virtual folders (e.g. the Desktop), not only when going to a different location (32/64)
+15.04.22 Fixed: Search text in menu Commands-Search... and Lister: Do not limit Unicode search to 127 characters when searching with regular expressions, they can handle far longer search strings (32/64)
+14.04.22 Fixed: Id3 tags: Cyrillic with invalid ANSI encoding was only fixed when the file had a cyrillic file name too. Now it's also handled when the default Windows encoding is Cyrillic (32/64)
+14.04.22 Fixed: Id3v2 tags: Instead of the comment, only the comment language was shown (32/64)
+14.04.22 Fixed: Id3v2 tags: Only the first genre was shown, now show them all separated by a semicolon if the tag contains multiple (32/64)
+14.04.22 Fixed: Button bar: When setting the tooltip to a single space to hide the tip, the text in the right click menu was also empty (32/64)
+14.04.22 Fixed: String 2112 (separate) was not found in 64-bit executable (opening separate search with internal English language) (64)
+14.04.22 Fixed: Configuration - Options - Tabstops: Changing the date format from a custom format to default wasn't applied immediately after clicking on "Apply" (32/64)
+13.04.22 Fixed: Warn user when he chooses the new option "Automatic, only with 'Everything'" in Configuration - Options - Operation when 'Everything' isn't installed or not set to index folder sizes (32/64)
+
+12.04.22 Release Total Commander 10.50 beta 1
+12.04.22 Fixed: Updated unrar.dll and unrar64.dll to latest version 6.11.0 (32/64)
+11.04.22 Added: Show error when trying to check a BLAKE3 checksum and the dll cannot be loaded, e.g. on Windows versions before Windows XP, or when the dll isn't found (32/64)
+11.04.22 Fixed: FTP download: don't try to re-download or resume if the server doesn't respond when a download is complete, and the length of the received data is the same as expected (32/64)
+11.04.22 Fixed: Make BLAKE3 hash file compatible with b3sum by separating the hash and file name by 2 spaces instead of space and * character (32/64)
+10.04.22 Fixed: Configuration - Change settings files directly: Use the editor defined for F4 by the user when notepad.exe isn't installed (32/64)
+08.04.22 Added: Show transfer speed with mixed units (e.g. x.xx b/M/G/T), configured via [Configuration] SizeTransfer, defaults to value of SizeFooter (32/64)
+08.04.22 Fixed: Copy speed didn't support the display of speeds larger than 2GB per second (32/64)
+08.04.22 Fixed: Recreate drop targets for drag&drop to Total Commander after a theme change (WM_THEMCHANGE message received) (32/64)
+07.04.22 Fixed: Lister: pressing '4' while in Explorer preview mode handled the key twice, skipping the viewer/plugin which would be used when choosing '4' from the menu (32/64)
+07.04.22 Fixed: Compare by content didn't work when one side was a 7zip file with encrypted names opened via internal 7zip (32/64)
+07.04.22 Fixed: Command line: Set the combobox dropdown height to less than the current screen height, otherwise items may not be reachable (32/64)
+06.04.22 Fixed: Support Unicode also in date and time separator characters in print function, synchronize dirs, find files, change attributes, multi-rename tool, and when copying file names with full details to the clipboard (32/64)
+06.04.22 Added: Support Unicode also in date and time separator characters in file lists (32/64)
+05.04.22 Fixed: Lister was opening audio/video in the internal player without a taskbar icon after a recent change (64)
+04.04.22 Added: Support for very fast BLAKE3 hash algorithm via external DLL compiled from code available at https://github.com/BLAKE3-team/BLAKE3, licensed under the Apache License 2.0. The 64-bit version uses Assembler code, the 32-bit highly optimized C, Visual Studio 2017 (32/64)
+30.03.22 Fixed: Verify checksums: Ignore byte order mark (BOM) at the start of a line, e.g. after concatenating two Unicode checksum files with BOM (32/64)
+30.03.22 Fixed: Lister: When viewing the media player after a text file, the scroll bars were sometimes not removed (64)
+30.03.22 Fixed: Lister: Do not allow to zoom album art like images, it moves away the player controls. F to fit image to window does work, though (32/64)
+29.03.22 Fixed: Lister: Ctrl+Mouse wheel stopped working in text because it was used for zooming images (32/64)
+29.03.22 Fixed: Made the listbox in Configuration - Options - Plugins - Configure (all types except packer) owner-drawn also in the 32-bit version, to better align the text (32)
+28.03.22 Added: Calculate occupied space: Load directory sizes of the currently active panel first, continue in other panel when done, or the user switches to the other side (32/64)
+27.03.22 Added: Load directory sizes in their own thread, so it can't be slowed down by loading icons or overlays (32/64)
+25.03.22 Fixed: Quick search with option "Letters - with search dialog" still not working properly with Traditional Chinese when entering multiple characters at once (64)
+24.03.22 Fixed: SAVEDETAILSA didn't convert comments from Unicode comment file (UTF-16, UTF-8) to ANSI (32/64)
+24.03.22 Fixed: Show file extension attached to file name if the tab width for the extension is negative, e.g. due to an error in the wincmd.ini (32/64)
+20.03.22 Fixed: Access violation when trying to use language file .lng with Unix style line breaks (32/64)
+18.03.22 Added: Multi-rename tool: Offer to auto-rename files also when moving them to subdirs and a file with the same name already exists in that dir, e.g. with rename mask subdir\[N] (32/64)
+18.03.22 Added: Support for OpenSSL 3.0 from https://curl.se/windows/ - just put libssl-3.dll and libcrypto-3.dll (libssl-3-x64.dll and libcrypto-3-x64.dll for 64-bit) in the program directory (not the 64 subdirectory!) (32/64)
+18.03.22 Added: Search dialog launched in separate process now shows "Find Files (separate)" in the title bar, so it can be distinguished from internal search (32/64)
+16.03.22 Added: wincmd.ini [Configuration] CustomSeparators=0000 set date separator, time separator, thousands separator, and decimal separator. Use 0 for user default from control panel (32/64)
+16.03.22 Added: wincmd.ini [Configuration] CustomDateFormat=-1 set date format independent from the system: -1=default, 0=M-D-Y, 1=D-M-Y, 2=Y-M-D, use CustomSeparators for separator character (32/64)
+16.03.22 Added: Multi-rename tool: New placeholders [B+0]..[B+9] inserts drive letter, first directory in path, second directory etc. To insert name part, use [B+1_2-5] (32/64)
+16.03.22 Added: Multi-rename tool: New placeholders [B0]..[B9] inserts parent, grandparent, great grandparent folder etc. To insert name part, use [B0_2-5] (32/64)
+15.03.22 Added: wincmd.ini [Configuration] GetDirSize=0 0:Manual: Alt+Shift+Enter, 1:Automatic, local drives only, 2:Automatic, also on network, 3:Automatic, only with 'Everything' (32/64)
+15.03.22 Added: New options to load directory sizes: either manually (Alt+Shift+Enter), or automatically: only for local drives, or for network drives too, or only via 'Everything' (32/64)
+15.03.22 Fixed: Update status bar when doing quick search with search dialog in brief view or search results when nothing is selected (32/64)
+14.03.22 Added: Show new option "Finish copying the current file" when aborting copying in the middle of a file. Aborts the operation after the currently copied file (32/64)
+11.03.22 Added: New command line parameter /P without '=' behind it opens parent of passed path and places cursor on last directory, e.g. /P c:\Windows\System32 -> go to c:\Windows and place cursor on System32 (32/64)
+11.03.22 Added: Compare by content: F2 now jumps to the first difference on the next line with differences when no more differences are found on the current line (32/64)
+11.03.22 Added: Compare by content: Shift+F2 now jumps to the last difference on the previous line with differences when no more differences are found on the current line (32/64)
+10.03.22 Added: Compare by content: New hotkeys F2 and Shift+F2 to jump to the next/previous difference within the current line in edit mode (32/64)
+10.03.22 Added: Synchronize dirs: Show progress when comparing by content also in taskbar icon, useful when minimized (32/64)
+09.03.22 Added: cm_CopyFileDetailsToClip, cm_CopyHdrFileDetailsToClip etc. now accept parameter to copy only specific columns (1=name+ext, 2=first custom, 4=second custom etc.) in normal, comments, and custom columns view. Parameter 1 alone copies full list with headers, for backwards compatibility (32/64)
+09.03.22 Added: Content plugins: output numbers as hex, octal or binary. Syntax: [=plugin.field._format]. Example: field._x02' d=decimal, x=lowercase hex, X=uppercase hex, o=octal, b=binary, 0=keep leading zeroes, 2=2 digit groups, '=separator (32/64)
+08.03.22 Added: New internal command cm_CloseDuplicateTabs to close all duplicate tabs in current panel (same as the command in the right click menu) (32/64)
+08.03.22 Added: Button bar, Start menu: command "cd" can now be combined with internal commands, but the path must be in double quotes, e.g. cm_SrcShort,cd "c:\Windows" (32/64)
+08.03.22 Added: New internal command cm_SwitchFileTipWindows to enable/disable the display of tooltips (hints) for files. Also accepts parameters 0=toggle, 1=on, 2(or -1)=off (32/64)
+08.03.22 Added: New internal command cm_ReloadFileIcons re-loads all icons and icon overlays without re-reading the file lists (32/64)
+08.03.22 Added: cm_UnloadPlugins now supports parameters: 0=unload all types, or sum of: 1=packer, 2=file system, 4=lister, 8=content plugins (32/64)
+08.03.22 Added: cm_CloseCurrentTab now supports parameter 1=close locked tab without confirmation (32/64)
+08.03.22 Added: cm_CloseAllTabs now supports parameters: 1=close unlocked tabs without confirmation, 2=close also locked tabs, with confirmation, 3=close also locked tabs, without confirmation (32/64)
+08.03.22 Added: New internal command cm_SwitchColorsByFileType to turn colors by file type on/off. Also accepts parameters 0=toggle, 1=on, 2(or -1)=off (32/64)
+07.03.22 Added: Compare by content: Accept one or two file names via drag&drop to the path edit boxes (32/64)
+07.03.22 Added: Change attributes: Set partial date and/or time by using letters in place of the unchanged parts, e.g. 10:mm:ss to change just the hours. Note: The letters don't matter, something like 10:xx:xx also works (32/64)
+04.03.22 Fixed: Compare by content, read only mode: Do not crash when the allocation of the array to store the selection status fails (for very large text files) (32/64)
+04.03.22 Added: Compare by content: Button "Sync" to choose re-synchronize method within a line (32/64)
+04.03.22 Added: Compare by content: wincmd.ini [Configuration] CompareResync=3 Re-synchronize at user-defined separators, stored in CompareResyncSeparators (32/64)
+02.03.22 Added: Compare by content: wincmd.ini [Configuration] CompareResync=2 New compare method where the differences are compared with re-synchronizing only at spaces, not in the middle of a word (32/64)
+02.03.22 Added: Compare by content: wincmd.ini [Configuration] CompareResync=1 Old compare method where the differences are compared with re-synchronizing in the middle of a word (32/64)
+02.03.22 Added: Compare by content: wincmd.ini [Configuration] CompareResync=0 New compare method where the differences are compared without re-synchronizing on inserted/removed characters (32/64)
+02.03.22 Added: New internal commands cm_CopyToArchive/cm_MoveToArchive to open pack dialog with "Move" option unchecked/checked independent of the state of the Ctrl/Alt/Shift keys (32/64)
+02.03.22 Added: Configure extra space around drive button icons via Configuration - Options - Icons (32/64)
+02.03.22 Fixed: Inplace rename: while the rename edit box was open, clicking on a different file to rename it sometimes required 3 clicks instead of 2 (64)
+01.03.22 Added: Internal content plugin (tc): New fields from id3v1/id3v2/ape/flac/wav/ogg/m4a metadata tags: Tag Present, Title, Artist, Album, Release Year, Description, Track Nr, Genre (32/64)
+28.02.22 Added: command MULTIRENAME==<settings> with two equal signs now starts renaming immediately and closes the dialog if successful (32/64)
+28.02.22 Added: command MULTIRENAME=<settings> now starts renaming immediately with given saved settings, unless the settings cannot be loaded (32/64)
+28.02.22 Added: Lister: When a new text search doesn't find anything, show buttons OK+Cancel in warning. Clicking OK then re-opens the search dialog, Cancel doesn't (32/64)
+25.02.22 Fixed: Lister, internal media player: Center and correctly resize cover image, and react to show/hide cover image button (64)
+24.02.22 Added: Lister, internal media player: Button to show/hide cover image, saved separately for Lister and quick view panel. Hotkey: C (32/64)
+23.02.22 Added: Lister, internal media player: Load cover image from cover.jpg, folder.jpg, cover.png, or folder.png if the track doesn't contain any cover art (32/64)
+22.02.22 Added: Lister, internal media player: Load cover image from id3v2.2, id3v2.3/2.4, ape, flac, ogg (32/64)
+21.02.22 Added: Lister, internal media player: Load track name and artist from id3v1, id3v2.2, id3v2.3/2.4, ape, flac, wav, ogg and m4a tags (32/64)
+20.02.22 Added: Lister, internal media player: Load track positions and names from .cue file with the same name as the opened media file (32/64)
+18.02.22 Added: Lister, internal media player: Single step now also works for audio only, it just plays in 1/10 second steps (32/64)
+18.02.22 Added: Lister, internal media player: New hotkeys: M=Mute, E=Single step, Arrow up/down=volume in 1% steps, Ctrl/Shift+up/down=volume in 10% steps (32/64)
+18.02.22 Added: Lister, internal media player: New hotkeys: Shift/Ctrl+Arrow left/right: Jump by small/large step like the buttons (32/64)
+14.02.22 Fixed: Lister, update zoom percent value for internal image viewer when switching from plugin to internal (32/64)
+14.02.22 Fixed: Keep content of file TOTALCMD.INC cached to make various functions which use it (e.g. loading menus) faster (32/64)
+14.02.22 Added: Lister, click on % value: Allow to enter fractional percent values, separated by dot or comma, e.g. 50.5 or 20,7 (32/64)
+11.02.22 Added: Dark mode: Option to configure border color (lines between controls) via Configuration - Options - Color (32/64)
+11.02.22 Fixed: Dark mode, right panel: current path field didn't have left border when only the left panel had folder tabs (32/64)
+11.02.22 Fixed: Right file panel was 1 pixel too wide when not using folder tabs (32/64)
+11.02.22 Fixed: Compare by content: Swap sides (Ctrl+U) not working when there had been no comparison, e.g. because one of the files was missing (32/64)
+04.02.22 Fixed: Search - Find text - Plugins: Do not show plugin fields supporting ContentCompareFiles, like [=tc.partner file with other extension], they cannot be used there (32/64)
+04.02.22 Added: wincmd.ini [Configuration] FontQualityMenu=0..6 set font quality separately for main menu font, overrides FontQuality and can only be used if FontQuality is set too (64)
+01.02.22 Fixed: Skip Windows executable part (PE format) when checking if an executable is a self-extracting archive, to support very large RAR self extractors (32/64)
+01.02.22 Added: Allow to rename or permanently delete files named 'nul' by using prefix \\?\ to bypass Windows parsing of the name (32/64)
+01.02.22 Fixed: Dark mode, find files, plugins page: Scroll bars in dropdown comboboxes were not dark (32/64)
+01.02.22 Fixed: Dark mode, custom columns configuration dialog: up/down scroll bar buttons were not dark (32/64)
+01.02.22 Fixed: Button to switch to Windows Subsystem for Linux (wsl) with cd \\wsl$ didn't work, returned ERROR_BAD_NET_NAME (32/64)
+31.01.22 Fixed: Faster loading of main configuration dialog in dark mode, by setting dark theme to controls only when switching to the affected tab (64)
+30.01.22 Fixed: Deleting files in dark mode was much slower than in normal mode when using brief view with many visible columns (32/64)
+28.01.22 Fixed: Counting files and folders in F5 copy dialog counted too many files when using a copy filter (32/64)
+25.01.22 Fixed: FTP via IPv6: data connections in active (EPRT) mode didn't work for some long (in text form) IPv6 addresses (32/64)
+14.01.22 Added: Show total bytes, files and folders to be copied already in F5 copy dialog, not only after starting the copy operation (32/64)
+09.01.22 Fixed: Show overlay icons in search results, refresh overlays when TC re-gains focus (32/64)
+09.01.22 Fixed: Could not handle two RAR archives with encrypted file names and different passwords, one shown in each panel (32/64)
+09.01.22 Fixed: Do not remove directional marks (right to left/left to right text) from file names if the name contains Hebrew or Arabic, e.g. in Synchronize Dirs (32/64)
+07.01.22 Fixed: Removed colon ':' from listbox names (LEFT and RIGHT) for visually impaired (32/64)
+07.01.22 Added: wincmd.ini [Configuration] ExecUseContextMenu=0: Set to 1 to open files as if the user right clicked on it and clicked on the default context menu item (32/64)
+06.01.22 Added: wincmd.ini [1920x1080 (8x16)] ExtraDriveWidth_120=0 ExtraDriveHeight_120=0: Make drive bar buttons larger by the given number of pixels for the given DPI (dots per inch) screen scaling (32/64)
+06.01.22 Added: wincmd.ini [1920x1080 (8x16)] ExtraDriveWidth=0 ExtraDriveHeight=0: Make drive bar buttons larger by the given number of pixels, stored in section of the current screen resolution and font size (32/64)
+06.01.22 Added: Alt+Enter on parent directory [..] with nothing selected now shows properties of current directory (just as when right clicking on it) (32/64)
+06.01.22 Added: When starting and there is no wincmd.ini in the configured location, copy maintemplate.txt (program directory) to wincmd.ini and ftptemplate.txt to wcx_ftp.ini. Note: The installer does create a wincmd.ini. This is meant for automatic deployments in companies (32/64)
+05.01.22 Fixed: Installer: Surround path in UninstallString registry value (under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall) in double quotes if the path contains one or more spaces (32/64)
+05.01.22 Added: Installer: Use icon from main program (updatecheck from install.inf) for entry in control panel instead of uninstaller icon (32/64)
+05.01.22 Fixed: Split up string for checking access to drive:\$ M F T so anti-malware programs don't find a false positive (32/64)
+05.01.22 Fixed: Internal 7zip unpacker: Couldn't open archives where the name contained characters from a different code page, e.g. Chinese on English locale (64)
+04.01.22 Fixed: Show comments also in search results after "Feed to Listbox" - "Show" - "Comments" (32/64)
+04.01.22 Added: Button bar: set the "Tooltip" field to a single space to disable tooltip for that specific button (32/64)
+04.01.22 Fixed: Opening file without association or invalid association from archive with Enter/double click will now use the default open method as for unpacked files (32/64)
+04.01.22 Fixed: After the update to version 10, tooltips showing just the name (no win32-style tips) no longer used the same font as the file list (64)
+03.01.22 Added: Use 256x256 icons if available for icons >=64x64, e.g. in thumbnails view, use optimized downscaling of 256x256 icons to 64x64 (average of 4x4 pixel to one pixel) (32/64)
+03.01.22 Fixed: Handle FTP server which doesn't support CDUP command, but returns wrong error code 550 (meaning that changing directory failed) -> use CD .. (32/64)
+03.01.22 Fixed: Access violation in function SAVEDETAILSA when using a custom columns view with a single field longer than 258 characters, e.g. a very long comment (32/64)
+03.01.22 Fixed: Do not recreate free and total disk space control in drive bar when adding/removing drive buttons, e.g. when connecting to ftp or attaching USB flash drive, re-use existing control (32/64)
+03.01.22 Fixed: TAR packer: End archives with two empty 512 byte blocks, otherwise some programs will not be able to open the archive (32/64)
+03.01.22 Fixed: Compare by content: "Cannot focus" exception when pressing Ctrl+Tab while the bottom two line compare window was hidden (64)
+31.12.21 Added: Multi-rename tool: New field [T4] will use EXIF date for all date fields after this placeholder. Will use one of DATETIME_ORIGINAL, DATETIME_DIGITIZED, DATETIME, whichever is found first. No EXIF->skip file (32/64)
+28.12.21 Added: Multi-rename tool: The Fields [T1] to [T3] now support a time offset in the form [T1+60m], composed of: Sign + or -, value, unit: s=seconds, m=minutes, h=hours, D=days, M=months, Y=years
+10.11.21 Fixed: System information: Detect Windows 11, GetVersionEx reports Windows 10 build 22000 or newer (32/64)
+10.11.21 Fixed: Windows 11: Non-flat buttons look almost the same when down and up -> use flat buttons for pressed drive bar buttons, and for all "synchronize dirs" buttons (32/64)
+10.11.21 Fixed: Press Ctrl+Q while focus on RTF edit control in Quick View panel -> quick view was closed and immediately opened again (32)
+10.11.21 Fixed: The command cd \\?\Volume{UUID} was no longer working on Windows 11 (32/64)
+10.11.21 Fixed: Configuration - Options - ZIP packer: in "Pack Unicode names", the second option (internal English only) was named incorrectly, it should be "Store Unicode names as UTF-8 (Pkzip 4.5/Winzip 11.2 method)" (32/64)
+10.11.21 Fixed: Rubber band selection: Start selecting below last file/folder, stretch rubber band outside of the panel -> last file/folder was selected by mistake (32/64)
+10.11.21 Fixed: Setting thumbnail icons with ThumbIconSize to a value larger than the thumbnail size (zoomed or not) was scaled down to 16, 32 or 48 pixel icons (32/64)
+24.10.21 Fixed: Switching from other program to TC via mouse click behind a file name -> rubber band selection was activated by mistake, but only when viewing a virtual folder (32/64)
+22.10.21 Added: Option to not show hidden Appdata folder when hidden files are not displayed: wincmd.ini [Configuration] AlwaysShowAppdata=0 (32/64)
+14.10.21 Added: Menu Files - Print - File content now prints all selected files (after a warning) (32/64)
+14.10.21 Fixed: MediaAdditionalTypes and IViewAdditionalTypes didn't work with Unicode file names on drives which didn't provide alternate DOS names (32/64)
+13.10.21 Fixed: LOADLIST filelist.txt did not find directories when their name didn't end with a backslash (only when more than 10 items were in the same directory) (32/64)
+05.10.21 Fixed: Quick search with option "Letters - with search dialog" not working properly with Traditional Chinese (64)
+05.10.21 Fixed: Multi-rename tool: Name history not stored correctly when the name ended with certain accented characters (e.g. U with ` accent), due to wrong detection of UTF-8 (32/64)
+05.10.21 Fixed: The focus rectangle in the inactive file panel (set e.g. via InactiveFocus=1) was sometimes lost, e.g. when opening a connection to FTP or a plugin in the other panel (32/64)
+03.10.21 Fixed: Let's encrypt certificates with dual signing were not recognized as valid, because the "DST Root CA X3" cert in the Windows cert store has expired, and the alternate chain wasn't checked (32/64)
+01.10.21 Fixed: Crash when searching for tc-comment field with some very long Unicode text (32/64)
+01.10.21 Fixed: Button bar, start menu: Parameter to append characters just from file name, not extension (like %N:~-0,255 or %S:~-0,255) didn't work if file didn't have an extension (32/64)
+29.09.21 Fixed: After editing a comment with Ctrl+Z in search results, the comment cache wasn't cleared, so another Ctrl+Z showed the previous (unchanged) comment (32/64)
+29.09.21 Fixed: F5 Copy dialog: F7 menu didn't work when there was no target path, e.g. when the other panel shows search results. Instead of nothing, show "Directory hotlist" menu item (32/64)
+29.09.21 Fixed: F3 on file in ZIP compressed with LZMA could not be aborted with ESC, but pressing the button or SPACEBAR worked (32)
+29.09.21 Fixed: Multi-rename tool: Option "First letter of each word uppercase" now treats slashes and backslashes as separators, e.g. 	 -> Test\File Name.ext (32/64)
+29.09.21 Fixed: Configuration - Button bar - Change >> - Add subbar: When entering button bar name to edit, append .bar if the file has no extension (32/64)
+29.09.21 Fixed: Synchronize dirs, dialog box to start operations: Checkbox "Confirm overwrites" didn't have a hotkey in English version (32/64)
+29.09.21 Fixed: Faster loading of multi-line options in Attributes dialog (plugins), Search dialog (plugins tab), and Custom columns dialog (32/64)
+02.09.21 Fixed: Lister: In rare cases, a text search may not end by itself, only when the user presses another key (32/64)
+01.09.21 Fixed: Port connection to other PC: Couldn't make a search after aborting a previous search, had to close search and refresh the directory (32/64)
+30.08.21 Fixed: Restore base pointer rbp after catching external exception calling packer or file system plugins, as well as some OLE2 functions (64)
+27.08.21 Fixed: Folder tabs: For locked tabs with directory changes allowed, show exclamation mark (when in different directory) without making the tab larger - it caused problems with multi-line tab controls (32/64)
+26.08.21 Fixed: Auto mode switching not working when not using "Return to locked tab root directory on tab change" in special case: Open tab, locked with directory changes allowed, switch to dir with other view mode, then switch to other tab and back (32/64)
+23.08.21 Added: On Windows 10 older than 1709 (Fall 2017) and older Windows versions, support thumbnails larger than 240 pixels by recreating the listbox (32/64)
+23.08.21 Fixed: SELECTFILES command with many file names now much faster when just the names are provided (no wildcards, no backslashes, no exclusions) (32/64)
+23.08.21 Fixed: SELECTFILES command with too many file names didn't work in right pane, e.g. when called with %R parameter with many files selected in the other panel (32/64)
+23.08.21 Fixed: Error deleting from UC2 file when the archive name contained spaces or Unicode from a different code page (note: only works when drive supports 8.3 DOS names) (32/64)
+23.08.21 Fixed: Temporary file u$~reslt.ok remaining after opening UC2 file containing ^ or & in the file name (32/64)
+23.08.21 Fixed: Access violation when clicking on a button with parameter %S with no files selected and cursor standing on [..] (32/64)
+20.08.21 Fixed: Update drive icon of card in card reader in the drive buttonbar when switching between cards (32/64)
+20.08.21 Fixed: FTP: Re-upload edited file to FTP server could send file to wrong folder if the user saved the file after switching to a different tab (32/64)
+18.08.21 Fixed: Lister: Reduce reloading of new Plugins menu item, check currently active plugin in menu (32/64)
+16.08.21 Fixed: Help wasn't reverted to default when switching to a language with a CHM/HLP file in directory language\ and then to a language other than English without one (32/64)
+08.08.21 Fixed: Crash unpacking ZIPX archive containing an XZ packed file behind an LZMA packed file (64)
+04.08.21 Added: Unpack ZIP files with Brotli (by Google) compression, mainly used in XPI files (32/64)
+04.08.21 Fixed: "Drive not found!" dialog: Show drive letter behind the warning if the drive letter itself isn't in the dropdown list, e.g. for unplugged USB drives (32/64)
+04.08.21 Fixed: Crash in plugin field picker (e.g. [=?] button in multi-rename tool) when clicking on "All plugins" and then using a filter too quickly (32/64)
+04.08.21 Fixed: Support fonts with weight 200 (e.g. Cascadia Code ExtraLight) also in background transfer manager and "copy in background" (32/64)
+02.08.21 Added: Lister: Show additional main menu item to directly choose a Lister plugin (32/64)
+28.07.21 Fixed: Lister: When zooming in/out of images, keep the currently centered pixel in the center (32/64)
+28.07.21 Fixed: Lister: Avoid flickering when zooming in/out of images (32)
+27.07.21 Added: Lister: Use Shift+Cursor left/right to scroll images in smaller steps than Cursor left/right (32/64)
+27.07.21 Added: Lister: Faster display of large JPG/PNG/GIF images, especially on high zoom factors (32/64)
+23.07.21 Fixed: Animated GIFs didn't work with the new zoom function of the internal image viewer (32/64)
+23.07.21 Fixed: Extensions were not shown aligned (with tab) in custom columns view when showing a search result (feed to listbox) (32/64)
+23.07.21 Fixed: Support fonts with weight 200 (e.g. Cascadia Code ExtraLight) also in Lister - you need to re-choose the font if you already set it previously (32/64)
+23.07.21 Fixed: Couldn't use fonts with weight 200 (e.g. Cascadia Code ExtraLight) in main window and dialog boxes (32/64)
+20.07.21 Fixed: Dragging a folder from a single separate tree not working when the right panel was the active panel (32/64)
+19.07.21 Added: Lister: Use Ctrl+Mouse wheel or +/- on numeric keypad to zoom into/out of images in internal viewer (bmp, jpg, png, gif) (32/64)
+09.07.21 Fixed: Search with Everything didn't find files with extension when looking for a pattern like *12.*, to match e.g. test12.txt (32/64)
+09.07.21 Fixed: Dark mode: Right border of listbox was sometimes missing after closing quick view panel with Ctrl+Q (64)
+07.07.21 Fixed: Dark mode: Handle special case where user changed between light/dark mode via menu Configure, then via Windows 10 control panel, causing wrong context menu colors (32/64)
+06.07.21 Fixed: New text file (Shift+F4): If the editor for f4 isn't set, don't try to open the file after creating it. Just refresh the list and place cursor on new file (32/64)
+06.07.21 Added: Quick view panel: Show used plugin in title (normally used for path) behind the file name (32/64)
+05.07.21 Fixed: Copy in background via F5 - Enter - Background: Restore minimized Total Commander when clicking on "Foreground" (32/64)
+05.07.21 Fixed: Copy in background via F5 - Enter - Background: Focus lost when main Total Commander window was minimized to tray (32/64)
+05.07.21 Added: Lister: wincmd.ini [Lister] PreferFiltersFromFile=1/0 determines whether DirectShow filters from the filter32/64 directory or filters registered in Windows will be preferred (32/64)
+05.07.21 Added: Lister: Prefer DirectShow filters from filter32/64 subdirectory when present, even when a different version of that filter is registered in the system (32/64)
+02.07.21 Fixed: Change attributes: access violation when putting long string like [=tc.Name:9-10].[=tc.Name:6-7].[=tc.Name:1-4] in "Date" field, and then re-opening the dialog with multiple selected files (32/64)
+02.07.21 Fixed: Synchronize dirs to encrypted ZIP only working on second attempt, because re-entering the password failed (32/64)
+30.06.21 Fixed: Installer, change INI file location: Do not disable options for Windows directory or program directory if they are the current option, otherwise they can't be unchecked (32/64)
+30.06.21 Fixed: FTP: Handle servers which send EPSV command response to PASV command (32/64)
+30.06.21 Fixed: Button bar: Access violation when using multi-file parameters like %S while the cursor was standing on [..] with nothing selected (64)
+30.06.21 Fixed: Synchronize dirs: Make sure the Enter key is not pressed any more when deleting files on the left/right via context menu before showing the confirmation dialog (not reproduced bug) (32/64)
+29.06.21 Fixed: Duplicate file finder with plugin fields didn't find all duplicates when using sort method "Strictly by numeric character code", SortUpper=1 (32/64)
+29.06.21 Fixed: Ctrl+Q on icon library with plugin iclview while in the right file panel, save individual icon -> focus was set to hidden left panel (32/64)
+28.06.21 Fixed: Lister: Mouse wheel scrolling wasn't the same in 32-bit and 64-bit. Shift+Wheel=scroll sideways, Ctrl+Wheel=scroll page by page (32/64)
+28.06.21 Fixed: Couldn't hide AppData folder in user profile - now it can via ignore list entry: %USERPROFILE%\AppData (32/64)
+28.06.21 Fixed: Added IEIFLAG_ORIGSIZE parameter when extracting thumbnails, gives much better quality on connected phones (32/64)
+27.06.21 Fixed: Pre-loading thumbnails didn't work in virtual folders (e.g. on a connected smartphone), they were only loaded when scrolling (32/64)
+25.06.21 Fixed: Configuration - Options - Packer: Disable checkbox for internal ACE unpacker because it's unavailable in 64-bit (64)
+25.06.21 Fixed: When loading language files from a different directory than the default (e.g. via OPENLANGUAGEFILE), then also look for CHM/HLP files in the same directory (32/64)
+18.06.21 Fixed: Internal media player: detect whether a video needs to be rotated because it was filmed in portrait mode, or upside down - uses vmr9rotator.dll (32/64)
+16.06.21 Fixed: Button bar: Add the name of the current button to the bar control when focusing the bar with Alt+Shift+F11 (for visually impaired) (32/64)
+
 10.06.21 Release Total Commander 10.00 final
 09.06.21 Fixed: Synchronize dirs: The warning exclamation mark on not pressed buttons "duplicates"/"singles" was shown even with ShowWarningIcons=0 set (32/64)
 07.06.21 Fixed: Dark mode, vertical button bar: triangle button to open overflow menu (shown when there are too many buttons for the available space) was using black color instead of dark mode text color (32/64)
@@ -90,7 +677,7 @@
 26.04.21 Added: All placeholders in button bar or start menu like %N, %P now support substring fields in the form :~start,end, e.g. %N:~2,5 (5 characters from the second) or %N:~-8,5 (5 from the 8-last) (32/64)
 26.04.21 Added: New placeholder %B+ for part of path (including branch view paths), start counting from the beginning: %B+ drive with ":", %B+0 drive without ":", %B+1 first subdirectory, %B+2 second subdirectory etc. (32/64)
 25.04.21 Added: Configure option to save displayed file types (e.g. *.txt) separately for each tab: Configuration - Options - Folder Tabs - Save displayed file types separately for each tab (32/64)
-25.04.21 Added: Option to save displayed file types (e.g. *.txt) separately for each tab, or same for all tabs: wincmd.ini [Configure] DirTabFilters=1/0 (32/64)
+25.04.21 Added: Option to save displayed file types (e.g. *.txt) separately for each tab, or same for all tabs: wincmd.ini [Configuration] DirTabFilters=1/0 (32/64)
 23.04.21 Added: Save displayed file types (e.g. *.txt) separately for each tab (32/64)
 23.04.21 Fixed: Lister: Press '5' while the new media player was shown -> conversion to html was done twice even when not aborted (32/64)
 
@@ -232,7 +819,7 @@
 16.03.21 Fixed: Lister, new media player: Display track position also when resizing the window while not playing (32/64)
 16.03.21 Fixed: Lister, new media player: Foreground color for player buttons were not changed to the user-defined lister foreground color (32/64)
 16.03.21 Added: New internal command OPENATTRIBUTES: With '=' as first parameter, apply attributes immediately and close dialog (32/64)
-16.03.21 Added: New internal command OPENATTRIBUTES <parameters> Change attributes: +s (subfolders), +a/-a +r/-r +h/-h +s/-s +dDate +tTime Plugin_settings (32/64)
+16.03.21 Added: New internal command OPENATTRIBUTES <parameters> Change attributes: +f (subfolders), +a/-a +r/-r +h/-h +s/-s +dDate +tTime Plugin_settings (32/64)
 16.03.21 Added: Lister, new media player: Added filter graph to "Running Object Table" so it can be viewed in GraphEdit/GraphStudioNext via "ConnectToRemoteGraph" (needs registered proppage.dll from Microsoft SDK) (32/64)
 15.03.21 Fixed: Made some dialog boxes with checkboxes a bit wider, e.g. the one in Multi-Rename tool when clicking on [N#-#] (32/64)
 15.03.21 Fixed: When unpacking files, remove ReferrerUrl from Zone.Identifier stream data, and change HostUrl to server name only (32/64)
@@ -275,7 +862,7 @@
 08.03.21 Added: New internal commands to copy file details with header titles (field names) to the clipboard: cm_CopyHdrFileDetailsToClip, cm_CopyHdrFpFileDetailsToClip, cm_CopyHdrNetFileDetailsToClip (32/64)
 08.03.21 Fixed: Synchronize dirs: Excluding subdirectories via wildcard field (e.g. *.* | svn\) wasn't always used with "Empty directories" checked, in archives, FTP connections, and file system plugins (32/64)
 07.03.21 Fixed: Block access to paths starting with certain prefixes to the kernel which could crash/hang Windows (32/64)
-07.03.21 Fixed: Block access to drive:\$ MFT and below also when getting icons from LNK files (32/64)
+07.03.21 Fixed: Block access to drive:\$ M F T and below also when getting icons from LNK files (32/64)
 07.03.21 Added: New DirectShow media player: Right click context menu now shows which filter is linked to which (32/64)
 07.03.21 Added: wincmd.ini, new section [ReplaceIniLocation]: Change location of ini file settings each plugin uses, via line pluginfile.ext=c:\path\newinifile.ini (32/64)
 05.03.21 Fixed: Workaround to Windows 10 bug where renaming on FAT formatted drive fails when only the case (upper-/lowercase) is changed (32/64)
@@ -322,7 +909,7 @@
 06.01.21 Fixed: Drop file from outside (e.g. virtual folder in Explorer) to read only directory (e.g. c:\windows): Better dialogs to allow overwrite and copy as admin (32/64)
 05.01.21 Fixed: Compare by content: Multi-line text from clipboard not added when a line ended with 0x13 0x13 0x10 characters (32/64)
 05.01.21 Added: Compare by content: Show progress dialog when pasting large text buffer takes more than 2 seconds, allows to abort paste, but doesn't revert it (32/64)
-04.01.21 Added: New DirectShow media player: Preload DirectVobSub filter if the source filter has a pin "Subtitle" (32/64)
+04.01.21 Added: New DirectShow media player: Pre-load DirectVobSub filter if the source filter has a pin "Subtitle" (32/64)
 04.01.21 Fixed: New DirectShow media player: Detect presence of XySubFilter in filter list and replace with VSFilter.dll if installed or present in subdir "filter32"/"filter64", because XySubFilter only works with madVR output filter, which doesn't support windowless mode required by Lister (32/64)
 03.01.21 Added: New DirectShow media player: do not delete+recreate player controls when switching between tracks (32/64)
 31.12.20 Added: New DirectShow media player: wincmd.ini [Lister] PreloadFilterType64=1 instead of PreloadFilterType32 (64)
@@ -917,7 +1504,7 @@
 03.11.19 Fixed: Dark mode: Removed panel border also when there are no tabs (32/64)
 03.11.19 Fixed: Dark mode: Folder tabs: Only use highlight color for active tab borders, not for inactive tab borders (32/64)
 03.11.19 Fixed: Printing: Catch error "Access denied" (64)
-03.11.19 Fixed: Lister: "Define view method by file type" took precedence over command line paramter /S=L:Pplugin (32/64)
+03.11.19 Fixed: Lister: "Define view method by file type" took precedence over command line parameter /S=L:Pplugin (32/64)
 03.11.19 Fixed: Right click on button bar shown as menu no longer opened the button context menu (32/64)
 03.11.19 Fixed: Dark mode: 2 buttons in "Change attributes" were not translated, as well as the buttons F3 and F4 in "Find files" (64)
 01.11.19 Fixed: Configuration - Button bar had wrong width for items in the upper list if there were too few items in the bar (32)
@@ -1578,7 +2165,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 09.03.18 Fixed: Background transfer manager crashed when using Windows 10 exploits protections (due to handle values > 4GB) (64)
 27.02.18 Fixed: Synchronize dirs, internal compare plugin (compare as text) may hang with 2 files of different size, multiple of 32kBytes (32/64)
 10.12.17 Fixed: Configuration - button bar: icons were sometimes wrong (32/64)
-04.12.17 Added: Show warning in log when upload to Micrsoft IIS FTP server via TLSv1.2 fails. Search for KB2888853 for a hotfix (32/64)
+04.12.17 Added: Show warning in log when upload to Microsoft IIS FTP server via TLSv1.2 fails. Search for KB2888853 for a hotfix (32/64)
 
 24.11.17 Release Total Commander 9.12 final (32/64)
 23.11.17 Fixed: Get \\tsclient shares during remote desktop session using Unicode functions (64)
@@ -2220,7 +2807,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 21.09.16 Added: Message dialog with checkbox (e.g. shown on multi-rename name collisions): Show icon, make it look more like the standard MessageBox dialog (32/64)
 21.09.16 Added: For the sorting commands like CM_SRCBYNAME, add parameter 4 to sort by additional columns, e.g. CM_SRCBYSIZE 5 adds sort by size, ascending (32/64)
 20.09.16 Added: The following internal commands now accept parameters 0 (toggle, default), 1 (true), and 2 (false), except in main menu (* stands for LEFT, RIGHT, and SRC): CM_VERTICALPANELS,CM_*THUMBS,CM_*BYNAME,CM_*BYEXT,CM_*BYSIZE,CM_*BYDATETIME,CM_*NEGORDER (32/64)
-20.09.16 Fixed: Make sure that when rubberband selection starts in one file panel, it will remain there (32/64)
+20.09.16 Fixed: Make sure that when rubber band selection starts in one file panel, it will remain there (32/64)
 20.09.16 Fixed: FTP: avoid infinite retries if both PASV and PORT mode fail due to server misconfiguration (32/64)
 20.09.16 Fixed: Auto-switching to thumbnails view in directory with images -> one of the images would sometimes not get a thumbnail (64)
 20.09.16 Added: Execute view mode commands also when switching between 2 tabs with different view modes (32/64)
@@ -2446,7 +3033,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 13.07.16 Fixed: Search function, search text in plugins: Incorrect results with "whole words" and any other encoding that "Unicode UTF16" checked (32/64)
 13.07.16 Fixed: Windows classic theme: Use unified color (button shadow) for lines above function buttons and command line - overdraw lower tab delimiter (32/64)
 13.07.16 Fixed: Shift+F6 on [..] (change current path): Confirmation button appeared only for a short time, then disappeared (Tab background redraw problem) (32/64)
-13.07.16 Fixed: Allow inplace rename also by clicking behind file name even when using rubberband selection, unless the selection has already selected something (32/64)
+13.07.16 Fixed: Allow inplace rename also by clicking behind file name even when using rubber band selection, unless the selection has already selected something (32/64)
 13.07.16 Fixed: Folder tabs: Show correct drive icons in tabs also when using OldDriveIcons=1 or 2, or DriveLib=dllname (32/64)
 13.07.16 Fixed: Folder tabs: Default Zip icon was shown on tabs for archives with read only, hidden, or system attribute (32/64)
 13.07.16 Fixed: ZIP packer: Don't pack each file to TEMP when packing to RAM disks, only when packing to removable disks and CD-RW (32/64)
@@ -2538,7 +3125,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 28.06.16 Added: wincmd.ini [Configuration] Everything=Everything.exe set location of everything to run when it's not running, and TC checks "Everything" checkbox (32/64)
 28.06.16 Fixed: Empty Network Neighborhood on Windows XP or older (32/64)
 28.06.16 Fixed: TC icon extraction thread was constantly busy with some file types (e.g. .pif) with no default icon in one of the panels (32/64)
-28.06.16 Fixed: Do not draw text cursor (caret) during rubberband selection (32/64)
+28.06.16 Fixed: Do not draw text cursor (caret) during rubber band selection (32/64)
 28.06.16 Fixed: Multi-rename tool, button "#": Wrong position of dropdown menu (32/64)
 28.06.16 Fixed: Scaling of "go up" icon wasn't smooth in thumbnails view (32/64)
 28.06.16 Fixed: Button bar, start menu: We need to swap parameters %C1 and %C2 if the cursor is in the right panel, and less than 2 files are selected (32/64)
@@ -2610,7 +3197,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 15.06.16 Fixed: Configuration - Options - Misc: Dropdown list of configured hotkey didn't support Unicode (32/64)
 15.06.16 Fixed: Hotkeys not working in various locations of the main settings dialog, where options changed (32/64)
 15.06.16 Added: Command cm_SearchForInCurdir opens search with directory under cursor. Accepts drive letter as parameter to search on that drive. Use the character code for scripting, e.g. A=65 (32/64)
-15.06.16 Added: The following internal commands now support a drive letter (A-Z) or /=root, .=parent, [=nethood as parameter: CM_SRCOPENDRIVES , CM_LEFTOPENDRIVES , CM_RIGHTOPENDRIVES. Use the character code for scripting, e.g. A=65 (32/64)
+15.06.16 Added: The following internal commands now support a drive letter (A-Z) or \=root, .=parent, [=nethood as parameter: CM_SRCOPENDRIVES , CM_LEFTOPENDRIVES , CM_RIGHTOPENDRIVES. Use the character code for scripting, e.g. A=65 (32/64)
 15.06.16 Added: Show state for commands cm_FocusSrc, cm_FocusLeftTree, cm_FocusRightTree, cm_FocusSrcTree, cm_FocusTrgTree. Also update button state when entering tree panel (32/64)
 15.06.16 Added: Configuration - Options, left list panel: Show "Auto switch mode" more to the right than "View modes" (32/64)
 14.06.16 Added: Commands with numerical parameters like CM_SELECT now support ? or ?number as parameter, to get dialog box with value request (32/64)
@@ -2636,8 +3223,8 @@ Options added during the development of 9.22 (but only added to 9.50):
 13.06.16 Fixed: Configuration: View mode - "Auto-run commands" wasn't implemented yet. Supports cm_x and em_y commands only (32/64)
 13.06.16 Fixed: Error unpacking RAR archives with subdirs. Reason: Incomplete implementation of deduplicated file unpacking (32/64)
 13.06.16 Fixed: User may get "Configure custom columns view" at program start when using a view mode where the view is set to "unchanged" (32/64)
-13.06.16 Fixed: When rubberband selection ended, inplace rename would sometimes start (32/64)
-13.06.16 Fixed: Rubberband selection couldn't be fully disabled, it still worked when starting it below the name list (32/64)
+13.06.16 Fixed: When rubber band selection ended, inplace rename would sometimes start (32/64)
+13.06.16 Fixed: Rubber band selection couldn't be fully disabled, it still worked when starting it below the name list (32/64)
 12.06.16 Fixed: Lister or Ctrl+Q could sometimes lock image files, so they couldn't be deleted (32/64)
 12.06.16 Fixed: Reading network neighborhood was slow when using NethoodStyle=2 (32/64)
 12.06.16 Fixed: Alternate icon library wasn't used for the main menu (64)
@@ -2648,9 +3235,9 @@ Options added during the development of 9.22 (but only added to 9.50):
 12.06.16 Fixed: Alt+F1/Alt+F2 drive dropdown combobox: Do not handle Num+"-" for selection, it's used to switch to devices without drive letters (32/64)
 12.06.16 Fixed: Multi-rename tool, range picker dialog: Range was lost when closing dialog with ENTER (64)
 12.06.16 Fixed: cm_visButtonbar2 didn't have a checkmark in main menu / pressed button in horizontal buttonbar when vertical bar was visible (32/64)
-12.06.16 Fixed: Rubberband selection: Start selecting below last file while some files were already selected -> selection wasn't removed (32/64)
-12.06.16 Fixed: Rubberband selection: Full view, moving mouse cursor sideways out of panel -> rubberband still drawn, but nothing more selected (32/64)
-12.06.16 Fixed: Rubberband selection: Number of selected files/folders (footer) wasn't updated (32/64)
+12.06.16 Fixed: Rubber band selection: Start selecting below last file while some files were already selected -> selection wasn't removed (32/64)
+12.06.16 Fixed: Rubber band selection: Full view, moving mouse cursor sideways out of panel -> rubber band still drawn, but nothing more selected (32/64)
+12.06.16 Fixed: Rubber band selection: Number of selected files/folders (footer) wasn't updated (32/64)
 12.06.16 Fixed: Find files, second tab, "Older than" edit box was enabled even when checkbox wasn't (32/64)
 12.06.16 Fixed: Auto-switch view modes to comments view not working if comment view was already active (would turn it off) (32/64)
 12.06.16 Fixed: "Show admin shares" was no longer working (32/64)
@@ -2676,10 +3263,10 @@ Options added during the development of 9.22 (but only added to 9.50):
 09.06.16 Fixed: Vertical button bar: Context menu for entire bar was shown at the wrong position (32/64)
 09.06.16 Fixed: Configuration - Options - View modes: Changed checkbox "Reversed" to "Descending" (32/64)
 09.06.16 Fixed: File context menu (Shift+F10): Hotkeys were missing "+", e.g. between "Ctrl" and "F8", when using English language only (32/64)
-09.06.16 Fixed: Rubberband selection: Stop selecting when switching away from program with Alt+Tab (32/64)
-09.06.16 Fixed: Rubberband selection: Don't show inactive title of main window when selection starts (32/64)
-09.06.16 Fixed: Rubberband selection: Listbox didn't auto-scroll when moving cursor above/below the list (64)
-09.06.16 Fixed: Rubberband selection: An additional icon appeared in the taskbar during selection -> we need to set a window parent (32/64)
+09.06.16 Fixed: Rubber band selection: Stop selecting when switching away from program with Alt+Tab (32/64)
+09.06.16 Fixed: Rubber band selection: Don't show inactive title of main window when selection starts (32/64)
+09.06.16 Fixed: Rubber band selection: Listbox didn't auto-scroll when moving cursor above/below the list (64)
+09.06.16 Fixed: Rubber band selection: An additional icon appeared in the taskbar during selection -> we need to set a window parent (32/64)
 09.06.16 Fixed: "Function not implemented" was shown when creating new view mode with fresh wincmd.ini (32/64)
 09.06.16 Fixed: Set default font size to 9, not 8 (32/64)
 09.06.16 Fixed: Changed German translation of view mode in main menu (32/64)
@@ -2749,7 +3336,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 27.04.16 Fixed: Drive dropdown list: Re-open with new drive when drive is added while the list is open (32/64)
 27.04.16 Fixed: Windows 10: Hide drive letters like "X:" on desktop (in file list, tree, breadcrumb bar etc) (32/64)
 27.04.16 Fixed: Do not actively close HTML help (.chm) when closing TC, it crashes on Vista/8/8.1/10 when user chooses "Close group". Windows closes the window by itself (32/64)
-27.04.16 Fixed: Unpack files with F5 from ZIP, option 'Unpack path names if stored with files'' NOT checked -> only unpack files, not the empty folders themselves (32/64)
+27.04.16 Fixed: Unpack files with F5 from ZIP, option 'Unpack path names if stored with files' NOT checked -> only unpack files, not the empty folders themselves (32/64)
 27.04.16 Fixed: Internal associations: Allow to override also internal unpackers with **packerplugin, e.g. for 7z, not only define additional extensions (32/64)
 27.04.16 Fixed: English version: Replaced "Less rules" by "Fewer rules" (grammar error) in search dialog, also "Fewer attributes" in attributes dialog (32/64)
 27.04.16 Fixed: Connection progress dialog: Limit size of this dialog to the size of the main Total Commander window (32/64)
@@ -2994,8 +3581,8 @@ Options added during the development of 9.22 (but only added to 9.50):
 24.02.15 Fixed: Run tcmadmin.exe with current directory set to TC program dir, not the current panel directory (XP) or drive c (after XP) (32/64)
 24.02.15 Fixed: Linux: GetCurrentDirectory returns UNC/server/share instead of //server/share for UNC paths linked under ~/.wine/dosdevices/unc (32/64)
 22.02.15 Added: Standalone search: Allow to search in search results (after feed to listbox) and selected files. Option is disabled when user changes focus away from search (32/64)
-22.02.15 Added: Disable rubberband selection mode via Configuration-Options-Operation, or wincmd.ini [Configuration] UseRubberBandSelection=0 (32/64)
-22.02.15 Added: Use different type of rubberband selection in thumbs view: Just select from first clicked image to the one the cursor is on (32/64)
+22.02.15 Added: Disable rubber band selection mode via Configuration-Options-Operation, or wincmd.ini [Configuration] UseRubberBandSelection=0 (32/64)
+22.02.15 Added: Use different type of rubber band selection in thumbs view: Just select from first clicked image to the one the cursor is on (32/64)
 20.02.15 Added: Change attributes: Show error message if setting attributes or timestamp failed (plugins were already handled separately) (32/64)
 20.02.15 Added: New internal command cm_wait, accepting wait time in milliseconds, e.g. cm_wait 1000. Can be combined, e.g. em_cmd1,cm_wait 1000,em_cmd2 (32/64)
 20.02.15 Fixed: Command line parameter FTPOPEN:Connection_name only worked for left panel, not for right panel (e.g. via /R=) (32/64)
@@ -3009,7 +3596,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 04.02.15 Added: Use "Everything" search functions (if installed) to make search on NTFS drives faster (32/64)
 03.02.15 Added: Support URLs in current path inplace rename and "cd" command: file:///c|/Windows , file:///c:/Windows , file://localhost/c|/Windows , file://localhost/c:/Windows, file://server/share/dir, file://c:/Program%20Files (32/64)
 30.01.15 Fixed: Search function: Show error when user tries to use content plugin search on FTP, file system plugin, or inside an archive (32/64)
-28.01.15 Added: Show rubberband selection window when selecting with left mouse button, brief+thumbs view need more work (32/64)
+28.01.15 Added: Show rubber band selection window when selecting with left mouse button, brief+thumbs view need more work (32/64)
 28.01.15 Added: Click on tab header with "locked but directory changed allowed" returns to base directory of that tab (32/64)
 28.01.15 Added: More checks that the data stored in window data belongs to TC itself, to reduce crashes (64)
 27.01.15 Added: Background transfer manager: Set thread priority to highest until the window has been created (may help avoid error message "fatal error: background window not found") (32/64)
@@ -6522,81 +7109,81 @@ Options added during the development of 9.22 (but only added to 9.50):
 20.01.09  Added: Lister configuration dialog: When the plugins button isn't pressed, immediately apply only the following changes: font, line width. A full reload is only done while in plugins view and the plugin settings are changed
 18.01.09  Added: Windows NT-based systems, Installer: When no wincmd.ini location is set in registry, set it to %APPDATA%\GHISLER\wincmd.ini and store in registry
 18.01.09  Added: Windows NT-based systems: When no wincmd.ini location is set in registry, via command line or in wincmd.ini in program dir, and there is no wincmd.ini in Windows dir, use %APPDATA%\GHISLER\wincmd.ini
-18.01.09: Fixed: FTP connection details: Do not allow to create or rename a connection if the target name is already used for a server template
-18.01.09: Fixed: Configuration - Copy/Delete: 'Use standard method' wasn't saved when choosing the Explorer method and then the standard method
-18.01.09: Fixed: Lister, right click on scrollbar: The following commands were not supported: Top, Bottom, Left Edge and Right Edge
-18.01.09: Fixed: FTP Connect dialog: It was still possible to create folder names consisting of just spaces, by entering a name like |       |
-18.01.09: Added: Re-use MinLineHeight option from main file list also for breadcrumb bar
-18.01.09: Fixed: Use string 6201 throughout the "compare by contents" dialog for message boxes and other titles
-18.01.09: Fixed: More alignment problems in search dialog with right to left alignment
-18.01.09: Fixed: Drive bar: Tooltip of neighbor button still shown when a drive had no label
-18.01.09: Fixed: Drive bar: Tooltip shown when moving cursor away from drive button and back
-18.01.09: Fixed: Button bar: button state not always shown correctly for multi-line button bars (and more than 2 lines not supported at all)
-16.01.09: Fixed: Breadcrumb bar: When current path was hidden and user accesses breadcrumb bar via Alt+F11 and Cursor down, pressing ESC was hiding the path too early
-16.01.09: Fixed: Access violation when turning off visibility of current path and using no themes
-16.01.09: Fixed: Tab order wrong in "Encode" dialog
-16.01.09: Fixed: Breadcrumb bar: BreadcrumbDelay* ini values didn't work
-16.01.09: Fixed: Breadcrumb bar: Return focus to file panel when resizing window or changing panel separator position while focus is on breadcrumb bar
-16.01.09: Fixed: Breadcrumb bar: Check whether a virtual folder is a Drag&Drop target or not (via SFGAO_DROPTARGET flag)
-16.01.09: Fixed: Breadcrumb bar: Don't allow to drop files on "ftp" menu item
-16.01.09: Added: Button bar dropdown menu: Always show below button, not at click position
-16.01.09: Fixed: Button bar dropdown menu: Do not show duplicate separators or separators at the start or before a column break
-16.01.09: Fixed: Button bar dropdown menu: Do not show buttons which point to the current main button bar
-16.01.09: Fixed: Button bar: Arrow overlay for dropdown menus was shown only after clicking once on a dropdown menu button
-16.01.09: Fixed: GroupBox labels were no longer translated (except for the radio button groupboxes)
-16.01.09: Fixed: cd .. in command line went up two directories instead of one (caused by bad fix in beta 6)
+18.01.09  Fixed: FTP connection details: Do not allow to create or rename a connection if the target name is already used for a server template
+18.01.09  Fixed: Configuration - Copy/Delete: 'Use standard method' wasn't saved when choosing the Explorer method and then the standard method
+18.01.09  Fixed: Lister, right click on scrollbar: The following commands were not supported: Top, Bottom, Left Edge and Right Edge
+18.01.09  Fixed: FTP Connect dialog: It was still possible to create folder names consisting of just spaces, by entering a name like |       |
+18.01.09  Added: Re-use MinLineHeight option from main file list also for breadcrumb bar
+18.01.09  Fixed: Use string 6201 throughout the "compare by contents" dialog for message boxes and other titles
+18.01.09  Fixed: More alignment problems in search dialog with right to left alignment
+18.01.09  Fixed: Drive bar: Tooltip of neighbor button still shown when a drive had no label
+18.01.09  Fixed: Drive bar: Tooltip shown when moving cursor away from drive button and back
+18.01.09  Fixed: Button bar: button state not always shown correctly for multi-line button bars (and more than 2 lines not supported at all)
+16.01.09  Fixed: Breadcrumb bar: When current path was hidden and user accesses breadcrumb bar via Alt+F11 and Cursor down, pressing ESC was hiding the path too early
+16.01.09  Fixed: Access violation when turning off visibility of current path and using no themes
+16.01.09  Fixed: Tab order wrong in "Encode" dialog
+16.01.09  Fixed: Breadcrumb bar: BreadcrumbDelay* ini values didn't work
+16.01.09  Fixed: Breadcrumb bar: Return focus to file panel when resizing window or changing panel separator position while focus is on breadcrumb bar
+16.01.09  Fixed: Breadcrumb bar: Check whether a virtual folder is a Drag&Drop target or not (via SFGAO_DROPTARGET flag)
+16.01.09  Fixed: Breadcrumb bar: Don't allow to drop files on "ftp" menu item
+16.01.09  Added: Button bar dropdown menu: Always show below button, not at click position
+16.01.09  Fixed: Button bar dropdown menu: Do not show duplicate separators or separators at the start or before a column break
+16.01.09  Fixed: Button bar dropdown menu: Do not show buttons which point to the current main button bar
+16.01.09  Fixed: Button bar: Arrow overlay for dropdown menus was shown only after clicking once on a dropdown menu button
+16.01.09  Fixed: GroupBox labels were no longer translated (except for the radio button groupboxes)
+16.01.09  Fixed: cd .. in command line went up two directories instead of one (caused by bad fix in beta 6)
 
 14.01.09 Release Total Commander 7.50 Beta 6
-14.01.09: Fixed: Total Commander no longer worked on Windows 95/95b
-14.01.09: Fixed: Delay before auto-scrolling file list during Drag&Drop no longer worked (scrolling started immediately)
-14.01.09: Fixed: ContentStopGetValueW function wasn't loaded, so it couldn't be called
-14.01.09: Added: Breadcrumb bar, ftp: Don't show progress dialog when loading subdir, show abort button instead (icon to be determined)
-14.01.09: Added: wincmd.ini [Configuration] BreadcrumbDelayVirtual=500 BreadcrumbDelayFtp=500 BreadcrumbdelayPlugin=500 BreadcrumbDelayDir=250  allow to set the delay in milliseconds when hovering over the breadcrumb until a subfolder is opened - separately for virtual folders, ftp, file system plugins, and directories
-14.01.09: Added: wincmd.ini [Configuration] BreadcrumbSeparator=-3 allows to set the location of the breadcrumb separator behind which the subdirs expand when hovering with the mouse: 0..100: width in percent, <0 : measured from the end in units of line height
-13.01.09: Fixed: Command line, "cd" command: Detect and remove invalid constructs like cd . \x  or cd  . . \x (The dots are counted as if there were no spaces)
-13.01.09: Fixed: Lister: Removed F12 hotkey now that Ctrl+Right Shift/Ctrl+Left Shift works as planned
-13.01.09: Fixed: Lister: Slightly different line break location of lines in plain English files between text and UTF-8 mode
-13.01.09: Fixed: FTP connection dialog: When trying to protect selected connections with password, warn the user when some connections had no password stored
-13.01.09: Fixed: FTP connection dialog: When trying to protect selected connections with password, uncheck all folders (also empty) and show error if no connection selected
-13.01.09: Fixed: Compare by contents: First character couldn't be found sometimes when searching backwards (binary: first two characters)
-13.01.09: Fixed: Compare by contents, search backwards: If search string was found on first line, repeating the search would not report an error that the string wasn't found (search loops)
-13.01.09: Added: Lister: Show vertical scrollbar on the left side when right-aligning right to left text
-13.01.09: Fixed: Lister: Backwards search didn't place cursor in front of search text if selection already started at the beginning
-13.01.09: Added: New start menu parameters %WL and %WF to pass UTF-16 Unicode list file (with BOM) to program in button bar or start menu
-13.01.09: Added: New start menu parameters %UL and %UF to pass UTF-8 list file (with BOM) to program in button bar or start menu (like %L and %F)
-13.01.09: Fixed: Couldn't immediately abort the copying of many small files with compatibility mode
-13.01.09: Fixed: Win9x/ME: Groupboxes as in "Encode files" dialog not translated correctly
-13.01.09: Added: Use themed button for breadcrumb dropdown panel. When using the flat interface, the panel is shown with a border (otherwise almost nothing is visible)
-13.01.09: Fixed: It wasn't always possible to abort the counting of files in F5/F6 functions with ESC, sometimes the function stopped too
-12.01.09: Fixed: Log file: User name and computer name were not stored as UTF-8 on NT-based systems
-12.01.09: Fixed: Synchronize dirs: Archive with stored dir names: Error about duplicate names was shown if same dir with different case found
-12.01.09: Fixed: Synchronize dirs: Multiple directory headers could be shown for the same dir when the dir had different case on left and right side, e.g. TEST and test
-12.01.09: Fixed: RAR archive, Alt+Enter on file: Support 1 second precision of timestamp
-12.01.09: Fixed: Main configuration dialog, Copy/Delete page: When "Use standard method" is checked, "Copy directory date" isn't enabled when the Explorer copy method was checked before
-12.01.09: Fixed: Main configuration dialog, Copy/Delete page: "Use standard method" didn't enable Apply button
-12.01.09: Fixed: Wine only: When setting ini location to program dir, the ftp ini file was named "windows" instead of "wcx_ftp.ini"
-12.01.09: Fixed: Lister, right to left text: swap left and right cursor key when showing the text right-aligned
-12.01.09: Fixed: FTP connection details: User tries to protect password with master password but fails to enter correct master password -> password not saved. Solution: Keep dialog open
-12.01.09: Fixed: Synchronize dirs: Changed tab order, so the Load/Save button comes before the left path
-12.01.09: Fixed: Right to left display, copy progress dialog: Mirror Background and Pause button too
-12.01.09: Fixed: Change volume name of drive in file panel tree -> wrong name was suggested
-12.01.09: Fixed: Change volume name of drive in (separate or file panel) tree: Handle renaming internally if drive letter detected
-12.01.09: Added: Synchronize dirs: Do not count directories in the footer
-11.01.09: Fixed: Wine, Thumbnails view: Horizontal cursor movement didn't work
-11.01.09: Fixed: Wine, Thumbnails view: Thumbnails database didn't work on newer versions of Wine (bug in Wine's IStream.SetSize)
-11.01.09: Fixed: Button bar: Right click on button pointing to button bar, "Edit linked button bar": ">>"-Button now allows to choose different button bar
-11.01.09: Fixed: Length of operators in search function (plugins page) increased from 31 to 48 as in TC 7.0x
-11.01.09: Fixed: Quick filter: When in custom columns view with delay-loading fields, using a quick filter stopped the loading of delayed fields, but didn't restart it afterwards
-11.01.09: Fixed: Lister: Update title bar when switching through files with n/p also when file cannot be read
-11.01.09: Fixed: When AllowSetCursorPos=0  set, the current item was changed when the left mouse button was released.
-11.01.09: Fixed: Right mouse button Drag&Drop: Show error when target is invalid, e.g. "ftp" in tree, or "My Computer" for shortcuts
-11.01.09: Fixed: Lister: Select text, rename file, F2 (-> file not found), rename back, F2 (->file shown), select -> selection start was at old cursor position
-11.01.09: Fixed: Cancel editing of current path -> only set cursor on current panel when user pressed Escape, not when he clicked somewhere (caused problems with Drag&Drop)
-11.01.09: Fixed: Could not Drag&Drop files to virtual folders in the right breadcrumb bar (it worked with the left one, though)
-11.01.09: Fixed: Some fixes to help (Shortcuts, Lister)
-11.01.09: Fixed: Lister: Search text, select text, switch view mode -> selection retained incorrectly
-11.01.09: Fixed: Resizing of multi-rename tool in right to left mode
-11.01.09: Fixed: Create folder in connect dialog allowed to create empty folders in other ways. Solution: Disallow folders with trailing spaces or empty folders
+14.01.09  Fixed: Total Commander no longer worked on Windows 95/95b
+14.01.09  Fixed: Delay before auto-scrolling file list during Drag&Drop no longer worked (scrolling started immediately)
+14.01.09  Fixed: ContentStopGetValueW function wasn't loaded, so it couldn't be called
+14.01.09  Added: Breadcrumb bar, ftp: Don't show progress dialog when loading subdir, show abort button instead (icon to be determined)
+14.01.09  Added: wincmd.ini [Configuration] BreadcrumbDelayVirtual=500 BreadcrumbDelayFtp=500 BreadcrumbdelayPlugin=500 BreadcrumbDelayDir=250  allow to set the delay in milliseconds when hovering over the breadcrumb until a subfolder is opened - separately for virtual folders, ftp, file system plugins, and directories
+14.01.09  Added: wincmd.ini [Configuration] BreadcrumbSeparator=-3 allows to set the location of the breadcrumb separator behind which the subdirs expand when hovering with the mouse: 0..100: width in percent, <0 : measured from the end in units of line height
+13.01.09  Fixed: Command line, "cd" command: Detect and remove invalid constructs like cd . \x  or cd  . . \x (The dots are counted as if there were no spaces)
+13.01.09  Fixed: Lister: Removed F12 hotkey now that Ctrl+Right Shift/Ctrl+Left Shift works as planned
+13.01.09  Fixed: Lister: Slightly different line break location of lines in plain English files between text and UTF-8 mode
+13.01.09  Fixed: FTP connection dialog: When trying to protect selected connections with password, warn the user when some connections had no password stored
+13.01.09  Fixed: FTP connection dialog: When trying to protect selected connections with password, uncheck all folders (also empty) and show error if no connection selected
+13.01.09  Fixed: Compare by contents: First character couldn't be found sometimes when searching backwards (binary: first two characters)
+13.01.09  Fixed: Compare by contents, search backwards: If search string was found on first line, repeating the search would not report an error that the string wasn't found (search loops)
+13.01.09  Added: Lister: Show vertical scrollbar on the left side when right-aligning right to left text
+13.01.09  Fixed: Lister: Backwards search didn't place cursor in front of search text if selection already started at the beginning
+13.01.09  Added: New start menu parameters %WL and %WF to pass UTF-16 Unicode list file (with BOM) to program in button bar or start menu
+13.01.09  Added: New start menu parameters %UL and %UF to pass UTF-8 list file (with BOM) to program in button bar or start menu (like %L and %F)
+13.01.09  Fixed: Couldn't immediately abort the copying of many small files with compatibility mode
+13.01.09  Fixed: Win9x/ME: Groupboxes as in "Encode files" dialog not translated correctly
+13.01.09  Added: Use themed button for breadcrumb dropdown panel. When using the flat interface, the panel is shown with a border (otherwise almost nothing is visible)
+13.01.09  Fixed: It wasn't always possible to abort the counting of files in F5/F6 functions with ESC, sometimes the function stopped too
+12.01.09  Fixed: Log file: User name and computer name were not stored as UTF-8 on NT-based systems
+12.01.09  Fixed: Synchronize dirs: Archive with stored dir names: Error about duplicate names was shown if same dir with different case found
+12.01.09  Fixed: Synchronize dirs: Multiple directory headers could be shown for the same dir when the dir had different case on left and right side, e.g. TEST and test
+12.01.09  Fixed: RAR archive, Alt+Enter on file: Support 1 second precision of timestamp
+12.01.09  Fixed: Main configuration dialog, Copy/Delete page: When "Use standard method" is checked, "Copy directory date" isn't enabled when the Explorer copy method was checked before
+12.01.09  Fixed: Main configuration dialog, Copy/Delete page: "Use standard method" didn't enable Apply button
+12.01.09  Fixed: Wine only: When setting ini location to program dir, the ftp ini file was named "windows" instead of "wcx_ftp.ini"
+12.01.09  Fixed: Lister, right to left text: swap left and right cursor key when showing the text right-aligned
+12.01.09  Fixed: FTP connection details: User tries to protect password with master password but fails to enter correct master password -> password not saved. Solution: Keep dialog open
+12.01.09  Fixed: Synchronize dirs: Changed tab order, so the Load/Save button comes before the left path
+12.01.09  Fixed: Right to left display, copy progress dialog: Mirror Background and Pause button too
+12.01.09  Fixed: Change volume name of drive in file panel tree -> wrong name was suggested
+12.01.09  Fixed: Change volume name of drive in (separate or file panel) tree: Handle renaming internally if drive letter detected
+12.01.09  Added: Synchronize dirs: Do not count directories in the footer
+11.01.09  Fixed: Wine, Thumbnails view: Horizontal cursor movement didn't work
+11.01.09  Fixed: Wine, Thumbnails view: Thumbnails database didn't work on newer versions of Wine (bug in Wine's IStream.SetSize)
+11.01.09  Fixed: Button bar: Right click on button pointing to button bar, "Edit linked button bar": ">>"-Button now allows to choose different button bar
+11.01.09  Fixed: Length of operators in search function (plugins page) increased from 31 to 48 as in TC 7.0x
+11.01.09  Fixed: Quick filter: When in custom columns view with delay-loading fields, using a quick filter stopped the loading of delayed fields, but didn't restart it afterwards
+11.01.09  Fixed: Lister: Update title bar when switching through files with n/p also when file cannot be read
+11.01.09  Fixed: When AllowSetCursorPos=0  set, the current item was changed when the left mouse button was released.
+11.01.09  Fixed: Right mouse button Drag&Drop: Show error when target is invalid, e.g. "ftp" in tree, or "My Computer" for shortcuts
+11.01.09  Fixed: Lister: Select text, rename file, F2 (-> file not found), rename back, F2 (->file shown), select -> selection start was at old cursor position
+11.01.09  Fixed: Cancel editing of current path -> only set cursor on current panel when user pressed Escape, not when he clicked somewhere (caused problems with Drag&Drop)
+11.01.09  Fixed: Could not Drag&Drop files to virtual folders in the right breadcrumb bar (it worked with the left one, though)
+11.01.09  Fixed: Some fixes to help (Shortcuts, Lister)
+11.01.09  Fixed: Lister: Search text, select text, switch view mode -> selection retained incorrectly
+11.01.09  Fixed: Resizing of multi-rename tool in right to left mode
+11.01.09  Fixed: Create folder in connect dialog allowed to create empty folders in other ways. Solution: Disallow folders with trailing spaces or empty folders
 09.01.09  Fixed: Correct right to left text display also on buttons
 09.01.09  Added: wincmd.ini [ButtonBar] PopupOverlay=0 allows to turn off the small arrow overlay of button bar buttons linking to popup bars
 09.01.09  Fixed: Button bar dropdown menu: text starts too far to the left if small icon size set via PopupIconSize, and the frame around "checked" items was too large
@@ -6699,105 +7286,105 @@ Options added during the development of 9.22 (but only added to 9.50):
 23.12.08  Fixed: ToolTipDelay: By mistake, the lower limit was set to 5 seconds (instead of the upper limit)
 
 23.12.08 Release Total Commander 7.50 Beta 4
-23.12.08: Added: (Experimental) Support for separated Ansi and Unicode plugins. The Unicode plugins must be named <pluginname>.u<extension>, e.g. id3.wdx and id3.uwdx
-23.12.08: Fixed: Do not show directory context menu when right clicking on header of quick view panel
-23.12.08: Fixed: Only when using double byte locale (e.g. Chinese): Unpacking from ZIP in Chinese subdir produced incorrect file names (name start cut)
-23.12.08: Fixed: Win9x only: empty .inc files created in TC dir after changing language and opening the main menu for the first time (caused by GetPrivateProfileSection)
-23.12.08: Fixed: Linux with Wine: Could not delete 2 folders with same name, just different case, e.g. 'Hello' and 'hello'
-23.12.08: Fixed: FTP connect: Changed name of folders section to [|empty_folders|] to make name collisions improbable
-23.12.08: Fixed: Changed file sorting methods 0-2 to use CompareStringW on NT-based systems (not available on Win9x) to get similar sorting as older versions
-23.12.08: Fixed: Fast flickering during Drag&Drop in FTP connect dialog, too fast scrolling (changed to 2 different speeds)
-23.12.08: Fixed: Make quick filter compatible with these functions: delete in 'feed to listbox', 'Show only selected', 'Mark newer, hide same files', Delete of files outside of TC+watch dirs
-22.12.08: Fixed: Line height in FTP connect progress dialog/CRC check dialog
-22.12.08: Fixed: LB_GETTEXT no longer working with FTP log list
-22.12.08: Fixed: ToolTipDelay and DriveTipDelay options were ignored
-22.12.08: Fixed: Lister: Access violation when file gone and switching to binary mode and back to text mode
-22.12.08: Fixed: Drag folder to tree, hold down right mouse button before releasing left -> right click menu was shown when releasing right button
-22.12.08: Fixed: Change start menu dialog: Cursor not set in "Command" field when adding first command to empty list
-22.12.08: Added: tcmdx64: Allow to add also per extension Explorer extensions to the ignore list
-22.12.08: Fixed: tcmdx64: Wrong first item index passed to plugins
-21.12.08: Fixed: Ctrl+F connect dialog: show error when delete or Drag&Drop fails because wcx_ftp.ini is write protected
-21.12.08: Added: Breadcrumb bar dropdown: custom-drawn arrows for long lists
-21.12.08: Added: Breadcrumb bar: During Drag&Drop, let the underline flash so the user knows that the subdir will soon open
-21.12.08: Added: New style of breadcrumb bar with small arrow panel below bar to open subdirs
-19.12.08: Fixed: Synchronize dirs: "Empty dirs" ignored option "Only selected"
-19.12.08: Fixed: Opening file from archive via internal associations sometimes loaded the editor, but the file was deleted before the editor could open it
-19.12.08: Fixed: Lister: When file not accessible, Lister switched to text mode, but the max. line width remained that of the previous view (e.g. hex view)
-19.12.08: Added: Apply quick filter also to auto-refresh
-19.12.08: Fixed: Crash with quick filter and auto-refresh when new files arrived while quick filter was set
-19.12.08: Fixed: Files - Change attributes: content plugin parameters like [tc.comment] can now be up to 2kBytes long
-19.12.08: Added: Button bar: Show small overlay when a button opens a menu bar dropdown menu
-19.12.08: Fixed: Button bar dropdown menu: moved option PopupIconSize from bar to wincmd.ini section [ButtonBar]
-19.12.08: Fixed: Button bar dropdown menu: Icons slightly distorted when popup icon size differs from main bar icon size
-19.12.08: Fixed: Button bar dropdown menu: Selected items were not shown if the main menu was configured to use checkmarks
-19.12.08: Fixed: Define server type dialog: Show saved definitions popup menu at button position, not mouse position
-19.12.08: Fixed: Define server type dialog: Some hotkeys not working
-19.12.08: Fixed: Define server type dialog: Tab order wrong
-19.12.08: Fixed: Synchronize dirs: Also warn about identical left+right path if drive letter has different case
-18.12.08: Fixed: Couldn't open Explorer via "Explore" command in root any more
-17.12.08: Fixed: FTP connect dialog: Drag&Drop of connection out of folder to root could still show "encrypted" icon by mistake if the connection appeared at the end of the list
-17.12.08: Fixed: FTP connect dialog: Show warning when the user has selected only folders and wants to change the password for these
-17.12.08: Fixed: CRC check: Using hotkeys to jump to a line not working when the checked file was larger than 1 MB
-17.12.08: Fixed: Lister: Wrong selection after putting cursor somewhere in text, and then switching to different mode (e.g. text->binary)
-17.12.08: Fixed: Lister: Access violation in binary or hex mode when selecting text and jumping to end (Ctrl+End) with different codepage (Uniscribe)
-17.12.08: Fixed: Ctrl+E (previous in command line): Loop when a name was part of another, longer name -> not all history items shown
-17.12.08: Fixed: Increased default width of plugin configuration dialog
+23.12.08  Added: (Experimental) Support for separated Ansi and Unicode plugins. The Unicode plugins must be named <pluginname>.u<extension>, e.g. id3.wdx and id3.uwdx
+23.12.08  Fixed: Do not show directory context menu when right clicking on header of quick view panel
+23.12.08  Fixed: Only when using double byte locale (e.g. Chinese): Unpacking from ZIP in Chinese subdir produced incorrect file names (name start cut)
+23.12.08  Fixed: Win9x only: empty .inc files created in TC dir after changing language and opening the main menu for the first time (caused by GetPrivateProfileSection)
+23.12.08  Fixed: Linux with Wine: Could not delete 2 folders with same name, just different case, e.g. 'Hello' and 'hello'
+23.12.08  Fixed: FTP connect: Changed name of folders section to [|empty_folders|] to make name collisions improbable
+23.12.08  Fixed: Changed file sorting methods 0-2 to use CompareStringW on NT-based systems (not available on Win9x) to get similar sorting as older versions
+23.12.08  Fixed: Fast flickering during Drag&Drop in FTP connect dialog, too fast scrolling (changed to 2 different speeds)
+23.12.08  Fixed: Make quick filter compatible with these functions: delete in 'feed to listbox', 'Show only selected', 'Mark newer, hide same files', Delete of files outside of TC+watch dirs
+22.12.08  Fixed: Line height in FTP connect progress dialog/CRC check dialog
+22.12.08  Fixed: LB_GETTEXT no longer working with FTP log list
+22.12.08  Fixed: ToolTipDelay and DriveTipDelay options were ignored
+22.12.08  Fixed: Lister: Access violation when file gone and switching to binary mode and back to text mode
+22.12.08  Fixed: Drag folder to tree, hold down right mouse button before releasing left -> right click menu was shown when releasing right button
+22.12.08  Fixed: Change start menu dialog: Cursor not set in "Command" field when adding first command to empty list
+22.12.08  Added: tcmdx64: Allow to add also per extension Explorer extensions to the ignore list
+22.12.08  Fixed: tcmdx64: Wrong first item index passed to plugins
+21.12.08  Fixed: Ctrl+F connect dialog: show error when delete or Drag&Drop fails because wcx_ftp.ini is write protected
+21.12.08  Added: Breadcrumb bar dropdown: custom-drawn arrows for long lists
+21.12.08  Added: Breadcrumb bar: During Drag&Drop, let the underline flash so the user knows that the subdir will soon open
+21.12.08  Added: New style of breadcrumb bar with small arrow panel below bar to open subdirs
+19.12.08  Fixed: Synchronize dirs: "Empty dirs" ignored option "Only selected"
+19.12.08  Fixed: Opening file from archive via internal associations sometimes loaded the editor, but the file was deleted before the editor could open it
+19.12.08  Fixed: Lister: When file not accessible, Lister switched to text mode, but the max. line width remained that of the previous view (e.g. hex view)
+19.12.08  Added: Apply quick filter also to auto-refresh
+19.12.08  Fixed: Crash with quick filter and auto-refresh when new files arrived while quick filter was set
+19.12.08  Fixed: Files - Change attributes: content plugin parameters like [tc.comment] can now be up to 2kBytes long
+19.12.08  Added: Button bar: Show small overlay when a button opens a menu bar dropdown menu
+19.12.08  Fixed: Button bar dropdown menu: moved option PopupIconSize from bar to wincmd.ini section [ButtonBar]
+19.12.08  Fixed: Button bar dropdown menu: Icons slightly distorted when popup icon size differs from main bar icon size
+19.12.08  Fixed: Button bar dropdown menu: Selected items were not shown if the main menu was configured to use checkmarks
+19.12.08  Fixed: Define server type dialog: Show saved definitions popup menu at button position, not mouse position
+19.12.08  Fixed: Define server type dialog: Some hotkeys not working
+19.12.08  Fixed: Define server type dialog: Tab order wrong
+19.12.08  Fixed: Synchronize dirs: Also warn about identical left+right path if drive letter has different case
+18.12.08  Fixed: Couldn't open Explorer via "Explore" command in root any more
+17.12.08  Fixed: FTP connect dialog: Drag&Drop of connection out of folder to root could still show "encrypted" icon by mistake if the connection appeared at the end of the list
+17.12.08  Fixed: FTP connect dialog: Show warning when the user has selected only folders and wants to change the password for these
+17.12.08  Fixed: CRC check: Using hotkeys to jump to a line not working when the checked file was larger than 1 MB
+17.12.08  Fixed: Lister: Wrong selection after putting cursor somewhere in text, and then switching to different mode (e.g. text->binary)
+17.12.08  Fixed: Lister: Access violation in binary or hex mode when selecting text and jumping to end (Ctrl+End) with different codepage (Uniscribe)
+17.12.08  Fixed: Ctrl+E (previous in command line): Loop when a name was part of another, longer name -> not all history items shown
+17.12.08  Fixed: Increased default width of plugin configuration dialog
 
 17.12.08 Release Total Commander 7.50 Beta 3a
-17.12.08: Fixed: Win9x/ME: Disable watch dirs options in configuration because the corresponding functions don't exist anyway
-17.12.08: Fixed: Win9x/ME: Font in custom message dialog (e.g. to confirm deleting of read-only files) was bold by mistake
-17.12.08: Fixed: Couldn't load a lot of settings on Windows 9x/ME. Reason: GetPrivateProfileSection simply fails with buffers >32767!
+17.12.08  Fixed: Win9x/ME: Disable watch dirs options in configuration because the corresponding functions don't exist anyway
+17.12.08  Fixed: Win9x/ME: Font in custom message dialog (e.g. to confirm deleting of read-only files) was bold by mistake
+17.12.08  Fixed: Couldn't load a lot of settings on Windows 9x/ME. Reason: GetPrivateProfileSection simply fails with buffers >32767!
 
 16.12.08 Release Total Commander 7.50 Beta 3
-16.12.08: Fixed: Lister: Auto right-scroll right-aligned text in Lister when switching through multiple right-aligned files with n/p
-16.12.08: Added: Code to detect OEM Russian file names in zip files marked as created by Windows
-16.12.08: Fixed: Win32-style tooltips for files: Curr. names not shown when using user-defined tips (e.g. with content plugins)
-16.12.08: Fixed: Chinese and Korean not shown correctly in list and page titles of main configuration dialog, but only when Chinese or Korean is the default language
-16.12.08: Added: Shadows to breadcrumb bar dropdowns
-15.12.08: Added: Ctrl+Shift+S restores last-used quick filter
-15.12.08: Added: Ctrl+S always goes directly into quick filter mode
-15.12.08: Fixed: cm_SwitchX64Redirection not working properly (needed restart of TC to turn redirection back on)
-15.12.08: Fixed: Linux with Wine: Don't use Uniscribe, Wine doesn't seem to implement it yet
-15.12.08: Fixed: Linux with Wine: Synchronize dirs didn't erase the list background when no items in list
-15.12.08: Fixed: F7 mkdir: Select directory name manually (Wine doesn't seem to select the name)
-15.12.08: Fixed: Beep in Lister when scrolling through some Unicode files
-15.12.08: Added: tcmdx64: Support per extension context menu extensions (e.g. .avi) and folder extensions. A mix of extensions (e.g. avi and mpg) isn't supported
-15.12.08: Fixed: Choose command dialog, em_xyz user commands: Unicode in comment field (e.g. from a Unicode program) not shown correctly
-15.12.08: Fixed: cm_rereadsource received from outside while file system plugin list shown -> quick filter not removed properly
-15.12.08: Fixed: No .exe icons in Search - Feed to listbox
-15.12.08: Fixed: Alt+Enter on file system plugins in Network Neighborhood no longer worked
-14.12.08: Added: Breadcrumb bar: Support for Windows Vista directory hard links
-14.12.08: Added: Button bar as menu: User-defined icon size for subbar. (Edit: Now in wincmd.ini) Example: wincmd.ini [Buttonbar] PopupIconSize=24
-14.12.08: Fixed: Button bar: Cache not working properly since the addition of menu-style subbars
-14.12.08: Added: Increased maximum content plugin value size which can be set via Files->Change attributes to 2 kBytes-1 (the max. which can be retrieved)
-14.12.08: Fixed: Drag&Drop of OLE objects from non-unicode source (e.g. TC 7.0x from ZIP) failed
-14.12.08: Fixed: Change of quick filter (Ctrl+S) in thumbnails view stopped loading the thumbnails
-14.12.08: Fixed: Breadcrumb bar: Dropdown of Network Neighborhood had no file system plugin icons
-14.12.08: Fixed: Close Quick View panel when user chooses a directory from directory hotlist or history in that panel
-14.12.08: Added: New internal cm_SrcHideQuickView (also with Left and Right) to turn quick view panel off
-14.12.08: Fixed: Breadcrumb bar: No FTP directory progress dialog shown when caching turned off
-14.12.08: Fixed: Dual monitors: Breadcrumb bar: Make sure that ftp directory progress dialog is always on the same screen as the current breadcrumb panel
-14.12.08: Fixed: Dual monitors: Files - Change attributes - tc-Comments >>  -> Edit dialog always on primary screen
-14.12.08: Fixed: Change button bar button: Icon not taken from em_xyz commands
-12.12.08: Fixed: Synchronize dirs, right click, delete on both sides, Cancel both -> selection lost
-12.12.08: Fixed: Vista: Show split arrow/wait cursor while waiting for Network Neighborhood instead of full wait cursor
-12.12.08: Added: Re-use thread when using ThreadFindFirst option and thread doesn't hang
-12.12.08: Fixed: Synchronize dirs, right click, copy file attributes: Buttons and checkboxes overlapped
-12.12.08: Fixed: No state information shown for cm_SwitchX64Redirection (e.g. in button bar)
-12.12.08: Fixed: Button bar config: Disable minimized/maximized checkboxes for numeric values
-12.12.08: Fixed: Lister: switch from text mode to multimedia and back -> selection start no longer at text cursor position
-12.12.08: Fixed: Alt+Shift+F4 opened same dialog as Shift+F4, but closed TC when the dialog was closed
-12.12.08: Added: Support Shift+F10 hotkey in button bar
-12.12.08: Added: When using Alt for quick search, do not react to Alt+Space (system menu)
-12.12.08: Fixed: FTP Connection details: Do not allow user to enter pipe symbol | at start or end of name (has special meanings)
-12.12.08: Added: FTP Connect dialog: Drag&Drop multiple connection in one operation
-12.12.08: Fixed: Show help page in Shift+F5/F6 when user presses F1
-12.12.08: Fixed: Internal associations via [Associations] not working inside archives
-12.12.08: Fixed: Internal associations via [Associations] section in wincmd.ini didn't work with double quotes around program
-12.12.08: Fixed: Overwrite dialog: Wrong version information shown
-12.12.08: Fixed: Synchronize dirs: Give more space for checkbox "Empty subdirs" for translations
-12.12.08: Fixed: Breadcrumb bar: Reset subdir open timer when user moves cursor to other line
-12.12.08: Fixed: Drag&Drop didn't work to breadcrumb when dir of that panel showed virtual folder like the Network Neighborhood
+16.12.08  Fixed: Lister: Auto right-scroll right-aligned text in Lister when switching through multiple right-aligned files with n/p
+16.12.08  Added: Code to detect OEM Russian file names in zip files marked as created by Windows
+16.12.08  Fixed: Win32-style tooltips for files: Curr. names not shown when using user-defined tips (e.g. with content plugins)
+16.12.08  Fixed: Chinese and Korean not shown correctly in list and page titles of main configuration dialog, but only when Chinese or Korean is the default language
+16.12.08  Added: Shadows to breadcrumb bar dropdowns
+15.12.08  Added: Ctrl+Shift+S restores last-used quick filter
+15.12.08  Added: Ctrl+S always goes directly into quick filter mode
+15.12.08  Fixed: cm_SwitchX64Redirection not working properly (needed restart of TC to turn redirection back on)
+15.12.08  Fixed: Linux with Wine: Don't use Uniscribe, Wine doesn't seem to implement it yet
+15.12.08  Fixed: Linux with Wine: Synchronize dirs didn't erase the list background when no items in list
+15.12.08  Fixed: F7 mkdir: Select directory name manually (Wine doesn't seem to select the name)
+15.12.08  Fixed: Beep in Lister when scrolling through some Unicode files
+15.12.08  Added: tcmdx64: Support per extension context menu extensions (e.g. .avi) and folder extensions. A mix of extensions (e.g. avi and mpg) isn't supported
+15.12.08  Fixed: Choose command dialog, em_xyz user commands: Unicode in comment field (e.g. from a Unicode program) not shown correctly
+15.12.08  Fixed: cm_rereadsource received from outside while file system plugin list shown -> quick filter not removed properly
+15.12.08  Fixed: No .exe icons in Search - Feed to listbox
+15.12.08  Fixed: Alt+Enter on file system plugins in Network Neighborhood no longer worked
+14.12.08  Added: Breadcrumb bar: Support for Windows Vista directory hard links
+14.12.08  Added: Button bar as menu: User-defined icon size for subbar. (Edit: Now in wincmd.ini) Example: wincmd.ini [Buttonbar] PopupIconSize=24
+14.12.08  Fixed: Button bar: Cache not working properly since the addition of menu-style subbars
+14.12.08  Added: Increased maximum content plugin value size which can be set via Files->Change attributes to 2 kBytes-1 (the max. which can be retrieved)
+14.12.08  Fixed: Drag&Drop of OLE objects from non-unicode source (e.g. TC 7.0x from ZIP) failed
+14.12.08  Fixed: Change of quick filter (Ctrl+S) in thumbnails view stopped loading the thumbnails
+14.12.08  Fixed: Breadcrumb bar: Dropdown of Network Neighborhood had no file system plugin icons
+14.12.08  Fixed: Close Quick View panel when user chooses a directory from directory hotlist or history in that panel
+14.12.08  Added: New internal cm_SrcHideQuickView (also with Left and Right) to turn quick view panel off
+14.12.08  Fixed: Breadcrumb bar: No FTP directory progress dialog shown when caching turned off
+14.12.08  Fixed: Dual monitors: Breadcrumb bar: Make sure that ftp directory progress dialog is always on the same screen as the current breadcrumb panel
+14.12.08  Fixed: Dual monitors: Files - Change attributes - tc-Comments >>  -> Edit dialog always on primary screen
+14.12.08  Fixed: Change button bar button: Icon not taken from em_xyz commands
+12.12.08  Fixed: Synchronize dirs, right click, delete on both sides, Cancel both -> selection lost
+12.12.08  Fixed: Vista: Show split arrow/wait cursor while waiting for Network Neighborhood instead of full wait cursor
+12.12.08  Added: Re-use thread when using ThreadFindFirst option and thread doesn't hang
+12.12.08  Fixed: Synchronize dirs, right click, copy file attributes: Buttons and checkboxes overlapped
+12.12.08  Fixed: No state information shown for cm_SwitchX64Redirection (e.g. in button bar)
+12.12.08  Fixed: Button bar config: Disable minimized/maximized checkboxes for numeric values
+12.12.08  Fixed: Lister: switch from text mode to multimedia and back -> selection start no longer at text cursor position
+12.12.08  Fixed: Alt+Shift+F4 opened same dialog as Shift+F4, but closed TC when the dialog was closed
+12.12.08  Added: Support Shift+F10 hotkey in button bar
+12.12.08  Added: When using Alt for quick search, do not react to Alt+Space (system menu)
+12.12.08  Fixed: FTP Connection details: Do not allow user to enter pipe symbol | at start or end of name (has special meanings)
+12.12.08  Added: FTP Connect dialog: Drag&Drop multiple connection in one operation
+12.12.08  Fixed: Show help page in Shift+F5/F6 when user presses F1
+12.12.08  Fixed: Internal associations via [Associations] not working inside archives
+12.12.08  Fixed: Internal associations via [Associations] section in wincmd.ini didn't work with double quotes around program
+12.12.08  Fixed: Overwrite dialog: Wrong version information shown
+12.12.08  Fixed: Synchronize dirs: Give more space for checkbox "Empty subdirs" for translations
+12.12.08  Fixed: Breadcrumb bar: Reset subdir open timer when user moves cursor to other line
+12.12.08  Fixed: Drag&Drop didn't work to breadcrumb when dir of that panel showed virtual folder like the Network Neighborhood
 11.12.08  Added: Speedup of loading Folder tabs, histories etc. at startup and Ctrl+D menu by using GetPrivateProfileSection
 10.12.08  Fixed: Vista: Could no longer enter "forbidden" directories requiring admin rights. Reason: Faulty check for reparse points
 10.12.08  Added: FTP, HTTP CONNECT or SOCKS firewall, passive mode: When server reports a local address like 192.168.*.*, use original server name for data connection
@@ -7022,7 +7609,7 @@ Options added during the development of 9.22 (but only added to 9.50):
 24.09.08  Fixed: Unicode support in parallel port connection not working properly in all functions
 23.09.08  Added: Synchronize dirs: Allow user to copy just the time stamp, attributes, and NTFS permissions of files
 21.09.08  Added: Support for UTF-16 Unicode ini files when reading/writing Unicode names. TC re-checks whether an ini file is Unicode when copying files, when switching to TC from another program, and when closing down
-19.09.08  Fixed: dead keys like  did not work with quick search (letters with search dialog), e.g. a -> ä
+19.09.08  Fixed: dead keys like ¨ did not work with quick search (letters with search dialog), e.g. a¨ ->ä
 19.09.08  Fixed: Drag&Drop within separate tree: Do not allow to collapse directory if the dragged item is part of it
 17.09.08  Added: Drag&Drop from separate tree to archive
 17.09.08  Added: Drag&Drop from separate tree to file list, drive button bar and tabs
