@@ -2,7 +2,7 @@
 
 rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 echo Recompose 'miktex' caches...
-start "" /d "%~dp0Document\miktex\" "miktex-cleanup-fndb.bat"
+start "" /d "%~dp0Document\miktex" "miktex-cleanup-fndb.bat"
 
 rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 echo Recompose 'nvm' dependencies...
@@ -94,6 +94,21 @@ rem	)
 
 	del "sourcetrail_indexer.exe.001" /q 1>nul 2>nul
 	del "sourcetrail_indexer.exe.002" /q 1>nul 2>nul
+)
+
+cd "..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'Doxygen' dependencies...
+cd "Document\Doxygen"
+
+if exist "libclang.dll.001" (
+rem	if not exist "libclang.dll" (
+		copy /y /b "libclang.dll.001"+"libclang.dll.002" "libclang.dll"
+rem	)
+
+	del "libclang.dll.001" /q 1>nul 2>nul
+	del "libclang.dll.002" /q 1>nul 2>nul
 )
 
 cd "..\.."
