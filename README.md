@@ -47,6 +47,7 @@ Windows 7+ (mostly 64 bit applications now)
 
 **ditaa** : diagram tool to convert ASCII-art into `svg` (for **miktex**)<br>
 **Doxygen** : create documentation from "intrumented" source code (with proper syntax)<br>
+**Graphviz** : generate weighted graphs from formal description files (manual or generated)<br>
 **LibreOffice** : like `Office` but `Libre`, with a few key differences though <ins>EXTERNAL INSTALLER</ins><br>
 **miktex** : `LaTeX` tools needed by **texmaker** (includes its own package updater)<br>
 **mscgen-0.20** : command line based `Message Sequence Charts` generator<br>
