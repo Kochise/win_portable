@@ -144,6 +144,22 @@ rem	)
 cd "..\..\.."
 
 rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+echo Recompose 'Tesseract-OCR' dependencies...
+cd "Image\Tesseract-OCR"
+
+if exist "libtesseract-5.dll.001" (
+rem	if not exist "libtesseract-5.dll" (
+		copy /y /b "libtesseract-5.dll.001"+"libtesseract-5.dll.002"+"libtesseract-5.dll.003" "libtesseract-5.dll"
+rem	)
+
+	del "libtesseract-5.dll.001" /q 1>nul 2>nul
+	del "libtesseract-5.dll.002" /q 1>nul 2>nul
+	del "libtesseract-5.dll.003" /q 1>nul 2>nul
+)
+
+cd "..\.."
+
+rem - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 echo Recompose 'Chrome' dependencies...
 cd "Internet\Chrome\App\Chrome-bin\104.0.5112.102"
 
